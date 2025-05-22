@@ -15,6 +15,8 @@ package mesquite.lib.duties;
 
 import java.awt.*;
 import mesquite.lib.*;
+import mesquite.lib.taxa.Taxa;
+import mesquite.lib.taxa.TaxaDisplay;
 
 /* ======================================================================== */
 /**This is superclass of Mesquite modules that draw terminal taxon names in a taxa window.  Relies on information in the

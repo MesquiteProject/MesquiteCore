@@ -18,6 +18,7 @@ import java.util.*;
 
 import mesquite.lib.*;
 import mesquite.lib.duties.*;
+import mesquite.lib.taxa.Taxa;
 
 
 /* ======================================================================== */
@@ -32,16 +33,19 @@ public abstract class AssociationsManager extends FileElementManager   {
  		return "Manager of Taxa Associations, including read/write ASSOCIATION block";
    	 }
 	
-	public abstract int getNumberOfAssociations(Taxa taxaA, Taxa taxaB);
+	public abstract int getNumberOfAssociations(Taxa containingTaxa, Taxa containedTaxa);
 	public abstract int getNumberOfAssociations(Taxa taxa);
 	public abstract int getNumberOfAssociations();
-	public abstract TaxaAssociation getAssociation(Taxa taxaA, Taxa taxaB, int i);
+	public abstract TaxaAssociation getAssociation(Taxa containingTaxa, Taxa containedTaxa, int i);
 	public abstract TaxaAssociation getAssociation(Taxa taxa, int i);
 	public abstract int getWhichAssociation(Taxa taxa, TaxaAssociation assoc);
 	public abstract TaxaAssociation getAssociation(int i);
 	public abstract TaxaAssociation findAssociationByID(long id, Taxa taxa);
-  	 public abstract TaxaAssociation makeNewAssociation(Taxa taxaA, Taxa taxaB);
+  	 public abstract TaxaAssociation makeNewAssociation(Taxa containingTaxa, Taxa containedTaxa);
+  	 public abstract TaxaAssociation makeNewAssociation(Taxa containingTaxa, Taxa containedTaxa, String name);
+  	 public abstract TaxaAssociation duplicateAssociation(TaxaAssociation association);
 	public abstract ListableVector getAssociationsVector();
+	public abstract boolean showAssociationInTaxonList(Taxa taxa, TaxaAssociation association, boolean showEditor);
 	public Class getElementClass(){
 		return TaxaAssociation.class;
 	}

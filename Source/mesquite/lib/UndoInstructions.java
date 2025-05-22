@@ -20,6 +20,7 @@ import mesquite.lib.characters.*;
 import mesquite.categ.lib.*;
 //import mesquite.charMatrices.lib.*;
 import mesquite.lib.table.*;
+import mesquite.lib.taxa.Taxa;
 
 /*
  Undo PARTS_MOVED:

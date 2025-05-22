@@ -17,6 +17,8 @@ import java.awt.*;
 
 import mesquite.lib.*;
 import mesquite.lib.duties.*;
+import mesquite.lib.taxa.Taxa;
+import mesquite.lib.tree.AdjustableTree;
 
 /* ======================================================================== */
 public class SetToArbitrarySymmetrical extends TreeAltererMult {

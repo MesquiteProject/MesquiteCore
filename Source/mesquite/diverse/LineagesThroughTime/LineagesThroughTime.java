@@ -17,6 +17,12 @@ import java.awt.*;
 
 import mesquite.lib.*;
 import mesquite.lib.duties.*;
+import mesquite.lib.tree.Tree;
+import mesquite.lib.ui.ChartListener;
+import mesquite.lib.ui.MesquiteChart;
+import mesquite.lib.ui.MesquitePanel;
+import mesquite.lib.ui.MesquiteWindow;
+import mesquite.lib.ui.MessagePanel;
 
 /** ======================================================================== */
 public class LineagesThroughTime extends TreeWindowAssistantA {

@@ -20,6 +20,10 @@ import java.awt.*;
 import mesquite.lib.*;
 import mesquite.lib.characters.CharacterData;
 import mesquite.lib.duties.*;
+import mesquite.lib.misc.CanRetrieveTreeBlock;
+import mesquite.lib.taxa.Taxa;
+import mesquite.lib.tree.Tree;
+import mesquite.lib.tree.TreeVector;
 
 /* ======================================================================== */
 public abstract class TreeSearch extends TreeInferer implements Incrementable {
@@ -40,6 +44,11 @@ public String getMessageIfUserAbortRequested () {
 	if (searchTask!=null)
 		return searchTask.getMessageIfUserAbortRequested();
 	return null;
+}
+public String getInferenceDetails() {
+	if (searchTask==null)
+		return "";
+	return searchTask.getInferenceDetails();
 }
 
 /*.................................................................................................................*/
@@ -80,13 +89,13 @@ public void processUserClickingOnTextCommandLink(String command) {
 	public boolean startJob(String arguments, Object condition, boolean hiredByName) {
 		loadPreferences();
 		if (arguments !=null) {
-			searchTask = (TreeSearcher)hireNamedEmployee(TreeSearcher.class,arguments);
+			searchTask = (TreeSearcher)hireNamedEmployee(TreeSearcher.class,arguments, condition);
 			if (searchTask==null) {
 				return sorry(getName() + " couldn't start because the requested tree searching module not obtained: "+arguments);
 			}
 		}
 		else {
-			searchTask= (TreeSearcher)hireEmployee(TreeSearcher.class, "Tree Searcher");
+			searchTask= (TreeSearcher)hireCompatibleEmployee(TreeSearcher.class, condition, "Tree Searcher");
 			if (searchTask==null) return sorry(getName() + " couldn't start because tree searching module not obtained.");
 		}
 		return true;
@@ -94,6 +103,14 @@ public void processUserClickingOnTextCommandLink(String command) {
 	public String getLogText() {
 		return searchTask.getLogText();
 	}
+/*
+	// optional, in case employer wants to force use of a matrix
+ public MatrixSourceCoord getMatrixSource() {
+	 return searchTask.getMatrixSource();
+ }
+ public void setMatrixSource(MatrixSourceCoord msource) {
+	 searchTask.setMatrixSource(msource);
+ }
 
 	/*.................................................................................................................*/
 	public String getHTMLDescriptionOfStatus(){
@@ -143,6 +160,13 @@ public void processUserClickingOnTextCommandLink(String command) {
  	public Tree getLatestTree(Taxa taxa, MesquiteNumber score, MesquiteString titleForWindow){
    		return searchTask.getLatestTree(taxa, score, titleForWindow);
    	 }
+ 	
+ 	
+	public TreeVector getCurrentMultipleTrees(Taxa taxa, MesquiteString titleForWindow){
+   		return searchTask.getCurrentMultipleTrees(taxa, titleForWindow);
+   	 }
+
+
 
 	/*.................................................................................................................*/
 	public void setCurrent(long i){  //SHOULD NOT notify (e.g., parametersChanged)
@@ -215,13 +239,12 @@ public void processUserClickingOnTextCommandLink(String command) {
 	public void initialize(Taxa taxa){
 		searchTask.initialize(taxa);
 		searchTask.setTreeInferer(this);
-
 	}
 	/*.................................................................................................................*/
-	public void fillTreeBlock(TreeVector treeList, int numberIfUnlimited){
+	public int fillTreeBlock(TreeVector treeList, int numberIfUnlimited){
 		//DISCONNECTABLE
 		searchTask.setTreeInferer(this);
-		searchTask.fillTreeBlock(treeList);
+		return searchTask.fillTreeBlock(treeList);
 	}
 	/*.................................................................................................................*/
 	public void retrieveTreeBlock(TreeVector treeList, int numberIfUnlimited){

@@ -20,6 +20,20 @@ import java.awt.*;
 import java.util.*;
 import java.net.*;
 import mesquite.lib.duties.*;
+import mesquite.lib.misc.HNode;
+import mesquite.lib.taxa.Taxa;
+import mesquite.lib.tree.Tree;
+import mesquite.lib.tree.TreeVector;
+import mesquite.lib.ui.ColorTheme;
+import mesquite.lib.ui.HTMLDescribable;
+import mesquite.lib.ui.ListDialog;
+import mesquite.lib.ui.MesquiteFrame;
+import mesquite.lib.ui.MesquiteMenuItem;
+import mesquite.lib.ui.MesquiteMenuItemSpec;
+import mesquite.lib.ui.MesquiteMenuSpec;
+import mesquite.lib.ui.MesquitePopup;
+import mesquite.lib.ui.MesquiteSubmenuSpec;
+import mesquite.lib.ui.MesquiteWindow;
 import mesquite.lib.characters.*;
 
 /* ======================================================================== */
@@ -50,6 +64,15 @@ public class MesquiteProject extends Attachable implements Listable, MesquiteLis
 	protected ListableVector nexusBlocks; 
 	/** */
 	CentralModelListener modelListener;
+	
+	
+	public ListableVector knownBranchProperties = new ListableVector();
+	//The storage points for branch properties are:
+	// BranchProperty.branchPropertiesSettingsVector: static, records settings in Mesquite_Folder/settings/trees/BranchPropertiesInit regarding branch properties (e.g. default kinds, betweenness)
+	// DisplayableBranchProperty.branchPropertyDisplayPreferences: static, records the display preferences of branch properties
+	// MesquiteProject.knownBranchProperties: instance, the properties known by the project. For interface; not saved to file.
+	// The module BranchPropertiesInit is the primary manager
+
 	public boolean virginProject = true;
 	public long startupTime = 0;
 	public MesquiteWindow windowToActivate, activeWindowOfProject;
@@ -59,8 +82,10 @@ public class MesquiteProject extends Attachable implements Listable, MesquiteLis
 	MesquiteFile homeFile;
 
 	/** Commands used with standard Close, Save and Save As...and other menu items*/
-	private MesquiteCommand closeCommand, closeFilesCommand, showFileOnDiskCommand, saveCommand, saveFilesCommand, saveAsCommand, saveLinkagesCommand, revertCommand, linkFileCommand, linkURLCommand, includeFileCommand, includeURLCommand;
+	private MesquiteCommand closeCommand, closeFilesCommand, showFileOnDiskCommand, saveCommand, saveFilesCommand, saveAsCommand, saveLinkagesCommand, revertCommand;
+	private MesquiteCommand linkFileCommand, linkURLCommand, includeFileCommand, includeURLCommand;
 	public MesquiteCommand exportCommand, newLinkFileCommand, getInfoCommand;
+	public MesquiteSubmenuSpec includeMergeSubmenuSpec;
 	/** The file coordinator module that owns this object*/
 	public FileCoordinator ownerModule=null; 
 
@@ -74,6 +99,8 @@ public class MesquiteProject extends Attachable implements Listable, MesquiteLis
 	public boolean developing = true;
 	public boolean autosave = false;
 	public boolean isDoomed = false;
+	public boolean isProcessDataFilesProject = false;
+	public boolean openedWithoutMesquiteBlock = true;
 	public long timePreviouslySavedAsRecorded = 0;
 	public long timePreviouslySavedByFile = 0;
 
@@ -122,6 +149,21 @@ public class MesquiteProject extends Attachable implements Listable, MesquiteLis
 		linkURLCommand = MesquiteModule.makeCommand("linkURL", ownerModule);
 		includeFileCommand = MesquiteModule.makeCommand("includeFile", ownerModule);
 		includeURLCommand = MesquiteModule.makeCommand("includeURL", ownerModule);
+		includeMergeSubmenuSpec = new MesquiteSubmenuSpec(MesquiteTrunk.fileMenu, "Include & Merge",   ownerModule);
+		ownerModule.addItemToSubmenu(MesquiteTrunk.fileMenu, includeMergeSubmenuSpec,"Include File...",  getIncludeFileCommand());
+		ownerModule.addItemToSubmenu(MesquiteTrunk.fileMenu, includeMergeSubmenuSpec,"Link File...",  getLinkFileCommand());
+		ownerModule.addItemToSubmenu(MesquiteTrunk.fileMenu, includeMergeSubmenuSpec,"-", null);
+		MesquiteMenuItemSpec mmis = ownerModule.addItemToSubmenu(MesquiteTrunk.fileMenu, includeMergeSubmenuSpec,"Taxa, Matrices (& Sometimes Trees)", null);
+		mmis.setEnabled(false); //just in case
+		ownerModule.addModuleMenuItemsSeparatelyToSubmenu(MesquiteTrunk.fileMenu, includeMergeSubmenuSpec, new MesquiteCommand("newAssistant", ownerModule), FileAssistantFM.class);
+		ownerModule.addItemToSubmenu(MesquiteTrunk.fileMenu, includeMergeSubmenuSpec,"-", null);
+		mmis = ownerModule.addItemToSubmenu(MesquiteTrunk.fileMenu, includeMergeSubmenuSpec,"Trees", null);
+		mmis.setEnabled(false); //just in case
+		ownerModule.addModuleMenuItemsSeparatelyToSubmenu(MesquiteTrunk.fileMenu, includeMergeSubmenuSpec, new MesquiteCommand("newAssistant", ownerModule), FileAssistantTM.class);
+		ownerModule.addItemToSubmenu(MesquiteTrunk.fileMenu, includeMergeSubmenuSpec,"-", null);
+		MesquiteCommand eICC =   new MesquiteCommand("explainIncludeChoices", ownerModule);
+		eICC.bypassQueue = true;
+		ownerModule.addItemToSubmenu(MesquiteTrunk.fileMenu, includeMergeSubmenuSpec,"Explain These Choices...",  eICC);
 	}
 
 	public void refreshProjectWindow(){
@@ -164,6 +206,7 @@ public class MesquiteProject extends Attachable implements Listable, MesquiteLis
 	public void decrementProjectWindowSuppression(){
 		if (refreshSuppression ==0) {
 			MesquiteMessage.warnProgrammer("decrementProjectWindowSuppression when already zero");
+			//Debugg.printStackTrace(); //temporary while debugging v. 4.0
 			return;
 		}
 		refreshSuppression--;
@@ -272,12 +315,47 @@ public class MesquiteProject extends Attachable implements Listable, MesquiteLis
 		return s;
 	}
 	/*.................................................................................................................*/
+	/** returns the ith TreeVector */
+	public TreeVector getTreesByNumber(int i) {
+		if (i < getNumberTreeVectors())
+			return (TreeVector)getFileElement(TreeVector.class, i);
+		return null;
+	}
+	/*.................................................................................................................*/
+	/** returns the ith TreeVector */
+	public TreeVector getTreesByNumber(Taxa taxa, int i) {
+		if (i < getNumberTreeVectors(taxa)){
+			int count = 0;
+			for (int k = 0; k<treeVectors.size(); k++){
+				TreeVector trees = (TreeVector)treeVectors.elementAt(k);
+				if (trees.getTaxa() == taxa){
+					if (i == count)
+						return trees;
+					count++;
+				}
+			}
+		}
+		return null;
+	}
+	/*.................................................................................................................*/
 	/** returns the Trees with given id number */
 	public TreeVector getTreesByID(long id) {
 		//second look for match with .# file number
 		for (int i=0; i<getNumberOfFileElements(TreeVector.class); i++) {
 			TreeVector trees = (TreeVector)getFileElement(TreeVector.class, i);
 			if (id == trees.getID())
+				return trees;
+		}
+		return null;
+	}
+	/*.................................................................................................................*/
+	/** returns the Trees with given name */
+	public TreeVector getTreesByName(String name) {
+		if (name == null)
+			return null;
+		for (int i=0; i<getNumberOfFileElements(TreeVector.class); i++) {
+			TreeVector trees = (TreeVector)getFileElement(TreeVector.class, i);
+			if (name.equals(trees.getName()))
 				return trees;
 		}
 		return null;
@@ -432,6 +510,14 @@ public class MesquiteProject extends Attachable implements Listable, MesquiteLis
 		totalFinalized++;
 		super.finalize();
 	}
+	
+	boolean ignoreDirtWhenCloseRequested = false;
+	public void setIgnoreDirtWhenCloseRequested(boolean closeAnyway) {
+		this.ignoreDirtWhenCloseRequested = closeAnyway;
+	}
+	public boolean getIgnoreDirtWhenCloseRequested() {
+		return ignoreDirtWhenCloseRequested;
+	}
 	/*.................................................................................................................*/
 	/** returns whether any files are dirty */
 	public boolean isDirty(){  
@@ -457,7 +543,7 @@ public class MesquiteProject extends Attachable implements Listable, MesquiteLis
 			if (name != null)
 				temp.addLine("setName " + ParseUtil.tokenize(name));
 			if (saveSnapAttach)
-				temp.addLine("attachments "+ writeAttachments(false));
+				temp.addLine("attachments <"+ writeAttachments() +">");
 			return temp;
 		}
 		return null;
@@ -754,6 +840,10 @@ public class MesquiteProject extends Attachable implements Listable, MesquiteLis
 	public MesquiteCommand getSaveLinkagesCommand(){
 		return saveLinkagesCommand;
 	}
+	
+	public MesquiteSubmenuSpec getIncludeMergeSubmenuSpec(){
+		return includeMergeSubmenuSpec;
+	}
 	/*.................................................................................................................*/
 	/** returns the file coordinator module in charge of the project*/
 	public FileCoordinator getCoordinatorModule(){
@@ -768,8 +858,12 @@ public class MesquiteProject extends Attachable implements Listable, MesquiteLis
 			return;
 		}
 
-		if (code != MesquiteListener.SELECTION_CHANGED)
-			notifyListeners(this, new Notification(MesquiteListener.ELEMENT_CHANGED));
+		if (code != MesquiteListener.SELECTION_CHANGED){
+			if (Notification.appearsCosmetic(notification))
+				notifyListeners(this, new Notification(code));
+			else
+				notifyListeners(this, new Notification(MesquiteListener.ELEMENT_CHANGED));
+		}
 	}
 	/** passes which object was disposed*/
 	public void disposing(Object obj){
@@ -1207,8 +1301,11 @@ public class MesquiteProject extends Attachable implements Listable, MesquiteLis
 	public void removeNexusBlock(NexusBlock block) {
 		if (nexusBlocks != null) {
 			if (block !=null) {
-				if (files.indexOf(block.getFile())<0)
+				if (files.indexOf(block.getFile())<0) {
 					MesquiteMessage.warnProgrammer("Error: NEXUS block found referring to file that no longer exists " + block.getClass());
+					if (MesquiteTrunk.developmentMode)
+						MesquiteMessage.printStackTrace();
+				}
 				block.dispose();
 				nexusBlocks.removeElement(block, true);
 			}
@@ -1784,12 +1881,12 @@ public class MesquiteProject extends Attachable implements Listable, MesquiteLis
 		if (dataClass ==null)
 			return true;
 		if (dataClass instanceof Class){
-			return ((Class)dataClass).isAssignableFrom(data.getStateClass());
+			return ((Class)dataClass).isAssignableFrom(data.getStateClass()) || ((Class)dataClass).isAssignableFrom(data.getClass());
 		}
 		else if (dataClass instanceof Class[]){
 			Class[] dataClasses = ((Class[])dataClass);
 			for (int i=0; i<dataClasses.length; i++){
-				if (dataClasses[i].isAssignableFrom(data.getStateClass()))
+				if (dataClasses[i].isAssignableFrom(data.getStateClass()) || dataClasses[i].isAssignableFrom(data.getClass()))
 					return true;
 			}
 			return false;

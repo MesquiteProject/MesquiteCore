@@ -13,13 +13,16 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
 */
 package mesquite.lists.BooleanForTaxaList;
 
+import java.util.Vector;
+
 import mesquite.lib.*;
 import mesquite.lib.characters.*;
 import mesquite.lib.duties.*;
 import mesquite.lib.table.*;
+import mesquite.lib.taxa.Taxa;
 import mesquite.lists.lib.*;
 
-public class BooleanForTaxaList extends TaxonListAssistant implements MesquiteListener {
+public class BooleanForTaxaList extends TaxonListAssistant implements MesquiteListener, Pausable {
 	Taxa taxa;
 	/*.................................................................................................................*/
 	public String getName() {
@@ -126,6 +129,27 @@ public class BooleanForTaxaList extends TaxonListAssistant implements MesquiteLi
 		return booleanTask.getVeryShortName();
 	}
 	/*.................................................................................................................*/
+	/** Indicate what could be paused */
+	public void addPausables(Vector pausables) {
+		if (pausables != null)
+			pausables.addElement(this);
+	}
+	/** to ask Pausable to pause*/
+	public void pause() {
+		paused = true;
+	}
+	/** to ask a Pausable to unpause (i.e. to resume regular activity)*/
+	public void unpause() {
+		paused = false;
+		doCalcs();
+		parametersChanged(null);
+	}
+	/*.................................................................................................................*/
+	boolean paused = false;
+	boolean okToCalc() {
+		return !paused;
+	}
+	/*.................................................................................................................*/
 	/** passes which object is being disposed (from MesquiteListener interface)*/
 	public void disposing(Object obj){
 	}
@@ -160,7 +184,7 @@ public class BooleanForTaxaList extends TaxonListAssistant implements MesquiteLi
 	int totalUndetermined = 0;
 	/*.................................................................................................................*/
 	public void doCalcs(){
-		if (suppressed || booleanTask==null)
+		if (!okToCalc() || suppressed || booleanTask==null)
 			return;
 		int numTaxa = taxa.getNumTaxa();
 		booleanList.resetSize(numTaxa);

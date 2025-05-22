@@ -18,6 +18,9 @@ import java.awt.*;
 import mesquite.lib.*;
 import mesquite.lib.characters.*;
 import mesquite.lib.duties.*;
+import mesquite.lib.taxa.Taxa;
+import mesquite.lib.tree.Tree;
+import mesquite.lib.ui.MesquiteSubmenuSpec;
 
 /* ======================================================================== */
 public class NumForMatCurrentTree extends NumberForMatrix { // implements NumForCharTreeDep {
@@ -50,7 +53,7 @@ public class NumForMatCurrentTree extends NumberForMatrix { // implements NumFor
 				return sorry(getName() + " couldn't start because the requested calculator module wasn't successfully hired.");
 		}
 		else {
-			numberTask = (NumberForMatrixAndTree)hireEmployee(NumberForMatrixAndTree.class, "Value to calculate for character matrix");
+			numberTask = (NumberForMatrixAndTree)hireEmployee(NumberForMatrixAndTree.class, "Value to calculate for character matrix with tree");
 			if (numberTask == null)
 				return sorry(getName() + " couldn't start because no calculator module obtained.");
 		}

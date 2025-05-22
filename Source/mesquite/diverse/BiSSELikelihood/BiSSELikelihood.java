@@ -20,6 +20,9 @@ import mesquite.diverse.lib.*;
 import mesquite.diverse.BiSSELikelihoodCalculator.BiSSELikelihoodCalculator;
 import mesquite.lib.*;
 import mesquite.lib.characters.CharacterDistribution;
+import mesquite.lib.tree.Tree;
+import mesquite.lib.ui.MesquiteSubmenuSpec;
+import mesquite.lib.ui.ParametersDialog;
 import mesquite.stochchar.lib.MargLikelihoodForModel;
 
 public class BiSSELikelihood extends NumForCharAndTreeDivers {
@@ -134,7 +137,7 @@ public class BiSSELikelihood extends NumForCharAndTreeDivers {
 	}
 	boolean setParam(MesquiteParameter p, MesquiteParameter[] params, Parser parser){
 		double newValue = MesquiteDouble.fromString(parser);
-		int loc = parser.getPosition();
+		long loc = parser.getPosition();
 		String token = parser.getNextToken();
 		if (token != null && "=".equals(token)){
 			int con = MesquiteInteger.fromString(parser);

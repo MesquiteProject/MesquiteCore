@@ -16,6 +16,9 @@ package mesquite.treefarm.NNAssocValues;
 
 import mesquite.lib.*;
 import mesquite.lib.duties.*;
+import mesquite.lib.tree.AdjustableTree;
+import mesquite.lib.tree.Tree;
+import mesquite.lib.ui.ListDialog;
 
 
 

@@ -21,6 +21,10 @@ import mesquite.lib.*;
 import mesquite.lib.characters.*;
 import mesquite.lib.duties.*;
 import mesquite.lib.table.*;
+import mesquite.lib.ui.ColorDistribution;
+import mesquite.lib.ui.MQTextArea;
+import mesquite.lib.ui.MesquiteWindow;
+import mesquite.lib.ui.MousePanel;
 import mesquite.categ.lib.*;
 import mesquite.cont.lib.*;
 
@@ -106,7 +110,7 @@ public class SelSummaryStrip extends DataWindowAssistantID {
 		}
 
 		if (table.anyCellSelectedAnyWay()){
-			int numCells = table.numCellsSelectedAnyWay();
+			long numCells = table.numCellsSelectedAnyWay();
 			if (numCells == 1)
 				result += "1 Cells selected.  ";
 			else
@@ -219,7 +223,7 @@ class Ledge extends MousePanel {
 		setLayout(null);
 		this.ownerModule = ownerModule;
 		/* */
-		message = new TextArea(" ", 20, 2, TextArea.SCROLLBARS_NONE);
+		message = new MQTextArea(" ", 20, 2, TextArea.SCROLLBARS_NONE);
 		message.setVisible(true);
 		add(message);
 		message.setBounds(titleWidth,0,getBounds().width-titleWidth, getBounds().height);
@@ -227,7 +231,7 @@ class Ledge extends MousePanel {
 
 
 
-		title = new TextArea(" ", 20, 2, TextArea.SCROLLBARS_NONE);
+		title = new MQTextArea(" ", 20, 2, TextArea.SCROLLBARS_NONE);
 		title.setVisible(true);
 		add(title);
 		title.setBounds(0,0,titleWidth, getBounds().height);

@@ -10,7 +10,7 @@ Mesquite's web site is http://mesquiteproject.org
 
 This source code and its compiled class files are free and modifiable under the terms of 
 GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
-*/
+ */
 package mesquite.lib;
 
 import java.awt.*;
@@ -22,7 +22,7 @@ public class IntegerArray  implements Listable  {
 	int[] values;
 	NameReference name=null;
 	int autoExpandAmount = 0;
-	
+
 	public IntegerArray(int num){	
 		this(num, 0);
 	}
@@ -154,19 +154,19 @@ public class IntegerArray  implements Listable  {
 			int count = 1;
 			for (int i = 0; i<values.length; i++) {
 				if (!MesquiteInteger.isCombinable(values[i])) {
-						if (candidate==count){
-							values[i] = value;
-							break;
-						}
-						count++;
+					if (candidate==count){
+						values[i] = value;
+						break;
+					}
+					count++;
 				}
 			}
 			value++;
 		}
 		for (int i = 0; i<values.length; i++) {
 			if (!MesquiteInteger.isCombinable(values[i])) {
-					MesquiteMessage.warnProgrammer("Some values in int[] not filled with random order values");
-					return;
+				MesquiteMessage.warnProgrammer("Some values in int[] not filled with random order values");
+				return;
 			}
 		}
 	}
@@ -254,7 +254,7 @@ public class IntegerArray  implements Listable  {
 		int index = 0;
 		for (int i=0; i<values.length; i++) {
 			if (MesquiteInteger.whichIsGreater(values[i],values[index])>0)  // then the first one is greater
-					index=i;
+				index=i;
 		}
 		return index;
 	}
@@ -271,7 +271,7 @@ public class IntegerArray  implements Listable  {
 	public static void sort(int[] array){
 		if (array==null || array.length<=1)
 			return;
-		
+
 		for (int i=1; i<array.length; i++) {
 			for (int j= i-1; j>=0 && array[j]>array[j+1]; j--) {
 				int temp = array[j];
@@ -279,7 +279,7 @@ public class IntegerArray  implements Listable  {
 				array[j+1]=temp;
 			}
 		}
-		
+
 	}
 	/*...........................................................*/
 	public void resetSize(int newNum) {
@@ -309,7 +309,7 @@ public class IntegerArray  implements Listable  {
 			}
 			return newMatrix;
 		}
-		*/
+		 */
 		if (starting<0) 
 			starting = -1;
 		if (starting>=d.length) 
@@ -350,6 +350,88 @@ public class IntegerArray  implements Listable  {
 		for (int i=starting+num; i<d.length; i++)
 			newValues[i-num]=d[i];
 		return newValues;
+	}
+	/*...........................................................*/
+	public void deletePartsFlagged(Bits toDelete) {
+		values = deletePartsFlagged(values, toDelete);
+	}
+	/*...........................................................*/
+	public static int[] deletePartsFlagged(int[] d, Bits toDelete) {
+		if (d == null)
+			return null;
+		if (toDelete == null)
+			return d;
+		int toFill =toDelete.nextBit(0, true); //find next to be cleared
+		if (toFill <0)
+			return d;
+		Bits flags = toDelete.cloneBits(); 
+		int source = flags.nextBit(toFill, false); //find source to move into it
+		int highestFilled = toFill-1;
+		while (source >=0 && source < d.length && toFill >=0) { //First, compact storage toward the start of the array.
+			d[toFill] = d[source]; //move content from source to place
+			highestFilled = toFill;
+			flags.setBit(source, true); // set to available to receive
+			toFill =flags.nextBit(++toFill, true);
+			source =flags.nextBit(++source, false);	
+		}
+		//Next, trim leftovers
+		int newNum = highestFilled+1;
+		int[] newD = new int[newNum];
+		for (int i=0; i<newNum; i++) 
+			newD[i] = d[i];
+		return newD;
+	}
+	/*...........................................................*/
+	public static int[] compressUnassigneds(int[] d) {
+		if (d == null)
+			return d;
+		int[] newD = new int[d.length];
+		for (int i = 0; i<d.length; i++)
+			newD[i] = d[i];
+		boolean found = true;
+		for (int sink = 0; sink < newD.length && found; sink++) { 
+			if (MesquiteInteger.unassigned == newD[sink]){ //available to be filled
+				found = false;
+				for (int source = sink+1; source < newD.length; source++){
+					if (newD[source] != MesquiteInteger.unassigned){
+						newD[sink] = newD[source];
+						newD[source] = MesquiteInteger.unassigned;
+						found = true;
+						break;
+					}
+				}
+			}
+		}
+		return newD;
+	}
+	/*...........................................................*
+	public void deletePartsBy Blocks(int[][] blocks) {
+		values = deletePartsBy Blocks(values, blocks);
+	}
+	/*...........................................................*
+	public static int[] deletePartsBy Blocks(int[] d, int[][] blocks) {
+		if (d == null)
+			return d;
+		if (blocks == null || blocks.length == 0)
+			return d;
+		int availableSlot = blocks[0][0];
+		//First shift storage toward the start of the array. Later, we'll delete the leftovers at the end.
+		for (int block = 0; block<blocks.length; block++) {
+			int startOfPreserved = blocks[block][1]+1;
+			int endOfPreserved = d.length-1;
+			if (block+1<blocks.length) //there's another block coming afterward
+				endOfPreserved = blocks[block+1][0]-1;
+			for (int ic=startOfPreserved; ic<=endOfPreserved; ic++) {
+				d[availableSlot] = d[ic];
+				availableSlot++;
+			}
+		}
+		//Next, trim leftovers
+		int newNum = availableSlot;
+		int[] newD = new int[newNum];
+		for (int i=0; i<newNum; i++) 
+			newD[i] = d[i];
+		return newD;
 	}
 	/*...........................................................*/
 	public static void swapParts(int[] d, int first, int second) {
@@ -560,26 +642,26 @@ public class IntegerArray  implements Listable  {
 		return subtraction;
 	}
 	/*-----------------------------------------*/
-  	 public static boolean inArray(int n, int[] a){
-  	 	if (a==null)
-  	 		return false;
-  	 	for (int i = 0; i<a.length; i++)
-  	 		if (a[i] == n)
-  	 			return true;
-  	 	return false;
-  	 }
+	public static boolean inArray(int n, int[] a){
+		if (a==null)
+			return false;
+		for (int i = 0; i<a.length; i++)
+			if (a[i] == n)
+				return true;
+		return false;
+	}
 	/*-----------------------------------------*/
-   	 public static boolean arraysSame(int[]a, int[] b){ //assumes numbers not duplicated
-  	 	if (a==null || b == null)
-  	 		return false;
+	public static boolean arraysSame(int[]a, int[] b){ //assumes numbers not duplicated
+		if (a==null || b == null)
+			return false;
 		if (a.length != b.length)
 			return false;
-		
+
 		for (int i = 0; i<a.length; i++) {
 			if (!inArray(a[i],b))
 				return false;
 		}
 		return true;
-  	 }
+	}
 }
 

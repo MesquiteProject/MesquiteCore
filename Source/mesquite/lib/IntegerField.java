@@ -16,14 +16,20 @@ package mesquite.lib;
 import java.awt.*;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyListener;
+import java.awt.event.TextEvent;
+import java.awt.event.TextListener;
+
+import mesquite.lib.ui.ExtensibleDialog;
+import mesquite.lib.ui.SingleLineTextField;
 
 
 
 /*===============================================*/
 /** a field for ints */
-public class IntegerField  {
+public class IntegerField implements TextListener {
 	ExtensibleDialog dialog;
 	SingleLineTextField textField;
+	String previousText = null;
 	boolean isInteger=true;
 	int initialValue=0;
 	int min=MesquiteInteger.unassigned;
@@ -33,13 +39,14 @@ public class IntegerField  {
 		super();
 		this.dialog = dialog;
 		this.initialValue = initialValue;
-		if (initialValue==MesquiteInteger.unassigned)
-			textField = dialog.addTextField (message, "", fieldLength);
-		else
-			textField = dialog.addTextField (message, MesquiteInteger.toString(initialValue), fieldLength);
+		previousText = "";
+		if (initialValue!=MesquiteInteger.unassigned)
+			previousText = MesquiteInteger.toString(initialValue);
+		textField = dialog.addTextField (message, previousText, fieldLength);
 		this.min = min;
 		this.max = max;
-		dialog.focalComponent = textField;
+		dialog.setFocalComponent(textField);
+		textField.addTextListener(this);
 		
 	}
 	/*.................................................................................................................*/
@@ -51,7 +58,8 @@ public class IntegerField  {
 			textField = dialog.addTextField (message, "", fieldLength);
 		else
 			textField = dialog.addTextField (message, MesquiteInteger.toString(initialValue), fieldLength);
-		dialog.focalComponent = textField;
+		dialog.setFocalComponent(textField);
+		textField.addTextListener(this);
 
 	}
 	/*.................................................................................................................*/
@@ -60,13 +68,26 @@ public class IntegerField  {
 		this.dialog = dialog;
 		this.initialValue = 0;
 		textField = dialog.addTextField (message, "", fieldLength);
-		dialog.focalComponent = textField;
+		dialog.setFocalComponent(textField);
+		textField.addTextListener(this);
+	}
+	/*.................................................................................................................*/
+	public void textValueChanged(TextEvent e){
+		if (!validValue())
+			textField.setText(previousText);
+		else
+			previousText = textField.getText();
 	}
 
 	/*.................................................................................................................*/
 	public void setLabelText(String s) {
 		if (textField!=null)
 			textField.setLabelText(s);
+	}
+	/*.................................................................................................................*/
+	public void setEnabled(boolean s) {
+		if (textField!=null)
+			textField.setEnabled(s);
 	}
 	/*.................................................................................................................*/
 	public SingleLineTextField getTextField() {
@@ -90,9 +111,25 @@ public class IntegerField  {
 		textField.setText(MesquiteInteger.toString(value));
 	}
 	/*.................................................................................................................*/
+	boolean validValue () {
+		String s = textField.getText();
+		if (s != null && (s.equals("?") || s.equals("")))
+			return true;
+		if (s != null && (s.equalsIgnoreCase("infinite") ||  s.equalsIgnoreCase("infinity")) && !MesquiteInteger.isCombinable(max))
+			return true;
+		int value = MesquiteInteger.fromString(s);
+		if (!MesquiteInteger.isCombinable(value)) {
+			return false;
+		} else if (value< min && MesquiteInteger.isCombinable(min))
+			return false;
+		else if (value>max && MesquiteInteger.isCombinable(max)) 
+			return false;
+		return true;
+	}
+	/*.................................................................................................................*/
 	public int getValue () {
 		String s = textField.getText();
-		if (s != null && s.equals("?"))
+		if (s != null && (s.equals("?") || s.equals("")))
 			return MesquiteInteger.unassigned;
 		if (s != null && (s.equalsIgnoreCase("infinite") ||  s.equalsIgnoreCase("infinity")) && !MesquiteInteger.isCombinable(max))
 			return MesquiteInteger.infinite;
@@ -106,6 +143,10 @@ public class IntegerField  {
 		else if (value>max && MesquiteInteger.isCombinable(max)) 
 			value = max;
 		return value;
+	}
+	
+	public String getValueAsString(){
+		return MesquiteInteger.toString(getValue());
 	}
 
 }

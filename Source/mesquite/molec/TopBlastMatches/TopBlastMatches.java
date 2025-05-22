@@ -22,6 +22,8 @@ import mesquite.lib.*;
 import mesquite.lib.characters.*;
 import mesquite.lib.duties.MatrixSourceCoord;
 import mesquite.lib.table.*;
+import mesquite.lib.ui.DoubleField;
+import mesquite.lib.ui.ExtensibleDialog;
 import mesquite.categ.lib.*;
 import mesquite.cont.lib.ContinuousState;
 import mesquite.molec.lib.*;
@@ -39,13 +41,13 @@ public class TopBlastMatches extends CategDataSearcher implements ItemListener {
 
 	int blastType = Blaster.BLAST;
 
-	boolean importTopMatches = false;
-	boolean saveResultsToFile = true;
-	int maxHits = 1;
+	boolean importTopMatches = true;
+	boolean saveResultsToFile = false;
+	int maxHits = 5;
 	double  minimumBitScore = 0.0;
 	boolean preferencesSet = false;
 	boolean fetchTaxonomy = false;
-	boolean interleaveResults = false;
+	boolean interleaveResults = true;
 	boolean adjustSequences = false;
 	boolean addInternalGaps = false;
 	boolean appendQueryName = false;
@@ -53,7 +55,7 @@ public class TopBlastMatches extends CategDataSearcher implements ItemListener {
 	int maxTime = 300;
 	//	static int upperMaxHits = 30;
 
-	double eValueCutoff = 10.0;
+	double eValueCutoff = 0.0000001;
 	int wordSize  = 11;
 
 
@@ -212,6 +214,14 @@ public class TopBlastMatches extends CategDataSearcher implements ItemListener {
 	public void unsuccessfulSearchMessage(){
 		logln("BLAST database returned no sequences in response to query.");
 	}
+	
+	/*.................................................................................................................*/
+	/** message once search has been fully invoked.  */
+	public void searchInvokedMessage(){
+		logln("Search completed.");
+
+	}
+
 	/*.................................................................................................................*/
 	public boolean isNucleotides(CharacterData data){
 		return data instanceof DNAData;
@@ -303,7 +313,7 @@ public class TopBlastMatches extends CategDataSearcher implements ItemListener {
 			//String newSequencesAsFasta = NCBIUtil.fetchGenBankSequencesFromIDs(ID, data instanceof DNAData, this, true, report);	
 
 			StringBuffer blastResponse = new StringBuffer();
-			String newSequencesAsFasta = blasterTask.getFastaFromIDs(localID,  data instanceof DNAData, blastResponse, passNumber);
+			String newSequencesAsFasta = blasterTask.getFastaFromIDs(data.getTaxa().getTaxonName(it), localID,  data instanceof DNAData, blastResponse, passNumber);
 
 			String appendToTaxonName = "";
 			if (appendQueryName)
@@ -337,7 +347,7 @@ public class TopBlastMatches extends CategDataSearcher implements ItemListener {
 			return false;
 		String sequenceName = data.getTaxa().getTaxonName(it);
 		results.append("\n   BLASTing "+ sequenceName+ " (matrix: "+ data.getName() + ")\n");
-		StringBuffer sequence = new StringBuffer(data.getNumChars());
+		MesquiteStringBuffer sequence = new MesquiteStringBuffer(data.getNumChars());
 		for (int ic = icStart; ic<=icEnd; ic++) {  // let's get the querySequence
 			data.statesIntoStringBuffer(ic, it, sequence, false, false, false);
 		}
@@ -350,6 +360,7 @@ public class TopBlastMatches extends CategDataSearcher implements ItemListener {
 		boolean someHits = false;
 		passNumberOfIDs= new int[0];
 		ID=new String[0];
+		String errorMessage = "";
 
 
 		for (int iDatabase = 0; iDatabase<numDatabases; iDatabase++) {
@@ -361,6 +372,9 @@ public class TopBlastMatches extends CategDataSearcher implements ItemListener {
 				blasterTask.blastForMatches(database, "blastp", sequenceName, sequence.toString(), true, maxHits, maxTime, eValueCutoff,wordSize, response, true);
 			else {	
 				blasterTask.basicDNABlastForMatches(database, blastType, sequenceName, sequence.toString(), maxHits, maxTime, eValueCutoff, wordSize, response, true);
+				String singleErrorMessage = blasterTask.getBlastErrorMessage();
+				if (StringUtil.notEmpty(singleErrorMessage))
+					errorMessage = singleErrorMessage;
 			}
 
 			BLASTResults blastResults = new BLASTResults(maxHits);
@@ -383,8 +397,15 @@ public class TopBlastMatches extends CategDataSearcher implements ItemListener {
 				for (int pass=startThisPass; pass<passNumberOfIDs.length; pass++)
 					passNumberOfIDs[pass]=iDatabase;
 			}
-			else
-				results.append("   No hits returned.\n");
+			else {
+				Parser dataBaseParser = new Parser(database);
+				dataBaseParser.setPunctuationString("/\\");
+				String databaseName = dataBaseParser.getLastToken();
+				if (StringUtil.notEmpty(databaseName))
+					results.append("   No hits returned [" + databaseName + "]\n");
+				else 
+					results.append("   No hits returned\n");
+			}
 
 			for (int i=0; i<maxHits; i++) {
 				if (StringUtil.notEmpty(blastResults.getAccession(i))) {
@@ -403,6 +424,9 @@ public class TopBlastMatches extends CategDataSearcher implements ItemListener {
 			results.append("-----------\n");
 
 		}
+
+		if (StringUtil.notEmpty(errorMessage))
+			MesquiteMessage.discreetNotifyUser(errorMessage);
 
 		//accessionNumbers = blastResults.getAccessions();
 		return someHits;

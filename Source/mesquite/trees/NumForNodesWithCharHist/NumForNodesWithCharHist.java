@@ -18,6 +18,7 @@ import java.awt.*;
 import mesquite.lib.*;
 import mesquite.lib.characters.*;
 import mesquite.lib.duties.*;
+import mesquite.lib.tree.Tree;
 
 /* ======================================================================== */
 /**Suppliies numbers for each node of a tree.*/

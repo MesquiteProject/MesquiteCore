@@ -22,6 +22,7 @@ import mesquite.lib.characters.*;
 import mesquite.lib.characters.CharacterData;
 import mesquite.lib.duties.*;
 import mesquite.lib.table.*;
+import mesquite.lib.ui.MesquiteWindow;
 import mesquite.categ.lib.*;
 
 /* ======================================================================== */

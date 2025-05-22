@@ -14,10 +14,10 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
 package mesquite.charMatrices.lib;
 
 
-import mesquite.lib.ClosablePanel;
-import mesquite.lib.ClosablePanelContainer;
 import mesquite.lib.characters.CharacterData;
 import mesquite.lib.table.MesquiteTable;
+import mesquite.lib.ui.ClosablePanel;
+import mesquite.lib.ui.ClosablePanelContainer;
 
 
 public class MatrixInfoExtraPanel extends ClosablePanel {

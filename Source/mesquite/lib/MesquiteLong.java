@@ -15,12 +15,15 @@ package mesquite.lib;
 
 import java.awt.*;
 
+import mesquite.lib.ui.MesquiteWindow;
+import mesquite.lib.ui.QueryDialogs;
+
 /*Last documented:  August 1999 */
 
 /* ======================================================================== */
 /**This long wrapper class is used to be able to pass integers by reference and have the
 	original change as needed.*/
-public class MesquiteLong implements Listable {
+public class MesquiteLong implements Listable, Nameable {
 	public static final long unassigned = Long.MIN_VALUE+1;
 	public static final long inapplicable = Long.MAX_VALUE - 1;
 	public static final long infinite = Long.MAX_VALUE;

@@ -21,8 +21,8 @@ import java.io.*;
 import org.dom4j.Element;
 
 import mesquite.lib.*;
-import mesquite.lib.Bits;
 import mesquite.lib.characters.*;
+import mesquite.lib.taxa.Taxa;
 import mesquite.categ.lib.*;
 import mesquite.io.InterpretFastaDNA.InterpretFastaDNA;   //is this guaranteed to be an installed package?
 import mesquite.io.InterpretFastaProtein.InterpretFastaProtein;   //is this guaranteed to be an installed package?
@@ -32,12 +32,24 @@ import mesquite.io.lib.*;
 /* ======================================================================== */
 /** A set of static methods for NCBI*/
 public class NCBIUtil {
-	public final static NameReference EVALUE = new NameReference("BLASTeValue");
-	public final static NameReference BITSCORE = new NameReference("BLASTbitScore");
-	public final static NameReference DEFINITION = new NameReference("GenBankdefinition");
-	public final static NameReference ACCESSION = new NameReference("GenBankAccession");
-	public final static NameReference FRAME = new NameReference("GenBankFrame");
-	public final static NameReference TAXONOMY = new NameReference("GenBankTaxonomy");
+	public final static NameReference EVALUE = NameReference.getNameReference("BLASTeValue");
+	public final static NameReference BITSCORE = NameReference.getNameReference("BLASTbitScore");
+	public final static NameReference DEFINITION = NameReference.getNameReference("GenBankdefinition");
+	public final static NameReference ACCESSION = NameReference.getNameReference("GenBankAccession");
+	public final static NameReference FRAME = NameReference.getNameReference("GenBankFrame");
+	public final static NameReference TAXONOMY = NameReference.getNameReference("GenBankTaxonomy");
+
+	
+	
+	/*.................................................................................................................*/
+	public static String getBLASTFileInputName(String fileName) {
+		if (MesquiteTrunk.isWindows()) {
+			return "\"\\\"" + fileName + "\\\"\"";
+		} else {
+			return "\' \"" + fileName + "\" \'";
+		}
+	}
+
 	/*.................................................................................................................*/
 	public static boolean responseSaysBLASTIsReady(String response) {
 		if (StringUtil.blank(response))
@@ -669,7 +681,7 @@ public class NCBIUtil {
 		if (data==null)
 			return null;
 		Taxa taxa = data.getTaxa();
-		StringBuffer sb = new StringBuffer();
+		MesquiteStringBuffer sb = new MesquiteStringBuffer();
 		sb.append(">"+ taxa.getTaxonName(it) + StringUtil.lineEnding());
 		int counter=0;
 		for (int ic=icStart; ic<=icEnd; ic++) {

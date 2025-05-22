@@ -18,6 +18,9 @@ import java.awt.*;
 import mesquite.lib.*;
 import mesquite.lib.characters.*;
 import mesquite.lib.duties.*;
+import mesquite.lib.taxa.Taxa;
+import mesquite.lib.taxa.Taxon;
+import mesquite.lib.ui.ProgressIndicator;
 import mesquite.categ.lib.*;
 import mesquite.cont.lib.*;
 
@@ -67,7 +70,7 @@ public abstract class InterpretSimple extends FileInterpreterI {
 		progIndicator.start();
 		file.linkProgressIndicator(progIndicator);
 		if (file.openReading()) {
-			Taxa taxa = taxaTask.makeNewTaxa(getProject().getTaxas().getUniqueName("Taxa"), 0, false);
+			Taxa taxa = taxaTask.makeNewTaxaBlock(getProject().getTaxas().getUniqueName("Taxa"), 0, false);
 			taxa.addToFile(file, getProject(), taxaTask);
 			CharacterData data = (CharacterData)createData(charTask,taxa);
 			data.addToFile(file, getProject(), null);
@@ -75,7 +78,7 @@ public abstract class InterpretSimple extends FileInterpreterI {
 			data.saveChangeHistory = false;
 
 			int numTaxa = 0;
-			StringBuffer sb = new StringBuffer(1000);
+			MesquiteStringBuffer sb = new MesquiteStringBuffer(1000);
 			file.readLine(sb);
 			String line = sb.toString();
 			String token;
@@ -208,7 +211,7 @@ public abstract class InterpretSimple extends FileInterpreterI {
 			expectedIncrement++;
 		int numTaxa = taxa.getNumTaxa();
 		int numChars = data.getNumChars();
-		StringBuffer outputBuffer = new StringBuffer(numTaxa*(20 + numChars));
+		MesquiteStringBuffer outputBuffer = new MesquiteStringBuffer(numTaxa*(20L + numChars));
 
 		for (int it = 0; it<numTaxa; it++){
 			if (!writeOnlySelectedTaxa || (taxa.getSelected(it))){
@@ -218,7 +221,7 @@ public abstract class InterpretSimple extends FileInterpreterI {
 					outputBuffer.append(ParseUtil.tokenize(taxa.getTaxonName(it)) + "\t");
 				for (int ic = 0; ic<numChars; ic++) {
 					if (!writeOnlySelectedData || (data.getSelected(ic))){
-						int currentSize = outputBuffer.length();
+						long currentSize = outputBuffer.length();
 						if (includeGaps || (!data.isInapplicable(ic,it))) {
 							if (includeTabs) outputBuffer.append("\t");
 							data.statesIntoStringBuffer(ic, it, outputBuffer, false);

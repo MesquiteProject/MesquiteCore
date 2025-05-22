@@ -19,6 +19,12 @@ import mesquite.lib.*;
 import mesquite.lib.characters.CharacterDistribution;
 import mesquite.lib.characters.CharacterStates;
 import mesquite.lib.duties.*;
+import mesquite.lib.taxa.Taxa;
+import mesquite.lib.tree.Tree;
+import mesquite.lib.ui.MQTextArea;
+import mesquite.lib.ui.MesquiteSubmenuSpec;
+import mesquite.lib.ui.MesquiteWindow;
+import mesquite.lib.ui.MousePanel;
 import mesquite.correl.lib.*;
 
 
@@ -257,7 +263,7 @@ public class CorrelationViewer extends TreeWindowAssistantA implements CLogger  
 			}
 		}
 		else if (checker.compare(this.getClass(), "Sets the character to use for X", "[character number]", commandName, "setX")) {
-			int icNum = MesquiteInteger.fromFirstToken(arguments, stringPos);
+			int icNum = MesquiteInteger.fromFirstToken(arguments, pos);
 			if (!MesquiteInteger.isCombinable(icNum))
 				return null;
 			askedForXY = true;
@@ -283,7 +289,7 @@ public class CorrelationViewer extends TreeWindowAssistantA implements CLogger  
 				doCounts();
 		}
 		else if (checker.compare(this.getClass(), "Sets the character to use for X", "[character number]", commandName, "setY")) {
-			int icNum = MesquiteInteger.fromFirstToken(arguments, stringPos);
+			int icNum = MesquiteInteger.fromFirstToken(arguments, pos);
 			if (!MesquiteInteger.isCombinable(icNum))
 				return null;
 			int ic = CharacterStates.toInternal(icNum);
@@ -400,7 +406,7 @@ class CorrelPanel extends MousePanel{
 	boolean calculating = false;
 	public CorrelPanel(){
 		super();
-		text = new TextArea(" ", 50, 50, TextArea.SCROLLBARS_VERTICAL_ONLY);
+		text = new MQTextArea(" ", 50, 50, TextArea.SCROLLBARS_VERTICAL_ONLY);
 		setLayout(null);
 		add(text);
 		text.setLocation(0,26);

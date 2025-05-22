@@ -16,35 +16,76 @@ package mesquite.charMatrices.AlterMatrixAsUtility;
 
 import mesquite.lists.lib.*;
 
+import java.util.Vector;
 
 import mesquite.lib.*;
 import mesquite.lib.characters.*;
 import mesquite.lib.duties.*;
 import mesquite.lib.table.*;
+import mesquite.lib.ui.ProgressIndicator;
 
 /* ======================================================================== */
-public class AlterMatrixAsUtility extends DatasetsListUtility {
+public class AlterMatrixAsUtility extends CharMatricesListProcessorUtility {
 	/*.................................................................................................................*/
 	public String getName() {
-		return "Alter Matrix As Utility";
+		return "Alter Matrices";  
 	}
 	public String getNameForMenuItem() {
-		return "Alter/Transform Selected Matrices...";
+		return "Alter Matrices...";
 	}
 
 	public String getExplanation() {
 		return "Alters selected matrices in List of Character Matrices window." ;
 	}
+	DataAlterer alterTask = null;
 	/*.................................................................................................................*/
 	public boolean startJob(String arguments, Object condition, boolean hiredByName) {
-		return true;
-	}
-	/*.................................................................................................................*/
-	public boolean queryOptions() {
-		if (!MesquiteThread.isScripting()){
+		if (arguments !=null) {
+			alterTask = (DataAlterer)hireNamedEmployee(DataAlterer.class, arguments);
+			if (alterTask == null)
+				return sorry(getName() + " couldn't start because the requested data alterer wasn't successfully hired.");
+		}
+		else if (!MesquiteThread.isScripting()) {
+			alterTask = (DataAlterer)hireEmployee(DataAlterer.class, "Alterer of matrices");
+			if (alterTask == null)
+				return sorry(getName() + " couldn't start because no matrix alterer module obtained.");
 		}
 		return true;
 	}
+ 	public String getNameForProcessorList() {
+ 		if (alterTask != null)
+ 			return getName() + "(" + alterTask.getName() + ")";
+ 		return getName();
+   	}
+	/*.................................................................................................................*/
+ public String getNameAndParameters() {
+	 if (alterTask==null)
+		 return "Alter Matrices";
+	 else
+		 return alterTask.getNameAndParameters();
+ }
+	/*.................................................................................................................*/
+	public Snapshot getSnapshot(MesquiteFile file) { 
+		Snapshot temp = new Snapshot();
+		temp.addLine("setDataAlterer ", alterTask);  
+		return temp;
+	}
+	/*.................................................................................................................*/
+	public Object doCommand(String commandName, String arguments, CommandChecker checker) {
+		if (checker.compare(this.getClass(), "Sets the module that alters data", "[name of module]", commandName, "setDataAlterer")) {
+			DataAlterer temp =  (DataAlterer)replaceEmployee(DataAlterer.class, arguments, "Data alterer", alterTask);
+			if (temp!=null) {
+				alterTask = temp;
+				return alterTask;
+			}
+
+		}
+		else
+			return  super.doCommand(commandName, arguments, checker);
+		return null;
+	}
+	/*.................................................................................................................*/
+	
 	boolean firstTime = true;
 	/** if returns true, then requests to remain on even after operateOnTaxas is called.  Default is false*/
 	public boolean pleaseLeaveMeOn(){
@@ -52,29 +93,49 @@ public class AlterMatrixAsUtility extends DatasetsListUtility {
 	}
 	/** Called to operate on the CharacterData blocks.  Returns true if taxa altered*/
 	public boolean operateOnDatas(ListableVector datas, MesquiteTable table){
-		DataAlterer tda= (DataAlterer)hireEmployee(DataAlterer.class, "How to alter data");
-		if (tda == null)
-			return false;
-		CompatibilityTest test = tda.getCompatibilityTest();
+		CompatibilityTest test = alterTask.getCompatibilityTest();
 		firstTime = true;
 		getProject().getCoordinatorModule().setWhomToAskIfOKToInteractWithUser(this);
 		if (getProject() != null)
 			getProject().incrementProjectWindowSuppression();
-		for (int im = 0; im < datas.size(); im++){
+		Vector v = pauseAllPausables();
+		int count = 0;
+		
+		ProgressIndicator progIndicator = new ProgressIndicator(getProject(),"Altering matrices", "", datas.size(), true);
+		progIndicator.start();
+		boolean abort = false;
+		for (int im = 0; im < datas.size() && !abort; im++){
 			CharacterData data = (CharacterData)datas.elementAt(im);
-			if (test.isCompatible(data, getProject(), this)){
-				logln("About to alter matrix \"" + data.getName() + "\"");
+			if (progIndicator.isAborted())
+				abort=true;
+			if (!abort && test.isCompatible(data, getProject(), this)){
+				if (datas.size()<=50)
+					logln("Altering matrix \"" + data.getName() + "\"");
 				AlteredDataParameters alteredDataParameters = new AlteredDataParameters();
-				boolean a = tda.alterData(data, null, null, alteredDataParameters);
-				if (a){
+				progIndicator.setText("Altering matrix " +data.getName());
+				MesquiteThread.setHintToSuppressProgressIndicatorCurrentThread(true);
+				int returnCode = alterTask.alterData(data, null, null, alteredDataParameters);
+				MesquiteThread.setHintToSuppressProgressIndicatorCurrentThread(false);
+				progIndicator.increment();
+				if (im < 2)
+					progIndicator.toFront();
+				if (datas.size()>50 && im != 0 && im % 50 == 0)
+					logln("" + (im) +  " matrices altered.");
+				if (returnCode == 0){
 					Notification notification = new Notification(MesquiteListener.DATA_CHANGED, alteredDataParameters.getParameters(), null);
 					if (alteredDataParameters.getSubcodes()!=null)
 						notification.setSubcodes(alteredDataParameters.getSubcodes());
 					data.notifyListeners(this, notification);
+					count++;
+				} else if (returnCode < 0) {
+					abort = true;
 				}
 				firstTime = false;
 			}
 		}
+		progIndicator.goAway();
+		logln("Altered: " + (count) +  " matrices.");
+		unpauseAllPausables(v);
 		if (getProject() != null)
 			getProject().decrementProjectWindowSuppression();
 		getProject().getCoordinatorModule().setWhomToAskIfOKToInteractWithUser(null);

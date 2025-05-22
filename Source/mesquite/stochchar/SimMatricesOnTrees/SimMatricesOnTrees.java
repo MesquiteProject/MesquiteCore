@@ -20,6 +20,10 @@ import java.awt.event.*;
 import mesquite.lib.*;
 import mesquite.lib.characters.*;
 import mesquite.lib.duties.*;
+import mesquite.lib.taxa.Taxa;
+import mesquite.lib.tree.Tree;
+import mesquite.lib.ui.MesquiteMenuItemSpec;
+import mesquite.lib.ui.MesquiteSubmenuSpec;
 
 /* ======================================================================== */
 public class SimMatricesOnTrees extends CharMatrixSource {
@@ -345,7 +349,7 @@ public class SimMatricesOnTrees extends CharMatrixSource {
 			s = "Matrix #" + CharacterStates.toExternal(currentDataSet) + " simulated by " + charSimulatorTask.getName() + " on trees from " + treeTask.getName();
 		else
 			s = "Matrix simulated by " + charSimulatorTask.getName() + " on trees from " + treeTask.getName();
-		return s + " [seed for matrix sim. " + originalSeed + "]";
+		return s + " (seed for matrix sim. " + originalSeed + ")";
    	 }
 	/*.................................................................................................................*/
     	 public String getName() {

@@ -17,6 +17,8 @@ package mesquite.trees.BLFromNodeAgeConstraints;
 
 import mesquite.lib.*;
 import mesquite.lib.duties.*;
+import mesquite.lib.tree.AdjustableTree;
+import mesquite.lib.tree.Tree;
 
 /* ======================================================================== */
 public class BLFromNodeAgeConstraints extends BranchLengthsAltererMult {
@@ -46,13 +48,13 @@ public class BLFromNodeAgeConstraints extends BranchLengthsAltererMult {
 	/*.................................................................................................................*/
 	/** returns whether this module is requesting to appear as a primary choice */
 	public boolean requestPrimaryChoice(){
-		return true;  
+		return false;  
 	}
 	NameReference nodeAgeConstrRef = NameReference.getNameReference("nodeAgeConstraints");
 	void getConstraint(Tree tree, int node, MesquiteDouble min, MesquiteDouble max){
 		min.setToUnassigned();
 		max.setToUnassigned();
-		String constraint = (String)tree.getAssociatedObject(nodeAgeConstrRef, node);
+		String constraint = (String)tree.getAssociatedString(nodeAgeConstrRef, node);
 		// one number: fixed age
 		// 0-max
 		// min+

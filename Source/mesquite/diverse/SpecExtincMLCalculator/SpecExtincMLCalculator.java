@@ -18,6 +18,9 @@ import java.util.Vector;
 import mesquite.diverse.lib.*;
 import mesquite.lib.*;
 import mesquite.lib.duties.ParametersExplorer;
+import mesquite.lib.tree.Tree;
+import mesquite.lib.ui.MesquiteSubmenuSpec;
+import mesquite.lib.ui.ParametersExplorable;
 
 public class SpecExtincMLCalculator extends MesquiteModule implements ParametersExplorable, Evaluator {
 	public void getEmployeeNeeds(){  //This gets called on startup to harvest information; override this and inside, call registerEmployeeNeed

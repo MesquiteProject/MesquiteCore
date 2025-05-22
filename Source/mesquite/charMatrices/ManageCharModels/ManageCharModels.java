@@ -19,6 +19,7 @@ import java.awt.*;
 import mesquite.lib.*;
 import mesquite.lib.characters.*;
 import mesquite.lib.duties.*;
+import mesquite.lib.ui.MesquiteSubmenuSpec;
 
 /** Manages models of character evolution, including coordinating file reading and writing*/
 public class ManageCharModels extends FileInit implements ElementManager {
@@ -282,7 +283,7 @@ public class ManageCharModels extends FileInit implements ElementManager {
 		return readerTask;
 	}
 	/*.................................................................................................................*/
-	public boolean readNexusCommand(MesquiteFile file, NexusBlock nBlock, String blockName, String command, MesquiteString comment){ 
+	public boolean readNexusCommand(MesquiteFile file, NexusBlock nBlock, String blockName, String command, MesquiteString comment, String fileReadingArguments){ 
 		if (blockName.equalsIgnoreCase("ASSUMPTIONS") || blockName.equalsIgnoreCase("MESQUITECHARMODELS")) {
 			MesquiteInteger startCharT = new MesquiteInteger(0);
 			int format;

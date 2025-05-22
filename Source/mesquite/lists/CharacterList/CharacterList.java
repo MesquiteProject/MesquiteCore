@@ -21,6 +21,10 @@ import mesquite.lib.*;
 import mesquite.lib.characters.*;
 import mesquite.lib.duties.*;
 import mesquite.lib.table.*;
+import mesquite.lib.taxa.Taxa;
+import mesquite.lib.ui.AlertDialog;
+import mesquite.lib.ui.MesquiteButton;
+import mesquite.lib.ui.MesquiteWindow;
 import mesquite.categ.lib.*;
 
 /* ======================================================================== */
@@ -479,7 +483,7 @@ class CharacterListWindow extends ListWindow implements MesquiteListener {
 			selectionCoordinator.showPopUp(cont, x+5, y+5);
 	}
 	/*.................................................................................................................*/
-	public void setRowName(int row, String name){
+	public void setRowName(int row, String name, boolean update){
 		if (data!=null) {
 			String warning = data.checkNameLegality(row, name);
 			if (warning == null)
@@ -585,6 +589,105 @@ class CharacterListWindow extends ListWindow implements MesquiteListener {
 		}
 	}
 
+	//overridden to be able to do more efficient row deletion
+	public void deleteSelectedRows(boolean byCommand) {
+		int numSelected = 0;
+		for (int ic = table.getNumRows()-1; ic>=0; ic--){
+			if (table.isRowSelected(ic)) { 
+				numSelected++;
+			}
+		}
+		if (!byCommand && (table.editingAnything() || numSelected == 0))
+			return;
+		if (numSelected>0) {
+			String message;
+			if  (numSelected > 1)
+				message = "Are you sure you want to permanently delete " +  numSelected + " characters?";
+			else
+				message = "Are you sure you want to permanently delete the selected characters?";
+			if (!AlertDialog.query(this, "Delete?",message, "Yes", "No"))
+				return;
+			MenuOwner.incrementMenuResetSuppression();
+			Vector v = listModule.pauseAllPausables();
+			if (ownerModule != null && ownerModule.getProject() != null)
+				ownerModule.getProject().incrementProjectWindowSuppression();
+			
+
+			int count =0;
+			int currentNumRows = listModule.getNumberOfRows();
+			Object obj = getCurrentObject();
+
+			//NOTE: this code allows reporting of what contiguous blocks were deleted, but causes full recalculations for each discontiguity
+			int row = currentNumRows-1;
+			int firstInBlockDeleted = -1;
+			int lastInBlockDeleted = -1;
+
+			while(row>=0) {
+				if (table.isRowSelected(row) && listModule.rowDeletable(row)){  // we've found a selected one
+					lastInBlockDeleted = row;
+					while(row>=0) {  // now let's look for the first non-selected one
+						if (table.isRowSelected(row) && listModule.rowDeletable(row))
+							firstInBlockDeleted = row;
+						else break;
+						row--;
+					}
+					listModule.aboutToDeleteRows(firstInBlockDeleted, lastInBlockDeleted, false);  // now prepare contiguous block for deletion
+				}
+				row--;
+			}
+			
+			row = currentNumRows-1;
+			firstInBlockDeleted = -1;
+			lastInBlockDeleted = -1;
+			((Listened)getCurrentObject()).incrementNotifySuppress();
+			
+	
+			count = 0;
+			//Deleting rows
+			Bits bits = new Bits(table.getNumRows());
+			for (row = 0; row<currentNumRows; row++)
+				if (table.isRowSelected(row) && listModule.rowDeletable(row)){// we've found a selected one
+					bits.setBit(row, true);
+					count++;
+		}
+			if (count>0) {
+				data.deletePartsFlagged(bits, false);
+				data.deleteInLinkedFlagged(bits, false);
+			}
+				/* old wayneeff
+		while(row>=0) {
+				if (table.isRowSelected(row) && listModule.rowDeletable(row)){  // we've found a selected one
+					lastInBlockDeleted = row;
+					while(row>=0) {  // now let's look for the first non-selected one
+						if (table.isRowSelected(row) && listModule.rowDeletable(row))
+							firstInBlockDeleted = row;
+						else break;
+						row--;
+					}
+					listModule.deleteRows(firstInBlockDeleted, lastInBlockDeleted, false);  // now delete contiguous block
+					count += lastInBlockDeleted-firstInBlockDeleted+1;
+				}
+				row--;
+			}
+			*/
+			table.setNumRows(currentNumRows-count);
+			((Listened)getCurrentObject()).decrementNotifySuppress();
+			notifyRowDeletion(obj);
+
+			//NOTE: this code allows reporting of what contiguous blocks were deleted, but causes full recalculations for each discontiguity
+			notifyRowDeletion(obj);
+			table.repaintAll();
+			if (count>=0)
+				listModule.resetAllMenuBars();
+
+			if (ownerModule != null && ownerModule.getProject() != null)
+				ownerModule.getProject().decrementProjectWindowSuppression();
+			listModule.unpauseAllPausables(v);
+		MenuOwner.decrementMenuResetSuppression();
+		}
+		else
+			ownerModule.alert("Rows must be selected before \"delete\" command is given");
+	}
 
 }
 

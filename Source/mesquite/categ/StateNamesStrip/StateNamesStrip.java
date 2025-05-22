@@ -21,6 +21,10 @@ import mesquite.lib.*;
 import mesquite.lib.characters.*;
 import mesquite.lib.duties.*;
 import mesquite.lib.table.*;
+import mesquite.lib.ui.ColorTheme;
+import mesquite.lib.ui.MQTextArea;
+import mesquite.lib.ui.MesquiteWindow;
+import mesquite.lib.ui.MousePanel;
 import mesquite.categ.lib.*;
 
 
@@ -141,7 +145,7 @@ class Ledge extends MousePanel {
 		setLayout(null);
 		this.ownerModule = ownerModule;
 		/* */
-		message = new TextArea(" ", 20, 2, TextArea.SCROLLBARS_NONE);
+		message = new MQTextArea(" ", 20, 2, TextArea.SCROLLBARS_NONE);
 		message.setVisible(true);
 		add(message);
 		message.setBounds(0,0,getBounds().width, getBounds().height);

@@ -16,6 +16,9 @@ package mesquite.lib;
 
 import java.awt.*;
 import java.util.*;
+
+import mesquite.lib.ui.ListDialog;
+
 import java.io.*;
 
 /* ======================================================================== */

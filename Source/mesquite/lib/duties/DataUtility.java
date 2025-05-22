@@ -19,12 +19,9 @@ import mesquite.lib.characters.*;
 
 
 /* ======================================================================== */
-/**This is superclass of modules to alter a data matrix.*/
+/**This is superclass of modules to be a utility for a data matrix. If it alters the matrix, subclass DataUtilityAlterer instead.*/
 
 public abstract class DataUtility extends MesquiteModule  {
-	 public String getFunctionIconPath(){
-   		 return getRootImageDirectoryPath() + "functionIcons/matrixEditorUtil.gif";
-   	 }
 
    	 public Class getDutyClass() {
    	 	return DataUtility.class;

@@ -19,6 +19,9 @@ import java.awt.Checkbox;
 
 import mesquite.lib.*;
 import mesquite.lib.characters.*;
+import mesquite.lib.taxa.Taxa;
+import mesquite.lib.ui.ExtensibleDialog;
+import mesquite.lib.ui.RadioButtons;
 import mesquite.categ.lib.DNAData;
 import mesquite.distance.lib.*;
 

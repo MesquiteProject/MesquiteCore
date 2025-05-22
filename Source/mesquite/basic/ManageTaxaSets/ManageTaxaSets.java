@@ -10,7 +10,7 @@ Mesquite's web site is http://mesquiteproject.org
 
 This source code and its compiled class files are free and modifiable under the terms of 
 GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
-*/
+ */
 package mesquite.basic.ManageTaxaSets;
 /*~~  */
 
@@ -18,19 +18,23 @@ import java.util.*;
 import java.awt.*;
 import mesquite.lib.*;
 import mesquite.lib.duties.*;
+import mesquite.lib.taxa.Taxa;
+import mesquite.lib.taxa.TaxaSelectionSet;
+import mesquite.lib.taxa.Taxon;
+import mesquite.lib.ui.MesquiteSubmenuSpec;
 
 /** Manages TAXSETs (not Taxa blocks; see ManageTaxa), including reading the NEXUS command for TAXSETs */
 public class ManageTaxaSets extends SpecsSetManager {
 	public void getEmployeeNeeds(){  //This gets called on startup to harvest information; override this and inside, call registerEmployeeNeed
 		EmployeeNeed e = registerEmployeeNeed(mesquite.lists.TaxonSetList.TaxonSetList.class, getName() + "  uses an assistant to display a list window.",
-		"The assistant is arranged automatically");
+				"The assistant is arranged automatically");
 	}
 	/*.................................................................................................................*/
 	public boolean startJob(String arguments, Object condition, boolean hiredByName) {
- 		return true;
+		return true;
 	}
-	
-	
+
+
 	public void elementsReordered(ListableVector v){
 	}
 	/*.................................................................................................................*/
@@ -50,101 +54,101 @@ public class ManageTaxaSets extends SpecsSetManager {
 		return TaxaSelectionSet.class;
 	}
 	/*.................................................................................................................*/
- 	/** A method called immediately after the file has been read in.*/
- 	public void projectEstablished() {
+	/** A method called immediately after the file has been read in.*/
+	public void projectEstablished() {
 		MesquiteSubmenuSpec mmis = getFileCoordinator().addSubmenu(MesquiteTrunk.treesMenu,"List of Taxon Sets", makeCommand("showSets",  this), getProject().taxas);
 		mmis.setBehaviorIfNoChoice(MesquiteSubmenuSpec.ONEMENUITEM_ZERODISABLE);
 		mmis.setOwnerModuleID(getID());
 		super.projectEstablished();
- 	}
+	}
 	/*.................................................................................................................*/
-  	 public Snapshot getSnapshot(MesquiteFile file) { 
-   	 	Snapshot temp = new Snapshot();
+	public Snapshot getSnapshot(MesquiteFile file) { 
+		Snapshot temp = new Snapshot();
 		for (int i = 0; i<getNumberOfEmployees(); i++) {
 			MesquiteModule e=(MesquiteModule)getEmployeeVector().elementAt(i);
 			if (e instanceof ManagerAssistant && (e.getModuleWindow()!=null) && e.getModuleWindow().isVisible() && e.getName().equals("List of Taxon Sets")) {
 				Object o = e.doCommand("getTaxa", null, CommandChecker.defaultChecker);
-				
+
 				if (o !=null && o instanceof Taxa) {
 					//int wh =getProject().getTaxaReference((Taxa)o);
-  	 				temp.addLine("showSets " + getProject().getTaxaReferenceExternal((Taxa)o), e); 
-  	 			}
-  	 			else
-  	 				temp.addLine("showSets ", e); 
-  	 		}
+					temp.addLine("showSets " + getProject().getTaxaReferenceExternal((Taxa)o), e); 
+				}
+				else
+					temp.addLine("showSets ", e); 
+			}
 		}
-  	 	return temp;
-  	 }
+		return temp;
+	}
 	/*.................................................................................................................*/
-    	 public Object doCommand(String commandName, String arguments, CommandChecker checker) {
-    	 	if (checker.compare(this.getClass(), "Shows lists of the taxon sets (TAXSETS)", null, commandName, "showSets")) {
-    	 		if (StringUtil.blank(arguments)) {
-	    	 		for (int i = 0; i< getProject().getNumberTaxas(checker.getFile()); i++) {
-	    	 			showSpecsSets(getProject().getTaxa(checker.getFile(), i), "List of Taxon Sets");
-				}
-    	 		}
-    	 		else {
-    	 			Taxa t = getProject().getTaxa(checker.getFile(), parser.getFirstToken(arguments));
- 	 			if (t!=null ) {
- 	 				return showSpecsSets(t, "List of Taxon Sets");
- 	 			}
-    	 		}
-//    	 			alert("Sorry, there are no taxon sets");
-    	 	}
-    	 	else
-    	 		return  super.doCommand(commandName, arguments, checker);
-		return null;
-   	 }
-   
-	/*.................................................................................................................*/
-	String nexusStringForSpecsSet(TaxaSelectionSet taxaSet, Taxa taxa, MesquiteFile file, boolean isCurrent){
-			String s= "";
-			if (taxaSet!=null && (taxaSet.getFile()==file || (taxaSet.getFile()==null && taxa.getFile()==file))) {
-				String sT = "";
-				int continuing = 0;
-				int lastWritten = -1;
-				for (int ic=0; ic<taxa.getNumTaxa(); ic++) {
-					if (taxaSet.isBitOn(ic)) {
-						if (continuing == 0) {
-							sT += " " + Taxon.toExternal(ic);
-							lastWritten = ic;
-							continuing = 1;
-						}
-						else if (continuing == 1) {
-							sT += " - ";
-							continuing = 2;
-						}
-					}
-					else if (continuing>0) {
-						if (lastWritten != ic-1) {
-							sT += " " + Taxon.toExternal(ic-1);
-							lastWritten = ic-1;
-						}
-						else
-							lastWritten = -1;
-						continuing = 0;
-					}
-
-				}
-				if (continuing>1)
-					sT += " " + Taxon.toExternal(taxa.getNumTaxa()-1);
-				if (!StringUtil.blank(sT)) {
-					s+= "\tTAXSET " ;
-					if (isCurrent)
-						s += "* ";
-					s+= StringUtil.tokenize(taxaSet.getName()) + " ";
-					if (file.getProject().getNumberTaxas()>1)
-						s+= " (TAXA = " +  StringUtil.tokenize(taxa.getName()) + ")";
-					s+= " = "+  sT + ";" + StringUtil.lineEnding();
+	public Object doCommand(String commandName, String arguments, CommandChecker checker) {
+		if (checker.compare(this.getClass(), "Shows lists of the taxon sets (TAXSETS)", null, commandName, "showSets")) {
+			if (StringUtil.blank(arguments)) {
+				for (int i = 0; i< getProject().getNumberTaxas(checker.getFile()); i++) {
+					showSpecsSets(getProject().getTaxa(checker.getFile(), i), "List of Taxon Sets");
 				}
 			}
-			return s;
-   	}
+			else {
+				Taxa t = getProject().getTaxa(checker.getFile(), parser.getFirstToken(arguments));
+				if (t!=null ) {
+					return showSpecsSets(t, "List of Taxon Sets");
+				}
+			}
+			//    	 			alert("Sorry, there are no taxon sets");
+		}
+		else
+			return  super.doCommand(commandName, arguments, checker);
+		return null;
+	}
+
+	/*.................................................................................................................*/
+	String nexusStringForSpecsSet(TaxaSelectionSet taxaSet, Taxa taxa, MesquiteFile file, boolean isCurrent){
+		String s= "";
+		if (taxaSet!=null && (taxaSet.getFile()==file || (taxaSet.getFile()==null && taxa.getFile()==file))) {
+			String sT = "";
+			int continuing = 0;
+			int lastWritten = -1;
+			for (int ic=0; ic<taxa.getNumTaxa(); ic++) {
+				if (taxaSet.isBitOn(ic)) {
+					if (continuing == 0) {
+						sT += " " + Taxon.toExternal(ic);
+						lastWritten = ic;
+						continuing = 1;
+					}
+					else if (continuing == 1) {
+						sT += " - ";
+						continuing = 2;
+					}
+				}
+				else if (continuing>0) {
+					if (lastWritten != ic-1) {
+						sT += " " + Taxon.toExternal(ic-1);
+						lastWritten = ic-1;
+					}
+					else
+						lastWritten = -1;
+					continuing = 0;
+				}
+
+			}
+			if (continuing>1)
+				sT += " " + Taxon.toExternal(taxa.getNumTaxa()-1);
+			if (!StringUtil.blank(sT)) {
+				s+= "\tTAXSET " ;
+				if (isCurrent)
+					s += "* ";
+				s+= StringUtil.tokenize(taxaSet.getName()) + " ";
+				if (file.getProject().getNumberTaxas()>1)
+					s+= " (TAXA = " +  StringUtil.tokenize(taxa.getName()) + ")";
+				s+= " = "+  sT + ";" + StringUtil.lineEnding();
+			}
+		}
+		return s;
+	}
 	/*.................................................................................................................*/
 	public String getNexusCommands(MesquiteFile file, String blockName){ 
 		if (blockName.equalsIgnoreCase("SETS")) {
 			String s= "";
-	 		for (int ids = 0; ids<file.getProject().getNumberTaxas(); ids++) {
+			for (int ids = 0; ids<file.getProject().getNumberTaxas(); ids++) {
 
 				Taxa taxa =  file.getProject().getTaxa(ids);
 				if (taxa.getFile() == file){
@@ -157,8 +161,8 @@ public class ManageTaxaSets extends SpecsSetManager {
 							ms.setName("UNTITLED");
 							s += nexusStringForSpecsSet(ms, taxa, file, true);
 						}
-						
-							
+
+
 						for (int ims = 0; ims<numSets; ims++) {
 							s += nexusStringForSpecsSet((TaxaSelectionSet)taxa.getSpecsSet(ims, TaxaSelectionSet.class), taxa, file, false);
 						}
@@ -171,7 +175,7 @@ public class ManageTaxaSets extends SpecsSetManager {
 		return null;
 	}
 	/*.................................................................................................................*/
-	public boolean readNexusCommand(MesquiteFile file, NexusBlock nBlock, String blockName, String command, MesquiteString comment){ 
+	public boolean readNexusCommand(MesquiteFile file, NexusBlock nBlock, String blockName, String command, MesquiteString comment, String fileReadingArguments){ 
 		if (blockName.equalsIgnoreCase("SETS") || blockName.equalsIgnoreCase("ASSUMPTIONS")) {
 			MesquiteInteger startCharT = new MesquiteInteger(0);
 
@@ -187,12 +191,22 @@ public class ManageTaxaSets extends SpecsSetManager {
 				token = ParseUtil.getToken(command, startCharT);
 				String paradigmString = null;
 				Taxa taxa = null;
-				if (token.equalsIgnoreCase("(")) {
+				if (token.equalsIgnoreCase("(")) { //VVECTOR
 					token = ParseUtil.getToken(command, startCharT); //TAXA  //TODO: check to see what parameter is being set!
-					token = ParseUtil.getToken(command, startCharT); //=
-					token = (ParseUtil.getToken(command, startCharT)); // name of data
-					taxa = file.getProject().getTaxaLastFirst(token);
-					token = ParseUtil.getToken(command, startCharT); //)
+					if (token.equalsIgnoreCase("VECTOR")) {
+						token = ParseUtil.getToken(command, startCharT); //)
+						MesquiteMessage.discreetNotifyUser("Sorry, a TAXSET could not be read because Mesquite does not support the VECTOR subcommand.");
+						return false;
+					}
+					else if (token.equalsIgnoreCase("STANDARD")) {
+						token = ParseUtil.getToken(command, startCharT); //)
+					}
+					else {
+						token = ParseUtil.getToken(command, startCharT); //=
+						token = (ParseUtil.getToken(command, startCharT)); // name of taxa block
+						taxa = file.getProject().getTaxaLastFirst(token);
+						token = ParseUtil.getToken(command, startCharT); //)
+					}
 					token = ParseUtil.getToken(command, startCharT);  //=
 				}
 				else if (file.getProject().getNumberTaxas()>0)
@@ -202,18 +216,18 @@ public class ManageTaxaSets extends SpecsSetManager {
 
 				if (taxa == null)
 					return false;
-				
+
 				if (token.equals("="))
 					token = ParseUtil.getToken(command, startCharT); 
 				//TaxaGroup defaultProperty =  null;
-	
+
 				//TaxaGroup lastCM =new TaxaGroup();
 				//lastCM.setName(token);
-				
+
 				//lastCM.setGroupNumber(MesquiteInteger.fromString(token));
-		 		TaxaSelectionSet taxaSet= new TaxaSelectionSet(nameOfTypeset, taxa.getNumTaxa(), taxa);
+				TaxaSelectionSet taxaSet= new TaxaSelectionSet(nameOfTypeset, taxa.getNumTaxa(), taxa);
 				taxaSet.setNexusBlockStored(blockName);
-				
+
 				int lastChar = -1;
 				boolean join = false;
 				while (!token.equals(";") && token.length()>0) {
@@ -224,7 +238,7 @@ public class ManageTaxaSets extends SpecsSetManager {
 					else if (token!=null) {
 						if (token != null && token.equals("."))
 							token = Integer.toString(taxa.getNumTaxa());
-					
+
 						if (token.startsWith("-")) {
 							if (lastChar!=-1)
 								join = true;
@@ -249,19 +263,19 @@ public class ManageTaxaSets extends SpecsSetManager {
 					}
 					token = ParseUtil.getToken(command, startCharT); 
 				}
-				
+
 				if (isDefault) {
 					if (!"UNTITLED".equals(taxaSet.getName())) {
-			 			taxa.storeSpecsSet(taxaSet, TaxaSelectionSet.class);
-			 		}
-			 		taxaSet.addToFile(file, getProject(), this);
+						taxa.storeSpecsSet(taxaSet, TaxaSelectionSet.class);
+					}
+					taxaSet.addToFile(file, getProject(), this);
 					taxa.setCurrentSpecsSet(taxaSet, TaxaSelectionSet.class);
 				}
 				else {
-		 			taxa.storeSpecsSet(taxaSet, TaxaSelectionSet.class);
-			 		taxaSet.addToFile(file, getProject(), this);
-			 	}
-			 	return true;
+					taxa.storeSpecsSet(taxaSet, TaxaSelectionSet.class);
+					taxaSet.addToFile(file, getProject(), this);
+				}
+				return true;
 			}
 		}
 		return false;
@@ -271,18 +285,18 @@ public class ManageTaxaSets extends SpecsSetManager {
 		return new TSetNexusCommandTest();
 	}
 	/*.................................................................................................................*/
-    	 public String getName() {
+	public String getName() {
 		return "Manage taxon sets";
-   	 }
-   	 
+	}
+
 	/*.................................................................................................................*/
-   	 
- 	/** returns an explanation of what the module does.*/
- 	public String getExplanation() {
- 		return "Manages (including NEXUS read/write) taxon sets." ;
-   	 }
+
+	/** returns an explanation of what the module does.*/
+	public String getExplanation() {
+		return "Manages (including NEXUS read/write) taxon sets." ;
+	}
 	/*.................................................................................................................*/
-   	 
+
 }
 
 class TSetNexusCommandTest  extends NexusCommandTest{

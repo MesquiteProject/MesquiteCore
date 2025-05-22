@@ -23,6 +23,7 @@ import java.net.URLClassLoader;
 import mesquite.*;
 import mesquite.lib.*;
 import mesquite.lib.duties.*;
+import mesquite.lib.ui.ThermoPanel;
 /*======================================================================== */
 public class ModuleLoader {
 	Mesquite mesquite;
@@ -179,7 +180,7 @@ public class ModuleLoader {
 					getModules(loaderAMMMODULES, "mesquite", MesquiteModule.getRootPath() +  "additionalMesquiteModules" + MesquiteFile.fileSeparator + "mesquite", "", 0, null, false, true);  //do the directories in config
 
 					String[] classPathsFileMF = null; 
-					if (MesquiteFile.fileExists(MesquiteModule.getRootPath() + MesquiteModule.classpathsFileName)){
+				if (MesquiteFile.fileExists(MesquiteModule.getRootPath() + MesquiteModule.classpathsFileName)){
 						classPathsFileMF = MesquiteFile.getFileContentsAsStrings(MesquiteModule.getRootPath() + MesquiteModule.classpathsFileName);
 
 						addModulesAtPaths(MesquiteModule.getRootPath(), classPathsFileMF);
@@ -414,9 +415,9 @@ public class ModuleLoader {
 					showMessage(true, "Loading from directory: " + fileName, directoryTotal, ++directoryNumber);
 					mesquite.log(" " + fileName);
 					if (MesquiteFile.fileOrDirectoryExists(filePathName + MesquiteFile.fileSeparator + "jars")){
-						StringBuffer buffer =new StringBuffer();
-						buffer.append("\n");
-						mesquite.logln(buffer.toString());
+						//StringBuffer buffer =new StringBuffer();
+						//buffer.append("\n");  //ZQ do you remember what this was for? why not just  logln? Debugg.println
+						//mesquite.logln(buffer.toString());
 					}
 				}
 				else
@@ -624,6 +625,8 @@ public class ModuleLoader {
 					//instantiateTime.start();
 					MesquiteModule mb = mesquite.instantiateModule(c);
 					if (mb!=null && mb instanceof MesquiteModule) {
+						if (MesquiteTrunk.developmentMode && !mb.loadModule())
+							System.err.println("Module installed but not loaded by module's request: " + mb.getName() + " " + mb.getClass().getName());
 						if (mb.isPrerelease() && mb.isSubstantive() && mb.loadModule()){
 
 							MesquiteModule.mesquiteTrunk.substantivePrereleasesFound();

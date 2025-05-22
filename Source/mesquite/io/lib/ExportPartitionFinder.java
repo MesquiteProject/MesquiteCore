@@ -15,20 +15,22 @@ import mesquite.lib.ListableVector;
 import mesquite.lib.MesquiteFile;
 import mesquite.lib.MesquiteInteger;
 import mesquite.lib.MesquiteProject;
+import mesquite.lib.MesquiteString;
+import mesquite.lib.MesquiteStringBuffer;
 import mesquite.lib.MesquiteThread;
 import mesquite.lib.NumberArray;
 import mesquite.lib.Parser;
 import mesquite.lib.StringUtil;
-import mesquite.lib.Taxa;
-import mesquite.lib.Taxon;
-import mesquite.lib.TaxonNamer;
-import mesquite.lib.TreeVector;
 import mesquite.lib.characters.CharacterData;
 import mesquite.lib.characters.CharacterPartition;
 import mesquite.lib.characters.CharacterStates;
 import mesquite.lib.characters.CharactersGroup;
 import mesquite.lib.characters.CodonPositionsSet;
 import mesquite.lib.duties.FileInterpreterI;
+import mesquite.lib.taxa.Taxa;
+import mesquite.lib.taxa.Taxon;
+import mesquite.lib.taxa.TaxonNamer;
+import mesquite.lib.tree.TreeVector;
 import mesquite.io.lib.*;
 
 
@@ -263,7 +265,7 @@ public abstract class ExportPartitionFinder extends FileInterpreterI {
 		return sb.toString();
 	}
 	/*.................................................................................................................*/
-	public void appendPhylipStateToBuffer(CharacterData data, int ic, int it, StringBuffer outputBuffer){
+	public void appendPhylipStateToBuffer(CharacterData data, int ic, int it, MesquiteStringBuffer outputBuffer){
 		data.statesIntoStringBuffer(ic, it, outputBuffer, false);
 	}
 	/*.................................................................................................................*/
@@ -289,7 +291,7 @@ public abstract class ExportPartitionFinder extends FileInterpreterI {
 	}	
 
 	/*.................................................................................................................*/
-	public void exportBlock(Taxa taxa, CharacterData data, StringBuffer outputBuffer, int startChar, int endChar) { 
+	public void exportBlock(Taxa taxa, CharacterData data, MesquiteStringBuffer outputBuffer, int startChar, int endChar) { 
 		int numTaxa = taxa.getNumTaxa();
 		int maxNameLength = taxa.getLongestTaxonNameLength()+1;
 		int numChars = data.getNumChars();
@@ -320,7 +322,7 @@ public abstract class ExportPartitionFinder extends FileInterpreterI {
 				counter = startChar;
 				for (int ic = startChar; ic<numChars; ic++) {
 					if ((!writeOnlySelectedData || (data.getSelected(ic))) && (writeExcludedCharacters || data.isCurrentlyIncluded(ic))){
-						int currentSize = outputBuffer.length();
+						long currentSize = outputBuffer.length();
 						appendPhylipStateToBuffer(data, ic, it, outputBuffer);
 						if (outputBuffer.length()-currentSize>1) {
 							alert("Sorry, this data matrix can't be exported to this format (some character states aren't represented by a single symbol [char. " + CharacterStates.toExternal(ic) + ", taxon " + Taxon.toExternal(it) + "])");
@@ -372,7 +374,7 @@ public abstract class ExportPartitionFinder extends FileInterpreterI {
 		numTaxaWrite = countTaxa;
 
 		int numChars = 0;
-		StringBuffer outputBuffer = new StringBuffer(numTaxa*(20 + numChars));
+		MesquiteStringBuffer outputBuffer = new MesquiteStringBuffer(numTaxa*(20L + numChars));
 
 
 		if (data != null){
@@ -392,9 +394,15 @@ public abstract class ExportPartitionFinder extends FileInterpreterI {
 		saveExportedFileWithExtension(outputBuffer, arguments, "phy");
 		
 
-		String cfgString = getPartitionFinderCFGText(data, partition, getExportedFileName());
-		String cfgFilePath = getExportedFilePath();
-		cfgFilePath=StringUtil.getAllButLastItem(cfgFilePath, MesquiteFile.fileSeparator)+MesquiteFile.fileSeparator+"partition_finder.cfg";
+		MesquiteString dir = new MesquiteString();
+		MesquiteString fn = new MesquiteString();
+		String suggested = "PartitionFinder.txt";
+		if (file !=null)
+			suggested = file.getFileName();
+		String path = getPathForExport(arguments, suggested, dir, fn);
+
+		String cfgString = getPartitionFinderCFGText(data, partition, file.getName());
+		String cfgFilePath=StringUtil.getAllButLastItem(path, MesquiteFile.fileSeparator)+MesquiteFile.fileSeparator+"partition_finder.cfg";
 		MesquiteFile.putFileContents(cfgFilePath, cfgString, true);
 
 		

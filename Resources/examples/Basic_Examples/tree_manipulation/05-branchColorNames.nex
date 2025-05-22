@@ -1,5 +1,5 @@
 #NEXUS
-[written Sat Jun 07 10:49:19 PDT 2008 by Mesquite  version 2.5 BETA 2 (build j76) at Thrandina.local/192.168.0.136 (Wayne Maddison)]
+[written Sat Mar 22 11:08:51 PDT 2025 by Mesquite  version 3.9Dev+ (build 1047) at Amilaps.local/127.0.0.1]
 
 BEGIN TAXA;
 	TITLE Taxa;
@@ -15,9 +15,10 @@ END;
 BEGIN CHARACTERS;
 	TITLE  'Matrix in file "05-branchColorNames.nex"';
 	DIMENSIONS  NCHAR=2;
-	FORMAT DATATYPE = STANDARD GAP = - MISSING = ? SYMBOLS = "  0 1";
+	FORMAT DATATYPE = STANDARD RESPECTCASE GAP = - MISSING = ? SYMBOLS = "  0 1";
 	CHARSTATELABELS 
-		1 number_of_eyes /  one two, 2 tail_color /  blue red ; 
+		1 number_of_eyes /  one two,
+		2 tail_color /  blue red ; 
 	MATRIX
 	Aus         11
 	Fubonidia   11
@@ -36,17 +37,18 @@ BEGIN CHARACTERS;
 END;
 BEGIN TREES;
 	Title 'Trees from "05-branchColorNames.nex"';
+	ID 0195b97459279;
 	LINK Taxa = Taxa;
 	TRANSLATE
-		1 Aus,
-		2 Fubonidia,
-		3 Ibbinidibe,
-		4 Snorolopa,
-		5 Quidnubia,
-		6 Suinon,
-		7 Zorabynyx,
-		8 Huichoros,
-		9 Jotinupa;
+[0] 		1 Aus,
+[1] 		2 Fubonidia,
+[2] 		3 Ibbinidibe,
+[3] 		4 Snorolopa,
+[4] 		5 Quidnubia,
+[5] 		6 Suinon,
+[6] 		7 Zorabynyx,
+[7] 		8 Huichoros,
+[8] 		9 Jotinupa;
 	TREE First_Tree = ((((1,5),4),((7,6),2)),((9,8),3));
 	TREE Second_Tree = ((((9,((4,1),2)),6),3),((8,7),5));
 	TREE Third_Tree = ((8,((2,6),1)),((((3,9),7),4),5));
@@ -57,27 +59,30 @@ BEGIN TREES;
 END;
 
 
-BEGIN CODONS;
-	CODESET * UNTITLED   =  universal:  1 -  2;
-
+BEGIN TREES[!'This  "temporary" tree block was written by Mesquite to hold the modified tree being edited in a tree window.'];
+	Title Temp1284.967851092611.9112317805264017777;
+	ID 0195bf0b1cd4149;
+	LINK Taxa = Taxa;
+	TRANSLATE
+[0] 		1 Aus,
+[1] 		2 Fubonidia,
+[2] 		3 Ibbinidibe,
+[3] 		4 Snorolopa,
+[4] 		5 Quidnubia,
+[5] 		6 Suinon,
+[6] 		7 Zorabynyx,
+[7] 		8 Huichoros,
+[8] 		9 Jotinupa;
+	TREE First_Tree = ((((1,5),4),((7,6),2)[&!color = #ff0000 ]),((9,8),3)Jotinupini);
 
 END;
 
-BEGIN ASSUMPTIONS;
-OPTIONS DEFTYPE =                     unord PolyTcount =                     MINSTEPS;
-	TYPESET * UNTITLED   =  unord:  1 -  2;
-TYPESET Current_Parsimony_Models   =  unord:  1 -  2;
-
-END;
-
-BEGIN MESQUITECHARMODELS;
-	ProbModelSet * UNTITLED   =  'Mk1 (est.)':  1 -  2;
-END;
 
 Begin MESQUITE;
 		MESQUITESCRIPTVERSION 2;
 		TITLE AUTO;
 		tell ProjectCoordinator;
+		timeSaved 1742666931500;
 		getEmployee #mesquite.minimal.ManageTaxa.ManageTaxa;
 		tell It;
 			setID 0 8476784597994698209 WM114895e917988;
@@ -85,20 +90,49 @@ Begin MESQUITE;
 		getEmployee #mesquite.charMatrices.ManageCharacters.ManageCharacters;
 		tell It;
 			setID 0 974864624972105434 WM114895e91890;
-			checksum 0 4129971366 WM114895e91890;
+			mqVersion 390;
+			checksumv 0 3 3673400160 WM114895e91890  getNumChars 2 numChars 2 getNumTaxa 9 numTaxa 9   short true   bits 3   states 3   sumSquaresStatesOnly 47.0 sumSquares 47.0 longCompressibleToShort false usingShortMatrix true   NumFiles 1 NumMatrices 1;
+			mqVersion;
 		endTell;
 		getWindow;
 		tell It;
-			setResourcesState false false 72;
-			setPopoutState 400;
+			suppress;
+			setUniqueID 0195b974590919;
 			setExplanationSize 0;
 			setAnnotationSize 0;
 			setFontIncAnnot 0;
 			setFontIncExp 0;
-			setSize 421 476;
-			setLocation 7 22;
+			setSize 470 470;
+			setLocation 7 25;
 			setFont SanSerif;
 			setFontSize 10;
+			getToolPalette;
+			tell It;
+			endTell;
+		endTell;
+		getEmployee  #mesquite.io.InterpretFastaDNA.InterpretFastaDNA;
+		tell It;
+			includeGaps true;
+			simplifyTaxonName false;
+			convertMultStateToMissing false;
+			writeExcludedCharacters true;
+			uniqueSuffix '';
+		endTell;
+		getEmployee  #mesquite.io.InterpretFastaDNAByOTUID.InterpretFastaDNAByOTUID;
+		tell It;
+			includeGaps false;
+			simplifyTaxonName false;
+			convertMultStateToMissing true;
+			writeExcludedCharacters true;
+			uniqueSuffix '';
+		endTell;
+		getEmployee  #mesquite.io.InterpretFastaProtein.InterpretFastaProtein;
+		tell It;
+			includeGaps false;
+			simplifyTaxonName false;
+			convertMultStateToMissing true;
+			writeExcludedCharacters true;
+			uniqueSuffix '';
 		endTell;
 		getEmployee  #mesquite.trees.BasicTreeWindowCoord.BasicTreeWindowCoord;
 		tell It;
@@ -108,19 +142,22 @@ Begin MESQUITE;
 				setTreeSource  #mesquite.trees.StoredTrees.StoredTrees;
 				tell It;
 					setTreeBlock 1;
+					setTreeBlockID 0195b97459279;
 					toggleUseWeights off;
 				endTell;
 				setAssignedID 1284.967851092611.9112317805264017777;
 				getTreeWindow;
 				tell It;
+					readUnsavedTreeBlock Temp1284.967851092611.9112317805264017777;
+					setUniqueID 0195b974592f20;
 					popAsTile false;
 					popOut;
 					setExplanationSize 52;
 					setAnnotationSize 20;
 					setFontIncAnnot 0;
 					setFontIncExp 0;
-					setSize 536 420;
-					setLocation 439 22;
+					setSize 556 421;
+					setLocation 490 25;
 					setFont SanSerif;
 					setFontSize 10;
 					getToolPalette;
@@ -134,50 +171,74 @@ Begin MESQUITE;
 					tell It;
 						setNodeLocs #mesquite.trees.NodeLocsStandard.NodeLocsStandard;
 						tell It;
-							stretchToggle off;
-							branchLengthsToggle off;
+							inhibitStretchToggle on;
+							orientUp;
+							branchLengthsDisplay 0;
 							toggleScale on;
 							toggleBroadScale off;
 							toggleCenter off;
 							toggleEven off;
+							setFixedTaxonDistance 0;
 						endTell;
 						setEdgeWidth 12;
-						orientUp;
 					endTell;
 					setBackground White;
 					setBranchColor Black;
 					showNodeNumbers off;
 					showBranchColors on;
-					labelBranchLengths off;
-					centerBrLenLabels on;
-					showBrLensUnspecified on;
-					showBrLenLabelsOnTerminals on;
-					setBrLenLabelColor 0 0 255;
-					setNumBrLenDecimals 6;
+					setSelectedTaxonHighlightMode 1;
 					desuppress;
 					getEmployee #mesquite.trees.BasicDrawTaxonNames.BasicDrawTaxonNames;
 					tell It;
 						setColor Black;
-						toggleColorPartition on;
+						setTaxonNameStyler  #mesquite.trees.ColorTaxonByPartition.ColorTaxonByPartition;
 						toggleShadePartition off;
+						toggleShowFootnotes on;
 						toggleNodeLabels on;
 						toggleCenterNodeNames off;
 						toggleShowNames on;
 						namesAngle ?;
 					endTell;
+					getEmployee #mesquite.trees.CollapseCladeNameHighlight.CollapseCladeNameHighlight;
+					tell It;
+						setMode 3;
+					endTell;
 				endTell;
 					setTreeNumber 1;
-					setTree '((((1:1.0,5:1.0):1.0,4:2.0<color = 11 >):1.0,((7:1.0,6:1.0):1.0,2:2.0):1.0):1.0,((9:1.0,8:1.0):1.0,3:2.0)Jotinupinae:2.0):1.0;';
-					useSuggestedSize off;
-					toggleSizeToFit on;
+					setDrawingSizeMode 1;
+					toggleLegendFloat on;
 					toggleTextOnTree off;
+					togglePrintName off;
 					showWindow;
 				endTell;
 				desuppressEPCResponse;
+				getEmployee #mesquite.trees.TreeInfoValues.TreeInfoValues;
+				tell It;
+					panelOpen false;
+				endTell;
+				getEmployee #mesquite.genomic.ShowMatrixInTreeWindow.ShowMatrixInTreeWindow;
+				tell It;
+					chooseOrLink 0;
+					fieldWidth 0;
+					selectedOnly false;
+					showMatrix false;
+				endTell;
 				getEmployee #mesquite.trees.ColorBranches.ColorBranches;
 				tell It;
-					setColor Red;
+					setColorRGB #ff0000;
 					removeColor off;
+				endTell;
+				getEmployee #mesquite.trees.NodePropertyDisplayControl.NodePropertyDisplayControl;
+				tell It;
+					showAssociate Node_label 0 false;
+					setBooleans Node_label 0  false false false false true false false false;
+					setNumbers Node_label 0  12 0 0 4 0 ?;
+					showAssociate Branch_length 0 false;
+					setBooleans Branch_length 0  true true false true true false false false;
+					setNumbers Branch_length 0  12 0 0 6 0 ?;
+					showAssociate !color 4 false;
+					setBooleans !color 4  true false false true true false false false;
+					setNumbers !color 4  12 0 0 4 0 ?;
 				endTell;
 				getEmployee #mesquite.ornamental.BranchNotes.BranchNotes;
 				tell It;
@@ -187,19 +248,6 @@ Begin MESQUITE;
 				tell It;
 					colorByPartition off;
 				endTell;
-				getEmployee #mesquite.ornamental.DrawTreeAssocDoubles.DrawTreeAssocDoubles;
-				tell It;
-					setOn on;
-					setDigits 4;
-					writeAsPercentage off;
-					toggleHorizontal on;
-					setFontSize 10;
-					setOffset 0  0;
-				endTell;
-				getEmployee #mesquite.trees.TreeInfoValues.TreeInfoValues;
-				tell It;
-					panelOpen false;
-				endTell;
 			endTell;
 		endTell;
 		newAssistant  #mesquite.basic.ExamplesNavigator.ExamplesNavigator;
@@ -208,14 +256,18 @@ Begin MESQUITE;
 			setPrevFileName '04-branchLengths.nex';
 			getWindow;
 			tell It;
+					setUniqueID 0195b974598121;
 					setExplanationSize 0;
 					setAnnotationSize 0;
 					setFontIncAnnot 0;
 					setFontIncExp 0;
-					setSize 349 459;
-					setLocation 7 22;
+					setSize 398 448;
+					setLocation 7 25;
 					setFont SanSerif;
 					setFontSize 10;
+					getToolPalette;
+					tell It;
+					endTell;
 					setActive;
 				setExplanation 'The currently selected tool in the tool palette at left is the Color Branches tool.  It colors a branch a chosen color.  This has nothing to do with reconstructions of character evolution; it can be used to highlight particular clades, for instance for use with Dependent Tree windows (or for demonstrations or example files).^n^nTo color a branch, touch on it.  You can change the color of paint by touching on the tool in the tool palette and holding the mouse button down.  A menu should appear offering choices of colors.  You can also select "Remove Color", which turns the tool into one that removes paint color from branches.^n^nBeside the Color Branches that is the Name Nodes tool, which allows you to assign names to the clades of a tree.  When you touch on a branch, an editable text area will appear in which you can edit the clade name.^n^nOther tools are explained in subsequent example files.';
 				setTitle Branch_colors_&_names;
@@ -224,6 +276,15 @@ Begin MESQUITE;
 				setNextButtonName Next;
 			endTell;
 			showWindow;
+		endTell;
+		getWindow;
+		tell It;
+			setResourcesState false false 72;
+			findWindow 0195b974598121;
+			tell It;
+				setAsFront;
+			endTell;
+			desuppress;
 		endTell;
 		endTell;
 end;

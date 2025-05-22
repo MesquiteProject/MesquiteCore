@@ -16,7 +16,10 @@ package mesquite.charMatrices.SortTaxa;
 
 import mesquite.lib.*;
 import mesquite.lib.duties.*;
+import mesquite.lib.misc.MesquiteCollator;
 import mesquite.lib.table.*;
+import mesquite.lib.taxa.Taxa;
+import mesquite.lib.ui.MesquiteWindow;
 import mesquite.lib.characters.*;
 import mesquite.lib.characters.CharacterData;
 

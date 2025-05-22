@@ -18,6 +18,9 @@ import java.awt.*;
 import mesquite.lib.*;
 import mesquite.lib.characters.*;
 import mesquite.lib.duties.*;
+import mesquite.lib.taxa.Taxa;
+import mesquite.lib.taxa.Taxon;
+import mesquite.lib.ui.ProgressIndicator;
 import mesquite.categ.lib.*;
 
 /* 
@@ -86,7 +89,7 @@ public abstract class InterpretGenBank extends FileInterpreterI implements ReadF
 		Taxon taxon = data.getTaxa().getTaxon(it);
 		Associable tInfo = data.getTaxaInfo(true);
 		if (tInfo != null && taxon != null) {
-			tInfo.setAssociatedObject(MolecularData.genBankNumberRef, it, s);
+			tInfo.setAssociatedString(MolecularData.genBankNumberRef, it, s);
 		}
 	}
 	/*.................................................................................................................*/
@@ -95,7 +98,7 @@ public abstract class InterpretGenBank extends FileInterpreterI implements ReadF
 			data.saveChangeHistory = false;
 			Parser subParser = new Parser();
 
-			StringBuffer sb = new StringBuffer(1000);
+			MesquiteStringBuffer sb = new MesquiteStringBuffer(1000);
 			if (file!=null)
 				file.readLine(sb);
 			else
@@ -244,7 +247,7 @@ public abstract class InterpretGenBank extends FileInterpreterI implements ReadF
 			}
 			
 			if (taxa == null){
-				taxa = taxaTask.makeNewTaxa(getProject().getTaxas().getUniqueName("Taxa"), 0, false);
+				taxa = taxaTask.makeNewTaxaBlock(getProject().getTaxas().getUniqueName("Taxa"), 0, false);
 				taxa.addToFile(file, getProject(), taxaTask);
 			}
 			CategoricalData data = null;

@@ -17,6 +17,9 @@ import java.awt.*;
 import java.awt.event.*;
 
 import mesquite.lib.*;
+import mesquite.lib.ui.ColorTheme;
+import mesquite.lib.ui.MesquiteTool;
+import mesquite.lib.ui.MesquiteWindow;
 
 import java.io.*;
 
@@ -104,7 +107,7 @@ public class RowNamesPanel extends EditorPanel implements FocusListener  {
 		return width;
 	}
 	public void textReturned(int column, int row, String text){
-		table.returnedRowNameText(row, text);
+		table.returnedRowNameText(row, text, true);
 	}
 	public String getText(int column, int row){
 		return table.getRowNameText(row);
@@ -134,8 +137,9 @@ public class RowNamesPanel extends EditorPanel implements FocusListener  {
 
 		Shape clip = g.getClip();
 		g.setClip(0,topSide,columnWidth(-1), rowHeight(row));
+		boolean selected = table.isRowNameSelected(row) || table.isRowSelected(row);
 
-		prepareCell(g, -1, row, 1,topSide+1,columnWidth(-1), rowHeight(row)-2, table.focusRow == row,  table.isRowNameSelected(row) || table.isRowSelected(row), table.getCellDimmed(-1, row), table.isRowNameEditable(row));
+		prepareCell(g, -1, row, 1,topSide+1,columnWidth(-1), rowHeight(row)-2, table.focusRow == row,  selected, table.getCellDimmed(-1, row), table.isRowNameEditable(row));
 
 		g.setClip(0,0, getBounds().width, getBounds().height);
 
@@ -191,6 +195,30 @@ public class RowNamesPanel extends EditorPanel implements FocusListener  {
 		g.drawLine(width-1, 0, width-1, height);
 	}
 
+	public void redrawColumn() {
+		Graphics mg = getGraphics();
+		if (mg == null)
+			return;
+		Color c = mg.getColor();
+		mg.setColor(ColorTheme.getContentBackgroundPale());   //ggray
+		mg.fillRect(0, 0, getWidth()-1, getHeight()-1);
+		int x = 0;
+		int w = getWidth();
+		for (int i = table.getFirstRowVisible(); i<=table.getLastRowVisible(); i++) 
+			if (i>=0 && i<table.getNumRows()) {
+				int y = table.getTopOfRow(i);
+				int h = table.rowHeights[i];
+				mg.setColor(ColorTheme.getContentBackgroundPale());   //ggray
+				mg.fillRect(x, y, w, h);
+				mg.setColor(Color.lightGray);
+				mg.drawRect(x, y, w, h);
+			}		
+		for (int i = table.getFirstRowVisible(); i<=table.getLastRowVisible(); i++) 
+			if (i>=0 && i<table.getNumRows()) {
+				redrawName(mg, i);
+			}
+		mg.dispose();
+	}
 	public void repaint(){
 		checkEditFieldLocation();
 		super.repaint();
@@ -294,6 +322,8 @@ public class RowNamesPanel extends EditorPanel implements FocusListener  {
 	int touchX = -1;
 	int lastX = -1;
 	int lastY=-1;
+	int shimmerRow = -1;
+	int shimmerColumn = -1;
 	int touchRow;
 	int previousRowDragged = -1;
 	/*...............................................................................................................*/
@@ -304,15 +334,13 @@ public class RowNamesPanel extends EditorPanel implements FocusListener  {
 		touchY=-1;
 		touchRow=-1;
 		int possibleTouch = findRow(x, y);
-		int regionInCellH = findRegionInCellH(x);
-		int regionInCellV =findRegionInCellV(y);
 		boolean isArrowEquivalent = ((TableTool)tool).isArrowKeyOnRow(x,table);
 
 		touchX=-1;
 		if (x>getBounds().width-8) {
 			touchX=x;
 			lastX = x;
-			shimmerOn(x);
+			table.shimmerVerticalOn(this, x);
 		}
 		else
 		if (possibleTouch>=0 && possibleTouch<table.numRowsTotal) {
@@ -322,21 +350,21 @@ public class RowNamesPanel extends EditorPanel implements FocusListener  {
 				lastY = y;
 				touchRow=possibleTouch;
 				table.shimmerHorizontalOn(touchY);
+				shimmerRow = touchRow;
 			}
 			else if ((table.showRowGrabbers) && (x<table.getRowGrabberWidth())) {
 				if (((TableTool)tool).getIsBetweenRowColumnTool() && !isArrowEquivalent)
 					possibleTouch = findRowBeforeBetween(x, y);
-				table.rowTouched(isArrowEquivalent, possibleTouch,regionInCellH, regionInCellV,modifiers);
+				table.rowTouched(isArrowEquivalent, possibleTouch,this, x, y,modifiers);
 				if (tool != null && isArrowEquivalent && table.getUserMoveRow() && table.isRowSelected(possibleTouch) && !MesquiteEvent.shiftKeyDown(modifiers) && !MesquiteEvent.commandOrControlKeyDown(modifiers)) {
 					touchY=y;
 					lastY = MesquiteInteger.unassigned;;
-					touchRow=possibleTouch;
-					//table.shimmerHorizontalOn(touchY);
+					touchRow=possibleTouch; 
 				}
 
 			}
 			else if (isArrowEquivalent) {
-				table.rowNameTouched(possibleTouch,regionInCellH, regionInCellV, modifiers,clickCount);
+				table.rowNameTouched(possibleTouch,this, x, y, modifiers,clickCount);
 			}
 			else if (tool!=null && ((TableTool)tool).getWorksOnRowNames()) {
 				if (((TableTool)tool).getIsBetweenRowColumnTool())
@@ -344,11 +372,11 @@ public class RowNamesPanel extends EditorPanel implements FocusListener  {
 				touchY=y;
 				lastY = y;
 				touchRow=possibleTouch;
-				table.rowNameTouched(possibleTouch,regionInCellH, regionInCellV, modifiers,clickCount);
+				table.rowNameTouched(possibleTouch,this, x, y, modifiers,clickCount);
 			}
 		}
 		else if (possibleTouch==-2 && ((TableTool)tool).getWorksBeyondLastRow())
-			table.rowTouched(isArrowEquivalent,possibleTouch,regionInCellH, regionInCellV,modifiers);
+			table.rowTouched(isArrowEquivalent,possibleTouch,this, x, y,modifiers);
 		else if (tool != null && tool.isArrowTool()){
 			table.offAllEdits();
 			table.outOfBoundsTouched(modifiers, clickCount);
@@ -364,19 +392,21 @@ public class RowNamesPanel extends EditorPanel implements FocusListener  {
 	/*...............................................................................................................*/
 	public void mouseDrag(int modifiers, int x, int y, MesquiteTool tool) {
 		if (touchX >=0) {
-			shimmerOff(lastX);
-			shimmerOn(x);
+			table.shimmerVerticalOff(this, lastX, -1);
+			table.shimmerVerticalOn(this, x);
 			lastX=x;
 		}
 		else if (touchRow>=0 && tool != null)
 			if (((TableTool)tool).isArrowKeyOnRow(x,table)) {
 				if (table.getUserAdjustColumn()==MesquiteTable.RESIZE) {
-					table.shimmerHorizontalOff(lastY);
+					table.shimmerHorizontalOff(lastY, shimmerRow);
+					shimmerRow = findRow(x, y);
 					table.shimmerHorizontalOn(y);
 					lastY=y;
 				}
-				else if (table.getUserMoveColumn()) {
-					table.shimmerHorizontalOff(lastY);
+				else if (table.getUserMoveRow()) {  //Debugg.println( why was this usermovecolumn? 
+					table.shimmerHorizontalOff(lastY, shimmerRow);
+					shimmerRow = findRow(x, y);
 					table.shimmerHorizontalOn(y);
 					lastY=y;
 				}
@@ -385,9 +415,7 @@ public class RowNamesPanel extends EditorPanel implements FocusListener  {
 			else if (((TableTool)tool).getWorksOnRowNames()) {
 				table.checkForAutoScroll(this, MesquiteInteger.unassigned,y);   // pass unassigned in x so it doesn't do anything in that direction
 				int dragRow = findRow(x, y);
-				int regionInCellH = findRegionInCellH(x);
-				int regionInCellV =findRegionInCellV(y);
-				((TableTool)tool).cellDrag(-1,dragRow,regionInCellH,regionInCellV,modifiers);
+				((TableTool)tool).cellDrag(-1,dragRow, this, x, y,modifiers);
 				if (((TableTool)tool).getEmphasizeRowsOnMouseDrag()){
 					table.emphasizeRow(previousRowDragged,dragRow, touchRow, false, Color.blue);
 					previousRowDragged = dragRow;
@@ -398,7 +426,7 @@ public class RowNamesPanel extends EditorPanel implements FocusListener  {
 	public void mouseUp(int modifiers, int x, int y, MesquiteTool tool) {
 		table.stopAutoScrollThread();
 		if (touchX >=0) {
-			shimmerOff(lastX);
+			table.shimmerVerticalOff(this, lastX, -1);
 			int newColumnWidth = getBounds().width + x-touchX-table.rowGrabberWidth;
 			if (newColumnWidth > 16) {
 				table.rowNamesWidthAdjusted = true;
@@ -422,13 +450,16 @@ public class RowNamesPanel extends EditorPanel implements FocusListener  {
 							table.repaintAll();
 						}*/
 					}
-					if (table.getUserMoveRow())
-						table.shimmerHorizontalOff(lastY);
+					if (table.getUserMoveRow()) {
+						table.shimmerHorizontalOff(lastY, shimmerRow);
+						shimmerRow = -1;
+					}
 				}
 				/*@@@*/
 				else {
 					if (table.getUserMoveRow()) {
-						table.shimmerHorizontalOff(lastY);
+						table.shimmerHorizontalOff(lastY, shimmerRow);
+						shimmerRow = -1;
 						int dropRow = findRowBeforeBetween(x, y);
 						if (dropRow == -2)
 							dropRow = table.getNumRows()-1;
@@ -442,34 +473,11 @@ public class RowNamesPanel extends EditorPanel implements FocusListener  {
 			}
 			else if (((TableTool)tool).getWorksOnRowNames()) {
 				int dropRow = findRow(x, y);
-				int regionInCellH = findRegionInCellH(x);
-				int regionInCellV =findRegionInCellV(y);
-				((TableTool)tool).cellDropped(-1,dropRow,regionInCellH,regionInCellV,modifiers);
+				((TableTool)tool).cellDropped(-1,dropRow, this, x, y,modifiers);
 			}
 
 	}
-	/*...............................................................................................................*/
-   	public void shimmerOff(int x) {
-		if (x<=getBounds().width) {
-			table.shimmerVerticalOff(this,x);
-			table.shimmerVerticalOff(table.rowNames,x);
-		}
-		else {
-			table.shimmerVerticalOff(table.columnNames,x-touchX);
-			table.shimmerVerticalOff(table.matrix,x-touchX);
-		}
-   	 }
-	/*...............................................................................................................*/
-   	public void shimmerOn(int x) {
-		if (x<=getBounds().width) {
-			table.shimmerVerticalOn(this,x);
-			table.shimmerVerticalOn(table.rowNames,x);
-		}
-		else {
-			table.shimmerVerticalOn(table.columnNames,x-touchX);
-			table.shimmerVerticalOn(table.matrix,x-touchX);
-		}
-   	 }
+	
 
 	/*...............................................................................................................*/
 	public void mouseExited(int modifiers, int x, int y, MesquiteTool tool) {

@@ -19,6 +19,9 @@ import java.awt.*;
 import mesquite.lib.*;
 import mesquite.lib.characters.*;
 import mesquite.lib.duties.*;
+import mesquite.lib.taxa.Taxa;
+import mesquite.lib.tree.Tree;
+import mesquite.lib.ui.MesquiteSubmenuSpec;
 
 /* ======================================================================== */
 public class SimulatedCharacters extends CharacterSource {
@@ -226,14 +229,14 @@ public class SimulatedCharacters extends CharacterSource {
 				String s =  "Simulator: " + simulatorTask.getName();
 				if (lastTree !=null)
 					s+= "; most recent tree: " + lastTree.getName();
-				return s + " [seed for char sim. " + originalSeed + "]";
+				return s + " (seed for char sim. " + originalSeed + ")";
 			}
 			else
 				return "";
    	 }
 	/*.................................................................................................................*/
     	 public String getName() {
-		return "Simulated Characters";
+		return "Simulated Characters on Tree";
    	 }
    	 
 	/*.................................................................................................................*/

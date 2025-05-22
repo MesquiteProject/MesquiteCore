@@ -18,6 +18,12 @@ import java.util.*;
 import java.awt.*;
 import mesquite.lib.*;
 import mesquite.lib.duties.*;
+import mesquite.lib.tree.MesquiteTree;
+import mesquite.lib.tree.Tree;
+import mesquite.lib.tree.TreeDisplay;
+import mesquite.lib.tree.TreeDisplayDrawnExtra;
+import mesquite.lib.tree.TreeDisplayExtra;
+import mesquite.lib.ui.GraphicsUtil;
 
 /* ======================================================================== */
 public class NodeNumbers extends TreeDisplayAssistantD {
@@ -93,7 +99,9 @@ class SpotsDrawing extends TreeDisplayDrawnExtra {
 	}
 	/*_________________________________________________*/
 	private   void drawSpot(TreeDisplay treeDisplay, Tree tree, Graphics g, int N) {
-		if (tree.nodeExists(N)) {
+		if (tree.withinCollapsedClade(N))
+			return;
+	if (tree.nodeExists(N)) {
 			if (tree.nodeIsInternal(N) || nnModule.terminalShow.getValue()){
 				int i=0;
 				int j=2;
@@ -106,7 +114,7 @@ class SpotsDrawing extends TreeDisplayDrawnExtra {
 				if (spotsize>height)
 					height = spotsize;
 		        	g.setColor(Color.yellow);
-				GraphicsUtil.fillOval(g,treeDisplay.getTreeDrawing().x[N] +i - width/2 , treeDisplay.getTreeDrawing().y[N] +i - height/2, width-i-i, height-i-i);
+			GraphicsUtil.fillOval(g,treeDisplay.getTreeDrawing().x[N] +i - width/2 , treeDisplay.getTreeDrawing().y[N] +i - height/2, width-i-i, height-i-i);
 		        	g.setColor(Color.black);
 		        	
 				GraphicsUtil.drawOval(g,treeDisplay.getTreeDrawing().x[N] +i - width/2 , treeDisplay.getTreeDrawing().y[N] +i - height/2, width-i-i, height-i-i);

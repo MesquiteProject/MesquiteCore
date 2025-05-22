@@ -1,5 +1,5 @@
 #NEXUS
-[written Sat Jun 07 11:48:06 PDT 2008 by Mesquite  version 2.5 BETA 2 (build j76) at Thrandina.local/192.168.0.136 (Wayne Maddison)]
+[written Sat Mar 22 14:22:51 PDT 2025 by Mesquite  version 3.9Dev+ (build 1047) at Amilaps.local/127.0.0.1]
 
 BEGIN TAXA;
 	TITLE Untitled_Block_of_Taxa;
@@ -16,9 +16,13 @@ END;
 BEGIN CHARACTERS;
 	TITLE  'Matrix in file "08-binaryTreeSim.nex"';
 	DIMENSIONS  NCHAR=5;
-	FORMAT DATATYPE = STANDARD GAP = - MISSING = ? SYMBOLS = "  0 1";
+	FORMAT DATATYPE = STANDARD RESPECTCASE GAP = - MISSING = ? SYMBOLS = "  0 1";
 	CHARSTATELABELS 
-		1 Sim._with_tree_1, 2 Sim._with_tree_2, 3 Sim._with_tree_3, 4 Sim._with_tree_4, 5 Sim._with_tree_5 ; 
+		1 Sim._with_tree_1,
+		2 Sim._with_tree_2,
+		3 Sim._with_tree_3,
+		4 Sim._with_tree_4,
+		5 Sim._with_tree_5 ; 
 	MATRIX
 	taxon_1    11001
 	taxon_2    11111
@@ -169,148 +173,149 @@ BEGIN CHARACTERS;
 END;
 BEGIN TREES;
 	Title 'Trees from "08-binaryTreeSim.nex"';
+	ID 0195bfbca862237;
 	LINK Taxa = Untitled_Block_of_Taxa;
 	TRANSLATE
-		1 taxon_1,
-		2 taxon_2,
-		3 taxon_3,
-		4 taxon_4,
-		5 taxon_5,
-		6 taxon_6,
-		7 taxon_7,
-		8 taxon_8,
-		9 taxon_9,
-		10 taxon_10,
-		11 taxon_11,
-		12 taxon_12,
-		13 taxon_13,
-		14 taxon_14,
-		15 taxon_15,
-		16 taxon_16,
-		17 taxon_17,
-		18 taxon_18,
-		19 taxon_19,
-		20 taxon_20,
-		21 taxon_21,
-		22 taxon_22,
-		23 taxon_23,
-		24 taxon_24,
-		25 taxon_25,
-		26 taxon_26,
-		27 taxon_27,
-		28 taxon_28,
-		29 taxon_29,
-		30 taxon_30,
-		31 taxon_31,
-		32 taxon_32,
-		33 taxon_33,
-		34 taxon_34,
-		35 taxon_35,
-		36 taxon_36,
-		37 taxon_37,
-		38 taxon_38,
-		39 taxon_39,
-		40 taxon_40,
-		41 taxon_41,
-		42 taxon_42,
-		43 taxon_43,
-		44 taxon_44,
-		45 taxon_45,
-		46 taxon_46,
-		47 taxon_47,
-		48 taxon_48,
-		49 taxon_49,
-		50 taxon_50,
-		51 taxon_51,
-		52 taxon_52,
-		53 taxon_53,
-		54 taxon_54,
-		55 taxon_55,
-		56 taxon_56,
-		57 taxon_57,
-		58 taxon_58,
-		59 taxon_59,
-		60 taxon_60,
-		61 taxon_61,
-		62 taxon_62,
-		63 taxon_63,
-		64 taxon_64,
-		65 taxon_65,
-		66 taxon_66,
-		67 taxon_67,
-		68 taxon_68,
-		69 taxon_69,
-		70 taxon_70,
-		71 taxon_71,
-		72 taxon_72,
-		73 taxon_73,
-		74 taxon_74,
-		75 taxon_75,
-		76 taxon_76,
-		77 taxon_77,
-		78 taxon_78,
-		79 taxon_79,
-		80 taxon_80,
-		81 taxon_81,
-		82 taxon_82,
-		83 taxon_83,
-		84 taxon_84,
-		85 taxon_85,
-		86 taxon_86,
-		87 taxon_87,
-		88 taxon_88,
-		89 taxon_89,
-		90 taxon_90,
-		91 taxon_91,
-		92 taxon_92,
-		93 taxon_93,
-		94 taxon_94,
-		95 taxon_95,
-		96 taxon_96,
-		97 taxon_97,
-		98 taxon_98,
-		99 taxon_99,
-		100 taxon_100,
-		101 taxon_101,
-		102 taxon_102,
-		103 taxon_103,
-		104 taxon_104,
-		105 taxon_105,
-		106 taxon_106,
-		107 taxon_107,
-		108 taxon_108,
-		109 taxon_109,
-		110 taxon_110,
-		111 taxon_111,
-		112 taxon_112,
-		113 taxon_113,
-		114 taxon_114,
-		115 taxon_115,
-		116 taxon_116,
-		117 taxon_117,
-		118 taxon_118,
-		119 taxon_119,
-		120 taxon_120,
-		121 taxon_121,
-		122 taxon_122,
-		123 taxon_123,
-		124 taxon_124,
-		125 taxon_125,
-		126 taxon_126,
-		127 taxon_127,
-		128 taxon_128,
-		129 taxon_129,
-		130 taxon_130,
-		131 taxon_131,
-		132 taxon_132,
-		133 taxon_133,
-		134 taxon_134,
-		135 taxon_135,
-		136 taxon_136,
-		137 taxon_137,
-		138 taxon_138,
-		139 taxon_139,
-		140 taxon_140;
+[0] 		1 taxon_1,
+[1] 		2 taxon_2,
+[2] 		3 taxon_3,
+[3] 		4 taxon_4,
+[4] 		5 taxon_5,
+[5] 		6 taxon_6,
+[6] 		7 taxon_7,
+[7] 		8 taxon_8,
+[8] 		9 taxon_9,
+[9] 		10 taxon_10,
+[10] 		11 taxon_11,
+[11] 		12 taxon_12,
+[12] 		13 taxon_13,
+[13] 		14 taxon_14,
+[14] 		15 taxon_15,
+[15] 		16 taxon_16,
+[16] 		17 taxon_17,
+[17] 		18 taxon_18,
+[18] 		19 taxon_19,
+[19] 		20 taxon_20,
+[20] 		21 taxon_21,
+[21] 		22 taxon_22,
+[22] 		23 taxon_23,
+[23] 		24 taxon_24,
+[24] 		25 taxon_25,
+[25] 		26 taxon_26,
+[26] 		27 taxon_27,
+[27] 		28 taxon_28,
+[28] 		29 taxon_29,
+[29] 		30 taxon_30,
+[30] 		31 taxon_31,
+[31] 		32 taxon_32,
+[32] 		33 taxon_33,
+[33] 		34 taxon_34,
+[34] 		35 taxon_35,
+[35] 		36 taxon_36,
+[36] 		37 taxon_37,
+[37] 		38 taxon_38,
+[38] 		39 taxon_39,
+[39] 		40 taxon_40,
+[40] 		41 taxon_41,
+[41] 		42 taxon_42,
+[42] 		43 taxon_43,
+[43] 		44 taxon_44,
+[44] 		45 taxon_45,
+[45] 		46 taxon_46,
+[46] 		47 taxon_47,
+[47] 		48 taxon_48,
+[48] 		49 taxon_49,
+[49] 		50 taxon_50,
+[50] 		51 taxon_51,
+[51] 		52 taxon_52,
+[52] 		53 taxon_53,
+[53] 		54 taxon_54,
+[54] 		55 taxon_55,
+[55] 		56 taxon_56,
+[56] 		57 taxon_57,
+[57] 		58 taxon_58,
+[58] 		59 taxon_59,
+[59] 		60 taxon_60,
+[60] 		61 taxon_61,
+[61] 		62 taxon_62,
+[62] 		63 taxon_63,
+[63] 		64 taxon_64,
+[64] 		65 taxon_65,
+[65] 		66 taxon_66,
+[66] 		67 taxon_67,
+[67] 		68 taxon_68,
+[68] 		69 taxon_69,
+[69] 		70 taxon_70,
+[70] 		71 taxon_71,
+[71] 		72 taxon_72,
+[72] 		73 taxon_73,
+[73] 		74 taxon_74,
+[74] 		75 taxon_75,
+[75] 		76 taxon_76,
+[76] 		77 taxon_77,
+[77] 		78 taxon_78,
+[78] 		79 taxon_79,
+[79] 		80 taxon_80,
+[80] 		81 taxon_81,
+[81] 		82 taxon_82,
+[82] 		83 taxon_83,
+[83] 		84 taxon_84,
+[84] 		85 taxon_85,
+[85] 		86 taxon_86,
+[86] 		87 taxon_87,
+[87] 		88 taxon_88,
+[88] 		89 taxon_89,
+[89] 		90 taxon_90,
+[90] 		91 taxon_91,
+[91] 		92 taxon_92,
+[92] 		93 taxon_93,
+[93] 		94 taxon_94,
+[94] 		95 taxon_95,
+[95] 		96 taxon_96,
+[96] 		97 taxon_97,
+[97] 		98 taxon_98,
+[98] 		99 taxon_99,
+[99] 		100 taxon_100,
+[100] 		101 taxon_101,
+[101] 		102 taxon_102,
+[102] 		103 taxon_103,
+[103] 		104 taxon_104,
+[104] 		105 taxon_105,
+[105] 		106 taxon_106,
+[106] 		107 taxon_107,
+[107] 		108 taxon_108,
+[108] 		109 taxon_109,
+[109] 		110 taxon_110,
+[110] 		111 taxon_111,
+[111] 		112 taxon_112,
+[112] 		113 taxon_113,
+[113] 		114 taxon_114,
+[114] 		115 taxon_115,
+[115] 		116 taxon_116,
+[116] 		117 taxon_117,
+[117] 		118 taxon_118,
+[118] 		119 taxon_119,
+[119] 		120 taxon_120,
+[120] 		121 taxon_121,
+[121] 		122 taxon_122,
+[122] 		123 taxon_123,
+[123] 		124 taxon_124,
+[124] 		125 taxon_125,
+[125] 		126 taxon_126,
+[126] 		127 taxon_127,
+[127] 		128 taxon_128,
+[128] 		129 taxon_129,
+[129] 		130 taxon_130,
+[130] 		131 taxon_131,
+[131] 		132 taxon_132,
+[132] 		133 taxon_133,
+[133] 		134 taxon_134,
+[134] 		135 taxon_135,
+[135] 		136 taxon_136,
+[136] 		137 taxon_137,
+[137] 		138 taxon_138,
+[138] 		139 taxon_139,
+[139] 		140 taxon_140;
 	TREE 'Simulated Tree (with character) 1' = (((13:0.26414291654120825,89:0.26414291654120825):12.66569902022103,((4:2.245005924397304,(57:1.4365952502271064,72:1.4365952502271064):0.808410674170198):10.061848574720196,((((5:6.7062377792435,(21:4.397116509475041,(((33:1.493667627615986,71:1.493667627615986):2.5854357019863663,((40:2.976067881831738,53:2.976067881831738):0.2557339990166187,49:3.2318018808483564):0.8473014487539956):0.09137888232724879,(36:3.179102152041311,50:3.179102152041311):0.9913800598882901):0.22663429754544118):2.3091212697684607):3.518503950551628,((9:1.5186424029407128,79:1.5186424029407128):5.425043693114888,(((20:0.060872138035395054,100:0.060872138035395054):0.5396378740179559,70:0.600510012053351):3.8277264848078665,((32:0.17351680614352843,95:0.17351680614352843):2.1210541079926495,56:2.294570914136178):2.1336655827250377):2.515449599194386):3.2810556337395282):0.3969769610145193,(((7:5.880348131901751,((24:1.8461274545522233,61:1.8461274545522233):2.214104827610751,(41:3.8204822999218067,((44:3.734250582554956,(47:1.205241591143171,74:1.205241591143171):2.5290089914117844):0.023951544392953317,((((46:0.6267857993488887,84:0.6267857993488887):1.2834109408488483,59:1.9101967401977367):1.0987465244014505,((52:0.5692481011945624,86:0.5692481011945624):1.9014370957499651,(38:1.0694777667754722,80:1.0694777667754722):1.4012074301690551):0.5382580676546599):0.07561090075659263,51:3.0845541653557804):0.6736479615921294):0.06228017297389717):0.23974998224116803):1.8201158497387784):4.134310575204565,10:10.014658707106321):0.4901431194171596,(((8:4.163113541861947,(37:0.18253278397313646,94:0.18253278397313646):3.980580757888812):4.159507759429159,(((((19:0.9766218603579516,30:0.9766218603579516):1.5788503277994184,(11:1.608322096260005,67:1.608322096260005):0.9471500918973647):0.27726495199177836,(43:1.7785445146679395,(62:0.588890406554164,85:0.588890406554164):1.1896541081137755):1.0541926254812082):2.9200186443184437,(91:1.162257290837547,(78:0.009932620523370156,25:0.009932620523370156):1.152324670314177):4.590498493630045):0.9064312372237074,((22:0.21498506318373276,90:0.21498506318373276):4.070510144387209,((35:0.23933231356153234,58:0.23933231356153234):3.5536050757442554,(45:2.1288396210862595,(31:1.6606616092574882,(65:1.0393561923200985,(12:0.767544560493447,82:0.767544560493447):0.2718116318266515):0.6213054169373896):0.4681780118287714):1.6640977682195275):0.4925578182651544):2.3736918141203582):1.6634342795998078):0.8599725619460677,(14:1.7667036679456574,((((63:0.07686913089463243,99:0.07686913089463243):0.1258923576742496,92:0.20276148856888204):0.3174257291361061,(87:0.09050884369455534,98:0.09050884369455534):0.4296783740104329):1.018320912620936,69:1.538508130325924):0.22819553761973335):7.415890195291518):1.3222079632863026):0.11691686428617315):0.8408299919959468,((2:0.1284228692947272,97:0.1284228692947272):6.953479919103079,(((16:1.6297182589547838,(66:0.6703132478395832,(83:0.1935835927363961,93:0.1935835927363961):0.4767296551031871):0.9594050111152007):3.9719905758855343,55:5.601708834840316):0.5176123565014688,(((23:1.365062522573327,73:1.365062522573327):1.3645171617630303,54:2.729579684336358):2.533970968657945,(15:4.330233104248458,(34:4.145950900901953,39:4.145950900901953):0.18428220334650336):0.9333175487458454):0.8557705383474827):0.9625815970560223):4.380645894407789):0.8443058163119082):0.6229874376447343):7.059791104447394,(((3:8.513740229195653,(17:4.739455570899427,(48:1.8712991556213066,((60:1.3061966303196677,26:1.3061966303196677):0.35901653415762047,(64:1.1840144821443028,76:1.1840144821443028):0.48119868233298524):0.2060859911440184):2.868156415278121):3.774284658296225):1.1525210363913716,((18:1.5554082816811872,68:1.5554082816811872):0.6268304875655505,6:2.1822387692467378):7.4840224963402875):1.587873487646932,(((27:0.37401140727614246,88:0.37401140727614246):0.823965651150295,75:1.1979770584264373):3.979653264512042,(((28:0.939022817722179,81:0.939022817722179):1.0658124432901779,77:2.0048352610123565):3.135367262896273,(((29:0.16429534179711944,96:0.16429534179711944):2.2548813340345593,42:2.419176675831679):0.4432035607309688,1:2.862380236562648):2.2778222873459812):0.03742779902984921):6.0765044302954765):8.735498287975677):3.7256163307418646;
 	TREE 'Simulated Tree (with character) 2' = ((((57:8.740564889482517,12:8.740564889482515):0.08951737253490406,(11:2.686632950623149,49:2.6866329506231486):6.143449311394269):1.9682270009255305,3:10.798309262942945):0.10691079279564765,((((((((((2:0.3076379941221983,94:0.3076379941221983):0.14765376902865543,(87:0.008091472062248412,100:0.008091472062248412):0.44720029108860526):1.1528414010681944,(62:1.5798099269923387,80:1.5798099269923387):0.028323237226710315):5.315645902764501,(13:5.427483239484042,(((20:3.11650308421794,(41:0.9158831495464465,79:0.9158831495464465):2.200619934671493):0.5344693429164447,(((98:0.42756004582895846,(89:0.36854419995258514,91:0.36854419995258514):0.059015845876373325):0.14889341215792307,1:0.5764534579868814):1.5761993216099102,(55:0.807861401466335,(33:0.3350143090634801,93:0.3350143090634801):0.47284709240285483):1.344791378130457):1.4983196475375926):0.4815375829041647,(28:3.9941038884984903,(30:2.4181038195218245,((52:0.4246360043050929,90:0.4246360043050929):0.25043353606568736,82:0.6750695403707802):1.7430342791510443):1.5760000689766653):0.1384061215400595):1.2949732294454952):1.4962958274995035):1.4968179543745528,(15:5.2737616970440175,(22:0.5348296081543352,84:0.5348296081543352):4.738932088889688):3.1468353243140794):0.002781620347024277,((14:2.7322253826722878,((46:1.6668970729162649,60:1.6668970729162649):0.6935904741436052,(53:1.6132325562731247,61:1.6132325562731247):0.7472549907867456):0.37173783561241736):1.6988736555899044,26:4.4310990382621895):3.9922796034429324):0.8484723550667577,((9:1.0450328356424765,(75:0.973385256688017,76:0.973385256688017):0.07164757895445921):2.7469328222790916,((34:0.3590256678395345,92:0.3590256678395345):1.8910371842823481,(19:1.8242948345437477,58:1.8242948345437477):0.42576801757813487):1.5419028057996849):5.479885338850315):0.22232880504972338,((8:3.2856717760404406,(38:1.4743884463499073,68:1.4743884463499073):1.8112833296905335):3.237346843293854,(21:1.5008896601114354,(65:0.5617372265952054,((39:0.07784758777025433,50:0.07784758777025433):0.09932349078311506,97:0.1771710785533694):0.38456614804183625):0.9391524335162292):5.022128959222861):2.971161182487311):0.05708260340489333,((((7:5.48888373202122,(((((5:0.18420335846744368,96:0.18420335846744368):2.27149878149906,(((51:1.16969447288362,(73:0.028919896279563123,88:0.028919896279563123):1.140774576604057):0.01777056180200225,72:1.1874650346856221):0.613963916116492,59:1.8014289508021137):0.6542731891643906):1.2960278368496239,35:3.751729976816129):0.138588682078231,32:3.8903186588943597):1.5916737287553422,((17:1.6079383881174023,63:1.6079383881174023):1.2175320194587025,((44:0.4838182454508701,86:0.4838182454508701):0.9944012962239468,(67:1.295990157973416,(69:0.03557175281417003,31:0.03557175281417003):1.260418405159246):0.182229383701401):1.3472508659012876):2.656521980073596):0.006891344371521752):2.4634933257657496,((18:0.011149005001483784,99:0.011149005001483784):4.809055110269699,(((25:0.9217699427436866,78:0.9217699427436866):0.044261380638359285,(77:0.6604124169073572,83:0.6604124169073572):0.3056189064746885):1.7283250274407689,48:2.6943563508228148):2.1258477644483698):3.1321729425157874):0.3934006938868019,((16:2.5749700580008836,4:2.5749700580008836):1.421928872919795,(29:3.580806199672173,37:3.580806199672173):0.416092731248506):4.348878820753095):0.6479950937895768,((((10:1.2823903400314853,70:1.2823903400314853):1.6231805477694585,(43:2.7969217787282195,((45:0.6963351967892236,81:0.6963351967892236):2.013395468340936,(47:0.5452175941576847,(64:0.5257860276991528,85:0.5257860276991528):0.019431566458531876):2.164513070972475):0.08719111359805985):0.10864910907272407):2.025536615762459,((24:2.1394585653285936,(56:0.22496381768406132,95:0.22496381768406132):1.9144947476445322):1.699441536121825,(((27:0.12603545284833817,36:0.12603545284833817):1.1093486726156734,71:1.2353841254640117):0.06289407147322923,54:1.2982781969372412):2.540621904513178):1.092207402112983):0.008231301310871858,(23:3.1858716003759304,(40:1.0494313286292454,74:1.0494313286292454):2.1364402717466855):1.7534672044983433):4.054434040589077):0.5574895597631485):1.2283752595847288,((6:1.4922210838540175,66:1.4922210838540175):1.4477885910245092,42:2.9400096748785263):7.8396279899327):0.12558239092736778):0.0;
 	TREE 'Simulated Tree (with character) 3' = (((((((1:1.5622844604031214,68:1.5622844604031214):0.6620126144845917,(56:1.0301802241163402,78:1.0301802241163402):1.1941168507713722):1.7548017644175342,(32:0.16290197669355147,99:0.16290197669355147):3.8161968626116964):2.4374614041472977,((15:0.6272692628633048,89:0.6272692628633048):3.036006628479801,(((38:0.48495012101992835,94:0.48495012101992835):0.5399002029330823,(79:0.906466918413682,((81:0.2517086324661378,96:0.2517086324661378):0.31916226785831986,92:0.5708709003244575):0.3355960180892244):0.11838340553932859):1.1766751384131762,57:2.2015254623661864):1.4617504289769185):2.753284352109439):0.04600923274586818,28:6.462569476198413):0.08525655306218673,(13:5.2098104278660715,(23:3.35111439112681,(43:2.4710429352475183,(54:0.8869993615929336,82:0.8869993615929336):1.5840435736545853):0.8800714558792901):1.858696036739262):1.3380156013945281):5.074459397616571,(((((((2:0.6361995821183353,87:0.6361995821183353):1.2419417962246266,(61:1.686160150897463,66:1.686160150897463):0.19198122744549945):3.2702579837434143,24:5.148399362086377):1.7776803502130931,(((10:1.0482540317882485,76:1.0482540317882485):0.892211853472459,60:1.940465885260707):1.776018150967579,(36:1.3798911778721075,70:1.3798911778721075):2.336592858356179):3.209595676071182):0.09004196284036342,(9:5.787207174552948,(20:1.984530179391105,59:1.984530179391105):3.802676995161842):1.2289145005868856):1.2113564489016861,(((5:4.2786516010476285,(31:0.3115934358085691,95:0.3115934358085691):3.9670581652390595):0.7989358374588416,(25:3.3635581805692,42:3.3635581805692):1.7140292579372702):0.6815549118614022,((21:0.2447669935952402,97:0.2447669935952402):3.3788032939775148,((39:1.634867116710081,67:1.634867116710081):1.498397336720212,47:3.133264453430293):0.49030583414246093):2.1355720627951182):2.4683357736736475):2.4588398198385644,(((((3:2.9994059296878453,46:2.9994059296878457):1.4371414832447278,(30:0.8594502198976846,83:0.8594502198976846):3.577097193034889):1.4395832940551563,(19:3.6692914131923056,(37:3.020494564315019,45:3.020494564315019):0.6487968488772861):2.2068392937954244):2.070972824950238,(((6:3.561329191409625,(22:1.0464547219346374,77:1.0464547219346374):2.5148744694749867):0.3018069694693989,33:3.863136160879023):0.6117015949998396,((29:2.685192451043383,(50:0.2427513964727859,98:0.2427513964727859):2.442441054570597):1.1483280857864022,((((34:0.8224932138298606,84:0.8224932138298606):0.508553945425676,73:1.331047159255537):2.0505830383231833,41:3.381630197578721):0.39005873966633253,(35:2.1094170588027414,58:2.1094170588027414):1.66227187844231):0.06183159958473338):0.6413172190490762):3.4722657760591056):0.47275748159137665,((((((4:1.801387476843813,64:1.801387476843813):0.06011584613510922,((62:1.0992550939226993,51:1.0992550939226993):0.35550612778633683,(69:0.6274942885752053,88:0.6274942885752053):0.8272669331338305):0.40674210126988636):0.782405045114069,52:2.643908368092991):1.0623953973279716,(14:3.4899670063329236,40:3.4899670063329236):0.21633675908804068):3.4342371477486258,((((((8:1.3771129980998764,72:1.3771129980998764):0.0022768035859159776,(71:0.5773029994229125,91:0.5773029994229125):0.8020868022628794):1.1525248496733167,53:2.5319146513591075):0.14312567157050152,(65:0.5073776286261943,49:0.5073776286261943):2.1676626943034165):3.34002870010037,(18:2.111281221641564,(26:1.2175662932245337,74:1.2175662932245337):0.893714928417031):3.903787801388416):0.6578694344478665,((((11:1.8027956834565582,63:1.8027956834565582):1.1913673995748777,48:2.9941630830314363):3.3726014421814083,(16:0.6071419533909189,90:0.6071419533909189):5.759622571821925):0.21290265274631434,12:6.579667177959158):0.09327127951868822):0.46760245569174275):0.08584632360500134,((7:2.4346036847290637,55:2.4346036847290637):3.7033582990394107,((17:2.294630160656669,44:2.294630160656669):2.403830289966331,(27:1.0535892893225007,(((75:0.5520898814559375,93:0.5520898814559375):0.23889442898561472,(85:0.0029591711662563442,100:0.0029591711662563442):0.788025139275296):0.15253330466041856,(80:0.784673817543995,86:0.784673817543995):0.15884379755797587):0.11007167422052976):3.6448711613005007):1.439501533145474):1.088425253006116):1.193473776754753):2.266456930350739):0.9359674829970878):3.5191706469292106;
@@ -320,25 +325,11 @@ BEGIN TREES;
 END;
 
 
-BEGIN CODONS;
-	CODESET * UNTITLED   =  universal:  1 -  5;
-
-
-END;
-
-BEGIN ASSUMPTIONS;
-	TYPESET * UNTITLED   =  unord:  1 -  5;
-
-END;
-
-BEGIN MESQUITECHARMODELS;
-	ProbModelSet * UNTITLED   =  'Mk1 (est.)':  1 -  5;
-END;
-
 Begin MESQUITE;
 		MESQUITESCRIPTVERSION 2;
 		TITLE AUTO;
 		tell ProjectCoordinator;
+		timeSaved 1742678571071;
 		getEmployee #mesquite.minimal.ManageTaxa.ManageTaxa;
 		tell It;
 			setID 0 6732219986260810463 WM1148f47d2081;
@@ -346,20 +337,49 @@ Begin MESQUITE;
 		getEmployee #mesquite.charMatrices.ManageCharacters.ManageCharacters;
 		tell It;
 			setID 0 7885352486418568017 WM1149667c69b0;
-			checksum 0 905627623 WM1149667c69b0;
+			mqVersion 390;
+			checksumv 0 3 4178809762 WM1149667c69b0  getNumChars 5 numChars 5 getNumTaxa 140 numTaxa 140   short true   bits 3   states 3   sumSquaresStatesOnly 1967.0 sumSquares 1967.0 longCompressibleToShort false usingShortMatrix true   NumFiles 1 NumMatrices 1;
+			mqVersion;
 		endTell;
 		getWindow;
 		tell It;
-			setResourcesState false false 72;
-			setPopoutState 400;
+			suppress;
+			setUniqueID 0195bfbca83b546;
 			setExplanationSize 0;
 			setAnnotationSize 0;
 			setFontIncAnnot 0;
 			setFontIncExp 0;
 			setSize 1163 648;
-			setLocation 8 22;
+			setLocation 8 25;
 			setFont SanSerif;
 			setFontSize 10;
+			getToolPalette;
+			tell It;
+			endTell;
+		endTell;
+		getEmployee  #mesquite.io.InterpretFastaDNA.InterpretFastaDNA;
+		tell It;
+			includeGaps true;
+			simplifyTaxonName false;
+			convertMultStateToMissing false;
+			writeExcludedCharacters true;
+			uniqueSuffix '';
+		endTell;
+		getEmployee  #mesquite.io.InterpretFastaDNAByOTUID.InterpretFastaDNAByOTUID;
+		tell It;
+			includeGaps false;
+			simplifyTaxonName false;
+			convertMultStateToMissing true;
+			writeExcludedCharacters true;
+			uniqueSuffix '';
+		endTell;
+		getEmployee  #mesquite.io.InterpretFastaProtein.InterpretFastaProtein;
+		tell It;
+			includeGaps false;
+			simplifyTaxonName false;
+			convertMultStateToMissing true;
+			writeExcludedCharacters true;
+			uniqueSuffix '';
 		endTell;
 		getEmployee  #mesquite.trees.BasicTreeWindowCoord.BasicTreeWindowCoord;
 		tell It;
@@ -369,17 +389,19 @@ Begin MESQUITE;
 				setTreeSource  #mesquite.trees.StoredTrees.StoredTrees;
 				tell It;
 					setTreeBlock 1;
+					setTreeBlockID 0195bfbca862237;
 					toggleUseWeights off;
 				endTell;
 				setAssignedID 786.1187814845004.4817563795317733133;
 				getTreeWindow;
 				tell It;
+					setUniqueID 0195bfbca870547;
 					setExplanationSize 30;
 					setAnnotationSize 20;
 					setFontIncAnnot 0;
 					setFontIncExp 0;
-					setSize 1091 581;
-					setLocation 8 22;
+					setSize 1091 576;
+					setLocation 8 25;
 					setFont SanSerif;
 					setFontSize 10;
 					getToolPalette;
@@ -394,43 +416,45 @@ Begin MESQUITE;
 					tell It;
 						setNodeLocs #mesquite.trees.NodeLocsStandard.NodeLocsStandard;
 						tell It;
-							stretchToggle off;
-							branchLengthsToggle on;
+							inhibitStretchToggle on;
+							orientUp;
+							branchLengthsDisplay 2;
 							toggleScale on;
 							toggleBroadScale off;
 							toggleCenter on;
 							toggleEven on;
+							setFixedTaxonDistance 0;
 						endTell;
 						setEdgeWidth 6;
-						orientUp;
-						toggleCorners on;
+						setCornerMode Diagonal  50;
 					endTell;
 					setBackground White;
 					setBranchColor Black;
 					showNodeNumbers off;
 					showBranchColors on;
-					labelBranchLengths off;
-					centerBrLenLabels on;
-					showBrLensUnspecified on;
-					showBrLenLabelsOnTerminals on;
-					setBrLenLabelColor 0 0 255;
-					setNumBrLenDecimals 6;
+					setSelectedTaxonHighlightMode 1;
 					desuppress;
 					getEmployee #mesquite.trees.BasicDrawTaxonNames.BasicDrawTaxonNames;
 					tell It;
 						setColor Black;
-						toggleColorPartition on;
+						setTaxonNameStyler  #mesquite.trees.ColorTaxonByPartition.ColorTaxonByPartition;
 						toggleShadePartition off;
+						toggleShowFootnotes on;
 						toggleNodeLabels on;
 						toggleCenterNodeNames off;
 						toggleShowNames on;
 						namesAngle ?;
 					endTell;
+					getEmployee #mesquite.trees.CollapseCladeNameHighlight.CollapseCladeNameHighlight;
+					tell It;
+						setMode 3;
+					endTell;
 				endTell;
 					setTreeNumber 1;
-					useSuggestedSize off;
-					toggleSizeToFit on;
+					setDrawingSizeMode 1;
+					toggleLegendFloat on;
 					toggleTextOnTree off;
+					togglePrintName off;
 					showWindow;
 					newAssistant  #mesquite.ancstates.TraceCharacterHistory.TraceCharacterHistory;
 				tell It;
@@ -438,6 +462,7 @@ Begin MESQUITE;
 					setDisplayMode  #mesquite.ancstates.ShadeStatesOnTree.ShadeStatesOnTree;
 					tell It;
 						toggleLabels off;
+						togglePredictions off;
 						toggleGray off;
 					endTell;
 					setHistorySource  #mesquite.ancstates.RecAncestralStates.RecAncestralStates;
@@ -458,24 +483,45 @@ Begin MESQUITE;
 								toggleWeight on;
 							endTell;
 						endTell;
+						toggleShowSelectedOnly off;
 					endTell;
 					setCharacter 1;
 					setMapping 1;
 					toggleShowLegend on;
-					toggleGray off;
+					setColorMode 0;
 					toggleWeights on;
-					setInitialOffsetX -162;
+					setInitialOffsetX 4;
 					setInitialOffsetY -307;
 					setLegendWidth 142;
-					setLegendHeight 158;
+					setLegendHeight 161;
 					resume ;
 				endTell;
 				endTell;
 				desuppressEPCResponse;
+				getEmployee #mesquite.trees.TreeInfoValues.TreeInfoValues;
+				tell It;
+					panelOpen false;
+				endTell;
+				getEmployee #mesquite.genomic.ShowMatrixInTreeWindow.ShowMatrixInTreeWindow;
+				tell It;
+					chooseOrLink 0;
+					fieldWidth 0;
+					selectedOnly false;
+					showMatrix false;
+				endTell;
 				getEmployee #mesquite.trees.ColorBranches.ColorBranches;
 				tell It;
-					setColor Red;
+					setColorRGB #ff0000;
 					removeColor off;
+				endTell;
+				getEmployee #mesquite.trees.NodePropertyDisplayControl.NodePropertyDisplayControl;
+				tell It;
+					showAssociate Node_label 0 false;
+					setBooleans Node_label 0  false false false false true false false false;
+					setNumbers Node_label 0  12 0 0 4 0 ?;
+					showAssociate Branch_length 0 false;
+					setBooleans Branch_length 0  true true false true true false false false;
+					setNumbers Branch_length 0  12 0 0 6 0 ?;
 				endTell;
 				getEmployee #mesquite.ornamental.BranchNotes.BranchNotes;
 				tell It;
@@ -485,19 +531,6 @@ Begin MESQUITE;
 				tell It;
 					colorByPartition off;
 				endTell;
-				getEmployee #mesquite.ornamental.DrawTreeAssocDoubles.DrawTreeAssocDoubles;
-				tell It;
-					setOn on;
-					setDigits 4;
-					writeAsPercentage off;
-					toggleHorizontal on;
-					setFontSize 10;
-					setOffset 0  0;
-				endTell;
-				getEmployee #mesquite.trees.TreeInfoValues.TreeInfoValues;
-				tell It;
-					panelOpen false;
-				endTell;
 			endTell;
 		endTell;
 		getEmployee  #mesquite.charMatrices.BasicDataWindowCoord.BasicDataWindowCoord;
@@ -506,34 +539,45 @@ Begin MESQUITE;
 			tell It;
 				getWindow;
 				tell It;
+					setUniqueID 0195bfbca8c9548;
 					setExplanationSize 30;
 					setAnnotationSize 20;
 					setFontIncAnnot 0;
 					setFontIncExp 0;
-					setSize 1091 581;
-					setLocation 8 22;
+					setLocation 8 25;
 					setFont SanSerif;
 					setFontSize 10;
 					getToolPalette;
 					tell It;
+						setTool mesquite.charMatrices.BasicDataWindowMaker.BasicDataWindow.arrow;
 					endTell;
 					setTool mesquite.charMatrices.BasicDataWindowMaker.BasicDataWindow.arrow;
 					colorCells  #mesquite.charMatrices.NoColor.NoColor;
-					colorRowNames  #mesquite.charMatrices.TaxonGroupColor.TaxonGroupColor;
+					colorRowNames  #mesquite.charMatrices.NoColor.NoColor;
 					colorColumnNames  #mesquite.charMatrices.CharGroupColor.CharGroupColor;
 					colorText  #mesquite.charMatrices.NoColor.NoColor;
 					setBackground White;
 					toggleShowNames on;
 					toggleShowTaxonNames on;
 					toggleTight off;
+					toggleThinRows off;
 					toggleShowChanges on;
 					toggleSeparateLines off;
 					toggleShowStates on;
+					toggleReduceCellBorders off;
 					toggleAutoWCharNames on;
+					toggleAutoTaxonNames off;
 					toggleShowDefaultCharNames off;
 					toggleConstrainCW on;
 					setColumnWidth 16;
 					toggleBirdsEye off;
+					toggleColorOnlyTaxonNames off;
+					toggleShowPaleGrid off;
+					toggleShowPaleCellColors off;
+					toggleShowPaleExcluded off;
+					togglePaleInapplicable on;
+					togglePaleMissing off;
+					toggleShowBoldCellText off;
 					toggleAllowAutosize on;
 					toggleColorsPanel off;
 					toggleDiagonal on;
@@ -542,6 +586,15 @@ Begin MESQUITE;
 					toggleScrollLinkedTables off;
 				endTell;
 				hideWindow;
+				getEmployee #mesquite.charMatrices.AlterData.AlterData;
+				tell It;
+					toggleBySubmenus off;
+				endTell;
+				getEmployee #mesquite.charMatrices.ColorByState.ColorByState;
+				tell It;
+					setStateLimit 9;
+					toggleUniformMaximum on;
+				endTell;
 				getEmployee #mesquite.charMatrices.ColorCells.ColorCells;
 				tell It;
 					setColor Red;
@@ -563,6 +616,10 @@ Begin MESQUITE;
 				tell It;
 					autotabOff;
 				endTell;
+				getEmployee #mesquite.charMatrices.SelSummaryStrip.SelSummaryStrip;
+				tell It;
+					showStrip off;
+				endTell;
 				getEmployee #mesquite.categ.SmallStateNamesEditor.SmallStateNamesEditor;
 				tell It;
 					panelOpen true;
@@ -575,6 +632,7 @@ Begin MESQUITE;
 			setPrevFileName '07-contTreeSim.nex';
 			getWindow;
 			tell It;
+					setUniqueID 0195bfbca8fb549;
 					popAsTile false;
 					popOut;
 					setExplanationSize 0;
@@ -582,9 +640,12 @@ Begin MESQUITE;
 					setFontIncAnnot 0;
 					setFontIncExp 0;
 					setSize 524 161;
-					setLocation 108 630;
+					setLocation 37 746;
 					setFont SanSerif;
 					setFontSize 10;
+					getToolPalette;
+					tell It;
+					endTell;
 				setExplanation 'This shows a tree and character simulated together. The BiSSE model was used, with rate of speciation with state 0 = 0.1, with state 1 = 0.3, rate of extinction with state 0 = 0.05, with state 1 = 0.05, and rates of state change 0.005.^n^nA block of simulated trees and accompanying matrix (such that the i''th character was simulated with the i''th tree) was made by selecting Trees & Diversification Characters from the Taxa & Trees menu.  ';
 				setTitle Simulated_trees_&_characters;
 				toggleFileNames off;
@@ -592,6 +653,15 @@ Begin MESQUITE;
 				setNextButtonName Return_to_main_Intro.;
 			endTell;
 			showWindow;
+		endTell;
+		getWindow;
+		tell It;
+			setResourcesState false false 72;
+			findWindow 0195bfbca870547;
+			tell It;
+				setAsFront;
+			endTell;
+			desuppress;
 		endTell;
 		endTell;
 end;

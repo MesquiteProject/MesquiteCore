@@ -152,11 +152,39 @@ public abstract class NumSpecsSet extends SpecsSet  {
   		defaultValue = def;
   	}
 	/*.................................................................................................................*/
+	public boolean allDefault(){
+		if (defaultValue == null)
+			return false;
+		for (int i=0; i<getNumberOfParts(); i++) {
+			if (nums.equals(i, defaultValue))
+				return false;
+		}
+		return true;
+	}
+	/*.................................................................................................................*/
 	/** Delete num parts from and including "starting"  */
 	public boolean deleteParts(int starting, int num){ 
 		setDirty(true);
  		nums.deleteParts(starting, num);
 		numParts = nums.getSize();
+	return true;
+	}
+	/*.................................................................................................................*/
+	/** Deletes parts flagged in Bits.*/
+	protected boolean deletePartsFlagged(Bits toBeDeleted){ 
+		setDirty(true);
+ 		nums.deletePartsFlagged(toBeDeleted); 
+ 		numParts = nums.getSize();
+		return true;
+	}
+	/*.................................................................................................................*/
+	/** Deletes parts by blocks.
+	 * blocks[i][0] is start of block; blocks[i][1] is end of block
+	 * Assumes that these blocks are in sequence, non-overlapping, etc!!! *
+	protected boolean deletePartsBy Blocks(int[][] blocks){ 
+		setDirty(true);
+ 		nums.deletePartsBy Blocks(blocks);
+ 		numParts = nums.getSize();
 		return true;
 	}
 	/*.................................................................................................................*/

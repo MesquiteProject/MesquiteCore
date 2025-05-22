@@ -21,6 +21,8 @@ import java.io.*;
 import mesquite.assoc.lib.AssociationSource;
 import mesquite.lib.*;
 import mesquite.lib.duties.*;
+import mesquite.lib.ui.AlertDialog;
+import mesquite.lib.ui.ProgressIndicator;
 
 /** Manages the Mesquite block of a nexus file, which contains scripts for Mesquite and its modules. */
 public class ManageMesquiteBlock extends ScriptingManager {
@@ -175,15 +177,15 @@ public class ManageMesquiteBlock extends ScriptingManager {
 		MesquiteBlock b = makeBlock(file, blockString);
 		Parser commandParser = new Parser();
 		commandParser.setString(blockString);
-		MesquiteInteger startCharC = new MesquiteInteger(0);
+		MesquiteLong startCharC = new MesquiteLong(0);
 		int scriptVersion = -1;
 		boolean ignoreScriptVersion = true;
 		boolean forceIgnore = false;
 		String s;
-		int previousStart = startCharC.getValue();
+		long previousStart = startCharC.getValue();
 		while (!StringUtil.blank(s=commandParser.getNextCommand(startCharC))) {
 			String commandName = parser.getFirstToken(s);
-			String commandArguments = s.substring(parser.getPosition(), s.length()-1);
+			String commandArguments = s.substring((int)parser.getPosition(), s.length()-1);
 			if ("BEGIN".equalsIgnoreCase(commandName)) {
 
 			}
@@ -216,7 +218,9 @@ public class ManageMesquiteBlock extends ScriptingManager {
 				}
 				CommandRecord prevR = MesquiteThread.getCurrentCommandRecord();
 				MesquiteThread.setCurrentCommandRecord(cRecord);
-				p.execute(getFileCoordinator(), blockString, startCharC, "", false, b, file);
+				MesquiteInteger startCharCInt = new MesquiteInteger((int)startCharC.getValue());
+				p.execute(getFileCoordinator(), blockString, startCharCInt, "", false, b, file);
+				startCharC.setValue(startCharCInt.getValue());
 				MesquiteThread.setCurrentCommandRecord(prevR);
 			}
 			previousStart = startCharC.getValue();
@@ -252,7 +256,7 @@ public class ManageMesquiteBlock extends ScriptingManager {
 
 	/*.................................................................................................................*/
 	public String getAutoBlock(MesquiteFile file){
-		if (file!= getProject().getHomeFile())
+		if (getProject() == null || file!= getProject().getHomeFile())
 			return "";
 		if (file.useConservativeNexus || file.useSimplifiedNexus)
 			return "";

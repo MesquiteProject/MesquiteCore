@@ -17,6 +17,9 @@ import java.awt.*;
 import java.util.*;
 import mesquite.lib.*;
 import mesquite.lib.characters.*;
+import mesquite.lib.ui.ExtensibleDialog;
+import mesquite.lib.ui.MQPanel;
+import mesquite.lib.ui.SingleLineTextField;
 
 
 
@@ -65,7 +68,7 @@ public class IntegerSqMatrixFields  {
 		if (!onlyUpperRight)
 			adj = 1;
 		
-		Panel newPanel = new Panel();
+		Panel newPanel = new MQPanel();
 		newPanel.setLayout(gridBag);
 		gridBag.setConstraints(newPanel,constraints);
 		constraints.gridy = 1;

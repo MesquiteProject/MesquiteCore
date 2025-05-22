@@ -21,6 +21,8 @@ import java.io.*;
 import mesquite.lib.*;
 import mesquite.lib.characters.*;
 import mesquite.lib.duties.*;
+import mesquite.lib.taxa.Taxa;
+import mesquite.lib.ui.ProgressIndicator;
 import mesquite.cont.lib.*;
 
 /* ======================================================================== 
@@ -234,7 +236,7 @@ public abstract class ManageContCharsA extends CharMatrixManager {
 	public void writeCharactersBlock(CharacterData data, CharactersBlock cB, MesquiteFile file, ProgressIndicator progIndicator){
 		ContinuousData cData = (ContinuousData)data;
 		//StringBuffer blocks = new StringBuffer(cData.getNumChars()*cData.getNumTaxa()*10*cData.getNumItems());
-		StringBuffer line = new StringBuffer(cData.getNumChars()*10*cData.getNumItems());
+		MesquiteStringBuffer line = new MesquiteStringBuffer(cData.getNumChars()*10L*cData.getNumItems());
 		file.write("BEGIN CHARACTERS");
 		if (data.getAnnotation()!=null && !file.useSimplifiedNexus) 
 			file.write("[!" + StringUtil.tokenize(data.getAnnotation()) + "]");

@@ -29,17 +29,18 @@ public class Parser extends StringUtil {
 	String lineEndStringSet = null;
 	static char openCommentBracket = '[';
 	static char closeCommentBracket = ']';
+	public static char substantiveCommentMark = '&'; //had been % before v. 4
 	public static boolean allowComments = true;
 	boolean convertUnderscoresToBlanks = true;
 	char quoteChar = defaultQuote;
 	boolean lineEndingsDark = false;
-	MesquiteInteger pos;
+	MesquiteLong pos;
 	boolean hyphensArePartOfNumbers = true;
-	StringBuffer line = new StringBuffer(1000);
+	MesquiteStringBuffer line = new MesquiteStringBuffer(1000);
 	char[][] charTranslationTable = new char[50][2];  //50 max
-	
+
 	public Parser(){
-		pos = new MesquiteInteger(0);
+		pos = new MesquiteLong(0);
 		buffer = new StringBuffer(100); 
 		buffer2 = new StringBuffer(100); 
 		openCommentBracket = '[';
@@ -102,22 +103,32 @@ public class Parser extends StringUtil {
 		this.convertUnderscoresToBlanks = convertUnderscoresToBlanks;
 	}
 
-	char lineCharAt(String line, int pos){
-		if (line == null)
+	char lineCharAt(String s, int pos){
+		if (s == null)
 			return 0;
-		if (pos>=line.length()) 
+		if (pos>=s.length()) 
 			return 0;
-		char c = line.charAt(pos); 
+		char c = s.charAt(pos); 
 		if (anyTranslations)
 			return getTranslation(c);
 		return c;
 	}
-	char lineCharAt(StringBuffer line, int pos){
-		if (line == null)
+	char lineCharAt(StringBuffer s, int pos){
+		if (s == null)
 			return 0;
-		if (pos>=line.length()) 
+		if (pos>=s.length()) 
 			return 0;
-		char c = line.charAt(pos); 
+		char c = s.charAt(pos); 
+		if (anyTranslations)
+			return getTranslation(c);
+		return c;
+	}
+	char lineCharAt(MesquiteStringBuffer s, long pos){
+		if (s == null)
+			return 0;
+		if (pos>=s.length()) 
+			return 0;
+		char c = s.charAt(pos); 
 		if (anyTranslations)
 			return getTranslation(c);
 		return c;
@@ -132,16 +143,20 @@ public class Parser extends StringUtil {
 	}
 	/*this causes the passed buffer to be used.  Danger is that the Parser is later subject to this buffer's external chagnes.
 	thus, call resetBufferToLocal afterward to make Parser behave normally */
-	public void setBuffer(StringBuffer s){
-		if (s == null)
-			return;
+	public void setBuffer(MesquiteStringBuffer s){
 		line = s;
 		pos.setValue(0);
 	}
-	public void resetBufferToLocal(){
-		line = new StringBuffer(1000);
+	public void setBuffer(StringBuffer s){
+		if (s == null)
+			return;
+		line = new MesquiteStringBuffer(s);
+		pos.setValue(0);
 	}
-	public StringBuffer getBuffer(){
+	public void resetBufferToLocal(){
+		line = new MesquiteStringBuffer(1000);
+	}
+	public MesquiteStringBuffer getBuffer(){
 		return line;
 	}
 	public String getString(){
@@ -162,10 +177,13 @@ public class Parser extends StringUtil {
 	public boolean atEnd(){
 		return pos.getValue()>=line.length();
 	}
-	public int getPosition(){
+	public long getPosition(){
 		return pos.getValue();
 	}
 	public void setPosition(int p){
+		pos.setValue(p);
+	}
+	public void setPosition(long p){
 		pos.setValue(p);
 	}
 	public String getlineEndString(){
@@ -181,6 +199,12 @@ public class Parser extends StringUtil {
 			lineEndStringSet = s;
 		}
 	}
+	
+	/*.................................................................................................................*/
+	public boolean whitespace(char c) {
+		return whitespace(c, whitespaceString);
+	}
+
 	/*.................................................................................................................*/
 	public boolean lineEndCharacter(char c) {
 		if (c<0)
@@ -272,6 +296,8 @@ public class Parser extends StringUtil {
 			}
 		}
 	}
+	/*.................................................................................................................*/
+
 	public void setPunctuationStringRaw(String s){
 		if (s==null){
 			punctuationStringSet = null;
@@ -284,18 +310,25 @@ public class Parser extends StringUtil {
 	public String getPunctuationString (){
 		return punctuationString;
 	}
+
+	private boolean storageNull() {
+		return line == null;
+	}
+	private boolean storageZeroLength() {
+		return line != null && (line.equals(""));  //Debugg.println this equals should have a special method; it will always return false here
+	}
 	private String getQuoted() {
-		if (line==null)
+		if (storageNull())
 			return null;
 		buffer2.setLength(0);
 		char c;
 		boolean done = false;
 		while (!done) {
-			int where = pos.getValue();
+			long where = pos.getValue();
 			if (where<line.length()) {
 				c= lineCharAt(line, where);
 				if (c==quoteChar){
-					int np = where + 1;
+					long np = where + 1;
 					if (np<line.length()) {
 						char nxt= lineCharAt(line, np);
 						if (nxt==quoteChar) {
@@ -309,7 +342,7 @@ public class Parser extends StringUtil {
 					else done = true;
 				}
 				else if (c=='^'){
-					int np = where + 1;
+					long np = where + 1;
 					if (np<line.length()) {
 						char nxt= lineCharAt(line, np);
 						if (nxt=='n') {
@@ -343,17 +376,17 @@ public class Parser extends StringUtil {
 	/*.........................................................................................................*/
 	/*  doesn't replace '' by ' */
 	private StringBuffer getQuotedUnaltered(StringBuffer buf) {
-		if (line==null)
+		if (storageNull())
 			return null;
 		buf.setLength(0);
 		char c;
 		boolean done = false;
 		while (!done) {
-			int where = pos.getValue();
+			long where = pos.getValue();
 			if (where<line.length()) {
 				c= lineCharAt(line, where);
 				if (c==quoteChar){
-					int np = where + 1;
+					long np = where + 1;
 					if (np<line.length()) {
 						char nxt= lineCharAt(line, np);
 						if (nxt==quoteChar) {
@@ -387,7 +420,7 @@ public class Parser extends StringUtil {
 		else if (pos.getValue()<0 || line.length() == 0)
 			return null;
 		else
-			return line.toString().substring(pos.getValue(), line.length());
+			return line.toString().substring((int)pos.getValue(), (int)line.length());  //Debugg.println deal with longs?
 	}
 
 	public void setQuoteCharacter(char c){
@@ -434,7 +467,7 @@ public class Parser extends StringUtil {
 	/*............................................  ....................................................*/
 	/** returns first index of occurence of target token; useful to find if token is in string*/
 	public int tokenIndexOfIgnoreCase(String line, String target) {
-		if (target == null || line == null)
+		if (target == null || storageNull())
 			return -1;
 		setString(line);
 		pos.setValue(0);
@@ -450,7 +483,7 @@ public class Parser extends StringUtil {
 	/*............................................  ....................................................*/
 	/** returns first index of occurence of target token; useful to find if token is in string*/
 	public int tokenIndex(String line, String target) {
-		if (target == null || line == null)
+		if (target == null || storageNull())
 			return -1;
 		setString(line);
 		pos.setValue(0);
@@ -471,9 +504,9 @@ public class Parser extends StringUtil {
 	/*............................................  ....................................................*/
 	/** returns characters from pos to first instance of c*/
 	public String getRemainingUntilChar(char stopChar, boolean skipPast) {
-		if (line==null)
+		if (storageNull())
 			return null;
-		else if (line.equals(""))
+		else if (storageZeroLength())
 			return "";
 		if (pos.getValue() >= line.length())
 			return null;
@@ -492,9 +525,9 @@ public class Parser extends StringUtil {
 	/*............................................  ....................................................*/
 	/** returns characters from pos to first instance of any character in stopChars */
 	public String getRemainingUntilChars(String stopChars, boolean skipPast) {
-		if (line==null)
+		if (storageNull())
 			return null;
-		else if (line.equals(""))
+		else if (storageZeroLength())
 			return "";
 		if (pos.getValue() >= line.length())
 			return null;
@@ -517,9 +550,9 @@ public class Parser extends StringUtil {
 	/*............................................  ....................................................*/
 	/** returns characters from pos to first instance of \r or \n*/
 	public String getRawNextLine() {
-		if (line==null)
+		if (storageNull())
 			return null;
-		else if (line.equals(""))
+		else if (storageZeroLength())
 			return "";
 		if (pos.getValue() >= line.length())
 			return null;
@@ -531,7 +564,7 @@ public class Parser extends StringUtil {
 			c=getNextCharRaw();
 		}
 		if (c=='\r' && lineEndsAreDefaults()) {
-			int pos = getPosition();
+			long pos = getPosition();
 			c=getNextCharRaw();
 			if (c!='\n')   // if the next char is a newline, we want to go past it; otherwise, step back
 				setPosition(pos);
@@ -541,15 +574,15 @@ public class Parser extends StringUtil {
 	/*............................................  ....................................................*/
 	/** returns n characters from pos */
 	public String getPiece(int n) {
-		if (line==null)
+		if (storageNull())
 			return null;
-		else if (line.equals(""))
+		else if (storageZeroLength())
 			return "";
 		if (pos.getValue() >= line.length())
 			return null;
 		char c=getNextChar();
 		buffer.setLength(0);
-		
+
 		int count = 0;
 		while (count++< n && pos.getValue()<=line.length() && c!=(char)0) {  
 			buffer.append(c);
@@ -560,15 +593,16 @@ public class Parser extends StringUtil {
 	/*............................................  ....................................................*/
 	/** returns n characters from pos */
 	public String getPieceOfLine(int n) {
-		if (line==null)
+		if (storageNull())
 			return null;
-		else if (line.equals(""))
+		else if (storageZeroLength())
 			return "";
+
 		if (pos.getValue() >= line.length())
 			return null;
 		char c=getNextChar();
 		buffer.setLength(0);
-		
+
 		int count = 0;
 		while (count++< n && !lineEndCharacter(c) &&  pos.getValue()<=line.length() && c!=(char)0) {  
 			buffer.append(c);
@@ -597,10 +631,10 @@ public class Parser extends StringUtil {
 	}
 	/*............................................  ....................................................*/
 	/** returns the position just before the last token */
-	public int getPosBeforeLastToken() {
+	public long getPosBeforeLastToken() {
 		String s = getFirstToken();
-		int lastPos = 0;
-		int prevPos=0;
+		long lastPos = 0;
+		long prevPos=0;
 		while (!StringUtil.blank(s)) {
 			prevPos=lastPos;
 			lastPos=pos.getValue();
@@ -617,27 +651,27 @@ public class Parser extends StringUtil {
 		return null;
 	}
 	/*............................................  ....................................................*/
-	int startOfToken;
-	public int getStartOfPreviousToken(){
+	long startOfToken;
+	public long getStartOfPreviousToken(){
 		return startOfToken;
 	}
 	private void recordStartOfToken(){
-		if (!MesquiteInteger.isCombinable(startOfToken))
+		if (!MesquiteLong.isCombinable(startOfToken))
 			startOfToken = pos.getValue()-1;
 	}
 	/*............................................  ....................................................*/
 	/** returns token from line starting at pos; excluding square bracket comments*/
 	public String getNextToken() {
-		startOfToken = MesquiteInteger.unassigned;
-		if (line==null)
+		startOfToken = MesquiteLong.unassigned;
+		if (storageNull())
 			return null;
-		else if (line.equals(""))
+		else if (storageZeroLength())
 			return "";
 		if (pos.getValue() >= line.length())
 			return null;
 		char c;
 		buffer.setLength(0);
-		startOfToken = MesquiteInteger.unassigned;
+		startOfToken = MesquiteLong.unassigned;
 		try {
 			boolean continu = true;
 			while (whitespace(c=getNextChar(), whitespaceString))
@@ -696,7 +730,7 @@ public class Parser extends StringUtil {
 		}
 		catch (StringIndexOutOfBoundsException e) {
 			System.out.println("string bounds exceeded 0");
-			startOfToken = MesquiteInteger.unassigned;
+			startOfToken = MesquiteLong.unassigned;
 			pos.setValue(line.length());
 		}
 		return buffer.toString();
@@ -704,10 +738,10 @@ public class Parser extends StringUtil {
 	/*.........................................................................................................*/
 	/** returns token from line starting at pos; excluding square bracket comments*/
 	public String getUnalteredToken(boolean includeWhitespace) {
-		startOfToken = MesquiteInteger.unassigned;
-		if (line==null)
+		startOfToken = MesquiteLong.unassigned;
+		if (storageNull())
 			return null;
-		else if (line.equals(""))
+		else if (storageZeroLength())
 			return "";
 		if (pos.getValue() >= line.length())
 			return null;
@@ -770,7 +804,7 @@ public class Parser extends StringUtil {
 		catch (StringIndexOutOfBoundsException e) {
 			System.out.println("string bounds exceeded 0");
 			pos.setValue(line.length());
-			startOfToken = MesquiteInteger.unassigned;
+			startOfToken = MesquiteLong.unassigned;
 		}
 		if (blankByCurrentWhitespace(buffer)) 
 			return null;
@@ -779,10 +813,10 @@ public class Parser extends StringUtil {
 	/*.........................................................................................................*/
 	/** returns token from line starting at pos; keeps track of pending square bracket closure, etc.*/
 	public String getUnalteredToken(boolean includeWhitespace, MesquiteInteger pendingBrackets, StringBuffer comment, MesquiteBoolean suppressComment) {
-		startOfToken = MesquiteInteger.unassigned;
-		if (line==null)
+		startOfToken = MesquiteLong.unassigned;
+		if (storageNull())
 			return null;
-		else if (line.equals(""))
+		else if (storageZeroLength())
 			return "";
 		if (pos.getValue() >= line.length())
 			return null;
@@ -846,7 +880,7 @@ public class Parser extends StringUtil {
 		}
 		catch (StringIndexOutOfBoundsException e) {
 			System.out.println("string bounds exceeded 1");
-			startOfToken = MesquiteInteger.unassigned;
+			startOfToken = MesquiteLong.unassigned;
 			pos.setValue(line.length());
 		}
 		if (blankByCurrentWhitespace(buffer)) 
@@ -856,7 +890,7 @@ public class Parser extends StringUtil {
 	/*.........................................................................................................*/
 	/** Fills StringBuffer with token from line starting at pos; keeps track of pending square bracket closure, etc.  Returns false if null string to be returned*/
 	public boolean getUnalteredToken(StringBuffer token, boolean includeWhitespace, MesquiteInteger pendingBrackets, StringBuffer comment, MesquiteBoolean suppressComment) {
-		startOfToken = MesquiteInteger.unassigned;
+		startOfToken = MesquiteLong.unassigned;
 		if (token == null)
 			return false;
 		token.setLength(0);
@@ -925,7 +959,7 @@ public class Parser extends StringUtil {
 		}
 		catch (StringIndexOutOfBoundsException e) {
 			System.out.println("string bounds exceeded 1");
-			startOfToken = MesquiteInteger.unassigned;
+			startOfToken = MesquiteLong.unassigned;
 			pos.setValue(line.length());
 		}
 		if (blankByCurrentWhitespace(token)) 
@@ -935,10 +969,10 @@ public class Parser extends StringUtil {
 	/*.................................................................................................................*/
 	/** returns token from line starting at pos; keeps track of pending square bracket closure, etc.*/
 	public String getToken(MesquiteInteger pendingBrackets, StringBuffer comment, MesquiteBoolean suppressComment) {
-		startOfToken = MesquiteInteger.unassigned;
-		if (line==null)
+		startOfToken = MesquiteLong.unassigned;
+		if (storageNull())
 			return null;
-		else if (line.equals(""))
+		else if (storageZeroLength())
 			return "";
 		if (pos.getValue() >= line.length())
 			return null;
@@ -995,10 +1029,20 @@ public class Parser extends StringUtil {
 		}
 		catch (StringIndexOutOfBoundsException e) {
 			System.out.println("string bounds exceeded 1");
-			startOfToken = MesquiteInteger.unassigned;
+			startOfToken = MesquiteLong.unassigned;
 			pos.setValue(line.length());
 		}
 		return buffer.toString();
+	}
+	/*............................................  ....................................................*/
+	public boolean hasAnyFileReadingArguments(String arguments){
+		String fRA = getFirstToken(arguments);
+		while (!StringUtil.blank(fRA)) {
+			if (fRA.startsWith("" + StringUtil.argumentMarker ))
+				return true;
+			fRA = getNextToken();
+		}
+		return false;
 	}
 	/*............................................  ....................................................*/
 	public boolean hasFileReadingArgument(String arguments, String target){
@@ -1006,17 +1050,31 @@ public class Parser extends StringUtil {
 		while (!StringUtil.blank(fRA)) {
 			if (fRA.equalsIgnoreCase(StringUtil.argumentMarker + target))
 				return true;
+			if (fRA.startsWith(StringUtil.argumentMarker + target + "."))
+				return true;
 			fRA = getNextToken();
 		}
 		return false;
 	}
 	/*............................................  ....................................................*/
+	public String getFileReadingArgumentSubtype(String arguments, String target){
+		String fRA = getFirstToken(arguments);
+		while (!StringUtil.blank(fRA)) {
+			if (fRA.startsWith(StringUtil.argumentMarker + target + ".")){
+				String subS = fRA.substring(fRA.indexOf(".")+1, fRA.length());
+				return subS;
+			}
+			fRA = getNextToken();
+		}
+		return null;
+	}
+	/*............................................  ....................................................*/
 	/** returns next XML starttag element name.  Returns attributes in MesquiteString attributes.  If it is an empty element (ending in /) or a processing instruction (bounded by ?) that too is returned in the arguments.*/
 	//TODO: does this deal with escaped characters?
-	public String getNextXMLTag(MesquiteInteger startPos, MesquiteString attributes, MesquiteBoolean isEmptyElement, MesquiteBoolean isProcessingInstruction, MesquiteBoolean isEndTag) {
-		if (line==null)
+	public String getNextXMLTag(MesquiteLong startPos, MesquiteString attributes, MesquiteBoolean isEmptyElement, MesquiteBoolean isProcessingInstruction, MesquiteBoolean isEndTag) {
+		if (storageNull())
 			return null;
-		else if (line.equals(""))
+		else if (storageZeroLength())
 			return "";
 		String s2 = line.toString();
 		if (pos.getValue() >= line.length())
@@ -1095,7 +1153,7 @@ public class Parser extends StringUtil {
 	}
 	/*............................................  ....................................................*/
 	/** returns next tag in <>*/
-	public String getNextXMLTag(MesquiteInteger startPos) {
+	public String getNextXMLTag(MesquiteLong startPos) {
 		return getNextXMLTag(startPos,null,null,null,null);
 	}
 	/*............................................  ....................................................*/
@@ -1106,7 +1164,7 @@ public class Parser extends StringUtil {
 	/*............................................  ....................................................*/
 	/** checks to see if the contained String is an XML document */
 	public boolean isXMLDocument(boolean rememberPosition) {
-		int oldPos = getPosition();
+		long oldPos = getPosition();
 		setPosition(0);
 		MesquiteBoolean isProcessingElement = new MesquiteBoolean(false);
 		String tag = getNextXMLTag(null,null,null, isProcessingElement,null);   
@@ -1126,12 +1184,12 @@ public class Parser extends StringUtil {
 			return null;
 		String endTag = s;
 		String nextTag;
-		int startPos = pos.getValue();
+		long startPos = pos.getValue();
 		if (startPos>=line.length()) {
 			return null;
 		}
 
-		MesquiteInteger endPos = new MesquiteInteger(startPos);
+		MesquiteLong endPos = new MesquiteLong(startPos);
 		try {
 			while (!endTag.equalsIgnoreCase(nextTag=getNextXMLTag(endPos,null,null,null,isEndTag)) && !StringUtil.blank(nextTag)) {//get end tag
 				if (!isEndTag.getValue())
@@ -1145,8 +1203,11 @@ public class Parser extends StringUtil {
 		}
 		if (endPos.getValue()<=startPos)
 			return null;
-		else
-			return line.substring(startPos,endPos.getValue());
+		else {
+			String st = line.toString();
+
+			return st.substring((int)startPos,(int)endPos.getValue()); //Debugg.println
+		}
 	}
 	/*............................................  ....................................................*/
 	/** returns token from line starting at pos; excluding square bracket comments*/
@@ -1197,10 +1258,14 @@ public class Parser extends StringUtil {
 	}
 	/*.................................................................................................................*/
 
-	int pendingPComment = 0;
+	boolean pendingPComment = false;
+
+	public boolean isSubstantiveCommentPending(){
+		return pendingPComment;
+	}
 	/*.................................................................................................................*/
 	char getNextChar(MesquiteInteger pendingBrackets, StringBuffer comment, MesquiteBoolean suppressComment) {
-		int posTemp = pos.getValue();
+		long posTemp = pos.getValue();
 		if (posTemp>=line.length()) {
 			return 0;
 		}
@@ -1216,11 +1281,12 @@ public class Parser extends StringUtil {
 			char next = 0;
 			if (posTemp<line.length())
 				next = lineCharAt(line, posTemp);
-			if (debt==0 && (next == '%')) { 
+			if (debt==0 && (next == '%' || next == '&')) { //a substantive comment Mesquite-style; can only be at first level
 				c = '<';
 				posTemp++; //done to go past %
 				line.setCharAt(posTemp-1, c); //done in case punctuation passed back will cause pos to decrement
-				pendingPComment = 1;
+				pendingPComment = true;
+				//don't add to debt to treat as a comment, but remember that there is a pending Substantive comment
 			}
 			else {
 				if (!storeCharToComment(c, debt, comment, suppressComment))
@@ -1232,12 +1298,12 @@ public class Parser extends StringUtil {
 
 		}
 		else if (closingCommentBracket(c)) {
-			if (comment!=null)
-				comment.append("$1");
-			if (debt==0 && pendingPComment >0) {
+			/*if (comment!=null)
+				comment.append("$1");*/
+			if (debt==0 && pendingPComment) {
 				c = '>';
 				line.setCharAt(posTemp-1, c); //done in case punctuation passed back will cause pos to decrement
-				pendingPComment = 0;
+				pendingPComment = false;
 			}
 			else {
 				if (debt>0){
@@ -1257,7 +1323,7 @@ public class Parser extends StringUtil {
 			c=lineCharAt(line, posTemp);
 			if (!whitespace(c) && count == 1 && checkExclamation){
 				if (checkExclamation && debt ==1)
-					if (c != '!' && c!= '&')
+					if (c != '!') // && c!= '&')
 						suppressComment.setValue(true);
 				checkExclamation = false;
 			}
@@ -1269,8 +1335,8 @@ public class Parser extends StringUtil {
 				debt++;
 			}
 			else if (closingCommentBracket(c)) {
-				if (comment!=null)
-					comment.append("$2");
+				/*if (comment!=null)
+					comment.append("$2");*/
 				if (debt>0){
 					debt--;
 					storeCharToComment(c, debt, comment, suppressComment);
@@ -1297,7 +1363,7 @@ public class Parser extends StringUtil {
 
 	/*.................................................................................................................*/
 	public char charOnDeck(int ahead) {
-		int posTemp = pos.getValue() +ahead;
+		long posTemp = pos.getValue() +ahead;
 		if (posTemp>=line.length()) {
 			return 0;
 		}
@@ -1305,7 +1371,7 @@ public class Parser extends StringUtil {
 	}
 	/*.................................................................................................................*/
 	public char getNextChar() {
-		int posTemp = pos.getValue();
+		long posTemp = pos.getValue();
 		if (posTemp>=line.length()) {
 			return 0;
 		}
@@ -1344,7 +1410,7 @@ public class Parser extends StringUtil {
 	}
 	/*.................................................................................................................*/
 	public char getNextCharRaw() {
-		int posTemp = pos.getValue();
+		long posTemp = pos.getValue();
 		if (posTemp>=line.length()) 
 			return 0;
 		char c = line.charAt(posTemp); 
@@ -1395,7 +1461,7 @@ public class Parser extends StringUtil {
 	}
 	/*.................................................................................................................*/
 	public int getNumberOfTokensRemaining() {
-		int oldPos = pos.getValue();
+		long oldPos = pos.getValue();
 		String token=null;
 		int count=0;
 		do {
@@ -1446,7 +1512,7 @@ public class Parser extends StringUtil {
 	/*.................................................................................................................*/
 	void skipComment() {
 		try {
-			int index = pos.getValue();
+			long index = pos.getValue();
 			char c;
 			while ((c = lineCharAt(line, index)) != closeCommentBracket) {
 				if (c==openCommentBracket && allowComments) {
@@ -1464,7 +1530,7 @@ public class Parser extends StringUtil {
 	/*.................................................................................................................*/
 	void skipToDarkspace() {
 		try {
-			int index = pos.getValue();
+			long index = pos.getValue();
 			while (whitespace(lineCharAt(line, index), whitespaceString))
 				index++;
 			pos.setValue(index);
@@ -1476,7 +1542,7 @@ public class Parser extends StringUtil {
 	/*.................................................................................................................*/
 	public char nextDarkChar() {
 		try {
-			int index = pos.getValue();
+			long index = pos.getValue();
 			while (whitespace(lineCharAt(line, index), whitespaceString))
 				index++;
 			char dark =lineCharAt(line, index);
@@ -1494,7 +1560,7 @@ public class Parser extends StringUtil {
 	/*.................................................................................................................*/
 	public char firstDarkChar() {
 		try {
-			int index = 0;
+			long index = 0;
 			while (whitespace(lineCharAt(line, index), whitespaceString))
 				index++;
 			return lineCharAt(line, index);
@@ -1503,6 +1569,11 @@ public class Parser extends StringUtil {
 		return '\0';
 	}
 	/*.................................................................................................................*/
+	public char getCharAt(long index) {
+		if (line != null && index >=0 && index<line.length())
+			return lineCharAt(line, index);
+		return '\0';
+	}
 	/*.................................................................................................................*/
 	public char getCharAt(int index) {
 		if (line != null && index >=0 && index<line.length())
@@ -1510,21 +1581,20 @@ public class Parser extends StringUtil {
 		return '\0';
 	}
 	/*.................................................................................................................*/
-	public boolean whitespace(char c) {
-		return whitespace(c, whitespaceString);
-	}
-	/*.................................................................................................................*/
-	public boolean punctuation(char c) {
-		return punctuation(c, punctuationString);
-	}
-	/*.................................................................................................................*/
 	/** Returns the name of the next command in the string passed starting at the given character.  Resets pos afterward to start of command name. */
-	public String getNextCommandName(MesquiteInteger p) {
+	public String getNextCommandNameWithoutConsuming(MesquiteLong p) {
 		if (p!=null)
 			pos.setValue(p.getValue());
 		String token = getUnalteredToken(false);
 		if (p!=null)
 			pos.setValue(p.getValue());
+		return token;
+	}
+	/** Returns the name of the next command in the string.  Resets pos afterward to start of command name. DOES NOT EAT UP commandName.*/
+	public String getNextCommandNameWithoutConsuming() {
+		long currentPos = pos.getValue();
+		String token = getUnalteredToken(false);
+		pos.setValue(currentPos);
 		return token;
 	}
 	/*.................................................................................................................*/
@@ -1534,9 +1604,20 @@ public class Parser extends StringUtil {
 			pos.setValue(p.getValue());
 		String token = getNextCommand();
 		if (p!=null)
+			p.setValue((int)pos.getValue());
+		return token;
+	}
+	/*.................................................................................................................*/
+	/** Returns the next command in the string passed starting at the given character */
+	public String getNextCommand(MesquiteLong p) {
+		if (p!=null)
+			pos.setValue(p.getValue());
+		String token = getNextCommand();
+		if (p!=null)
 			p.setValue(pos.getValue());
 		return token;
 	}
+
 	/*.................................................................................................................*/
 	/** Returns the next command in the string passed starting at the given character */
 	public String getNextCommand() {
@@ -1548,10 +1629,10 @@ public class Parser extends StringUtil {
 		String token = getUnalteredToken(false);
 		if (!blankByCurrentWhitespace(token)) {
 			commandBuffer.append(token);
-			while (!blankByCurrentWhitespace(token) && !token.equals(";")) {
+			while (!blankByCurrentWhitespace(token) && !(token.equals(";") && !isSubstantiveCommentPending())) {
 				token = getUnalteredToken( false);
 				if (token != null && token.length() >0) {
-					if (token.charAt(0)!=';') 
+					if (!(token.charAt(0)==';' && !isSubstantiveCommentPending())) 
 						commandBuffer.append(' ');
 					commandBuffer.append(token);
 				}

@@ -21,6 +21,9 @@ import mesquite.lib.characters.CharacterData;
 import mesquite.lib.characters.MCharactersDistribution;
 import mesquite.lib.duties.MatrixSourceCoord;
 import mesquite.lib.table.*;
+import mesquite.lib.taxa.Taxa;
+import mesquite.lib.taxa.Taxon;
+import mesquite.lib.ui.MesquiteMenuItemSpec;
 
 
 /* ======================================================================== */
@@ -52,8 +55,9 @@ public class GenBankNumber extends TaxonListAssistant {
 	}
 	/*.................................................................................................................*/
 	public void setTableAndTaxa(MesquiteTable table, Taxa taxa){
-		deleteMenuItem(mss2);
-		mss2 = addMenuItem("Move Numbers from GenBank/FASTA Taxon Name", makeCommand("moveNumbersFromName", this));
+		deleteAllMenuItems();
+		addMenuItem("Move Numbers from GenBank/FASTA Taxon Name", makeCommand("moveNumbersFromName", this));
+		addMenuItem( "Paste Values into Selected", makeCommand("paste",  this));
 		if (this.taxa != null)
 			this.taxa.removeListener(this);
 		this.taxa = taxa;
@@ -97,7 +101,14 @@ public class GenBankNumber extends TaxonListAssistant {
 			moveNumberFromGenBankTaxonName();
 			return null;
 		}
+		else if (checker.compare(this.getClass(), "Pastes", "", commandName, "paste")) {
+			MesquiteBoolean success = pasteIntoRows(table);
+			if (StringUtil.notEmpty(success.getName()))
+				discreetAlert("Problem with pasting:" + success.getName());
+			if (!MesquiteThread.isScripting() && success.getValue()) parametersChanged();
+		}
 		else return  super.doCommand(commandName, arguments, checker);
+		return null;
 	}
 	/*.................................................................................................................*/
 	private void moveNumberFromGenBankTaxonName() {
@@ -150,7 +161,7 @@ public class GenBankNumber extends TaxonListAssistant {
 		Taxon taxon = data.getTaxa().getTaxon(it);
 		Associable tInfo = data.getTaxaInfo(false);
 		if (tInfo != null && taxon != null) {
-			return (String)tInfo.getAssociatedObject(MolecularData.genBankNumberRef, it);
+			return (String)tInfo.getAssociatedString(MolecularData.genBankNumberRef, it);
 		}
 		return "-";
 	}
@@ -166,8 +177,10 @@ public class GenBankNumber extends TaxonListAssistant {
 			return;
 		Taxon taxon = data.getTaxa().getTaxon(row);
 		Associable tInfo = data.getTaxaInfo(true);
+		if (StringUtil.blank(s))
+			s = null;
 		if (tInfo != null && taxon != null) {
-			tInfo.setAssociatedObject(MolecularData.genBankNumberRef, row, s);
+			tInfo.setAssociatedString(MolecularData.genBankNumberRef, row, s);
 		}
 	}
 	public boolean useString(int ic){

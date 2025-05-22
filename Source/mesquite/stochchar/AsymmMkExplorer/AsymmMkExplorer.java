@@ -19,6 +19,9 @@ import java.awt.event.*;
 import mesquite.lib.*;
 import mesquite.lib.characters.*;
 import mesquite.lib.duties.*;
+import mesquite.lib.taxa.Taxa;
+import mesquite.lib.tree.Tree;
+import mesquite.lib.ui.ParametersExplorable;
 import mesquite.stochchar.lib.AsymmModel;
 import mesquite.stochchar.lib.MargLikelihoodForModel;
 import mesquite.categ.lib.*;
@@ -125,7 +128,7 @@ public class AsymmMkExplorer extends TreeWindowAssistantOA implements Parameters
 			}
 		}
 		else if (checker.compare(this.getClass(), "Sets the character to use", "[character number]", commandName, "setCharacter")) {
-			int icNum = MesquiteInteger.fromFirstToken(arguments, stringPos);
+			int icNum = MesquiteInteger.fromFirstToken(arguments, pos);
 			if (!MesquiteInteger.isCombinable(icNum))
 				return null;
 			int ic = CharacterStates.toInternal(icNum);

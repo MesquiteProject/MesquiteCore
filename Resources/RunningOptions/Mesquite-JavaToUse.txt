@@ -1,0 +1,17 @@
+java
+
+INSTRUCTIONS
+The first line, above, is used as the path to the version of Java to be used by Mesquite-Starter.app
+
+Below is a library of suggested alternatives:
+
+DEFAULT:
+java
+
+Place the above line as the first line of this file if you want to use your system's current default version of Java. 
+
+JAVA 1.8:
+/Library/Internet Plug-Ins/JavaAppletPlugin.plugin/Contents/Home/bin/java
+
+Place the above line as the first line of this file if you want to use Java 1.8. Mesquite will crash with Java 1.8 in places, but you may learn to avoid those!
+

@@ -1,5 +1,5 @@
 #NEXUS
-[written Sun May 04 14:34:34 PDT 2008 by Mesquite  version 2.01+ (build j65) at Thrandina.local/10.0.1.8 (Wayne Maddison)]
+[written Sat Mar 22 10:56:21 PDT 2025 by Mesquite  version 3.9Dev+ (build 1047) at Amilaps.local/127.0.0.1]
 
 BEGIN TAXA;
 	TITLE Taxa;
@@ -15,9 +15,10 @@ END;
 BEGIN CHARACTERS;
 	TITLE  'Matrix in file "08-logFile.nex"';
 	DIMENSIONS  NCHAR=2;
-	FORMAT DATATYPE = STANDARD GAP = - MISSING = ? SYMBOLS = "  0 1";
+	FORMAT DATATYPE = STANDARD RESPECTCASE GAP = - MISSING = ? SYMBOLS = "  0 1";
 	CHARSTATELABELS 
-		1 number_of_eyes /  one two, 2 tail_color /  blue red ; 
+		1 number_of_eyes /  one two,
+		2 tail_color /  blue red ; 
 	MATRIX
 	Aus         11
 	Fubonidia   11
@@ -36,17 +37,18 @@ BEGIN CHARACTERS;
 END;
 BEGIN TREES;
 	Title 'Trees from "08-logFile.nex"';
+	ID 0195beff9a9624;
 	LINK Taxa = Taxa;
 	TRANSLATE
-		1 Aus,
-		2 Fubonidia,
-		3 Ibbinidibe,
-		4 Snorolopa,
-		5 Quidnubia,
-		6 Suinon,
-		7 Zorabynyx,
-		8 Huichoros,
-		9 Jotinupa;
+[0] 		1 Aus,
+[1] 		2 Fubonidia,
+[2] 		3 Ibbinidibe,
+[3] 		4 Snorolopa,
+[4] 		5 Quidnubia,
+[5] 		6 Suinon,
+[6] 		7 Zorabynyx,
+[7] 		8 Huichoros,
+[8] 		9 Jotinupa;
 	TREE First_Tree = ((((1,5),4),((7,6),2)),((9,8),3));
 	TREE Second_Tree = ((((9,((4,1),2)),6),3),((8,7),5));
 	TREE Third_Tree = ((8,((2,6),1)),((((3,9),7),4),5));
@@ -58,33 +60,17 @@ END;
 
 BEGIN NOTES;
 
-	TEXT  TAXA = Taxa TAXON = 5 TEXT = Lives_deep_in_dark_caves;
+	TEXT  TAXON = 5 TEXT = Lives_deep_in_dark_caves;
 
 	TEXT   TAXON = 4 CHARACTER = 2 TEXT = 'Some individuals are blue, others are red.  Why, no one knows.';
 
-END;
-
-BEGIN CODONS;
-	CODESET * UNTITLED   =  universal:  1 -  2;
-
-
-END;
-
-BEGIN ASSUMPTIONS;
-OPTIONS DEFTYPE =                     unord PolyTcount =                     MINSTEPS;
-	TYPESET * UNTITLED   =  unord:  1 -  2;
-TYPESET Current_Parsimony_Models   =  unord:  1 -  2;
-
-END;
-
-BEGIN MESQUITECHARMODELS;
-	ProbModelSet * UNTITLED   =  'Mk1 (est.)':  1 -  2;
 END;
 
 Begin MESQUITE;
 		MESQUITESCRIPTVERSION 2;
 		TITLE AUTO;
 		tell ProjectCoordinator;
+		timeSaved 1742666181976;
 		getEmployee #mesquite.minimal.ManageTaxa.ManageTaxa;
 		tell It;
 			setID 0 8476784597994698209 WM11486dc41c048;
@@ -92,20 +78,49 @@ Begin MESQUITE;
 		getEmployee #mesquite.charMatrices.ManageCharacters.ManageCharacters;
 		tell It;
 			setID 0 974864624972105434 WM11486dc41dd0;
-			checksum 0 4129971366 WM11486dc41dd0;
+			mqVersion 390;
+			checksumv 0 3 3673400160 WM11486dc41dd0  getNumChars 2 numChars 2 getNumTaxa 9 numTaxa 9   short true   bits 3   states 3   sumSquaresStatesOnly 47.0 sumSquares 47.0 longCompressibleToShort false usingShortMatrix true   NumFiles 1 NumMatrices 1;
+			mqVersion;
 		endTell;
 		getWindow;
 		tell It;
-			setResourcesState false true 100;
-			setPopoutState 400;
+			suppress;
+			setUniqueID 0195beff9a7f47;
 			setExplanationSize 0;
 			setAnnotationSize 0;
 			setFontIncAnnot 0;
 			setFontIncExp 0;
-			setSize 700 464;
-			setLocation 417 24;
+			setSize 692 380;
+			setLocation 417 25;
 			setFont SanSerif;
 			setFontSize 10;
+			getToolPalette;
+			tell It;
+			endTell;
+		endTell;
+		getEmployee  #mesquite.io.InterpretFastaDNA.InterpretFastaDNA;
+		tell It;
+			includeGaps true;
+			simplifyTaxonName false;
+			convertMultStateToMissing false;
+			writeExcludedCharacters true;
+			uniqueSuffix '';
+		endTell;
+		getEmployee  #mesquite.io.InterpretFastaDNAByOTUID.InterpretFastaDNAByOTUID;
+		tell It;
+			includeGaps false;
+			simplifyTaxonName false;
+			convertMultStateToMissing true;
+			writeExcludedCharacters true;
+			uniqueSuffix '';
+		endTell;
+		getEmployee  #mesquite.io.InterpretFastaProtein.InterpretFastaProtein;
+		tell It;
+			includeGaps false;
+			simplifyTaxonName false;
+			convertMultStateToMissing true;
+			writeExcludedCharacters true;
+			uniqueSuffix '';
 		endTell;
 		newAssistant  #mesquite.basic.ExamplesNavigator.ExamplesNavigator;
 		tell It;
@@ -113,14 +128,18 @@ Begin MESQUITE;
 			setPrevFileName '07-moreHelp.nex';
 			getWindow;
 			tell It;
+					setUniqueID 0195beff9a9c48;
 					setExplanationSize 0;
 					setAnnotationSize 0;
 					setFontIncAnnot 0;
 					setFontIncExp 0;
-					setSize 700 447;
-					setLocation 417 24;
+					setSize 692 358;
+					setLocation 417 25;
 					setFont SanSerif;
 					setFontSize 10;
+					getToolPalette;
+					tell It;
+					endTell;
 					setActive;
 				setExplanation 'Mesquite maintains a log file ("Mesquite log") automatically that records commands given.  You can see it by selecting the Mesquite Log menu item in the View menu.^n^nMesquite saves the current log file and the previous five log files automatically in the Mesquite_Support_Files on your hard disk.  If you wish to save a log file, you can copy it from that directory or rename it so that Mesquite won''t overwrite it.';
 				setTitle Log_file;
@@ -129,6 +148,15 @@ Begin MESQUITE;
 				setNextButtonName Next;
 			endTell;
 			showWindow;
+		endTell;
+		getWindow;
+		tell It;
+			setResourcesState false true 100;
+			findWindow 0195beff9a9c48;
+			tell It;
+				setAsFront;
+			endTell;
+			desuppress;
 		endTell;
 		endTell;
 end;

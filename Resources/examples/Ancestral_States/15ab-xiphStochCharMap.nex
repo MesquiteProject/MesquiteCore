@@ -1,5 +1,5 @@
 #NEXUS
-[written Sat Jun 07 10:12:36 PDT 2008 by Mesquite  version 2.5 BETA 2 (build j76) at Thrandina.local/192.168.0.136 (Wayne Maddison)]
+[written Sat Mar 22 12:24:03 PDT 2025 by Mesquite  version 3.9Dev+ (build 1047) at Amilaps.local/127.0.0.1]
 
 BEGIN TAXA;
 	TITLE Taxa;
@@ -15,7 +15,7 @@ END;
 BEGIN CHARACTERS;
 	TITLE  'Matrix in file "15ab-xiphStochCharMap.nex"';
 	DIMENSIONS  NCHAR=1;
-	FORMAT DATATYPE = STANDARD GAP = - MISSING = ? SYMBOLS = "  0 1";
+	FORMAT DATATYPE = STANDARD RESPECTCASE GAP = - MISSING = ? SYMBOLS = "  0 1";
 	CHARSTATELABELS 
 		1 Tail /  swordless swords ; 
 	MATRIX
@@ -52,60 +52,84 @@ BEGIN CHARACTERS;
 END;
 BEGIN TREES;
 	Title 'Trees from "15ab-xiphStochCharMap.nex"';
+	ID 0195bf4f916a22;
 	LINK Taxa = Taxa;
 	TRANSLATE
-		1 X._multilineatus,
-		2 X._nigrensis,
-		3 X._cortezi,
-		4 X._malinche,
-		5 X._continens,
-		6 X._nezahualcoyti,
-		7 X._montezumae,
-		8 X._pygmaeus,
-		9 X._birchmanii,
-		10 X._couchianus,
-		11 X._gordoni,
-		12 X._meyeri,
-		13 X._xiphidium,
-		14 X._variatus,
-		15 X._evelynae,
-		16 X._clemenciae,
-		17 X._milleri,
-		18 X._maculatus,
-		19 X._andersi,
-		20 X._alvarezi,
-		21 X._helleri,
-		22 X._signum,
-		23 P._olmaceae,
-		24 P._interm,
-		25 P._compressa;
+[0] 		1 X._multilineatus,
+[1] 		2 X._nigrensis,
+[2] 		3 X._cortezi,
+[3] 		4 X._malinche,
+[4] 		5 X._continens,
+[5] 		6 X._nezahualcoyti,
+[6] 		7 X._montezumae,
+[7] 		8 X._pygmaeus,
+[8] 		9 X._birchmanii,
+[9] 		10 X._couchianus,
+[10] 		11 X._gordoni,
+[11] 		12 X._meyeri,
+[12] 		13 X._xiphidium,
+[13] 		14 X._variatus,
+[14] 		15 X._evelynae,
+[15] 		16 X._clemenciae,
+[16] 		17 X._milleri,
+[17] 		18 X._maculatus,
+[18] 		19 X._andersi,
+[19] 		20 X._alvarezi,
+[20] 		21 X._helleri,
+[21] 		22 X._signum,
+[22] 		23 P._olmaceae,
+[23] 		24 P._interm,
+[24] 		25 P._compressa;
 	TREE Figure_5 = ((((((((1:1.0,2:1.0):1.0,(3:1.0,4:1.0):1.0):1.0,5:1.0):1.0,6:1.0):1.0,7:1.0):1.0,(8:1.0,9:1.0):1.0):1.0,((((((((((10:1.0,11:1.0):1.0,12:1.0):1.0,13:1.0):1.0,14:1.0):1.0,15:1.0):1.0,16:1.0):1.0,17:1.0):1.0,18:1.0):1.0,19:1.0):1.0,((20:1.0,21:1.0):1.0,22:1.0):1.0):1.0):1.0,((25:1.0,24:1.0):1.0,23:1.0):1.0):1.0;
 
 END;
 
 
-BEGIN CODONS;
-	CODESET * UNTITLED   =  universal:  1;
-
-
-END;
-
 BEGIN MESQUITECHARMODELS;
 	CharModel mk1_model (Mk1) = 
 		 rate 0.067 maxState 1;
-
-	ProbModelSet * UNTITLED   =  'Mk1 (est.)':  1;
 END;
 
-BEGIN ASSUMPTIONS;
-	TYPESET * UNTITLED   =  unord:  1;
+BEGIN TREES[!'This  "temporary" tree block was written by Mesquite to hold the modified tree being edited in a tree window.'];
+	Title Temp298.1019014879746.4115002201943536709;
+	ID 0195bf4ff69324;
+	LINK Taxa = Taxa;
+	TRANSLATE
+[0] 		1 X._multilineatus,
+[1] 		2 X._nigrensis,
+[2] 		3 X._cortezi,
+[3] 		4 X._malinche,
+[4] 		5 X._continens,
+[5] 		6 X._nezahualcoyti,
+[6] 		7 X._montezumae,
+[7] 		8 X._pygmaeus,
+[8] 		9 X._birchmanii,
+[9] 		10 X._couchianus,
+[10] 		11 X._gordoni,
+[11] 		12 X._meyeri,
+[12] 		13 X._xiphidium,
+[13] 		14 X._variatus,
+[14] 		15 X._evelynae,
+[15] 		16 X._clemenciae,
+[16] 		17 X._milleri,
+[17] 		18 X._maculatus,
+[18] 		19 X._andersi,
+[19] 		20 X._alvarezi,
+[20] 		21 X._helleri,
+[21] 		22 X._signum,
+[22] 		23 P._olmaceae,
+[23] 		24 P._interm,
+[24] 		25 P._compressa;
+	TREE Figure_5 = ((((((((1:1.0,2:1.0):1.0,(3:1.0,4:1.0):1.0):1.0,5:3.0):1.0,6:4.0):1.0,7:5.0):1.0,(8:1.0,9:1.0):5.0):5.0,((((((((((10:1.0,11:1.0):1.0,12:2.0):1.0,13:3.0):1.0,14:4.0):1.0,15:5.0):1.0,16:6.0):1.0,17:7.0):1.0,18:8.0):1.0,19:9.0):1.0,((20:1.0,21:1.0):1.0,22:2.0):8.0):1.0):1.0,((25:1.0,24:1.0):1.0,23:2.0):10.0):1.0;
 
 END;
+
 
 Begin MESQUITE;
 		MESQUITESCRIPTVERSION 2;
 		TITLE AUTO;
 		tell ProjectCoordinator;
+		timeSaved 1742671443663;
 		getEmployee #mesquite.minimal.ManageTaxa.ManageTaxa;
 		tell It;
 			setID 0 8265138006560775301 010a90b186ef1;
@@ -113,20 +137,49 @@ Begin MESQUITE;
 		getEmployee #mesquite.charMatrices.ManageCharacters.ManageCharacters;
 		tell It;
 			setID 0 6115459465024062079 010a90b187b50;
-			checksum 0 3737896798 010a90b187b50;
+			mqVersion 390;
+			checksumv 0 3 1326791329 010a90b187b50  getNumChars 1 numChars 1 getNumTaxa 25 numTaxa 25   short true   bits 3   states 3   sumSquaresStatesOnly 58.0 sumSquares 58.0 longCompressibleToShort false usingShortMatrix true   NumFiles 1 NumMatrices 1;
+			mqVersion;
 		endTell;
 		getWindow;
 		tell It;
-			setResourcesState false false 72;
-			setPopoutState 400;
+			suppress;
+			setUniqueID 0195bf4f914f58;
 			setExplanationSize 0;
 			setAnnotationSize 0;
 			setFontIncAnnot 0;
 			setFontIncExp 0;
 			setSize 475 402;
-			setLocation 3 22;
+			setLocation 3 25;
 			setFont SanSerif;
 			setFontSize 10;
+			getToolPalette;
+			tell It;
+			endTell;
+		endTell;
+		getEmployee  #mesquite.io.InterpretFastaDNA.InterpretFastaDNA;
+		tell It;
+			includeGaps true;
+			simplifyTaxonName false;
+			convertMultStateToMissing false;
+			writeExcludedCharacters true;
+			uniqueSuffix '';
+		endTell;
+		getEmployee  #mesquite.io.InterpretFastaDNAByOTUID.InterpretFastaDNAByOTUID;
+		tell It;
+			includeGaps false;
+			simplifyTaxonName false;
+			convertMultStateToMissing true;
+			writeExcludedCharacters true;
+			uniqueSuffix '';
+		endTell;
+		getEmployee  #mesquite.io.InterpretFastaProtein.InterpretFastaProtein;
+		tell It;
+			includeGaps false;
+			simplifyTaxonName false;
+			convertMultStateToMissing true;
+			writeExcludedCharacters true;
+			uniqueSuffix '';
 		endTell;
 		getEmployee  #mesquite.trees.BasicTreeWindowCoord.BasicTreeWindowCoord;
 		tell It;
@@ -136,11 +189,14 @@ Begin MESQUITE;
 				setTreeSource  #mesquite.trees.StoredTrees.StoredTrees;
 				tell It;
 					setTreeBlock 1;
+					setTreeBlockID 0195bf4f916a22;
 					toggleUseWeights off;
 				endTell;
 				setAssignedID 298.1019014879746.4115002201943536709;
 				getTreeWindow;
 				tell It;
+					readUnsavedTreeBlock Temp298.1019014879746.4115002201943536709;
+					setUniqueID 0195bf4f917159;
 					popAsTile false;
 					popOut;
 					setExplanationSize 20;
@@ -162,44 +218,45 @@ Begin MESQUITE;
 					tell It;
 						setNodeLocs #mesquite.trees.NodeLocsStandard.NodeLocsStandard;
 						tell It;
-							stretchToggle off;
-							branchLengthsToggle off;
+							inhibitStretchToggle on;
+							orientRight;
+							branchLengthsDisplay 1;
 							toggleScale on;
 							toggleBroadScale off;
 							toggleCenter on;
 							toggleEven on;
+							setFixedTaxonDistance 0;
 						endTell;
 						setEdgeWidth 10;
-						orientRight;
-						toggleCorners off;
+						setCornerMode Right_Angle  50;
 					endTell;
 					setBackground White;
 					setBranchColor Black;
 					showNodeNumbers off;
 					showBranchColors on;
-					labelBranchLengths off;
-					centerBrLenLabels on;
-					showBrLensUnspecified on;
-					showBrLenLabelsOnTerminals on;
-					setBrLenLabelColor 0 0 255;
-					setNumBrLenDecimals 6;
+					setSelectedTaxonHighlightMode 1;
 					desuppress;
 					getEmployee #mesquite.trees.BasicDrawTaxonNames.BasicDrawTaxonNames;
 					tell It;
 						setColor Black;
-						toggleColorPartition on;
+						setTaxonNameStyler  #mesquite.trees.ColorTaxonByPartition.ColorTaxonByPartition;
 						toggleShadePartition off;
+						toggleShowFootnotes on;
 						toggleNodeLabels on;
 						toggleCenterNodeNames off;
 						toggleShowNames on;
 						namesAngle ?;
 					endTell;
+					getEmployee #mesquite.trees.CollapseCladeNameHighlight.CollapseCladeNameHighlight;
+					tell It;
+						setMode 3;
+					endTell;
 				endTell;
 					setTreeNumber 1;
-					setTree '((23:2.0,(24:1.0,25:1.0):1.0):10.0,(((8:1.0,9:1.0):5.0,(7:5.0,(6:4.0,(5:3.0,((1:1.0,2:1.0):1.0,(3:1.0,4:1.0):1.0):1.0):1.0):1.0):1.0):5.0,((22:2.0,(20:1.0,21:1.0):1.0):8.0,(19:9.0,(18:8.0,(17:7.0,(16:6.0,(15:5.0,(14:4.0,(13:3.0,(12:2.0,(10:1.0,11:1.0):1.0):1.0):1.0):1.0):1.0):1.0):1.0):1.0):1.0):1.0):1.0):1.0;';
-					useSuggestedSize off;
-					toggleSizeToFit on;
+					setDrawingSizeMode 1;
+					toggleLegendFloat on;
 					toggleTextOnTree off;
+					togglePrintName off;
 					showWindow;
 					newAssistant  #mesquite.ancstates.TraceCharacterHistory.TraceCharacterHistory;
 				tell It;
@@ -207,6 +264,7 @@ Begin MESQUITE;
 					setDisplayMode  #mesquite.ancstates.ShadeStatesOnTree.ShadeStatesOnTree;
 					tell It;
 						toggleLabels off;
+						togglePredictions off;
 						toggleGray off;
 					endTell;
 					setHistorySource  #mesquite.ancstates.RecAncestralStates.RecAncestralStates;
@@ -232,24 +290,45 @@ Begin MESQUITE;
 								setUnderflowCheckFreq 2;
 							endTell;
 						endTell;
+						toggleShowSelectedOnly off;
 					endTell;
 					setCharacter 1;
 					setMapping 1;
 					toggleShowLegend on;
-					toggleGray off;
+					setColorMode 0;
 					toggleWeights on;
 					setInitialOffsetX 7;
-					setInitialOffsetY -175;
+					setInitialOffsetY 4;
 					setLegendWidth 243;
-					setLegendHeight 175;
+					setLegendHeight 163;
 					resume ;
 				endTell;
 				endTell;
 				desuppressEPCResponse;
+				getEmployee #mesquite.trees.TreeInfoValues.TreeInfoValues;
+				tell It;
+					panelOpen false;
+				endTell;
+				getEmployee #mesquite.genomic.ShowMatrixInTreeWindow.ShowMatrixInTreeWindow;
+				tell It;
+					chooseOrLink 0;
+					fieldWidth 0;
+					selectedOnly false;
+					showMatrix false;
+				endTell;
 				getEmployee #mesquite.trees.ColorBranches.ColorBranches;
 				tell It;
-					setColor Red;
+					setColorRGB #ff0000;
 					removeColor off;
+				endTell;
+				getEmployee #mesquite.trees.NodePropertyDisplayControl.NodePropertyDisplayControl;
+				tell It;
+					showAssociate Node_label 0 false;
+					setBooleans Node_label 0  false false false false true false false false;
+					setNumbers Node_label 0  12 0 0 4 0 ?;
+					showAssociate Branch_length 0 false;
+					setBooleans Branch_length 0  true true false true true false false false;
+					setNumbers Branch_length 0  12 0 0 6 0 ?;
 				endTell;
 				getEmployee #mesquite.ornamental.BranchNotes.BranchNotes;
 				tell It;
@@ -258,19 +337,6 @@ Begin MESQUITE;
 				getEmployee #mesquite.ornamental.ColorTreeByPartition.ColorTreeByPartition;
 				tell It;
 					colorByPartition off;
-				endTell;
-				getEmployee #mesquite.ornamental.DrawTreeAssocDoubles.DrawTreeAssocDoubles;
-				tell It;
-					setOn on;
-					setDigits 4;
-					writeAsPercentage off;
-					toggleHorizontal on;
-					setFontSize 10;
-					setOffset 0  0;
-				endTell;
-				getEmployee #mesquite.trees.TreeInfoValues.TreeInfoValues;
-				tell It;
-					panelOpen false;
 				endTell;
 			endTell;
 		endTell;
@@ -284,6 +350,7 @@ Begin MESQUITE;
 					tell It;
 						setSweetMin 0.0;
 						setSweetMax 1.0;
+						setUniqueID 0195bf4f91ca60;
 						popAsTile false;
 						popOut;
 						setExplanationSize 0;
@@ -294,6 +361,9 @@ Begin MESQUITE;
 						setLocation 57 508;
 						setFont SanSerif;
 						setFontSize 10;
+						getToolPalette;
+						tell It;
+						endTell;
 					endTell;
 					showWindow;
 				endTell;
@@ -305,14 +375,18 @@ Begin MESQUITE;
 			setPrevFileName '15aa-xiphLikelihood.nex';
 			getWindow;
 			tell It;
+					setUniqueID 0195bf4f91f261;
 					setExplanationSize 0;
 					setAnnotationSize 0;
 					setFontIncAnnot 0;
 					setFontIncExp 0;
-					setSize 403 385;
-					setLocation 3 22;
+					setSize 403 380;
+					setLocation 3 25;
 					setFont SanSerif;
 					setFontSize 10;
+					getToolPalette;
+					tell It;
+					endTell;
 					setActive;
 				setExplanation 'This shows a realization of character evolution made by stochastic character mapping.  Stochastic character mapping is available as a reconstruction method for categorical data.^n^nUse the "realization" arrows to see alternative realizations.  The model of evolution, shown in the small window, has its rate estimated from the tree and data.  Try raising the rate to see how the realizations change.';
 				setTitle Stochastic_character_mapping;
@@ -322,6 +396,15 @@ Begin MESQUITE;
 				addWebLink Show_Manual  'mesquite:docs/Ancestral States.html#scm';
 			endTell;
 			showWindow;
+		endTell;
+		getWindow;
+		tell It;
+			setResourcesState false false 72;
+			findWindow 0195bf4f91f261;
+			tell It;
+				setAsFront;
+			endTell;
+			desuppress;
 		endTell;
 		endTell;
 end;

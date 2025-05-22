@@ -20,6 +20,10 @@ import java.awt.*;
 import mesquite.coalesce.lib.Coalescer;
 import mesquite.lib.*;
 import mesquite.lib.duties.*;
+import mesquite.lib.taxa.Taxa;
+import mesquite.lib.tree.MesquiteTree;
+import mesquite.lib.tree.Tree;
+import mesquite.lib.ui.MesquiteSubmenuSpec;
 
 /** Supplies simulated trees.  This is a coordinator; the simulations themselves are done by modules hired.*/
 public class SimulateTree extends TreeSource {
@@ -266,7 +270,7 @@ public class SimulateTree extends TreeSource {
 	/*.................................................................................................................*/
 	public String getParameters() {
 		if (simulatorTask==null) return "";
-		return "Tree simulator: " + simulatorTask.getName() + ". [seed: " + originalSeed + "]";
+		return "Tree simulator: " + simulatorTask.getName() + ". (seed: " + originalSeed + ")";
 	}
 	/*.................................................................................................................*/
 	/** returns whether this module is requesting to appear as a primary choice */

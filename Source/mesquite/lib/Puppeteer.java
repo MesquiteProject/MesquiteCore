@@ -17,6 +17,12 @@ package mesquite.lib;
 
 import java.awt.*;
 import mesquite.lib.duties.*;
+import mesquite.lib.ui.AlertDialog;
+import mesquite.lib.ui.ColorTheme;
+import mesquite.lib.ui.ListDialog;
+import mesquite.lib.ui.MesquiteDialog;
+import mesquite.lib.ui.MesquiteWindow;
+
 import java.util.*;
 import java.io.*;
 
@@ -341,7 +347,7 @@ public class Puppeteer  {
 		else return MesquiteInteger.fromString(name);
 	}
 	/*--------------------------------------*/
-	private boolean debugging = false;  
+	private boolean debugging = false;    //Debugg.println
 	private boolean logOnly = false;
 	private MesquiteTimer timer;
 	private boolean showTime = false;
@@ -537,7 +543,6 @@ public class Puppeteer  {
 		String previousCommandName = "";
 		String rememberedArguments = null;
 		while (!StringUtil.blank(s=commandParser.getNextCommand(stringPos)) && !s.equalsIgnoreCase(endString)) {
-
 			if (debugging) {
 				if (mb == null)
 					stamp("<NULL OBJECT>" + s);
@@ -605,6 +610,7 @@ public class Puppeteer  {
 				}
 				if (fineDebugging) stamp("-sc- (" + level + ")10");
 				sendCommands(who, block, stringPos, "endTell;", skip, nb, checker);
+
 				if (fineDebugging) stamp("-sc- (" + level + ")11");
 			} 
 			//else if (checker.compare(null, "End this level of the script", null, commandName, "endTell")) {
@@ -1198,7 +1204,10 @@ public class Puppeteer  {
 			}
 			else if (checker.compare(null, "Displays a message in the system console indicating the current object being commanded", null, commandName, "showObjectCommanded")) {
 				if (fineDebugging) stamp("-sc- (" + level + ")22");
-				stamp("     object commanded: " + mb);
+				String addendum = "";
+				if (mb instanceof Listable)
+				addendum = " Name: " + ((Listable)mb).getName();
+				stamp("     object commanded: " + mb + addendum);
 				result = mb;
 			}
 			else if (checker.compare(null, "Used at the start of macros, to indicate the Class to which the macro is designed to direct its commands", "[short (packageless) name of Class]", commandName, "telling")) {
@@ -1238,6 +1247,11 @@ public class Puppeteer  {
 			}
 			else if (checker.compare(null, "Stamps the time to the log", null, commandName, "stampVersion")) {
 				MesquiteTrunk.mesquiteTrunk.logln("Mesquite version " + MesquiteModule.getMesquiteVersion() + MesquiteModule.getBuildVersion());
+			}
+			else if (checker.compare(null, "writes text to log", "[text]", commandName, "logln")) {
+				String argument = nextTokenCompressAsterisk(parser); //fileName
+				MesquiteTrunk.mesquiteTrunk.logln(argument); 
+
 			}
 			else if (checker.compare(null, "Stamps the time to the log", null, commandName, "stampTime")) {
 				long t = System.currentTimeMillis();
@@ -1291,7 +1305,7 @@ public class Puppeteer  {
 				else if (StringUtil.blank(s) || parser.getPosition()>= s.length()) 
 					commandArguments = null;
 				else {
-					commandArguments = s.substring(parser.getPosition(), s.length()-1);
+					commandArguments = s.substring((int)parser.getPosition(), s.length()-1);
 					commandArguments = argumentToString(commandArguments, result);
 				}
 				previousArguments = commandArguments;
@@ -1312,6 +1326,7 @@ public class Puppeteer  {
 
 					try{
 						result = ((Commandable)mb).doCommand(commandName, commandArguments,checker);  //cm = mb.doCommand(commandName, commandArguments);
+						
 						//CommandRecord.tick("Command complete");
 						CommandRecord.tick(commandName + " complete");
 					}

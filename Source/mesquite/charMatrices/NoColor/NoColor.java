@@ -19,6 +19,8 @@ import mesquite.lib.*;
 import mesquite.lib.characters.*;
 import mesquite.lib.duties.*;
 import mesquite.lib.table.*;
+import mesquite.lib.taxa.Taxa;
+import mesquite.lib.ui.ColorRecord;
 
 
 /* ======================================================================== */
@@ -51,7 +53,7 @@ public class NoColor extends DataWindowAssistantID implements CellColorer, CellC
    	public void viewChanged(){
    	}
    	 public boolean setActiveColors(boolean active){
-   	 	setActive(true);
+   		setActive(active);
 		return true; 
   	 }
    	public ColorRecord[] getLegendColors(){

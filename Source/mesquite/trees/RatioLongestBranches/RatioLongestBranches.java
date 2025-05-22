@@ -15,6 +15,7 @@ package mesquite.trees.RatioLongestBranches;
 
 import mesquite.lib.*;
 import mesquite.lib.duties.*;
+import mesquite.lib.tree.Tree;
 
 /** this is a silly little module that can be used as a demonstration for NumberForTree modules */
 public class RatioLongestBranches extends NumberForTree {

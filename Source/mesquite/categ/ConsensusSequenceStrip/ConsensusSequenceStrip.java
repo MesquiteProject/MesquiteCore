@@ -21,6 +21,11 @@ import mesquite.charMatrices.ColorByState.ColorByState;
 import mesquite.molec.ColorByAA.ColorByAA;
 import mesquite.lib.duties.*;
 import mesquite.lib.table.*;
+import mesquite.lib.taxa.Taxa;
+import mesquite.lib.ui.ColorDistribution;
+import mesquite.lib.ui.GraphicsUtil;
+import mesquite.lib.ui.MesquiteMenuItemSpec;
+import mesquite.lib.ui.MesquiteSubmenuSpec;
 import mesquite.categ.lib.*;
 
 
@@ -86,6 +91,7 @@ public class ConsensusSequenceStrip extends DataColumnNamesAssistant {
 	public void checkMenuItems() {
 		colorByAAMenuItem.setEnabled((data instanceof DNAData) && ((DNAData)data).someCoding());
 		emphasizeLessDegenerateMenuItem.setEnabled((data instanceof DNAData) && ((DNAData)data).someCoding()&& colorByAA.getValue());
+		MesquiteTrunk.resetMenuItemEnabling();
 	}
 	public void deleteRemoveMenuItem() {
 		deleteMenuItem(lineMenuItem);
@@ -376,7 +382,7 @@ public class ConsensusSequenceStrip extends DataColumnNamesAssistant {
 					Color textColor = ColorDistribution.getContrasting(selected, cellColor, hsb, Color.white, Color.black);
 					g.setColor(textColor);
 			 }
-			 StringBuffer sb = new StringBuffer();
+			 MesquiteStringBuffer sb = new MesquiteStringBuffer();
 			 ((CategoricalData)data).statesIntoStringBufferCore(ic,  s,  sb, true,false, false);
 			 FontMetrics fm = g.getFontMetrics(g.getFont());
 			 int svp = StringUtil.getStringVertPosition(fm, y, h, null);

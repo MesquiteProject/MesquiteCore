@@ -22,6 +22,7 @@ import mesquite.lib.*;
 import mesquite.lib.characters.*;
 import mesquite.lib.duties.*;
 import mesquite.lib.table.*;
+import mesquite.lib.ui.AlertDialog;
 
 /* ======================================================================== */
 public class CharSetList extends DataSpecssetList {
@@ -80,7 +81,7 @@ public class CharSetList extends DataSpecssetList {
 	/*.................................................................................................................*/
 	public Object doCommand(String commandName, String arguments, CommandChecker checker) {
 		if (checker.compare(this.getClass(), "Instructs user as how to make new character set (CHARSET)", null, commandName, "newCharSet")){
-			Object obj = getMainObject();
+			Object obj = getCharacterMatrix();
 			if (!(obj instanceof CharacterData))
 				return null;
 			CharacterData data = (CharacterData)obj;

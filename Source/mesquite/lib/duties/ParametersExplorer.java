@@ -15,6 +15,7 @@ package mesquite.lib.duties;
 
 
 import mesquite.lib.*;
+import mesquite.lib.ui.ParametersExplorable;
 
 /* ======================================================================== */
 

@@ -15,6 +15,7 @@ package mesquite.lib.duties;
 
 import java.awt.*;
 import mesquite.lib.*;
+import mesquite.lib.ui.ClosablePanelContainer;
 import mesquite.charMatrices.lib.*;
 
 

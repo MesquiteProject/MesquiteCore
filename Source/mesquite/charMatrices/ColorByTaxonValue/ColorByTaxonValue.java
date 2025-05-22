@@ -19,6 +19,10 @@ import mesquite.lib.*;
 import mesquite.lib.characters.*;
 import mesquite.lib.duties.*;
 import mesquite.lib.table.*;
+import mesquite.lib.taxa.Taxa;
+import mesquite.lib.ui.ColorRecord;
+import mesquite.lib.ui.MesquiteColorTable;
+import mesquite.lib.ui.MesquiteSubmenuSpec;
 import mesquite.cont.lib.*;
 
 /* ======================================================================== */
@@ -43,7 +47,7 @@ public class ColorByTaxonValue extends DataWindowAssistantID implements CellColo
 		return true;
 	}
 	public boolean setActiveColors(boolean active){
-		setActive(true);
+		setActive(active);
 		if (active){
 			if (numModulesAvailable(NumberForTaxon.class)>0) {
 				mss = addSubmenu(null, "Values for Colors", ntC, NumberForTaxon.class);

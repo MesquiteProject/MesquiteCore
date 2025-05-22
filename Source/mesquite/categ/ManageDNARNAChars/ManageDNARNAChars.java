@@ -20,6 +20,8 @@ import java.io.*;
 import mesquite.lib.*;
 import mesquite.lib.characters.*;
 import mesquite.lib.duties.*;
+import mesquite.lib.taxa.Taxa;
+import mesquite.lib.ui.ProgressIndicator;
 import mesquite.categ.lib.*;
 
 /* ======================================================================== 
@@ -117,8 +119,21 @@ public class ManageDNARNAChars extends CategMatrixManager {
 		String tok = ParseUtil.getToken(formatCommand, stringPos);
 		while (tok != null && !tok.equals(";")) {
 			if (tok.equalsIgnoreCase("TRANSPOSE")) {
-				alert("Sorry, Transposed matrices of DNA characters can't yet be read");
-				return null;
+				int p = stringPos.getValue();
+				boolean uhOh = true;
+				String e = ParseUtil.getToken(formatCommand, stringPos); //eating up = ?
+				if ("=".equals(e)){
+					String t = ParseUtil.getToken(formatCommand, stringPos);
+					if (t!=null && t.equalsIgnoreCase("no")) {
+						uhOh = false;
+					}
+				}
+				else
+					stringPos.setValue(p);
+				if (uhOh) {
+					alert("Sorry, Mesquite does not support transposed DNA/RNA matrices.");
+					return null;
+				}
 			}
 			else if (tok.equalsIgnoreCase("interleave")) {
 				int sp = stringPos.getValue();
@@ -150,6 +165,20 @@ public class ManageDNARNAChars extends CategMatrixManager {
 				String t = ParseUtil.getToken(formatCommand, stringPos);
 				if (t!=null && t.length()==1)
 					data.setMatchChar(t.charAt(0));
+			}
+			else if (tok.equalsIgnoreCase("NOLABELS")) { 
+				discreetAlert("Mesquite does not support the NOLABELS option.");
+				return null;
+			}
+			else if (tok.equalsIgnoreCase("LABELS")) { 
+				ParseUtil.getToken(formatCommand, stringPos); //eating up =
+				String t = ParseUtil.getToken(formatCommand, stringPos);
+				if (t!=null) {
+					if (t.equalsIgnoreCase("RIGHT")) {
+						discreetAlert("Mesquite does not support the LABELS=RIGHT option.");
+						return null;
+					}
+				}
 			}
 			else if (tok.equalsIgnoreCase("DATATYPE")) { 
 				ParseUtil.getToken(formatCommand, stringPos); //eating up =
@@ -273,7 +302,7 @@ public class ManageDNARNAChars extends CategMatrixManager {
 		if (file!=null && file.useDataBlocks){
 			int numTaxaToWrite = data.getNumTaxa();
 			if (!file.writeTaxaWithAllMissing)
-				numTaxaToWrite = data.numTaxaWithSomeApplicable(false, file.writeOnlySelectedTaxa, file.writeExcludedCharacters, file.fractionApplicable);
+				numTaxaToWrite = data.numTaxaWithSomeApplicable(false, file.writeOnlySelectedTaxa, file.writeExcludedCharacters, 1.0);
 			else if (file.writeOnlySelectedTaxa)
 				numTaxaToWrite = data.numSelectedTaxa();
 			blocks.append(" NTAX=" + numTaxaToWrite);

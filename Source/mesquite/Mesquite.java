@@ -15,6 +15,7 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
 package mesquite;
 
 import java.awt.*;
+
 import java.awt.image.BufferedImage;
 import java.util.*;
 import java.io.*;
@@ -22,11 +23,39 @@ import java.lang.reflect.Method;
 import java.net.*;
 
 import javax.imageio.ImageIO;
-
+import javax.swing.UIManager;
 
 import mesquite.lib.*;
 import mesquite.lib.duties.*;
+import mesquite.lib.misc.ClassVector;
+import mesquite.lib.misc.HPanel;
 import mesquite.lib.simplicity.*;
+import mesquite.lib.taxa.Taxon;
+import mesquite.lib.tree.MesquiteTree;
+import mesquite.lib.tree.TreeVector;
+import mesquite.lib.ui.AlertDialog;
+import mesquite.lib.ui.ChecklistDialog;
+import mesquite.lib.ui.ColorTheme;
+import mesquite.lib.ui.ExplanationArea;
+import mesquite.lib.ui.ExtensibleDialog;
+import mesquite.lib.ui.GraphicsUtil;
+import mesquite.lib.ui.HelpSearchManager;
+import mesquite.lib.ui.HelpSearchStrip;
+import mesquite.lib.ui.InfoBar;
+import mesquite.lib.ui.LinuxGWAThread;
+import mesquite.lib.ui.ListDialog;
+import mesquite.lib.ui.MesquiteColorTable;
+import mesquite.lib.ui.MesquiteDialogParent;
+import mesquite.lib.ui.MesquiteFrame;
+import mesquite.lib.ui.MesquiteImage;
+import mesquite.lib.ui.MesquiteMenuBar;
+import mesquite.lib.ui.MesquiteMenuItem;
+import mesquite.lib.ui.MesquiteMenuItemSpec;
+import mesquite.lib.ui.MesquiteMenuSpec;
+import mesquite.lib.ui.MesquitePanel;
+import mesquite.lib.ui.MesquiteSubmenuSpec;
+import mesquite.lib.ui.MesquiteWindow;
+import mesquite.lib.ui.ProgressIndicator;
 import mesquite.lib.characters.*;
 import mesquite.trunk.*;
 
@@ -37,28 +66,28 @@ public class Mesquite extends MesquiteTrunk
 {
 	/*.................................................................................................................*/
 	public String getCitation() {
-		return "Maddison, W.P. & D.R. Maddison. 2023. Mesquite: A modular system for evolutionary analysis.  Version " + getVersion() + ".  https://www.mesquiteproject.org";
+		return "Maddison, W.P. & D.R. Maddison. 2025. Mesquite: A modular system for evolutionary analysis.  Version " + getVersion() + ".  https://www.mesquiteproject.org";
 	}
 	/*.................................................................................................................*/
 	public String getVersion() {
-		return "3.81";
+		return "4.beta";
 	}
 
 	/*.................................................................................................................*/
 	public int getVersionInt() {
-		return 381;
+		return 399;
 	}
 	/*.................................................................................................................*/
 	public double getMesquiteVersionNumber(){
-		return 3.81;
+		return 3.99;
 	}
 	/*.................................................................................................................*/
 	public String getDateReleased() {
-		return "April 2023"; //"April 2007";
+		return "May 2025"; //"April 2007";
 	}
 	/*.................................................................................................................*/
 	public boolean isPrerelease(){
-		return false;
+		return true;
 	}
 
 	/*.................................................................................................................*/
@@ -127,6 +156,10 @@ public class Mesquite extends MesquiteTrunk
 	/*.................................................................................................................*/
 	public void endJob() {
 		deleteTempDirectory();
+		if (MesquiteTrunk.startedFromFlex2) {
+			String currentPIDPath = System.getProperty("user.home") + MesquiteFile.fileSeparator + "Mesquite_Support_Files" + MesquiteFile.fileSeparator + MesquiteTrunk.encapsulatedPathOfExecutable+ MesquiteFile.fileSeparator + "currentPID.txt";
+			MesquiteFile.deleteFile(currentPIDPath);
+		}
 	}
 
 	/*.................................................................................................................*/
@@ -157,9 +190,10 @@ public class Mesquite extends MesquiteTrunk
 
 
 	/*.................................................................................................................*/
+	static boolean verboseStartup = false;
 	public void init()
 	{
-		boolean verboseStartup = false;
+		verboseStartup = false;
 		long startingTime = System.currentTimeMillis();
 		System.setProperty("awt.useSystemAAFontSettings","on");
 		System.setProperty("swing.aatext", "true");
@@ -171,8 +205,6 @@ public class Mesquite extends MesquiteTrunk
 		boolean makeNewPrefsDirectory = false;
 		configurations = new ListableVector(); 
 		packages = new ListableVector();
-		if (isPrerelease())
-			errorReportURL =  "http://mesquiteproject.org/pyMesquiteFeedbackPrerelease";
 
 		/* 
 (1) Look for Mesquite.pref file in .Mesquite_Prefs folder of user.home.  If exists, read it 
@@ -180,6 +212,12 @@ public class Mesquite extends MesquiteTrunk
 		 */
 
 		if (verboseStartup) System.out.println("main init 2");
+
+		// [Search for MQLINUX]
+		if (isLinux()) {
+			linuxGWAThread = new LinuxGWAThread();
+			linuxGWAThread.start();
+		}
 
 
 		String sep = MesquiteFile.fileSeparator;
@@ -267,7 +305,7 @@ public class Mesquite extends MesquiteTrunk
 			supportFilesDirectory = new File(supportFilesPath);
 			if (!supportFilesDirectory.exists())
 				supportFilesDirectory.mkdir();
-			if (!supportFilesDirectory.exists()){
+			if (!supportFilesDirectory.exists()){ 
 				writabilityWarned = true;
 				if (MesquiteWindow.headless)
 					System.out.println("Mesquite does not have permission to write its log file or its preferences files.  It has attempted to create both " + oldPath +
@@ -306,38 +344,48 @@ public class Mesquite extends MesquiteTrunk
 		MesquiteModule.mesquiteHomePageURL = getRootPath() + "docs/home.html";
 		MesquiteModule.mesquiteDocsURL = getRootPath() + "docs/";
 
+		if (verboseStartup) System.out.println("main init 6a");
 		if (starter != null){ // because of Java 9 classloading issues, rely on starter class to make class loader if it exists
 			try {
+				if (verboseStartup) System.out.println("main init 6b");
 				Method gsn = starter.getClass().getDeclaredMethod("getStartupNotices", null);
 				startupNotices = (Vector)gsn.invoke(starter, null);
 				if (startupNotices != null)
 					System.out.println("Received startupNotices from start.Mesquite");
 				//the following could thro
+				if (verboseStartup) System.out.println("main init 6c");
 				Method gmcl = starter.getClass().getDeclaredMethod("getMesquiteClassLoader", null);
 				Object obj = gmcl.invoke(starter, null);
+				if (verboseStartup) System.out.println("main init 6d");
 				if (obj instanceof URLClassLoader)
 					basicClassLoader = (URLClassLoader)obj;
 				if (basicClassLoader!= null)
 					System.out.println("Received URLClassLoader from start.Mesquite");
+				if (verboseStartup) System.out.println("main init 6e");
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
 
 		}
+		if (verboseStartup) System.out.println("main init 6f");
 		if (basicClassLoader == null){ 
 			basicClassLoader = makeModuleClassLoader(MesquiteModule.getRootPath(), null, new Vector());
 			System.out.println("No URLClassLoader received from start.Mesquite; made one after startup");
 		}
 
+		if (verboseStartup) System.out.println("main init 6g");
 		addToStartupNotices("Current class loader " + this.getClass().getClassLoader());
 		addToStartupNotices("Module class loader " + basicClassLoader);
+		addToStartupNotices("==================================\n");
 
+		if (verboseStartup) System.out.println("main init 6h");
 		if (prefsFile.exists() || prefsFileXML.exists()) {
 			loadPreferences();
 			if (!preferencesSet) {
 				setMesquiteDirectoryPath();
 			}
 		}
+		readRecordOfRecentFiles();
 		if (verboseStartup) System.out.println("main init 7");
 
 
@@ -366,26 +414,22 @@ public class Mesquite extends MesquiteTrunk
 			MesquiteFile.rename(logPath, supportFilesPath + sep + MesquiteTrunk.logFileName + "_(Previous#1)");
 		}
 		if (verboseStartup) System.out.println("main init 10");
-		/*
-		 * 		String recentFilesPath = supportFilesPath + sep + MesquiteTrunk.recentFilesFileName; 
-		File recentFilesFile = new File(recentFilesPath);
-		if (recentFilesFile.exists()) {
-		}
-		 */
+
 
 		/**/
 		/*
-(3) Try to find the logo for the about window
+		(3) Try to find the logo for the about window
 		 */
-		String logInitString = "Mesquite version " + getMesquiteVersion() + getBuildVersion() + "\n";
+		String logInitString = "Mesquite version " + getMesquiteVersion() + getBuildVersion() + " " + MesquiteModule.getBuildDate() + "\n";
+		logInitString += "https://www.mesquiteproject.org\n";
 		if (StringUtil.notEmpty(MesquiteModule.getSpecialVersion()))
 			logInitString  +="  " + MesquiteModule.getSpecialVersion()+ "\n";
-		logInitString  += ("Copyright (c) 1997-2023 W. Maddison and D. Maddison\n");
+		logInitString  += ("\nCopyright (c) 1997-2025 W. Maddison and D. Maddison\n");
 		logInitString  += "The basic Mesquite package (class library and basic modules) is free software; you can redistribute it and/or modify it under the terms of the GNU Lesser General Public License. "
 				+ "  Mesquite is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY.  For details on license and "
 				+ "lack of warranty see the GNU Lesser General Public License by selecting \"Display License\" from the Window menu or at www.gnu.org\n"
 				+ "\nPrincipal Authors: Wayne Maddison & David Maddison\nDevelopment Team: Wayne Maddison, David Maddison, Daisie Huang, Peter Midford, Rutger Vos, Jeff Oliver"
-				+ "\nDevelopment Team Alumnus: Danny Mandel\n";
+				+ "\nDevelopment Team Alumnus: Danny Mandel\n* * * * * * * * * * * * * * * *\n";
 
 		if (verboseStartup) System.out.println("main init 11");
 		logWindow = new LogWindow(logInitString);
@@ -423,12 +467,9 @@ public class Mesquite extends MesquiteTrunk
 		if (verboseStartup) System.out.println("main init 16");
 
 
-		tempDirectory = createTempDirectory();
-
-
 		/*EMBEDDED include following if embedded *
 		setLayout( new BorderLayout() );
-		embeddedPanel = new Panel();
+		embeddedPanel = new MQPanel();
 		add("Center", embeddedPanel);
 		embeddedPanel.setBackground(Color.cyan);
 		embeddedPanel.setVisible(true);
@@ -478,7 +519,7 @@ public class Mesquite extends MesquiteTrunk
 		if (verboseStartup) System.out.println("main init 21");
 		logln("Running under Java " + System.getProperty("java.version") +"; virtual machine by " + System.getProperty("java.vendor") + mrj + " on " + System.getProperty("os.name") + " " + System.getProperty("os.version") + " (architecture: " + System.getProperty("os.arch") + ")");
 		logln("User: " + System.getProperty("user.name") );
-		logln(" ");
+	//	logln(" ");
 		/* EMBEDDED add following if embedded *
 		logWindow.setVisible(false);
 		 /* */
@@ -522,9 +563,14 @@ public class Mesquite extends MesquiteTrunk
 		}
 		if (verboseStartup) System.out.println("main init 24");
 
+		tempDirectory = createTempDirectory();
+
+
+
 		/*----*/
 
-		suggestedDirectory = mesquiteDirectoryPath + "examples";
+		setSuggestedDirectory(mesquiteDirectoryPath + "examples");
+		appsDirectory = mesquiteDirectoryPath + "apps";
 		pythonDirectory = mesquiteDirectoryPath + "python";
 		if (mesquiteDirectory!=null)
 			logln("Mesquite directory: " + mesquiteDirectoryPath);
@@ -575,35 +621,43 @@ public class Mesquite extends MesquiteTrunk
 		int count = 0;
 		if (isPrerelease())
 			count++;
-		boolean first = true;
+		String citationsString = "\nMesquite version " + getMesquiteVersion() + getBuildVersion() ;
+		if (StringUtil.notEmpty(MesquiteModule.getSpecialVersion()))
+			citationsString  +="  " + MesquiteModule.getSpecialVersion();
+		citationsString += ":\n" + getCitation() + "\n";
+		int numExtra = 0;
 		for (int i= 0; i<mesquiteModulesInfoVector.size(); i++){
 			MesquiteModuleInfo mmi = (MesquiteModuleInfo)mesquiteModulesInfoVector.elementAt(i);
 			if (mmi.isSubstantive() && mmi.isPrerelease()) {
 				count++;
 			}
 			if (mmi.getIsPackageIntro() && !mmi.isBuiltInPackage()){
-				if (first)
-					logln("\n------------------------------------\nExtra package(s) installed:");
-				first = false;
-				String s = "\n" + mmi.getPackageName();
+				numExtra++;
+				citationsString+= "\n" + mmi.getPackageName();
 				if (!StringUtil.blank(mmi.getPackageVersion()))
-					s += " version " + mmi.getPackageVersion();
+					citationsString += " version " + mmi.getPackageVersion();
 				if (mmi.getPackageBuildNumber() > 0)
-					s += " build " + mmi.getPackageBuildNumber();
+					citationsString += " build " + mmi.getPackageBuildNumber();
 				if (StringUtil.notEmpty(mmi.getPackageDateReleased()))
-					s += ", " + mmi.getPackageDateReleased();
+					citationsString += ", " + mmi.getPackageDateReleased();
 				if (!StringUtil.blank(mmi.getPackageAuthors()))
-					s += " (by " + mmi.getPackageAuthors() + ")";
+					citationsString += " (by " + mmi.getPackageAuthors() + ")";
 				if (!StringUtil.blank(mmi.getPackageCitation()))
-					s += " [" + mmi.getPackageCitation() + "]";
-				logln(s);
-
+					citationsString += ":\n" + mmi.getPackageCitation() + "";
+				citationsString +="\n";
 			}
 		}
-		if (!first)
-			logln("\n------------------------------------");
 		if (verboseStartup) System.out.println("main init 28");
 
+		try {
+	        Taskbar taskbar = Taskbar.getTaskbar();
+	        if (taskbar.isSupported(Taskbar.Feature.ICON_IMAGE)) {
+	            java.awt.Image icon = Toolkit.getDefaultToolkit().getImage(MesquiteModule.getRootPath() + "images" + MesquiteFile.fileSeparator + "openMesquite.png");
+	            taskbar.setIconImage(icon);
+	        }
+	    } catch (UnsupportedOperationException e) {
+	    } catch (SecurityException e) {
+	    }
 
 
 		logln(" ");
@@ -620,15 +674,24 @@ public class Mesquite extends MesquiteTrunk
 		if (MesquiteTrunk.isWindows())
 			ackn += " The Windows executable is wrapped with Launch4j by Grzegorz Kowal, copyright Grzegorz Kowal 2005-2014, distributed under a BSD license (http://opensource.org/licenses/bsd-license.html) and a MIT license (http://opensource.org/licenses/mit-license.html).";
 		logln(ackn);
-
-		logln(" ");
-		logln("====================================");
 		logln(" ");
 		makeMenu("Mesquite"); //just in case employees have no where else to put
 
-		openExternalSMS = new MesquiteSubmenuSpec(null, "Open Other", this);
-		openExternalSMS.setCommand(makeCommand("openGeneral", this));
-		openExternalSMS.setList(GeneralFileMaker.class);
+		openSpecialSubmenuSpec = new MesquiteSubmenuSpec(fileMenu, "Open Special", this);
+		MesquiteMenuItemSpec mmiO = addItemToSubmenu(fileMenu, openSpecialSubmenuSpec, "One File", null);
+		mmiO.setEnabled(false); // this wasn't getting enamed,f or some reason....
+		addModuleMenuItemsSeparatelyToSubmenu(fileMenu, openSpecialSubmenuSpec, makeCommand("openGeneral", this), GeneralFileMakerSingle.class);
+		addItemToSubmenu(fileMenu, openSpecialSubmenuSpec, "-", null);
+		mmiO = addItemToSubmenu(fileMenu, openSpecialSubmenuSpec, "Multiple Files", null);
+		mmiO.setEnabled(false); // this wasn't getting enamed,f or some reason....
+		addModuleMenuItemsSeparatelyToSubmenu(fileMenu, openSpecialSubmenuSpec, makeCommand("openGeneral", this), GeneralFileMakerMultiple.class);
+		addItemToSubmenu(fileMenu, openSpecialSubmenuSpec,"-", null);
+		MesquiteCommand eOCC =   new MesquiteCommand("explainOpenChoices", this);
+		eOCC.bypassQueue = true; //for some reason putting the HTML dialog on AWTEventThread helps!
+		addItemToSubmenu(fileMenu, openSpecialSubmenuSpec,"Explain These Choices...",   eOCC);
+
+		//	openSpecialSubmenuSpec.setCommand(makeCommand("openGeneral", this));
+		//	openSpecialSubmenuSpec.setList(GeneralFileMakerSingle.class);
 
 		addMenuItem(helpMenu, "Mesquite Documentation", makeCommand("showHomePage",  this));
 		addMenuItem(helpMenu, "Support and Advice", makeCommand("showSupport",  this));
@@ -679,11 +742,21 @@ public class Mesquite extends MesquiteTrunk
 		new MesquiteColorTable(); //initialize default charstate colors
 
 		resetContainingMenuBar();
-	/* hire all inits */
+		/* hire all inits */
 		if (verboseStartup) System.out.println("main init 29");
 		hireAllEmployees(MesquiteInit.class);
 
+		logln("\n------------------------------------");
+		if (numExtra ==0)
+			logln("Citation for Mesquite:");
+		else if (numExtra ==1)
+			logln("Citations for Mesquite and extra package installed:");
+		else
+			logln("Citations for Mesquite and extra packages installed:");
+		//Mesquite citation
+		logln(citationsString);
 
+		logln("====================================");
 		if (!isApplet()){
 			//setModuleWindow(null);
 			BrowseHierarchy projectHierarchyTask= (BrowseHierarchy)hireEmployee(BrowseHierarchy.class, "Hierarchy browser");
@@ -715,8 +788,11 @@ public class Mesquite extends MesquiteTrunk
 
 		if (verboseStartup) System.out.println("main init 31");
 		decrementMenuResetSuppression();
+		
+		
+		
 		if (MesquiteTrunk.mesquiteTrunk.isPrerelease()) 
-			logln("\nTHIS IS A PRERELEASE (BETA) VERSION: We discourage you from publishing results with this version of Mesquite, unless you check with the authors.\n");
+			logln("\nTHIS IS A PRERELEASE (ALPHA or BETA) VERSION: We discourage you from publishing results with this version of Mesquite, unless you check with the authors.\n");
 		if (debugMode){ 
 			logln("############### Startup Notices ###############");
 			for (int i=0; i<startupNotices.size(); i++)
@@ -736,7 +812,8 @@ public class Mesquite extends MesquiteTrunk
 			logWindow.resetWindowSizeForce();
 
 		}
-
+		
+		
 		/* */
 		cwt = new ClockWatcherThread(this);
 		cwt.start();  
@@ -745,6 +822,15 @@ public class Mesquite extends MesquiteTrunk
 			ConsoleThread cot = new ConsoleThread(this, this, true);
 			cot.start();
 			consoleThread = cot;
+		}
+		if (isJavaVersionLessThan(1.9)){
+			String warning1_8 = "WARNING: You are running an old version of Java, 1.8 or lower. It is HIGHLY RECOMMENDED that you update your version of Java to the latest JDK version of Java"
+					+" (for example, JDK 21 or later) from oracle.com. Because you are using an old version of Java, Mesquite will crash with some important functions.";
+			if (!java1_8warned)
+				discreetAlert(warning1_8);
+			else
+				logln("\n\n=============\n" + warning1_8 + "\n=============\n\n");
+			java1_8warned = true;
 		}
 		storePreferences();
 
@@ -965,6 +1051,9 @@ public class Mesquite extends MesquiteTrunk
 		else if ("browserString".equalsIgnoreCase(tag)){
 			browserString = (content);
 		}
+		else if ("java1_8warned".equalsIgnoreCase(tag)){
+			java1_8warned = MesquiteBoolean.fromTrueFalseString(content);
+		}
 		else if ("defaultHideMesquiteWindow".equalsIgnoreCase(tag)){
 			defaultHideMesquiteWindow=MesquiteBoolean.fromTrueFalseString(content);
 		}
@@ -1053,11 +1142,17 @@ public class Mesquite extends MesquiteTrunk
 				ColorTheme.THEME_FOR_NEXT_STARTUP = iq;
 			}
 		}
+		else if ("suggestedDirectory".equalsIgnoreCase(tag)){
+			MesquiteTrunk.setSuggestedDirectory(StringUtil.cleanXMLEscapeCharacters(content));
+		}
+
 		/* EMBEDDED disable if embedded */
 		setMesquiteDirectoryPath();
 		/**/
 
 	}
+
+	/*.................................................................................................................*/
 	String previousMesquiteHeadlessPath = "";//hackathon
 	String previousMesquitePath = "";
 	public String preparePreferencesForXML () {
@@ -1077,6 +1172,7 @@ public class Mesquite extends MesquiteTrunk
 		StringUtil.appendXMLTag(buffer, 2, "scriptRecoveryDelay", ShellScriptUtil.recoveryDelay);  
 		StringUtil.appendXMLTag(buffer, 2, "maxNumMatrixUndoTaxa", maxNumMatrixUndoTaxa);  
 		StringUtil.appendXMLTag(buffer, 2, "maxNumMatrixUndoChars", maxNumMatrixUndoChars);  
+		StringUtil.appendXMLTag(buffer, 2, "java1_8warned", java1_8warned);  
 
 		StringUtil.appendXMLTag(buffer, 2, "lastVersionRun", lastVersionRun);  
 		//	StringUtil.appendXMLTag(buffer, 2, "listUrgeGiven", listUrgeGiven);  
@@ -1086,6 +1182,7 @@ public class Mesquite extends MesquiteTrunk
 		StringUtil.appendXMLTag(buffer, 2, "lastVersionNoticed", lastVersionNoticed);  
 		StringUtil.appendXMLTag(buffer, 2, "lastNotice", lastNotice);  
 		StringUtil.appendXMLTag(buffer, 2, "lastNoticeForMyVersion", lastNoticeForMyVersion);  
+		StringUtil.appendXMLTag(buffer, 2, "suggestedDirectory", MesquiteTrunk.getSuggestedDirectory());  
 
 		if (MesquiteWindow.headless) { //hackathon
 			StringUtil.appendXMLTag(buffer, 2, "mesquiteHeadlessPath", stripPath(mesquiteDirectoryPath));  
@@ -1354,13 +1451,25 @@ public class Mesquite extends MesquiteTrunk
 	}
 	/*.................................................................................................................*/
 	/* makes and returns a new project, in process making taxa block.*/
-	public MesquiteProject newFileWithTaxa(String arguments){
-		return newProject(arguments, 0);
+	private MesquiteProject newFileWithTaxa(String arguments){
+		MesquiteProject proj =  newProject(arguments, 0);
+		if (proj == null)
+			return null;
+		MesquiteFile mF = proj.getHomeFile();
+		if (mF != null)
+			mF.okForRecentRereading = true;
+		return proj;
 	}
 	/*.................................................................................................................*/
 	/* makes and returns a new project.*/
-	public MesquiteProject newFile(String arguments){
-		return newProject(arguments, -1);
+	private MesquiteProject newFile(String arguments){
+		MesquiteProject proj = newProject(arguments, -1);
+		if (proj == null)
+			return null;
+		MesquiteFile mF = proj.getHomeFile();
+		if (mF != null)
+			mF.okForRecentRereading = true;
+		return proj;
 	}
 	/*.................................................................................................................*/
 	/* makes and returns a new project.*/
@@ -1371,7 +1480,7 @@ public class Mesquite extends MesquiteTrunk
 	public MesquiteProject newProject(String arguments, int code, boolean actAsScriptingRegardless){
 		return newProject(arguments, code, actAsScriptingRegardless, null, null);
 	}
-	/* makes and returns a new project.*/ //hackathon
+	/* makes and returns a new project.* NOT USED/ //hackathon
 	public MesquiteProject newProject(String arguments, int code, boolean actAsScriptingRegardless, String originalArguments){
 		return newProject(arguments, code, actAsScriptingRegardless, originalArguments, null);
 	}
@@ -1401,8 +1510,8 @@ public class Mesquite extends MesquiteTrunk
 			return null;
 		}
 	}
-	/*.................................................................................................................*/
-	/* makes and returns a new project.*///hackathon
+	/*.................................................................................................................*
+	// makes and returns a new project.///hackathon
 	public MesquiteProject newProject(InputStream stream, String arguments, boolean actAsScriptingRegardless, String originalArguments){
 		if (MesquiteThread.isScripting() || actAsScriptingRegardless) {
 			ObjectContainer projCont = new ObjectContainer();
@@ -1678,7 +1787,7 @@ public class Mesquite extends MesquiteTrunk
 		MesquiteThread.setCurrentCommandRecord(cr);
 
 		if (StringUtil.blank(path)) {
-			f = openFile(null, importerSubclass); 
+			f = openFile(null, completeArguments, importerSubclass); 
 		}
 		else {
 			String baseN = null;
@@ -1700,7 +1809,10 @@ public class Mesquite extends MesquiteTrunk
 	String noticeLocation = "http://"; //before release, change URL to "http://"
 	/*.................................................................................................................*/
 	public Object doCommand(String commandName, String arguments, CommandChecker checker) {
-		if (checker.compare(this.getClass(), "Sets the packages of modules loaded at startup, using a configuration file", null, commandName, "setConfig")) {
+		if (checker.compare(this.getClass(), "A command that is ignored; can give to menu items so that they are active but do nothing", "[]", commandName, "null")) {
+			
+		}
+		else if (checker.compare(this.getClass(), "Sets the packages of modules loaded at startup, using a configuration file", null, commandName, "setConfig")) {
 			//need Module Activation menu item with submenu items: Use All Installed Modules; Choose Module set
 			//use MesquiteTrunks.configs, a vector of configurations found (each stores name, explanation)
 			Listable[] list = new Listable[configurations.size()];
@@ -1810,6 +1922,13 @@ public class Mesquite extends MesquiteTrunk
 			MesquiteFile.putFileContents(macro.getPath(), oldFile, true);
 			resetAllMenuBars();
 		}
+		else if (checker.compare(this.getClass(), "Returns a file coordinator for a project", "[number of project]", commandName, "getFileCoordinator")) {
+			int iProj = MesquiteInteger.fromString(arguments);
+			if (MesquiteInteger.isCombinable(iProj) && iProj<projects.getNumProjects()){
+				MesquiteProject proj = projects.getProject(iProj);
+				return proj.getCoordinatorModule();
+			}
+		}
 		else if (checker.compare(this.getClass(), "Brings up a dialog box to examine macro files", null, commandName, "showMacros")) {
 
 			//first get list of user-defined configs; must filter configurations vector to include only user-defined.  Then delete corresponding files!
@@ -1885,6 +2004,45 @@ public class Mesquite extends MesquiteTrunk
 			return openOrImportFileHandler( path,  completeArguments, null);
 
 		}
+		else if (checker.compare(this.getClass(), "Explains the File>Open Special items", "[]", commandName, "explainOpenChoices")) {
+			String explanation = "<html><body><h3>Open Special</h3>These menu items open files as separate (independent) projects. "
+					+ "Those at the top of the submenu open a single file; those at the bottom open multiple files in a folder."
+					+" The different options serve different purposes and have different limitations.<br><br>";
+			explanation += "<b>Reads One File</b><br><ul>";
+			MesquiteMenuItemSpec mmis = new MesquiteMenuItemSpec(null, "", module, null);  //temporary; doesn't get registered; just helps find compatible modules
+			mmis.setList(GeneralFileMakerSingle.class);
+			MesquiteModuleInfo mbi = null;
+			while ((mbi = getNextCompatibleModuleOfDuty(mbi, mmis)) != null) {
+				explanation += "<li><b>" + StringUtil.protectForXML(mbi.getNameForMenuItem()) + "</b>— " + StringUtil.protectForXML(mbi.getExplanation()) + "</li><br>";
+			}
+			explanation += "</ul><b>Reads Multiple Files in a Folder</b><br><ul>";
+			mmis.setList(GeneralFileMakerMultiple.class);
+			mbi = null;
+			while ((mbi = getNextCompatibleModuleOfDuty(mbi, mmis)) != null) {
+				explanation += "<li><b>" + StringUtil.protectForXML(mbi.getNameForMenuItem()) + "</b>— " + StringUtil.protectForXML(mbi.getExplanation()) + "</li><br>";
+			}
+			explanation += "</ul></body></html>";
+			//AlertDialog.noticeHTML(containerOfModule(), "Open Special Submenu", explanation, 500, 500, null);
+			alertHTML(containerOfModule().getParentFrame(), explanation,"Open Special Submenu", null, 600, 500);
+		}
+		else if (checker.compare(this.getClass(), "Opens recent file.  The file will be opened as a separate project (i.e. not sharing information) from any other files currently open.", "[name and path of file]", commandName, "openRecent")) {
+			String path = ParseUtil.getFirstToken(arguments, stringPos);
+			MesquiteFile currentFile = MesquiteTrunk.getProjectList().findFile(path);
+			if (currentFile == null) {
+				String completeArguments = arguments;
+				return openOrImportFileHandler( path,  completeArguments, null);
+			}
+			else {
+				MesquiteProject p = currentFile.getProject();
+				if (p!= null)
+					p.getCoordinatorModule().doCommand("allToFront", null);
+			}
+
+		}
+		else if (checker.compare(this.getClass(), "Clears list of recent files.", null, commandName, "clearRecent")) {
+			clearRecentFiles(true);
+			resetAllMenuBars();
+		}
 		else if (checker.compare(this.getClass(), "Opens file on web server.  The file will be opened as a separate project (i.e. not sharing information) from any other files currently open.", "[URL of file] - if parameter absent then presents user with dialog box to enter URL", commandName, "openURL")){
 			arguments = ParseUtil.getFirstToken(arguments, stringPos);
 			return openURLString(arguments);
@@ -1914,6 +2072,7 @@ public class Mesquite extends MesquiteTrunk
 		else if (checker.compare(this.getClass(), "Forces a reset of the menus.", null, commandName, "resetMenus")) {
 			zeroMenuResetSuppression();
 			resetAllMenuBars();
+			zeroMenuResetSuppression();
 		}
 		else if (checker.compare(this.getClass(), "Shows the GNU Lesser General Public License.", null, commandName, "showLicense")) {
 			TextDisplayer displayer = (TextDisplayer)hireEmployee(TextDisplayer.class, null);
@@ -1921,7 +2080,7 @@ public class Mesquite extends MesquiteTrunk
 				displayer.showFile(getRootPath()  + "lesser.txt", 100000, true); 
 			return displayer;
 		}
-		else if (checker.compare(this.getClass(), "Shows the currently executing command and offers to stop it.", null, commandName, "currentCommand")) {
+		/*	else if (checker.compare(this.getClass(), "Shows the currently executing command and offers to stop it.", null, commandName, "currentCommand")) {
 			if (MainThread.getCurrentlyExecuting()!=null) {
 				MainThread.mainThread.suspend();
 				if (!AlertDialog.query(containerOfModule(), "Current Command", "The current command is\n" + MainThread.getCurrentlyExecuting().getListName(), "Continue", "STOP COMMAND")) {
@@ -1938,6 +2097,7 @@ public class Mesquite extends MesquiteTrunk
 			else
 				alert("There is no command currently executing");
 		}
+		 */
 		else if (checker.compare(this.getClass(), "Shows the list of pending commands and offers some to be suspended.", null, commandName, "pendingCommands")) {
 			if (MesquiteCommand.anyQueuedCommands(true)) {
 				String message = "This is a list of pending commands.  If you want to suspend any commands, select them and hit STOP COMMAND.  Otherwise, hit CANCEL.  The currently executing command is NOT listed.";
@@ -1953,8 +2113,7 @@ public class Mesquite extends MesquiteTrunk
 		else if (checker.compare(this.getClass(), "Reports memory status, for debugging of memory leaks.  Static boolean checkMemory needs to have been set first.", null, commandName, "reportMemory")) {
 			reportMemory();
 		}
-		else if (checker.compare(this.getClass(), "Quits Mesquite", null, commandName, "quit") || checker.compare(this.getClass(), "Quits Mesquite", null, commandName, "exit")) {
-			//CommandRecord.checkThread = false; //suppress thread checking
+		else if (checker.compare(this.getClass(), "Quits Mesquite", null, commandName, "quit") || checker.compare(this.getClass(), "Quits Mesquite", null, commandName, "exit")) { //"exit" here also in case command line use
 			if (startedAsLibrary){
 				logln("Mesquite is being used by another program.  You should avoid asking Mesquite to quit, and instead let the other program ask Mesquite to quit");
 				return null;
@@ -1977,6 +2136,7 @@ public class Mesquite extends MesquiteTrunk
 				//CommandRecord.checkThread = true;
 				System.out.println("Quit cancelled");
 				attemptingToQuit = false;
+				MesquiteTrunk.startupShutdownThread = null;
 				return null;
 			}
 			if (debugMode){
@@ -2101,8 +2261,9 @@ public class Mesquite extends MesquiteTrunk
 				Object obj = e.nextElement();
 				MesquiteWindow mw = (MesquiteWindow)obj;
 				MesquiteFrame mf = mw.getParentFrame();
-				if (mf.isVisible())
+				if (mf.isVisible()) {
 					mf.setVisible(true);
+				}
 			}
 		}
 		else if (checker.compare(this.getClass(), "Closes all current projects and files", null, commandName, "closeAllProjects")) {
@@ -2379,7 +2540,11 @@ public class Mesquite extends MesquiteTrunk
 
 		}	
 		else if (checker.compare(this.getClass(), "Sends Error to Server", null, commandName, "testError")) {
-			reportProblemToHome("TESTING ERROR REPORTING");
+			reportableAlert("STRING:ERROR", "DETAILS:TESTING ERROR REPORTING");
+		}
+		else if (checker.compare(this.getClass(), "Causes intentional crash", null, commandName, "pleaseCrash")) {
+			String s = null;
+			s.substring(0, 2);
 		}
 
 		else
@@ -2422,17 +2587,23 @@ public class Mesquite extends MesquiteTrunk
 		projects = new Projects();
 		mesquiteTrunk.newFileCommand = makeCommand("newProject",  mesquiteTrunk);
 		mesquiteTrunk.openFileCommand = makeCommand("openFile",  mesquiteTrunk);
+		mesquiteTrunk.openRecentCommand = makeCommand("openRecent",  mesquiteTrunk);
+		mesquiteTrunk.clearRecentCommand = makeCommand("clearRecent",  mesquiteTrunk);
 		mesquiteTrunk.openURLCommand = makeCommand("openURL",  mesquiteTrunk);
-		mesquiteTrunk.currentCommandCommand = makeCommand("currentCommand",  mesquiteTrunk);
-		mesquiteTrunk.currentCommandCommand.setQueueBypass(true);
+		//mesquiteTrunk.currentCommandCommand = makeCommand("currentCommand",  mesquiteTrunk);
+		//mesquiteTrunk.currentCommandCommand.setQueueBypass(true);
 		mesquiteTrunk.pendingCommandsCommand = makeCommand("pendingCommands",  mesquiteTrunk);
 		mesquiteTrunk.pendingCommandsCommand.setQueueBypass(true);
 		mesquiteTrunk.resetMenusCommand = makeCommand("resetMenus",  mesquiteTrunk);
+		if (!MesquiteTrunk.developmentMode)
+			mesquiteTrunk.resetMenusCommand.setSuppressLogging(true);
 		mesquiteTrunk.showLicenseCommand = makeCommand("showLicense",  mesquiteTrunk);
 		mesquiteTrunk.quitCommand = makeCommand("quit",  mesquiteTrunk);
 		mesquiteTrunk.quitCommand.setQueueBypass(true);
+		mesquiteTrunk.quitCommand.setOKOnOtherThread(true);
 		mesquiteTrunk.forceQuitCommand = makeCommand("forceQuit",  mesquiteTrunk);
-		mesquiteTrunk.forceQuitCommand.setQueueBypass(true);
+		mesquiteTrunk.forceQuitCommand.setQueueBypass(!MesquiteTrunk.isLinux());
+		mesquiteTrunk.forceQuitCommand.setOKOnOtherThread(true);
 		mesquiteTrunk.showAllCommand = makeCommand("showAllWindows", mesquiteTrunk);
 		mesquiteTrunk.closeAllCommand = makeCommand("closeAllProjects", mesquiteTrunk);
 		mesquiteTrunk.saveAllCommand = makeCommand("saveAllProjects", mesquiteTrunk);
@@ -2456,6 +2627,7 @@ public class Mesquite extends MesquiteTrunk
 	}
 
 	String earlyWarning = "";
+	/*
 	private void registerMacHandlers(){
 		if (!MesquiteWindow.GUIavailable)
 			return;
@@ -2469,7 +2641,7 @@ public class Mesquite extends MesquiteTrunk
 				earlyWarning += w;
 				System.out.println(w);
 			}
-			catch (NoClassDefFoundError e) { //WAYNECHECK: DAVIDCHECK: need to add alternative macos application event handling methods for post-1.8 Java
+			catch (NoClassDefFoundError e) {
 				String w = "File handling failed to register with macOS (NCME).";
 				earlyWarning += w;
 				System.out.println(w);
@@ -2479,8 +2651,12 @@ public class Mesquite extends MesquiteTrunk
 				earlyWarning += w;
 				System.out.println(w);
 			}
+			catch (Throwable e) {
+			}
 		}
 	}
+	 */
+
 
 	public Mesquite(){
 		super();
@@ -2506,14 +2682,19 @@ public class Mesquite extends MesquiteTrunk
 						MesquiteTrunk.suppressErrorReporting = true;
 					else if (args[i].equals("-nb"))
 						MesquiteTrunk.noBeans = true;
+					else if (args[i].equals("-mqflex2"))
+						MesquiteTrunk.startedFromFlex2 = true;
 					else if (args[i].equals("-mqex"))
 						MesquiteTrunk.startedFromExecutable = true;
+					else if (args[i].equals("-development")) {
+						MesquiteTrunk.developmentMode = true;
+					}
 					else if (args[i].equals("-mqcat"))
 						; //started from Catalina executable
 					else if (args[i].equals("-mq17")) {
 						MesquiteMessage.warnUser("This executable is not compatible with current Mesquite");
 					}
-					else if (args[i].equals("-d"))
+					else if (args[i].equals("-debug"))
 						MesquiteTrunk.debugMode = true;
 					else if (args[i].equals("--version"))
 						outputVersion = true;
@@ -2575,7 +2756,16 @@ public class Mesquite extends MesquiteTrunk
 				textEdgeCompensationHeight = 7; //6 on mac; 7 on pc
 				textEdgeCompensationWidth = 22; //12 on mac; 28 on pc
 			}
-			mesq.registerMacHandlers();
+
+			/*/if JDK≥9 register quit handler */
+			if (getJavaVersionAsDouble()>=1.9){ //if before Java 9.0 or before then add to the system class loader in the old fashioned way
+				applicationHandler9 = new ApplicationHandler9(this);
+			}
+			/*	else
+				mesq.registerMacHandlers();  //no longer useful unless old Java & OS
+			 */
+
+
 			if (MesquiteTrunk.debugMode)
 				System.out.println("main constructor 4");
 			MainThread.mainThread = new MainThread();
@@ -2590,7 +2780,7 @@ public class Mesquite extends MesquiteTrunk
 			mesquiteTrunk.init();
 			//EMBEDDED: include this  
 			((Mesquite)mesquiteTrunk).start(); 
-
+			MesquiteCommand.nullCommand = new MesquiteCommand("null", MesquiteTrunk.mesquiteTrunk);
 			if (MesquiteTrunk.debugMode)
 				System.out.println("main constructor 7");
 			// open the files requested at startup
@@ -2598,13 +2788,28 @@ public class Mesquite extends MesquiteTrunk
 				// report arguments
 				String s = "Arguments: ";
 				for ( int i = 0; i < args.length; i++ ) {
-					s += " [ " + args[i] + " ]";
+					if (!MesquiteTrunk.startedFromFlex2 || (args[i]!=null && args[i].startsWith("-"))){
+						if (!args[i].equalsIgnoreCase("-null"))
+							s += " [ " + args[i] + " ]";
+					}
 				}
 				MesquiteTrunk.mesquiteTrunk.logln(s);
+				if (MesquiteTrunk.developmentMode)
+					MesquiteTrunk.mesquiteTrunk.logln("Development mode enabled.");
+				// get the total memory for my app
 
 				for ( int i = 0; i < args.length; i++ ) {
-					if (args[i]!=null && !args[i].startsWith("-"))
-						mesquiteTrunk.openFile(args[i]);
+					if (args[i]!=null && !args[i].startsWith("-")) {
+						if (MesquiteTrunk.startedFromFlex2) { //the argument is not a file to open, but rather the encapsulatedpath of the app on macOS to find the list of files to open
+							if (MesquiteTrunk.debugMode)
+								MesquiteTrunk.mesquiteTrunk.logln("Encapsulated path to me: "+ args[i]);
+
+							MesquiteTrunk.encapsulatedPathOfExecutable= args[i];
+							//record the encapsulated path to the filesToOpen so that ConsoleThread can find any list of files
+						}
+						else
+							mesquiteTrunk.openFile(args[i]);
+					}
 				}
 			}
 
@@ -2733,7 +2938,9 @@ public class Mesquite extends MesquiteTrunk
 			//Accumulate all jars in Mesquite_Folder to classpath
 			collectAllJars(mesquiteDirectoryPath, urls, jars);
 			String classpathstxt = MesquiteFile.composePath(mesquiteDirectoryPath , MesquiteModule.classpathsFileName);
-			String[] paths = MesquiteFile.getFileContentsAsStringsForStarter(classpathstxt);
+			String[] paths = null;
+			if (MesquiteFile.fileExists(classpathstxt))
+				paths = MesquiteFile.getFileContentsAsStringsForStarter(classpathstxt);
 			if (paths != null){
 				//Go through each package listed in classpaths.txt
 				for (int i = 0; i<paths.length; i++){
@@ -2797,7 +3004,9 @@ public class Mesquite extends MesquiteTrunk
 			String jarPath="";
 			for (int i = 0; i<jars.size(); i++){
 				jarPath = (String)jars.elementAt(i);
-				JarLoader.addJarFileToClassPath(jarPath);
+				if (verboseStartup) System.out.println("loading " + jarPath);
+				if (jarPath.endsWith("jar"))
+					JarLoader.addJarFileToClassPath(jarPath);
 			}
 			return classLoader;
 		} 
@@ -2818,11 +3027,12 @@ public class Mesquite extends MesquiteTrunk
 	{
 		addToStartupNotices("Mesquite Startup arguments:" + StringArray.toString(args));
 		MesquiteWindow.GUIavailable = !MesquiteWindow.headless;
-		mesquiteTrunk = new Mesquite(args);
+		StartupThread sThread = new StartupThread(args);
+		sThread.start(); //for bug in Linus post-Java-8
+		//mesquiteTrunk = new Mesquite(args);
 	}
 
 
 }
-
 
 

@@ -17,6 +17,10 @@ import java.awt.*;
 
 import javax.swing.*;
 
+import mesquite.lib.ui.ExtensibleDialog;
+import mesquite.lib.ui.MesquiteWindow;
+import mesquite.lib.ui.SingleLineTextField;
+
 /*===============================================*/
 /** A dialog box to allow the user to enter a username and password for authentication. */
 public class UserNamePasswordDialog extends ExtensibleDialog {

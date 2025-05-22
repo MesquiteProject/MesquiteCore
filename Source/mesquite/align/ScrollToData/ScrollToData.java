@@ -19,6 +19,7 @@ import mesquite.lib.characters.CharacterData;
 import mesquite.lib.duties.DataWindowAssistantI;
 import mesquite.lib.table.MesquiteTable;
 import mesquite.lib.table.TableTool;
+import mesquite.lib.ui.MesquiteWindow;
 
 public class ScrollToData extends DataWindowAssistantI {
 	protected MesquiteTable table;

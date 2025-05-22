@@ -18,6 +18,13 @@ import java.util.*;
 import java.awt.*;
 import mesquite.lib.*;
 import mesquite.lib.duties.*;
+import mesquite.lib.taxa.Taxa;
+import mesquite.lib.tree.MesquiteTree;
+import mesquite.lib.tree.Tree;
+import mesquite.lib.tree.TreeContext;
+import mesquite.lib.tree.TreeContextListener;
+import mesquite.lib.ui.AlertDialog;
+import mesquite.lib.ui.ListDialog;
 
 /** Supplies a "current" tree.  It does this by looking for currently open tree contexts -- for instance, a Tree Window showing a tree.  If the tree is 
 for the appropriate block of taxa, this module can returns it.  It is used by simulators of character evolution and other calculations that depend upon a single "current tree".
@@ -170,7 +177,7 @@ public class TreeOfContext extends OneTreeSource implements TreeContextListener 
   					s+= context.getName();
   				if (StringUtil.notEmpty(explanationForUser))
   					s+="\n "+explanationForUser;
-				alert(s);
+				logln(s); //changed from alert so as not to be annoying
   			}
   			return context;
   			
@@ -366,7 +373,7 @@ public class TreeOfContext extends OneTreeSource implements TreeContextListener 
 		else
 			s = "Tree(s) used from " + context.getContextName() + ".";  
 		 if (lastTree!=null)
-		 	s+= " Last tree used: " + lastTree.getName() +  "  [tree: " + lastTree.writeTree() + "] ";
+		 	s+= " Last tree used: " + lastTree.getName() +  "  (tree: " + lastTree.writeTree() + ")";
 		return s;
    	 }
 	/*.................................................................................................................*/

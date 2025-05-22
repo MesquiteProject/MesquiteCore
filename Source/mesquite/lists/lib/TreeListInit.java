@@ -18,10 +18,14 @@ import java.util.*;
 import mesquite.lib.*;
 import mesquite.lib.duties.*;
 import mesquite.lib.table.*;
+import mesquite.lib.tree.TreeVector;
 
 
 /* ======================================================================== */
 public abstract class TreeListInit extends MesquiteModule  {
+	public boolean loadModule(){ //Debugg.println replaced by eye show tool
+		return false;
+	}
 
    	 public Class getDutyClass() {
    	 	return TreeListInit.class;

@@ -18,6 +18,8 @@ import java.util.*;
 import mesquite.lib.*;
 import mesquite.lib.characters.*;
 import mesquite.lib.duties.*;
+import mesquite.lib.taxa.Taxa;
+import mesquite.lib.tree.Tree;
 
 /* ======================================================================== */
 /** A class for an array of  categorical character states for one character, at each of the taxa  or nodes*/

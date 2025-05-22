@@ -18,6 +18,7 @@ import java.util.*;
 import mesquite.lib.*;
 import mesquite.lib.characters.*;
 import mesquite.lib.duties.*;
+import mesquite.lib.tree.Tree;
 import mesquite.categ.lib.*;
 
 
@@ -27,6 +28,8 @@ Also counts steps*/
 
 public abstract class ParsAncStatesForModel extends MesquiteModule  {
 	protected boolean calcConditionalMPRs = false;
+	public static MesquiteBoolean countStepsInTermPolymorphisms; //instantiated in minimal.Defaults
+	
    	 public Class getDutyClass() {
    	 	return ParsAncStatesForModel.class;
    	 }

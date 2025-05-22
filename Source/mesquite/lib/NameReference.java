@@ -27,10 +27,10 @@ public class NameReference implements Listable {
 	private String value=null;
 	private URI mNamespace=null;
 	public static long totalCreated = 0;
-	public NameReference() {
+	private NameReference() {
 		totalCreated++;
 	}
-	public NameReference(String value) {
+	private NameReference(String value) {
 		if (value == null)
 			this.value=value;
 		else
@@ -39,7 +39,7 @@ public class NameReference implements Listable {
 	}
 	/*...........................................................*/
 	public static NameReference getNameReference(String name){
-		Object obj = names.getElement(name);
+		Object obj = names.getElementIgnoreCase(name);
 		if (obj==null) {
 			NameReference nr = new NameReference(name);
 			names.addElement(nr, false);
@@ -49,6 +49,18 @@ public class NameReference implements Listable {
 			return (NameReference)obj;
 	}
 	public boolean equals (NameReference nr){
+			return nr==this;
+	}
+	 public boolean equalsString (String name){
+			if (name == null )
+				return false;
+			else if (value==null)
+				return false;
+			return getValue().equalsIgnoreCase(name);
+		}
+/*
+ * 	pre-4 version, anxious 
+ * public boolean equals (NameReference nr){
 		if (nr==this)
 			return true;
 		else if (nr == null )
@@ -63,6 +75,8 @@ public class NameReference implements Listable {
 			return true;
 		return false;
 	}
+
+	*/
 	public static boolean equal (NameReference nr, NameReference nr2){
 		if (nr!= null)
 			return nr.equals(nr2);

@@ -18,6 +18,9 @@ import java.awt.*;
 import mesquite.lib.*;
 import mesquite.lib.characters.*;
 import mesquite.lib.duties.*;
+import mesquite.lib.taxa.Taxa;
+import mesquite.lib.ui.AlertDialog;
+import mesquite.lib.ui.ListDialog;
 
 /* ======================================================================== */
 public class ConcatenateMatrices extends DataUtility { 
@@ -195,9 +198,15 @@ public class ConcatenateMatrices extends DataUtility {
 		int origNumChars = data.getNumChars();
 		data.addParts(data.getNumChars()+1, oData.getNumChars());
 		CharacterPartition partition = (CharacterPartition) data.getCurrentSpecsSet(CharacterPartition.class);
-		if (partition==null) // let's give the original ones a group
-			data.setToNewGroup(data.getName(), 0, origNumChars-1, this);  //set group
-		data.setToNewGroup(oData.getName(), origNumChars, data.getNumChars()-1, this);  //set group
+		Color randomColour = new Color(RandomBetween.getIntStatic(100,255),RandomBetween.getIntStatic(100,255),RandomBetween.getIntStatic(100,255));
+		CharactersGroup dCG=null;
+		CharactersGroup oCG = null;
+		if (partition==null) { // let's give the original ones a group
+			dCG = data.setToNewGroup(data.getName(), 0, origNumChars-1, this);  //set group
+			dCG.setColor(randomColour);
+	}
+	oCG= data.setToNewGroup(oData.getName(), origNumChars, data.getNumChars()-1, this);  //set group
+		oCG.setColor(randomColour);
 		data.addInLinked(data.getNumChars()+1, oData.getNumChars(), true);
 		CharacterState cs = null;
 		for (int ic = 0; ic<oData.getNumChars(); ic++){

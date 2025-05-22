@@ -1,6 +1,8 @@
 package mesquite.externalCommunication.lib;
 
 import mesquite.lib.*;
+import mesquite.lib.ui.ExtensibleDialog;
+import mesquite.lib.ui.SingleLineTextField;
 
 public class PythonUtil {
 	public static String python2Path = "";

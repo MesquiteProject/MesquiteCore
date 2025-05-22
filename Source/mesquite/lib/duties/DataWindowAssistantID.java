@@ -29,7 +29,7 @@ public abstract class DataWindowAssistantID extends DataWindowAssistantI  {
  		return "INIT Assistant for Data Window; Display";
    	}
    	 public String[] getDefaultModule() {
-   	 	return new String[] {"#NoColor", "#ColorCells", "#ColorByState", "ColorByFootnote"};
+   	 	return new String[] {"#DefaultCellColor", "#NoColor", "#ColorCells", "#ColorByState", "ColorByFootnote"};
    	 }
 
 	/*.................................................................................................................*/

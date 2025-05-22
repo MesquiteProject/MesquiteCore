@@ -16,6 +16,7 @@ package mesquite.trees.SetToRooted;
 import java.awt.*;
 import mesquite.lib.*;
 import mesquite.lib.duties.*;
+import mesquite.lib.tree.AdjustableTree;
 
 /* ======================================================================== */
 public class SetToRooted extends TreeAltererMult {

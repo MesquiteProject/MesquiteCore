@@ -1,0 +1,10 @@
+
+
+
+INSTRUCTIONS
+If you put text on the first line, above, it will be used by Mesquite-Starter.app as the command-line flags (VM arguments) in starting Mesquite. 
+
+Your flags will replace the ones that Mesquite-Starter.app uses by default. For Java 9 and above, the default flags are:
+--add-exports java.desktop/com.apple.eawt=ALL-UNNAMED -XX:+EnableDynamicAgentLoading
+
+

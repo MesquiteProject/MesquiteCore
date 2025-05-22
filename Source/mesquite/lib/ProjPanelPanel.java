@@ -20,6 +20,17 @@ import java.util.*;
 import java.util.List;
 
 import mesquite.lib.duties.*;
+import mesquite.lib.ui.ClosablePanel;
+import mesquite.lib.ui.ClosablePanelContainer;
+import mesquite.lib.ui.ColorDistribution;
+import mesquite.lib.ui.ColorTheme;
+import mesquite.lib.ui.MesquiteFrame;
+import mesquite.lib.ui.MesquiteImage;
+import mesquite.lib.ui.MesquiteMenuItem;
+import mesquite.lib.ui.MesquitePopup;
+import mesquite.lib.ui.MesquiteTool;
+import mesquite.lib.ui.MesquiteWindow;
+import mesquite.lib.ui.StringInABox;
 import mesquite.minimal.BasicFileCoordinator.ProjectWindow;
 
 /* ======================================================================== */
@@ -37,7 +48,7 @@ public class ProjPanelPanel extends ClosablePanel implements MesquiteListener, C
 	protected Vector subPanels = new Vector();
 	protected MesquiteWindow w = null;
 	MesquiteModule owner;
-	ProjectWindow projectWindow;
+	protected ProjectWindow projectWindow;
 
 	public ProjPanelPanel(FileCoordinator bfc, ClosablePanelContainer container, MesquiteWindow w, String name, MesquiteModule owner){
 		super(container, name);

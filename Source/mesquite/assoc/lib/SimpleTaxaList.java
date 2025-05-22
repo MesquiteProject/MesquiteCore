@@ -16,6 +16,11 @@ package mesquite.assoc.lib;
 import java.awt.*;
 import java.awt.event.*;
 import mesquite.lib.*;
+import mesquite.lib.taxa.Taxa;
+import mesquite.lib.ui.MQScrollbar;
+import mesquite.lib.ui.MesquitePanel;
+import mesquite.lib.ui.MesquiteTool;
+import mesquite.lib.ui.MousePanel;
 
 
 public class SimpleTaxaList extends MesquitePanel implements AdjustmentListener {
@@ -23,25 +28,30 @@ public class SimpleTaxaList extends MesquitePanel implements AdjustmentListener 
 	MousePanel homePanel;
 	boolean[] selected;
 	boolean[] assigned;
-	Scrollbar scrollBar;
+	MQScrollbar scrollBar;
 	int scrollWidth=16;
 	int topRow = 0;
-	
-	
-	public SimpleTaxaList(Taxa taxa, MousePanel homePanel) {
+	int rowSpacing = 6;
+	boolean selectable = true;
+
+	public SimpleTaxaList(Taxa taxa, MousePanel homePanel, boolean showScroll, int rowSpacing, boolean selectable) {
 		super();
 		this.homePanel = homePanel;
 		setBackground(Color.white);
-		scrollBar=new Scrollbar(Scrollbar.VERTICAL);
-		scrollBar.setVisible(true);
-		scrollBar.setValues(0,getNumRowsVisible(),0,0);
-		scrollBar.addAdjustmentListener(this);
-		scrollBar.setUnitIncrement(1);
-		scrollBar.setBlockIncrement(1);
-		add(scrollBar);
+		this.rowSpacing = rowSpacing;
+		this.selectable = selectable;
+		if (showScroll){
+			scrollBar=new MQScrollbar(Scrollbar.VERTICAL);
+			scrollBar.setVisible(true);
+			scrollBar.setValues(0,getNumRowsVisible(),0,0);
+			scrollBar.addAdjustmentListener(this);
+			scrollBar.setUnitIncrement(1);
+			scrollBar.setBlockIncrement(1);
+			add(scrollBar);
+		}
 		setTaxa(taxa);
 	}
-	
+
 	public void setAssigned(int i, boolean b) {
 		if (assigned!=null && i>=0 && i<assigned.length)
 			assigned[i] = b;
@@ -56,6 +66,7 @@ public class SimpleTaxaList extends MesquitePanel implements AdjustmentListener 
 		return false;
 	}
 
+
 	public void setSize(int width, int height) {
 		super.setSize(width,height);
 		if (scrollBar!=null) {
@@ -64,7 +75,7 @@ public class SimpleTaxaList extends MesquitePanel implements AdjustmentListener 
 			scrollBar.setVisibleAmount(getNumRowsVisible());
 			scrollBar.setBlockIncrement(getNumRowsVisible()-1);
 		}
-		
+
 	}
 
 	public void setLocation(int x, int y) {
@@ -75,7 +86,7 @@ public class SimpleTaxaList extends MesquitePanel implements AdjustmentListener 
 
 	public int getNumRowsVisible(){
 		if (taxa!=null)
-			return MesquiteInteger.minimum(taxa.getNumTaxa(), Math.round(getBounds().height/getRowHeight()));
+			return MesquiteInteger.minimum(getNumTaxa(taxa), Math.round(getBounds().height/getRowHeight()));
 		return Math.round(getBounds().height/getRowHeight());
 	}
 	public void deselectAll() {
@@ -99,38 +110,47 @@ public class SimpleTaxaList extends MesquitePanel implements AdjustmentListener 
 		}
 	}
 	public void selectRow(int row,boolean b) {
-			if (row>=0 && row<selected.length) {
-				boolean wasSelected = selected[row];
-				selected[row]=b;
-				if (wasSelected!=b) 
-					redrawRow(row, true);
-			}
+		if (row>=0 && row<selected.length) {
+			boolean wasSelected = selected[row];
+			selected[row]=b;
+			if (wasSelected!=b) 
+				redrawRow(row, true);
+		}
+	}
+	int getNumTaxa(Taxa taxa){
+		int numTaxa = 0;
+		if (taxa != null)
+			numTaxa = taxa.getNumTaxa();
+		return numTaxa;
 	}
 	public void setTaxa(Taxa taxa) {
-		if (taxa!=null){//&& taxa!=this.taxa) {
 			this.taxa = taxa;
-			selected = new boolean[taxa.getNumTaxa()];
-			assigned = new boolean[taxa.getNumTaxa()];
+			int numTaxa = getNumTaxa(taxa);
+				
+			selected = new boolean[numTaxa];
+			assigned = new boolean[numTaxa];
 			for (int i=0; i<selected.length; i++){
 				selected[i]=false;
 				assigned[i]=false;
 			}
-			scrollBar.setMaximum(taxa.getNumTaxa());
-		}
+			if (scrollBar != null)
+				scrollBar.setMaximum(numTaxa);
+			repaint();
 	}
-	
+
 	public void paint(Graphics g) {
-		if (taxa==null || g==null)
+		if (g==null)
 			return;
 		FontMetrics fm=g.getFontMetrics(g.getFont());
-		int numParts =  taxa.getNumTaxa();
+		int numParts =  getNumTaxa(taxa);
 		for (int i=0; i<numParts && i<selected.length; i++) {
 			drawRow(g, i, fm.getMaxDescent(), false);
 		}
+		g.drawLine(0, getHeight()-1, getWidth(), getHeight()-1);  //bottom line
 	}
-	
+
 	public void drawRow(Graphics g, int row, int maxDescent, boolean erase) {
-		if (taxa==null || row<0 || row>=selected.length || row>=taxa.getNumTaxa())
+		if (row<0 || row>=selected.length || row>=getNumTaxa(taxa))
 			return;
 		if (!getRowVisible(row))
 			return;
@@ -154,7 +174,7 @@ public class SimpleTaxaList extends MesquitePanel implements AdjustmentListener 
 			g.drawString(taxa.getTaxonName(row),5+offset,getRowBottom(row)-maxDescent);
 	}
 	public void redrawRow(int row, boolean erase) {
-		if (taxa==null || row<0)
+		if (row<0)
 			return;
 		Graphics g = getGraphics();
 		if (g==null)
@@ -162,14 +182,14 @@ public class SimpleTaxaList extends MesquitePanel implements AdjustmentListener 
 		FontMetrics fm=g.getFontMetrics(g.getFont());
 		drawRow(g,row,fm.getMaxDescent(), erase);
 		g.dispose();
-		
+
 	}
 	public int getRowHeight() {
 		Graphics g = getGraphics();
 		if (g==null)
 			return -1;
 		FontMetrics fm=g.getFontMetrics(g.getFont());
-		int rowHeight = (fm.getMaxAscent() + fm.getMaxDescent() + 6);
+		int rowHeight = (fm.getMaxAscent() + fm.getMaxDescent() + rowSpacing);
 		g.dispose();
 		return (rowHeight);
 	}
@@ -180,7 +200,7 @@ public class SimpleTaxaList extends MesquitePanel implements AdjustmentListener 
 		if (g==null)
 			return -1;
 		FontMetrics fm=g.getFontMetrics(g.getFont());
-		int rowHeight = (fm.getMaxAscent() + fm.getMaxDescent() + 6);
+		int rowHeight = (fm.getMaxAscent() + fm.getMaxDescent() + rowSpacing);
 		g.dispose();
 		return ((row-topRow)*rowHeight);
 	}
@@ -191,18 +211,18 @@ public class SimpleTaxaList extends MesquitePanel implements AdjustmentListener 
 		if (g==null)
 			return -1;
 		FontMetrics fm=g.getFontMetrics(g.getFont());
-		int rowHeight = (fm.getMaxAscent() + fm.getMaxDescent() + 6);
+		int rowHeight = (fm.getMaxAscent() + fm.getMaxDescent() + rowSpacing);
 		g.dispose();
 		return ((row-topRow)*rowHeight+rowHeight);
 	}
 	public boolean getRowVisible(int row) {
 		return (getRowTop(row)<getBounds().height && getRowBottom(row)>=0);
 	}
-	
+
 	public int findRow(int y) {
 		if (taxa==null)
 			return -1;
-		int numParts =  taxa.getNumTaxa();
+		int numParts =  getNumTaxa(taxa);
 		int row = -1;
 		for (int i=0; i<numParts; i++) {
 			if (y>getRowTop(i) && y<= getRowBottom(i)) {
@@ -212,11 +232,13 @@ public class SimpleTaxaList extends MesquitePanel implements AdjustmentListener 
 		}
 		return row;
 	}
-	
-	
+
+
 	public void mouseDown (int modifiers, int clickCount, long when, int x, int y, MesquiteTool tool) {
+		if (!selectable)
+			return;
 		int  row = findRow(y);
-		if (row>=0 && row<=selected.length && row<=taxa.getNumTaxa()) {
+		if (row>=0 && row<=selected.length && row<=getNumTaxa(taxa)) {
 			if (!selected[row] && !MesquiteEvent.shiftKeyDown(modifiers) && !MesquiteEvent.commandOrControlKeyDown(modifiers))
 				deselectAll();
 			if (MesquiteEvent.shiftKeyDown(modifiers)) {
@@ -228,7 +250,7 @@ public class SimpleTaxaList extends MesquitePanel implements AdjustmentListener 
 						break;
 					}
 				if (!selectionExtended)
-					for (int i=taxa.getNumTaxa()-1; i>row && i<selected.length; i--)
+					for (int i=getNumTaxa(taxa)-1; i>row && i<selected.length; i--)
 						if (selected[i]){
 							selectRows(row,i);
 							selectionExtended=true;
@@ -268,5 +290,5 @@ public class SimpleTaxaList extends MesquitePanel implements AdjustmentListener 
 			}
 		}
 	}
-	
+
 }

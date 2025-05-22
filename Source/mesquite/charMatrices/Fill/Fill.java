@@ -42,7 +42,7 @@ public class Fill extends DataAlterer implements AltererSimpleCell {
 	/*.................................................................................................................*/
 	/** returns whether this module is requesting to appear as a primary choice */
    	public boolean requestPrimaryChoice(){
-   		return true;  
+   		return false;  
    	}
 	/*.................................................................................................................*/
    	/** Called to alter data in those cells selected in table*/
@@ -52,21 +52,20 @@ public class Fill extends DataAlterer implements AltererSimpleCell {
    	}
 	/*.................................................................................................................*/
    	/** Called to alter data in those cells selected in table*/
-   	public boolean alterData(CharacterData data, MesquiteTable table,UndoReference undoReference){
+   	public int alterData(CharacterData data, MesquiteTable table,UndoReference undoReference){
   		String fillString;
 		if ((table==null && data!=null)||!table.anyMainTableCellSelected())
 			fillString = MesquiteString.queryString(containerOfModule(), "Fill all cells", "Fill entire matrix with states:", "");
 		else
 			fillString = MesquiteString.queryString(containerOfModule(), "Fill selected cells", "Fill selected cells with states:", "");
 		if (StringUtil.blank(fillString))
-			return false;
+			return ResultCodes.USER_STOPPED;
 		
    		fillState = data.getCharacterState(fillState, 0, 0); //just to have a template
    		fillState.setValue(fillString, data);
 		if (fillState.isImpossible()) 
-			return false;
-		boolean success = alterContentOfCells(data,table, undoReference);
-		return success;
+			return -20;
+		return alterContentOfCells(data,table, undoReference);
    	}
 
    	

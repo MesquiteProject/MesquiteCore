@@ -28,7 +28,6 @@ public class NumTaxaWithDataInMatrix extends NumberForMatrix {
 				count++;
 		}
 
-
 		if (count>0) {
 			result.setValue(count); 
 		}  else

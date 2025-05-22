@@ -18,6 +18,20 @@ import java.awt.*;
 
 import mesquite.lib.*;
 import mesquite.lib.duties.*;
+import mesquite.lib.taxa.Taxa;
+import mesquite.lib.tree.MesquiteTree;
+import mesquite.lib.tree.Tree;
+import mesquite.lib.tree.TreeContextListener;
+import mesquite.lib.tree.TreeDisplay;
+import mesquite.lib.tree.TreeDisplayExtra;
+import mesquite.lib.tree.TreeTool;
+import mesquite.lib.ui.ColorTheme;
+import mesquite.lib.ui.Legend;
+import mesquite.lib.ui.MQPanel;
+import mesquite.lib.ui.MQScrollPane;
+import mesquite.lib.ui.MesquiteSubmenuSpec;
+import mesquite.lib.ui.MesquiteWindow;
+import mesquite.lib.ui.MessagePanel;
 import mesquite.assoc.lib.*;
 
 /* ======================================================================== */
@@ -60,8 +74,10 @@ public class SimpleTreeWindow extends MesquiteWindow  {
 		MesquiteSubmenuSpec mss = ownerModule.addSubmenu(null, "Analysis", MesquiteModule.makeCommand("newAssistant",  this), TreeDisplayAssistantA.class);
 		mss = ownerModule.addSubmenu(null, "Display", MesquiteModule.makeCommand("newAssistantD",  this), TreeDisplayAssistantD.class);
 		treeDisplay =treeDrawCoordTask.createOneTreeDisplay(taxa, this); //TODO: set tree display when tree is set for first time
-		scrollPane = new ScrollPane(ScrollPane.SCROLLBARS_AS_NEEDED);
+		treeDisplay.setOrientation(TreeDisplay.RIGHT);
+		scrollPane = new MQScrollPane(ScrollPane.SCROLLBARS_AS_NEEDED);
 		scrollPane.add(treeDisplay);
+		treeDisplay.autoStretchIfNeeded = true;
 		sizeDisplays();
 		addToWindow(scrollPane);
 		resetTitle();
@@ -75,6 +91,7 @@ public class SimpleTreeWindow extends MesquiteWindow  {
 			return;
 		tce.setTree(tree);
 		treeDisplay.addExtra(tce);
+		treeDisplay.accumulateRequestsFromExtras(tree);
 		treeDisplay.pleaseUpdate(false);
 		if (getMode()>0)
 			updateTextPage();
@@ -97,14 +114,14 @@ public class SimpleTreeWindow extends MesquiteWindow  {
 	String title = "Tree";
 	public void setWindowTitle(String t){
 		title = t;
-		resetTitle();
+		setTitle(title);
 	}
 	/*.................................................................................................................*/
 	/** When called the window will determine its own title.  MesquiteWindows need
 	to be self-titling so that when things change (names of files, tree blocks, etc.)
 	they can reset their titles properly*/
 	public void resetTitle(){
-		setTitle(title); //TODO: what tree?
+		setTitle(title); 
 	}
 	/*.................................................................................................................*/
 	public int getNumSnapshotLines(MesquiteFile file) {
@@ -292,8 +309,11 @@ public class SimpleTreeWindow extends MesquiteWindow  {
 			tree = newTree.cloneTree();//no need to establish listener to Taxa, as will be remade when needed?
 			treeDisplay.setTree(tree);
 			treeDisplay.suppressDrawing(suppressDrawing);
-			treeDisplay.setVisible(true);
+			treeDisplay.redoCalculations(111113);
 			treeDisplay.recalculatePositions();
+			sizeDisplays();
+			treeDisplay.setVisible(true);
+
 			treeDisplay.forceRepaint();
 			treeDisplay.setTreeAllExtras(tree);
 			MesquiteModule employer = ownerModule.getEmployer();
@@ -323,14 +343,14 @@ public class SimpleTreeWindow extends MesquiteWindow  {
 				return null;
 		return treeDisplay.getTree();
 	}
-	/*_________________________________________________*/
+	/*_________________________________________________*
 	public   void InvertBranchOld(TreeDisplay treeDisplay, Graphics g, int N) {
 		if (ownerModule.isDoomed())
 			return;
 		highlightedBranch=N;
 		treeDisplay.getTreeDrawing().fillBranchInverted(treeDisplay.getTree(), N, g);
 	}
-	/*_________________________________________________*/
+	/*_________________________________________________*
 	public   void RevertBranchOld(TreeDisplay treeDisplay, Graphics g, int N) {
 		if (ownerModule.isDoomed())
 			return;
@@ -481,7 +501,7 @@ public class SimpleTreeWindow extends MesquiteWindow  {
 	}
 }
 /* ======================================================================== */
-class SMessagePanel extends Panel {
+class SMessagePanel extends MQPanel {
 	String message;
 
 	public SMessagePanel(MesquiteWindow w) {  //in future pass general MesquiteWindow

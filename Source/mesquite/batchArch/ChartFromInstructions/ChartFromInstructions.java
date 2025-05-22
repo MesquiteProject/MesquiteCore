@@ -18,6 +18,11 @@ import java.awt.*;
 import java.util.*;
 import mesquite.lib.*;
 import mesquite.lib.duties.*;
+import mesquite.lib.taxa.Taxa;
+import mesquite.lib.ui.ChartWindow;
+import mesquite.lib.ui.ExtensibleDialog;
+import mesquite.lib.ui.MesquiteWindow;
+import mesquite.lib.ui.ProgressIndicator;
 
 
 public class ChartFromInstructions extends MesquiteModule implements NumberForItem  {
@@ -458,7 +463,7 @@ public class ChartFromInstructions extends MesquiteModule implements NumberForIt
 	public long numberTokensInFile(MesquiteFile file){
 		long count = 0;
 		if (file.openReading()) {
-			StringBuffer sb = new StringBuffer(1000);
+			MesquiteStringBuffer sb = new MesquiteStringBuffer(1000);
 			file.readLine(sb);
 			String line = sb.toString();
 			String token;
@@ -481,7 +486,7 @@ public class ChartFromInstructions extends MesquiteModule implements NumberForIt
 	public int numberLinesInFile(MesquiteFile file){
 		int count = 0;
 		if (file.openReading()) {
-			StringBuffer sb = new StringBuffer(1000);
+			MesquiteStringBuffer sb = new MesquiteStringBuffer(1000);
 				file.readLine(sb);
 				String line = sb.toString();		
 			boolean abort = false;
@@ -523,7 +528,7 @@ public class ChartFromInstructions extends MesquiteModule implements NumberForIt
 		file.linkProgressIndicator(progIndicator);
 		boolean writeTokens = true;
 		if (file.openReading()) {
-			StringBuffer sb = new StringBuffer(100);
+			MesquiteStringBuffer sb = new MesquiteStringBuffer(100);
 			file.readLine(sb);
 			String line = sb.toString();		
 			//line = file.readLine();		

@@ -20,6 +20,11 @@ import java.awt.event.*;
 import mesquite.lib.*;
 import mesquite.lib.characters.*;
 import mesquite.lib.duties.*;
+import mesquite.lib.ui.DoubleSliderWindow;
+import mesquite.lib.ui.ExtensibleDialog;
+import mesquite.lib.ui.MesquiteWindow;
+import mesquite.lib.ui.RadioButtons;
+import mesquite.lib.ui.SliderWindow;
 import mesquite.categ.lib.*;
 import mesquite.stochchar.lib.*;
 /* ======================================================================== */
@@ -143,6 +148,7 @@ public class AsymmModelCurator extends CategProbModelCurator  implements Editing
 				return null;
 			
 			AsymmModelEditor dsw = new AsymmModelEditor(windowServer, "Edit model " + modelToEdit.getName(), param1Name, makeCommand("setParam1", modelToEdit), modelToEdit.getParam1(), 0, MesquiteDouble.infinite, 0, 1, param0Name, makeCommand("setParam0", modelToEdit), modelToEdit.getParam0(), 0, MesquiteDouble.infinite, 0, 1); 
+			windowServer.setModuleWindow(dsw);
 			dsw.setPrior(modelToEdit.getUseEquilFreqAsPrior(), makeCommand("toggleEquilibPrior", modelToEdit));
 			dsw.setAllowEstimation(modelToEdit instanceof CModelEstimator);
 			dsw.useExponentialScale(true);
@@ -157,7 +163,7 @@ public class AsymmModelCurator extends CategProbModelCurator  implements Editing
 			
 			return windowServer;
 		}
-		return null;
+		return this;
    	}
 	/*.................................................................................................................*/
  		/*if (modal && false){

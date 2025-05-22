@@ -17,6 +17,7 @@ package mesquite.categ.lib;
 import java.util.*;
 import mesquite.lib.*;
 import mesquite.lib.characters.*;
+import mesquite.lib.ui.MesquiteColorTable;
 
 
 

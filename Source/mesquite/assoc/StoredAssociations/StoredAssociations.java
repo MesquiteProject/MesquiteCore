@@ -18,6 +18,9 @@ import java.util.*;
 import java.awt.*;
 import mesquite.lib.*;
 import mesquite.lib.duties.*;
+import mesquite.lib.taxa.Taxa;
+import mesquite.lib.ui.ListDialog;
+import mesquite.lib.ui.MesquiteWindow;
 import mesquite.assoc.lib.*;
 
 /* ======================================================================== */
@@ -27,7 +30,7 @@ public class StoredAssociations extends AssociationSource implements MesquiteLis
 	AssociationsManager manager;
 	TaxaAssociation currentAssociation = null;
 	Taxa currentTaxa = null;
-	Taxa currentTaxa2 = null;
+	ListableVector associationsVector;
 	/*.................................................................................................................*/
 	public boolean startJob(String arguments, Object condition, boolean hiredByName) {
 		manager = (AssociationsManager)findElementManager(TaxaAssociation.class);
@@ -35,17 +38,24 @@ public class StoredAssociations extends AssociationSource implements MesquiteLis
 			return sorry(getName() + " couldn't start because no associations manager was found.");
 		}
 		if (manager.getNumberOfAssociations()==0) {
-			return sorry("No stored associations between taxa are available.");
-		}
+			return sorry("No stored associations between taxa are available. If you want to use this, please first establish an association, e.g. by the menu item Taxa&Trees > New Association...");
+		} 
 		addMenuItem("Choose Taxa Association...", makeCommand("chooseAssociation", this));
+		associationsVector = manager.getAssociationsVector();
+		associationsVector.addListener(this);
 		return true;
 	}
- 	public String getKeywords(){
- 		return "genes species";
- 	}
+	public String getKeywords(){
+		return "genes species";
+	}
 
 	public boolean isPrerelease(){
 		return false;
+	}
+	public void endJob() {
+		if (this.associationsVector != null)
+			associationsVector.removeListener(this);
+		super.endJob();
 	}
 	/*.................................................................................................................*/
 	public void changed(Object caller, Object obj, Notification notification){
@@ -69,7 +79,7 @@ public class StoredAssociations extends AssociationSource implements MesquiteLis
 		if (!MesquiteInteger.isCombinable(currentAssociationIndex))
 			return null;
 		Snapshot temp = new Snapshot();
-			temp.addLine("setCurrentAssociation " + currentAssociationIndex); 
+		temp.addLine("setCurrentAssociation " + currentAssociationIndex); 
 		return temp;
 	}
 	MesquiteInteger pos = new MesquiteInteger();
@@ -87,14 +97,18 @@ public class StoredAssociations extends AssociationSource implements MesquiteLis
 			if (MesquiteInteger.isCombinable(c)) {
 				currentAssociationID = c;
 				currentAssociationIndex = MesquiteInteger.unassigned;
-				parametersChanged();
+			parametersChanged();
 			}
 		}
 		else if (checker.compare(this.getClass(), "Choose the current association", null, commandName, "chooseAssociation")) {
 			if (currentTaxa !=null) {
 				TaxaAssociation t = chooseAssociation(containerOfModule(), currentTaxa);
-				if (t!=null)
+				if (t!=null){
+					currentAssociationIndex = manager.getWhichAssociation(currentTaxa, t);
+					currentAssociation = t;
+					currentAssociationID = MesquiteInteger.unassigned;
 					parametersChanged();
+				}
 				return t;
 			}
 			else
@@ -119,25 +133,28 @@ public class StoredAssociations extends AssociationSource implements MesquiteLis
 	}
 	/*.................................................................................................................*/
 	public TaxaAssociation getCurrentAssociation(Taxa taxa) { 
+		
 		TaxaAssociation oldAssociation = currentAssociation;
 		currentTaxa = taxa;
 		boolean done = false;
 		if (MesquiteInteger.isCombinable(currentAssociationID)&& !MesquiteInteger.isCombinable(currentAssociationIndex)){
-			currentAssociation  =  manager.findAssociationByID(currentAssociationID, taxa);
+			currentAssociation =  manager.findAssociationByID(currentAssociationID, taxa);
 			currentAssociationIndex = manager.getWhichAssociation(taxa, currentAssociation);
 			if (currentAssociation != null){
 				done = true;
 			}
 		}
- 		if (!done){
+		if (!done){
 			if (!MesquiteThread.isScripting() && !MesquiteInteger.isCombinable(currentAssociationIndex) && getNumberOfAssociations(taxa)>1)
-				currentAssociation  =  chooseAssociation(containerOfModule(), taxa);
+				currentAssociation =  chooseAssociation(containerOfModule(), taxa);
 			else {
-				if (getNumberOfAssociations(taxa) ==1)
+				if (getNumberOfAssociations(taxa) ==1) {
 					currentAssociationIndex = 0;
+				}
 				else if (currentAssociationIndex>=getNumberOfAssociations(taxa) || currentAssociationIndex<0)
 					return  null;
 				currentAssociation = manager.getAssociation(taxa, currentAssociationIndex);
+				
 			}
 		}
 		if (currentAssociation!=null && currentAssociation!=oldAssociation){
@@ -171,7 +188,8 @@ public class StoredAssociations extends AssociationSource implements MesquiteLis
 	}
 	/*.................................................................................................................*/
 	public TaxaAssociation getAssociation(Taxa taxa1, Taxa taxa2, int ic) {
-		if (ic >= manager.getNumberOfAssociations(taxa1, taxa2))			return null;
+		if (ic >= manager.getNumberOfAssociations(taxa1, taxa2))
+			return null;
 		return manager.getAssociation(taxa1, taxa2, ic);
 	}
 	/*.................................................................................................................*/

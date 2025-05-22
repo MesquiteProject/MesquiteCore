@@ -19,6 +19,15 @@ import java.awt.*;
 import mesquite.lib.*;
 import mesquite.lib.characters.*;
 import mesquite.lib.duties.*;
+import mesquite.lib.tree.Tree;
+import mesquite.lib.tree.TreeDecorator;
+import mesquite.lib.tree.TreeDisplay;
+import mesquite.lib.tree.TreeDisplayExtra;
+import mesquite.lib.ui.ColorDistribution;
+import mesquite.lib.ui.ColorRecord;
+import mesquite.lib.ui.GraphicsUtil;
+import mesquite.lib.ui.MesquiteColorTable;
+import mesquite.lib.ui.MesquiteSubmenuSpec;
 import mesquite.cont.lib.*;
 
 /* ======================================================================== */
@@ -226,6 +235,8 @@ class ShadeNumbersDecorator extends TreeDecorator {
 	}
 	/*.................................................................................................................*/
 	private void shadeNode(int N, Tree tree, NumberArray numbers, MesquiteNumber min, MesquiteNumber max, Graphics g) {
+		if (tree.withinCollapsedClade(N))
+			return;
 		for (int d = tree.firstDaughterOfNode(N); tree.nodeExists(d); d = tree.nextSisterOfNode(d))
 				shadeNode(d, tree, numbers, min, max, g);
 				

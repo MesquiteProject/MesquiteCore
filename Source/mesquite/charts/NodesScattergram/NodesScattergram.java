@@ -18,6 +18,21 @@ import java.awt.*;
 import java.util.*;
 import mesquite.lib.*;
 import mesquite.lib.duties.*;
+import mesquite.lib.tree.LabelsAtNodes;
+import mesquite.lib.tree.Tree;
+import mesquite.lib.tree.TreeDisplay;
+import mesquite.lib.tree.TreeDisplayExtra;
+import mesquite.lib.ui.AlertDialog;
+import mesquite.lib.ui.ChartListener;
+import mesquite.lib.ui.ChartWindow;
+import mesquite.lib.ui.Charter;
+import mesquite.lib.ui.DoubleMiniScroll;
+import mesquite.lib.ui.GraphicsUtil;
+import mesquite.lib.ui.MesquiteChart;
+import mesquite.lib.ui.MesquiteLabel;
+import mesquite.lib.ui.MesquiteMenuSpec;
+import mesquite.lib.ui.MesquiteSubmenuSpec;
+import mesquite.lib.ui.MesquiteWindow;
 
 /* ======================================================================== */
 /**=== Class NodesScattergram.  ===*/
@@ -462,14 +477,7 @@ class NodeLabeller extends TreeDisplayExtra {
 			c.setLocation((int)treeDisplay.getBounds().width- w, (int)nodeY + 18);  // integer nodeloc approximation
 		else
 			c.setLocation((int)nodeX + 16, (int)nodeY + 18); // integer nodeloc approximation
-		g.setColor(brightGreen);
-		g.setXORMode(Color.white);
-		GraphicsUtil.drawLine(g,nodeX, nodeY, c.getBounds().x, c.getBounds().y);
-		GraphicsUtil.drawLine(g,nodeX, nodeY+1, c.getBounds().x, c.getBounds().y + 1);
-		GraphicsUtil.drawLine(g,nodeX, nodeY+2, c.getBounds().x, c.getBounds().y + 2);
-		GraphicsUtil.drawLine(g,nodeX, nodeY+3, c.getBounds().x, c.getBounds().y + 3);
-		g.setPaintMode();
-		g.setColor(Color.black);
+		GraphicsUtil.drawXORLine(g, (int)nodeX, (int)nodeY, c.getBounds().x, c.getBounds().y, 3, brightGreen);
 		labelDrawn = N;
 	}
 	/*.................................................................................................................*/
@@ -484,17 +492,13 @@ class NodeLabeller extends TreeDisplayExtra {
 			return;
 		double nodeX = treeDisplay.getTreeDrawing().x[N];
 		double nodeY = treeDisplay.getTreeDrawing().y[N];
-		g.setColor(brightGreen);
-		g.setXORMode(Color.white);
-		GraphicsUtil.drawLine(g,nodeX, nodeY, c.getBounds().x, c.getBounds().y);
-		GraphicsUtil.drawLine(g,nodeX, nodeY+1, c.getBounds().x, c.getBounds().y + 1);
-		GraphicsUtil.drawLine(g,nodeX, nodeY+2, c.getBounds().x, c.getBounds().y + 2);
-		GraphicsUtil.drawLine(g,nodeX, nodeY+3, c.getBounds().x, c.getBounds().y + 3);
-		g.setPaintMode();
+		GraphicsUtil.undrawXORLine(treeDisplay, g, (int)nodeX, (int)nodeY, c.getBounds().x, c.getBounds().y, 3, brightGreen);
 		labelDrawn = -1;
 	}
 	/*.................................................................................................................*/
 	private void drawLabels(int N, Tree tree, Graphics g) {
+		if (tree.withinCollapsedClade(N))
+			return;
 		for (int d = tree.firstDaughterOfNode(N); tree.nodeExists(d); d = tree.nextSisterOfNode(d))
 			drawLabels(d, tree, g);
 		drawOneLabel(N, tree, g);

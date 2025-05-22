@@ -18,6 +18,11 @@ import java.util.*;
 import java.awt.*;
 import mesquite.lib.*;
 import mesquite.lib.duties.*;
+import mesquite.lib.taxa.Taxa;
+import mesquite.lib.tree.MesquiteTree;
+import mesquite.lib.tree.TreeVector;
+import mesquite.lib.ui.AlertDialog;
+import mesquite.lib.ui.ProgressIndicator;
 import mesquite.trees.lib.*;
 
 /* ======================================================================== */
@@ -319,15 +324,16 @@ public class AddAndRearrange extends TreeSearcher implements Incrementable {
 		return true;
 	}
 	/*.................................................................................................................*/
-	public void fillTreeBlock(TreeVector treeList){
+	public int fillTreeBlock(TreeVector treeList){
 		if (treeList==null)
-			return;
+			return ResultCodes.INPUT_NULL;
 		Taxa taxa = treeList.getTaxa();
 		TreeVector trees = getTrees(taxa);
 		treeList.setName("Trees from Mesquite's heuristic search");
 		treeList.setAnnotation ("Parameters: "  + getParameters(), false);
 		if (trees!=null)
 			treeList.addElements(trees, false);
+		return ResultCodes.NO_ERROR;
 	}
 	/*.................................................................................................................*/
 	public String getParameters() {

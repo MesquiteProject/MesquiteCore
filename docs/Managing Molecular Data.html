@@ -41,8 +41,8 @@
     <td width="51%"><strong id="PackageTitle">Mesquite</strong></td>
     <td width="33%" align="right"><div id="subtitle"><!-- InstanceBeginEditable name="subtitle" -->Managing Molecular Data<!-- InstanceEndEditable --></div></td>
     <td width="2%">&nbsp;</td>
-    <td width="14%">Version 3.81<br />
-      April 2023<br /></td>
+    <td width="14%">Version 4.0beta<br />
+      May 2025<br /></td>
   </tr>
 </table>
 
@@ -120,7 +120,8 @@
   			<tr><td><a href="javascript:pageLink('Character%20Evolution.html');">Character Evolution</a></td></tr>
   			<tr><td><a href="javascript:pageLink('Align.html');">Sequence Alignment</a></td></tr>
   			<tr><td><a href="javascript:pageLink('Analyzing%20Molecular%20Data.html');">Molecular Data</a></td></tr>
-  			<tr><td><a href="javascript:pageLink('Diversification.html');">Diversification</a></td></tr>
+    			<tr><td><a href="javascript:pageLink('Managing%20Genomic%20Data.html');">Phylogenomic Data</a></td></tr>
+ 			<tr><td><a href="javascript:pageLink('Diversification.html');">Diversification</a></td></tr>
   			<tr><td><a href="javascript:pageLink('Gene%20Trees.html');">Gene Trees</a></td></tr>
   			<tr><td><a href="javascript:pageLink('Simulations%20&%20Randomizations.html');">Simulations &amp; Randomizations</a></td></tr>
   			<tr><td><a href="javascript:pageLink('Analyzing%20Continuous%20Characters.html');">Continuous Characters</a></td></tr>
@@ -133,7 +134,8 @@
     <div class="CollapsiblePanelContent" style="display: block">
   		<table width="100%" border="0" cellpadding="1">
   			<tr><td><a href="javascript:pageLink('Managing%20Molecular%20Data.html');">Managing Molecular Data</a></td></tr>
-  			<tr><td><a href="javascript:pageLink('Managing%20Continuous%20Data.html');">Managing Continuous Data</a></td></tr>
+   			<tr><td><a href="javascript:pageLink('Managing%20Genomic%20Data.html');">Managing Phylogenomic Data</a></td></tr>
+ 			<tr><td><a href="javascript:pageLink('Managing%20Continuous%20Data.html');">Managing Continuous Data</a></td></tr>
   			<tr><td><a href="javascript:pageLink('Interactions%20with%20Other%20Programs.html');">Interactions with other programs</a></td></tr>
 		</table>
     </div>
@@ -201,6 +203,10 @@
 <h1 id="toc0"><a name="Managing Molecular Data"></a>Managing Molecular Data</h1>
  Molecular data (DNA or protein sequences) can be edited, manipulated, simulated and analyzed in various ways in Mesquite. Most of the features discussed elsewhere concerning editing and analysis of general categorical data also apply to molecular data; here we focus on features specifically designed for sequence data.<br />
 <br />
+	   <hr />
+ <h3>***&nbsp; This page has not been updated yet for version 4 ***</h3>
+ <hr />
+
 <h3 id="toc1"><a name="Managing Molecular Data--Contents"></a>Contents</h3>
  <ul><li><a  href="Managing%20Molecular%20Data.html#editing">Editing molecular data</a><ul><li><a  href="Managing%20Molecular%20Data.html#altertransform">Alter/Transform Tools</a></li><li><a  href="Managing%20Molecular%20Data.html#alignment">Alignment</a></li><li><a  href="Managing%20Molecular%20Data.html#finding">Finding sequences</a></li><li><a  href="Managing%20Molecular%20Data.html#sequencedisplay">Display of sequences</a></li><li><a  href="Managing%20Molecular%20Data.html#consensus">Consensus sequences</a></li></ul></li><li><a  href="Managing%20Molecular%20Data.html#fusing">Combining molecular matrices and sequences</a><ul><li><a  href="Managing%20Molecular%20Data.html#addingTaxa">Adding new taxa/sequences</a><ul><li><a  href="Managing%20Molecular%20Data.html#includetaxafromfile">Include Taxa from File</a></li><li><a  href="Managing%20Molecular%20Data.html#dragAndDrop">Drag and Drop</a></li></ul></li><li><a  href="Managing%20Molecular%20Data.html#addingGenes">Adding genes</a><ul><li><a  href="Managing%20Molecular%20Data.html#concatMatrices">Concatenate Matrices</a></li><li><a  href="Managing%20Molecular%20Data.html#fusedMatrices">Fused Matrix Export</a></li></ul></li></ul></li><li><a  href="Managing%20Molecular%20Data.html#managing">Other tools for managing molecular matrices</a><ul><li><a  href="Managing%20Molecular%20Data.html#archivenames">Alternative Taxon Names</a></li><li><a  href="Managing%20Molecular%20Data.html#translate">Translate to protein</a></li></ul></li><li><a  href="Managing%20Molecular%20Data.html#codonpositions">Codon Positions</a></li><li><a  href="Managing%20Molecular%20Data.html#geneticcodes">Genetic Codes</a></li></ul><br />
 <div style="text-align: center"><img src="files/DNAMatrix.gif" alt="DNAMatrix.gif" title="DNAMatrix.gif" /></div><br />
@@ -316,7 +322,10 @@ If you have two files, each with sequences from a different gene but with blocks
  Managing sequences in different matrices, especially if from different genes, can be difficult. Several functions assist in this. These features are not restricted to molecular data, but we anticipate most of their use will be with sequences.<br />
 <br />
 <ul><li><a name="archivenames"></a>Alternative Taxon Names: This feature allows you to have several alternative naming schemes for taxa, e.g. one set of names that includes your specimen codes, another set that uses formal taxonomic names (for publication), another set whose names are condensed for exporting the file to programs like CLUSTAL that can handle only short names, and so on. For details see <a  href="Taxa.html#alternativeNames">here</a>.</li><li><a name="translate"></a>Translation to protein: a new matrix of amino acids, derived by translation from existing protein-coding DNA matrix, can be formed by choosing Characters&gt;Make New Matrix from&gt;Translate DNA to Protein. This request that <a  href="Managing%20Molecular%20Data.html#codonpositions">codon positions</a>, and the correct <a  href="Managing%20Molecular%20Data.html#geneticcodes">genetic code</a>, be assigned.</li></ul><h3 id="toc11"><a name="Managing Molecular Data-Other Tools for Managing Molecular matrices-Display of Sequences"></a><a name="sequencedisplay"></a>Display of Sequences</h3>
- Protein-coding sequences can be colored by the amino acid into which a triplet would be translated (under the genetic code for that triplet) by choosing Display&gt;Color Cells&gt;Color Nucleotide by Amino Acid.<br />
+<p>To see the matrix in compressed form so as to see more sites at once, hit the bird's eye button at the lower left (<img src="files/birdsEye.gif" width="16" height="12" alt=""/>). The columns will become very narrow, showing only the color:</p>
+	<div style="text-align: center"><img src="files/birdsEyeMatrix.jpg" width="70%"  alt=""/></div>
+	<p>
+Protein-coding sequences can be colored by the amino acid into which a triplet would be translated (under the genetic code for that triplet) by choosing Display&gt;Color Cells&gt;Color Nucleotide by Amino Acid.</p>
 <h3 id="toc12"><a name="Managing Molecular Data-Other Tools for Managing Molecular matrices-Consensus Sequences"></a><a name="consensus"></a>Consensus Sequences</h3>
  Consensus Sequences can be displayed above the character matrix by choosing Display&gt;Add Info Strip&gt;Consensus Sequence Strip, as indicated below by the arrows:<br />
 <br />
@@ -347,7 +356,7 @@ The genetic code affects, among other things, the Translate DNA to Protein comma
     </div>
 	<!-- This clearing element should immediately follow the #mainContent div in order to force the #container div to contain all child floats --><br class="clearfloat" />
   <div id="footer">
-    <p> ©2023 Wayne P. Maddison &amp;  David R. Maddison </p>
+    <p> ©2025 Wayne P. Maddison &amp;  David R. Maddison </p>
   <!-- end #footer --></div>
 <!-- end #container --></div>
 

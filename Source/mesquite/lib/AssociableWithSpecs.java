@@ -16,6 +16,8 @@ package mesquite.lib;
 import java.awt.*;
 import java.util.*;
 
+import mesquite.lib.taxa.TaxaPartition;
+
 /*==========================  Mesquite Basic Class Library    ==========================*/
 /*===  the basic classes used by the trunk of Mesquite and available to the modules
 
@@ -84,6 +86,7 @@ public abstract class AssociableWithSpecs extends Associable {
 	}
 	public void dispose(){
   		if (specsVectors!=null){ //update size of specification sets
+  			try {
 	  		for (int i=0; i<specsVectors.size(); i++) {
 	  			SpecsSetVector sv = (SpecsSetVector)specsVectors.elementAt(i);
 	  			SpecsSet s = sv.getCurrentSpecsSet();
@@ -93,6 +96,9 @@ public abstract class AssociableWithSpecs extends Associable {
 	  		}
 	  		if (specsVectors!=null)
 	  			specsVectors.removeAllElements();
+  			}
+  			catch (Exception e){
+  			}
   		}
   		specsVectors = null;
  		super.dispose();
@@ -159,6 +165,51 @@ public abstract class AssociableWithSpecs extends Associable {
   		}
   		return true;
 	}
+	
+	/** Deletes parts flagged for deletion in Bits*/
+	protected boolean deletePartsFlagged(Bits toDelete){ 
+		
+		if (!super.deletePartsFlagged(toDelete))
+			return false;
+  		if (specsVectors!=null){ //update size of specification sets
+	  		for (int i=0; i<specsVectors.size(); i++) {
+	  			SpecsSetVector sv = (SpecsSetVector)specsVectors.elementAt(i);
+	  			for (int j=0; j<sv.size(); j++) {
+	  				SpecsSet css = (SpecsSet)sv.elementAt(j);
+	  				css.deletePartsFlagged(toDelete);
+	  			}
+	  			SpecsSet currentSS = sv.getCurrentSpecsSet();
+	  			if (currentSS!=null)
+	  				currentSS.deletePartsFlagged(toDelete);
+	  		}
+  		}
+		return true;
+	}	
+	
+	
+	/** Deletes parts by blocks.
+	 * blocks[i][0] is start of block; blocks[i][1] is end of block
+	 * Assumes that these blocks are in sequence, non-overlapping, etc!!! *
+	protected boolean deletePartsBy Blocks(int[][] blocks){ 
+		
+		if (!super.deletePartsBy Blocks(blocks))
+			return false;
+  		if (specsVectors!=null){ //update size of specification sets
+	  		for (int i=0; i<specsVectors.size(); i++) {
+	  			SpecsSetVector sv = (SpecsSetVector)specsVectors.elementAt(i);
+	  			for (int j=0; j<sv.size(); j++) {
+	  				SpecsSet css = (SpecsSet)sv.elementAt(j);
+	  				css.deletePartsBy Blocks(blocks);
+	  			}
+	  			SpecsSet currentSS = sv.getCurrentSpecsSet();
+	  			if (currentSS!=null)
+	  				currentSS.deletePartsBy Blocks(blocks);
+	  		}
+  		}
+		return true;
+	}
+	
+	/**/
 	public boolean moveParts(int starting, int num, int justAfter){
 		if (!super.moveParts(starting, num, justAfter))
 			return false;
@@ -224,6 +275,7 @@ public abstract class AssociableWithSpecs extends Associable {
 	  		}
 	  		//not found; need to make new one
   			SpecsSetVector sv = new SpecsSetVector(typeName); 
+  			sv.setObjectCharacterized(this);
   			sv.setType(type);
   			specsVectors.addElement(sv);
   		}
@@ -248,6 +300,7 @@ public abstract class AssociableWithSpecs extends Associable {
 	  		//not found; need to make new one
 			String typeName = specsSet.getTypeName() + "s";
 			SpecsSetVector sv = new SpecsSetVector(typeName); 
+  			sv.setObjectCharacterized(this);
   			sv.setType(type);
   			specsVectors.addElement(sv);
   			sv.addSpecSet(specsSet);
@@ -286,7 +339,8 @@ public abstract class AssociableWithSpecs extends Associable {
   		}
   		return 0;
   	}
- 	/*.................................................................................................................*/
+
+	/*.................................................................................................................*/
  	/** returns the given specs set from the list of specs sets*/
   	public SpecsSet getCurrentSpecsSet(Class type){  
   		if (type!=null && specsVectors!=null) {
@@ -313,6 +367,7 @@ public abstract class AssociableWithSpecs extends Associable {
 	  		//not found; need to make new one
 			String typeName = specsSet.getTypeName() + "s";
  			SpecsSetVector sv = new SpecsSetVector(typeName); 
+  			sv.setObjectCharacterized(this);
   			sv.setType(type);
   			specsVectors.addElement(sv);
 	  		sv.setCurrentSpecsSet(specsSet);

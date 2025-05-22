@@ -19,51 +19,31 @@ import java.util.*;
 import java.awt.*;
 import mesquite.lib.*;
 import mesquite.lib.duties.*;
+import mesquite.lib.tree.MesquiteTree;
+import mesquite.lib.tree.Tree;
+import mesquite.lib.tree.TreeDisplay;
+import mesquite.lib.tree.TreeDisplayExtra;
+import mesquite.lib.ui.ExtensibleDialog;
+import mesquite.lib.ui.MesquiteCheckMenuItem;
+import mesquite.lib.ui.MesquiteMenuItem;
+import mesquite.lib.ui.MesquiteMenuSpec;
+import mesquite.lib.ui.MesquitePopup;
+import mesquite.lib.ui.MesquiteSubmenuSpec;
+import mesquite.lib.ui.StringInABox;
+import mesquite.trees.BranchPropertyDisplayControl.BranchPropertyDisplayControl;
 
 /* ======================================================================== */
+/* No longer used, subsumed under BranchPropertyDisplayControl, but kept here to forward old scripts thereto */
 public class DrawTreeAssocDoubles extends TreeDisplayAssistantDI {
-	public Vector extras;
-	public boolean first = true;
-	MesquiteBoolean on, percentage, horizontal, centred, whiteEdges, showOnTerminals;
-	MesquiteInteger positionAlongBranch;
-	MesquiteDouble thresholdValueToShow;
-	MesquiteSubmenuSpec positionSubMenu;
-	public static final boolean CENTEREDDEFAULT = false;
-	public ListableVector names;
-	static boolean asked= false;
-	int digits = 4;
-	int fontSize = 10;
-	int xOffset = 0;
-	int yOffset = 0;
+	public boolean loadModule(){
+		return true;
+	}   	 
+
+	MesquiteBoolean on;
 	/*.................................................................................................................*/
 	public boolean startJob(String arguments, Object condition, boolean hiredByName){
-		extras = new Vector();
-		names = new ListableVector();
-		//if (!MesquiteThread.isScripting())
-		names.addElement(new MesquiteString("consensusFrequency", "consensusFrequency"), false);
-		names.addElement(new MesquiteString("bootstrapFrequency", "bootstrapFrequency"), false);
-		names.addElement(new MesquiteString("posteriorProbability", "posteriorProbability"), false);
-		thresholdValueToShow = new MesquiteDouble();
 		on = new MesquiteBoolean(true);  //ON is currently true always
-		percentage = new MesquiteBoolean(false);
-		horizontal = new MesquiteBoolean(true);
-		centred = new MesquiteBoolean(CENTEREDDEFAULT);
-		whiteEdges = new MesquiteBoolean(true);
-		showOnTerminals = new MesquiteBoolean(true);
-		MesquiteSubmenuSpec mss = addSubmenu(null, "Node-Associated Values");
-		addItemToSubmenu(null, mss, "Choose Values To Show...", makeCommand("chooseValues",  this));
-		addItemToSubmenu(null, mss, "Threshold Value...", makeCommand("setThreshold",  this));
-		MesquiteSubmenuSpec mss2 =  addSubmenu(mss, "Styles");  //Wayne: here it is.   x123y
-		addItemToSubmenu(mss, mss2, "Percentage, Below Branch", makeCommand("setCorvallisStyle",  this));
-		addItemToSubmenu(null, mss, "Digits...", makeCommand("setDigits",  this));
-		addCheckMenuItemToSubmenu(null, mss, "Show As Percentage", makeCommand("writeAsPercentage",  this), percentage);
-		addItemToSubmenu(null, mss, "Font Size...", makeCommand("setFontSize",  this));
-		addCheckMenuItemToSubmenu(null, mss, "White Edges", makeCommand("toggleWhiteEdges",  this), whiteEdges);
-		addCheckMenuItemToSubmenu(null, mss, "Show on Terminal Branches", makeCommand("toggleShowOnTerminals",  this), showOnTerminals);
-		addCheckMenuItemToSubmenu(null, mss, "Centered on Branch", makeCommand("toggleCentred",  this), centred);
-		//		addItemToSubmenu(null, mss, "Position Along Branch...", makeCommand("setPositionAlongBranch",  this));
-		addItemToSubmenu(null, mss, "Locations...", makeCommand("setOffset",  this));
-		addCheckMenuItemToSubmenu(null, mss, "Horizontal", makeCommand("toggleHorizontal",  this), horizontal);
+
 		return true;
 	} 
 	/*.................................................................................................................*/
@@ -72,9 +52,7 @@ public class DrawTreeAssocDoubles extends TreeDisplayAssistantDI {
 	}
 	/*.................................................................................................................*/
 	public   TreeDisplayExtra createTreeDisplayExtra(TreeDisplay treeDisplay) {
-		NodeAssocValuesExtra newPj = new NodeAssocValuesExtra(this, treeDisplay);
-		extras.addElement(newPj);
-		return newPj;
+		return null;
 	}
 	/*.................................................................................................................*/
 	public String getName() {
@@ -83,42 +61,10 @@ public class DrawTreeAssocDoubles extends TreeDisplayAssistantDI {
 
 	/*.................................................................................................................*/
 	public Snapshot getSnapshot(MesquiteFile file) {
-		Snapshot temp = new Snapshot();
-		if (on.getValue()){
-			temp.addLine("setOn " + on.toOffOnString());
-			for (int i=0; i< names.size(); i++)
-				temp.addLine("toggleShow " + StringUtil.tokenize(((Listable)names.elementAt(i)).getName()));
-			temp.addLine("toggleShow consensusFrequency"); //given it's on by default, this will reverse previous command
-			temp.addLine("toggleShow posteriorProbability"); //given it's on by default, this will reverse previous command
-			temp.addLine("toggleShow bootstrapFrequency"); //given it's on by default, this will reverse previous command
-			temp.addLine("setDigits " + digits); 
-			temp.addLine("setThreshold " + thresholdValueToShow); 
-			temp.addLine("writeAsPercentage " + percentage.toOffOnString());
-			temp.addLine("toggleCentred " + centred.toOffOnString());
-			//			temp.addLine("setPositionAlongBranch " + positionAlongBranch); 
-			temp.addLine("toggleHorizontal " + horizontal.toOffOnString());
-			temp.addLine("toggleWhiteEdges " + whiteEdges.toOffOnString());
-			temp.addLine("toggleShowOnTerminals " + showOnTerminals.toOffOnString());
-			temp.addLine("setFontSize " + fontSize); 
-			temp.addLine("setOffset " + xOffset + "  " + yOffset); 
-		}
-		return temp;
+		return null;
+	
 	}
-	/*.................................................................................................................*
-	public void queryLocationAlongBranch(){
-		MesquiteInteger buttonPressed = new MesquiteInteger(1);
-		ExtensibleDialog settingsDialog = new ExtensibleDialog(containerOfModule(), "Location Along Branch",  buttonPressed);
-		RadioButtons rb = settingsDialog.addRadioButtons(new String[]{"Just apical to node","Just basal to node","Centered on branch"}, positionAlongBranch.getValue());
-		settingsDialog.completeAndShowDialog(true);
-		boolean ok = (settingsDialog.query()==0);
-
-		if (ok) {
-			positionAlongBranch.setValue(rb.getValue());
-
-		}
-		settingsDialog.dispose();
-	 	storePreferences();
-	}
+	
 	/*.................................................................................................................*/
 	MesquiteInteger pos = new MesquiteInteger();
 	/*.................................................................................................................*/
@@ -128,140 +74,116 @@ public class DrawTreeAssocDoubles extends TreeDisplayAssistantDI {
 				on.setValue(!on.getValue());
 			else
 				on.toggleValue(parser.getFirstToken(arguments));
-			for (int i =0; i<extras.size(); i++){
-				NodeAssocValuesExtra e = (NodeAssocValuesExtra)extras.elementAt(i);
-				e.setOn(on.getValue());
-			}
-
 		}
-		else if (checker.compare(this.getClass(), "Shows dialog box to choose what values to display", null, commandName, "chooseValues")) {
-			if (extras.size() == 0)
-				return null;
-			showChoiceDialog((Associable)((NodeAssocValuesExtra)extras.elementAt(0)).lastTree, names);
+//" showName centred whiteEdges showOnTerminals showIfUnassigned showPercentage vertical "
+		else if (checker.compare(this.getClass(), "Sets whether to write the values as percentage", "[on or off]", commandName, "writeAsPercentage")) {//forwarded
+			String token = parser.getFirstToken(arguments);
+			boolean B = true;
+			if (token.equalsIgnoreCase("off") || token.equalsIgnoreCase("false"))
+				B = false;
+			MesquiteModule mb = findNearestColleagueWithDuty(BranchPropertyDisplayControl.class);
+			if (mb != null)
+				mb.doCommand("setBooleansAllDoubles",  " x x x x x " + B + " x ", checker);
+	}
+		else if (checker.compare(this.getClass(), "Sets whether to write the values with horizontally", "[on or off]", commandName, "toggleHorizontal")) { //forwarded
+			String token = parser.getFirstToken(arguments);
+			boolean B = true;
+			if (token.equalsIgnoreCase("off") || token.equalsIgnoreCase("false"))
+				B = false;
+			MesquiteModule mb = findNearestColleagueWithDuty(BranchPropertyDisplayControl.class);
+			if (mb != null)
+				mb.doCommand("setBooleansAllDoubles",  " x x x x x x " + !B + " ", checker);
 		}
-		else if (checker.compare(this.getClass(), "Sets whether to write the values as percentage", "[on or off]", commandName, "writeAsPercentage")) {
-			if (StringUtil.blank(arguments))
-				percentage.setValue(!percentage.getValue());
-			else
-				percentage.toggleValue(parser.getFirstToken(arguments));
-			if (!MesquiteThread.isScripting()) parametersChanged();
+		else if (checker.compare(this.getClass(), "Sets whether to write the values white edges", "[on or off]", commandName, "toggleWhiteEdges")) {//forwarded
+			String token = parser.getFirstToken(arguments);
+			boolean B = true;
+			if (token.equalsIgnoreCase("off") || token.equalsIgnoreCase("false"))
+				B = false;
+			MesquiteModule mb = findNearestColleagueWithDuty(BranchPropertyDisplayControl.class);
+			if (mb != null)
+				mb.doCommand("setBooleansAllDoubles",  " x x " + B + " x x x x ", checker);
 		}
-		else if (checker.compare(this.getClass(), "Sets whether to write the values with horizontally", "[on or off]", commandName, "toggleHorizontal")) {
-			if (StringUtil.blank(arguments))
-				horizontal.setValue(!horizontal.getValue());
-			else
-				horizontal.toggleValue(parser.getFirstToken(arguments));
-			if (!MesquiteThread.isScripting()) parametersChanged();
+		else if (checker.compare(this.getClass(), "Sets whether to show the values on the terminal branches", "[on or off]", commandName, "toggleShowOnTerminals")) {//forwarded
+			String token = parser.getFirstToken(arguments);
+			boolean B = true;
+			if (token.equalsIgnoreCase("off") || token.equalsIgnoreCase("false"))
+				B = false;
+			MesquiteModule mb = findNearestColleagueWithDuty(BranchPropertyDisplayControl.class);
+			if (mb != null)
+				mb.doCommand("setBooleansAllDoubles",  " x x x " + B + " x x x ", checker);
 		}
-		else if (checker.compare(this.getClass(), "Sets whether to write the values white edges", "[on or off]", commandName, "toggleWhiteEdges")) {
-			if (StringUtil.blank(arguments))
-				whiteEdges.setValue(!whiteEdges.getValue());
-			else
-				whiteEdges.toggleValue(parser.getFirstToken(arguments));
-			if (!MesquiteThread.isScripting()) parametersChanged();
+		else if (checker.compare(this.getClass(), "Sets whether to write the values centrally over the branches", "[on or off]", commandName, "toggleCentred")) {//forwarded
+			String token = parser.getFirstToken(arguments);
+			boolean B = true;
+			if (token.equalsIgnoreCase("off") || token.equalsIgnoreCase("false"))
+				B = false;
+			MesquiteModule mb = findNearestColleagueWithDuty(BranchPropertyDisplayControl.class);
+			if (mb != null)
+				mb.doCommand("setBooleansAllDoubles",  " x " + B + " x x x x x ", checker);
+			
 		}
-		else if (checker.compare(this.getClass(), "Sets whether to show the values on the terminal branches", "[on or off]", commandName, "toggleShowOnTerminals")) {
-			if (StringUtil.blank(arguments))
-				showOnTerminals.setValue(!showOnTerminals.getValue());
-			else
-				showOnTerminals.toggleValue(parser.getFirstToken(arguments));
-			if (!MesquiteThread.isScripting()) parametersChanged();
-		}
-		else if (checker.compare(this.getClass(), "Sets whether to write the values centrally over the branches", "[on or off]", commandName, "toggleCentred")) {
-			if (StringUtil.blank(arguments))
-				centred.setValue(!centred.getValue());
-			else
-				centred.toggleValue(parser.getFirstToken(arguments));
-			if (!MesquiteThread.isScripting()) parametersChanged();
-		}
-		else if (checker.compare(this.getClass(), "Sets how many digits are shown", "[number of digits]", commandName, "setDigits")) {
+	//" fontSize xOffset yOffset digits color thresholdValue "
+		else if (checker.compare(this.getClass(), "Sets how many digits are shown", "[number of digits]", commandName, "setDigits")) {//forwarded
 			int newWidth= MesquiteInteger.fromFirstToken(arguments, pos);
-			if (!MesquiteInteger.isCombinable(newWidth))
-				newWidth = MesquiteInteger.queryInteger(containerOfModule(), "Set number of digits", "Number of digits (after decimal point) to display for values on tree:", digits, 0, 24);
-			if (newWidth>=0 && newWidth<24 && newWidth!=digits) {
-				digits = newWidth;
-				if (!MesquiteThread.isScripting()) parametersChanged();
+			if (newWidth>=0 && newWidth<24 ) {
+				MesquiteModule mb = findNearestColleagueWithDuty(BranchPropertyDisplayControl.class);
+				if (mb != null)
+					mb.doCommand("setNumbersAllDoubles",  " x x x  " + newWidth + " x x  ", checker);
 			}
 		}
-		else if (checker.compare(this.getClass(), "Sets threshold value - values have to be above this to be shown", "[value]", commandName, "setThreshold")) {
-			String value = parser.getFirstToken(arguments);
-			double newThreshold = MesquiteDouble.unassigned;
-			if (!"off".equalsIgnoreCase(value) && "?"!=value){
-				newThreshold= MesquiteDouble.fromString(value);
-				if (!MesquiteDouble.isCombinable(newThreshold) && !MesquiteThread.isScripting())
-					newThreshold = MesquiteDouble.queryDouble(containerOfModule(), "Set threshold value", "Only show values above this threshold:", "Remember to enter the threshold in its native format.  For example, if percentages are being shown, "+
-							" and you wish to have a threshold of 50%, then enter 0.5. To turn off the threshold, enter ?",thresholdValueToShow.getValue());
-			}
-			if (newThreshold!=thresholdValueToShow.getValue()) {
-				thresholdValueToShow.setValue(newThreshold);
-				if (!MesquiteThread.isScripting()) parametersChanged();
+		else if (checker.compare(this.getClass(), "Sets threshold value — values have to be above this to be shown", "[value]", commandName, "setThreshold")) {//forwarded
+			parser.setString(arguments);
+			double newThreshold = MesquiteDouble.fromString(parser);
+			if (MesquiteDouble.isCombinable(newThreshold)) {
+				MesquiteModule mb = findNearestColleagueWithDuty(BranchPropertyDisplayControl.class);
+				if (mb != null)
+					mb.doCommand("setNumbersAllDoubles",  " x x x x x " + newThreshold, checker);
 			}
 		}
-		else if (checker.compare(this.getClass(), "Set's to David's style", "", commandName, "setCorvallisStyle")) {
-			whiteEdges.setValue(false);
-			percentage.setValue(true);
-			centred.setValue(false);
-			horizontal.setValue(true);
-			thresholdValueToShow.setToUnassigned();
-			digits=0;
-			xOffset = -2;
-			yOffset = 9;
-			if (!MesquiteThread.isScripting()) parametersChanged();
+		else if (checker.compare(this.getClass(), "Set's to David's style", "", commandName, "setCorvallisStyle")) {//forwarded
+			String token = parser.getFirstToken(arguments);
+			boolean B = true;
+			if (token.equalsIgnoreCase("off") || token.equalsIgnoreCase("false"))
+				B = false;
+			MesquiteModule mb = findNearestColleagueWithDuty(BranchPropertyDisplayControl.class);
+			if (mb != null){
+				mb.doCommand("setBooleansAllDoubles",  " false false false false false true false ", checker);
+				mb.doCommand("setNumbersAllDoubles",  " x -2 9  0 x ?  ", checker);
+			}
 		}
-		else if (checker.compare(this.getClass(), "Sets offset of label from nodes", "[offsetX] [offsetY]", commandName, "setOffset")) {
+		else if (checker.compare(this.getClass(), "Sets offset of label from nodes", "[offsetX] [offsetY]", commandName, "setOffset")) {//forwarded
 			int newX= MesquiteInteger.fromFirstToken(arguments, pos);
 			int newY= MesquiteInteger.fromString(arguments, pos);
-			if (!MesquiteInteger.isCombinable(newX)){
-				MesquiteBoolean answer = new MesquiteBoolean(false);
-				MesquiteInteger nX = new MesquiteInteger(xOffset);
-				MesquiteInteger nY = new MesquiteInteger(yOffset);
-				MesquiteInteger.queryTwoIntegers(containerOfModule(), "Location of Values", "X offset from node", "Y offset from node", answer, nX, nY,-200,200,-200,200, null);
-				if (!answer.getValue())
-					return null;
-				newX = nX.getValue();
-				newY = nY.getValue();
-			}
-			if (newX>-200 && newX <200 && newY>-200 && newY <200 && (newX!=xOffset ||   newY!=yOffset)) {
-				xOffset = newX;
-				yOffset = newY;
-				if (!MesquiteThread.isScripting()) parametersChanged();
+			if (MesquiteInteger.isCombinable(newX) && newX>-200 && newX <200 && newY>-200 && newY <200) {
+				MesquiteModule mb = findNearestColleagueWithDuty(BranchPropertyDisplayControl.class);
+				if (mb != null)
+					mb.doCommand("setNumbersAllDoubles",  " x " + newX + " " + newY + " x x x x  ", checker);
 			}
 		}
-		else if (checker.compare(this.getClass(), "Sets font size", "[font size]", commandName, "setFontSize")) {
+		else if (checker.compare(this.getClass(), "Sets font size", "[font size]", commandName, "setFontSize")) {//forwarded
 			int newWidth= MesquiteInteger.fromFirstToken(arguments, pos);
-			if (!MesquiteInteger.isCombinable(newWidth))
-				newWidth = MesquiteInteger.queryInteger(containerOfModule(), "Set font size", "Font Size:", fontSize, 2, 96);
-			if (newWidth>1 && newWidth<96 && newWidth!=fontSize) {
-				fontSize = newWidth;
-				for (int i =0; i<extras.size(); i++){
-					NodeAssocValuesExtra e = (NodeAssocValuesExtra)extras.elementAt(i);
-					e.resetFontSize();
-				}
-				if (!MesquiteThread.isScripting()) parametersChanged();
+			if (newWidth>1 && newWidth<96 ) {
+				MesquiteModule mb = findNearestColleagueWithDuty(BranchPropertyDisplayControl.class);
+				if (mb != null)
+					mb.doCommand("setNumbersAllDoubles",  " " + newWidth + " x x x x x x  ", checker);
 			}
 		}
-		/*		else if (checker.compare(this.getClass(), "Sets the location of the value along the branch", "[location constant]", commandName, "setPositionAlongBranch")) {
-			int newPos= MesquiteInteger.fromFirstToken(arguments, pos);
-			if (!MesquiteInteger.isCombinable(newPos))
-				queryLocationAlongBranch();
-			else
-				positionAlongBranch.setValue(newPos);
-
-			if (!MesquiteThread.isScripting()) parametersChanged();
-		}
-		 */		
-
-		else if (checker.compare(this.getClass(), "Sets whether to show a node or branch associated value", "[on or off]", commandName, "toggleShow")) {
+		else if (checker.compare(this.getClass(), "Sets whether to show a node or branch associated value", "[on or off]", commandName, "toggleShow")) {//forwarded
 			String name = parser.getFirstToken(arguments);
-			if (isShowing(name)){
-				names.removeElementAt(names.indexOfByName(name), false);
-			}
-			else
-				names.addElement(new MesquiteString(name, name), false);
-
-			for (int i =0; i<extras.size(); i++){
-				NodeAssocValuesExtra e = (NodeAssocValuesExtra)extras.elementAt(i);
-				e.update();
+			String token = parser.getFirstToken(arguments);
+			boolean B = true;
+			if (token.equalsIgnoreCase("off") || token.equalsIgnoreCase("false"))
+				B = false;
+			if (B && on.getValue()){
+				MesquiteModule mb = findNearestColleagueWithDuty(BranchPropertyDisplayControl.class);
+			if (mb != null){
+				String toggle = "true";
+				if (name.equalsIgnoreCase("consensusFrequency") ||name.equalsIgnoreCase("posteriorProbability") ||name.equalsIgnoreCase("bootstrapFrequency"))  //because old system used to treat thses as starting at true!
+					toggle = "false";
+				mb.doCommand("showAssociate",  StringUtil.tokenize(name) + " " + Associable.DOUBLES + " " + toggle, checker);
+				mb.doCommand("setBooleans",  StringUtil.tokenize(name) + " " + Associable.DOUBLES + " false x x x false x x ", checker); //defaults
+				mb.doCommand("setNumbers",  StringUtil.tokenize(name) + " " + Associable.DOUBLES + " x x x x x ? ", checker); //defaults
+		}
 			}
 		}
 		else
@@ -269,61 +191,7 @@ public class DrawTreeAssocDoubles extends TreeDisplayAssistantDI {
 		return null;
 	}
 	/*.................................................................................................................*/
-	void showChoiceDialog(Associable tree, ListableVector names) {
-		if (tree == null)
-			return;
-		MesquiteInteger buttonPressed = new MesquiteInteger(1);
-		ListableVector v = new ListableVector();
-		int num = tree.getNumberAssociatedDoubles();
-		boolean[] shown = new boolean[num + names.size()]; //bigger than needed probably
-		for (int i = 0; i< num; i++){
-			DoubleArray da = tree.getAssociatedDoubles(i);
-			if (da != null){
-				v.addElement(new MesquiteString(da.getName(), ""), false);
-				if (names.indexOfByName(da.getName())>=0)
-					shown[i] = true;
-			}
-		}
-		for (int i = 0; i<names.size(); i++){
-			String name = ((MesquiteString)names.elementAt(i)).getName();
-			if (v.indexOfByName(name)<0){
-				v.addElement(new MesquiteString(name, " (not in current tree)"), false);
-				if (v.size()-1>= shown.length)
-					shown[v.size()-1] = true;
-			}
-		}
 
-		if (v.size()==0)
-			alert("This Tree has no values associated with nodes");
-		else {
-			ExtensibleDialog queryDialog = new ExtensibleDialog(containerOfModule(), "Values to show",  buttonPressed);
-			queryDialog.addLabel("Values to display on tree", Label.CENTER);
-			Checkbox[] checks = new Checkbox[v.size()];
-			for (int i=0; i<v.size(); i++){
-				MesquiteString ms = (MesquiteString)v.elementAt(i);
-				checks[i] = queryDialog.addCheckBox (ms.getName() + ms.getValue(), shown[i]);
-			}
-
-			queryDialog.completeAndShowDialog(true);
-
-			boolean ok = (queryDialog.query()==0);
-
-			if (ok) {
-				names.removeAllElements(false);
-				for (int i=0; i<checks.length; i++){
-					MesquiteString ms = (MesquiteString)v.elementAt(i);
-					if (checks[i].getState())
-						names.addElement(new MesquiteString(ms.getName(), ms.getName()), false);
-				}
-				for (int i =0; i<extras.size(); i++){
-					NodeAssocValuesExtra e = (NodeAssocValuesExtra)extras.elementAt(i);
-					e.setOn(on.getValue());
-				}
-			}
-
-			queryDialog.dispose();
-		}
-	}
 	/*.................................................................................................................*/
 	/** returns an explanation of what the module does.*/
 	public String getExplanation() {
@@ -333,204 +201,6 @@ public class DrawTreeAssocDoubles extends TreeDisplayAssistantDI {
 		return false;
 	}   	 
 
-	boolean isShowing(String name){
-		boolean s = names.indexOfByName(name)>=0;
-		return s;
-	}
-}
-
-/* ======================================================================== */
-class NodeAssocValuesExtra extends TreeDisplayExtra  {
-	DrawTreeAssocDoubles assocDoublesModule;
-	MesquiteCommand taxonCommand, branchCommand;
-	boolean on;
-	Tree lastTree = null;
-	//	StringInABox
-	public NodeAssocValuesExtra (DrawTreeAssocDoubles ownerModule, TreeDisplay treeDisplay) {
-		super(ownerModule, treeDisplay);
-		assocDoublesModule = ownerModule;
-		on = assocDoublesModule.on.getValue();
-		resetFontSize();
-	}
-	StringInABox box = new StringInABox( "", treeDisplay.getFont(),1500);
-	public void resetFontSize(){
-		Font f = treeDisplay.getFont();
-		box.setFont(new Font(f.getName(),f.getStyle(), assocDoublesModule.fontSize)); 
-	}
-	/*.................................................................................................................*/
-	public   void myDraw(Tree tree, int node, Graphics g, DoubleArray[] arrays) {
-		if (!assocDoublesModule.showOnTerminals.getValue() && tree.nodeIsTerminal(node))
-			return;
-		for (int d = tree.firstDaughterOfNode(node); tree.nodeExists(d); d = tree.nextSisterOfNode(d))
-			myDraw(tree, d, g, arrays);
-		String nodeString = "";
-		for (int i=0; i<arrays.length; i++){
-			double d = arrays[i].getValue(node);
-			if (MesquiteDouble.isCombinable(d) && (!assocDoublesModule.thresholdValueToShow.isCombinable() || (d>=assocDoublesModule.thresholdValueToShow.getValue()))){
-				if (assocDoublesModule.percentage.getValue())
-					d *= 100;
-				nodeString += MesquiteDouble.toStringDigitsSpecified(d, assocDoublesModule.digits) + "\n";
-			}
-		}
-		if (assocDoublesModule.whiteEdges.getValue())
-			box.setColors(Color.black, Color.white);
-		else
-			box.setColors(Color.black, null);
-		box.setString(nodeString);
-
-		double x, y;
-		if (assocDoublesModule.centred.getValue()){   // center on branch
-			double centreBranchX = treeDisplay.getTreeDrawing().getBranchCenterX(node) + assocDoublesModule.xOffset;
-			double centreBranchY =  treeDisplay.getTreeDrawing().getBranchCenterY(node)+ assocDoublesModule.yOffset;
-			/*g.setColor(Color.yellow);
-					g.drawLine(treeDisplay.getTreeDrawing().lineBaseX[node], treeDisplay.getTreeDrawing().lineBaseY[node], treeDisplay.getTreeDrawing().lineTipX[node], treeDisplay.getTreeDrawing().lineTipY[node]);
-					/*g.setColor(Color.red);
-					g.drawRect(centreBranchX-10, centreBranchY-10, 20, 20);
-					g.drawString(Integer.toString(node), centreBranchX, centreBranchY);*/
-			int stringWidth = box.getMaxWidthMunched();
-			if (assocDoublesModule.horizontal.getValue()){
-				x = centreBranchX - stringWidth/2;
-				y = centreBranchY - assocDoublesModule.fontSize;
-			}
-			else {
-				x = centreBranchX - assocDoublesModule.fontSize*2;
-				y = centreBranchY + stringWidth/2;
-			}
-		}
-		else {
-			int stringWidth = box.getMaxWidthMunched();
-			x= treeDisplay.getTreeDrawing().getNodeValueTextBaseX(node, treeDisplay.getTreeDrawing().getEdgeWidth(), stringWidth, assocDoublesModule.fontSize, assocDoublesModule.horizontal.getValue()) + assocDoublesModule.xOffset;
-			y = treeDisplay.getTreeDrawing().getNodeValueTextBaseY(node, treeDisplay.getTreeDrawing().getEdgeWidth(), stringWidth,assocDoublesModule.fontSize,assocDoublesModule.horizontal.getValue()) + assocDoublesModule.yOffset;
-		}
-		/*				else {
-					x= treeDisplay.getTreeDrawing().x[node] + assocDoublesModule.xOffset;
-					y = treeDisplay.getTreeDrawing().y[node] + assocDoublesModule.yOffset + i*assocDoublesModule.fontSize*2;
-				}
-
-		 */
-		if (assocDoublesModule.horizontal.getValue())
-			box.draw(g,  x, y);
-		else
-			box.draw(g,  x, y, 0, 1500, treeDisplay, false, false);
-
-	}
-	/*.................................................................................................................*/
-	public   void drawOnTree(Tree tree, int node, Graphics g) {
-		if (!on)
-			return;
-		int num = tree.getNumberAssociatedDoubles();
-		int total = 0;
-		for (int i = 0; i< num; i++){
-			DoubleArray da = tree.getAssociatedDoubles(i);
-			if (assocDoublesModule.isShowing(da.getName()))
-				total++;
-		}
-		DoubleArray[] arrays = new DoubleArray[total];
-		int count = 0;
-		for (int i = 0; i< num; i++){
-			DoubleArray da = tree.getAssociatedDoubles(i);
-			if (assocDoublesModule.isShowing(da.getName()))
-				arrays[count++] = da;
-		}
-
-		myDraw(tree, node, g, arrays);
-
-	}
-
-	void update(){
-		treeDisplay.pleaseUpdate(false);
-	}
-	void setOn(boolean a){
-		on = a;
-		treeDisplay.pleaseUpdate(false);
-	}
-	/**return a text version of information at node*/
-	public String textAtNode(Tree tree, int node){
-		if (!on)
-			return null;
-		int num = tree.getNumberAssociatedDoubles();
-		if (num == 0)
-			return "";
-		String s = "";
-		boolean first = true;
-		for (int i = 0; i< num; i++){
-			DoubleArray da = tree.getAssociatedDoubles(i);
-			if (assocDoublesModule.isShowing(da.getName())){
-				double d = da.getValue(node);
-				if (!first)
-					s += ", " + MesquiteDouble.toString(d);
-				first = false;
-			}
-		}
-		return s;
-	}
-	/**return a text version of information on tree, displayed on a text version of the tree*/
-	public String writeOnTree(Tree tree, int node){
-		if (!on || tree.getNumberAssociatedDoubles() == 0)
-			return null;
-		return super.writeOnTree(tree, node);
-	}
-	/**return a text version of information on tree, displayed as list of nodes with information at each*/
-	public String infoAtNodes(Tree tree, int node){
-		if (!on || tree.getNumberAssociatedDoubles() == 0)
-			return null;
-		return super.infoAtNodes(tree, node);
-	}
-	/**return a table version of information on tree, displayed as list of nodes with information at each*/
-	public String tableAtNodes(Tree tree, int node){
-		if (!on || tree.getNumberAssociatedDoubles() == 0)
-			return null;
-		return super.tableAtNodes(tree, node);
-	}
-	MesquitePopup popup=null;
-	/*.................................................................................................................*/
-	void redoMenu(Associable tree) {
-
-		if (popup==null)
-			popup = new MesquitePopup(treeDisplay);
-		popup.removeAll();
-		popup.add(new MesquiteMenuItem("Display Node or Branch-Associated Values", null, null));
-		popup.add(new MesquiteMenuItem("-", null, null));
-		int num = tree.getNumberAssociatedDoubles();
-		if (num == 0)
-			popup.add(new MesquiteMenuItem("This Tree has no values associated with nodes or brances", null, null));
-		else 
-			for (int i = 0; i< num; i++){
-				DoubleArray da = tree.getAssociatedDoubles(i);
-				MesquiteCommand mc = new MesquiteCommand("toggleShow", assocDoublesModule);
-				String selName = " ";
-				if (assocDoublesModule.isShowing(da.getName()))
-					selName = da.getName();
-				popup.add(new MesquiteCheckMenuItem(da.getName(), assocDoublesModule, mc, StringUtil.tokenize(da.getName()), new MesquiteString(selName )));
-			}
-		treeDisplay.add(popup);
-	}
-	/* ................................................................................................................. */
-	public void cursorTouchField(Tree tree, Graphics g, int x, int y, int modifiers){
-		if (MesquiteEvent.rightClick(modifiers)) {
-			redoMenu((Associable)tree);
-			popup.show(treeDisplay, x, y);
-		}
-	}
-	/*.................................................................................................................*/
-	public   void printOnTree(Tree tree, int drawnRoot, Graphics g) {
-		if (!on)
-			return;
-		drawOnTree(tree, drawnRoot, g); //should draw numbered footnotes!
-	}
-	/*.................................................................................................................*/
-	public   void setTree(Tree tree) {
-		lastTree = tree;
-	}
-	/*NameReference assocValueRef = NameReference.getNameReference("consensusFrequency");
-	double getValue(Tree tree, int node){
-		return tree.getAssociatedDouble(assocValueRef, node);
-	}
-*/
-	public void turnOff() {
-		assocDoublesModule.extras.removeElement(this);
-		super.turnOff();
-	}
 }
 
 

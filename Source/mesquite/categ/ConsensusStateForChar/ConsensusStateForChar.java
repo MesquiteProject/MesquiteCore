@@ -17,6 +17,7 @@ package mesquite.categ.ConsensusStateForChar;
 import mesquite.categ.lib.*;
 import mesquite.lib.*;
 import mesquite.lib.table.*;
+import mesquite.lib.ui.MesquiteMenuItemSpec;
 
 public class ConsensusStateForChar extends CategStateForCharacter {
 	MesquiteBoolean showOnlyModal = new MesquiteBoolean(false);

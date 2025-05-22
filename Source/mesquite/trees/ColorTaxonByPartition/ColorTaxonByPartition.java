@@ -17,6 +17,9 @@ import java.util.*;
 import java.awt.*;
 import mesquite.lib.*;
 import mesquite.lib.duties.*;
+import mesquite.lib.taxa.Taxa;
+import mesquite.lib.taxa.TaxaGroup;
+import mesquite.lib.taxa.TaxaPartition;
 
 /* ======================================================================== */
 public class ColorTaxonByPartition extends TaxonNameStyler {
@@ -45,7 +48,6 @@ public class ColorTaxonByPartition extends TaxonNameStyler {
  	}
  
  	/*.................................................................................................................*/
-	NameReference colorNameRef = NameReference.getNameReference("color");
 	
 	public Color getTaxonNameColor(Taxa taxa, int ic){
 		TaxaPartition partitions =  (TaxaPartition)taxa.getCurrentSpecsSet(TaxaPartition.class);

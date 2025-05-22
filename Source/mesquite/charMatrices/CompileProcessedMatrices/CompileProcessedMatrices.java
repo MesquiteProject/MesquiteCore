@@ -21,13 +21,18 @@ import mesquite.categ.lib.ProteinData;
 import mesquite.lib.*;
 import mesquite.lib.characters.CharacterData;
 import mesquite.lib.duties.*;
+import mesquite.lib.taxa.Taxa;
+import mesquite.lib.ui.AlertDialog;
+import mesquite.lib.ui.ColorTheme;
 
 /* ======================================================================== */
 public class CompileProcessedMatrices extends FileProcessor {
 	String saveFile = null;
 	String tempFile = null;
+	boolean openAfterCompiled = true;
 	/*.................................................................................................................*/
 	public boolean startJob(String arguments, Object condition, boolean hiredByName) {
+		loadPreferences();
 		return true;
 	}
 	/*.................................................................................................................*/
@@ -49,12 +54,65 @@ public class CompileProcessedMatrices extends FileProcessor {
 		return false;
 	}
 	/*.................................................................................................................*/
-	ListableVector taxonNames = new ListableVector();
+	public Snapshot getSnapshot(MesquiteFile file) { 
+		Snapshot temp = new Snapshot();
+		temp.addLine("setOpenAfterward " + openAfterCompiled);  
+		return temp;
+	}
+	
+	boolean OACOptionAlreadySet = false;
+	/*.................................................................................................................*/
+	public Object doCommand(String commandName, String arguments, CommandChecker checker) {
+		if (checker.compare(this.getClass(), "Sets whether to open after compilation", "[path]", commandName, "setOpenAfterward")) {
+			openAfterCompiled = MesquiteBoolean.fromTrueFalseString(parser.getFirstToken(arguments));
+			OACOptionAlreadySet = true;
+		}
+		else
+			return  super.doCommand(commandName, arguments, checker);
+		return null;
+	}	
+	
+	/*.................................................................................................................*/
+	void queryOpenAfter() {
+		int def = 2;
+		if (openAfterCompiled)
+			def = 1;
+		String ast = "";
+		String when = "";
+		if (!StringUtil.blank(previousProcessorLabel)) {
+			ast = "*";
+			when = "\n\n* after " + previousProcessorLabel;
+		}
+
+		openAfterCompiled = AlertDialog.query(containerOfModule(), "Open when done?", "Open file of compiled matrices" + ast + " when finished?" + when, "Open", "Don't", def);
+		OACOptionAlreadySet = true;
+	}
+	/*.................................................................................................................*/
+	public void queryLocalOptions () {
+	 	queryOpenAfter();
+	}
+	/*.................................................................................................................*
+	public void processSingleXMLPreference (String tag, String content) {
+		if ("openAfterCompiled".equalsIgnoreCase(tag)) {
+			openAfterCompiled = MesquiteBoolean.fromOffOnString(content);
+		}
+
+	
+}
+/*.................................................................................................................*
+public String preparePreferencesForXML () {
+		StringBuffer buffer = new StringBuffer(200);
+		StringUtil.appendXMLTag(buffer, 2, "openAfterCompiled", MesquiteBoolean.toOffOnString(openAfterCompiled));  
+		return buffer.toString();
+	}	
+*/
+ListableVector taxonNames = new ListableVector();
+	/*.................................................................................................................*/
 	void checkTaxonList(CharacterData data, String saveFile){
 		Taxa taxa = data.getTaxa();
 		boolean added = false;
 		for (int it = 0; it<taxa.getNumTaxa(); it++){
-		
+
 			if (taxonNames.indexOfByName(taxa.getTaxonName(it))<0){
 				MesquiteString n = new MesquiteString(taxa.getTaxonName(it));
 				n.setName(taxa.getTaxonName(it));
@@ -84,7 +142,7 @@ public class CompileProcessedMatrices extends FileProcessor {
 			MesquiteFile.appendFileContents(file, "\tFORMAT DATATYPE = DNA GAP = - MISSING = ?;" + StringUtil.lineEnding() + "\tMATRIX" + StringUtil.lineEnding() , true);
 		for (int it = 0; it < data.getNumTaxa(); it++){
 			MesquiteFile.appendFileContents(file, "\t" + ParseUtil.tokenize(data.getTaxa().getTaxonName(it)) + "\t" , true);
-			StringBuffer description = new StringBuffer();
+			MesquiteStringBuffer description = new MesquiteStringBuffer();
 			for (int ic =0; ic<data.getNumChars(); ic++){
 				data.statesIntoNEXUSStringBuffer(ic, it, description);
 			}
@@ -95,38 +153,64 @@ public class CompileProcessedMatrices extends FileProcessor {
 	/*.................................................................................................................*/
 
 	/** Called to alter file. */
-	public boolean processFile(MesquiteFile file){
+	public int processFile(MesquiteFile file){
 
 		if (saveFile == null || okToInteractWithUser(CAN_PROCEED_ANYWAY, "Asking for file to save")){ //need to check if can proceed
-
-			MesquiteFileDialog fdlg= new MesquiteFileDialog(containerOfModule(), "Output File for Compiled Matrices(s)", FileDialog.SAVE);
+			loadPreferences();
+			
+			String message = "Output File for Compiled Matrices(s)";
+			if (!StringUtil.blank(previousProcessorLabel))
+				message = message + " [after " + previousProcessorLabel + "] ";
+			MesquiteFileDialog fdlg= new MesquiteFileDialog(containerOfModule(), message, FileDialog.SAVE);
 			fdlg.setBackground(ColorTheme.getInterfaceBackground());
 			fdlg.setVisible(true);
 			String fileName=fdlg.getFile();
 			String directory=fdlg.getDirectory();
 			// fdlg.dispose();
 			if (StringUtil.blank(fileName) || StringUtil.blank(directory))
-				return false;
+				return -1;
 			saveFile = MesquiteFile.composePath(directory, fileName);
 			tempFile = MesquiteFile.composePath(directory, MesquiteFile.massageStringToFilePathSafe(MesquiteTrunk.getUniqueIDBase() + fileName)) ;
+		 	if (!OACOptionAlreadySet)
+		 		queryOpenAfter();
+			storePreferences();
 		}
 		if (saveFile == null)
-			return false;
+			return -1;
 		Listable[] matrices = proj.getFileElements(CharacterData.class);	
 		if (matrices == null)
-			return false;
+			return -1;
 		for (int im = 0; im < matrices.length; im++){
 			CharacterData data = (CharacterData)matrices[im];
-			if (data.getFile() == file){
+			if (data.getFile() == file && data.getNumChars()>0){
 				checkTaxonList(data, saveFile);
-				writeMatrixToFile(saveFile, data, file.getFileName());
-				writeMatrixToFile(tempFile, data, file.getFileName());
+				String name = cleanFileName(file.getFileName());
+				
+				writeMatrixToFile(saveFile, data, name);
+				writeMatrixToFile(tempFile, data, name);
 			}
 		}
-		return true;
+		return 0;
 
 	}
+	String cleanFileName(String fName) {
+		if (fName.endsWith(".fas") || fName.endsWith(".nexus") || fName.endsWith(".fasta") || fName.endsWith(".nex") || fName.endsWith(".phy") ||fName.endsWith(".FAS") || fName.endsWith(".NEXUS") || fName.endsWith(".FASTA") || fName.endsWith(".NEX"))
+		 return StringUtil.getAllButLastItem(fName, ".");
+		return fName;
+	}
+	/*.................................................................................................................*/
+	/** Called after processing a series of files.*/
+	public  boolean afterProcessingSeriesOfFiles(){
+		MesquiteFile.deleteFile(tempFile);
 
+		if (openAfterCompiled) {
+			String commands = "newThread; tell Mesquite; openFile" + StringUtil.tokenize(saveFile) + "; endTell;";
+			Puppeteer p = new Puppeteer(this);
+			MesquiteInteger pos = new MesquiteInteger(0);
+			p.execute(getFileCoordinator(), commands, pos, "", false);
+		}
+		return true;
+	}
 
 	/*.................................................................................................................*/
 	/** returns the version number at which this module was first released.  If 0, then no version number is claimed.  If a POSITIVE integer

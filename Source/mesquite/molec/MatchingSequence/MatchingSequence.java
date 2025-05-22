@@ -21,6 +21,7 @@ import mesquite.lib.*;
 import mesquite.lib.characters.*;
 import mesquite.lib.duties.*;
 import mesquite.lib.table.*;
+import mesquite.lib.ui.ExtensibleDialog;
 import mesquite.categ.lib.*;
 import mesquite.molec.lib.*;
 import java.awt.event.*;

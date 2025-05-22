@@ -15,6 +15,11 @@ package mesquite.treefarm.TreeSatisfiesValue;
 
 import mesquite.lib.*;
 import mesquite.lib.duties.*;
+import mesquite.lib.tree.Tree;
+import mesquite.lib.ui.DoubleField;
+import mesquite.lib.ui.ExtensibleDialog;
+import mesquite.lib.ui.MesquiteSubmenuSpec;
+
 import java.awt.*;
 
 /** this is a module that deterimines whether or not a tree has a value the same as, greater than or less than a specified value */

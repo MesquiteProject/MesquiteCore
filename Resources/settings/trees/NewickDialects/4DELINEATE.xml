@@ -1,0 +1,18 @@
+<?xml version="1.0"?>
+<mesquite>
+	<humanName>DELINEATE</humanName> <!-- required -->
+	<internalName>Delineate</internalName> <!-- required -->
+	<!-- At least one element of the following must be present -->
+	<punctuation>,=&gt;&lt;</punctuation> <!-- if not present, punctuation is null, i.e. default  -->
+	<whitespace></whitespace> <!-- if not present, whitespace is null, i.e. default  -->
+	<replacement> 
+		<before> = </before>
+		<after>=</after>
+	</replacement> 
+	<replacement> 
+		<before> , </before>
+		<after>,</after>
+	</replacement> 
+
+</mesquite>
+

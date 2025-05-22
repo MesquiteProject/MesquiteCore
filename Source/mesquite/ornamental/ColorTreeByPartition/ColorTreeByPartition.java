@@ -20,6 +20,20 @@ import java.awt.image.*;
 
 import mesquite.lib.*;
 import mesquite.lib.duties.*;
+import mesquite.lib.taxa.Taxa;
+import mesquite.lib.taxa.TaxaGroup;
+import mesquite.lib.taxa.TaxaGroupVector;
+import mesquite.lib.taxa.TaxaPartition;
+import mesquite.lib.tree.MesquiteTree;
+import mesquite.lib.tree.Tree;
+import mesquite.lib.tree.TreeDisplay;
+import mesquite.lib.tree.TreeDisplayEarlyExtra;
+import mesquite.lib.tree.TreeDisplayExtra;
+import mesquite.lib.ui.ColorDistribution;
+import mesquite.lib.ui.MesquiteMenu;
+import mesquite.lib.ui.MesquiteMenuItem;
+import mesquite.lib.ui.MesquiteMenuSpec;
+import mesquite.lib.ui.MesquitePopup;
 
 /* ======================================================================== */
 public class ColorTreeByPartition extends TreeDisplayAssistantDI {
@@ -29,7 +43,11 @@ public class ColorTreeByPartition extends TreeDisplayAssistantDI {
 	public boolean startJob(String arguments, Object condition, boolean hiredByName){
 		extras = new Vector();
 		colorByPartition = new MesquiteBoolean(false);
-		addCheckMenuItem(null, "Color Branches by Partition", makeCommand("colorByPartition",  this), colorByPartition);
+		MesquiteMenuSpec colorMenu = findMenuAmongEmployers("Color");
+		MesquiteModule mb = this;
+		if (colorMenu != null && colorMenu.getOwnerModule() != null)
+			mb = colorMenu.getOwnerModule();
+		mb.addCheckMenuItem(colorMenu, "Color Branches by Taxon Groups", makeCommand("colorByPartition",  this), colorByPartition);
 		return true;
 	} 
 	/*.................................................................................................................*/
@@ -40,7 +58,7 @@ public class ColorTreeByPartition extends TreeDisplayAssistantDI {
 	}
 	/*.................................................................................................................*/
 	public String getName() {
-		return "Color Branches by Partition";
+		return "Color Branches by Taxon Groups";
 	}
 
 	/*.................................................................................................................*/
@@ -93,27 +111,50 @@ public class ColorTreeByPartition extends TreeDisplayAssistantDI {
 }
 
 /* ======================================================================== */
-class ColorByPartitionExtra extends TreeDisplayExtra implements MesquiteListener   {
+class ColorByPartitionExtra extends TreeDisplayExtra implements MesquiteListener, Commandable, TreeDisplayEarlyExtra   {
 	ColorTreeByPartition branchNotesModule;
-	TaxaPartition partitions = null;
+	TaxaPartition partition = null;
 	ColorDistribution[] colors;
 	TaxaGroup[][] groupsAtNode;
 	boolean showColors;
+	MesquiteTree myTree;
 	public ColorByPartitionExtra (ColorTreeByPartition ownerModule, TreeDisplay treeDisplay) {
 		super(ownerModule, treeDisplay);
 		branchNotesModule = ownerModule;
 		showColors = branchNotesModule.colorByPartition.getValue();
 	}
+
+	/*_________________________________________________*/
+	public ColorDistribution colorsInClade(Tree tree, int node){
+		if (tree.nodeIsTerminal(node))
+			return colors[node];
+		ColorDistribution cladeColor = null;
+		for (int d = tree.firstDaughterOfNode(node); tree.nodeExists(d); d = tree.nextSisterOfNode(d)){
+			ColorDistribution dsColor = colorsInClade(tree, d);
+			if (cladeColor == null)
+				cladeColor = dsColor;
+			else
+				cladeColor.concatenate(dsColor);
+		}
+		return cladeColor;
+	}
 	/*.................................................................................................................*/
 	public   void drawOnTree(Tree tree, int node, Graphics g) {
+		if (!tree.isVisibleEvenIfInCollapsed(node))
+			return;
 		if (showColors) {
 			if (needsReharvesting)
 				reharvest(tree);
 
-			if (partitions != null){
+			if (partition != null){
 				for (int d = tree.firstDaughterOfNode(node); tree.nodeExists(d); d = tree.nextSisterOfNode(d))
 					drawOnTree(tree, d, g);
-				if (colors[node].anyColors())
+				if (tree.isLeftmostTerminalOfCollapsedClade(node)){
+					ColorDistribution cladeColors = colorsInClade(tree, tree.deepestCollapsedAncestor(node));
+					if (cladeColors != null && cladeColors.anyColors())
+						treeDisplay.getTreeDrawing().fillBranchWithColors(tree,  node, cladeColors, g);
+				}
+				else if (colors[node].anyColors())
 					treeDisplay.getTreeDrawing().fillBranchWithColors(tree,  node, colors[node], g);
 			}
 		}
@@ -150,11 +191,11 @@ class ColorByPartitionExtra extends TreeDisplayExtra implements MesquiteListener
 	}
 	/*.................................................................................................................*/
 	public   void harvestColorsDOWN(Tree tree, int node) {
-		if (partitions != null){
+		if (partition != null){
 			int count = 0;
 			if (tree.nodeIsTerminal(node)){
 				int taxonNumber = tree.taxonNumberOfNode(node);
-				TaxaGroup mi = (TaxaGroup)partitions.getProperty(taxonNumber);
+				TaxaGroup mi = (TaxaGroup)partition.getProperty(taxonNumber);
 				if (mi!=null) {
 					fillNext(groupsAtNode[node], mi); 
 				}
@@ -194,7 +235,7 @@ class ColorByPartitionExtra extends TreeDisplayExtra implements MesquiteListener
 	TaxaGroup[] tempGroups;
 	/*.................................................................................................................*/
 	public   void harvestColorsUP(Tree tree, int node) {
-		if (partitions != null){
+		if (partition != null){
 			if (tree.nodeIsInternal(node)){
 				//rule is: if color is found in more than one descendent, the color it
 
@@ -224,11 +265,13 @@ class ColorByPartitionExtra extends TreeDisplayExtra implements MesquiteListener
 			}
 		}
 	}
+	/*.................................................................................................................*/
 	Taxa taxa;
 	boolean needsReharvesting = false;
 	void reharvest(Tree tree){
 		if (tree == null)
 			return;
+		this.myTree = (MesquiteTree)tree;
 		if (colors == null || colors.length != tree.getNumNodeSpaces())
 			colors = new ColorDistribution[ tree.getNumNodeSpaces()];
 		if (colors == null)
@@ -240,9 +283,9 @@ class ColorByPartitionExtra extends TreeDisplayExtra implements MesquiteListener
 		}
 
 		if (taxa == null)
-			partitions = (TaxaPartition)tree.getTaxa().getCurrentSpecsSet(TaxaPartition.class);
+			partition = (TaxaPartition)tree.getTaxa().getCurrentSpecsSet(TaxaPartition.class);
 		else
-			partitions = (TaxaPartition)taxa.getCurrentSpecsSet(TaxaPartition.class);
+			partition = (TaxaPartition)taxa.getCurrentSpecsSet(TaxaPartition.class);
 		if (groupsAtNode == null || groupsAtNode.length != tree.getNumNodeSpaces())
 			groupsAtNode = new TaxaGroup[tree.getNumNodeSpaces()][];
 		TaxaGroupVector groups = (TaxaGroupVector)ownerModule.getProject().getFileElement(TaxaGroupVector.class, 0);
@@ -267,8 +310,77 @@ class ColorByPartitionExtra extends TreeDisplayExtra implements MesquiteListener
 			taxa = tree.getTaxa();
 			taxa.addListener(this);
 		}
+		this.myTree = (MesquiteTree)tree;
 		needsReharvesting = true;
 	}
+	/*.................................................................................................................*/
+	/**Add any desired menu items to the right click popup*/
+	public void addToRightClickPopup(MesquitePopup popup, MesquiteTree tree, int branchFound){
+		if (branchFound>0){
+			MesquiteMenu setGroupSubmenu = new MesquiteMenu("Set Group for Taxa in Clade");
+			if (groups == null)
+				groups = (TaxaGroupVector)ownerModule.getProject().getFileElement(TaxaGroupVector.class, 0);
+			for (int i = 0; i<groups.size(); i++){
+				TaxaGroup group = (TaxaGroup)groups.elementAt(i);
+				MesquiteMenuItem mmi = new MesquiteMenuItem(group.getName(), ownerModule, new MesquiteCommand("setGroup", this), MesquiteInteger.toString(branchFound) + " " + ParseUtil.tokenize(group.getName()));
+				setGroupSubmenu.add(mmi);
+			}
+			setGroupSubmenu.setEnabled(groups.size()>0);
+			popup.add(setGroupSubmenu);
+			popup.addItem("New Taxon Group for Clade...", ownerModule, new MesquiteCommand("newGroup", this), MesquiteInteger.toString(branchFound));
+			popup.addItem("Remove Group Designation for Taxa", ownerModule, new MesquiteCommand("removeGroup", this), MesquiteInteger.toString(branchFound));
+		}
+	}
+	TaxaGroupVector groups;
+	/*.................................................................................................................*/
+	public void setGroupRec(MesquiteTree tree, int node, TaxaGroup group, TaxaPartition partition) {
+		if (tree.nodeIsTerminal(node)){
+			partition.setProperty(group, tree.taxonNumberOfNode(node));
+		}
+		else {
+			for (int d = tree.firstDaughterOfNode(node); tree.nodeExists(d); d = tree.nextSisterOfNode(d))
+				setGroupRec(tree, d, group, partition);
+		}
+	}	
+
+	private void setGroup(TaxaGroup group, MesquiteTree tree, int node){
+		if (tree == null || !tree.nodeExists(node))
+			return;
+		if (partition == null)
+			partition = (TaxaPartition) taxa.getOrMakeCurrentSpecsSet(TaxaPartition.class);
+		setGroupRec(tree, node, group, partition);
+		taxa.notifyListeners(this, new Notification(AssociableWithSpecs.SPECSSET_CHANGED));  
+		tree.notifyListeners(this, new Notification(AssociableWithSpecs.SPECSSET_CHANGED));  
+	}	
+	/*.................................................................................................................*/
+	Parser parser = new Parser();
+	public Object doCommand(String commandName, String arguments, CommandChecker checker) {
+		if (checker.compare(this.getClass(), "Creates a new group for use in taxon partitions", null, commandName, "newGroup")) {
+			parser.setString(arguments);
+			int node = MesquiteInteger.fromString(parser);
+			TaxaGroup group= TaxaGroup.createNewTaxonGroup(ownerModule, taxa.getFile());
+			if (group!=null)
+				setGroup(group, (MesquiteTree)treeDisplay.getTree(), node);
+			return group;
+		}
+		else	if (checker.compare(this.getClass(), "Removes group designation in current taxon partition", null, commandName, "removeGroup")) {
+			parser.setString(arguments);
+			int node = MesquiteInteger.fromString(parser);
+			setGroup(null, (MesquiteTree)treeDisplay.getTree(), node);
+		}
+		else if (checker.compare(this.getClass(), "Sets to which group a taxon belongs in the current taxa partition", "[name of group]", commandName, "setGroup")) {
+			parser.setString(arguments);
+			int node = MesquiteInteger.fromString(parser);
+			String name = parser.getNextToken();
+			if (groups == null)
+				groups = (TaxaGroupVector)ownerModule.getProject().getFileElement(TaxaGroupVector.class, 0);
+			Object obj = groups.getElement(name);
+			if (obj != null)
+				setGroup((TaxaGroup)obj, (MesquiteTree)treeDisplay.getTree(), node);
+		}
+		return null;
+	}
+
 	/** passes which object changed, along with optional Notification object with details (e.g., code number (type of change) and integers (e.g. which character))*/
 	public void changed(Object caller, Object obj, Notification notification){
 		if (obj == taxa)

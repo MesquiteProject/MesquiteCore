@@ -12,6 +12,10 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
 */
 package mesquite.lib;
 
+import mesquite.lib.taxa.Taxa;
+import mesquite.lib.taxa.Taxon;
+import mesquite.lib.taxa.TaxonNamer;
+
 public class SimpleNamesTaxonNamer extends TaxonNamer {
 	int[] numberTranslationTable= null;
 	
@@ -30,8 +34,9 @@ public class SimpleNamesTaxonNamer extends TaxonNamer {
 	public int whichTaxonNumberFromNumberTranslationTable(Taxa taxa, int otherNumber){
 		if (!MesquiteInteger.isCombinable(otherNumber) || numberTranslationTable==null)
 			return -1;
-		if (otherNumber>=0 && otherNumber<numberTranslationTable.length)
+		if (otherNumber>=0 && otherNumber<numberTranslationTable.length){
 			return numberTranslationTable[otherNumber];
+		}
 		return -1;
 	}
 

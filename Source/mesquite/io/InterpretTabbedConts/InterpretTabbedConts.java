@@ -18,6 +18,10 @@ import java.awt.*;
 import mesquite.lib.*;
 import mesquite.lib.characters.*;
 import mesquite.lib.duties.*;
+import mesquite.lib.taxa.Taxa;
+import mesquite.lib.taxa.Taxon;
+import mesquite.lib.ui.AlertDialog;
+import mesquite.lib.ui.ProgressIndicator;
 import mesquite.categ.lib.*;
 import mesquite.cont.lib.*;
 
@@ -60,7 +64,7 @@ public class InterpretTabbedConts extends FileInterpreterI {
 			TaxaManager taxaTask = (TaxaManager)findElementManager(Taxa.class);
 			 CharactersManager charTask = (CharactersManager)findElementManager(CharacterData.class);
 			
-			Taxa taxa = taxaTask.makeNewTaxa(getProject().getTaxas().getUniqueName("Taxa"), 0, false);
+			Taxa taxa = taxaTask.makeNewTaxaBlock(getProject().getTaxas().getUniqueName("Taxa"), 0, false);
 			taxa.addToFile(file, getProject(), taxaTask);
 			CharacterData data = charTask.newCharacterData(taxa, 0, ContinuousData.DATATYPENAME);
 			boolean wassave = data.saveChangeHistory;
@@ -68,7 +72,7 @@ public class InterpretTabbedConts extends FileInterpreterI {
 			data.addToFile(file, getProject(), null);
 			
 			int numTaxa = 0;
-			StringBuffer sb = new StringBuffer(1000);
+			MesquiteStringBuffer sb = new MesquiteStringBuffer(1000);
 			file.readLine(sb);
 			String line = sb.toString();
 			
@@ -175,7 +179,7 @@ public class InterpretTabbedConts extends FileInterpreterI {
 
 		int numTaxa = taxa.getNumTaxa();
 		int numChars = data.getNumChars();
-		StringBuffer outputBuffer = new StringBuffer(numTaxa*(20 + numChars));
+		MesquiteStringBuffer outputBuffer = new MesquiteStringBuffer(numTaxa*(20L + numChars));
 		
 		for (int it = 0; it<numTaxa; it++){
 			if (!writeOnlySelectedTaxa || (taxa.getSelected(it))){

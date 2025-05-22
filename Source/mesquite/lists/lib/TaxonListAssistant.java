@@ -18,6 +18,7 @@ import java.util.*;
 import mesquite.lib.*;
 import mesquite.lib.duties.*;
 import mesquite.lib.table.*;
+import mesquite.lib.taxa.Taxa;
 
 
 
@@ -32,6 +33,9 @@ public abstract class TaxonListAssistant extends ListAssistant  {
  	public String getDutyName() {
  		return "Taxon list assistant";
    	 }
+ 	 public String[] getDefaultModule() {
+ 	 	return new String[] {"#NumForTaxaList", "#NumWMatrixForTaxaList","#BooleanForTaxaList", "#TaxonListCurrPartition", "#TaxonListArchivedName", "#TaxaListHasData"};
+ 	 }
 
 	public abstract void setTableAndTaxa(MesquiteTable table, Taxa taxa);
 	public abstract String getStringForTaxon(int it);

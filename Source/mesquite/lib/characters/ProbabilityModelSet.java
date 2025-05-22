@@ -15,6 +15,7 @@ package mesquite.lib.characters;
 
 import java.awt.*;
 import mesquite.lib.duties.*;
+import mesquite.categ.lib.DNAData;
 import mesquite.lib.*;
 
 /*======================================================================== */
@@ -44,8 +45,14 @@ public class ProbabilityModelSet  extends ModelSet {
 	public CharacterModel getDefaultModel(int ic) {
 		return (CharacterModel)getDefaultProperty(ic);
 	}
-	/*.................................................................................................................*/
- 	/** Gets default model specified for ModelSet*/
+	public boolean hasDefaultProperty(int ic) {
+		if (data != null)
+			return getProperty(ic) == data.getDefaultModel("Likelihood");
+		return super.hasDefaultProperty(ic);
+	}
+
+	/*.................................................................................................................  WAYNECHECK2024*/
+ 	/** Gets default model specified for ModelSet*
 	public Object getDefaultProperty(int ic) {
 		if (getModel(ic) != null)
 			return getModel(ic);
@@ -57,5 +64,6 @@ public class ProbabilityModelSet  extends ModelSet {
 			return getModel(icRight);
 		return super.getDefaultModel(ic);
 	}
+	/**/
 }
 

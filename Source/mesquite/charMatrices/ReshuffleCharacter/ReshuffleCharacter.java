@@ -19,6 +19,8 @@ import java.awt.*;
 import mesquite.lib.*;
 import mesquite.lib.characters.*;
 import mesquite.lib.duties.*;
+import mesquite.lib.taxa.Taxa;
+import mesquite.lib.ui.ListDialog;
 
 /* ======================================================================== */
 public class ReshuffleCharacter extends CharacterSource {
@@ -231,7 +233,7 @@ public class ReshuffleCharacter extends CharacterSource {
 	/*.................................................................................................................*/
    	public String getParameters() {
    		if (matrix==null) return "";
-		return "Character reshuffle: " + matrix.getName() + ". [seed: " + originalSeed + "]";
+		return "Character reshuffle: " + matrix.getName() + ". (seed: " + originalSeed + ")";
    	}
 	/*.................................................................................................................*/
     	 public String getName() {

@@ -17,6 +17,8 @@ import java.util.*;
 import java.awt.*;
 import mesquite.lib.*;
 import mesquite.lib.duties.*;
+import mesquite.lib.taxa.Taxa;
+import mesquite.lib.tree.Tree;
 import mesquite.coalesce.lib.*;
 import mesquite.assoc.lib.*;
 /* ======================================================================== 
@@ -39,9 +41,6 @@ public class ContainedCoalescence extends TreeSimulate {
 	/*.................................................................................................................*/
 	public boolean startJob(String arguments, Object condition, boolean hiredByName) {
 		//TODO: allow subsequent choosing from menus
-		associationTask = (AssociationSource)hireEmployee(AssociationSource.class, "Source of taxon association (Contained Coalescence)");
-		if (associationTask == null)
-			return sorry(getName() + " couldn't start because no source of taxon associations obtained.");
 		simTask = (ContainedTreeSim)hireEmployee(ContainedTreeSim.class, "Simulator of coalescence within current tree");
 		if (simTask == null)
 			return sorry(getName() + " couldn't start because no simulation module obtained.");
@@ -102,8 +101,19 @@ public class ContainedCoalescence extends TreeSimulate {
 	boolean warnedNull = false;
 	/*.................................................................................................................*/
 	private boolean check(Taxa taxa){
+		if (associationTask == null) {
+			associationTask = (AssociationSource)findModuleOfEmploymentContextWithDuty(AssociationSource.class, this, this);
+			if (associationTask == null) {
+				associationTask = (AssociationSource)hireEmployee(AssociationSource.class, "Source of taxon association (Contained Coalescence)");
+				if (associationTask == null)
+					return false;
+			}
+		}
+		
 		if (taxa!=null) {
-			if (association == null || (association.getTaxa(0)!= taxa && association.getTaxa(1)!= taxa)) {
+			if (associationTask.getEmployer()!= this) //I'm borrowing someone elses source of association, therefore I have to get association again just in case there's been a change
+				association = associationTask.getCurrentAssociation(taxa);
+			else if (association == null || (association.getTaxa(0)!= taxa && association.getTaxa(1)!= taxa)) {
 				association = associationTask.getCurrentAssociation(taxa);
 				/*	MesquiteModule mb = getFileCoordinator().findEmployeeWithName("#mesquite.leaves.BestSpeciesTreeForAssoc.BestSpeciesTreeForAssoc");
 	        		if (mb!=null) {
@@ -112,6 +122,7 @@ public class ContainedCoalescence extends TreeSimulate {
 	        		if (association==null)
 		        		association = associationTask.getCurrentAssociation(taxa);
 				 */
+			}
 				if (association==null) {
 					String s = "Association null in Contained Coalescence (for taxa " + taxa.getName() + ")";
 					if (warnedNull)
@@ -121,7 +132,7 @@ public class ContainedCoalescence extends TreeSimulate {
 					warnedNull = true;
 					return false;
 				}
-			}
+		
 			if (oneTreeSourceTask == null) {
 				oneTreeSourceTask = (OneTreeSource)hireEmployee(OneTreeSource.class, "Source of containing tree");
 				if (oneTreeSourceTask == null) {
@@ -146,7 +157,8 @@ public class ContainedCoalescence extends TreeSimulate {
 	boolean first = true;
 	/*.................................................................................................................*/
 	public Tree getSimulatedTree(Taxa taxa, Tree geneTree, int treeNumber, ObjectContainer extra, MesquiteLong seed) {
-		if (!check(taxa))   			return null;
+		if (!check(taxa))
+			return null;
 		if (association==null) {
 			if (first && !MesquiteThread.isScripting()){
 				discreetAlert("No association found for use by Contained Coalescence; no tree could be made");
@@ -155,7 +167,7 @@ public class ContainedCoalescence extends TreeSimulate {
 			return null;
 		}
 		speciesTree = oneTreeSourceTask.getTree(association.getOtherTaxa(taxa));
-		if (speciesTree==null) {
+	if (speciesTree==null) {
 			if (first && !MesquiteThread.isScripting()){
 				discreetAlert("No species tree found for use by Contained Coalescence.  Taxa blocks: " + taxa + " AND " + association.getOtherTaxa(taxa));
 				first = false;

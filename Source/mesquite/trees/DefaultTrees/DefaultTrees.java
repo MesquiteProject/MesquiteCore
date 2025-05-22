@@ -18,6 +18,9 @@ import java.util.*;
 import java.awt.*;
 import mesquite.lib.*;
 import mesquite.lib.duties.*;
+import mesquite.lib.taxa.Taxa;
+import mesquite.lib.tree.MesquiteTree;
+import mesquite.lib.tree.Tree;
 
 /** Supplies default trees (e.g., ladder, bush).  Used as a last resort tree source. */
 public class DefaultTrees extends TreeSource {  
@@ -56,6 +59,16 @@ public class DefaultTrees extends TreeSource {
    	 public boolean isPrerelease(){
    	 	return false;
    	 }
+   	 
+ 	/* ................................................................................................................. */
+ 	public Object doCommand(String commandName, String arguments, CommandChecker checker) {
+ 		if (checker.compare(this.getClass(), "Hires a tree display assistant module", "[name of assistant module]", commandName, "laxOff")) {
+ 		}
+ 		else
+ 			return super.doCommand(commandName, arguments, checker);
+ 		return null;
+ 	}
+
    	 
    	 void formSymmetricalClade(MesquiteTree tree, int minTaxon, int maxTaxon){
  		int range = maxTaxon-minTaxon + 1;

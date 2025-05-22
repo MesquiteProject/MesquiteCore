@@ -18,6 +18,11 @@ import java.util.*;
 import java.awt.*;
 import mesquite.lib.*;
 import mesquite.lib.duties.*;
+import mesquite.lib.taxa.Taxa;
+import mesquite.lib.tree.TreeVector;
+import mesquite.lib.ui.MesquiteMenuItemSpec;
+import mesquite.lib.ui.MesquiteSubmenuSpec;
+import mesquite.lib.ui.MesquiteWindow;
 
 /** Coordinates the display of the basic Tree Windows (BasicTreeWindowMaker actually makes the window) */
 public class BasicTreeWindowCoord extends FileInit {
@@ -58,6 +63,26 @@ public class BasicTreeWindowCoord extends FileInit {
 			return getProject().getTaxaReferenceInternal(d);
 		else
 			return getProject().getTaxaReferenceExternal(d);
+	}
+	
+	boolean otherWithNameOtherThanThisOne(String proposed, MesquiteWindow w){
+		for (int i = 0; i<treeWindows.size(); i++){
+			Listable ow = treeWindows.elementAt(i);
+			if (ow != w && ow.getName().equals(proposed))
+				return true;
+		}
+		return false;
+	}
+	
+	public String getUniqueTreeWindowName(String proposed, MesquiteWindow w){
+		if (treeWindows == null || !otherWithNameOtherThanThisOne(proposed, w))
+			return proposed;
+		proposed += " *";
+		while (true){
+			if (!otherWithNameOtherThanThisOne(proposed, w))
+				return proposed;
+			proposed += "*";
+		}
 	}
 	/*.................................................................................................................*/
 	public boolean isSubstantive(){

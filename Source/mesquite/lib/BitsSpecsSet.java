@@ -36,6 +36,9 @@ public abstract class BitsSpecsSet extends SpecsSet  {
 		else
 			return "false";
 	}
+	public boolean allDefault(){
+		return !myBits.anyBitsOn();
+	}
  	/*.................................................................................................................*/
  	/** Sets the value for part "part" to be the same as that at part "otherPart" in the incoming specsSet*/
 	public void equalizeSpecs(SpecsSet other, int otherPart, int part){
@@ -72,6 +75,11 @@ public abstract class BitsSpecsSet extends SpecsSet  {
 	/*.................................................................................................................*/
 	/** Returns if part ic is on. */
 	public boolean isBitOn(int ic){
+		return myBits.isBitOn(ic);
+	}
+	/*.................................................................................................................*/
+	/** Returns if part ic is on. */
+	public boolean getSelected(int ic){
 		return myBits.isBitOn(ic);
 	}
 	/*.................................................................................................................*/
@@ -187,6 +195,24 @@ public abstract class BitsSpecsSet extends SpecsSet  {
 	public boolean deleteParts(int starting, int num){ 
 		setDirty(true);
  		myBits.deleteParts(starting, num);
+ 		numParts = myBits.getSize();
+		return true;
+	}
+	/*.................................................................................................................*/
+	/** Deletes parts flagged in Bits.*/
+	protected boolean deletePartsFlagged(Bits toBeDeleted){ 
+		setDirty(true);
+		myBits.deletePartsFlagged(toBeDeleted); 
+ 		numParts = myBits.getSize();
+		return true;
+	}
+	/*.................................................................................................................*/
+	/** Deletes parts by blocks.
+	 * blocks[i][0] is start of block; blocks[i][1] is end of block
+	 * Assumes that these blocks are in sequence, non-overlapping, etc!!! *
+	protected boolean deletePartsBy Blocks(int[][] blocks){ 
+		setDirty(true);
+ 		myBits.deletePartsBy Blocks(blocks);
  		numParts = myBits.getSize();
 		return true;
 	}

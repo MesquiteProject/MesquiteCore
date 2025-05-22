@@ -62,7 +62,7 @@ public class ModulesInfoVector extends ListableVector {
 		return list;
 	}
 	public Vector whoUsesMe(MesquiteModuleInfo module){
-		
+
 		Vector v = new Vector();
 		if (MesquiteTrunk.class.isAssignableFrom(module.getClass())) //no other modules use the trunk!
 			return v;
@@ -217,7 +217,7 @@ public class ModulesInfoVector extends ListableVector {
 				mmi.version =  pim.getPackageVersion();
 				mmi.packageName = pim.packageName;
 			}
-			
+
 			//if part of standard
 			if (inStandardPackages(mmi)) {
 				mmi.version =  MesquiteTrunk.mesquiteTrunk.getVersion();
@@ -235,7 +235,7 @@ public class ModulesInfoVector extends ListableVector {
 		boolean isDefault = false;
 		Class c = mb.getDutyClass();
 		String[] defaults = mb.getDefaultModule();
-		while (c!=MesquiteModule.class){
+		while (c != null && c!=MesquiteModule.class){
 			int loc = dutyClasses.indexOf(c);
 			if (loc<0){ //not found; simply added
 				dutyClasses.addElement(c);
@@ -250,7 +250,8 @@ public class ModulesInfoVector extends ListableVector {
 					dutyDefaultsSourceClass.setElementAt(mb.getDutyClass(), loc); 
 				}
 			}
-			c = c.getSuperclass();
+			if (c!=null)
+				c = c.getSuperclass();
 		}
 	}
 	public String getDutyName(Class dutyClass){
@@ -321,7 +322,7 @@ public class ModulesInfoVector extends ListableVector {
 	public Listable[] getModulesOfDuty(Class dutyClass, Object condition, MesquiteModule prospectiveEmployer) {
 		return getModulesOfDuty(dutyClass, condition, prospectiveEmployer, null);
 	}
-	
+
 	/** Return a String array listing all modules that subclass the passed duty class.  */
 	public Listable[] getModulesOfDuty(Class dutyClass, Object condition, MesquiteModule prospectiveEmployer, StringBuffer compatibilityReport) {
 		int num = size();
@@ -356,6 +357,25 @@ public class ModulesInfoVector extends ListableVector {
 			return infos;
 		}
 	}
+	/** Return the number of all modules that subclass the passed duty class.  */
+	public int getNumModulesOfDuty(Class dutyClass, Object condition, MesquiteModule prospectiveEmployer) {
+		int num = size();
+		MesquiteModuleInfo mbi=null;
+		MesquiteProject proj = null;
+		if (prospectiveEmployer !=null)
+			proj = prospectiveEmployer.getProject();
+		int count=0;
+		while ((mbi = findNextModule(dutyClass, mbi))!=null) {
+			//todo: could check for compatibility here as in menus
+			if (mbi.doesDuty(dutyClass) && mbi.getUserChooseable()) {
+				//Debugg.println("  " + mbi.getName() + " condition " + condition + " isCompatible " + mbi.isCompatible(condition, proj, prospectiveEmployer));
+				if (mbi.isCompatible(condition, proj, prospectiveEmployer))
+					count++;
+			}
+		}
+		return count;
+	}	
+
 	/*........................................................................*/
 	/** Returns module information for first module found that is instance of dutyClass and has given name.
 	Returns null if none found.*/
@@ -404,7 +424,7 @@ public class ModulesInfoVector extends ListableVector {
 	/*........................................................................*/
 	/** returns mbi's index among the default modules named in the string array; if not present, returns -1 */ 
 	private int whichDefault(String[] defaults, MesquiteModuleInfo mbi){ //finds out if mbi is in defaults list
-		if (defaults==null || defaults.length==0)
+		if (defaults==null || defaults.length==0 || mbi == null)
 			return -1;
 		for (int i=0; i<defaults.length; i++) {
 			if (defaults[i]==null)
@@ -516,6 +536,12 @@ public class ModulesInfoVector extends ListableVector {
 	}
 	/*........................................................................*/
 	/** Returns module information for next module found, after previousModule, that is instance of dutyClass.
+	Returns null if none found.*
+	public MesquiteModuleInfo findNextModule (Class dutyClass, MesquiteModuleInfo previousModule) {
+		return findNextModule(dutyClass, previousModule, null, null, null, 0);
+	}
+	/*........................................................................*/
+	/** Returns module information for next module found, after previousModule, that is instance of dutyClass.
 	Returns null if none found.*/
 	public MesquiteModuleInfo findNextModule (Class dutyClass, MesquiteModuleInfo previousModule) {
 		return findNextModule(dutyClass, previousModule, null, null, null);
@@ -530,26 +556,28 @@ public class ModulesInfoVector extends ListableVector {
 	/** Returns module information for next module found, after previousModule, that is instance of dutyClass and satisfies given condition. However, also makes sure that the module found is NOT one of the notDutyClasses 
 	Returns null if none found.  */
 	public MesquiteModuleInfo findNextModule (Class dutyClass, Class[] notDutyClasses, MesquiteModuleInfo previousModule, Object condition, MesquiteProject project, EmployerEmployee prospectiveEmployer) {
-		if (previousModule==null) {// no previous; find first module
+		/*	if (previousModule==null) {// no previous; find first module
 			return findModuleFilteredByNot(dutyClass, notDutyClasses, condition, project, prospectiveEmployer);
-		}
+		}*/
 
 		boolean chooseNext = false;
-		boolean defaultsExist = false;
+		boolean compatibleDefaultsExist = false;
 		int num = size();
 		MesquiteModuleInfo mbi;
+
+		//DEFAULT MODULES
 		//first, check to see if there are any more defaults that could be chosen
 		String[] defaultModules =getDutyDefaults(dutyClass); 
 		if (defaultModules!=null &&  defaultModules.length>=1) { //check if there is a subsequent default
-			defaultsExist = true;
 			if (previousModule == null){
 				MesquiteModuleInfo fmbi =findNextDefaultModuleFilteredByNot(dutyClass, notDutyClasses, -1, condition, project, prospectiveEmployer);
 				if (fmbi!=null)
 					return fmbi;
+				chooseNext = true;
 			}
 			else {
+				compatibleDefaultsExist = true;
 				int where = whichDefault(defaultModules, previousModule);
-
 
 				if (where >= 0 ) { // is a default, thus go to next
 					if (where == defaultModules.length-1){ //previous is exactly last default; thus go to non-defaults
@@ -563,21 +591,41 @@ public class ModulesInfoVector extends ListableVector {
 				}
 			}
 		}
-		else
-			defaultsExist = false;
 
-		for (int i=0; i<num; i++){ //next, go through non-defaults
+		//At this point, either previousModule is null, but there are no compatible defaults, or previousModule is beyond the last default
+		//PRIMARY CHOICES
+		for (int i=0; i<num; i++){ //next, go through non-defaults, but starting with the primary choices
 			mbi = (MesquiteModuleInfo)elementAt(i); //If there are defaults, don't choose if is default (otherwise defaults will be chosen more than once
-			if (chooseNext) {
-				if (mbi.doesDuty(dutyClass) && !mbi.doesADuty(notDutyClasses)){
-					if ((!defaultsExist || whichDefault(defaultModules, mbi)<0)  && mbi.isCompatible(condition, project, prospectiveEmployer)) { //&& mbi.getUserChooseable()
-						return mbi;
+			if (mbi.primaryChoiceRequested()){
+				if (chooseNext || previousModule == null) {
+					if (mbi.doesDuty(dutyClass) && !mbi.doesADuty(notDutyClasses)){
+						if ((!compatibleDefaultsExist || whichDefault(defaultModules, mbi)<0)  && mbi.isCompatible(condition, project, prospectiveEmployer)) { //&& mbi.getUserChooseable()
+							return mbi;
+						}
+					}
+				}
+				else {  //previous hasn't been found yet; choose next
+					if (mbi.mbClass == previousModule.getModuleClass()) {
+						chooseNext = true;
 					}
 				}
 			}
-			else {
-				if (mbi.mbClass == previousModule.getModuleClass()) {
-					chooseNext = true;
+		}
+		//SECONDARY CHOICES
+		for (int i=0; i<num; i++){ //next, go through non-defaults, but starting with the primary choices
+			mbi = (MesquiteModuleInfo)elementAt(i); //If there are defaults, don't choose if is default (otherwise defaults will be chosen more than once
+			if (!mbi.primaryChoiceRequested()){
+				if (chooseNext || previousModule == null) {
+					if (mbi.doesDuty(dutyClass) && !mbi.doesADuty(notDutyClasses)){
+						if ((!compatibleDefaultsExist || whichDefault(defaultModules, mbi)<0)  && mbi.isCompatible(condition, project, prospectiveEmployer)) { //&& mbi.getUserChooseable()
+							return mbi;
+						}
+					}
+				}
+				else {
+					if (mbi.mbClass == previousModule.getModuleClass()) {
+						chooseNext = true;
+					}
 				}
 			}
 		}

@@ -18,6 +18,9 @@ import java.awt.*;
 import mesquite.lib.*;
 import mesquite.lib.characters.CharacterData;
 import mesquite.lib.duties.*;
+import mesquite.lib.tree.MesquiteTree;
+import mesquite.lib.tree.Tree;
+import mesquite.lib.ui.MesquiteSubmenuSpec;
 
 /* ======================================================================== */
 public class SetTreeDefaults extends DefaultsAssistant {

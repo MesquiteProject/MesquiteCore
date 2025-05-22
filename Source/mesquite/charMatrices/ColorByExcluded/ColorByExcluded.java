@@ -19,6 +19,7 @@ import mesquite.lib.*;
 import mesquite.lib.characters.*;
 import mesquite.lib.duties.*;
 import mesquite.lib.table.*;
+import mesquite.lib.ui.ColorRecord;
 
 
 /* ======================================================================== */
@@ -55,7 +56,7 @@ public class ColorByExcluded extends DataWindowAssistantID implements CellColore
    	public void viewChanged(){
    	}
    	 public boolean setActiveColors(boolean active){
-   	 	setActive(true);
+   		setActive(active);
 		return true; 
 
    	 }

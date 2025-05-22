@@ -17,6 +17,11 @@ import java.awt.*;
 import java.awt.event.*;
 
 import mesquite.lib.*;
+import mesquite.lib.ui.ColorTheme;
+import mesquite.lib.ui.MesquitePanel;
+import mesquite.lib.ui.MesquitePopup;
+import mesquite.lib.ui.MesquiteTool;
+import mesquite.lib.ui.MesquiteWindow;
 
 /* ======================================================================== */
 /** A panel in upper left corner of MesquiteTable */
@@ -44,6 +49,15 @@ public class CornerPanel extends MesquitePanel {
 			redrawName(g);
 			g.dispose();
 		}
+	}
+	public void redrawColumn() {
+		Graphics mg = getGraphics();
+		if (mg == null)
+			return;
+		Color c = mg.getColor();
+		mg.setColor(ColorTheme.getContentBackgroundPale());   //ggray
+		mg.fillRect(0, 0, getWidth(), getHeight());
+		mg.dispose();
 	}
 	public void redrawName(Graphics g){
 		if (g ==null)
@@ -103,18 +117,11 @@ public class CornerPanel extends MesquitePanel {
 	/*...............................................................................................................*/
 	int touchX = -1;
 	int lastX = -1;
-	/*...............................................................................................................*/
-   	public void shimmerOff(int x) {
-		if (x<=getBounds().width) {
-			table.shimmerVerticalOff(this,x);
-			table.shimmerVerticalOff(table.rowNames,x);
-		}
-		else {
-			table.shimmerVerticalOff(table.columnNames,x-touchX);
-			table.shimmerVerticalOff(table.matrix,x-touchX);
-		}
+	/*...............................................................................................................*
+   	public void shimmerVerticalOff() {
+			table.shimmerVerticalOff(-1);
    	 }
-	/*...............................................................................................................*/
+	/*...............................................................................................................*
    	public void shimmerOn(int x) {
 		if (x<=getBounds().width) {
 			table.shimmerVerticalOn(this,x);
@@ -139,7 +146,7 @@ public class CornerPanel extends MesquitePanel {
 		if (x>getBounds().width-8) {
 			touchX=x;
 			lastX = x;
-			shimmerOn(x);
+			table.shimmerVerticalOn(this, x);
 		}
 		else {
 			table.cornerTouched(x,y, modifiers);
@@ -150,8 +157,8 @@ public class CornerPanel extends MesquitePanel {
 		if (tool == null || !isArrowEquivalent(tool))
 			return;
 		if (touchX >=0) {
-			shimmerOff(lastX);
-			shimmerOn(x);
+			table.shimmerVerticalOff(this, lastX, -1);
+			table.shimmerVerticalOn(this, x);
 			lastX=x;
 		}
    	 }
@@ -160,7 +167,7 @@ public class CornerPanel extends MesquitePanel {
 		if (tool == null || !isArrowEquivalent(tool))
 			return;
 		if (touchX >=0) {
-			shimmerOff(lastX);
+			table.shimmerVerticalOff(this, lastX, -1);
 			int newColumnWidth = getBounds().width + x-touchX-table.rowGrabberWidth;
 			if (newColumnWidth > 16) {
 				table.rowNamesWidthAdjusted = true;

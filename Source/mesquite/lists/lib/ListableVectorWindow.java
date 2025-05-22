@@ -59,11 +59,14 @@ public class ListableVectorWindow extends ListWindow implements MesquiteListener
 		}
 		return null;
 	}
-	public void setRowName(int row, String name){
+	public void setRowName(int row, String name, boolean update){
 		Listable item = getListable(row);
-		if (item!=null && item instanceof Renamable){
-			((Renamable)item).setName(name);
-			if (listModule.resetMenusOnNameChange()){
+		if (item!=null && item instanceof Nameable){
+			if (item instanceof NameableWithNotify)
+				((NameableWithNotify)item).setName(name, false);
+			else
+			((Nameable)item).setName(name);
+			if (update && listModule.resetMenusOnNameChange()){
 				resetAllTitles();
 				listModule.resetAllMenuBars();
 			}

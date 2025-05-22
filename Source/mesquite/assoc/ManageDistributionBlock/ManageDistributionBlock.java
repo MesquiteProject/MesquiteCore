@@ -18,6 +18,9 @@ import java.util.*;
 import java.awt.*;
 import mesquite.lib.*;
 import mesquite.lib.duties.*;
+import mesquite.lib.taxa.Taxa;
+import mesquite.lib.tree.MesquiteTree;
+import mesquite.lib.tree.TreeVector;
 import mesquite.assoc.lib.*;
 
 /* ======================================================================== 
@@ -67,7 +70,7 @@ public class ManageDistributionBlock extends MesquiteModule {
 		TaxaAssociation association=null;
 		Parser commandParser = new Parser();
 		commandParser.setString(block.toString());
-		MesquiteInteger startCharC = new MesquiteInteger(0);
+		MesquiteLong startCharC = new MesquiteLong(0);
 		String title= "Association from DISTRIBUTION";
 		String commandString;
 		Taxa hostTaxa= getProject().getTaxa(file, 0); //get last read TAXA as base
@@ -86,7 +89,7 @@ public class ManageDistributionBlock extends MesquiteModule {
 			else if (commandName.equalsIgnoreCase("NTAX")) {
 				//CREATE new contained taxa block here
 				numTaxa = MesquiteInteger.fromString(parser.getTokenNumber(3));
-				associateTaxa = taxaTask.makeNewTaxa(title, numTaxa, false);
+				associateTaxa = taxaTask.makeNewTaxaBlock(title, numTaxa, false);
 				associateTaxa.addToFile(file, getProject(), taxaTask);
 				//make new Assoc block
 				association = new TaxaAssociation();
@@ -145,7 +148,7 @@ public class ManageDistributionBlock extends MesquiteModule {
 						if (treeName.equals("*"))
 							treeName=parser.getNextToken();
 						parser.getNextToken(); //eat up "equals"
-						treeDescription=commandString.substring(parser.getPosition(), commandString.length());
+						treeDescription=commandString.substring((int)parser.getPosition(), commandString.length());
 						MesquiteTree thisTree =new MesquiteTree(associateTaxa);
 						/*
 						String commentString = comment.getValue();
@@ -161,7 +164,7 @@ public class ManageDistributionBlock extends MesquiteModule {
 					}
 			}
 			else if (!(commandName.equalsIgnoreCase("BEGIN") || commandName.equalsIgnoreCase("END")  || commandName.equalsIgnoreCase("ENDBLOCK"))) {
-					readUnrecognizedCommand(file,b, name, block, commandName, commandString, blockComments, null);
+					readUnrecognizedCommand(file,b, name, block, commandName, commandString, blockComments, null,  fileReadingArguments);
 			}
 		}
 		return b;

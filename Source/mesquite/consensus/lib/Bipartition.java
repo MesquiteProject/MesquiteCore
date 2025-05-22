@@ -16,6 +16,7 @@ package mesquite.consensus.lib;
 
 import mesquite.consensus.lib.Bipartition;
 import mesquite.lib.*;
+import mesquite.lib.tree.Tree;
 
 public class Bipartition {
 	Bits bits;

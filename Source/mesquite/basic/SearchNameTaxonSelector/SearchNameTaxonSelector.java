@@ -19,6 +19,9 @@ import java.awt.Checkbox;
 import mesquite.lib.*;
 import mesquite.lib.characters.CharacterData;
 import mesquite.lib.duties.TaxonSelector;
+import mesquite.lib.taxa.Taxa;
+import mesquite.lib.ui.ExtensibleDialog;
+import mesquite.lib.ui.SingleLineTextField;
 
 public class SearchNameTaxonSelector extends TaxonSelector {
 	String matchString = "";

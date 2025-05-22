@@ -19,6 +19,9 @@ import java.awt.*;
 import mesquite.lib.*;
 import mesquite.lib.duties.*;
 import mesquite.lib.table.*;
+import mesquite.lib.taxa.Taxa;
+import mesquite.lib.ui.ExtensibleDialog;
+import mesquite.lib.ui.SingleLineTextField;
 
 /* ======================================================================== */
 public class AssignTaxonNames extends TaxonNameAlterer {
@@ -59,6 +62,10 @@ public class AssignTaxonNames extends TaxonNameAlterer {
 		counter++;
 		return true;
    	}
+	/*.................................................................................................................*/
+	public boolean requestPrimaryChoice(){
+		return false;
+	}
 	/*.................................................................................................................*/
     	 public String getNameForMenuItem() {
 		return "Assign Taxon Names...";

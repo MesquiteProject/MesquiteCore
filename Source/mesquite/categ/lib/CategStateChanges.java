@@ -15,6 +15,8 @@ package mesquite.categ.lib;
 
 import mesquite.lib.*;
 import mesquite.lib.duties.CharHistorySource;
+import mesquite.lib.tree.Tree;
+import mesquite.lib.ui.ProgressIndicator;
 
 public class CategStateChanges {
 	int maxChangesRecorded = 10;

@@ -13,6 +13,7 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
  */package mesquite.lib.duties;
 
 import mesquite.lib.*;
+import mesquite.lib.taxa.Taxa;
 
 public abstract class BooleanForTaxon extends MesquiteModule implements BooleanForItem {
 

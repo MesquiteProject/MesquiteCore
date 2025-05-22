@@ -38,16 +38,14 @@ public class RandomFillMeristic extends MeristicDataAlterer implements AltererRa
 	}
 	/*.................................................................................................................*/
 	/** Called to alter data in those cells selected in table*/
-	public boolean alterData(CharacterData data, MesquiteTable table, UndoReference undoReference){
+	public int alterData(CharacterData data, MesquiteTable table, UndoReference undoReference){
 
-		boolean did=false;
 		if (!(data instanceof MeristicData))
-			return false;
+			return ResultCodes.INCOMPATIBLE_DATA;
 		MesquiteBoolean answer = new MesquiteBoolean(true);
 		MesquiteInteger.queryTwoIntegers(containerOfModule(), "Random fill (Meristic Uniform)", "Minimum of filled states", "Maximum of filled states", answer, min, max, 0, MeristicState.infinite, 0, MeristicState.infinite, "");
 		if (!(answer.getValue() && min.isCombinable() && (max.isCombinable()) && max.getValue()>=min.getValue()))
-			return false;
-		MeristicData cData = (MeristicData)data;
+			return ResultCodes.USER_STOPPED;
 		return alterContentOfCells(data,table, undoReference);
 	}
 

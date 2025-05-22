@@ -17,6 +17,9 @@ import java.util.*;
 import java.awt.*;
 import mesquite.lib.*;
 import mesquite.lib.duties.*;
+import mesquite.lib.taxa.Taxa;
+import mesquite.lib.tree.MesquiteTree;
+import mesquite.lib.tree.Tree;
 
 /* ======================================================================== */
 public class EqualRatesSpSampled extends TreeSimulate {

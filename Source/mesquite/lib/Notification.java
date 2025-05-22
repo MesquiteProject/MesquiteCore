@@ -35,6 +35,7 @@ public class Notification implements Identifiable {
 		this.code = code;
 		this.parameters = parameters;
 	}
+	static long numNMSLC = 0;
 	public Notification(int code){
 		this();
 		this.code = code;

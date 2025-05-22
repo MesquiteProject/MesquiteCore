@@ -19,6 +19,15 @@ import java.awt.*;
 import java.awt.image.*;
 import mesquite.lib.*;
 import mesquite.lib.duties.*;
+import mesquite.lib.taxa.Taxa;
+import mesquite.lib.tree.Tree;
+import mesquite.lib.tree.TreeDisplay;
+import mesquite.lib.tree.TreeDisplayExtra;
+import mesquite.lib.tree.TreeTool;
+import mesquite.lib.ui.MesquiteImage;
+import mesquite.lib.ui.MesquiteLabel;
+import mesquite.lib.ui.MesquiteWindow;
+import mesquite.lib.ui.StringInABox;
 
 /* ======================================================================== */
 public class BranchNotes extends TreeDisplayAssistantI {
@@ -113,6 +122,8 @@ class BranchNotesToolExtra extends TreeDisplayExtra implements Commandable  {
 	StringInABox box = new StringInABox( "", treeDisplay.getFont(),150);
 	/*.................................................................................................................*/
 	public   void drawOnTree(Tree tree, int node, Graphics g) {
+		if (tree.withinCollapsedClade(node))
+			return;
 		for (int d = tree.firstDaughterOfNode(node); tree.nodeExists(d); d = tree.nextSisterOfNode(d))
 			drawOnTree(tree, d, g);
 		if (getNote(tree, node)!=null) {
@@ -164,11 +175,11 @@ class BranchNotesToolExtra extends TreeDisplayExtra implements Commandable  {
 	}
 	NameReference branchNotesRef = NameReference.getNameReference("note");
 	String getNote(Tree tree, int node){
-		return (String)tree.getAssociatedObject(branchNotesRef, node);
+		return (String)tree.getAssociatedString(branchNotesRef, node);
 	}
 	void setNote(Tree tree, int node, String note){
 		if (tree instanceof Associable){
-			((Associable)tree).setAssociatedObject(branchNotesRef, node, note);
+			((Associable)tree).setAssociatedString(branchNotesRef, node, note);
 			((Associable)tree).notifyListeners(this, new Notification(MesquiteListener.ANNOTATION_CHANGED));
 
 		}

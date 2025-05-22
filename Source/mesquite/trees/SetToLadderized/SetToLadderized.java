@@ -16,6 +16,8 @@ package mesquite.trees.SetToLadderized;
 import java.awt.*;
 import mesquite.lib.*;
 import mesquite.lib.duties.*;
+import mesquite.lib.tree.AdjustableTree;
+import mesquite.lib.tree.MesquiteTree;
 
 /* ======================================================================== */
 public class SetToLadderized extends TreeAltererMult {
@@ -30,7 +32,7 @@ public class SetToLadderized extends TreeAltererMult {
 	/*.................................................................................................................*/
 	/** returns whether this module is requesting to appear as a primary choice */
 	public boolean requestPrimaryChoice(){
-		return true;  
+		return false;  
 	}
 	/*.................................................................................................................*/
 	public  boolean  transformTree(AdjustableTree tree, MesquiteString resultString, boolean notify){

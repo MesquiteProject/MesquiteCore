@@ -21,6 +21,8 @@ import mesquite.lib.*;
 import mesquite.lib.characters.*;
 import mesquite.lib.duties.*;
 import mesquite.lib.table.*;
+import mesquite.lib.ui.MesquiteCursor;
+import mesquite.lib.ui.MesquiteWindow;
 import mesquite.categ.lib.*;
 import mesquite.align.lib.*;
 
@@ -53,7 +55,7 @@ public  class MultiBlockSplitter extends MultiBlockMoveBase {
 			dragCommand.setSuppressLogging(true);
 			MesquiteCommand dropCommand = MesquiteModule.makeCommand("moveDropCell",  this);
 			dropCommand.setSuppressLogging(true);
-			moveTool = new MultiBlockTool(this, "multiBlockSplitter", getPath(), "MultiBlockSplitter.gif", 8,8,"CrossHair.gif",8,8,"Splits multiple sequences","This tool splits and moves blocks of sequences for manual alignment.", touchCommand, dragCommand, dropCommand);
+			moveTool = new MultiBlockTool(this, "multiBlockSplitter", getPath(), "multiBlockSplitter.gif", 8,8,"CrossHair.gif",8,8,"Splits multiple sequences","This tool splits and moves blocks of sequences for manual alignment.", touchCommand, dragCommand, dropCommand);
 			setOptionTools();
 			moveTool.setDeselectIfOutsideOfCells(false);
 			moveTool.setAcceptsOutsideDrops(true);
@@ -457,8 +459,8 @@ public  class MultiBlockSplitter extends MultiBlockMoveBase {
 			((MultiBlockSplitter)initiator).clearBetweenSelection();
 		}
 
-		public void cursorInCell(int modifiers, int column, int row, int regionInCellH, int regionInCellV, EditorPanel panel){
-			if (table.inBetweenSelection(column, row, regionInCellH, regionInCellV))  {
+		public void cursorInCell(int modifiers, int column, int row, EditorPanel editorPanel, int x, int y){
+			if (table.inBetweenSelection(column, row, editorPanel, x, y))  {
 				setCurrentStandardCursor(null);
 				if (optionBetweenSelectionCursor!=null && MesquiteEvent.optionKeyDown(modifiers)) {
 					setCurrentOptionCursor(optionBetweenSelectionCursor);

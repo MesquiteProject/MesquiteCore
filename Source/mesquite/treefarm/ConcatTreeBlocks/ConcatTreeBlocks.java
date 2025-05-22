@@ -18,6 +18,11 @@ import java.util.*;
 
 import mesquite.lib.*;
 import mesquite.lib.duties.*;
+import mesquite.lib.taxa.Taxa;
+import mesquite.lib.tree.MesquiteTree;
+import mesquite.lib.tree.Tree;
+import mesquite.lib.tree.TreeVector;
+import mesquite.lib.ui.ExtensibleDialog;
 import mesquite.lists.lib.*;
 
 
@@ -101,6 +106,7 @@ public class ConcatTreeBlocks extends TreeBlockListUtility  {
     	 	MesquiteFile file = getProject().chooseFile( "Select file to which to add the concatenated tree block");
 		incrementMenuResetSuppression();
 		getProject().incrementProjectWindowSuppression();
+		Vector v = pauseAllPausables();
 		TreeVector concat = new TreeVector(taxa);
    		for (int i=0; i<blocks.length; i++){
    			if (blocks[i].getTaxa() == taxa) {
@@ -119,11 +125,11 @@ public class ConcatTreeBlocks extends TreeBlockListUtility  {
    			else
    				otherTaxaBlockFound = true;
    		}
-
+   		unpauseAllPausables(v);
 		concat.setName("Concatenated");
 		concat.addToFile(file, getProject(), findElementManager(TreeVector.class));  
 		if (otherTaxaBlockFound)
-			discreetAlert( "Not all of the tree blocks were concatenated, because some were for different taxon blocks.  Only those tree blocks referring to the same taxa as the first were concatenated.");
+			discreetAlert( "Not all of the tree blocks were concatenated, because some were for different taxa blocks.  Only those tree blocks referring to the same taxa as the first were concatenated.");
 		getProject().decrementProjectWindowSuppression();
 		decrementMenuResetSuppression();
 		resetAllMenuBars();

@@ -19,6 +19,15 @@ import java.util.*;
 import java.io.*;
 
 import mesquite.lib.duties.*;
+import mesquite.lib.misc.HNode;
+import mesquite.lib.ui.AlertDialog;
+import mesquite.lib.ui.ColorDistribution;
+import mesquite.lib.ui.InfoBar;
+import mesquite.lib.ui.ListDialog;
+import mesquite.lib.ui.MesquiteDialog;
+import mesquite.lib.ui.MesquiteMenuSpec;
+import mesquite.lib.ui.MesquitePopup;
+import mesquite.lib.ui.MesquiteWindow;
 
 /* ======================================================================== */
 /** This is a superclass of MesquiteModule that handles the employee-employer relations. It is intended to be used only as a superclass of MesquiteModule */
@@ -468,7 +477,7 @@ public abstract class EmployerEmployee extends MenuOwner implements HNode, Lista
 	}
 	/* ................................................................................................................. */
 	/** Returns whether the given module is employer OR higher. */
-	public String dumpEmployers() {
+	public String listEmployers() {
 		String s = "";
 		EmployerEmployee empr = getEmployer();
 		while (empr != null){
@@ -551,6 +560,16 @@ public abstract class EmployerEmployee extends MenuOwner implements HNode, Lista
 			}
 		}
 		return closed;
+	}
+	/* ................................................................................................................. */
+	/** Moves the employee to first in the vector. */
+	public void moveEmployeeToFirst(MesquiteModule mb) {
+		if (employees == null)
+			return;
+		if (employees.indexOf(mb)<0)
+			return;
+		employees.removeElement(mb, false);
+		employees.insertElementAt(mb, 0, false);
 	}
 
 	/* ................................................................................................................. */
@@ -827,6 +846,16 @@ public abstract class EmployerEmployee extends MenuOwner implements HNode, Lista
 
 	/* ................................................................................................................. */
 	/**
+	 * Finds the module that belongs to a particular subclass that is hired by an employer. Keeps going up employer chain. 
+	 * Whether one is returned depends on the employer; it may choose to give such a module only to a particular one of its employees.
+	 */
+	public MesquiteModule findModuleOfEmploymentContextWithDuty(Class dutyClass, EmployerEmployee immediateRequestor, MesquiteModule originalRequestor) {
+		if (employer != null)
+			return employer.findModuleOfEmploymentContextWithDuty(dutyClass, this, originalRequestor);
+		return null;
+	}
+	/* ................................................................................................................. */
+	/**
 	 * Finds the nearest module that belongs to a particular subclass. Searches first among employees, then among colleagues, then among modules of this project, then among modules across Mesquite.
 	 */
 	public MesquiteModule findNearestModuleWithDuty(Class dutyClass) {
@@ -1020,7 +1049,7 @@ public abstract class EmployerEmployee extends MenuOwner implements HNode, Lista
 		if (MesquiteTrunk.debugMode && MesquiteTrunk.reportUnregisteredNeeds){
 			EmployeeNeed need = findEmployeeNeed(mb.getClass());
 			if (need == null) {
-				MesquiteMessage.println("@@@@@@@@@@@@@@@@@@@@");
+				MesquiteMessage.println("#################");
 				MesquiteMessage.println("UNREGISTERED NEED: " + dutyClass.getName() + " for " + module.getModuleInfo().getClassName() + " (hiring " + mb.getModuleInfo().getClassName() + ")");
 				String ln = listNeeds();
 				if (!StringUtil.blank(ln))
@@ -1167,6 +1196,7 @@ public abstract class EmployerEmployee extends MenuOwner implements HNode, Lista
 	public MesquiteModule instantiateEmployee(MesquiteModuleInfo mbi) {
 		if (mbi == null)
 			return null;
+		MesquiteThread.shouldBeOnMesquiteThread(true);
 		MesquiteModule mb = instantiateModule(mbi.mbClass);
 		if (mb != null) {
 			mb.employer = module;
@@ -1687,7 +1717,7 @@ public abstract class EmployerEmployee extends MenuOwner implements HNode, Lista
 				// s is now package name; find package and diagnose
 				MesquitePackageRecord mpr = MesquitePackageRecord.findPackage(s);
 				if (mpr == null)
-					message += "\nThe package in which this module resides (" + s + ") appears not to be installed.";
+					message += "\nThe package in which this module resides (" + s + ") appears not to be installed. This message can appear when you read a file that had been saved with a copy of Mesquite with different packages installed.";
 				else if (mpr.loaded)
 					message += "\nThe package in which this module resides (" + mpr.getName() + ") is installed and activated (loaded).  Perhaps the package has changed, or the command contains a misspelled name.";
 				else
@@ -1712,7 +1742,7 @@ public abstract class EmployerEmployee extends MenuOwner implements HNode, Lista
 					rec.setModuleNotFoundWarning(false);
 				}
 			}
-		module.logln("\nMODULE REQUESTED BY COMMAND NOT FOUND\n" + message + "\n");
+		module.logln("\nMODULE REQUESTED BY COMMAND NOT FOUND\n" + message + " \n");
 	}
 
 	/* ................................................................................................................. */

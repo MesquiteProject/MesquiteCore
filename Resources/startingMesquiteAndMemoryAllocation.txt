@@ -1,6 +1,6 @@
 To Run Mesquite
 
-To run Mesquite, you need Java installed.  Mesquite now runs only on Java 1.4 and higher.  We suggest Java 1.6 on Mac OS X, Java 1.7 on others.
+To run Mesquite, you need Java installed.  Mesquite now runs only on Java 9.
 
 Once Mesquite_Folder is installed, you can start Mesquite as follows:
 

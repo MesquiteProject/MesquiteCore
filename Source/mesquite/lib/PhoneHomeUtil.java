@@ -1,6 +1,7 @@
 /* Mesquite source code.  Copyright 1997 and onward, W. Maddison and D. Maddison. 
 
 
+
 Disclaimer:  The Mesquite source code is lengthy and we are few.  There are no doubt inefficiencies and goofs in this code. 
 The commenting leaves much to be desired. Please approach this source code with the spirit of helping out.
 Perhaps with your help we can be more than a few, and make Mesquite better.
@@ -17,8 +18,24 @@ import java.util.*;
 
 import org.dom4j.*;
 
+import mesquite.lib.ui.AlertDialog;
+import mesquite.lib.ui.MesquiteMenuItemSpec;
+import mesquite.lib.ui.MesquiteSubmenuSpec;
+
 public class PhoneHomeUtil {	
 
+	/*
+	 * 
+	 * The following are in MesquiteModule:
+	public static String versionReportURL =  "http://startup.mesquiteproject.org/mesquite/mesquiteStartup.php"; //(see PhoneHomeThread, checkForMessagesFromAllHomes)
+	public static String errorReportURL =  "http://error.mesquiteproject.org/mesquite/mesquiteError.php"; //see exceptionAlert in MesquiteModule
+	public static String prereleaseErrorReportURL =  "http://error.mesquiteproject.org/mesquite/mesquitePrereleaseError.php"; //see exceptionAlert in MesquiteModule
+	public static String beansReportURL = "http://beans.mesquiteproject.org/mesquite/mesquiteBeans.php";
+	
+	//See Mesquite.java for notices.xml URLs
+	//See Installer for updates.xml URLs
+
+	 * */
 	static int OS = 0;
 	static int OSVERSION=1;
 	static int JAVAVERSION=2;
@@ -472,8 +489,6 @@ public class PhoneHomeUtil {
 		}
 		if (StringUtil.blank(noticesFromHome))
 			return null;
-		if (mmi.getModuleClass() == mesquite.Mesquite.class)
-			phoneHomeSuccessful = true;
 		return handleMessages(false, noticesFromHome, mmi, phoneHomeRecord, logBuffer);
 	}
 	/*.................................................................................................................*/

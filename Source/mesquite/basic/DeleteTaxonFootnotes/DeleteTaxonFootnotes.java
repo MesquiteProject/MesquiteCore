@@ -15,6 +15,7 @@ package mesquite.basic.DeleteTaxonFootnotes;
 
 import mesquite.lib.*;
 import mesquite.lib.duties.TaxonUtility;
+import mesquite.lib.taxa.Taxa;
 
 public class DeleteTaxonFootnotes extends TaxonUtility {
 

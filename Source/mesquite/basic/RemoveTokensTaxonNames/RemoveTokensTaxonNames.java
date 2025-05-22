@@ -22,6 +22,8 @@ import javax.swing.JLabel;
 import mesquite.lib.*;
 import mesquite.lib.duties.*;
 import mesquite.lib.table.*;
+import mesquite.lib.taxa.Taxa;
+import mesquite.lib.ui.ExtensibleDialog;
 
 /* ======================================================================== */
 public class RemoveTokensTaxonNames extends TaxonNameAlterer implements KeyListener {

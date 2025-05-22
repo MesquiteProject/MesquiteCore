@@ -20,6 +20,8 @@ import mesquite.lib.*;
 import mesquite.lib.characters.*;
 import mesquite.lib.duties.*;
 import mesquite.lib.table.MesquiteTable;
+import mesquite.lib.taxa.Taxa;
+import mesquite.lib.ui.ColorDistribution;
 import mesquite.lists.lib.ListModule;
 import mesquite.molec.lib.*;
 
@@ -34,6 +36,9 @@ public class DNAData extends MolecularData {
 
 	public static Color dnaRed, dnaGreen, dnaYellow, dnaBlue;
 	public static Color dnaRedPale, dnaGreenPale, dnaYellowPale, dnaBluePale, dnaInapplicable, dnaUnassigned;
+	public static Color dnaRedDark, dnaGreenDark, dnaYellowDark, dnaBlueDark, dnaInapplicableDark, dnaUnassignedDark;
+	public static Color dnaRedVeryDark, dnaGreenVeryDark, dnaYellowVeryDark, dnaBlueVeryDark, dnaInapplicableVeryDark, dnaUnassignedVeryDark;
+	public static Color dnaRedExtremelyDark, dnaGreenExtremelyDark, dnaYellowExtremelyDark, dnaBlueExtremelyDark, dnaInapplicableExtremelyDark, dnaUnassignedExtremelyDark;
 
 	CodonPositionsSet codonPositionsSet = null;
 
@@ -53,6 +58,28 @@ public class DNAData extends MolecularData {
 		dnaBluePale = new Color((float) 0.7, (float) 0.7, (float) 1);
 		dnaInapplicable = new Color((float)0.93, (float)0.90, (float)0.87);  //ColorDistribution.inapplicable
 		dnaUnassigned = new Color((float)0.92, (float)0.94, (float)0.98); //ColorDistribution.unassigned;
+
+		dnaRedDark = new Color((float) 0.65, (float) 0.19, (float) 0.19);
+		dnaGreenDark = new Color((float) 0.19, (float) 0.65, (float) 0.19);
+		dnaYellowDark = new Color((float) 0.53, (float) 0.53, (float) 0.19);
+		dnaBlueDark = new Color((float) 0.19, (float) 0.19, (float) 0.65);
+		dnaInapplicableDark = new Color((float)0.4, (float)0.4, (float)0.4);  //ColorDistribution.inapplicable
+		dnaUnassignedDark = new Color((float)0.4, (float)0.4, (float)0.4); //ColorDistribution.unassigned;
+
+		dnaRedVeryDark = new Color((float) 0.45, (float) 0.19, (float) 0.19);
+		dnaGreenVeryDark = new Color((float) 0.19, (float) 0.45, (float) 0.19);
+		dnaYellowVeryDark = new Color((float) 0.33, (float) 0.33, (float) 0.19);
+		dnaBlueVeryDark = new Color((float) 0.19, (float) 0.19, (float) 0.45);
+		dnaInapplicableVeryDark = new Color((float)0.3, (float)0.3, (float)0.3);  //ColorDistribution.inapplicable
+		dnaUnassignedVeryDark = new Color((float)0.3, (float)0.3, (float)0.3); //ColorDistribution.unassigned;
+
+		dnaRedExtremelyDark= new Color((float) 0.35, (float) 0.13, (float) 0.13);
+		dnaGreenExtremelyDark= new Color((float) 0.13, (float) 0.35, (float) 0.13);
+		dnaYellowExtremelyDark = new Color((float) 0.23, (float) 0.23, (float) 0.13);
+		dnaBlueExtremelyDark= new Color((float) 0.13, (float) 0.13, (float) 0.35);
+		dnaInapplicableExtremelyDark = new Color((float)0.1, (float)0.1, (float)0.1);  //ColorDistribution.inapplicable
+		dnaUnassignedExtremelyDark = new Color((float)0.1, (float)0.1, (float)0.1); //ColorDistribution.unassigned;
+
 		A = "A";
 		C = "C";
 		G = "G";
@@ -256,6 +283,42 @@ public class DNAData extends MolecularData {
 			return dnaBluePale;
 		else
 			return dnaUnassigned;
+	}
+	public static Color getDNAColorOfStateDark(int istate) {
+		if (istate == 0)
+			return dnaRedDark;
+		else if (istate == 1)
+			return dnaGreenDark;
+		else if (istate == 2)
+			return dnaYellowDark;
+		else if (istate == 3)
+			return dnaBlueDark;
+		else
+			return dnaUnassignedDark;
+	}
+	public static Color getDNAColorOfStateVeryDark(int istate) {
+		if (istate == 0)
+			return dnaRedVeryDark;
+		else if (istate == 1)
+			return dnaGreenVeryDark;
+		else if (istate == 2)
+			return dnaYellowVeryDark;
+		else if (istate == 3)
+			return dnaBlueVeryDark;
+		else
+			return dnaUnassignedVeryDark;
+	}
+	public static Color getDNAColorOfStateExtremelyDark(int istate) {
+		if (istate == 0)
+			return dnaRedExtremelyDark;
+		else if (istate == 1)
+			return dnaGreenExtremelyDark;
+		else if (istate == 2)
+			return dnaYellowExtremelyDark;
+		else if (istate == 3)
+			return dnaBlueExtremelyDark;
+		else
+			return dnaUnassignedExtremelyDark;
 	}
 	/** returns the color of character ic; e.g., to indicate codon positions */
 	public Color getDefaultCharacterColor(int ic) {
@@ -730,9 +793,10 @@ public class DNAData extends MolecularData {
 	/** Returns true if there is more than one code within the current genetic code set */
 	public boolean getVariableCodes() {
 		GeneticCode genCode = getGeneticCode(0);
-		for (int ic=1;ic<getNumChars(); ic++)
-			if (!genCode.equals(getGeneticCode(ic)))
-				return true;
+		if (genCode!=null)
+			for (int ic=1;ic<getNumChars(); ic++)
+				if (!genCode.equals(getGeneticCode(ic)))
+					return true;
 		return false;
 	}
 	/* ................................................................................................................. */
@@ -1020,8 +1084,8 @@ public class DNAData extends MolecularData {
 			return null;
 		else {
 			CharacterModel cm = getProject().getCharacterModel(dR.getDefault());
-			if (cm == null)
-				MesquiteMessage.println("Default model not found / " + dR.getDefault());
+			//if (cm == null)
+			//	MesquiteMessage.println("Default model not found / " + dR.getDefault());
 			return cm;
 		}
 	}
@@ -1358,13 +1422,13 @@ public class DNAData extends MolecularData {
 
 	/* .......................................... DNAData .................................................. */
 	/** appends to buffer string describing the state(s) of character ic in taxon it. */
-	public void statesIntoStringBufferCore(int ic, long s, StringBuffer sb, boolean forDisplay) {
+	public void statesIntoStringBufferCore(int ic, long s, MesquiteStringBuffer sb, boolean forDisplay) {
 		statesIntoStringBufferCore(ic, s, sb, forDisplay, true, true);
 	}
 
 	/* .......................................... DNAData .................................................. */
 	/** appends to buffer string describing the state(s) of character ic in taxon it. */
-	public void statesIntoStringBufferCore(int ic, long s, StringBuffer sb, boolean forDisplay, boolean includeInapplicable, boolean includeUnassigned) {
+	public void statesIntoStringBufferCore(int ic, long s, MesquiteStringBuffer sb, boolean forDisplay, boolean includeInapplicable, boolean includeUnassigned) {
 		if (CategoricalState.cardinality(s) > 1 && CategoricalState.isUncertain(s))
 			sb.append(getIUPACSymbol(s));
 		else {
@@ -1419,7 +1483,7 @@ public class DNAData extends MolecularData {
 
 	/* .......................................... DNAData .................................................. */
 	/* Appends to buffer state symbol for state e � */
-	protected void appendStateSymbol(int e, boolean lowerCase, StringBuffer sb) {
+	protected void appendStateSymbol(int e, boolean lowerCase, MesquiteStringBuffer sb) {
 		if (lowerCase) {
 			if (e == 0)
 				sb.append('a');
@@ -1452,7 +1516,7 @@ public class DNAData extends MolecularData {
 
 	/* .......................................... DNAData .................................................. */
 	/* Fills buffer with string version of state in char ic and taxon it � */
-	public void statesIntoNEXUSStringBuffer(int ic, int it, StringBuffer sb) {
+	public void statesIntoNEXUSStringBuffer(int ic, int it, MesquiteStringBuffer sb) {
 		boolean first = true;
 		long s = getStateRaw(ic, it);
 		if (s == 0L || s == CategoricalState.impossible)
@@ -1465,7 +1529,7 @@ public class DNAData extends MolecularData {
 			sb.append(getIUPACSymbol(s));
 		else {
 			int card = 0;
-			int current = sb.length();
+			long current = sb.length();
 			for (int e = 0; e <= DNAState.maxDNAState; e++) {
 				if (CategoricalState.isElement(s, e)) {
 					card++;

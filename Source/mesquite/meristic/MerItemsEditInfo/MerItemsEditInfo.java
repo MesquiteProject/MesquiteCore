@@ -24,6 +24,14 @@ import mesquite.lib.duties.*;
 import mesquite.meristic.lib.*;
 import mesquite.charMatrices.lib.MatrixInfoExtraPanel;
 import mesquite.lib.table.*;
+import mesquite.lib.ui.ClosablePanelContainer;
+import mesquite.lib.ui.ListDialog;
+import mesquite.lib.ui.MQPanel;
+import mesquite.lib.ui.MQTextField;
+import mesquite.lib.ui.MesquiteImage;
+import mesquite.lib.ui.MesquiteTool;
+import mesquite.lib.ui.MesquiteWindow;
+import mesquite.lib.ui.StringInABox;
 
 public class MerItemsEditInfo extends MatrixInfoPanelAssistantI  {
 	ItemsPanel panel;
@@ -211,7 +219,7 @@ class ItemsPanel extends MatrixInfoExtraPanel  {
 	}
 }
 /*-----------------------------*/
-class ItemsField extends Panel {
+class ItemsField extends MQPanel {
 	NameField[] items;
 	ItemsPanel panel;
 	MeristicData data;
@@ -283,7 +291,7 @@ class ItemsField extends Panel {
 		resetLocs();
 	}
 }
-class NameField extends TextField implements FocusListener {
+class NameField extends MQTextField implements FocusListener {
 	ItemsPanel panel;
 	int item = -1;
 	boolean somethingTyped;

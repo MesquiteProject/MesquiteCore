@@ -19,6 +19,9 @@ import java.awt.FileDialog;
 import mesquite.lib.*;
 import mesquite.lib.characters.CharacterData;
 import mesquite.lib.duties.*;
+import mesquite.lib.tree.Tree;
+import mesquite.lib.tree.TreeVector;
+import mesquite.lib.ui.ColorTheme;
 
 /* ======================================================================== */
 public class CopyTreesToSimpleFile extends FileProcessor {
@@ -47,7 +50,7 @@ public class CopyTreesToSimpleFile extends FileProcessor {
 	}
 	/*.................................................................................................................*/
 	/** Called to alter file. */
-	public boolean processFile(MesquiteFile file){
+	public int processFile(MesquiteFile file){
 		
 		if (saveFile == null || okToInteractWithUser(CAN_PROCEED_ANYWAY, "Asking for file to save")){ //need to check if can proceed
 			
@@ -57,14 +60,14 @@ public class CopyTreesToSimpleFile extends FileProcessor {
 			String fileName=fdlg.getFile();
 			String directory=fdlg.getDirectory();
 			if (StringUtil.blank(fileName) || StringUtil.blank(directory))
-				return false;
+				return -1;
 			saveFile = MesquiteFile.composePath(directory, fileName);
 		}
 		if (saveFile == null)
-			return false;
+			return -1;
 		Listable[] treeVectors = proj.getFileElements(TreeVector.class);	
    		if (treeVectors == null)
-   			return false;
+   			return 1;
 		MesquiteFile.putFileContents(saveFile, "[trees from Process Data Files]  " , true);
 		for (int im = 0; im < treeVectors.length; im++){
    			TreeVector trees = (TreeVector)treeVectors[im];
@@ -78,7 +81,7 @@ public class CopyTreesToSimpleFile extends FileProcessor {
   				}
    			}
    		}
-		return true;
+		return 0;
 
 	}
 	/*.................................................................................................................*/

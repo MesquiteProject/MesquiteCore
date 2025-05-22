@@ -21,6 +21,8 @@ import mesquite.lib.*;
 import mesquite.lib.characters.*;
 import mesquite.lib.duties.*;
 import mesquite.lib.table.*;
+import mesquite.lib.ui.MesquiteMenuItemSpec;
+import mesquite.lib.ui.QueryDialogs;
 
 /* ======================================================================== *
 *new in 1.02*

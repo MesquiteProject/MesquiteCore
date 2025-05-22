@@ -19,12 +19,15 @@ import java.util.*;
 import java.util.List;
 import java.awt.*;
 import java.awt.event.*;
+import java.awt.font.FontRenderContext;
 
 import javax.swing.text.*;
 
 import mesquite.lib.*;
 import mesquite.lib.characters.*;
+import mesquite.lib.characters.CharacterData;
 import mesquite.lib.duties.*;
+import mesquite.lib.misc.AttachedNotesVector;
 
 import java.awt.datatransfer.*;
 import java.awt.dnd.DnDConstants;
@@ -36,6 +39,31 @@ import java.io.OutputStreamWriter;
 import java.io.Writer;
 
 import mesquite.lib.table.*;
+import mesquite.lib.taxa.Taxa;
+import mesquite.lib.taxa.Taxon;
+import mesquite.lib.ui.AlertDialog;
+import mesquite.lib.ui.ClosablePanel;
+import mesquite.lib.ui.ClosablePanelContainer;
+import mesquite.lib.ui.ColorDistribution;
+import mesquite.lib.ui.ColorRecord;
+import mesquite.lib.ui.ColorTheme;
+import mesquite.lib.ui.ExtensibleDialog;
+import mesquite.lib.ui.GraphicsUtil;
+import mesquite.lib.ui.MQTextArea;
+import mesquite.lib.ui.MesquiteButton;
+import mesquite.lib.ui.MesquiteCheckMenuItem;
+import mesquite.lib.ui.MesquiteImage;
+import mesquite.lib.ui.MesquiteMenuItemSpec;
+import mesquite.lib.ui.MesquiteMenuSpec;
+import mesquite.lib.ui.MesquitePopup;
+import mesquite.lib.ui.MesquitePrintJob;
+import mesquite.lib.ui.MesquiteSubmenuSpec;
+import mesquite.lib.ui.MesquiteTool;
+import mesquite.lib.ui.MesquiteWindow;
+import mesquite.lib.ui.MousePanel;
+import mesquite.lib.ui.QueryDialogs;
+import mesquite.lib.ui.StringInABox;
+import mesquite.lib.ui.ToolPalette;
 import mesquite.charMatrices.lib.MatrixInfoExtraPanel;
 import mesquite.categ.lib.*;
 import mesquite.cont.lib.ContinuousData;
@@ -57,7 +85,7 @@ public class BasicDataWindowMaker extends DataWindowMaker implements Commandable
 	MesquiteMenuSpec matrixMenu, displayMenu;
 	static boolean warnAgainAboutTaxonNameDuplication = true;
 	boolean suppressExplanationAreaUpdates = false;
-	
+
 	/* ................................................................................................................. */
 	public boolean startJob(String arguments, Object condition, boolean hiredByName) {
 		matrixMenu = makeMenu("Matrix");
@@ -123,6 +151,10 @@ public class BasicDataWindowMaker extends DataWindowMaker implements Commandable
 				return bdw;
 			}
 		}
+		else if (checker.compare(this.getClass(), "Goes to the matrix by reference", "[reference]", commandName, "showMatrix")) { 
+			if (bdw != null)
+				return bdw.doCommand("showMatrix", arguments, checker);
+		}
 
 		else
 			return super.doCommand(commandName, arguments, checker);
@@ -149,7 +181,7 @@ public class BasicDataWindowMaker extends DataWindowMaker implements Commandable
 		if (bdw != null)
 			bdw.selectSameColor(column, row, restrictToCharacter, restrictToTaxon, contiguous, subtractFromSelection);
 	}
-	
+
 	public void selectDataBlockInTaxon(int column, int row) {
 		if (bdw != null)
 			bdw.selectBlockInTaxon(column, row);
@@ -207,6 +239,7 @@ public class BasicDataWindowMaker extends DataWindowMaker implements Commandable
 			return null;
 		return data;
 	}
+	
 
 	/* ................................................................................................................. */
 	public void windowGoAway(MesquiteWindow whichWindow) {
@@ -289,6 +322,7 @@ class BasicDataWindow extends TableWindow implements MesquiteListener {
 	MatrixTable table;
 	int windowWidth = 420;
 	int windowHeight = 280;
+	int defaultRowNameWidth = 160;
 	int columnWidth = 12;
 	boolean widthsSet = false;
 	TableTool arrowTool, ibeamTool;// , charWandTool;//, taxaWandTool
@@ -332,7 +366,7 @@ class BasicDataWindow extends TableWindow implements MesquiteListener {
 			columnWidth = data.getDefaultColumnWidth();
 		MesquiteSubmenuSpec mssa = ownerModule.addSubmenu(ownerModule.addAuxiliaryMenu("Analysis:Matrix"), "Analyses for Matrix", MesquiteModule.makeCommand("newAssistant", this), DataWindowAssistantA.class);
 		mssa.setCompatibilityCheck(data.getStateClass());
-		table = new MatrixTable((BasicDataWindowMaker) ownerModule, this, data, data.getTaxa().getNumTaxa(), data.getNumChars(), windowWidth, windowHeight, 110);
+		table = new MatrixTable((BasicDataWindowMaker) ownerModule, this, data, data.getTaxa().getNumTaxa(), data.getNumChars(), windowWidth, windowHeight, MesquiteTable.DEFAULTROWNAMEWIDTH);
 		/**/
 		/*	*/
 		table.setQuickMode(true);
@@ -391,16 +425,16 @@ class BasicDataWindow extends TableWindow implements MesquiteListener {
 		ownerModule.addItemToSubmenu(null, cmm, "Inapplicable Symbol...", MesquiteModule.makeCommand("setInapplicableSymbol", this));
 		ownerModule.addCheckMenuItem(null, "Show Matrix Info Panel", ownerModule.makeCommand("toggleInfoPanel", this), infoPanelOn);
 		editingNotPermitted.setValue(data.isEditInhibited());
-		
+
 		ownerModule.addCheckMenuItemToSubmenu(null, cmm,"Editing Not Permitted", ownerModule.makeCommand("toggleEditingNotPermitted", this), editingNotPermitted);
-		
+
 		MesquiteMenuItemSpec mmaa = ownerModule.addMenuItem( "Next Matrix", ownerModule.makeCommand("nextMatrix",  this));
 		mmaa.setShortcut(KeyEvent.VK_RIGHT); //right
 		mmaa = ownerModule.addMenuItem( "Previous Matrix", ownerModule.makeCommand("previousMatrix",  this));
 		mmaa.setShortcut(KeyEvent.VK_LEFT); //left
 		ownerModule.addMenuSeparator();
-		
-		
+
+
 		MesquiteSubmenuSpec mCC = ownerModule.addSubmenu(ownerModule.displayMenu, "Color Matrix Cells", MesquiteModule.makeCommand("colorCells", this), ownerModule.getEmployeeVector());
 		mCC.setListableFilter(CellColorerMatrix.class);
 
@@ -462,7 +496,7 @@ class BasicDataWindow extends TableWindow implements MesquiteListener {
 		ownerModule.addCheckMenuItemToSubmenu(ownerModule.displayMenu, namesSubmenu, "Show Default Char. Names", MesquiteModule.makeCommand("toggleShowDefaultCharNames", this), table.showDefaultCharNames);
 		ownerModule.addCheckMenuItemToSubmenu(ownerModule.displayMenu, namesSubmenu, "Bold Cell Text", MesquiteModule.makeCommand("toggleShowBoldCellText", this), table.showBoldCellText);
 
-		
+
 		MesquiteSubmenuSpec softnessSubmenu = ownerModule.addSubmenu(ownerModule.displayMenu, "Lighten");
 		//COLORS
 		ownerModule.addCheckMenuItemToSubmenu(ownerModule.displayMenu, softnessSubmenu, "Lighten Grid", MesquiteModule.makeCommand("toggleShowPaleGrid", this), table.showPaleGrid);
@@ -470,7 +504,7 @@ class BasicDataWindow extends TableWindow implements MesquiteListener {
 		ownerModule.addCheckMenuItemToSubmenu(ownerModule.displayMenu, softnessSubmenu, "Lighten Gaps/Inapplicable", MesquiteModule.makeCommand("togglePaleInapplicable", this), table.paleInapplicable);
 		ownerModule.addCheckMenuItemToSubmenu(ownerModule.displayMenu, softnessSubmenu, "Lighten Missing", MesquiteModule.makeCommand("togglePaleMissing", this), table.paleMissing);
 		ownerModule.addCheckMenuItemToSubmenu(ownerModule.displayMenu, softnessSubmenu, "Lighten Excluded Characters", MesquiteModule.makeCommand("toggleShowPaleExcluded", this), showPaleExcluded);
-		
+
 		ownerModule.addCheckMenuItem(ownerModule.displayMenu,"Reduce Cell Borders", MesquiteModule.makeCommand("toggleReduceCellBorders", this), table.reduceCellBorders);
 
 		//CHANGES
@@ -502,11 +536,12 @@ class BasicDataWindow extends TableWindow implements MesquiteListener {
 		ListableVector v = ownerModule.getEmployeeVector();
 
 		ownerModule.hireNamedEmployee(DataWindowAssistantI.class, "#AlterData");
-		
+
 		ownerModule.hireNamedEmployee(DataWindowAssistantI.class, "#AlignSequences");
 		ownerModule.hireNamedEmployee(DataWindowAssistantI.class, "#AddDeleteData");
 		ownerModule.hireNamedEmployee(DataWindowAssistantI.class, "#SearchData");
 		// ownerModule.addMenuSeparator();
+		ownerModule.hireNamedEmployee(DataWindowAssistantI.class, "#DefaultCellColor");
 		ownerModule.hireNamedEmployee(DataWindowAssistantI.class, "#NoColor");
 		ownerModule.hireNamedEmployee(DataWindowAssistantI.class, "#ColorByState");
 		ownerModule.hireNamedEmployee(DataWindowAssistantI.class, "#ColorCells");
@@ -521,11 +556,11 @@ class BasicDataWindow extends TableWindow implements MesquiteListener {
 				DataWindowAssistantI init = (DataWindowAssistantI) obj;
 				if (init instanceof DataWindowAssistantID || init instanceof CategDataEditorInitD)
 					init.setMenuToUse(ownerModule.displayMenu);
-				
+
 				init.setTableAndData(table, data);
 			}
 		}
-		
+
 		ownerModule.hireAllCompatibleEmployees(CharTableAssistantI.class, data.getStateClass());
 		enumeration = ownerModule.getEmployeeVector().elements();
 		while (enumeration.hasMoreElements()) {
@@ -563,6 +598,11 @@ class BasicDataWindow extends TableWindow implements MesquiteListener {
 		MesquiteSubmenuSpec mss4 = ownerModule.addSubmenu(null, "Character Inclusion/Exclusion");
 		ownerModule.addItemToSubmenu(null, mss4, "Include Selected Characters", ownerModule.makeCommand("includeSelectedCharacters", this));
 		ownerModule.addItemToSubmenu(null, mss4, "Exclude Selected Characters", ownerModule.makeCommand("excludeSelectedCharacters", this));
+		if (data instanceof MolecularData) {
+			ownerModule.addItemToSubmenu(null, mss4, "Add Exclusions by Trimming Method...", ownerModule.makeCommand("addExclusionByFlagger", this));
+			ownerModule.addItemToSubmenu(null, mss4, "Replace Exclusions by Trimming Method...", ownerModule.makeCommand("replaceExclusionByFlagger", this));
+		}
+		//DAVIDCHECK: not sure if useful ownerModule.addItemToSubmenu(null, mss4, "Exclude Characters by GBLOCKS...", ownerModule.makeCommand("excludeGBLOCKSCharacters", this));
 
 		// private, to fix frameshifted footnotes
 		// ownerModule.addMenuItem( "Move Footnotes...", ownerModule.makeCommand("moveFootnotes", this));
@@ -572,25 +612,25 @@ class BasicDataWindow extends TableWindow implements MesquiteListener {
 		MesquiteSubmenuSpec mss3 = ownerModule.addSubmenu(null, "Taxon Names", MesquiteModule.makeCommand("doNames", this));
 		mss3.setList(TaxonNameAlterer.class);
 		ownerModule.addMenuSeparator();
-		
-	
+
+
 		MesquiteModule noColor = ownerModule.findEmployeeWithName("#NoColor", true);
 		if (data.colorCellsByDefault()) {
-			MesquiteModule mbc = ownerModule.findEmployeeWithName("#ColorByState", true);
+			MesquiteModule mbc = ownerModule.findEmployeeWithName("#DefaultCellColor", true);
 			setCellColorer(mbc);
 		}
 		else {
 			setCellColorer(noColor);
 		}
-		MesquiteModule groupColor = ownerModule.findEmployeeWithName("#TaxonGroupColor", true);
-		setRowNamesColorer(groupColor);
-		groupColor = ownerModule.findEmployeeWithName("#CharGroupColor", true);
+		//	MesquiteModule groupColor = ownerModule.findEmployeeWithName("#TaxonGroupColor", true);
+		setRowNamesColorer(noColor);
+		MesquiteModule groupColor = ownerModule.findEmployeeWithName("#CharGroupColor", true);
 		setColumnNamesColorer(groupColor);
 		setTextColorer(noColor);
 		MesquiteSubmenuSpec mShowDataInfoStrip = ownerModule.addSubmenu(ownerModule.displayMenu, "Add Char Info Strip", ownerModule.makeCommand("hireDataInfoStrip", this), DataColumnNamesAssistant.class);
 		//ownerModule.hireAllCompatibleEmployees(DataColumnNamesAssistant.class, data.getStateClass());
-		
-	/*
+
+		/*
 		 * TableTool colorWandTool = new TableTool(this, "colorMagicWand", ownerModule.getPath(), "colorWand.gif", 1,1,"Select same color", "This tool selects cells of the same color", MesquiteModule.makeCommand("selectSameColor", this) , null, null); colorWandTool.setWorksOnColumnNames(false); colorWandTool.setWorksOnRowNames(false); colorWandTool.setWorksOnMatrixPanel(true); colorWandTool.setWorksOnCornerPanel(false); addTool(colorWandTool); /*
 		 * 
 		 * scrollTool = new TableTool(this, "simScroller", ownerModule.getPath(), "simScrollerRight.gif", 8, 8,"Scrolls between similar items", "This tool scrolls to other similar items", MesquiteModule.makeCommand("simScroll", this) , null, null); scrollTool.setOptionImageFileName("simScrollerLeft.gif", 8, 8); scrollTool.setWorksOnColumnNames(true); scrollTool.setWorksOnRowNames(false); scrollTool.setWorksOnMatrixPanel(false); scrollTool.setWorksOnCornerPanel(false); scrollTool.setSpecialToolForColumnNamesInfoStrips(true);
@@ -624,9 +664,9 @@ class BasicDataWindow extends TableWindow implements MesquiteListener {
 
 		resetTitle();
 	}
-public void requestFocus(){
-	table.requestFocus();
-}
+	public void requestFocus(){
+		table.requestFocus();
+	}
 	/* ................................................................................................................. */
 	/**
 	 * When called the window will determine its own title. MesquiteWindows need to be self-titling so that when things change (names of files, tree blocks, etc.) they can reset their titles properly
@@ -888,15 +928,6 @@ public void requestFocus(){
 	}
 
 	/* ................................................................................................................. */
-	int rowFirstTouched = 0;
-
-	int columnFirstTouched = 0;
-
-	int rowLastTouched = 0;
-
-	int columnLastTouched = 0;
-
-	/* ................................................................................................................. */
 	public Snapshot getSnapshot(MesquiteFile file) {
 		Snapshot temp = new Snapshot();
 		temp.incorporate(super.getSnapshot(file), false);
@@ -956,9 +987,9 @@ public void requestFocus(){
 		}
 		for (int i = 0; i < ownerModule.getNumberOfEmployees(); i++) {
 			Object e = ownerModule.getEmployeeVector().elementAt(i);
-			if (e instanceof DataWindowAssistant && !(e instanceof DataWindowAssistantI)) {
+			if (e instanceof DataWindowAssistant && !(e instanceof DataWindowAssistantI))
 				temp.addLine("newAssistant ", ((MesquiteModule) e));
-			}
+
 		}
 		if (matrixInfoPanelEverShown) {
 			if (matrixInfoPanel != null) {
@@ -969,29 +1000,28 @@ public void requestFocus(){
 			}
 			temp.addLine("toggleInfoPanel " + infoPanelOn.toOffOnString());
 		}
-//			temp.addLine("toggleEditingNotPermitted " + editingNotPermitted.toOffOnString());   //WAYNEASK:  Why is this here?
+		//			temp.addLine("toggleEditingNotPermitted " + editingNotPermitted.toOffOnString());   //WAYNEASK:  Why is this here?
 		return temp;
 	}
 
-	NameReference colorNameRef = NameReference.getNameReference("color");
-
+	NameReference oldColourNameRef = NameReference.getNameReference("color");
 	private void setColor(int ic, int it, int c) {
 		if (data == null)
 			return;
 		if (ic < 0 && it < 0) {
 		}
 		else if (ic < 0) { // taxon
-			data.getTaxa().setAssociatedLong(colorNameRef, it, c);
+			data.getTaxa().setColor(it, ColorDistribution.getStandardColorAsHex(c));
 		}
 		else if (it < 0) { // character
-			data.setAssociatedLong(colorNameRef, ic, c);
+			data.setColor(ic, ColorDistribution.getStandardColorAsHex(c));
 		}
 		else if (!MesquiteLong.isCombinable(c) || c < 0) {
-			data.setCellObject(colorNameRef, ic, it, null);
+			data.setCellObject(oldColourNameRef, ic, it, null);
 		}
 		else {
 			MesquiteInteger ms = new MesquiteInteger((int) c);
-			data.setCellObject(colorNameRef, ic, it, ms);
+			data.setCellObject(oldColourNameRef, ic, it, ms);
 		}
 	}
 
@@ -1163,7 +1193,7 @@ public void requestFocus(){
 		}
 
 	}
-	
+
 	public void selectBlockInTaxon(int column, int row) {
 		if (data == null || table == null)
 			return;
@@ -1180,7 +1210,7 @@ public void requestFocus(){
 				else
 					break;
 			}
-	
+
 		}
 
 
@@ -1291,6 +1321,43 @@ public void requestFocus(){
 		return null;
 	}
 
+	/* ................................................................................................................. *
+	protected boolean excludeGBLOCKSCharacters(MesquiteModule module, MesquiteTable table) {
+		CharacterSelector gblocksTask;
+			boolean changed=false;
+			if (table !=null) {
+				gblocksTask = (CharacterSelector)module.hireNamedEmployee(CharacterSelector.class, "#GBLOCKSSelector");
+				if (gblocksTask == null)
+					return false;
+				table.deselectAll();
+				data.deselectAll();
+				gblocksTask.selectCharacters(data);   // select characters using GBLOCKS
+
+
+				CharInclusionSet inclusionSet = (CharInclusionSet) data.getCurrentSpecsSet(CharInclusionSet.class);
+				if (inclusionSet == null) {
+					inclusionSet= new CharInclusionSet("Inclusion Set", data.getNumChars(), data);
+					inclusionSet.selectAll();
+					inclusionSet.addToFile(data.getFile(), data.getProject(), module.findElementManager(CharInclusionSet.class)); //THIS
+					data.setCurrentSpecsSet(inclusionSet, CharInclusionSet.class);
+				}
+				if (inclusionSet != null) {
+					for (int i=0; i<data.getNumChars(); i++) {
+						if (table.wholeColumnSelectedAnyWay(i) || table.isRowNameSelected(i)) {
+							inclusionSet.setSelected(i, false);  //exclude this one
+							changed = true;
+						} else
+							inclusionSet.setSelected(i, true);   // include this one
+
+					}
+				}
+				ownerModule.fireEmployee(gblocksTask);
+
+				if (changed)
+					data.notifyListeners(this, new Notification(AssociableWithSpecs.SPECSSET_CHANGED));  //not quite kosher; HOW TO HAVE MODEL SET LISTENERS??? -- modelSource
+			}
+			return changed;
+	}
 	/* ................................................................................................................. */
 	MesquiteModule findCellColorerTaxa(String arguments) {
 		Parser parser = new Parser();
@@ -1375,16 +1442,17 @@ public void requestFocus(){
 		return null;
 	}
 
-	public void switchToMatrix(int imNext) {
+	public Commandable switchToMatrix(int imNext) {
 		// ask coordinator to show that window
+
 		MesquiteModule bdwC = ownerModule.getEmployer();
+		CommandRecord previous = MesquiteThread.getCurrentCommandRecord();
+		CommandRecord record = new CommandRecord(true);
+		MesquiteThread.setCurrentCommandRecord(record);
 		Commandable mb = (Commandable)bdwC.doCommand("showExtraDataWindow", Integer.toString(imNext));
 		String cloneCommand =  Snapshot.getSnapshotCommands(ownerModule, null, "");
 		Puppeteer p = new Puppeteer(ownerModule);
 		MesquiteInteger pos = new MesquiteInteger(0);
-		CommandRecord previous = MesquiteThread.getCurrentCommandRecord();
-		CommandRecord record = new CommandRecord(true);
-		MesquiteThread.setCurrentCommandRecord(record);
 		MesquiteModule.incrementMenuResetSuppression();	
 		Object obj = p.sendCommands(mb, cloneCommand, pos, "", false, null,CommandChecker.defaultChecker);
 		MesquiteModule.decrementMenuResetSuppression();	
@@ -1392,6 +1460,7 @@ public void requestFocus(){
 
 		// close this one
 		closeWindow();
+		return mb;
 	}
 	/* ................................................................................................................. */
 	MesquiteInteger pos = new MesquiteInteger(0);
@@ -1427,8 +1496,7 @@ public void requestFocus(){
 				imNext = im+1;
 			if (imNext == im)
 				return null;
-			switchToMatrix(imNext);
-			return null;
+			return switchToMatrix(imNext);
 		}
 		else if (checker.compare(this.getClass(), "Goes to the previous matrix", null, commandName, "previousMatrix")) {
 			// figure out what is previous matrix
@@ -1439,10 +1507,21 @@ public void requestFocus(){
 				imPrev =  proj.getNumberCharMatrices()-1;
 			else
 				imPrev = im-1;
-			
+
 			if (imPrev == im)
 				return null;
-			switchToMatrix(imPrev);
+			return switchToMatrix(imPrev);
+		}
+		else if (checker.compare(this.getClass(), "Goes to the matrix by reference", "[reference]", commandName, "showMatrix")) { 
+			MesquiteProject proj = data.getProject();
+			CharacterData d = proj.getCharacterMatrixByReference(null, data.getTaxa(), null, ParseUtil.getFirstToken(arguments, pos));
+			if (d!= null){
+				int imCurrent = proj.getMatrixNumber(data);
+				int imOther = proj.getMatrixNumber(d);
+				if (imCurrent == imOther)
+					return ownerModule;
+				return switchToMatrix(imOther);
+			}
 			return null;
 		}
 		else if (checker.compare(this.getClass(), "Toggles whether the info panel is on", null, commandName, "toggleInfoPanel")) {
@@ -1762,16 +1841,28 @@ public void requestFocus(){
 			MesquiteInteger io = new MesquiteInteger(0);
 			int starting = CharacterStates.toInternal(MesquiteInteger.fromString(arguments, io));
 			int number = MesquiteInteger.fromString(arguments, io);
+			Vector v = ownerModule.pauseAllPausables();
 			if (data.deleteCharacters(starting, number, false)) {
 				data.notifyListeners(this, new Notification(MesquiteListener.PARTS_DELETED, new int[] { starting, number }));
 				data.deleteInLinked(starting, number, true);
 				table.setNumColumns(data.getNumChars());
 			}
+			ownerModule.unpauseAllPausables(v);
+		}
+		else if (checker.compare(this.getClass(), "Excludes characters by a trimming method, adding to existing exclusion", "[] []", commandName, "addExclusionByFlagger")) {
+			excludeByTrimmingMethod(false);
+		}
+		else if (checker.compare(this.getClass(), "Excludes characters by a trimming method, replacing existing exclusion", "[] []", commandName, "replaceExclusionByFlagger")) {
+			excludeByTrimmingMethod(true);
 		}
 		else if (checker.compare(this.getClass(), "Excludes selected characters", "[] []", commandName, "excludeSelectedCharacters")) {
 			if (data.setInclusionExclusion(ownerModule, table, false)) {
 			}
 		}
+		/*else if (checker.compare(this.getClass(), "Excludes GBLOCKS characters", "[] []", commandName, "excludeGBLOCKSCharacters")) {
+			if (excludeGBLOCKSCharacters(ownerModule, table)) {
+			}
+		}*/
 		else if (checker.compare(this.getClass(), "Includes selected characters", "[] []", commandName, "includeSelectedCharacters")) {
 			if (data.setInclusionExclusion(ownerModule, table, true)) {
 			}
@@ -1779,11 +1870,13 @@ public void requestFocus(){
 		else if (checker.compare(this.getClass(), "Adds taxa", "[taxon number after which new taxa to be inserted] [number of new taxa]", commandName, "addTaxa")) {
 			if (data.getTaxa().isEditInhibited())
 				ownerModule.discreetAlert("You cannot add taxa; the taxa block is locked.");
-		MesquiteInteger io = new MesquiteInteger(0);
+			MesquiteInteger io = new MesquiteInteger(0);
 			int starting = Taxon.toInternal(MesquiteInteger.fromString(arguments, io));
 			int number = MesquiteInteger.fromString(arguments, io);
+			Vector v = ownerModule.pauseAllPausables();
 			if (data.getTaxa().addTaxa(starting, number, true))
 				table.setNumRows(data.getNumTaxa());
+			ownerModule.unpauseAllPausables(v);
 		}
 		else if (checker.compare(this.getClass(), "Deletes taxa", "[first taxon to be deleted] [number of taxa]", commandName, "deleteTaxa")) {
 			if (data.getTaxa().isEditInhibited())
@@ -1796,8 +1889,10 @@ public void requestFocus(){
 				ownerModule.discreetAlert("You cannot delete all taxa; the command will be ignored");
 				return null;
 			}
+			Vector v = ownerModule.pauseAllPausables();
 			if (data.getTaxa().deleteTaxa(starting, number, true))
 				table.setNumRows(data.getNumTaxa());
+			ownerModule.unpauseAllPausables(v);
 		}
 		else if (checker.compare(this.getClass(), "Moves the selected characters ", "[column to move after; -1 if at start]", commandName, "moveCharsTo")) {
 			if (data.isEditInhibited()) {
@@ -1810,8 +1905,11 @@ public void requestFocus(){
 			}
 			MesquiteInteger io = new MesquiteInteger(0);
 			int justAfter = MesquiteInteger.fromString(arguments, io);
+			int howFar = table.getNumColumns() * 10;
+			if (howFar < 10001)
+				howFar = 10000;
 			if (!MesquiteInteger.isCombinable(justAfter))
-				justAfter = MesquiteInteger.queryInteger(this, "Move characters", "After which column should the selected characters be moved (enter 0 to move to first place)?", 0, 0, table.getNumColumns() * 10);
+				justAfter = MesquiteInteger.queryInteger(this, "Move characters", "After which column should the selected characters be moved (enter 0 to move to first place)?", 0, 0, howFar);
 			if (MesquiteInteger.isCombinable(justAfter))
 				table.selectedColumnsDropped(justAfter - 1); // -1 to convert to internal representation
 		}
@@ -1822,8 +1920,11 @@ public void requestFocus(){
 			}
 			MesquiteInteger io = new MesquiteInteger(0);
 			int justAfter = MesquiteInteger.fromString(arguments, io);
+			int howFar = table.getNumRows() * 10;
+			if (howFar < 10001)
+				howFar = 10000;
 			if (!MesquiteInteger.isCombinable(justAfter))
-				justAfter = MesquiteInteger.queryInteger(this, "Move taxa", "After which row should the selected taxa be moved (enter 0 to move to first place)?", 0, 0, table.getNumRows() * 10);
+				justAfter = MesquiteInteger.queryInteger(this, "Move taxa", "After which row should the selected taxa be moved (enter 0 to move to first place)?", 0, 0, howFar);
 			if (MesquiteInteger.isCombinable(justAfter))
 				table.selectedRowsDropped(justAfter - 1); // -1 to convert to internal representation
 		}
@@ -1836,7 +1937,7 @@ public void requestFocus(){
 				ownerModule.discreetAlert("Sorry, a single block of cells must be selected before it can be moved.");
 				return null;
 			}
-			
+
 			MesquiteInteger io = new MesquiteInteger(0);
 			int shiftAmount = MesquiteInteger.fromString(arguments, io);
 
@@ -1844,11 +1945,12 @@ public void requestFocus(){
 				String helpString ="Enter the amount to shift the block.  If you enter a positive number, the block will be shifted through that many characters to the right; a negative number, to the left. ";
 				helpString+="The block will not be shifted over top of existing data; it will only be moved through gaps.  If you request a shift larger than can be accommodated, then ";
 				helpString += "the block will be shifted as far as possible without overwriting data.";
-			
+
 				shiftAmount = MesquiteInteger.queryInteger(ownerModule.containerOfModule(), "Move Selected Block", "Number of characters to shift selected block", helpString, 1, MesquiteInteger.unassigned, MesquiteInteger.unassigned);
 			}
-			
+
 			if (MesquiteInteger.isCombinable(shiftAmount) && shiftAmount!=0) {
+				Vector v = ownerModule.pauseAllPausables();
 				MesquiteBoolean dataChanged = new MesquiteBoolean();
 				MesquiteInteger charAdded = new MesquiteInteger();
 				MesquiteInteger distanceMoved = new MesquiteInteger();
@@ -1859,6 +1961,7 @@ public void requestFocus(){
 				table.selectBlock(firstColumn.getValue()+distanceMoved.getValue(), firstRow.getValue(), lastColumn.getValue()+distanceMoved.getValue(), lastRow.getValue());
 				if (dataChanged.getValue())
 					contentsChanged();
+				ownerModule.unpauseAllPausables(v);
 			}
 		}
 		/* This is a hidden feature to help recover from consequences of bug of duplicate NOTES blocks in linked files in 1.0 to 1.02 */
@@ -1880,7 +1983,7 @@ public void requestFocus(){
 				int i = 0;
 				Bits sel = table.getColumnsSelected();
 				boolean asked = false;
-				ObjectArray charNotes = data.getWhichAssociatedObject(NameReference.getNameReference("comments"));
+				ObjectArray charNotes = data.getAssociatedObjects(NameReference.getNameReference("comments"));
 				while (i < table.getNumColumns()) {
 					if (sel.isBitOn(i)) {
 						table.deselectColumn(i);
@@ -1913,11 +2016,21 @@ public void requestFocus(){
 		/**/
 		else if (checker.compare(this.getClass(), "Hires utility module to operate on the data", "[name of module]", commandName, "doUtility")) {
 			if (table != null && data != null) {
-				if (data.isEditInhibited()) {
-					ownerModule.discreetAlert("This matrix is marked as locked against editing. To unlock, uncheck the menu item Matrix>Current Matrix>Editing Not Permitted");
-					return null;
+				DataUtility tda = null;
+				if (!StringUtil.blank(arguments)){
+					tda= (DataUtility)ownerModule.hireNamedEmployee(DataUtility.class, arguments);
+					if (data.isEditInhibited() && !(tda instanceof DataUtilityNoAlterer)) {
+						ownerModule.discreetAlert("This matrix is marked as locked against editing. To unlock, uncheck the menu item Matrix>Current Matrix>Editing Not Permitted");
+						return null;
+					}
 				}
-				DataUtility tda = (DataUtility) ownerModule.hireNamedEmployee(DataUtility.class, arguments);
+				else {
+					if (data.isEditInhibited())
+						tda= (DataUtilityNoAlterer)ownerModule.hireNamedEmployee(DataUtilityNoAlterer.class, arguments);
+					else
+						tda= (DataUtility)ownerModule.hireNamedEmployee(DataUtility.class, arguments);
+				}
+
 				if (tda != null) {
 					boolean a = tda.operateOnData(data);
 					if (a) {
@@ -2131,6 +2244,7 @@ public void requestFocus(){
 				oldColumnsWidths = table.getColumnWidthsUniform();
 				oldSuppress = table.suppressAutosize;
 				table.suppressAutosize = true;
+				table.frameMatrixCells = false;
 				table.setColumnWidthsUniform(table.birdsEyeWidth);
 				table.doAutosize = false;
 			}
@@ -2198,6 +2312,9 @@ public void requestFocus(){
 				setColorLegend(null, null, false);
 		}
 		else if (checker.compare(this.getClass(), "Hires new data editor assistant module", "[name of module]", commandName, "newAssistant")) {
+			//if can't find it, may be for a package not here; just absorb the instructions
+			/*	if (StringUtil.notEmpty(arguments) && MesquiteTrunk.mesquiteModulesInfoVector.findModule(DataWindowAssistant.class, arguments)== null)
+				return new MesquiteCommandAbsorber(); */
 			DataWindowAssistant dwa = (DataWindowAssistant) ownerModule.hireNamedEmployee(DataWindowAssistant.class, arguments);
 			if (dwa != null)
 				dwa.setTableAndData(table, data);
@@ -2208,6 +2325,27 @@ public void requestFocus(){
 		return null;
 	}
 
+	void excludeByTrimmingMethod(boolean replace) {
+		MatrixFlagger flagger = (MatrixFlagger)ownerModule.hireEmployee(MatrixFlagger.class, "Trimming method");
+		if (flagger ==null)
+			return;
+		MatrixFlags flags = flagger.flagMatrix(data, null); //if input flags is null, make one and return it. Otherwise, adjust the one input.
+		CharInclusionSet inclusionSet = (CharInclusionSet) data.getCurrentSpecsSet(CharInclusionSet.class);
+		if (inclusionSet == null) {
+			inclusionSet= new CharInclusionSet("Inclusion Set", data.getNumChars(), data);
+			inclusionSet.selectAll();
+			inclusionSet.addToFile(data.getFile(), data.getProject(), ownerModule.findElementManager(CharInclusionSet.class)); //THIS
+			data.setCurrentSpecsSet(inclusionSet, CharInclusionSet.class);
+		}
+		if (inclusionSet != null) {
+			if (replace)
+				inclusionSet.selectAll();
+			for (int i=0; i<data.getNumChars(); i++) 
+				inclusionSet.setSelected(i, !flags.isCharacterFlagOn(i));
+		}
+		contentsChanged();
+		ownerModule.fireEmployee(flagger);
+	}
 	SequenceLedge sequenceLedge;
 
 	public void resetSequenceLedge() {
@@ -2231,6 +2369,7 @@ public void requestFocus(){
 			table.doAutosize = true;
 			table.showStates.setValue(oldShowStates);
 			table.suppressAutosize = oldSuppress;
+			table.frameMatrixCells = true;
 			table.showBirdsEyeView.setValue(false);
 		}
 	}
@@ -2462,6 +2601,7 @@ public void requestFocus(){
 				table.offAllEditsDontRecord();// 1. 12
 				table.setNumRows(taxa.getNumTaxa());
 				table.synchronizeRowSelection(taxa);
+				table.resetComponentSizes();
 				table.repaintAll();
 				setUndoer(undoReference);
 			}
@@ -2469,6 +2609,7 @@ public void requestFocus(){
 				table.offAllEditsDontRecord();// 1. 12
 				table.setNumRows(taxa.getNumTaxa());
 				table.synchronizeRowSelection(taxa);
+				table.resetComponentSizes();
 				table.repaintAll();
 				setUndoer();
 			}
@@ -2476,6 +2617,7 @@ public void requestFocus(){
 				table.offAllEditsDontRecord();// 1. 12
 				table.setNumRows(taxa.getNumTaxa());
 				table.synchronizeRowSelection(taxa);
+				table.resetComponentSizes();
 				table.repaintAll();
 				setUndoer(undoReference);
 			}
@@ -2521,6 +2663,7 @@ public void requestFocus(){
 				if (table.getNumRows() != data.getTaxa().getNumTaxa())
 					table.setNumRows(data.getTaxa().getNumTaxa());
 				table.synchronizeColumnSelection(data);
+				table.resetComponentSizes();
 				table.repaintAll();
 				setUndoer();
 			}
@@ -2539,6 +2682,7 @@ public void requestFocus(){
 				if (table.getNumRows() != data.getTaxa().getNumTaxa())
 					table.setNumRows(data.getTaxa().getNumTaxa());
 				table.synchronizeColumnSelection(data);
+				table.resetComponentSizes();
 				table.repaintAll();
 				setUndoer(undoReference);
 			}
@@ -2555,7 +2699,9 @@ public void requestFocus(){
 				}
 				if (table.getNumRows() != data.getTaxa().getNumTaxa())
 					table.setNumRows(data.getTaxa().getNumTaxa());
+				table.setNumColumns(data.getNumChars());
 				table.synchronizeColumnSelection(data);
+				table.resetComponentSizes();
 				table.repaintAll();
 				setUndoer(undoReference);
 			}
@@ -2585,6 +2731,7 @@ public void requestFocus(){
 					table.setNumColumns(data.getNumChars());
 				}
 				table.synchronizeColumnSelection(data);
+				table.resetComponentSizes();
 				table.repaintAll();
 			}
 		}
@@ -2592,7 +2739,7 @@ public void requestFocus(){
 		super.changed(caller, obj, notification);
 	}
 
-	
+
 	/* ................................................................................................................. */
 	/** passes which object is being disposed (from MesquiteListener interface) */
 	public void disposing(Object obj) {
@@ -2648,7 +2795,7 @@ public void requestFocus(){
 		super.setWindowSize(width, height);
 		checkSizes();
 	}
-	
+
 	public void setVisible(boolean vis){
 		super.setVisible(vis);
 		if (table != null)
@@ -2902,7 +3049,7 @@ class ColorLegend extends MousePanel {
 		setBackground(Color.white);
 		setFont(new Font("SansSerif", Font.PLAIN, 10));
 		box = new StringInABox("", null, width);
-		goaway = MesquiteImage.getImage(MesquiteModule.getRootImageDirectoryPath() + "goaway.gif");
+		goaway = MesquiteImage.getImage(MesquiteModule.getRootImageDirectoryPath() + "goAway.gif");
 	}
 
 	public void setLegendColors(ColorRecord[] colors, String title, String explanation) {
@@ -3454,7 +3601,7 @@ class MatrixTable extends mesquite.lib.table.CMTable implements MesquiteDroppedF
 		if (sbUsed)
 			lineCount++;
 		boolean taxNamesChanged = false;
-		boolean atLeastOneFullRowSelected = isAnyRowSelected();
+		boolean atLeastOneFullRowSelected = anyRowSelected();
 		for (int j = 0; j < numRowsTotal && lineCount < lines.length; j++) {
 			if (sbUsed)
 				sb = new StringBuffer(lines[lineCount]);
@@ -3462,7 +3609,7 @@ class MatrixTable extends mesquite.lib.table.CMTable implements MesquiteDroppedF
 			if (atLeastOneFullRowSelected) {  // need to remove part before tab if a tab is there
 				removeTaxonNameIfPresent(sb);
 			} else if (rowNamesCopyPaste && (isRowNameSelected(j))) { // for name of taxon
-				returnedRowNameText(j, molecToken(sb, true));
+				returnedRowNameText(j, molecToken(sb, true), true);
 				taxNamesChanged = true;
 				sbUsed = true;
 			}  
@@ -3580,16 +3727,16 @@ class MatrixTable extends mesquite.lib.table.CMTable implements MesquiteDroppedF
 	protected boolean queryDroppedFileOptions(MesquiteBoolean adjustSequences) {
 		if (!(data instanceof MolecularData))
 			return false;
-		
+
 		MesquiteInteger buttonPressed = new MesquiteInteger(1);
 		ExtensibleDialog dialog = new ExtensibleDialog(editorModule.containerOfModule(), "Adjust incoming sequences?", buttonPressed); // MesquiteTrunk.mesquiteTrunk.containerOfModule()
 		String s="If you choose to adjust sequences on import, then Mesquite will examine each sequence it imports, and compare it against the reference sequence. ";
 		s+="It will reverse complement any DNA sequences that need to be so treated, and then do a partial pairwise alignment (no new gaps will be inserted) of that sequence to the reference sequence.";
 		dialog.appendToHelpString(s);
-	//	if (data instanceof DNAData) {
-	//		dialog.addLabel("Reverse complement a sequence (if needed)");
-	//		dialog.addBlankLine();
-	//	}
+		//	if (data instanceof DNAData) {
+		//		dialog.addLabel("Reverse complement a sequence (if needed)");
+		//		dialog.addBlankLine();
+		//	}
 		IntegerField referenceSequenceBox = dialog.addIntegerField("Compare to reference sequence: ", referenceSequence + 1, 8, 1, data.getNumTaxa());
 		dialog.completeAndShowDialog("Adjust Sequences", "Don't Adjust", "Cancel", "Adjust Sequences");
 
@@ -3601,7 +3748,7 @@ class MatrixTable extends mesquite.lib.table.CMTable implements MesquiteDroppedF
 		dialog.dispose();
 		return (buttonPressed.getValue() !=2);
 	}
-	
+
 	public int numIters (Iterator iter) {
 		int count = 0;
 		for ( ; iter.hasNext() ; ++count ) iter.next();
@@ -3638,7 +3785,7 @@ class MatrixTable extends mesquite.lib.table.CMTable implements MesquiteDroppedF
 							adjustNewSequences = adjustSequences.getValue();
 						}
 					}
-					
+
 				}
 				fileInterpreter.setImportFileNumber(count);
 				// system.out.println("next file dropped is: " + nextFile);
@@ -3654,7 +3801,7 @@ class MatrixTable extends mesquite.lib.table.CMTable implements MesquiteDroppedF
 				MesquiteMessage.println("Adjusting sequences... ");
 				if (!data.someApplicableInTaxon(referenceSequence, false)){  
 					MesquiteMessage.println("The reference sequence contains no data; adjustment cancelled.");
-				    adjustNewSequences = false;
+					adjustNewSequences = false;
 				}
 				if (adjustNewSequences) {
 					Bits newTaxa = fileInterpreter.getNewlyAddedTaxa(taxa);
@@ -3743,10 +3890,10 @@ class MatrixTable extends mesquite.lib.table.CMTable implements MesquiteDroppedF
 
 	/* ............................................................................................................... */
 	public String getUpperCornerText() {
-	//	if (data == null)
-			return "";
-		
-//		return data.getName();
+		//	if (data == null)
+		return "";
+
+		//		return data.getName();
 	}
 	/* ............................................................................................................... */
 	public String getCornerText() {
@@ -3778,6 +3925,9 @@ class MatrixTable extends mesquite.lib.table.CMTable implements MesquiteDroppedF
 		Color color = null;
 		if (!isRow)
 			color = data.getDefaultCharacterColor(number);
+		else {
+			color = data.getTaxa().getDefaultTaxonColor(number);
+		}
 		if (color != null)
 			return color;
 		else if (!isRow)
@@ -3876,14 +4026,22 @@ class MatrixTable extends mesquite.lib.table.CMTable implements MesquiteDroppedF
 	public CellColorer getCellColorer() {
 		return cellColorer;
 	}
-
 	public synchronized void drawMatrixCell(Graphics g, int x, int y, int w, int h, int column, int row, boolean selected, boolean writeStates, boolean leaveEdges) {
 		if (data == null)
 			return;
+		
+		if (timers[0] == null){
+			for (int i = 0; i<numTimers; i++)
+				timers[i] = new MesquiteTimer();
+		}
+		int timerNum = 0;
+		timers[timerNum].start();
+		
 		boolean changedSinceSave = showChanges.getValue() && data.getChangedSinceSave(column, row);
 
 		boolean annotationAvailable = isAttachedNoteAvailable(column, row);
-
+		timers[timerNum++].end();
+		timers[timerNum].start();
 		Color c = g.getColor();
 		hsb[0] = hsb[1] = hsb[2] = 1;
 
@@ -3899,41 +4057,64 @@ class MatrixTable extends mesquite.lib.table.CMTable implements MesquiteDroppedF
 			} catch (Throwable e) {
 			}
 		}
-		
-/*		if (paleInapplicable.getValue() && data.isTerminalInapplicable(column, row)){
+		timers[timerNum++].end();
+		timers[timerNum].start();
+
+		/*		if (paleInapplicable.getValue() && data.isTerminalInapplicable(column, row)){
 				fillColor = Color.white;
 				//fillColor = Color.lightGray;
 				g.setColor(ColorDistribution.veryVeryLightGray);
 				g.drawRect(x, y+1, w, h-2);
 		}
 		else { */
-			if (fillColor == null)
-				fillColor = bgColor;
-			if (showPaleExcluded.getValue() && !data.isCurrentlyIncluded(column))
-				fillColor = ColorDistribution.brighter(fillColor, showPaleExcludedValueBackground);
-			Color.RGBtoHSB(fillColor.getRed(), fillColor.getGreen(), fillColor.getBlue(), hsb);
+		if (fillColor == null)
+			fillColor = bgColor;
+		if (showPaleExcluded.getValue() && !data.isCurrentlyIncluded(column))
+			fillColor = ColorDistribution.brighter(fillColor, showPaleExcludedValueBackground);
+		
+		if (selected){
+			int red = fillColor.getRed();
+			
+		}
+		
+		Color.RGBtoHSB(fillColor.getRed(), fillColor.getGreen(), fillColor.getBlue(), hsb);
 		//}
+		timers[timerNum++].end();
+		//@@@@@@@@@@@@@@@@@@ macOS time weight ca. 46%-50% if states drawn, ~100% if not
+		timers[timerNum].start();
 		g.setColor(fillColor);
 
 		if (leaveEdges)
 			g.fillRect(x + 1, y + 1, w - 1, h - 1);
 		else
 			g.fillRect(x, y, w, h);
+		//@@@@@@ macOS
+
+		timers[timerNum++].end();
+		//@@@@@@@@@@@@@@@@@@ macOS time weight ca. 8% but only if selected blocks 
 
 		if (selected) {
+			timers[timerNum].start(); // timing part 4
+			timers[timerNum].setID("ft");
 			if (leaveEdges)
 				GraphicsUtil.fillTransparentSelectionRectangle(g, x + 1, y + 1, w - 1, h - 1);
 			else
 				GraphicsUtil.fillTransparentSelectionRectangle(g, x, y, w, h);
+			timers[timerNum].end();
 		}
+		timerNum++;
+		//@@@@@@ macOS
 
 		if (writeStates) {
+			timers[timerNum].start();
 			if (changedSinceSave) {
 				g.setColor(ColorDistribution.getContrasting(selected, fillColor, hsb, Color.lightGray, Color.darkGray));
 				g.drawLine(x, y + 1, x + 1, y);
 				g.drawLine(x, y + 2, x + 2, y);
 				g.drawLine(x, y + 3, x + 3, y);
 			}
+			timers[timerNum++].end();
+			timers[timerNum].start();
 			if (annotationAvailable) {
 				g.setColor(ColorDistribution.getContrasting(selected, fillColor, hsb, Color.white, Color.black));
 				g.drawLine(x + w - 2, y + 1, x + w - 2, y + 2); // left
@@ -3945,34 +4126,44 @@ class MatrixTable extends mesquite.lib.table.CMTable implements MesquiteDroppedF
 					g.drawLine(x + w - 1, y + 1, x + w - 1, y + 1);
 				}
 			}
+			timers[timerNum++].end();
 
 			try {
+				timers[timerNum].start();
 				Color textColor = null;
 				if (textColorer != null && !(textColorer instanceof mesquite.charMatrices.NoColor.NoColor) && !colorOnlyTaxonNames.getValue())
 					textColor = textColorer.getCellColor(column, row);
 
+				timers[timerNum++].end();
+				timers[timerNum].start();
 				if (textColor == null) {
 					if (paleInapplicable.getValue() && data.isInapplicable(column, row)){
-					/*	if (data.isTerminalInapplicable(column, row))
+						/*	if (data.isTerminalInapplicable(column, row))
 							textColor = Color.white;
 						else */
-							textColor = Color.lightGray;
+						textColor = Color.lightGray;
 					}
 					else if (paleMissing.getValue() && data.isUnassigned(column, row)){
-							/*	if (data.isTerminalInapplicable(column, row))
+						/*	if (data.isTerminalInapplicable(column, row))
 									textColor = Color.white;
 								else */
-									textColor = Color.lightGray;
-							}
+						textColor = Color.lightGray;
+					}
 					else
 						textColor = ColorDistribution.getContrasting(selected, fillColor, hsb, Color.white, Color.black);
 				}
+				timers[timerNum++].end();
+				timers[timerNum].start();
 				if (showPaleExcluded.getValue() && !data.isCurrentlyIncluded(column))
 					textColor = ColorDistribution.brighter(textColor, showPaleExcludedValueText);
 				g.setColor(textColor);
+				timers[timerNum++].end();
+				//timers[timerNum].start();
 			} catch (Exception e) {
 			}
 
+			//timers[timerNum++].end();
+			timers[timerNum].start();
 			String st = getMatrixTextForDisplay(column, row);
 			overflow.setValue(false);
 			int cent = StringUtil.getStringCenterPosition(st, g, x, w, overflow);
@@ -3984,16 +4175,27 @@ class MatrixTable extends mesquite.lib.table.CMTable implements MesquiteDroppedF
 				clip = g.getClip();
 				g.setClip(x, y, w, h);
 			}
+			timers[timerNum++].end();
+			//@@@@@@@@@@@@@@@@@@ macOS time weight ca. 46%-50% if states drawn
+			timers[timerNum].start(); // timing part 11 
+			timers[timerNum].setID("ds");
 			if (st != null)
 				g.drawString(st, cent, vert); // this is very time costly on OSX java 1.4!! (as of 10.3.9 on Powerbook G4)
+			timers[timerNum++].end();
+			timers[timerNum].start(); // timing part 12 
+			timers[timerNum++].end();
+			//@@@
+			timers[timerNum].start(); // timing part 13
 			if (useClip) {
 				g.setClip(clip);
 			}
-
+			timers[timerNum++].end();
+			//@@@@@@ macOS
 		}
 		if (c != null)
 			g.setColor(c);
-
+		timerCount++;
+		
 	}
 
 	/* ............................................................................................................... */
@@ -4164,7 +4366,7 @@ class MatrixTable extends mesquite.lib.table.CMTable implements MesquiteDroppedF
 
 	}
 
-	StringBuffer sb = new StringBuffer(50);
+	MesquiteStringBuffer sb = new MesquiteStringBuffer(50);
 
 	/* ............................................................................................................... */
 	public synchronized String getMatrixText(int column, int row) {
@@ -4318,7 +4520,7 @@ class MatrixTable extends mesquite.lib.table.CMTable implements MesquiteDroppedF
 	}
 
 	/* ............................................................................................................... */
-	StringBuffer esb = new StringBuffer(100);
+	MesquiteStringBuffer esb = new MesquiteStringBuffer(100);
 
 	String getCellExplanation(int column, int row) {
 		if (data == null)
@@ -4480,7 +4682,7 @@ class MatrixTable extends mesquite.lib.table.CMTable implements MesquiteDroppedF
 			notifySelectionChanged();
 		}
 	}
-	
+
 	public void deSelectBlock(int firstColumn, int firstRow, int lastColumn, int lastRow) {
 		if (!suppressSelect) {
 			super.deSelectBlock(firstColumn, firstRow, lastColumn, lastRow);
@@ -4547,18 +4749,17 @@ class MatrixTable extends mesquite.lib.table.CMTable implements MesquiteDroppedF
 	}
 
 	/* ............................................................................................................... */
-	public void cellTouched(int column, int row, int regionInCellH, int regionInCellV, int modifiers, int clickCount) {
-
+	public void cellTouched(int column, int row, EditorPanel editorPanel, int x, int y, int modifiers, int clickCount) {
 		if ((window.getCurrentTool() == window.arrowTool) && (clickCount > 1) && window.ibeamTool != null) {
 			window.setCurrentTool(window.ibeamTool);
 			window.getPalette().setCurrentTool(window.ibeamTool);
-			((TableTool) window.getCurrentTool()).cellTouched(column, row, regionInCellH, regionInCellV, modifiers);
+			((TableTool) window.getCurrentTool()).cellTouched(column, row, editorPanel, x, y, modifiers);
 		}
 		else if (((TableTool) window.getCurrentTool()).useTableTouchRules()) {
-			super.cellTouched(column, row, regionInCellH, regionInCellV, modifiers, clickCount);
+			super.cellTouched(column, row, editorPanel, x, y, modifiers, clickCount);
 		}
 		else {
-			((TableTool) window.getCurrentTool()).cellTouched(column, row, regionInCellH, regionInCellV, modifiers);
+			((TableTool) window.getCurrentTool()).cellTouched(column, row, editorPanel, x, y, modifiers);
 		}
 		if (window.getCurrentTool() == window.arrowTool || window.getCurrentTool() == window.ibeamTool || window.getCurrentTool().getAllowAnnotate() || ((TableTool) window.getCurrentTool()).useTableTouchRules()) {
 			setFocusedCell(column, row);
@@ -4570,19 +4771,19 @@ class MatrixTable extends mesquite.lib.table.CMTable implements MesquiteDroppedF
 	}
 
 	/* ............................................................................................................... */
-	public void cellDrag(int column, int row, int regionInCellH, int regionInCellV, int modifiers) {
+	public void cellDrag(int column, int row, EditorPanel editorPanel, int x, int y, int modifiers) {
 		if (((TableTool) window.getCurrentTool()).useTableTouchRules())
-			super.cellDrag(column, row, regionInCellH, regionInCellV, modifiers);
+			super.cellDrag(column, row, editorPanel, x, y, modifiers);
 		else
-			((TableTool) window.getCurrentTool()).cellDrag(column, row, regionInCellH, regionInCellV, modifiers);
+			((TableTool) window.getCurrentTool()).cellDrag(column, row, editorPanel, x, y, modifiers);
 	}
 
 	/* ............................................................................................................... */
-	public void cellDropped(int column, int row, int regionInCellH, int regionInCellV, int modifiers) {
+	public void cellDropped(int column, int row, EditorPanel editorPanel, int x, int y, int modifiers) {
 		if (((TableTool) window.getCurrentTool()).useTableTouchRules())
-			super.cellDropped(column, row, regionInCellH, regionInCellV, modifiers);
+			super.cellDropped(column, row, editorPanel, x, y, modifiers);
 		else
-			((TableTool) window.getCurrentTool()).cellDropped(column, row, regionInCellH, regionInCellV, modifiers);
+			((TableTool) window.getCurrentTool()).cellDropped(column, row, editorPanel, x, y, modifiers);
 
 	}
 
@@ -4592,7 +4793,7 @@ class MatrixTable extends mesquite.lib.table.CMTable implements MesquiteDroppedF
 			if (singleTableCellSelected()) {
 				Dimension sel = getFirstTableCellSelected();
 				if (oldColumn != sel.width || oldRow != sel.height) {
-					((TableTool) window.getCurrentTool()).cellTouched(sel.width, sel.height, 50, 50, 0);
+					((TableTool) window.getCurrentTool()).cellTouched(sel.width, sel.height, getMatrixPanel(), 50, 50, 0);
 				}
 			}
 		}
@@ -4627,7 +4828,7 @@ class MatrixTable extends mesquite.lib.table.CMTable implements MesquiteDroppedF
 	}
 
 	/* ............................................................................................................... */
-	public void rowNameTouched(int row, int regionInCellH, int regionInCellV, int modifiers, int clickCount) {
+	public void rowNameTouched(int row, EditorPanel editorPanel, int x, int y, int modifiers, int clickCount) {
 		if (window.getCurrentTool() == window.arrowTool || window.getCurrentTool() == window.ibeamTool || window.getCurrentTool().getAllowAnnotate()) {
 			cellAnnotated.setCell(-1, row);
 			window.setAnnotation(cellAnnotated);
@@ -4639,23 +4840,33 @@ class MatrixTable extends mesquite.lib.table.CMTable implements MesquiteDroppedF
 			if (clickCount > 1 && window.ibeamTool != null) {
 				window.setCurrentTool(window.ibeamTool);
 				window.getPalette().setCurrentTool(window.ibeamTool);
-				((TableTool) window.getCurrentTool()).cellTouched(-1, row, regionInCellH, regionInCellV, modifiers);
+				((TableTool) window.getCurrentTool()).cellTouched(-1, row, editorPanel, x, y, modifiers);
 			}
 			else
-				super.rowNameTouched(row, regionInCellH, regionInCellV, modifiers, clickCount);
+				super.rowNameTouched(row, editorPanel, x, y, modifiers, clickCount);
 		else
-			((TableTool) window.getCurrentTool()).cellTouched(-1, row, regionInCellH, regionInCellV, modifiers);
+			((TableTool) window.getCurrentTool()).cellTouched(-1, row, editorPanel, x, y, modifiers);
 		broadcastFocusInCell(-1, row);
 		if (window.matrixInfoPanel != null && window.infoPanelOn.getValue())
 			window.matrixInfoPanel.cellTouch(-1, row);
 	}
 
 	/* ............................................................................................................... */
-	public void rowTouched(boolean isArrowEquivalent, int row, int regionInCellH, int regionInCellV, int modifiers) {
-		if (((TableTool) window.getCurrentTool()).useTableTouchRules() || isArrowEquivalent)
-			super.rowTouched(isArrowEquivalent, row, regionInCellH, regionInCellV, modifiers);
+	public void rowTouched(boolean isArrowEquivalent, int row, EditorPanel editorPanel, int x, int y, int modifiers) {
+		if (((TableTool) window.getCurrentTool()).useTableTouchRules() || isArrowEquivalent){
+			Enumeration enumeration = window.ownerModule.getEmployeeVector().elements();
+			while (enumeration.hasMoreElements()) {
+				Object obj = enumeration.nextElement();
+				if (obj instanceof DataWindowAssistant) {
+					DataWindowAssistant assistant = (DataWindowAssistant) obj;
+					if (assistant.rowTouched(isArrowEquivalent, row, getRowNamesPanel(), x, y,modifiers))
+						return;  // touch consumed!
+				}
+			}
+			super.rowTouched(isArrowEquivalent, row, editorPanel, x, y, modifiers);
+		}
 		else
-			((TableTool) window.getCurrentTool()).cellTouched(-1, row, regionInCellH, regionInCellV, modifiers);
+			((TableTool) window.getCurrentTool()).cellTouched(-1, row, editorPanel, x, y, modifiers);
 		if (window.matrixInfoPanel != null && window.infoPanelOn.getValue())
 			window.matrixInfoPanel.cellTouch(-1, row);
 	}
@@ -4683,14 +4894,32 @@ class MatrixTable extends mesquite.lib.table.CMTable implements MesquiteDroppedF
 		}
 		else if (data instanceof MolecularData) {
 			int count = 0;
+			CategoricalData cData = (CategoricalData) data;
 			for (int ic = 0; ic <= column; ic++) {
-				CategoricalData cData = (CategoricalData) data;
 				if (!cData.isInapplicable(ic, row))
 					count++;
 			}
 			if (count > 0) {
 				s += "; Sequence site " + count;
 			}
+			if (data instanceof DNAData) {
+				int[] counts = new int[5];
+				for (int ik =0; ik<5; ik++) counts[ik]= 0;
+
+				for (int it = 0; it <= cData.getNumTaxa(); it++) {
+					long stateSet = cData.getState(column, it);
+					if (CategoricalState.isCombinable(stateSet) && !CategoricalState.hasMultipleStates(stateSet)) {
+						int state = CategoricalState.getOnlyElement(stateSet);
+						if (state >=0 && state<4)
+							counts[state]++;
+					}
+					else
+						counts[4]++;
+				}
+				s += "; [A: " + counts[0] + ", C: " + counts[1] + ", G: " + counts[2] + ", T: " + counts[3] + ", other: " + counts[4] + "]";
+
+			}
+
 		}
 		CharactersGroup g = data.getCurrentGroup(column);
 		if (g!= null)
@@ -4706,7 +4935,7 @@ class MatrixTable extends mesquite.lib.table.CMTable implements MesquiteDroppedF
 
 	/* ............................................................................................................... */
 	public void mouseInCell(int modifiers, int column, int subColumn, int row, int subRow, MesquiteTool tool) {
-				
+
 		if (column >= 0 && column <= data.getNumChars(false)) {
 			if (subRow >= 0) {
 				DataColumnNamesAssistant assistant = window.getDataColumnNamesAssistant(subRow);
@@ -4729,7 +4958,7 @@ class MatrixTable extends mesquite.lib.table.CMTable implements MesquiteDroppedF
 	}
 
 	/* ............................................................................................................... */
-	public void columnNameTouched(int column, int regionInCellH, int regionInCellV, int modifiers, int clickCount) {
+	public void columnNameTouched(int column, EditorPanel editorPanel, int x, int y, int modifiers, int clickCount) {
 		if (window.getCurrentTool() == window.arrowTool || window.getCurrentTool() == window.ibeamTool || window.getCurrentTool().getAllowAnnotate()) {
 			cellAnnotated.setCell(column, -1);
 			window.setAnnotation(cellAnnotated);
@@ -4742,13 +4971,13 @@ class MatrixTable extends mesquite.lib.table.CMTable implements MesquiteDroppedF
 			if (clickCount > 1 && window.ibeamTool != null) {
 				window.setCurrentTool(window.ibeamTool);
 				window.getPalette().setCurrentTool(window.ibeamTool);
-				((TableTool) window.getCurrentTool()).cellTouched(column, -1, regionInCellH, regionInCellV, modifiers);
+				((TableTool) window.getCurrentTool()).cellTouched(column, -1, editorPanel, x, y, modifiers);
 			}
 			else
-				super.columnNameTouched(column, regionInCellH, regionInCellV, modifiers, clickCount);
+				super.columnNameTouched(column, editorPanel, x, y, modifiers, clickCount);
 		}
 		else {
-			((TableTool) window.getCurrentTool()).cellTouched(column, -1, regionInCellH, regionInCellV, modifiers);
+			((TableTool) window.getCurrentTool()).cellTouched(column, -1, editorPanel, x, y, modifiers);
 		}
 		broadcastFocusInCell(column, -1);
 		if (window.matrixInfoPanel != null && window.infoPanelOn.getValue())
@@ -4756,7 +4985,7 @@ class MatrixTable extends mesquite.lib.table.CMTable implements MesquiteDroppedF
 	}
 
 	/* ............................................................................................................... */
-	public void subRowTouched(int subRow, int column, int regionInCellH, int regionInCellV, int x, int y, int modifiers) {
+	public void subRowTouched(int subRow, int column, EditorPanel editorPanel, int x, int y, int modifiers) {
 		if (!columnLegal(column))
 			return;
 		if (column >= 0) {
@@ -4764,7 +4993,7 @@ class MatrixTable extends mesquite.lib.table.CMTable implements MesquiteDroppedF
 			if (assistant != null){
 				assistant.setColumnTouched(column);
 				if (((TableTool) window.getCurrentTool()).getSpecialToolForColumnNamesInfoStrips())
-					((TableTool) window.getCurrentTool()).cellTouched(column, subRow, regionInCellH, regionInCellV, modifiers);
+					((TableTool) window.getCurrentTool()).cellTouched(column, subRow, editorPanel, x, y, modifiers);
 				else
 					assistant.showPopUp(columnNames, x + 5, y + 5);
 			}
@@ -4772,12 +5001,21 @@ class MatrixTable extends mesquite.lib.table.CMTable implements MesquiteDroppedF
 	}
 
 	/* ............................................................................................................... */
-	public void columnTouched(boolean isArrowEquivalent, int column, int regionInCellH, int regionInCellV, int modifiers) {
+	public void columnTouched(boolean isArrowEquivalent, int column, EditorPanel editorPanel, int x, int y, int modifiers) {
 		if (((TableTool) window.getCurrentTool()).useTableTouchRules() || isArrowEquivalent) {
-			super.columnTouched(isArrowEquivalent, column, regionInCellH, regionInCellV, modifiers);
+			Enumeration enumeration = window.ownerModule.getEmployeeVector().elements();
+			while (enumeration.hasMoreElements()) {
+				Object obj = enumeration.nextElement();
+				if (obj instanceof DataWindowAssistant) {
+					DataWindowAssistant assistant = (DataWindowAssistant) obj;
+					if (assistant.columnTouched(isArrowEquivalent, column, getColumnNamesPanel(), x, y,modifiers))
+						return;
+				}
+			}
+			super.columnTouched(isArrowEquivalent, column, editorPanel, x, y, modifiers);
 		}
 		else {
-			((TableTool) window.getCurrentTool()).cellTouched(column, -1, regionInCellH, regionInCellV, modifiers);
+			((TableTool) window.getCurrentTool()).cellTouched(column, -1, editorPanel, x, y, modifiers);
 		}
 		if (window.matrixInfoPanel != null && window.infoPanelOn.getValue())
 			window.matrixInfoPanel.cellTouch(column, -1);
@@ -4785,7 +5023,7 @@ class MatrixTable extends mesquite.lib.table.CMTable implements MesquiteDroppedF
 
 	/* ............................................................................................................... */
 	public void moveOneColumn(int column, int after) {
-		
+
 		int width = getColumnWidth(column);
 		if (column < after) {
 			for (int i = column; i < after; i++) {
@@ -4851,6 +5089,7 @@ class MatrixTable extends mesquite.lib.table.CMTable implements MesquiteDroppedF
 		UndoInstructions undoInstructions = new UndoInstructions(UndoInstructions.PARTS_MOVED, taxa);
 		undoInstructions.recordPreviousOrder(taxa);
 		UndoReference undoReference = new UndoReference(undoInstructions, editorModule);
+		Vector v = window.getOwnerModule().pauseAllPausables();
 		int i = 0;
 		while (i < getNumRows()) {
 			if (sel.isBitOn(i)) {
@@ -4866,6 +5105,7 @@ class MatrixTable extends mesquite.lib.table.CMTable implements MesquiteDroppedF
 				i++;
 		}
 		synchronizeRowSelection(data);
+		window.getOwnerModule().unpauseAllPausables(v);
 		taxa.notifyListeners(this, new Notification(MesquiteListener.PARTS_MOVED, undoReference));
 
 		editorModule.getModuleWindow().contentsChanged();
@@ -4875,18 +5115,21 @@ class MatrixTable extends mesquite.lib.table.CMTable implements MesquiteDroppedF
 	public void selectedColumnsDropped(int after) {
 		if (after < -1)
 			return;
-		if (after > getNumColumns())
-			after = getNumColumns();
+		if (after >= getNumColumns())
+			after = getNumColumns()-1;
 		int i = 0;
 		Bits sel = getColumnsSelected();
 		if (sel.numBitsOn() == 1 && sel.firstBitOn() == after) {
 			return;
 		}
+		int first = getFirstColumnVisible();
+		int last = getLastColumnVisible();
 		boolean asked = false;
 		long[] fullChecksumBefore = data.getIDOrderedFullChecksum();
 		UndoInstructions undoInstructions = new UndoInstructions(UndoInstructions.PARTS_MOVED, data);
 		undoInstructions.recordPreviousOrder(data);
 		UndoReference undoReference = new UndoReference(undoInstructions, editorModule);
+		Vector v = window.getOwnerModule().pauseAllPausables();
 		while (i < getNumColumns()) {
 			if (sel.isBitOn(i)) {
 				if (!asked && data.isMolecularSequence() && i != after) {
@@ -4909,10 +5152,18 @@ class MatrixTable extends mesquite.lib.table.CMTable implements MesquiteDroppedF
 		data.compareChecksums(fullChecksumBefore, fullChecksumAfter, true, "character moving");
 
 		synchronizeColumnSelection(data);
+		window.getOwnerModule().unpauseAllPausables(v);
 		data.notifyListeners(this, new Notification(MesquiteListener.PARTS_MOVED, undoReference));
 		data.notifyInLinked(new Notification(MesquiteListener.PARTS_MOVED));
 
+		setNumRows(data.getNumTaxa());
+		setNumColumns(data.getNumChars());
+		setFirstColumnVisible(first);
+		setLastColumnVisible(last);
+		resetNumColumnsVisible();
 		editorModule.getModuleWindow().contentsChanged();
+		resetComponentSizes();
+		repaintAll();
 	}
 
 	/* ............................................................................................................... */
@@ -4976,6 +5227,7 @@ class MatrixTable extends mesquite.lib.table.CMTable implements MesquiteDroppedF
 				if (!MesquiteThread.isScripting() && !AlertDialog.query(window, "Delete characters?", "The data for the selected characters have been cleared.  Do you also want to delete the selected characters?", "Yes", "No"))
 					return;
 				Vector blocks = new Vector();
+				/* Old
 				while (anyColumnSelected()) {
 					int lastOfBlock = lastColumnSelected();
 					int firstOfBlock = startOfLastColumnBlockSelected();
@@ -4987,6 +5239,23 @@ class MatrixTable extends mesquite.lib.table.CMTable implements MesquiteDroppedF
 						blocks.addElement(new int[] { firstOfBlock, lastOfBlock - firstOfBlock + 1 }); // do as series of contiguous blocks
 					}
 				}
+				 */
+				Bits toBeDeleted = new Bits(data.getNumChars());
+
+				while (anyColumnSelected()) {  // DELETING COLUMNS
+					int lastOfBlock = lastColumnSelected();
+					int firstOfBlock = startOfLastColumnBlockSelected();
+					if (lastOfBlock >= 0) {
+						for (int i = firstOfBlock; i <= lastOfBlock; i++) {
+							deselectColumn(i);
+							data.setSelected(i, false);
+							toBeDeleted.setBit(i, true);
+						}
+						blocks.addElement(new int[] { firstOfBlock, lastOfBlock - firstOfBlock + 1 }); // do as series of contiguous blocks
+					}
+				}
+				data.deletePartsFlagged(toBeDeleted, false);
+				data.deleteInLinkedFlagged(toBeDeleted, false);
 
 				if (blocks.size() == 1) {
 					data.notifyListeners(this, new Notification(MesquiteListener.PARTS_DELETED, (int[]) blocks.elementAt(0))); // do as series of contiguous blocks
@@ -5057,14 +5326,14 @@ class MatrixTable extends mesquite.lib.table.CMTable implements MesquiteDroppedF
 	}
 
 	/* ............................................................................................................... */
-	public void returnedRowNameText(int row, String s) {
+	public void returnedRowNameText(int row, String s, boolean update) {
 		if (data == null || taxa == null || window == null)
 			return;
 		String oldTaxonName = taxa.getTaxonName(row);
 		if (s != null && !s.equals(oldTaxonName)) {
 			String warning = taxa.checkNameLegality(row, s);
 			if (warning == null) {
-				taxa.setTaxonName(row, s);
+				taxa.setTaxonName(row, s, update);
 				taxNC = true; // for pasting, to discover if taxon names were changed (see pasteIt)
 				window.setUndoer(window.setUndoInstructions(UndoInstructions.SINGLETAXONNAME, -1, row, new MesquiteString(oldTaxonName), new MesquiteString(s)));
 			}
@@ -5081,6 +5350,9 @@ class MatrixTable extends mesquite.lib.table.CMTable implements MesquiteDroppedF
 		}
 	}
 
+	public void rowNamesReturned() {
+		taxa.notifyListeners(this, new Notification(MesquiteListener.NAMES_CHANGED));
+	}
 	/* ............................................................................................................... */
 	public void returnedColumnNameText(int column, String s) {
 		if (data == null || taxa == null || window == null)
@@ -5114,7 +5386,7 @@ class MatrixTable extends mesquite.lib.table.CMTable implements MesquiteDroppedF
 				else
 					turnOffIntegrityWarnings = !AlertDialog.query(window, "Problem with data", s + " (" + data + ")", "OK", "Don't warn again");
 
-			//	MesquiteTrunk.mesquiteTrunk.alert(s + " (" + data + ")");
+				//	MesquiteTrunk.mesquiteTrunk.alert(s + " (" + data + ")");
 			}
 		}
 		MesquiteWindow.uncheckDoomed(this);
@@ -5388,7 +5660,7 @@ class FootnotePanel extends MatrixInfoExtraPanel {
 
 }
 
-class NoteField extends TextArea implements FocusListener {
+class NoteField extends MQTextArea implements FocusListener {
 	FootnotePanel panel;
 
 	boolean somethingTyped;
@@ -5549,7 +5821,7 @@ class CellInfoPanel extends MatrixInfoExtraPanel {
 				}
 				Associable tInfo = data.getTaxaInfo(false);
 				if (tInfo != null) {
-					attachmentsMessage += tInfo.toString(it) + "\n";
+					attachmentsMessage += tInfo.toString(it) + ".\n";
 				}
 			}
 			else {

@@ -19,29 +19,32 @@ import mesquite.lists.lib.*;
 import java.util.*;
 import java.awt.*;
 
+import mesquite.basic.ManageTaxaPartitions.ManageTaxaPartitions;
 import mesquite.lib.*;
 import mesquite.lib.duties.*;
 import mesquite.lib.table.*;
+import mesquite.lib.taxa.Taxa;
+import mesquite.lib.taxa.TaxaGroup;
+import mesquite.lib.taxa.TaxaGroupVector;
+import mesquite.lib.taxa.TaxaPartition;
+import mesquite.lib.ui.ColorDistribution;
+import mesquite.lib.ui.ListDialog;
+import mesquite.lib.ui.MesquiteMenuItemSpec;
+import mesquite.lib.ui.MesquiteSubmenuSpec;
+import mesquite.lib.ui.MesquiteSymbol;
 
 /* ======================================================================== */
-public class TaxonListCurrPartition extends TaxonListAssistant {
-	/*.................................................................................................................*/
-	public String getName() {
-		return "Group Membership (taxa)";
-	}
-	public String getExplanation() {
-		return "Lists and allows changes to group membership in the current partition of taxa, for List of Taxa window." ;
-	}
+public class TaxonListCurrPartition extends TaxonListAssistant implements SelectionInformer {
 	/*.................................................................................................................*/
 	Taxa taxa;
 	MesquiteTable table=null;
-	MesquiteSubmenuSpec mss, mEGC;
-	MesquiteMenuItemSpec mScs, mStc, mRssc, mLine, nNG, mLine2, ms2;
 	TaxaGroupVector groups;
+	TaxaSelectedUtility helperTask;
 	/*.................................................................................................................*/
 	public boolean startJob(String arguments, Object condition, boolean hiredByName) {
 		groups = (TaxaGroupVector)getProject().getFileElement(TaxaGroupVector.class, 0);
 		groups.addListener(this);
+		helperTask = (TaxaSelectedUtility)hireNamedEmployee(TaxaSelectedUtility.class, "#TaxonPartitionHelper");
 		return true;
 	}
 	public void endJob(){
@@ -51,207 +54,17 @@ public class TaxonListCurrPartition extends TaxonListAssistant {
 			groups.removeListener(this);
 		super.endJob();
 	}
-	private void setGroup(TaxaGroup group, String arguments){
-		if (table !=null && taxa!=null) {
-			boolean changed=false;
-			String name = parser.getFirstToken(arguments);
-			if (group == null && StringUtil.blank(name))
-				return;
-			TaxaPartition partition = (TaxaPartition) taxa.getCurrentSpecsSet(TaxaPartition.class);
-			if (partition==null){
-				partition= new TaxaPartition("Partition", taxa.getNumTaxa(), null, taxa);
-				partition.addToFile(taxa.getFile(), getProject(), findElementManager(TaxaPartition.class));
-				taxa.setCurrentSpecsSet(partition, TaxaPartition.class);
-			}
-			if (group == null){
-				TaxaGroupVector groups = (TaxaGroupVector)getProject().getFileElement(TaxaGroupVector.class, 0);
-				Object obj = groups.getElement(name);
-				group = (TaxaGroup)obj;
-			}
 
-			if (group != null) {
-				if (partition != null) {
-					if (employer!=null && employer instanceof ListModule) {
-						int c = ((ListModule)employer).getMyColumn(this);
-						for (int i=0; i<taxa.getNumTaxa(); i++) {
-							if (table.isCellSelectedAnyWay(c, i)) {
-								partition.setProperty(group, i);
-								if (!changed)
-									outputInvalid();
-								changed = true;
-							}
-						}
-					}
-				}
-				if (changed)
-					taxa.notifyListeners(this, new Notification(AssociableWithSpecs.SPECSSET_CHANGED));  
-				parametersChanged();
-			}
-		}
-	}
-	private void removeGroupDesigation(){
-		if (table !=null && taxa!=null) {
-			boolean changed=false;
-			TaxaPartition partition = (TaxaPartition) taxa.getCurrentSpecsSet(TaxaPartition.class);
-			if (partition!=null){
-				if (employer!=null && employer instanceof ListModule) {
-					int c = ((ListModule)employer).getMyColumn(this);
-					for (int i=0; i<taxa.getNumTaxa(); i++) {
-						if (table.isCellSelectedAnyWay(c, i)) {
-							partition.setProperty(null, i);
-							if (!changed)
-								outputInvalid();
-							changed = true;
-						}
-					}
-				}
-
-				if (changed)
-					taxa.notifyListeners(this, new Notification(AssociableWithSpecs.SPECSSET_CHANGED)); //TODO: bogus! should notify via specs not data???
-							parametersChanged();
-
-			}
-		}
-	}
-	
-	MesquiteInteger pos = new MesquiteInteger(0);
 	/*.................................................................................................................*/
-	public Object doCommand(String commandName, String arguments, CommandChecker checker) {
-		if (checker.compare(this.getClass(), "Sets to which group a taxon belongs in the current taxa partition", "[name of group]", commandName, "setPartition")) {
-			setGroup(null, arguments);
-		}
-		else if (checker.compare(this.getClass(), "Edits the name, color, and symbol of a taxon group label", "[name of group]", commandName, "editGroup")) {
-			String name = parser.getFirstToken(arguments);
-			if (StringUtil.blank(name))
-				return null;
-			String num = parser.getNextToken();
-			int i = MesquiteInteger.fromString(num);
-			TaxaGroupVector groups = (TaxaGroupVector)getProject().getFileElement(TaxaGroupVector.class, 0);
-			Object obj;
-			if (MesquiteInteger.isCombinable(i) && i< groups.size())
-				obj = groups.elementAt(i);
-			else
-				obj = groups.getElement(name);
-			if (obj != null) {
-				TaxaGroup group = (TaxaGroup)obj;
-
-				GroupDialog d = new GroupDialog(getProject(),containerOfModule(), "Edit Taxon Group", group.getName(), group.getColor(), group.getSymbol(),group.supportsSymbols());
-				d.completeAndShowDialog();
-				name = d.getName();
-				boolean ok = d.query()==0;
-				Color c = d.getColor();
-				MesquiteSymbol symbol = d.getSymbol();
-				d.dispose();
-				if (!ok)
-					return null;
-
-
-				if (!StringUtil.blank(name)) {
-					group.setName(name);
-					group.setColor(c);
-					if (symbol!=null)
-						group.setSymbol(symbol);
-					taxa.notifyListeners(this, new Notification(AssociableWithSpecs.SPECSSET_CHANGED));  
-					group.notifyListeners(this, new Notification(MesquiteListener.DATA_CHANGED));
-				}
-				parametersChanged();
-			}
-		}
-		else if (checker.compare(this.getClass(), "Creates a new group for use in taxon partitions", null, commandName, "newGroup")) {
-			TaxaGroup group= TaxaListPartitionUtil.createNewTaxonGroup(this, taxa.getFile());
-			if (group!=null)
-				setGroup(group, group.getName());
-			return group;
-		}
-		else if (checker.compare(this.getClass(), "Stores the current taxa partition as a TAXAPARTITION", null, commandName, "storeCurrent")) {
-			if (taxa!=null){
-				SpecsSetVector ssv = taxa.getSpecSetsVector(TaxaPartition.class);
-				if (ssv == null || ssv.getCurrentSpecsSet() == null) {
-					TaxaPartition partition= new TaxaPartition("Partition", taxa.getNumTaxa(), null, taxa);
-					partition.addToFile(taxa.getFile(), getProject(), findElementManager(TaxaPartition.class));
-					taxa.setCurrentSpecsSet(partition, TaxaPartition.class);
-					ssv = taxa.getSpecSetsVector(TaxaPartition.class);
-				}
-				if (ssv!=null) {
-					SpecsSet s = ssv.storeCurrentSpecsSet();
-					if (s.getFile() == null)
-						s.addToFile(taxa.getFile(), getProject(), findElementManager(TaxaPartition.class));
-					s.setName(ssv.getUniqueName("Partition"));
-					String name = MesquiteString.queryString(containerOfModule(), "Name", "Name of taxa partition to be stored", s.getName());
-					if (!StringUtil.blank(name))
-						s.setName(name);
-					ssv.notifyListeners(this, new Notification(AssociableWithSpecs.SPECSSET_CHANGED));  
-				}
-				else MesquiteMessage.warnProgrammer("sorry, can't store because no specssetvector");
-			}
-			//return ((ListWindow)getModuleWindow()).getCurrentObject();
-		}
-		else if (checker.compare(this.getClass(), "Replaces a stored taxa partition by the current one", null, commandName, "replaceWithCurrent")) {
-			if (taxa!=null){
-				SpecsSetVector ssv = taxa.getSpecSetsVector(TaxaPartition.class);
-				if (ssv!=null) {
-					SpecsSet chosen = (SpecsSet)ListDialog.queryList(containerOfModule(), "Replace stored partition", "Choose stored partition to replace by current partition", MesquiteString.helpString,ssv, 0);
-					if (chosen!=null){
-						SpecsSet current = ssv.getCurrentSpecsSet();
-						ssv.replaceStoredSpecsSet(chosen, current);
-					}
-				}
-
-			}
-			//return ((ListWindow)getModuleWindow()).getCurrentObject();
-		}
-		else if (checker.compare(this.getClass(), "Loads the stored taxa partition to be the current one", "[number of partition to load]", commandName, "loadToCurrent")) {
-			if (taxa !=null) {
-				int which = MesquiteInteger.fromFirstToken(arguments, stringPos);
-				if (MesquiteInteger.isCombinable(which)){
-					SpecsSetVector ssv = taxa.getSpecSetsVector(TaxaPartition.class);
-					if (ssv!=null) {
-						SpecsSet chosen = ssv.getSpecsSet(which);
-						if (chosen!=null){
-							ssv.setCurrentSpecsSet(chosen.cloneSpecsSet()); 
-							taxa.notifyListeners(this, new Notification(AssociableWithSpecs.SPECSSET_CHANGED)); //TODO: bogus! should notify via specs not data???
-							return chosen;
-						}
-					}
-				}
-			}
-		}
-		else if (checker.compare(this.getClass(), "Removes the group designation from the selected taxa", null, commandName, "removeGroup")) {
-			removeGroupDesigation();
-		}
-		else
-			return  super.doCommand(commandName, arguments, checker);
-		return null;
+	public String getName() {
+		return "Group Membership (taxa)";
 	}
-
+	public String getExplanation() {
+		return "Lists and allows changes to group membership in the current partition of taxa, for List of Taxa window." ;
+	}
 	/*.................................................................................................................*/
 	public void setTableAndTaxa(MesquiteTable table, Taxa taxa){
-		/* hire employees here */
-		deleteMenuItem(mss);
-		deleteMenuItem(mScs);
-		deleteMenuItem(mRssc);
-		deleteMenuItem(mLine);
-		deleteMenuItem(mLine2);
-		deleteMenuItem(mStc);
-		deleteMenuItem(ms2);
-		deleteMenuItem(mEGC);
-		deleteMenuItem(nNG);
-		mss = addSubmenu(null, "Set Group", makeCommand("setPartition", this));
-		mss.setList((StringLister)getProject().getFileElement(TaxaGroupVector.class, 0));
 
-		ms2 = addMenuItem("Remove Group Designation", makeCommand("removeGroup",  this));
-
-		mLine2 = addMenuSeparator();
-		nNG = addMenuItem("New Group...", makeCommand("newGroup",  this));
-		mEGC = addSubmenu(null, "Edit Group...", makeCommand("editGroup", this));
-		mEGC.setList((StringLister)getProject().getFileElement(TaxaGroupVector.class, 0));
-
-		mLine = addMenuSeparator();
-		mScs = addMenuItem("Store current partition...", makeCommand("storeCurrent",  this));
-		mRssc = addMenuItem("Replace stored partition by current", makeCommand("replaceWithCurrent",  this));
-		if (taxa !=null) {
-			mStc = addSubmenu(null, "Load partition", makeCommand("loadToCurrent",  this), taxa.getSpecSetsVector(TaxaPartition.class));
-		}
 		if (taxa != this.taxa){
 			if (this.taxa != null)
 				this.taxa.removeListener(this);
@@ -259,12 +72,27 @@ public class TaxonListCurrPartition extends TaxonListAssistant {
 		}
 		this.taxa = taxa;
 		this.table = table;
+		helperTask.setTaxaAndSelectionInformer(taxa, this);
 	}
 	public void changed(Object caller, Object obj, Notification notification){
 		if (caller == this)
 			return;
 		outputInvalid();
 		parametersChanged(notification);
+	}
+	public boolean isItemSelected (int item, Object caller){
+		if (table != null && employer!=null && employer instanceof ListModule) {
+			int c = ((ListModule)employer).getMyColumn(this);
+			return table.isCellSelectedAnyWay(c, item);
+		}
+		return false;
+	}
+	public boolean anyItemsSelected (Object caller){
+		if (table != null && employer!=null && employer instanceof ListModule) {
+			int c = ((ListModule)employer).getMyColumn(this);
+			return table.anyCellsInColumnSelectedAnyWay(c);
+		}
+		return false;
 	}
 	public String getTitle() {
 		return "Group";
@@ -338,6 +166,25 @@ public class TaxonListCurrPartition extends TaxonListAssistant {
 	}
 
 	public String getWidestString(){
+		if (taxa != null) {
+			TaxaPartition part = (TaxaPartition)taxa.getCurrentSpecsSet(TaxaPartition.class);
+			if (part != null) {
+				int max = 12;
+				for (int it = 0; it<taxa.getNumTaxa(); it++) {
+					TaxaGroup tg = part.getTaxaGroup(it);
+					if (tg != null) {
+						String name = tg.getName();
+						if (StringUtil.notEmpty(name)) {
+							if (name.length()>max)
+								max = name.length();
+						}
+					}
+				}
+				if (max>50)
+					max = 60;
+				return "888888888 888888888 888888888 888888888 888888888 888888888 ".substring(0, max);
+			}
+		}
 		return "88888888888  ";
 	}
 	/*.................................................................................................................*/

@@ -15,6 +15,9 @@ package mesquite.lib;
 
 import java.awt.*;
 
+import mesquite.lib.ui.MesquiteWindow;
+import mesquite.lib.ui.QueryDialogs;
+
 /*Last documented:  August 1999 */
 /* ======================================================================== */
 /**This class is used to store numbers flexibly, so that system doesn't need to know whether int, long or double.
@@ -25,7 +28,7 @@ Most of the methods in MesquiteNumber use the incoming parameter
 	as a guide to how the data should be stored.  Thus there are int, long, and
 	double versions of many methods.  Calculations involving mixed types automatically
 	upgrade the storage to the bigger type. */
-public class MesquiteNumber implements Listable, WithStringDetails{
+public class MesquiteNumber implements Listable, Nameable, WithStringDetails{
 	private int intValue=0;
 	private long longValue=0;
 	private double doubleValue=0;

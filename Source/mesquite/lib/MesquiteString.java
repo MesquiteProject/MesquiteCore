@@ -15,10 +15,14 @@ package mesquite.lib;
 
 import java.awt.*;
 
+import mesquite.lib.ui.MesquiteWindow;
+import mesquite.lib.ui.QueryDialogs;
+import mesquite.lib.ui.TwoStringsDialog;
+
 /* ======================================================================== */
 /**This String wrapper class is used to be able to pass Strings by reference and have the
 	original change as needed*/
-public class MesquiteString extends Listened implements Listable, Identifiable, Explainable {
+public class MesquiteString extends Listened implements Listable, Identifiable { //, Explainable {
 	public static final int riseOffset = 5;
 	private boolean bound = false;
 	public static long totalCreated = 0;
@@ -66,7 +70,7 @@ public class MesquiteString extends Listened implements Listable, Identifiable, 
 	}
 	public String toString() {
 		if (isNull)
-			return "null";
+			return "NULL";
 		return sb.toString();
 	}
 	public boolean isBlank() {
@@ -83,9 +87,9 @@ public class MesquiteString extends Listened implements Listable, Identifiable, 
 		else
 			return name;
 	}
-	public String getExplanation(){
+	/*public String getExplanation(){
 		return getValue();
-	}
+	}*/
 	public static boolean explicitlyUnassigned(String s){
 		if (s==null)
 			return false;
@@ -103,14 +107,14 @@ public class MesquiteString extends Listened implements Listable, Identifiable, 
 		}
 		setValue(value.toString(), true);
 	}
-
 	public void setValue(String value, boolean notify) {
 		if (value==null){
 			sb.setLength(0);
 			if (!isNull){
 				isNull = true;
-				if (bound)
+				if (bound){
 					MesquiteTrunk.resetCheckMenuItems(); //TODO: shouldn't this method be in MenuOwner???
+				}
 				if (notify)
 					notifyListeners(this, new Notification(MesquiteListener.VALUE_CHANGED));
 			}
@@ -120,13 +124,15 @@ public class MesquiteString extends Listened implements Listable, Identifiable, 
 			if (!value.equals(sb.toString())) {
 				sb.setLength(0);
 				sb.append(value);
-				if (bound)
+				if (bound){
 					MesquiteTrunk.resetCheckMenuItems(); //TODO: shouldn't this method be in MenuOwner???
+				}
 				if (notify)
 					notifyListeners(this, new Notification(MesquiteListener.VALUE_CHANGED));
 			}
-			else if (bound)
+			else if (bound){
 				MesquiteTrunk.resetCheckMenuItems(); //TODO: shouldn't this method be in MenuOwner???
+			}
 		}
 	}
 

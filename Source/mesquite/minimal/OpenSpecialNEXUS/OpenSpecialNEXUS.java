@@ -21,7 +21,10 @@ import java.io.*;
 import mesquite.lib.*;
 import mesquite.lib.duties.*;
 
-public class OpenSpecialNEXUS extends GeneralFileMaker  {
+public class OpenSpecialNEXUS extends GeneralFileMakerSingle  {
+	public boolean loadModule(){
+		return false;
+	}
 	public String getNameForMenuItem() {
 		return "Special NEXUS...";
 	}
@@ -45,7 +48,8 @@ public class OpenSpecialNEXUS extends GeneralFileMaker  {
 	/** make a new    MesquiteProject.*/
 	/*.................................................................................................................*/
 	public MesquiteProject establishProject(String arguments){
-		return MesquiteTrunk.mesquiteTrunk.openOrImportFileHandler(null, arguments, NEXUSInterpreter.class);
+		MesquiteProject p = MesquiteTrunk.mesquiteTrunk.openOrImportFileHandler(null, arguments, NEXUSInterpreter.class);
+		return p;
 	}
 }
 

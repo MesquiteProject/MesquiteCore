@@ -17,13 +17,14 @@ package mesquite.genesis.SimDNAModelCurator;
 import mesquite.lib.*;
 import mesquite.lib.characters.*;
 import mesquite.lib.duties.*;
+import mesquite.lib.ui.MesquiteWindow;
 import mesquite.categ.lib.*;
 import mesquite.genesis.lib.*;
 import mesquite.stochchar.lib.*;
 /* ======================================================================== */
 public class SimDNAModelCurator extends CategProbModelCurator implements EditingCurator {
 	SimulationDNAModel modelToEdit;
-		 SimulationDNAModel defaultModel;
+	SimulationDNAModel defaultModel;
 	/*.................................................................................................................*/
 	public boolean startJob(String arguments, Object condition, boolean hiredByName) {
  		defaultModel = new SimulationDNAModel("Jukes-Cantor", DNAState.class, this);

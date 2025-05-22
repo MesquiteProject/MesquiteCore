@@ -18,6 +18,9 @@ import java.util.*;
 import java.awt.*;
 import mesquite.lib.*;
 import mesquite.lib.duties.*;
+import mesquite.lib.misc.HPanel;
+import mesquite.lib.ui.ColorDistribution;
+import mesquite.lib.ui.MesquiteWindow;
 
 /** Displays a window showing the employee tree of a module. */
 public class ShowEmployeeTree extends EmployeeTree {

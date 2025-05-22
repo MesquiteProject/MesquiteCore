@@ -19,6 +19,9 @@ import java.awt.*;
 import java.awt.image.*;
 import mesquite.lib.*;
 import mesquite.lib.duties.*;
+import mesquite.lib.ui.MQPanel;
+import mesquite.lib.ui.MesquiteImage;
+import mesquite.lib.ui.MesquiteWindow;
 
 /* ======================================================================== */
 public class PictureWindowMaker extends FileAssistantN {
@@ -181,7 +184,7 @@ class PictureWindow extends MesquiteWindow implements Commandable  {
 }
 /* ======================================================================== */
 /** The Panel containing the Mesquite logo on the startup window */
-class ImagePanel extends Panel {
+class ImagePanel extends MQPanel {
 	Image pic;
 	PictureWindow pw;
 	public ImagePanel (PictureWindow pw) {

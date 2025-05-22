@@ -25,6 +25,23 @@ import java.awt.event.*;
 import mesquite.lib.*;
 import mesquite.lib.characters.*;
 import mesquite.lib.duties.*;
+import mesquite.lib.taxa.Taxa;
+import mesquite.lib.tree.MesquiteTree;
+import mesquite.lib.tree.Tree;
+import mesquite.lib.tree.TreeVector;
+import mesquite.lib.ui.ClosablePanel;
+import mesquite.lib.ui.ClosablePanelContainer;
+import mesquite.lib.ui.ColorTheme;
+import mesquite.lib.ui.HelpSearchStrip;
+import mesquite.lib.ui.ListDialog;
+import mesquite.lib.ui.MesquiteDialog;
+import mesquite.lib.ui.MesquiteFrame;
+import mesquite.lib.ui.MesquiteImage;
+import mesquite.lib.ui.MesquiteMenuItem;
+import mesquite.lib.ui.MesquiteTool;
+import mesquite.lib.ui.MesquiteWindow;
+import mesquite.lib.ui.MousePanel;
+import mesquite.lib.ui.StringInABox;
 import mesquite.categ.lib.*;
 import mesquite.cont.lib.*;
 import mesquite.meristic.lib.*;
@@ -67,14 +84,48 @@ public class ProjectWindow extends MesquiteWindow implements MesquiteListener {
 		Snapshot temp = new Snapshot();
 		MesquiteFrame f = getParentFrame();
 		temp.addLine("suppress");
-		temp.addLine("setResourcesState " + f.getResourcesFullWindow() + " " + f.getResourcesClosedWhenMinimized() + " "  + f.getResourcesWidth());
-		/*	if (f.getResourcesWidth() != MesquiteFrame.defaultResourcesWidth)
-			temp.addLine("setResourcesWidth " + f.getResourcesWidth());
-		 */
-		temp.addLine("setPopoutState " + f.getPopoutWidth());
 		temp.incorporate(super.getSnapshot(file), false);
+		return temp;
+	}
+	/*.................................................................................................................*/
+	/** Gets basic snapshot for window, including size, location. */
+	public Snapshot getLateSnapshot(MesquiteFile file) { 
+		Snapshot temp = new Snapshot();
+		MesquiteFrame f = getParentFrame();
+
+		//find the uniqueID of the foremost window in each tile
+		MesquiteWindow main = f.frontMostInLocation(MesquiteFrame.MAIN);
+		MesquiteWindow pop = f.frontMostInLocation(MesquiteFrame.POPTILE);
+		MesquiteWindow either = f.getFrontWindow();
+
+		temp.addLine("setResourcesState " + f.getResourcesFullWindow() + " " + f.getResourcesClosedWhenMinimized() + " "  + f.getResourcesWidth());
+		if (either != null){
+			if (pop == null) //no pop just bring first
+				addToFrontScriptForWindow(temp, main);
+			else {
+				temp.addLine("setPopoutState " + f.getPopoutWidth());
+				if (either == pop){ //pop is frontmost; do main first then pop
+					addToFrontScriptForWindow(temp, main);
+					addToFrontScriptForWindow(temp, pop);
+				}
+				else { //main is frontmost; do pop first then main
+					addToFrontScriptForWindow(temp, pop);
+					addToFrontScriptForWindow(temp, main);
+				}
+			}
+		}
 		temp.addLine("desuppress");
 		return temp;
+	}
+
+	void addToFrontScriptForWindow(Snapshot temp, MesquiteWindow w){
+		if (w == null)
+			return;
+
+		temp.addLine("findWindow " + StringUtil.tokenize(w.getUniqueID()));
+		temp.addLine("tell It");
+		temp.addLine("\tsetAsFront");
+		temp.addLine("endTell");
 	}
 	/*.................................................................................................................*/
 	Parser parser = new Parser();
@@ -115,7 +166,7 @@ public class ProjectWindow extends MesquiteWindow implements MesquiteListener {
 			if (rfwt != null){
 				int rw = MesquiteInteger.fromString(rfwt);
 				if (MesquiteInteger.isCombinable(rw)){
-					f.setPopoutWidth(rw);
+					f.requestPopoutWidth(rw);
 				}
 				String rcwmt = parser.getNextToken();
 				if (rcwmt != null){
@@ -125,6 +176,12 @@ public class ProjectWindow extends MesquiteWindow implements MesquiteListener {
 					}
 				}
 			}
+		}
+		else if (checker.compare(MesquiteWindow.class, "Finds window with uniqueID", null, commandName, "findWindow")) {
+			MesquiteFrame f = getParentFrame();
+			MesquiteWindow w = f.findWindowByUniqueID(parser.getFirstToken(arguments));
+			return w;
+
 		}
 		else if (checker.compare(MesquiteWindow.class, "Explain the incorporation options", null, commandName, "explainIncorporate")) {
 			explainIncorporate();
@@ -183,7 +240,7 @@ public class ProjectWindow extends MesquiteWindow implements MesquiteListener {
 		html += "</ol>";
 
 		html += "</html></body>";
-		bfc.alertHTML(html, "Incorporating File", "Incorporating File", 820, 700);
+		bfc.alertHTML(bfc.containerOfModule().getParentFrame(), html, "Incorporating File", "Incorporating File", 820, 700);
 	}
 	/*  From ManageTrees
 	 * 		MesquiteSubmenuSpec mss = getFileCoordinator().addSubmenu(MesquiteTrunk.treesMenu, "Import File with Trees");
@@ -193,9 +250,13 @@ public class ProjectWindow extends MesquiteWindow implements MesquiteListener {
 
 	 */
 	public void windowResized(){
-		if (projPanel != null){
-			projPanel.setBounds(0,0,getBounds().width, getBounds().height);
-			scrollPanel.setBounds(0,getBounds().height-scrollHeight,getWidth(), scrollHeight);
+		try {
+			if (projPanel != null){
+				projPanel.setBounds(0,0,getBounds().width, getBounds().height);
+				scrollPanel.setBounds(0,getBounds().height-scrollHeight,getWidth(), scrollHeight);
+			}
+		}
+		catch (Exception e){
 		}
 	}
 	/*.................................................................................................................*/
@@ -331,7 +392,7 @@ class ProjectPanel extends MousePanel implements ClosablePanelContainer{
 		html += "</li></ul>";
 		html += "<p align=\"center\"><img  src=\"" + MesquiteFile.massageFilePathToURL(bfc.getPath()+"projectHTML" + MesquiteFile.fileSeparator + "projectPanel.jpg") + "\">";
 		html += "</p></html></body>";
-		bfc.alertHTML(html, "Project", "Project", 500, 600);
+		bfc.alertHTML(bfc.containerOfModule().getParentFrame(), html, "Project", "Project", 500, 600);
 	}
 	void addExtraPanel(ProjPanelPanel p){
 		elements.addElement(p);
@@ -384,7 +445,7 @@ class ProjectPanel extends MousePanel implements ClosablePanelContainer{
 			int m = MesquiteInteger.queryInteger(w, "Maximum items of a kind in project panel", "Your file has more than " + FileCoordinator.maxLinesOfAnyElementInPanel + " " + typeName +
 					". To save memory and time, Mesquite limits how many are shown in the project panel. If you'd like to change the limit, indicate a new maximum. You can always change this maximum " 
 					+ " via the menu item File>Defaults>Maximum # Items in Project Panel...", FileCoordinator.maxLinesOfAnyElementInPanel);
-		
+
 			if (MesquiteInteger.isCombinable(m) && MesquiteInteger.isPositive(m)){
 				FileCoordinator.maxLinesOfAnyElementInPanel = m;
 				FileCoordinator.maxLinesOfAnyElementInPanelQueried = true;
@@ -488,7 +549,7 @@ class ProjectPanel extends MousePanel implements ClosablePanelContainer{
 							panel.resetTitle();
 							panel.repaint();
 							e++;
-					}
+						}
 				}
 
 			}
@@ -662,12 +723,12 @@ class ProjectPanel extends MousePanel implements ClosablePanelContainer{
 					addExtraPanel(panel = new AbundanceTPanel(bfc, this, w, proj, t));
 					if (proj.getTreeVectors().size()<=FileCoordinator.maxLinesOfMatricesTreeBlocksSeparateInPanel)
 						for (int k = 0; k<proj.getNumberOfFileElements(TreeVector.class) && elementInBounds(k, "tree blocks"); k++){
-						TreeVector trees = (TreeVector)proj.getFileElement(TreeVector.class, k);
-						if (trees.getTaxa() == t){
-							addExtraPanel(panel = new TreesRPanel(bfc, this, w, trees));
-							panel.setLocation(0,0);
+							TreeVector trees = (TreeVector)proj.getFileElement(TreeVector.class, k);
+							if (trees.getTaxa() == t){
+								addExtraPanel(panel = new TreesRPanel(bfc, this, w, trees));
+								panel.setLocation(0,0);
+							}
 						}
-					}
 				}
 
 			}
@@ -866,6 +927,8 @@ class AddElementPanel extends ElementPanel {
 		ElementManager tm = bfc.findElementManager(TreeVector.class);
 		addCommand(false, "fileLinkTrees.gif", "Link\nTrees", "Link Trees...", new MesquiteCommand("linkTreeFile", ((MesquiteModule)tm)));
 		addCommand(false, "fileIncludeTrees.gif", "Include\nTrees", "Include Trees...", new MesquiteCommand("includeTreeFileAskPartial", ((MesquiteModule)tm)));
+		addCommand(true, null, "-", "-",  null);
+		addCommand(true, null, "New Linked File...", "New Linked File...",  bfc.getProject().getNewLinkFileCommand());
 	}
 
 }
@@ -979,7 +1042,7 @@ class NotesPanel extends ProjPanelPanel {
 	String text = null;
 	String heading = null;
 	public NotesPanel(BasicFileCoordinator bfc, ClosablePanelContainer container, MesquiteWindow w){
-		super(bfc, container, w, null, bfc);
+		super(bfc, container, w, "Notes", bfc);
 		headingBox =  new StringInABox("", new Font("SansSerif", Font.BOLD, MesquiteFrame.resourcesFontSize), getWidth());
 		textBox =  new StringInABox("", new Font("SansSerif", Font.PLAIN, MesquiteFrame.resourcesFontSize), getWidth());
 		setText(null, null);
@@ -1080,6 +1143,14 @@ class TaxaPanel extends ElementPanel {
 			setOpen(true);
 		setColors(ColorTheme.getExtInterfaceElement(), ColorTheme.getExtInterfaceElement(), ColorTheme.getExtInterfaceElement(), ColorTheme.getExtInterfaceTextMedium());
 		addCommand(false, "list.gif", "List &\nManage\nTaxa", "List & Manage Taxa", new MesquiteCommand("showMe", element));
+		if (otherMatch()) {
+			addCommand(true, null, "-", "-", null);
+			addCommand(true, null, "(NOTE: Taxa block duplicated? Select for details...)", "(NOTE: Taxa block duplicated? Select for details...)", new MesquiteCommand("duplicatedInfo", this));  
+			addCommand(true, null, "Copy Matrices to other Taxa Block", "Copy Matrices to other Taxa Block", new MesquiteCommand("transferMatrices", this));  
+			addCommand(true, null, "Copy Trees to other Taxa Block", "Copy Trees to other Taxa Block", new MesquiteCommand("transferTrees", this)); 
+			addCommand(true, null, "Merge Matrices and Trees with other Taxa Block", "Merge Matrices and Trees with other Taxa Block", new MesquiteCommand("mergeBlock", this)); 
+			addCommand(true, null, "-", "-", null);
+		}
 		addCommand(false, "chart.gif", "Chart\nTaxa", "Chart Taxa", new MesquiteCommand("chart", this));
 		addCommand(true, null, "Show New\nTree Window", "Show New Tree Window", new MesquiteCommand("showInitTreeWindow", this));
 		addCommand(true, null, "-", "-", null);
@@ -1110,8 +1181,122 @@ class TaxaPanel extends ElementPanel {
 			((BasicFileCoordinator)bfc).showInitTreeWindow((Taxa)element, true);
 			//MesquiteThread.setCurrentCommandRecord(oldCommandRec);
 		}
+		else if (checker.compare(this.getClass(), "Shows an initial tree window", null, commandName, "duplicatedInfo")) {
+			((BasicFileCoordinator)bfc).alert("This taxa block appears to be a duplicate of at least one other, because it has the same number of taxa and with the same names. " +
+					"Calculations with this taxa block will not have access to matrices and trees of the other block, and vice versa. " + 
+					"\n\nIf this was unintentional, you could choose the following menu items to transfer character matrices and trees to the other block. "+
+					"\n\nTo avoid this problem in the future, when combining separate files, try using options other than Include or Link under Include & Merge.");
+		}
+		else if (checker.compare(this.getClass(), "Transfers matrices to other taxa block", null, commandName, "transferMatrices")) {
+			Taxa taxa = (Taxa)element;
+			Taxa other = chooseOther(taxa, "Choose taxa block to which to copy the matrices");
+			if (other == null)
+				return null;
+			transferMatrices(taxa, other);
+			projectWindow.projPanel.refresh();
+		}
+		else if (checker.compare(this.getClass(), "Transfers matrices to other taxa block", null, commandName, "transferTrees")) {
+			Taxa taxa = (Taxa)element;
+			Taxa other = chooseOther(taxa, "Choose taxa block to which to copy the trees");
+			if (other == null)
+				return null;
+			transferTrees(taxa, other);
+			projectWindow.projPanel.refresh();
+		}
+		else if (checker.compare(this.getClass(), "Transfers matrices and trees to other taxa block and then deletes this taxa block", null, commandName, "mergeBlock")) {
+			Taxa taxa = (Taxa)element;
+			Taxa other = chooseOther(taxa, "Choose taxa block into which to merge this one, copying this one's matrices and trees before deleting it.");
+			if (other == null)
+				return null;
+			transferMatrices(taxa, other);
+			transferTrees(taxa, other);
+			taxa.deleteMe(false);
+			projectWindow.projPanel.refresh();
+		}
 		else
 			return  super.doCommand(commandName, arguments, checker);
+		return null;
+	}
+	
+	/* - - - - - - - - - - - - - - - - - - - - */
+	void transferMatrices(Taxa taxa, Taxa other){
+		MesquiteProject project = taxa.getProject();
+		boolean reordered = taxa.matchOrderIfEqual(other);
+		for (int iM = 0; iM < project.getNumberCharMatrices(taxa); iM++){
+			CharacterData data = project.getCharacterMatrix(taxa, iM);
+			CharacterData cloned = data.cloneData();
+			cloned.addToFile(project.getHomeFile(),project, bfc.findElementManager(CharacterData.class));  
+			data.copyMetadataTo(cloned);
+			cloned.setTaxa(other, true);
+			cloned.setName(data.getName());
+			cloned.setAnnotation(data.getAnnotation(), false);
+		}
+		if (reordered)
+			taxa.notifyListeners(this, new Notification(MesquiteListener.PARTS_MOVED));
+	}
+	/* - - - - - - - - - - - - - - - - - - - - */
+	void transferTrees(Taxa taxa, Taxa other){
+		MesquiteProject project = taxa.getProject();
+		boolean reordered = taxa.matchOrderIfEqual(other);
+		for (int iM = 0; iM < project.getNumberTreeVectors(taxa); iM++){
+			TreeVector trees = project.getTreesByNumber(taxa, iM);
+			TreeVector otherTrees = new TreeVector(other);
+			otherTrees.setWriteWeights(trees.getWriteWeights());
+			for (int i=0; i<trees.size(); i++){
+				MesquiteTree t = (MesquiteTree)trees.elementAt(i);
+				MesquiteTree cloned = t.cloneTree();
+				cloned.setTaxa(other, true);
+				otherTrees.addElement(cloned, false);
+
+			}
+			otherTrees.addToFile(project.getHomeFile(),project, bfc.findElementManager(TreeVector.class));  
+			otherTrees.setName(trees.getName());
+			otherTrees.setAnnotation(trees.getAnnotation(), false);
+		}
+		if (reordered)
+			taxa.notifyListeners(this, new Notification(MesquiteListener.PARTS_MOVED));
+	}	
+	/* - - - - - - - - - - - - - - - - - - - - */
+	Taxa chooseOther(Taxa taxa, String expl){
+		MesquiteProject project = taxa.getProject();
+		Taxa other = null;
+		ListableVector v = new ListableVector();
+		for (int iT = 0; iT < project.getNumberTaxas(); iT++){
+			Taxa c = taxa.getProject().getTaxa(iT);
+			if (c != taxa && c.equals(taxa, true, true))
+				v.addElement(c, false);
+		}
+		if (v.size() == 0)
+			return null;
+		else if (v.size() == 1){
+			other = (Taxa)v.elementAt(0);
+		}
+		else {
+			Listable result = ListDialog.queryList(bfc.containerOfModule(), "Choose taxa block", expl, null, v, 0); 
+			if (result == null)
+				return null;
+			other = (Taxa)result;
+		}
+		return other;
+	}
+	/* - - - - - - - - - - - - - - - - - - - - */
+	boolean otherMatch(){
+		if (element == null)
+			return false;
+		Taxa taxa = (Taxa)element;
+		MesquiteProject project = taxa.getProject();
+		for (int iT = 0; iT < project.getNumberTaxas(); iT++){
+			Taxa c = taxa.getProject().getTaxa(iT);
+			if (c != taxa && c.equals(taxa, true, true))
+				return true;
+		}
+		return false;
+	}
+	
+	/* - - - - - - - - - - - - - - - - - - - - */
+	public String getIconFileName(){
+		if (otherMatch())
+			return "warning.gif";
 		return null;
 	}
 	/*.................................................................................................................*/
@@ -1311,7 +1496,7 @@ class AbundanceMPanel extends ElementPanel {
 		int n = project.getNumberCharMatricesVisible(taxa);
 		if (n>1)
 			return Integer.toString(n) + " Character Matrices";
-		return "Character Matrix";
+		return "1 Character Matrix";
 
 	}
 }
@@ -1337,10 +1522,17 @@ class TreesRPanel extends ElementPanel {
 
 	public TreesRPanel(BasicFileCoordinator bfc, ClosablePanelContainer container, MesquiteWindow w, FileElement element){
 		super(bfc, container, w, element);
-		addCommand(false, "treeView.gif", "View\nTrees", "View Trees", new MesquiteCommand("showTreesInWindow", element));
+
+		addCommand(false, "treeView.gif", "View\nTrees", "View Trees ", new MesquiteCommand("showTreesInWindow", element));
+
+		addCommand(false, null, "View\nConsensus", "View Consensus", new MesquiteCommand("showConsensusInWindow", element));
 		addCommand(false, "trees.gif", "List &\nManage\nTrees", "List & Manage Trees", new MesquiteCommand("showMe", element));
 		addCommand(false, "chart.gif", "Chart\nTrees", "Chart Trees", new MesquiteCommand("chart", this));
 		addCommand(true, null, "-", "-", null);
+
+		if (!StringUtil.blank(getAnalysisDirectoryPath(element)))
+			addCommand(true, null, "Show Analysis Folder", "Show Analysis Folder", new MesquiteCommand("showAnalysisDirectory", this));
+
 		addCommand(true, null, "Rename Trees Block", "Rename Trees Block", new MesquiteCommand("renameMe", element));
 		addCommand(true, null, "Delete Trees Block", "Delete Trees Block", new MesquiteCommand("deleteMe", element));
 		addCommand(true, null, "Duplicate Trees Block", "Duplicate Trees Block", new MesquiteCommand("duplicateMe", element));
@@ -1350,6 +1542,48 @@ class TreesRPanel extends ElementPanel {
 		if (bfc.getProject().virginProject)
 			setOpen(true);
 		//	addCommand(true, null, "ID " + element.getID(), "ID " + element.getID(), new MesquiteCommand("id", this));
+
+	}
+
+	public String getFootnote(){
+		String s = " Tree";
+		int numTrees = ((TreeVector)element).size();
+		if (numTrees != 1)
+			s += "s";
+		String f = super.getFootnote();
+		if (f == null)
+			f = "";
+		return "" + numTrees + s + "\n" + f;
+	}
+
+	/*.................................................................................................................*/
+	String getAnalysisDirectoryPath(FileElement element) {
+		if (element instanceof TreeVector) {
+			String annot = element.getAnnotation();
+			if (annot != null) {
+				String targetHeading = "Results stored in folder:";
+				int i = StringUtil.indexOfIgnoreCase(annot, targetHeading);
+				if (i>=0) {
+					Parser parser = new Parser(annot);
+					parser.setPosition(i + targetHeading.length());
+					String path = parser.getRawNextLine();
+					path = StringUtil.stripLeadingWhitespace(path);
+					if (MesquiteFile.fileOrDirectoryExists(path)) {
+						return path;
+					}
+				}
+			}
+		}
+		return null;
+	}
+	public Object doCommand(String commandName, String arguments, CommandChecker checker) {
+		if (checker.compare(MesquiteWindow.class, "Shows analysis directory of element", null, commandName, "showAnalysisDirectory")) {
+			String dir = getAnalysisDirectoryPath((FileElement)getElement());
+			if (!StringUtil.blank(dir)) //show file location on  disk
+				MesquiteFile.showDirectory(dir);
+		}
+		else return  super.doCommand(commandName, arguments, checker);
+		return null;
 
 	}
 	/*.................................................................................................................*/
@@ -1387,7 +1621,7 @@ class TreesRPanel extends ElementPanel {
 class AssocPanel extends ElementPanel {
 	public AssocPanel(BasicFileCoordinator bfc, ClosablePanelContainer container, MesquiteWindow w, FileElement element){
 		super(bfc, container, w,element);
-		setTitle("Association: " + element.getName());
+		setTitle(element.getName());
 		setColors(ColorTheme.getExtInterfaceElement(), ColorTheme.getExtInterfaceElement(), ColorTheme.getExtInterfaceElement(), ColorTheme.getExtInterfaceTextMedium());
 		addCommand(true, null, "Edit Associaton", "Edit Associaton", new MesquiteCommand("showMe", element));
 		addCommand(true, null, "-", "-", null);

@@ -19,9 +19,19 @@ import java.awt.*;
 import mesquite.lib.*;
 import mesquite.lib.duties.*;
 import mesquite.lib.table.*;
+import mesquite.lib.taxa.Taxa;
+import mesquite.lib.tree.Tree;
+import mesquite.lib.tree.TreeDisplay;
+import mesquite.lib.tree.TreeDisplayActive;
+import mesquite.lib.tree.TreeDisplayExtra;
+import mesquite.lib.tree.TreeDisplayHolder;
+import mesquite.lib.ui.Legend;
+import mesquite.lib.ui.MesquitePDFFile;
+import mesquite.lib.ui.MesquiteWindow;
+import mesquite.lib.ui.MessagePanel;
 
 /* ======================================================================== */
-public class MirrorTreeWindowMaker extends TreeWindowAssistantN implements TreeDisplayActive {
+public class MirrorTreeWindowMaker extends TreeWindowAssistantN implements TreeDisplayActive, TreeDisplayHolder {
 	public void getEmployeeNeeds(){  //This gets called on startup to harvest information; override this and inside, call registerEmployeeNeed
 		EmployeeNeed e = registerEmployeeNeed(DrawTreeCoordinator.class, getName() + "  needs a module to coordinate tree drawing.",
 		"This is arranged automatically");
@@ -46,6 +56,10 @@ public class MirrorTreeWindowMaker extends TreeWindowAssistantN implements TreeD
   	 	if (m == treeDrawCoordTask)
   	 		iQuit();
   	 }
+ 	/** Returns true if other modules can control the orientation */
+ 	public boolean allowsReorientation(){
+ 		return false;
+ 	}
 	/*.................................................................................................................*/
  	public void employeeParametersChanged(MesquiteModule employee, MesquiteModule source, Notification notification) {
 		if (source instanceof DrawTreeCoordinator){ //ignores since this should have directly called to update tree display
@@ -189,15 +203,16 @@ class MirrorTreeWindow extends MesquiteWindow implements Commandable  {
 		treeDisplays[0].setAllowReorientation(false);
 		treeDisplays[0].setTipsMargin(40);
 		treeDisplays[0].setTaxonNameBuffer(8); ///8
-		treeDisplays[0].setTaxonNameDistance(14); ///absent
+		treeDisplays[0].setTaxonNameDistanceFromTip(14); ///absent
 		treeDisplays[1].setOrientation(TreeDisplay.LEFT);
 		treeDisplays[1].setAllowReorientation(false);
 		treeDisplays[1].suppressNames = true;
 		treeDisplays[1].setTipsMargin(18); //14
 		treeDisplays[1].setTaxonNameBuffer(20); //absent
-		treeDisplays[1].setTaxonNameDistance(14); ///absent
+		treeDisplays[1].setTaxonNameDistanceFromTip(14); ///absent
 		extra = new MirrorExtra(ownerModule, treeDisplays[0], this);
 		treeDisplays[0].addExtra(extra);
+		treeDisplays[0].floatNameAtHighest = true;
 		treeDisplays[0].centerNames = true;
 		//treeDisplays[1].setBackground(Color.cyan);
 		//treeDisplays[0].setBackground(Color.yellow);
@@ -283,7 +298,8 @@ class MirrorTreeWindow extends MesquiteWindow implements Commandable  {
 				
 				TreeDisplayExtra tce = tda.createTreeDisplayExtra(treeDisplays[0]);
 				tce.setTree(treeDisplays[0].getTree());
-				treeDisplays[0].addExtra(tce);
+			treeDisplays[0].addExtra(tce);
+			treeDisplays[0].accumulateRequestsFromExtras(treeDisplays[0].getTree());
 				treeDisplays[0].repaint();
 				return tda;
 			}
@@ -296,6 +312,7 @@ class MirrorTreeWindow extends MesquiteWindow implements Commandable  {
 				TreeDisplayExtra tce = tda.createTreeDisplayExtra(treeDisplays[1]);
 				tce.setTree(treeDisplays[1].getTree());
 				treeDisplays[1].addExtra(tce);
+				treeDisplays[1].accumulateRequestsFromExtras(treeDisplays[1].getTree());
 				treeDisplays[1].repaint();
 				return tda;
 			}
@@ -375,14 +392,14 @@ class MirrorTreeWindow extends MesquiteWindow implements Commandable  {
 		else messagePanel.setMessage("Error: source tree is null");  
 		messagePanel.repaint();
 	}
-	/*_________________________________________________*/
+	/*_________________________________________________*
 	
 	public   void InvertBranchOld(TreeDisplay treeDisplay, Graphics g, int N) {
 		highlightedBranch=N;
 		treeDisplay.getTreeDrawing().fillBranchInverted(treeDisplay.getTree(), N, g);
 	   }
 	   
-	/*_________________________________________________*/
+	/*_________________________________________________*
 	public   void RevertBranchOld(TreeDisplay treeDisplay, Graphics g, int N) {
 		highlightedBranch=0;
 		treeDisplay.getTreeDrawing().fillBranchInverted(treeDisplay.getTree(), N, g);
@@ -486,6 +503,15 @@ class MirrorTreeWindow extends MesquiteWindow implements Commandable  {
 		 			tce.cursorExitBranch(treeDisplay.getTree(), N, g);
 		 		}
 			}
+		}
+	}
+	public void windowResized() {
+		super.windowResized();
+		if (!MesquiteThread.isScripting())
+			sizeDisplays();
+		if (treeDisplays != null && treeDisplays[0] != null) {
+			treeDisplays[0].pleaseUpdate(true);
+		treeDisplays[1].pleaseUpdate(true);
 		}
 	}
 	/*.................................................................................................................*/

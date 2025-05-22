@@ -18,6 +18,7 @@ import java.awt.*;
 import mesquite.lib.*;
 import mesquite.lib.characters.*;
 import mesquite.lib.duties.*;
+import mesquite.lib.taxa.Taxa;
 import mesquite.categ.lib.*;
 import mesquite.io.lib.*;
 
@@ -68,6 +69,10 @@ public class InterpretFastaProtein extends InterpretFasta {
 		return "X";
 	}
 
+	/*.................................................................................................................*/
+	 public boolean requestPrimaryChoice() {
+	return true;
+	 }
 /*.................................................................................................................*/
     	 public String getName() {
 		return "FASTA (protein)";

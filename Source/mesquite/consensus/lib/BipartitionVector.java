@@ -18,6 +18,9 @@ import java.util.Vector;
 
 import mesquite.consensus.lib.Bipartition;
 import mesquite.lib.*;
+import mesquite.lib.taxa.Taxa;
+import mesquite.lib.tree.MesquiteTree;
+import mesquite.lib.tree.Tree;
 
 public class BipartitionVector extends Vector {
 	boolean rooted = true;
@@ -522,7 +525,7 @@ public class BipartitionVector extends Vector {
 		int newNode = tree.makeClade(stored.bits);
 		if (mode==MAJRULEMODE) {
 			double prop = getDecimalFrequency(stored);
-			tree.setAssociatedDouble(freqRef, newNode, prop, true);
+			tree.setAssociatedDouble(freqRef, newNode, prop);
 			//	tree.setNodeLabel(MesquiteDouble.toStringDigitsSpecified(prop, 3), newNode);
 			if (tree.nodeIsInternal(newNode)){
 				double length = stored.getSplitLength();

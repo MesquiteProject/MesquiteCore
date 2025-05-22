@@ -16,6 +16,8 @@ package mesquite.assoc.lib;
 import java.awt.*;
 import java.util.*;
 import mesquite.lib.*;
+import mesquite.lib.tree.AdjustableTree;
+import mesquite.lib.tree.Tree;
 
 /*June 28 2012.  There are some methods which encounter problems when a containing tree does not 
  * contain all nodes (internal or terminal) of the contained tree.  For example, if a containing tree
@@ -71,12 +73,17 @@ public class AssociationHistory {
 	}
 	public void resetArrays(){
 		if (containingTree!=null) {
-			if (enteringContainedBranches==null || enteringContainedBranches.length<containingTree.getNumNodeSpaces())
-				enteringContainedBranches = new int[containingTree.getNumNodeSpaces()][];
+			int nnsContaining = containingTree.getNumNodeSpaces();
+			if (enteringContainedBranches==null || enteringContainedBranches.length<nnsContaining)
+				enteringContainedBranches = new int[nnsContaining][];
+			for (int i= 0; i<nnsContaining; i++)
+				enteringContainedBranches[i] = null;
 			if (containedTree!=null){
 				int numContained = containedTree.getNumNodeSpaces();
 				if (locationOfContainedNode==null || locationOfContainedNode.length<numContained)
 					locationOfContainedNode = new int[numContained];
+				for (int i= 0; i<nnsContaining; i++)
+					locationOfContainedNode[i] = MesquiteInteger.unassigned;
 				if (enteringContainedBranches[0]==null || enteringContainedBranches[0].length<numContained) {
 					for (int i=0; i<enteringContainedBranches.length; i++) 
 						enteringContainedBranches[i]= new int[numContained];
@@ -632,6 +639,27 @@ public class AssociationHistory {
 		return locationOfContainedNode;
 	}
 
+	/*_________________________________________________*/
+	/** this method surveys the gene tree lineages within the species nodes */
+	public void cleanContained(Tree geneTree) {
+		for (int spNode = 0; spNode<enteringContainedBranches.length; spNode++){
+			for (int i = 0; i< enteringContainedBranches[spNode].length; i++)
+				if (!geneTree.nodeExists(enteringContainedBranches[spNode][i]))
+					enteringContainedBranches[spNode][i] = MesquiteInteger.unassigned;
+			enteringContainedBranches[spNode] = IntegerArray.compressUnassigneds(enteringContainedBranches[spNode]);
+		}
+		
+	}
+
+	/*_________________________________________________*/
+	/** this method surveys the gene tree lineages within the species nodes */
+	public void report(Tree speciesTree, int speciesNode, StringBuffer sb) {
+		int[] genesInNode = getContainedNodes(speciesNode);
+		sb.append("Sp.node " + speciesNode + " contains " + IntegerArray.toString(genesInNode) + "\n");
+		for (int d = speciesTree.firstDaughterOfNode(speciesNode); speciesTree.nodeExists(d); d = speciesTree.nextSisterOfNode(d)){
+			report(speciesTree,d, sb);
+		}
+	}
 
 	/*_________________________________________________*/
 	public String toString() {

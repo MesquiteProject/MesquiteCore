@@ -14,6 +14,8 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
 package mesquite.lib.duties;
 
 import java.awt.*;
+
+import mesquite.io.lib.TryNexusFirstTreeFileInterpreter;
 import mesquite.lib.*;
 
 
@@ -24,6 +26,17 @@ see BasicFileCoordinator.*/
 
 /** a subclass for reading nexus files*/
 public abstract class NexusFileInterpreter extends FileInterpreterI  {  
+	/* some file reading arguments:
+	 * 
+	@noWarnMissingReferent
+	@noWarnUnrecognized
+	@noWarnDupTaxaBlock
+	@readOneTaxaBlockOnly
+	@readOneMatrixOnly
+	@justTheseBlocks.TAXA.TREES.CHARACTERS  (or whatever blocks are to be read
+	 */
+
+	
 	/** returns whether module can read given file.*/
 	public abstract boolean canReadFile(MesquiteFile f);
 	/** writes the given MesquiteFile belonging to the MesquiteProject.*/
@@ -34,6 +47,8 @@ public abstract class NexusFileInterpreter extends FileInterpreterI  {
 	public abstract NexusBlock findBlock(FileElement e);
 	/** finds the ith block of a given type and returns it raw.*/
 	public abstract FileBlock readOneBlock(MesquiteProject mf, MesquiteFile f, String blockType, int i);
+	public abstract void readFile(MesquiteProject mf, MesquiteFile mNF, String arguments) ;
+
 }
 
 

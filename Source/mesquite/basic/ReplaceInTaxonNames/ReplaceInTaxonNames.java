@@ -19,6 +19,9 @@ import java.awt.*;
 import mesquite.lib.*;
 import mesquite.lib.duties.*;
 import mesquite.lib.table.*;
+import mesquite.lib.taxa.Taxa;
+import mesquite.lib.ui.ExtensibleDialog;
+import mesquite.lib.ui.SingleLineTextField;
 
 /* ======================================================================== 
 *new in 1.02* */
@@ -80,6 +83,12 @@ public class ReplaceInTaxonNames extends TaxonNameAlterer {
     	 		return  super.doCommand(commandName, arguments, checker);
 		return null;
    	 }
+    	 
+   /*.................................................................................................................*/
+    	 public boolean requestPrimaryChoice(){
+    		 return true;
+    	 }
+
 	/*.................................................................................................................*/
     	 public String getNameForMenuItem() {
 		return "Replace in Name...";

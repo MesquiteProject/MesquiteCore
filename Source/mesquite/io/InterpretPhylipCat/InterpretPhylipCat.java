@@ -18,6 +18,8 @@ import java.awt.*;
 import mesquite.lib.*;
 import mesquite.lib.characters.*;
 import mesquite.lib.duties.*;
+import mesquite.lib.taxa.Taxa;
+import mesquite.lib.ui.AlertDialog;
 import mesquite.categ.lib.*;
 import mesquite.io.lib.*;
 
@@ -53,7 +55,7 @@ public class InterpretPhylipCat extends InterpretPhylip {
 		 return charTask.newCharacterData(taxa, 0, CategoricalData.DATATYPENAME);  //
 	}
 /*.................................................................................................................*/
-	public void appendPhylipStateToBuffer(CharacterData data, int ic, int it, StringBuffer outputBuffer){
+	public void appendPhylipStateToBuffer(CharacterData data, int ic, int it, MesquiteStringBuffer outputBuffer){
 		outputBuffer.append(statesToStringPolyChar((CategoricalData)data, ic, it,'P'));
 	}
 	/*..........................................  CategoricalData  ..................................................*/

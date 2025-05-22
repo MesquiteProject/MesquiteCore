@@ -17,6 +17,9 @@ import java.util.*;
 import java.awt.*;
 import mesquite.lib.*;
 import mesquite.lib.duties.*;
+import mesquite.lib.tree.MesquiteTree;
+import mesquite.lib.ui.AlertDialog;
+import mesquite.lib.ui.MesquiteSubmenuSpec;
 import mesquite.coalesce.lib.*;
 /* ======================================================================== */
 public class NeutralCoalescence extends CoalescerObed {  //coalescer

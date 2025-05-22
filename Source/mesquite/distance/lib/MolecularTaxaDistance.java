@@ -17,6 +17,7 @@ import java.awt.Checkbox;
 import mesquite.categ.lib.*;
 import mesquite.lib.*;
 import mesquite.lib.characters.*;
+import mesquite.lib.taxa.Taxa;
 
 public abstract class MolecularTaxaDistance extends TaxaDistance {
 		protected double[][] distances;

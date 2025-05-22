@@ -13,8 +13,9 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
  */
 package mesquite.lib;
 
-//import org.apache.commons.lang3.StringEscapeUtils;
 import org.apache.commons.text.*;
+
+import mesquite.lib.ui.GraphicsUtil;
 
 import java.awt.*;
 import java.io.UnsupportedEncodingException;
@@ -164,6 +165,13 @@ public class StringUtil {
 		}
 		pos.setValue(s.length());
 		return null;
+	}
+	/*.................................................................................................................*/
+	public static char charAt(String string, MesquiteInteger pos) {
+		int loc = pos.getValue();
+		if (loc>=0 && loc< string.length())
+			return string.charAt(loc);
+		return 0;
 	}
 
 	static boolean isLineBreak(String s, int index) {
@@ -846,6 +854,18 @@ public class StringUtil {
 		else
 			return token;
 	}
+	public static String shrinkInMiddle(String line, int cutToLength) {
+		if (blank(line))
+			return line;
+		else if (line.length()<= cutToLength)
+			return line;
+		int halfLength = cutToLength/2;
+		if (halfLength*2 == cutToLength) //even number, take one fewer
+			halfLength -= 1;
+		String start = line.substring(0, halfLength);
+		String endPart = line.substring(line.length()-halfLength, line.length());
+		return start + " … " + endPart;
+	}
 	/*.................................................................................................................*/
 	//TODO: quote should not be punctuation, and should be treated separately!!!!
 	private static String quote(String token, StringBuffer sb) {
@@ -911,6 +931,8 @@ public class StringUtil {
 	public static String tokenize(String token, String punctuationString, StringBuffer sb) {
 		if (token == null)
 			return "";
+		if (token.length() == 0)
+			return "''";
 		if (hasPunctuation(token,punctuationString) || token.indexOf("_")>=0 || hasSpecial(token))  //28Feb05: added "_" so that this forced quoted token to preserve the underscore
 			return quote(token, sb);  
 		if (sb == null)
@@ -954,6 +976,86 @@ public class StringUtil {
 				numMatches++;
 		}
 		return numMatches;
+	}
+	/*.................................................................................................................*/
+	public static int getNumMatchingStrings(String token, String match) {
+		if (token==null) return 0;
+		int numMatches = 0;
+		int index =-1;
+		boolean completed=false;
+
+		while (!completed) {
+			index = token.indexOf(match,index+1);
+			if (index>=0) 
+				numMatches++;
+			else
+				completed=true;
+		}
+		return numMatches;
+	}
+	/*.................................................................................................................*/
+	public static int getIndexOfMatchingString(String token, String match, int matchNumber, boolean fromStart, boolean includeString) {
+		if (StringUtil.blank(token) || match==null || match=="") return 0;
+		int numMatches = 0;
+		int currentIndex =-1;
+		int index = -1;
+		boolean completed=false;
+
+		if (!fromStart) {
+			int totalNumberMatches = getNumMatchingStrings(token, match);
+			matchNumber = totalNumberMatches - matchNumber+1;			
+		}
+
+		if (matchNumber>0)
+			while (!completed) {
+				currentIndex = token.indexOf(match,currentIndex+1);
+				if (currentIndex>=0) {
+					numMatches++;
+					if (numMatches>=matchNumber) { // found it
+						index=currentIndex;
+						if (fromStart && !includeString)  
+							index+= match.length();
+						else if (!fromStart && includeString)
+							index+= match.length();
+						completed=true;
+					}
+				}
+				else
+					completed=true;
+			}
+
+
+		return index;
+	}
+	/*.................................................................................................................*/
+	public static int getIndexOfMatchingString(String token, String match, int matchNumber, boolean fromStart) {
+		if (StringUtil.blank(token) || match==null || match=="") return 0;
+		int numMatches = 0;
+		int currentIndex =-1;
+		int index = -1;
+		boolean completed=false;
+
+		if (!fromStart) {
+			int totalNumberMatches = getNumMatchingStrings(token, match);
+			matchNumber = totalNumberMatches - matchNumber+1;			
+		}
+
+		if (matchNumber>0)
+			while (!completed) {
+				currentIndex = token.indexOf(match,currentIndex+1);
+				if (currentIndex>=0) {
+					numMatches++;
+					if (numMatches>=matchNumber) { // found it
+						index=currentIndex;
+						completed=true;
+					}
+				}
+				else
+					completed=true;
+			}
+
+
+		return index;
 	}
 	/*.................................................................................................................*/
 	public static String punctuationToUnderline(String token) {
@@ -1022,8 +1124,9 @@ public class StringUtil {
 			return "";
 		String trimmedString = token.trim();
 		int charPos = trimmedString.lastIndexOf((int)c) ;  
-		if (charPos == trimmedString.length()-1)   // then the last none-whitespace is the character c
+		if (charPos>=0 && charPos == trimmedString.length()-1) {   // then the last none-whitespace is the character c
 			return token.substring(0,token.lastIndexOf((int)c));   //DRM March 2014:  changed from 0,token.lastIndexOf((int)c-1
+		}
 		else
 			return token;
 	}
@@ -1055,13 +1158,37 @@ public class StringUtil {
 		return sb.toString();
 	}
 	/*.................................................................................................................*/
-	public static String stripLeadingWhitespace(String token) { //added 22 Dec 01
+	public static String stripWhitespaceAroundPunctuation(String token) { 
+		if (token == null)
+			return "";
+		StringBuffer sb = new StringBuffer();
+		char prev = '\0';
+		for (int i=0; i<token.length(); i++) {
+			char c = token.charAt(i);
+			char nxt = '\0';
+			if (i+1<token.length())
+				nxt = token.charAt(i+1);
+			if (!whitespace(c, defaultWhitespace))  // if dark, keep regardless
+				sb.append(c);
+			else if (!punctuation(prev) && !punctuation(nxt)) // if white, keep it if neither of neighbours is punctuation
+				sb.append(c);
+			prev = c;
+		}
+		return sb.toString();
+	}
+
+	/*.................................................................................................................*/
+	public static String stripLeadingWhitespace(String token) { 
+		return stripLeadingWhitespace(token, defaultWhitespace);
+	}
+	/*.................................................................................................................*/
+	public static String stripLeadingWhitespace(String token, String whitespace) { //added 22 Dec 01
 		if (token == null)
 			return "";
 		int firstDark = -1;
 		for (int i=0; i<token.length(); i++) {
 			char c = token.charAt(i);
-			if (defaultWhitespace.indexOf(c)<0){
+			if (whitespace.indexOf(c)<0){
 				firstDark = i;
 				break;
 			}
@@ -1073,12 +1200,16 @@ public class StringUtil {
 	}
 	/*.................................................................................................................*/
 	public static String stripTrailingWhitespace(String token) {
+		return stripTrailingWhitespace(token, defaultWhitespace);
+	}
+	/*.................................................................................................................*/
+	public static String stripTrailingWhitespace(String token, String whitespace) {
 		if (token == null)
 			return "";
 		int firstDark = -1;
 		for (int i=token.length()-1;  i>=0; i--) {
 			char c = token.charAt(i);
-			if (defaultWhitespace.indexOf(c)<0){
+			if (whitespace.indexOf(c)<0){
 				firstDark = i;
 				break;
 			}
@@ -1171,17 +1302,29 @@ public class StringUtil {
 		return (c==']');
 	}
 	/*.................................................................................................................*/
-	public static boolean whitespace(char c, String whitespaceString) {
+	public static boolean defaultWhitespace(char c) {
 		// in the future, we might want to add  if (c<0) return true;
 		if (c<0)
 			return true;
 		if (c==0)
 			return false;  
-
-
+			return defaultWhitespace.indexOf(c)>=0;
+	}
+	/*.................................................................................................................*/
+	public static boolean whitespace(char c, String whitespaceString) {
+		if (c<0)
+			return true;
+		if (c==0)
+			return false;  
 		if (whitespaceString!=null)
 			return whitespaceString.indexOf(c)>=0;
 			return defaultWhitespace.indexOf(c)>=0;
+	}
+	/*.................................................................................................................*/
+	public static boolean punctuation(char c) {
+		if (c==0)
+			return false;
+		return defaultPunctuation.indexOf(c)>=0;
 	}
 	/*.................................................................................................................*/
 	public static boolean punctuation(char c, String punctuationString) {
@@ -1670,6 +1813,14 @@ public class StringUtil {
 		}
 	}
 	/*.................................................................................................................*/
+	public static void appendXMLTag(StringBuffer sb, int numTabs, String tag, String flavor, boolean value){
+		if (sb!=null) {
+			appendStartXMLTag(sb,numTabs,tag, XMLUtil.FLAVOR, StringUtil.protectForXML(flavor));
+			sb.append(MesquiteBoolean.toTrueFalseString(value));
+			appendEndXMLTag(sb,tag);
+		}
+	}
+	/*.................................................................................................................*/
 	public static void appendXMLTag(StringBuffer sb, int numTabs, String tag, MesquiteModule module){
 		if (sb!=null) {
 			appendStartXMLTag(sb,numTabs,tag);
@@ -1758,11 +1909,11 @@ public static String cleanseStringOfFancyChars(String s, boolean onlyAlphaNumeri
 		return simplifyIfNeededForOutput(s,simplify, false);
 	}
 	/*.................................................................................................................*/
-	public static String simplifyIfNeededForOutput(String s, boolean simplify, boolean forMesquiteUse){
+	public static String simplifyIfNeededForOutput(String s, boolean simplify, boolean underlineToBlanks){
 		String token = s;
 		if (simplify) {
 			token = cleanseStringOfFancyChars(token,false,true);
-			if (forMesquiteUse)
+			if (underlineToBlanks)
 				token = underlineToBlanks(token);
 		}
 		else
@@ -1841,6 +1992,10 @@ public static String cleanseStringOfFancyChars(String s, boolean onlyAlphaNumeri
 	/*.................................................................................................................*/
 	public static boolean containsIgnoreCase(String a, String b) {
 		return indexOfIgnoreCase(a,b)>=0;
+	}
+	/*.................................................................................................................*/
+	public static boolean containsBlanks(String a) {
+		return indexOfIgnoreCase(a," ")>=0;
 	}
 	/*.................................................................................................................*/
 	public static boolean stringsEqual(String a, String b) {
@@ -1925,6 +2080,36 @@ public static String cleanseStringOfFancyChars(String s, boolean onlyAlphaNumeri
 		}
 	}
 	/*.................................................................................................................*/
+	public static boolean blank(String line, String whitesp) {
+		if (line==null)
+			return true;
+		else if (line.length()==0)
+			return true;
+		else {
+			for (int i=0; i<line.length(); i++) {
+				char c = line.charAt(i);
+				if (c > 0 && !whitespace(c, whitesp))
+					return false;
+			}
+			return true;
+		}
+	}
+	/*.................................................................................................................*/
+	public static boolean blank(MesquiteStringBuffer line) {
+		if (line==null)
+			return true;
+		else if (line.length()==0)
+			return true;
+		else {
+			for (int i=0; i<line.length(); i++) {
+				char c = line.charAt(i);
+				if (c > 0 && !whitespace(c, null))
+					return false;
+			}
+			return true;
+		}
+	}
+	/*.................................................................................................................*/
 	public static boolean notEmpty(String line) {
 		return !blank(line);
 	}
@@ -1944,8 +2129,8 @@ public static String cleanseStringOfFancyChars(String s, boolean onlyAlphaNumeri
 		}
 	}
 	/*.................................................................................................................*/
-	public static boolean blank(String line, String temporaryWhiteSpace) {
-		if (temporaryWhiteSpace == null)
+	public static boolean blankWithExtraWhitespaceChars(String line, String additionalWhiteSpace) {
+		if (additionalWhiteSpace == null)
 			return blank(line);
 		if (line==null)
 			return true;
@@ -1953,7 +2138,7 @@ public static String cleanseStringOfFancyChars(String s, boolean onlyAlphaNumeri
 			return true;
 		else {
 			for (int i=0; i<line.length(); i++) {
-				if ((!whitespace(line.charAt(i), null)) && (!(temporaryWhiteSpace.indexOf(line.charAt(i))>=0))) {
+				if ((!whitespace(line.charAt(i), null)) && (!(additionalWhiteSpace.indexOf(line.charAt(i))>=0))) {
 					return false;
 				}
 			}
@@ -1983,6 +2168,13 @@ public static String cleanseStringOfFancyChars(String s, boolean onlyAlphaNumeri
 			return line.isEmpty();
 	}
 
+	/*.................................................................................................................*/
+	public static void append(MesquiteStringBuffer recipient, StringBuffer donor) {
+		if (recipient==null || donor == null || donor.length() == 0)
+			return;
+		for (int i=0; i<donor.length(); i++)
+			recipient.append(donor.charAt(i));
+	}
 	/*.................................................................................................................*/
 	public static void append(StringBuffer recipient, StringBuffer donor) {
 		if (recipient==null || donor == null || donor.length() == 0)

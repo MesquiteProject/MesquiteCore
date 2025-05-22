@@ -21,6 +21,10 @@ import mesquite.lib.*;
 import mesquite.lib.characters.*;
 import mesquite.lib.duties.*;
 import mesquite.lib.table.*;
+import mesquite.lib.ui.ColorDistribution;
+import mesquite.lib.ui.MQTextArea;
+import mesquite.lib.ui.MesquiteWindow;
+import mesquite.lib.ui.MousePanel;
 import mesquite.categ.lib.*;
 
 
@@ -184,9 +188,9 @@ public class CharReferenceStrip extends DataWindowAssistantID {
 		lastShown = column;
 		//	String s = Integer.toString(column+1) + ". " + data.getCharacterName(column);
 //		data.setCellObject(refRef, ic, it, null);
-		Object obj  = data.getAssociatedObject(refRef, column);
-		if (obj != null && obj instanceof String)
-			return (String)obj;
+		String obj  = data.getAssociatedString(refRef, column);
+		if (obj != null)
+			return obj;
 
 
 
@@ -198,7 +202,7 @@ public class CharReferenceStrip extends DataWindowAssistantID {
 			return;
 		if (StringUtil.blank(refString))
 			refString = null;
-		data.setAssociatedObject(refRef, column, refString);
+		data.setAssociatedString(refRef, column, refString);
 	}
 	/*.................................................................................................................*/
 	public Snapshot getSnapshot(MesquiteFile file) { 
@@ -245,7 +249,7 @@ class Ledge extends MousePanel {
 		setLayout(null);
 		this.ownerModule = ownerModule;
 		/* */
-		message = new TextArea(" ", 20, 2, TextArea.SCROLLBARS_NONE);
+		message = new MQTextArea(" ", 20, 2, TextArea.SCROLLBARS_NONE);
 		message.setVisible(true);
 		add(message);
 		message.setBounds(titleWidth,0,getBounds().width-titleWidth, getBounds().height);
@@ -253,7 +257,7 @@ class Ledge extends MousePanel {
 
 
 
-		title = new TextArea(" ", 20, 2, TextArea.SCROLLBARS_NONE);
+		title = new MQTextArea(" ", 20, 2, TextArea.SCROLLBARS_NONE);
 		title.setVisible(true);
 		add(title);
 		title.setBounds(0,0,titleWidth, getBounds().height);

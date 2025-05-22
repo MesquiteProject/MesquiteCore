@@ -18,6 +18,12 @@ import java.util.*;
 import java.awt.*;
 import mesquite.lib.*;
 import mesquite.lib.duties.*;
+import mesquite.lib.taxa.Taxa;
+import mesquite.lib.tree.MesquiteTree;
+import mesquite.lib.tree.Tree;
+import mesquite.lib.ui.ColorDistribution;
+import mesquite.lib.ui.ListDialog;
+import mesquite.lib.ui.MesquiteSubmenuSpec;
 import mesquite.treefarm.lib.*;
 
 /* ======================================================================== */
@@ -60,14 +66,12 @@ public class AugmentTreeRandomly extends RndTreeModifier {
    	 	temp.addLine("setMode " + mode);
  	 	return temp;
   	 }
-	NameReference colorNameRef = NameReference.getNameReference("color");
+
 	private void setColor(Tree tree, int node, boolean[] added){
 		if (tree == null || !(tree instanceof Associable))
 			return;
 		Associable aTree = (Associable)tree;
-		if (aTree.getWhichAssociatedLong(colorNameRef)==null)
-			aTree.makeAssociatedLongs("color");
-		aTree.setAssociatedLong(colorNameRef, node, ColorDistribution.numberOfGreen, true);
+		aTree.setColor(node, "#00ff00");
 		added[node] = true;
 	}
 	/** goes through the tree returning which node is the nodeNumberTH found in the traversal */

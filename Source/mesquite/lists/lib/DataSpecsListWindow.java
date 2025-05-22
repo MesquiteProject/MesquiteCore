@@ -21,6 +21,7 @@ import mesquite.lib.duties.*;
 import mesquite.lib.*;
 import mesquite.lib.characters.*;
 import mesquite.lib.table.*;
+import mesquite.lib.taxa.Taxa;
 
 
 /* ======================================================================== */
@@ -58,18 +59,23 @@ public class DataSpecsListWindow extends ListWindow implements MesquiteListener 
 			setTitle(((DataSpecssetList)ownerModule).getItemTypeNamePlural()); 
 		
 	}
-	/*.................................................................................................................*/
-	public Object getCurrentObject(){
-		return data;
+	/*.................................................................................................................*
+	public Object getCurrentObject(){ this is handled by MesquiteWindow's reference as stored below
+		return null; 
 	}
+	*/
 	public void setCurrentObject(Object obj){
 		if (obj instanceof CharacterData) {
-			data = (CharacterData)obj;
+			data = (CharacterData)obj;  
+			resetTitle();
+		}
+		else if (obj instanceof SpecsSetVector) {
+			data =(CharacterData)((SpecsSetVector)obj).getObjectCharacterized();  
 			resetTitle();
 		}
 		super.setCurrentObject(obj);
 	}
-	public void setRowName(int row, String name){
+	public void setRowName(int row, String name, boolean update){
 		if (data!=null) {
 			SpecsSet ss = data.getSpecsSet(row, ((DataSpecssetList)ownerModule).getItemType());
 			if (ss!=null)

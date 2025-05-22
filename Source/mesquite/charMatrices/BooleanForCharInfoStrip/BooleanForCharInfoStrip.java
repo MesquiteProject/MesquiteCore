@@ -22,12 +22,13 @@ import mesquite.lib.characters.CharacterData;
 import mesquite.lib.duties.DataColumnNamesAssistant;
 import mesquite.lib.table.ColumnNamesPanel;
 import mesquite.lib.table.MesquiteTable;
+import mesquite.lib.ui.MesquiteMenuItemSpec;
 
 public class BooleanForCharInfoStrip extends DataColumnNamesAssistant {
 	MesquiteTable table;
 	CharacterData data;
 	BooleanForCharacter booleanTask;
-	MesquiteMenuItemSpec closeMenuItem, toggleDirectionItem, selectMatchesItem, moveToNextMatchItem,moveToPrevMatchItem;
+	MesquiteMenuItemSpec closeMenuItem, toggleDirectionItem, selectMatchesItem, moveToNextMatchItem,moveToPrevMatchItem, moveToNextFalseItem,moveToPrevFalseItem;
 	MesquiteBoolean standardDirection = new MesquiteBoolean(true);
 
 	public void getEmployeeNeeds(){  //This gets called on startup to harvest information; override this and inside, call registerEmployeeNeed
@@ -100,6 +101,8 @@ public class BooleanForCharInfoStrip extends DataColumnNamesAssistant {
 		deleteMenuItem(selectMatchesItem);
 		deleteMenuItem(moveToNextMatchItem);
 		deleteMenuItem(moveToPrevMatchItem);
+		deleteMenuItem(moveToNextFalseItem);
+		deleteMenuItem(moveToPrevFalseItem);
 	}
 	public void addRemoveMenuItem() {
 		if (booleanTask!=null)
@@ -110,6 +113,8 @@ public class BooleanForCharInfoStrip extends DataColumnNamesAssistant {
 		selectMatchesItem= addMenuItem(null,"Select Characters Satisfying Criterion", makeCommand("selectMatches", this));
 		moveToNextMatchItem= addMenuItem(null,"Move to Next Character Satisfying Criterion", makeCommand("moveToNextMatch", this));
 		moveToPrevMatchItem= addMenuItem(null,"Move to Previous Character Satisfying Criterion", makeCommand("moveToPrevMatch", this));
+		moveToNextFalseItem= addMenuItem(null,"Move to Next Character NOT Satisfying Criterion", makeCommand("moveToNextFalse", this));
+		moveToPrevFalseItem= addMenuItem(null,"Move to Previous Character NOT Satisfying Criterion", makeCommand("moveToPrevFalse", this));
 	}
 
 
@@ -154,7 +159,7 @@ public class BooleanForCharInfoStrip extends DataColumnNamesAssistant {
 	}
 
 	/*.................................................................................................................*/
-	public void moveToNext(boolean next) { 
+	public void moveToNext(boolean next, boolean satisfy) { 
 		if (data == null || booleanTask==null || table ==null)
 			return;
 		boolean selectionChange = false;
@@ -167,7 +172,7 @@ public class BooleanForCharInfoStrip extends DataColumnNamesAssistant {
 				MesquiteString resultString = new MesquiteString();
 				booleanTask.calculateBoolean( data,  ic,  result,  resultString);
 
-				if (result.getValue()){
+				if (result.getValue() == satisfy){
 					table.scrollToColumn(ic);
 					break;
 				}
@@ -180,7 +185,7 @@ public class BooleanForCharInfoStrip extends DataColumnNamesAssistant {
 				MesquiteString resultString = new MesquiteString();
 				booleanTask.calculateBoolean( data,  ic,  result,  resultString);
 
-				if (result.getValue()){
+				if (result.getValue()==satisfy){
 					table.scrollToColumn(ic);
 					break;
 				}
@@ -206,10 +211,16 @@ public class BooleanForCharInfoStrip extends DataColumnNamesAssistant {
 			selectSame(true);
 		}
 		else if (checker.compare(this.getClass(), "Moves to next character with value of true for this boolean", null, commandName, "moveToNextMatch")) {
-			moveToNext(true);
+			moveToNext(true, true);
 		}
 		else if (checker.compare(this.getClass(), "Moves to previous character with value of true for this boolean", null, commandName, "moveToPrevMatch")) {
-			moveToNext(false);
+			moveToNext(false, true);
+		}
+		else if (checker.compare(this.getClass(), "Moves to next character with value of false for this boolean", null, commandName, "moveToNextFalse")) {
+			moveToNext(true, false);
+		}
+		else if (checker.compare(this.getClass(), "Moves to previous character with value of false for this boolean", null, commandName, "moveToPrevFalse")) {
+			moveToNext(false, false);
 		}
 		else if (checker.compare(this.getClass(), "Toggles the dark/light display", "[on, off]", commandName, "toggleDirection")) {
 			standardDirection.toggleValue(parser.getFirstToken(arguments));

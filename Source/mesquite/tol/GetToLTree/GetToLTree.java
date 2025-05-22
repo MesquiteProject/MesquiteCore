@@ -18,12 +18,18 @@ package mesquite.tol.GetToLTree;
 
 import mesquite.lib.*;
 import mesquite.lib.duties.*;
+import mesquite.lib.ui.ExtensibleDialog;
+import mesquite.lib.ui.SingleLineTextField;
 import mesquite.tol.lib.*;
 
 
-public class GetToLTree extends GeneralFileMaker  {
+public class GetToLTree extends GeneralFileMakerSingle  {
 	protected int pageDepth = 1;
 	protected String cladeName = "";
+	
+	public boolean loadModule(){
+		return false;
+	}
 	/*.................................................................................................................*/
 	public boolean startJob(String arguments, Object condition, boolean hiredByName) {
 		return true;

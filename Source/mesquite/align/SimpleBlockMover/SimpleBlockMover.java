@@ -24,9 +24,9 @@ import mesquite.lib.MesquiteFile;
 import mesquite.lib.MesquiteInteger;
 import mesquite.lib.MesquiteListener;
 import mesquite.lib.MesquiteModule;
-import mesquite.lib.MesquiteWindow;
 import mesquite.lib.Notification;
 import mesquite.lib.Snapshot;
+import mesquite.lib.ui.MesquiteWindow;
 
 
 /* ======================================================================== */

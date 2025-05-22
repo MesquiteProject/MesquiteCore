@@ -19,6 +19,8 @@ import mesquite.lib.*;
 import mesquite.lib.characters.*;
 import mesquite.lib.duties.*;
 import mesquite.lib.table.*;
+import mesquite.lib.ui.ColorDistribution;
+import mesquite.lib.ui.ColorRecord;
 import mesquite.categ.lib.*;
 
 
@@ -38,7 +40,7 @@ public class ColorForAlignment extends DataWindowAssistantID implements CellColo
 		return true;
 	}
 	public boolean setActiveColors(boolean active){
-		setActive(true);
+		setActive(active);
 		return true; 
 
 	}

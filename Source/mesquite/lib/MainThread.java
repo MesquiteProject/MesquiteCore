@@ -17,6 +17,8 @@ import java.awt.*;
 import java.io.*;
 
 import mesquite.lib.duties.*;
+import mesquite.lib.ui.MesquiteDialog;
+import mesquite.lib.ui.MesquiteWindow;
 
 /** The main thread for executing commands */
 public class MainThread extends MesquiteThread {
@@ -55,8 +57,9 @@ public class MainThread extends MesquiteThread {
 			for (int i= 0; i< pendingCommands.size(); i++) {
 				PendingCommand pc =  (PendingCommand)pendingCommands.elementAt(i); 
 				MesquiteCommand mc = pc.getCommand();
-				if (command == mc)
+				if (command == mc) {
 					return true;
+				}
 			}
 		}
 		catch (Exception e){
@@ -75,6 +78,13 @@ public class MainThread extends MesquiteThread {
 		return list;
 	}
 
+	MesquiteWindow windowContext = null;
+	public void setWindowContext(MesquiteWindow w){
+		windowContext = w;
+	}
+	public MesquiteWindow getWindowContext(){
+		return windowContext;
+	}
 	public static PendingCommand getCurrentlyExecuting(){
 		return currentlyExecuting;
 	}
@@ -94,10 +104,11 @@ public class MainThread extends MesquiteThread {
 	}
 	public String getCurrentCommandExplanation(){
 		if (currentlyExecuting !=null)
-			return currentlyExecuting.getExplanation();
+			return currentlyExecuting.getListName();
 		return null;
 	}
-	/** DOCUMENT */
+	
+	/** This is the main thread on which commands are queued (pendingCommands) and executed. */
 	public void run() {
 		try {
 			while (!MesquiteTrunk.mesquiteTrunk.isDoomed() && !isInterrupted()) { 
@@ -106,7 +117,6 @@ public class MainThread extends MesquiteThread {
 				}
 				try {
 					if (pendingCommands.size()>0) {
-
 						PendingCommand pc = (PendingCommand)pendingCommands.elementAt(0);  // get it so that we can set it to busy
 						MesquiteCommand c = pc.getCommand();
 						pc = (PendingCommand)pendingCommands.elementAt(0);  // pluck it off again
@@ -121,8 +131,9 @@ public class MainThread extends MesquiteThread {
 								MesquiteThread.setLoggerCurrentThread(c.getSupplementalLogger());
 								loggerSet = true;
 							}
-								
+							setWindowContext(c.getWindowContext()); //in case a command wants to know what was the window from which it was called. Currently (v 4) works only for MesquiteMenuItem called commands
 							pc.go();
+							setWindowContext(null); //in case a command wants to know what was the window from which it was called. Currently (v 4) works only for MesquiteMenuItem called commands
 							if (loggerSet){
 								MesquiteThread.setLoggerCurrentThread(null);
 							}

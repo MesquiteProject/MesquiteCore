@@ -5,8 +5,8 @@ import mesquite.categ.lib.DNAData;
 import mesquite.categ.lib.DNAState;
 import mesquite.categ.lib.ProteinData;
 import mesquite.lib.MesquiteModule;
-import mesquite.lib.Taxa;
 import mesquite.lib.characters.CharacterData;
+import mesquite.lib.taxa.Taxa;
 
 public class MolecUtil {
 	/*.................................................................................................................*/

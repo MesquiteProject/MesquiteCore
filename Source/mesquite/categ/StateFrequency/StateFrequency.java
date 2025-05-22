@@ -20,6 +20,7 @@ import mesquite.lib.*;
 import mesquite.lib.characters.CharacterDistribution;
 import mesquite.lib.duties.NumberForCharacter;
 import mesquite.lib.duties.NumberForCharacterIncr;
+import mesquite.lib.ui.MesquiteMenuItemSpec;
 
 public class StateFrequency extends NumberForCharacter {
     boolean warnedOnce = false;

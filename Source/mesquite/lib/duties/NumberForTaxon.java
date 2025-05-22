@@ -15,6 +15,8 @@ package mesquite.lib.duties;
 
 import java.awt.*;
 import mesquite.lib.*;
+import mesquite.lib.taxa.Taxa;
+import mesquite.lib.taxa.Taxon;
 
 
 
@@ -30,6 +32,9 @@ public abstract class NumberForTaxon extends MesquiteModule implements NumberFor
  	public String getDutyName() {
  		return "Number for Taxon";
    	 }
+  	 public String[] getDefaultModule() {
+    	 	return new String[] {"#NumMatricesWithDataForTaxon", "#SequenceLengthT", "#TaxonValueFromTree"};
+    	 }
    	/** Called to provoke any necessary initialization.  This helps prevent the module's intialization queries to the user from
    	happening at inopportune times (e.g., while a long chart calculation is in mid-progress)*/
    	public abstract void initialize(Taxa taxa);

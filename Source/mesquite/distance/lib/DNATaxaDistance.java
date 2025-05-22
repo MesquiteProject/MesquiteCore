@@ -16,6 +16,7 @@ package mesquite.distance.lib;
 import mesquite.categ.lib.*;
 import mesquite.lib.*;
 import mesquite.lib.characters.*;
+import mesquite.lib.taxa.Taxa;
 
 public class DNATaxaDistance extends MolecularTaxaDistance {
 		

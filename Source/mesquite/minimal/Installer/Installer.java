@@ -17,6 +17,9 @@ package mesquite.minimal.Installer;
 
 import mesquite.lib.*;
 import mesquite.lib.duties.*;
+import mesquite.lib.ui.AlertDialog;
+import mesquite.lib.ui.MesquiteWindow;
+
 import java.util.zip.*;
 import java.util.*;
 import java.io.*;
@@ -363,7 +366,7 @@ public class Installer extends MesquiteInit {
 		if (precedeWithCDToMesquiteFolder)
 			script = ShellScriptUtil.getChangeDirectoryCommand(MesquiteTrunk.isWindows(), getRootPath()) + script;
 		MesquiteFile.putFileContents(scriptPath, script, false);
-		return ShellScriptUtil.executeAndWaitForShell(scriptPath, "installScript");
+		return ShellScriptUtil.executeAndWaitForShell(scriptPath, "installScript") == ShellScriptUtil.shellScriptNoError;
 	}
 
 	//returns 1 if OK

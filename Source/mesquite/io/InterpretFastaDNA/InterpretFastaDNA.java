@@ -18,6 +18,7 @@ import java.awt.*;
 import mesquite.lib.*;
 import mesquite.lib.characters.*;
 import mesquite.lib.duties.*;
+import mesquite.lib.taxa.Taxa;
 import mesquite.categ.lib.*;
 import mesquite.io.lib.*;
 
@@ -75,6 +76,10 @@ public class InterpretFastaDNA extends InterpretFasta {
 		return "N";
 	}
 					
+	/*.................................................................................................................*/
+	 public boolean requestPrimaryChoice() {
+	return true;
+	 }
 /*.................................................................................................................*/
     	 public String getName() {
 		return "FASTA (DNA/RNA)";

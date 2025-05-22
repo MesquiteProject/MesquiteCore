@@ -27,17 +27,17 @@ public class TrimTermPartTriplets extends DNADataAlterer  implements AltererDNAC
 
 	/*.................................................................................................................*/
 	/** Called to alter data in those cells selected in table*/
-	public boolean alterData(CharacterData dData, MesquiteTable table,  UndoReference undoReference){
+	public int alterData(CharacterData dData, MesquiteTable table,  UndoReference undoReference){
 		if (dData==null)
-			return false;
+			return -10;
 	
 		if (!(dData instanceof DNAData)){
 			MesquiteMessage.warnProgrammer(getName() + " requires DNA data");
-			return false;
+			return ResultCodes.INCOMPATIBLE_DATA;
 		}
 		DNAData data = (DNAData)dData;
 		if (!data.someCoding()) 
-			return false;
+			return 10;
 
    		UndoInstructions undoInstructions = data.getUndoInstructionsAllMatrixCells(new int[] {UndoInstructions.NO_CHAR_TAXA_CHANGES});
 		boolean changed = false;
@@ -82,7 +82,9 @@ public class TrimTermPartTriplets extends DNADataAlterer  implements AltererDNAC
 				undoReference.setResponsibleModule(this);
 			}
 		}
-		return changed;
+		if ( changed)
+			return ResultCodes.SUCCEEDED;
+			return ResultCodes.MEH;
 	}
 	/*.................................................................................................................*/
 	public void alterCell(CharacterData ddata, int ic, int it){

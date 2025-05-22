@@ -16,6 +16,9 @@ package mesquite.lib.duties;
 
 import java.awt.*;
 import mesquite.lib.*;
+import mesquite.lib.tree.Tree;
+import mesquite.lib.tree.TreeDisplay;
+import mesquite.lib.tree.TreeDisplayExtra;
 
 
 /* ======================================================================== */
@@ -39,6 +42,11 @@ public abstract class TreeWindowAssistant extends TreeWDIAssistant  {
 	
 	public boolean rehireMeInSnapshot(){
 		return true;
+	}
+	
+	//This method is optional for TreeWindowAssistants, unlike TreeDisplayAssistants
+	public TreeDisplayExtra createTreeDisplayExtra(TreeDisplay treeDisplay){
+		return null;
 	}
 
 }

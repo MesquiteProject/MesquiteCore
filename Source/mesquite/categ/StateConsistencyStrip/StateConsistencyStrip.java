@@ -21,6 +21,10 @@ import mesquite.lib.*;
 import mesquite.lib.characters.*;
 import mesquite.lib.duties.*;
 import mesquite.lib.table.*;
+import mesquite.lib.taxa.Taxa;
+import mesquite.lib.ui.MesquiteColorTable;
+import mesquite.lib.ui.MesquiteMenuItemSpec;
+import mesquite.lib.ui.MesquiteSubmenuSpec;
 import mesquite.categ.lib.*;
 
 
@@ -315,7 +319,7 @@ public class StateConsistencyStrip extends DataColumnNamesAssistant {
 					 */
 					g.setColor(Color.black);
 			 }
-			 StringBuffer sb = new StringBuffer();
+			 MesquiteStringBuffer sb = new MesquiteStringBuffer();
 			 ((CategoricalData)data).statesIntoStringBufferCore(ic,  s,  sb, true,false, false);
 			 FontMetrics fm = g.getFontMetrics(g.getFont());
 			 int svp = StringUtil.getStringVertPosition(fm, y, h, null);

@@ -21,6 +21,9 @@ import mesquite.lib.*;
 import mesquite.lib.characters.*;
 import mesquite.lib.duties.*;
 import mesquite.lib.table.*;
+import mesquite.lib.ui.ListDialog;
+import mesquite.lib.ui.MesquiteMenuItemSpec;
+import mesquite.lib.ui.MesquiteSubmenuSpec;
 
 /* ======================================================================== */
 public class CharListWeights extends CharListAssistant {
@@ -119,7 +122,7 @@ public class CharListWeights extends CharListAssistant {
 		}
 		else if (checker.compare(this.getClass(), "Loads the stored weight set to be the current one", "[number of weight set to load]", commandName, "loadToCurrent")) {
 			if (data !=null) {
-				int which = MesquiteInteger.fromFirstToken(arguments, stringPos);
+				int which = MesquiteInteger.fromFirstToken(arguments, pos);
 				if (MesquiteInteger.isCombinable(which)){
 					SpecsSetVector ssv = data.getSpecSetsVector(CharWeightSet.class);
 					if (ssv!=null) {

@@ -18,6 +18,11 @@ import java.awt.*;
 import java.awt.image.*;
 import java.awt.event.*;
 import mesquite.lib.duties.*;
+import mesquite.lib.ui.ColorDistribution;
+import mesquite.lib.ui.HelpSearchStrip;
+import mesquite.lib.ui.MQPanel;
+import mesquite.lib.ui.MesquiteImage;
+import mesquite.lib.ui.MesquiteWindow;
 import mesquite.trunk.ProjectTreeWindow;
 
 
@@ -113,7 +118,7 @@ public class LogWindow extends ConsoleWindow implements SystemWindow {
 		super.keyReleased(e);
 	}
 }
-class BannerPanel extends Panel {
+class BannerPanel extends MQPanel {
 	Image banner;
 	int bannerHeight;
 	public BannerPanel(LogWindow w){

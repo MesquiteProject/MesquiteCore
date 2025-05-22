@@ -17,6 +17,7 @@ import java.awt.*;
 
 import mesquite.lib.*;
 import mesquite.lib.table.*;
+import mesquite.molec.lib.SequenceTrimmer;
 import mesquite.lib.characters.*;
 
 
@@ -44,14 +45,29 @@ public abstract class FileProcessor extends MesquiteModule  {
    		return false;
    	}
 	/*.................................................................................................................*/
+   	/** Called to inform module what is base directory of files.*/
+   	public void setBaseDirectory(String path){
+   	}
+   	
+   	protected String previousProcessorLabel = null;
+   	public void setPreviousProcessorLabel(String prevLabel) {
+   		previousProcessorLabel = prevLabel;
+   	}
+	/*.................................................................................................................*/
    	/** Called before processing a series of files.*/
-   	public  boolean beforeProcessingSeriesOfFiles(){
+   	public boolean beforeProcessingSeriesOfFiles(){
    		return true;
    	}
 	/*.................................................................................................................*/
-   	/** Called to process file. Override this or the next*/
-   	public  boolean processFile(MesquiteFile file){
-   		return true;
+   	/** Called to process file. Override this or the next
+	returnCode
+	
+	0 if succeeded; 
+	1 if failed but in a way not worth stopping the run (e.g. something is unavailable for that one file); 
+	-1 if failed in a way worthy of asking the user if they want to stop
+   	 * */
+   	public int processFile(MesquiteFile file){
+   		return 0;
    	}
   	
 	/*.................................................................................................................*/
@@ -71,7 +87,7 @@ public abstract class FileProcessor extends MesquiteModule  {
   	
 	/*.................................................................................................................*/
 	/** Called to process file. */
-	public boolean processFile(MesquiteFile file, MesquiteString notice){
+	public int processFile(MesquiteFile file, MesquiteString notice){
 		return processFile(file);
 	}
 

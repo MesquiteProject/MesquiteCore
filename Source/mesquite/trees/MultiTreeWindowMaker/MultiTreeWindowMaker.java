@@ -19,9 +19,24 @@ import java.awt.*;
 import mesquite.lib.*;
 import mesquite.lib.duties.*;
 import mesquite.lib.table.*;
+import mesquite.lib.taxa.Taxa;
+import mesquite.lib.tree.Tree;
+import mesquite.lib.tree.TreeDisplay;
+import mesquite.lib.tree.TreeDisplayExtra;
+import mesquite.lib.tree.TreeDisplayHolder;
+import mesquite.lib.tree.TreeVector;
+import mesquite.lib.ui.InfoBar;
+import mesquite.lib.ui.Legend;
+import mesquite.lib.ui.MesquiteMenuSpec;
+import mesquite.lib.ui.MesquitePDFFile;
+import mesquite.lib.ui.MesquitePanel;
+import mesquite.lib.ui.MesquitePrintJob;
+import mesquite.lib.ui.MesquiteScrollbar;
+import mesquite.lib.ui.MesquiteWindow;
+import mesquite.lib.ui.MessagePanel;
 
 /* ======================================================================== */
-public class MultiTreeWindowMaker extends FileAssistantT {
+public class MultiTreeWindowMaker extends FileAssistantT implements TreeDisplayHolder {
 	public void getEmployeeNeeds(){  //This gets called on startup to harvest information; override this and inside, call registerEmployeeNeed
 		EmployeeNeed e = registerEmployeeNeed(DrawTreeCoordinator.class, getName() + "  needs a module to coordinate tree drawing.",
 				"This is arranged automatically");
@@ -76,6 +91,10 @@ public class MultiTreeWindowMaker extends FileAssistantT {
 		return false;
 	}
 
+ 	/** Returns true if other modules can control the orientation */
+ 	public boolean allowsReorientation(){
+ 		return true;
+ 	}
 	public void employeeQuit(MesquiteModule m){
 		if (m == treeDrawCoordTask)
 			iQuit();
@@ -411,6 +430,7 @@ class MultiTreeWindow extends MesquiteWindow implements Commandable  {
 					TreeDisplayExtra tce = tda.createTreeDisplayExtra(treeDisplays[itree]);
 					tce.setTree(treeDisplays[itree].getTree());
 					treeDisplays[itree].addExtra(tce);
+					treeDisplays[itree].accumulateRequestsFromExtras(treeDisplays[itree].getTree());
 					treeDisplays[itree].repaint();
 				}
 				contentsChanged();
@@ -457,7 +477,7 @@ class MultiTreeWindow extends MesquiteWindow implements Commandable  {
 		sizeDisplays(false);
 	}
 	/*.................................................................................................................*/
-	public synchronized void sizeDisplays(boolean hide){
+	public void sizeDisplays(boolean hide){
 		if (treeScroll == null || messagePanel == null || containingPanel == null)
 			return;
 		totalWidth = getWidth()-16;

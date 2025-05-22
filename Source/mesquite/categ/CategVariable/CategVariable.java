@@ -17,6 +17,7 @@ import mesquite.categ.lib.CategoricalState;
 import mesquite.lib.*;
 import mesquite.lib.characters.*;
 import mesquite.lib.duties.*;
+import mesquite.lib.taxa.Taxa;
 import mesquite.parsimony.lib.ParsimonyModelSet;
 import mesquite.categ.lib.*;
 

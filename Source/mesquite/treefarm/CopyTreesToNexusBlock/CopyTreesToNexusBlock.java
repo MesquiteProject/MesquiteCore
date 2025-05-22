@@ -19,6 +19,9 @@ import java.awt.FileDialog;
 import mesquite.lib.*;
 import mesquite.lib.characters.CharacterData;
 import mesquite.lib.duties.*;
+import mesquite.lib.tree.Tree;
+import mesquite.lib.tree.TreeVector;
+import mesquite.lib.ui.ColorTheme;
 
 /* ======================================================================== */
 public class CopyTreesToNexusBlock extends FileProcessor {
@@ -70,16 +73,17 @@ public class CopyTreesToNexusBlock extends FileProcessor {
 
 	/*.................................................................................................................*/
 	/** Called to alter file. */
-	public boolean processFile(MesquiteFile file){
+	public int processFile(MesquiteFile file){
 		
 		if (saveFile == null || okToInteractWithUser(CAN_PROCEED_ANYWAY, "Asking for file to save")){ //need to check if can proceed
-			return initFile();
+			if (!initFile())
+				return -1;
 		}
 		if (saveFile == null)
-			return false;
+			return -1;
 		Listable[] treeVectors = proj.getFileElements(TreeVector.class);	
    		if (treeVectors == null)
-   			return false;
+   			return 1;
 		for (int im = 0; im < treeVectors.length; im++){
    			TreeVector trees = (TreeVector)treeVectors[im];
    			if (trees.getFile() == file){
@@ -92,7 +96,7 @@ public class CopyTreesToNexusBlock extends FileProcessor {
   				}
    			}
    		}
-		return true;
+		return 0;
 
 	}
 	/*.................................................................................................................*/
@@ -114,7 +118,7 @@ public class CopyTreesToNexusBlock extends FileProcessor {
 
 	/*.................................................................................................................*/
 	public String getName() {
-		return "Compile Trees in Nexus Block in file";
+		return "Compile Trees in Nexus Block into One File";
 	}
 	/*.................................................................................................................*/
 	/** returns an explanation of what the module does.*/

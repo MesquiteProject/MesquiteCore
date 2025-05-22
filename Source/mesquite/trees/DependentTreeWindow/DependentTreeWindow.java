@@ -18,9 +18,22 @@ import java.awt.*;
 
 import mesquite.lib.*;
 import mesquite.lib.duties.*;
+import mesquite.lib.taxa.Taxa;
+import mesquite.lib.tree.Tree;
+import mesquite.lib.tree.TreeDisplay;
+import mesquite.lib.tree.TreeDisplayActive;
+import mesquite.lib.tree.TreeDisplayExtra;
+import mesquite.lib.tree.TreeDisplayHolder;
+import mesquite.lib.tree.TreeTool;
+import mesquite.lib.ui.ColorTheme;
+import mesquite.lib.ui.Legend;
+import mesquite.lib.ui.MQPanel;
+import mesquite.lib.ui.MesquiteSubmenuSpec;
+import mesquite.lib.ui.MesquiteWindow;
+import mesquite.lib.ui.MessagePanel;
 
 /* ======================================================================== */
-public class DependentTreeWindow extends TreeWindowAssistantN implements TreeDisplayActive {
+public class DependentTreeWindow extends TreeWindowAssistantN implements TreeDisplayActive, TreeDisplayHolder {
 	public void getEmployeeNeeds(){  //This gets called on startup to harvest information; override this and inside, call registerEmployeeNeed
 		EmployeeNeed e = registerEmployeeNeed(DrawTreeCoordinator.class, getName() + "  needs a module to coordinate tree drawing.",
 		"This is arranged automatically");
@@ -38,6 +51,10 @@ public class DependentTreeWindow extends TreeWindowAssistantN implements TreeDis
 		return true;
 	}
 
+	/** Returns true if other modules can control the orientation */
+	public boolean allowsReorientation(){
+		return true;
+	}
 	public void employeeQuit(MesquiteModule m){
 		if (m==treeDrawCoordTask)
 			iQuit();
@@ -55,6 +72,9 @@ public class DependentTreeWindow extends TreeWindowAssistantN implements TreeDis
 	public boolean isSubstantive(){
 		return false;
 	}
+	public boolean suppressMenuAncestors(){
+		return true;
+	}
 	/*.................................................................................................................*/
 	public   void setTree(Tree tree) {
 		if (dependentTreeWindow == null){
@@ -66,6 +86,7 @@ public class DependentTreeWindow extends TreeWindowAssistantN implements TreeDis
 			dependentTreeWindow.sizeDisplays();
 			if (!MesquiteThread.isScripting())
 				dependentTreeWindow.setVisible(true);
+
 		}
 		dependentTreeWindow.setTree(tree);
 	}
@@ -263,7 +284,9 @@ class DepTreeWindow extends MesquiteWindow implements Commandable, MesquiteListe
 
 				TreeDisplayExtra tce = tda.createTreeDisplayExtra(treeDisplay);
 				tce.setTree(treeDisplay.getTree());
+
 				treeDisplay.addExtra(tce);
+				treeDisplay.accumulateRequestsFromExtras(treeDisplay.getTree());
 				treeDisplay.repaint();
 				return tda;
 			}
@@ -367,12 +390,12 @@ class DepTreeWindow extends MesquiteWindow implements Commandable, MesquiteListe
 	public boolean okToDispose(Object obj, int queryUser){
 		return true;  //TODO: respond
 	}
-	/*_________________________________________________*/
+	/*_________________________________________________*
 	public   void InvertBranchOld(TreeDisplay treeDisplay, Graphics g, int N) {
 		highlightedBranch=N;
 		treeDisplay.getTreeDrawing().fillBranchInverted(treeDisplay.getTree(), N, g);
 	}
-	/*_________________________________________________*/
+	/*_________________________________________________*
 	public   void RevertBranchOld(TreeDisplay treeDisplay, Graphics g, int N) {
 		highlightedBranch=0;
 		treeDisplay.getTreeDrawing().fillBranchInverted(treeDisplay.getTree(), N, g);
@@ -485,6 +508,8 @@ class DepTreeWindow extends MesquiteWindow implements Commandable, MesquiteListe
 	}
 	public void windowResized(){
 		sizeDisplays();
+		if (treeDisplay != null)
+			treeDisplay.pleaseUpdate(true);
 	}
 	/*.................................................................................................................*/
 	public void paintContents(Graphics g) {
@@ -521,7 +546,7 @@ class DepTreeWindow extends MesquiteWindow implements Commandable, MesquiteListe
 	}
 }
 /* ======================================================================== */
-class DepMessagePanel extends Panel {
+class DepMessagePanel extends MQPanel {
 	String message;
 
 	public DepMessagePanel(MesquiteWindow w) {  //in future pass general MesquiteWindow

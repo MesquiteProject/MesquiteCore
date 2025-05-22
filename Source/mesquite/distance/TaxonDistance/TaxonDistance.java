@@ -18,6 +18,9 @@ import java.util.*;
 import java.awt.*;
 import mesquite.lib.*;
 import mesquite.lib.duties.*;
+import mesquite.lib.taxa.Taxa;
+import mesquite.lib.taxa.Taxon;
+import mesquite.lib.ui.MesquiteSubmenuSpec;
 import mesquite.distance.lib.*;
 
 public class TaxonDistance extends NumberFor2Taxa {

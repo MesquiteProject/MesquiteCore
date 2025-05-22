@@ -15,6 +15,7 @@ package mesquite.search.LikelihoodTreeSearch;
 /*~~  */
 
 import mesquite.lib.*;
+import mesquite.lib.analysis.LikelihoodAnalysis;
 import mesquite.search.lib.*;
 
 /* ======================================================================== */

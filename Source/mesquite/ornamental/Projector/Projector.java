@@ -19,6 +19,18 @@ import java.awt.*;
 import java.awt.image.*;
 import mesquite.lib.*;
 import mesquite.lib.duties.*;
+import mesquite.lib.misc.AttachedNotesVector;
+import mesquite.lib.taxa.Taxa;
+import mesquite.lib.taxa.Taxon;
+import mesquite.lib.tree.Tree;
+import mesquite.lib.tree.TreeDisplay;
+import mesquite.lib.tree.TreeDisplayDrawnExtra;
+import mesquite.lib.tree.TreeDisplayExtra;
+import mesquite.lib.tree.TreeTool;
+import mesquite.lib.ui.MQPanel;
+import mesquite.lib.ui.MesquiteImage;
+import mesquite.lib.ui.MesquiteMenuItemSpec;
+import mesquite.lib.ui.MesquiteWindow;
 
 /* ======================================================================== */
 public class Projector extends TreeDisplayAssistantI {
@@ -116,6 +128,8 @@ class ProjectorToolExtra extends TreeDisplayDrawnExtra implements Commandable  {
 	}
 	/*.................................................................................................................*/
 	public   void drawNode(Tree tree, int node, Graphics g) {
+		if (tree.withinCollapsedClade(node))
+			return;
 		for (int d = tree.firstDaughterOfNode(node); tree.nodeExists(d); d = tree.nextSisterOfNode(d))
 			drawNode(tree, d, g);
 		if (tree.nodeIsTerminal(node)) {
@@ -365,7 +379,7 @@ class ProjectorToolExtra extends TreeDisplayDrawnExtra implements Commandable  {
 	}
 }
 
-class ProjectorPanel extends Panel {
+class ProjectorPanel extends MQPanel {
 	Image im=null;
 	TreeDisplay treeDisplay;
 	

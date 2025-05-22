@@ -30,7 +30,21 @@ public abstract class Blaster extends MesquiteModule   {
 	static final String[] blastTypeNames = new String[] {"BLAST", "BLASTX", "TBLASTX"};
 	protected boolean blastx = false;
 	protected int blastType = BLAST;
+	String blastErrorMessage = "";
+	boolean warnErrorMessage = true;
 
+	public boolean getWarnErrorMessage() {
+		return warnErrorMessage;
+	}
+	public void setWarnErrorMessage(boolean warnErrorMessage) {
+		this.warnErrorMessage = warnErrorMessage;
+	}
+	public String getBlastErrorMessage() {
+		return blastErrorMessage;
+	}
+	public void setBlastErrorMessage(String blastErrorMessage) {
+		this.blastErrorMessage = blastErrorMessage;
+	}
 	public Class getDutyClass() {
 		return Blaster.class;
 	}
@@ -39,7 +53,7 @@ public abstract class Blaster extends MesquiteModule   {
 	}
 
 	public String[] getDefaultModule() {
-		return new String[] {"#NCBIBlaster"};
+		return new String[] {"#LocalBlaster"};
 	}
 	/** Called to provoke any necessary initialization.  This helps prevent the module's intialization queries to the user from
    	happening at inopportune times (e.g., while a long chart calculation is in mid-progress)*/
@@ -47,7 +61,7 @@ public abstract class Blaster extends MesquiteModule   {
 
 	public abstract void blastForMatches(String database, String blastType, String sequenceName, String sequence, boolean isNucleotides, int numHits, int maxTime, double eValueCutoff, int wordSize, StringBuffer blastResponse, boolean writeTime);
 
-	public abstract String getFastaFromIDs(String[] idList,  boolean isNucleotides, StringBuffer fastaBlastResults, int databaseNumber);
+	public abstract String getFastaFromIDs(String queryTaxonName, String[] idList,  boolean isNucleotides, StringBuffer fastaBlastResults, int databaseNumber);
 
 	public abstract String getTaxonomyFromID(String id, boolean isNucleotides, boolean writeLog, StringBuffer report);
 
@@ -107,6 +121,9 @@ public abstract class Blaster extends MesquiteModule   {
 			break;
 		}
 	}
+	
+	
+
 	static public String getBlastTypeName(int blastOption) {
 		if (blastOption<0 || blastOption>=blastTypeNames.length) return "";
 		return blastTypeNames[blastOption];

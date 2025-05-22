@@ -18,6 +18,7 @@ import java.util.*;
 import java.awt.*;
 
 import mesquite.lib.table.*;
+import mesquite.lib.taxa.Taxa;
 import mesquite.lib.*;
 import mesquite.lib.characters.*;
 import mesquite.lib.duties.*;
@@ -45,9 +46,9 @@ public class MultiplyByCharacter extends ContDataAlterer   implements AltererCon
    		return false;  
    	}
    	/** Called to alter data in those cells selected in table*/
-   	public boolean alterData(CharacterData data, MesquiteTable table, UndoReference undoReference){
+   	public int alterData(CharacterData data, MesquiteTable table, UndoReference undoReference){
 		if (!(data instanceof ContinuousData))
-			return false;
+			return ResultCodes.INCOMPATIBLE_DATA;
  			Taxa taxa = data.getTaxa();
    			multiplyingIC=characterSourceTask.queryUserChoose(taxa, "by which to multiply states");
    			multiplyingCharacter = (ContinuousDistribution)characterSourceTask.getCharacter(taxa, multiplyingIC); 

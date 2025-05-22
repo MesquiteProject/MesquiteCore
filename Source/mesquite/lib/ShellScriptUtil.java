@@ -31,6 +31,13 @@ public class ShellScriptUtil  {
 	public static int recoveryDelay = 0;
 	public static final String runningFileName = "running";
 	
+	public static final int shellScriptNoError = 0;
+	public static final int shellScriptNullProcess = -1;
+	public static final int shellScriptInterruptedException = -2;
+	public static final int shellScriptIOException = 3;
+	
+	//public static boolean useRunningFile = false;   // this is always false; no code changes it.
+
 
 	/*.................................................................................................................*/
 	public static String protectForShellScript(String s) {  //Is this only used for paths???!!!!!  See StringUtil.protectForWindows.
@@ -78,7 +85,7 @@ public class ShellScriptUtil  {
 	}
 	/*.................................................................................................................*/
 	public static String getChangeDirectoryCommand(String directory){
-		return getChangeDirectoryCommand(false, directory);
+		return getChangeDirectoryCommand(MesquiteTrunk.isWindows(), directory); //Debugg.println why was this false?
 	}
 	/*.................................................................................................................*/
 	public static String getRemoveCommand(boolean isWindows, String filePath){
@@ -101,7 +108,7 @@ public class ShellScriptUtil  {
 	}
 	/*.................................................................................................................*/
 	public static String getRemoveCommand(String filePath){
-		return getRemoveCommand(false, filePath);
+		return getRemoveCommand(MesquiteTrunk.isWindows(), filePath); //Debugg.println why was this false?
 	}
 	
 	/** This returns whether or not an exit command for shell scripts is available
@@ -172,15 +179,63 @@ public class ShellScriptUtil  {
 		return null;
 	}
 
+	/*.................................................................................................................*/
+	public static long getProcessID(Process proc) {
+		if (proc==null)
+			return MesquiteLong.impossible;
+		try {
+			long procID = proc.pid();
+			return procID;
+		} catch (UnsupportedOperationException e) {
+		}
+		return MesquiteLong.impossible;
+	}
+	/*.................................................................................................................*/
+	public static long getChildProcessID(Process proc) {
+		ProcessHandle childH = getChildProcess(proc);
+		if (childH!=null)
+			return getProcessID(childH);
+		return MesquiteLong.impossible;
+	}
+	/*.................................................................................................................*/
+	public static long getProcessID(ProcessHandle procH) {
+		if (procH==null)
+			return MesquiteLong.impossible;
+		try {
+			long procID = procH.pid();
+			return procID;
+		} catch (UnsupportedOperationException e) {
+		}
+		return MesquiteLong.impossible;
+	}
+	/*.................................................................................................................*/
+	public static ProcessHandle getProcessHandleFromProcID(long processID) {
+		ProcessHandle process = null;
+		Optional<ProcessHandle> possibleProcess = ProcessHandle.of(processID);
+		if(possibleProcess.isPresent()) process = possibleProcess.get();
+		return process;
+	}
 
 	/*.................................................................................................................*/
 	@Deprecated
 	public  static Process executeScript(String scriptPath){ 
 		return executeScript(scriptPath, true);
 	}
+	
+
+	public static ProcessHandle getChildProcess(Process proc){
+		if (proc!=null) {
+			ProcessHandle childH=null;
+			Optional<ProcessHandle> possibleChild = proc.children().findFirst();
+			if(possibleChild.isPresent()) childH = possibleChild.get();
+			return childH;
+		}
+		return null;
+	}
+	
 	/*.................................................................................................................*/
 	public static Process executeScript(String scriptPath, boolean visibleTerminal){ 
-		//TODO: retool this to use ProcessBuilder
+		//TODO: retool this to use ProcessBuilder?
 		Process proc;
 		try {
 			String[] pathArray = null;
@@ -277,9 +332,10 @@ public class ShellScriptUtil  {
 	}
 
 	/*.................................................................................................................*/
+	/*.................................................................................................................*/
 	/** executes a shell script at "scriptPath".  If runningFilePath is not blank and not null, then Mesquite will create a file there that will
 	 * serve as a flag to Mesquite that the script is running.   */
-	public static boolean executeAndWaitForShell(String scriptPath, String runningFilePath, String runningFileMessage, boolean appendRemoveCommand, String name, String[] outputFilePaths, OutputFileProcessor outputFileProcessor, ShellScriptWatcher watcher, boolean visibleTerminal){
+	public static int executeAndWaitForShell(String scriptPath, String runningFilePath, String runningFileMessage, boolean appendRemoveCommand, String name, String[] outputFilePaths, OutputFileProcessor outputFileProcessor, ProcessWatcher watcher, boolean visibleTerminal){
 		Process proc = null;
 		long[] lastModified=null;
 		boolean stillGoing = true;
@@ -289,7 +345,7 @@ public class ShellScriptUtil  {
 		}
 		try{
 			ShellScriptUtil.setScriptFileToBeExecutable(scriptPath);
-			if (!StringUtil.blank(runningFilePath)) {
+/*			if (ShellScriptUtil.useRunningFile && !StringUtil.blank(runningFilePath)) {
 				if (StringUtil.blank(runningFileMessage))
 					MesquiteFile.putFileContents(runningFilePath, "Script running...", true);
 				else
@@ -298,28 +354,37 @@ public class ShellScriptUtil  {
 					MesquiteFile.appendFileContents(scriptPath, StringUtil.lineEnding() + ShellScriptUtil.getRemoveCommand(MesquiteTrunk.isWindows(), runningFilePath), true);  //append remove command to guarantee that the runningFile is deleted
 				//+StringUtil.lineEnding()+ShellScriptUtil.getExitCommand()
 			}
+*/
 			proc = ShellScriptUtil.executeScript(scriptPath, visibleTerminal);
 
 			if (proc==null) {
 				MesquiteMessage.notifyProgrammer("Process is null in shell script executed by " + name);
-				return false;
+				return shellScriptNullProcess;
 			}
-			else if (!StringUtil.blank(runningFilePath))   // is file at runningFilePath; watch for its disappearance
-				while (MesquiteFile.fileExists(runningFilePath) && stillGoing){
+			else {
+				stillGoing = StringUtil.blank(runningFilePath) || MesquiteFile.fileExists(runningFilePath);
+				while (stillGoing){
 					processOutputFiles (outputFileProcessor, outputFilePaths, lastModified);
 					try {
 						Thread.sleep(sleepTime);
 					}
 					catch (InterruptedException e){
 						MesquiteMessage.notifyProgrammer("InterruptedException in shell script executed by " + name);
-						return false;
+						return shellScriptInterruptedException;
 					}
-					stillGoing = watcher == null || watcher.continueShellProcess(proc);
+					// continue if there is a watcher and it says to continue
+					stillGoing = (watcher != null && watcher.continueProcess(proc));
+					// or, if there is neither a watcher nor is a runningFile being used, then if the process is still alive.
+					stillGoing = stillGoing || (watcher == null &&  proc.isAlive());
+					if (!stillGoing && (StringUtil.notEmpty(runningFilePath) && MesquiteFile.fileExists(runningFilePath)))
+						MesquiteMessage.notifyProgrammer("stillGoing false but running file still exists");
+					stillGoing = stillGoing && (StringUtil.blank(runningFilePath) || MesquiteFile.fileExists(runningFilePath));
 				}
+			}
 		}
 		catch (IOException e){
 			MesquiteMessage.warnProgrammer("IOException in shell script executed by " + name);
-			return false;
+			return shellScriptIOException;
 		}
 		
 		try {  
@@ -330,31 +395,36 @@ public class ShellScriptUtil  {
 		
 		if (outputFileProcessor!=null)
 			outputFileProcessor.processCompletedOutputFiles(outputFilePaths);
-		return true;
+		return shellScriptNoError;
 	}
 
 	/*.................................................................................................................*/
 	/** executes a shell script at "scriptPath".  If runningFilePath is not blank and not null, then Mesquite will create a file there that will
 	 * serve as a flag to Mesquite that the script is running.   */
-	public static boolean executeAndWaitForShell(String scriptPath, String runningFilePath, String runningFileMessage, boolean appendRemoveCommand, String name){
-		return executeAndWaitForShell( scriptPath,  runningFilePath,  runningFileMessage,  appendRemoveCommand,  name, null, null, null, true);
+	public static int executeAndWaitForShell(String scriptPath, String runningFilePath, String runningFileMessage, boolean appendRemoveCommand, String name){
+		return executeAndWaitForShell( scriptPath, runningFilePath,  runningFileMessage,  appendRemoveCommand,  name, null, null, null, true);
 	}
 	/*.................................................................................................................*/
-	public static boolean executeAndWaitForShell(String scriptPath, String name){
+	public static int executeAndWaitForShell(String scriptPath, String name){
 		String runningFilePath = null;
 		if (!StringUtil.blank(scriptPath))
 			runningFilePath=getDefaultRunningFilePath();
 		return executeAndWaitForShell(scriptPath, runningFilePath, null, true, name);
 	}
 
-
 	/*.................................................................................................................*/
-	public static boolean executeLogAndWaitForShell(String scriptPath, String name, String[] outputFilePaths, OutputFileProcessor outputFileProcessor, ShellScriptWatcher watcher){
+	public static int executeAndWaitForShell(String scriptPath){
+		return executeAndWaitForShell( scriptPath,  null, null, false, "anon", null, null, null, false);
+	}
+
+	/*.................................................................................................................*
+	public static boolean executeLogAndWaitForShell(String scriptPath, String name, String[] outputFilePaths, OutputFileProcessor outputFileProcessor, ProcessWatcher watcher){
 		String runningFilePath = null;
 		if (!StringUtil.blank(scriptPath))
 			runningFilePath=getDefaultRunningFilePath();
 		return executeAndWaitForShell(scriptPath, runningFilePath, null, true, name, outputFilePaths, outputFileProcessor, watcher, true);
 	}
+	/*.................................................................................................................*/
 
 
 

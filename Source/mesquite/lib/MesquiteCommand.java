@@ -16,6 +16,8 @@ package mesquite.lib;
 import java.awt.*;
 import java.util.*;
 import mesquite.lib.duties.*;
+import mesquite.lib.ui.MesquiteWindow;
+import mesquite.lib.ui.ProgressIndicator;
 
 /* ��������������������������� commands ������������������������������� */
 /* includes commands,  buttons, miniscrolls
@@ -34,11 +36,12 @@ public class MesquiteCommand  implements Listable, MesquiteListener {
 	private Commandable ownerObject;  
 	String defaultArguments = null;
 	boolean disposed = false;
+	boolean okOnOtherThread = false;
 	boolean letMe = true;
 	public static ListableVector currentThreads;
-	boolean bypassQueue = false;
-	boolean hideInList = false; 
-	boolean suppressLogging = false;
+	public boolean bypassQueue = false;
+	public boolean hideInList = false; 
+	public boolean suppressLogging = false;
 	public static boolean logEverything = false;
 	boolean dontDuplicate = false; //if true then the same command on to the same object will not be put on the queue more than once
 	//to find memory leaks
@@ -49,7 +52,7 @@ public class MesquiteCommand  implements Listable, MesquiteListener {
 	public static Vector classesLinked, classesUnlinked, countsOfClasses; //to detect memory leaks
 	private Logger logger = null;
 	private Logger supplementalLogger = null;
-	
+	public static MesquiteCommand nullCommand;
 	static {
 		currentThreads = new ListableVector(10);
 		if (MesquiteTrunk.checkMemory) {
@@ -79,9 +82,22 @@ public class MesquiteCommand  implements Listable, MesquiteListener {
 		totalCreated++;
 		ID = totalCreated;
 	}
-	
+	public MesquiteCommand clone(){
+		MesquiteCommand c = new MesquiteCommand(commandName, defaultArguments, ownerObject);
+		c.okOnOtherThread = okOnOtherThread;
+		c.letMe = letMe;
+		c.bypassQueue = bypassQueue;
+		c.hideInList = hideInList; 
+		c.suppressLogging = suppressLogging;
+		c.dontDuplicate = dontDuplicate; 
+		return c;
+	}
 	public int getID() {
 		return ID;
+	}
+	
+	public boolean isExecutable(){
+		return (commandName != null && ownerObject != null);
 	}
 	public void setSupplementalLogger(Logger logger){
 		this.supplementalLogger = logger;
@@ -93,6 +109,15 @@ public class MesquiteCommand  implements Listable, MesquiteListener {
 	public void setLogger(Logger logger){
 		this.logger = logger;
 	}
+	
+	MesquiteWindow windowContext = null;
+	public void setWindowContext(MesquiteWindow w){
+		windowContext = w;
+	}
+	public MesquiteWindow getWindowContext(){
+		return windowContext;
+	}
+
 	public String toString(){
 		return "command " + commandName + " to " + ownerObject;
 	}
@@ -110,7 +135,7 @@ public class MesquiteCommand  implements Listable, MesquiteListener {
 			logString +=  " \"" + arguments + "\"";
 		if (ownerObject instanceof Listable)
 			logString = ((Listable)ownerObject).getName() + logString;
-		else
+		else if (ownerObject != null)
 			logString = "[" + ownerObject.getClass().getName() + "]"  + logString;
 		if (separateThread)
 			logString += " -- on separate thread ";
@@ -133,6 +158,8 @@ public class MesquiteCommand  implements Listable, MesquiteListener {
 			MesquiteMessage.warnProgrammer("Warning: Command given to null object (" + commandName + "  " + arguments + ") MesquiteCommand");
 			return null;
 		}
+		if (!okOnOtherThread)
+			MesquiteThread.shouldBeOnMesquiteThread(true);
 		if (StringUtil.blank(arguments))
 			arguments = defaultArguments;
 		if (!suppressLogging || logEverything)
@@ -193,8 +220,9 @@ public class MesquiteCommand  implements Listable, MesquiteListener {
 	}
 	/** Do the command, passing the given arguments.  This will call the commanded object's doCommand method.  Object passed is UI object (if any), such as menu item or button in window, from which command was issued*/
 	public void doItMainThread(String arguments, String uiCallInformation, boolean showWaitCursors, boolean logCommand, Object c, boolean useWizard) {
-		if (dontDuplicate && MainThread.commandAlreadyOnQueue(this))
+		if (dontDuplicate && MainThread.commandAlreadyOnQueue(this)){
 			return;
+		}
 		if (bypassQueue) {
 			doIt(arguments);
 			return;
@@ -272,6 +300,10 @@ public class MesquiteCommand  implements Listable, MesquiteListener {
 		return defaultArguments ;
 	}
 	/** sets whether the command is to be let finish (i.e. a warning is give on quit if pending) */
+	public void setOKOnOtherThread(boolean ok) {
+		this.okOnOtherThread = ok;
+	}
+	/** sets whether the command is to be let finish (i.e. a warning is give on quit if pending) */
 	public void setLetMeFinish(boolean letMe) {
 		this.letMe = letMe;
 	}
@@ -282,6 +314,8 @@ public class MesquiteCommand  implements Listable, MesquiteListener {
 	/** sets whether the command is to bypass the command queue (e.g., for force quit) */
 	public void setQueueBypass(boolean bypass) {
 		bypassQueue = bypass;
+		if (bypass)
+			setOKOnOtherThread(true);
 	}
 	/** sets whether the command is to be suppressed from the command queue if there is already the same command to the same object there*/
 	public void setDontDuplicate(boolean dd) {

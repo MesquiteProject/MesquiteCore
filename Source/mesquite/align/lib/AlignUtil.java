@@ -26,10 +26,13 @@ import mesquite.lib.characters.*;
 import mesquite.lib.duties.*;
 import mesquite.categ.lib.*;
 import mesquite.lib.table.*;
+import mesquite.lib.taxa.Taxa;
+import mesquite.lib.ui.ExtensibleDialog;
+import mesquite.lib.ui.MesquiteWindow;
 
 /* ======================================================================== */
 public class AlignUtil {
-	StringBuffer sb = new StringBuffer();
+	MesquiteStringBuffer sb = new MesquiteStringBuffer();
 	private boolean checksumValid = false;
 	CRC32 checksum = new CRC32();
 	

@@ -26,7 +26,7 @@ public abstract class FileAssistantT extends FileAssistant  {
    	 	return FileAssistantT.class;
    	 }
  	public String getDutyName() {
- 		return "Trees Assistant for File";
+ 		return "Taxa/Trees Assistant for File";
    	 }
 }
 

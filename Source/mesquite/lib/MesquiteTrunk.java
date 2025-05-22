@@ -17,7 +17,17 @@ package mesquite.lib;
 import java.awt.*;
 
 import mesquite.lib.duties.*;
+import mesquite.lib.misc.HPanel;
 import mesquite.lib.simplicity.InterfaceManager;
+import mesquite.lib.ui.HelpSearchManager;
+import mesquite.lib.ui.LinuxGWAThread;
+import mesquite.lib.ui.MesquiteCheckMenuItem;
+import mesquite.lib.ui.MesquiteMenuItem;
+import mesquite.lib.ui.MesquiteMenuSpec;
+import mesquite.lib.ui.MesquiteSubmenu;
+import mesquite.lib.ui.MesquiteSubmenuSpec;
+import mesquite.lib.ui.MesquiteWindow;
+import mesquite.trunk.ApplicationHandler9;
 import mesquite.trunk.PhoneHomeThread;
 import mesquite.trunk.ProjectTreeWindow;
 
@@ -43,7 +53,7 @@ public abstract class MesquiteTrunk extends MesquiteModule
 	public static String tempDirectory ="";
 	public static String[] startupArguments = null;  //ask if flag "-myFlag" is in startupArguments by StringArray.indexOf(MesquiteTrunk.startupArguments, "-myFlag")>=0
 	public static boolean errorReportedDuringRun = false;
-	public static boolean errorReportedToHome = false;
+	public static int errorReportedToHome = 0;
 	public static boolean suppressMenuResponse = false;
 	static {
 		leakFinderObject = new LeakFinder();
@@ -60,48 +70,54 @@ public abstract class MesquiteTrunk extends MesquiteModule
 
 	/** List of standard packages.*/
 	public static String[] standardPackages = new String[]{
-		"minimal",
-		"charMatrices",
-		"basic", 
-		"trees",
-		"categ", 
-		"cont", 
-		"ancstates",
-		"charts",
-		"lists",
-		"io", 
-		"parsimony", 
-		"stochchar", 
-		"genesis"
+			"minimal",
+			"charMatrices",
+			"basic", 
+			"trees",
+			"categ", 
+			"cont", 
+			"ancstates",
+			"charts",
+			"lists",
+			"io", 
+			"parsimony", 
+			"stochchar", 
+			"genesis"
 	};
 	/** List of standard packages.*/
 	public static String[] standardExtras = new String[]{
-		"batchArch",
-		"assoc", 
-		"correl",
-		"coalesce", 
-		"diverse",
-		"rhetenor", 
-		"align",
-		"consensus",
-		"treefarm",
-		"molec",
-		"search", 
-		"distance",
-		"ornamental",
-		"pairwise",
-		"dmanager",
-		"mb",
-		"meristic",
-		"tol"
+			"genomic",
+			"batchArch",
+			"assoc", 
+			"correl",
+			"coalesce", 
+			"diverse",
+			"rhetenor", 
+			"align",
+			"consensus",
+			"treefarm",
+			"molec",
+			"search", 
+			"distance",
+			"ornamental",
+			"pairwise",
+			"dmanager",
+			"mb",
+			"meristic",
+			"tol"
 	};
 	public HelpSearchManager helpSearchManager;
 	public InterfaceManager interfaceManager;
 	//hackathon
 	public static boolean suppressSystemOutPrintln = false;
 	/** Default directory used in Open file dialogs and for consoles' current directory.  Adjusted by minimal.BasicFileCoordinator */
-	public static String suggestedDirectory = null;
+	private static String suggestedDirectory = null;
+	public static String appsDirectory = null;
 	public static String pythonDirectory = null;
+	public static String encapsulatedPathOfExecutable = null;
+	public int pausableLevel = 0;
+	public ApplicationHandler9 applicationHandler9 = null;
+
 	/** Time of startup.*/
 	public static long startupTime;
 
@@ -112,8 +128,9 @@ public abstract class MesquiteTrunk extends MesquiteModule
 	public static MesquiteMenuSpec fileMenu, editMenu, charactersMenu, treesMenu, analysisMenu, windowsMenu, helpMenu, utilitiesMenu;  
 	public static MesquiteSubmenuSpec defaultsSubmenu, setupSubmenu;
 	/** Commands belonging to special menu items owned by the trunk of Mesquite.  */
-	public MesquiteCommand newFileCommand, openFileCommand,  openURLCommand, showLicenseCommand, resetMenusCommand,currentCommandCommand, pendingCommandsCommand,  forceQuitCommand, quitCommand, showAllCommand, closeAllCommand, saveAllCommand;
-	public MesquiteSubmenuSpec openExternalSMS;
+	public MesquiteCommand newFileCommand, openFileCommand, openRecentCommand, clearRecentCommand, openURLCommand, showLicenseCommand, resetMenusCommand, pendingCommandsCommand,  forceQuitCommand, quitCommand, showAllCommand, closeAllCommand, saveAllCommand;
+	//public MesquiteCommand currentCommandCommand;
+	public MesquiteSubmenuSpec openSpecialSubmenuSpec;
 	/** True if MesquiteModule hiring and firing should be logged.*/
 	public static boolean trackActivity = false;
 	/** The name of the current module set loaded */
@@ -126,9 +143,9 @@ public abstract class MesquiteTrunk extends MesquiteModule
 
 	public static int  maxNumMatrixUndoTaxa = 1000;
 	public static int  maxNumMatrixUndoChars = 15000;
+	public static boolean java1_8warned = false;
 
 	public static String logFileName = "Mesquite_Log";
-	public static String recentFilesFileName = "RecentFiles.xml";
 	protected ProjectTreeWindow projectsWindow;
 	public int lastNotice = 0;  //here for phone home system
 	public int lastNoticeForMyVersion = 0;//here for phone home system
@@ -145,20 +162,23 @@ public abstract class MesquiteTrunk extends MesquiteModule
 	public static boolean suppressErrorReporting = false;
 	public static boolean noBeans = false;
 	public static boolean startedFromExecutable = false;
+	public static boolean startedFromFlex2 = false;
 	public static boolean debugMode = false;
+	public static boolean developmentMode = false;
 	public static boolean reportUnregisteredNeeds = false;
 	public static boolean mesquiteExiting = false;
 	public static int snapshotMode = Snapshot.SNAPALL;
 
-
-
+	public static ListableVector recentFiles = new ListableVector();
+	public static String recentFilesFileName = "RecentFiles.txt";
+	public static int maxNumRecentFiles = 20;
 
 	//true if Mesquite should check website for notices
 	public static boolean phoneHome = true;
-	public static boolean reportErrors = true;
 	public static boolean reportUse = true;
 	public static PhoneHomeThread phoneHomeThread;
-	
+	public static LinuxGWAThread linuxGWAThread;
+
 	/** The panel in which all Mesquite "windows" fit if run as applet embedded in page.*/
 	public Panel embeddedPanel;
 
@@ -188,8 +208,7 @@ public abstract class MesquiteTrunk extends MesquiteModule
 	/** Placed here so that MesquiteModules are able to request that the trunk module of Mesquite
 	open a new file */
 	public abstract MesquiteProject newProject(String pathname, int code, boolean actAsScriptingRegardless);
-	
-	
+
 	/*.................................................................................................................*/
 	public abstract MesquiteProject openOrImportFileHandler(String path, String completeArguments, Class importerSubclass);
 	/*.................................................................................................................*/
@@ -218,6 +237,112 @@ public abstract class MesquiteTrunk extends MesquiteModule
 		return projects;
 	}
 	/*.................................................................................................................*/
+	/* Recent file system. A ListableVector holds file records each of which is represented by a MesquiteFile.
+	 * If an active file, it is the actual object serving in the project.
+	 * If a former file, it is just a record of the directory and filename
+	 * */
+	/** Save recent files */
+	public static void saveRecentFiles(){
+		MesquiteStringBuffer sb = new MesquiteStringBuffer(100);
+		for (int i=recentFiles.size()-1; i>=0; i--) { //save in reverse order, so that most recent reappears on top
+			MesquiteFile stored = (MesquiteFile)recentFiles.elementAt(i);
+			if (stored.okForRecentRereading)
+				sb.append(stored.getDirectoryName() + "\t" + stored.getFileName()+ "\n");
+		}
+		MesquiteFile.putFileContents(MesquiteModule.prefsDirectory + MesquiteFile.fileSeparator+ recentFilesFileName, sb, false);
+	}
+	/** Save recent files */
+	public static void clearRecentFiles(boolean keepOpenFiles){
+		for (int i=recentFiles.size()-1; i>=0; i--) { //save in reverse order, so that most recent reappears on top
+			MesquiteFile stored = (MesquiteFile)recentFiles.elementAt(i);
+			if (MesquiteTrunk.getProjectList().findFile(stored.getPath())== null)
+				recentFiles.removeElementAt(i, false);
+		}
+		saveRecentFiles();
+	}
+	/** Clean recent files of names of files that can't be reopened*/
+	public static void cleanRecentFiles(){
+		for (int i=recentFiles.size()-1; i>=0; i--) { //save in reverse order, so that most recent reappears on top
+			MesquiteFile stored = (MesquiteFile)recentFiles.elementAt(i);
+			if (!stored.okForRecentRereading)
+				recentFiles.removeElementAt(i, false);
+		}
+		saveRecentFiles();
+	}
+	/** Read recent files */
+	public void readRecordOfRecentFiles(){
+		if (!MesquiteFile.fileExists(MesquiteModule.prefsDirectory + MesquiteFile.fileSeparator+ recentFilesFileName))
+			return;
+		String[] rfs = MesquiteFile.getFileContentsAsStrings(MesquiteModule.prefsDirectory + MesquiteFile.fileSeparator+ recentFilesFileName);
+		if (rfs == null)
+			return;
+		for (int i=0; i<rfs.length; i++) {
+			String[] rfstring = StringUtil.delimitedTokensToStrings(rfs[i], '\t');
+			if (rfstring != null && rfstring.length>1) {
+				MesquiteFile rf = new MesquiteFile(rfstring[0], rfstring[1]);
+				rf.okForRecentRereading = true;
+				recentFileRecord(rf, false);
+			}
+		}
+	}
+
+	/** Returns a recent file record that matches the incoming file */
+	public static MesquiteFile findRecentFile(MesquiteFile file, boolean objectIdentity){
+		if (file == null)
+			return null;
+		for (int i=0; i<recentFiles.size(); i++) {
+			MesquiteFile stored = (MesquiteFile)recentFiles.elementAt(i);
+			if (stored == file) 
+				return file;
+			if (stored.getPath()!= null && stored.getPath().equalsIgnoreCase(file.getPath()))
+				return stored;
+		}
+		return null;
+	}
+	/*.................................................................................................................*/
+	/** Records new or newly opened file among Recent Files */
+	public static void recentFileRecord(MesquiteFile file, boolean saveToPrefs){
+		if (file.getFileName() == null) //  !file.okForRecentRereading is ok; just not saved to prefs
+			return;
+		MesquiteFile stored = findRecentFile(file, false);
+		if (stored==null) {
+			recentFiles.insertElementAt(file, 0, false);
+			if (recentFiles.size()>maxNumRecentFiles)
+				recentFiles.removeElementAt(recentFiles.size()-1, false);
+		}
+		else {
+			recentFiles.removeElement(stored, false);
+			recentFiles.insertElementAt(file, 0, false); //move to first, but the incoming copy, in case the old is prior deal record
+		}
+		if (saveToPrefs)
+			saveRecentFiles();
+	}
+	/*.................................................................................................................*/
+	/** Records change in Recent Files */
+	public static void recentFileChange(MesquiteFile file){
+		MesquiteFile stored = findRecentFile(file, true);
+		if (stored==null) {
+			if (developmentMode)
+				System.err.println("Recent File changed but not found!!!");
+		}
+		else {
+			if (stored != null)
+				recentFiles.removeElement(stored, false);
+			recentFiles.insertElementAt(stored, 0, false); //move to first
+		}
+		saveRecentFiles();
+	}
+	/*.................................................................................................................*/
+	/** Records new or newly opened file among Recent Files */
+	public static ListableVector getRecentFiles(){
+		return recentFiles;
+	}
+	/*.................................................................................................................*/
+	/** Records new or newly opened file among Recent Files */
+	public static String[] getRecentFileNames(){
+		return recentFiles.getStrings();
+	}
+	/*.................................................................................................................*/
 	public static Thread startupShutdownThread = null;
 	public boolean isStartupShutdownThread(Thread t) {
 		return t == startupShutdownThread;
@@ -238,8 +363,9 @@ public abstract class MesquiteTrunk extends MesquiteModule
 	}
 	/*.................................................................................................................*/
 	public static boolean isMacOS(){
-		return !StringUtil.blank(System.getProperty("mrj.version"));
+		return System.getProperty("os.name").startsWith("Mac OS X") ||  !StringUtil.blank(System.getProperty("mrj.version"));
 	}
+	
 	public static boolean isMacOSX(){
 		return System.getProperty("os.name").startsWith("Mac OS X");
 	}
@@ -280,81 +406,120 @@ public abstract class MesquiteTrunk extends MesquiteModule
 	public static boolean isJavaGreaterThanOrEqualTo(double queryVersion){
 		return getJavaVersionAsDouble() >= queryVersion;
 	}
-	
+
 	/*.................................................................................................................*/
-	public static int getOSXVersion() {
-	    String osVersion = System.getProperty("os.version");
-	    String[] fragments = osVersion.split("\\.");
+	public static boolean isAarch64(String archName){
+		if (archName == null)
+			return false;
+		return archName.indexOf("aarch64")>=0 || archName.indexOf("arm64")>=0;
+	} 	
+	/*.................................................................................................................*/
+	public static boolean isX86(String archName){
+		if (archName == null)
+			return false;
+		return archName.indexOf("x86")>=0 || archName.indexOf("amd64")>=0;
+	} 
 
-	    // sanity check the "10." part of the version
-	    if (!fragments[0].equals("10")) return -1;
-	    if (fragments.length < 2) return -1;
-
-	    try {
-	        int minorVers = Integer.parseInt(fragments[1]);
-	        return minorVers;
-	    } catch (NumberFormatException e) {
-	    }
-	    return -1;
+	/*.................................................................................................................*/
+	public static boolean isAarch64(){
+		return isAarch64(System.getProperty("os.arch"));
+	} 	
+	public static boolean isX86(){
+		return isX86(System.getProperty("os.arch"));
+	} 	
+	/*.................................................................................................................*/
+	public static boolean isMacOSXMajorVersion10() {
+		return getOSXMajorVersion()==10;
 	}
 	/*.................................................................................................................*/
-	public static boolean isMacOSXPanther(){
+	public static int getOSXMajorVersion() {
+		String osVersion = System.getProperty("os.version");
+		String[] fragments = osVersion.split("\\.");
+
+		try {
+			int majorVersion = Integer.parseInt(fragments[0]);
+			return majorVersion;
+		} catch (NumberFormatException e) {
+		}
+		return -1;
+	}
+	/*.................................................................................................................*/
+	public static int getOSXMinorVersion() {
+		String osVersion = System.getProperty("os.version");
+		String[] fragments = osVersion.split("\\.");
+
+		if (fragments.length < 2) return -1;
+
+		try {
+			int minorVers = Integer.parseInt(fragments[1]);
+			return minorVers;
+		} catch (NumberFormatException e) {
+		}
+		return -1;
+	}
+	/*.................................................................................................................*/
+	public static boolean isMacOSX10MinorVersion(int minorVersion){
 		String mrj = System.getProperty("mrj.version");
 		if (mrj == null)
 			return false;
-		return System.getProperty("os.name").startsWith("Mac OS X") && (getOSXVersion()==3);
+		return System.getProperty("os.name").startsWith("Mac OS X") && (isMacOSXMajorVersion10() && getOSXMinorVersion()==minorVersion);
+	}
+	/*.................................................................................................................*/
+	public static boolean isMacOSXPanther(){
+		return isMacOSX10MinorVersion(3);
 	}
 	/*.................................................................................................................*/
 	public static boolean isMacOSXPanther33(){
 		String mrj = System.getProperty("mrj.version");
 		if (mrj == null)
 			return false;
-		return System.getProperty("os.name").startsWith("Mac OS X") && (getOSXVersion()==3) && mrj.startsWith("3.3");
+		return System.getProperty("os.name").startsWith("Mac OS X") && (isMacOSXMajorVersion10() && getOSXMinorVersion()==3) && mrj.startsWith("3.3");
 	}
 	/*.................................................................................................................*/
 	public static boolean isMacOSXAfterJaguarRunning33(){
 		String mrj = System.getProperty("mrj.version");
 		if (mrj == null)
 			return false;
-		return System.getProperty("os.name").startsWith("Mac OS X") && (getOSXVersion()>=3) && mrj.startsWith("3.3");
+		return System.getProperty("os.name").startsWith("Mac OS X") && 
+				(getOSXMajorVersion() > 10 || (isMacOSXMajorVersion10() && getOSXMinorVersion()>=3)) && mrj.startsWith("3.3");
 	} 	
 	/*.................................................................................................................*/
 	public static boolean isMacOSXBeforePanther(){
 		String mrj = System.getProperty("mrj.version");
 		if (mrj == null)
 			return false;
-		return System.getProperty("os.name").startsWith("Mac OS X") && (getOSXVersion()<3);
+		return System.getProperty("os.name").startsWith("Mac OS X") &&  (isMacOSXMajorVersion10() && getOSXMinorVersion()<3);
 	} 	
 	/*.................................................................................................................*/
 	public static boolean isMacOSXBeforeSnowLeopard(){
 		String mrj = System.getProperty("mrj.version");
 		if (mrj == null)
 			return false;
-		return System.getProperty("os.name").startsWith("Mac OS X") && (getOSXVersion()<3);
+		return System.getProperty("os.name").startsWith("Mac OS X") &&  (isMacOSXMajorVersion10() && getOSXMinorVersion()<6);
 	} 	
 	/*.................................................................................................................*/
 	public static boolean isMacOSXLeopard(){
-		return System.getProperty("os.name").startsWith("Mac OS X") && (getOSXVersion()==5);
+		return isMacOSX10MinorVersion(5);
 	} 	
 	/*.................................................................................................................*/
 	public static boolean isMacOSXYosemite(){
-		return System.getProperty("os.name").startsWith("Mac OS X") && (getOSXVersion()==10);
+		return isMacOSX10MinorVersion(10);
 	} 	
 	/*.................................................................................................................*/
 	public static boolean isMacOSXYosemiteOrLater(){
-		return System.getProperty("os.name").startsWith("Mac OS X") && (getOSXVersion()>=10);
-//		return System.getProperty("os.name").startsWith("Mac OS X") && (System.getProperty("os.version").indexOf("10.10")>=0 || System.getProperty("os.version").indexOf("10.11")>=0 || System.getProperty("os.version").indexOf("10.12")>=0|| System.getProperty("os.version").indexOf("10.13")>=0);
+		return System.getProperty("os.name").startsWith("Mac OS X") &&  (getOSXMajorVersion()>10 ||  getOSXMinorVersion()>=10);
+		//		return System.getProperty("os.name").startsWith("Mac OS X") && (System.getProperty("os.version").indexOf("10.10")>=0 || System.getProperty("os.version").indexOf("10.11")>=0 || System.getProperty("os.version").indexOf("10.12")>=0|| System.getProperty("os.version").indexOf("10.13")>=0);
 	} 	
 	/*.................................................................................................................*/
 	public static boolean isMacOSXCatalinaOrLater(){
-		return System.getProperty("os.name").startsWith("Mac OS X") && (getOSXVersion()>=15);
+		return System.getProperty("os.name").startsWith("Mac OS X") && (getOSXMajorVersion()>10 ||  getOSXMinorVersion()>=15);
 	} 	
 	/*.................................................................................................................*/
 	public static boolean isMacOSXJaguar(){
 		String mrj = System.getProperty("mrj.version");
 		if (mrj == null)
 			return false;
-		return System.getProperty("os.name").startsWith("Mac OS X") && (getOSXVersion()==2) && mrj.startsWith("3.3");
+		return System.getProperty("os.name").startsWith("Mac OS X") &&  (isMacOSXMajorVersion10() && getOSXMinorVersion()==2) && mrj.startsWith("3.3");
 	}
 	public static boolean isLinux(){
 		return System.getProperty("os.name").indexOf("Linux")>=0 || System.getProperty("os.name").indexOf("linux")>=0 || System.getProperty("os.name").indexOf("LINUX")>=0;
@@ -376,6 +541,14 @@ public abstract class MesquiteTrunk extends MesquiteModule
 	/*.................................................................................................................*/
 	public void setConfiguration(String s){
 		configuration = s;
+	}
+	/*.................................................................................................................*/
+	public static void setSuggestedDirectory(String s){
+		suggestedDirectory = s;
+	}
+	/*.................................................................................................................*/
+	public static String getSuggestedDirectory(){
+		return suggestedDirectory;
 	}
 	/*.................................................................................................................*/
 	public abstract void substantivePrereleasesFound();

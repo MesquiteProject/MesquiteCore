@@ -14,42 +14,35 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
 package mesquite.align.AlignSequences;
 /*~~  */
 
-import java.util.*;
-import java.lang.*;
-import java.io.*;
-import java.awt.*;
-import java.awt.event.*;
 
 import mesquite.lib.*;
 import mesquite.lib.characters.*;
 import mesquite.lib.duties.*;
 import mesquite.categ.lib.*;
 import mesquite.lib.table.*;
+import mesquite.lib.ui.MesquiteMenuItemSpec;
+import mesquite.lib.ui.MesquiteWindow;
 import mesquite.align.lib.*;
 
 /* ======================================================================== */
-public class AlignSequences extends MolecDataEditorInit implements CalculationMonitor, SeparateThreadStorage {
+/** This class duplicates part of the function of MultipleAlignService in the Alter menu, but appears in the Matrix menu */
+public class AlignSequences extends MolecDataEditorInit { //implements CalculationMonitor, SeparateThreadStorage {
 	public void getEmployeeNeeds(){  //This gets called on startup to harvest information; override this and inside, call registerEmployeeNeed
 		EmployeeNeed e2 = registerEmployeeNeed(MultipleSequenceAligner.class, getName() + " needs a module to calculate alignments.",
-		"The sequence aligner is chosen in the Align Multiple Sequences submenu of the Matrix menu");
+		"The sequence aligner is chosen in the Align Sequences or Selected Block submenu");
 	}
-//	boolean separateThread = AlignMultipleSequencesMachine.separateThread;
+
 	MolecularData data ;
-	MultipleSequenceAligner aligner;
-	boolean jobDone = false;
-	boolean separateThread = false;
-	
-	AlignMultipleSequencesMachine alignmentMachine;
 
 	MesquiteTable table;
 
-	MesquiteSubmenuSpec mss= null;
+	MesquiteMenuItemSpec mss= null;
 	
 	
 	/*.................................................................................................................*/
 	public boolean startJob(String arguments, Object condition, boolean hiredByName) {
-		mss = addSubmenu(null, "Align Multiple Sequences", makeCommand("doAlign",  this));
-		mss.setList(MultipleSequenceAligner.class);
+		mss = addModuleMenuItems(null, makeCommand("doAligner",  this), mesquite.align.AMultipleAlignService.AMultipleAlignService.class);
+	
 		return true;
 	}
 	/*.................................................................................................................*/
@@ -66,7 +59,8 @@ public class AlignSequences extends MolecDataEditorInit implements CalculationMo
 		}
 		this.table = table;
 		this.data = (MolecularData)data;
-		mss.setCompatibilityCheck(data.getStateClass());
+		if (mss != null)
+			mss.setCompatibilityCheck(data.getStateClass());
 		resetContainingMenuBar();
 
 	}
@@ -76,50 +70,35 @@ public class AlignSequences extends MolecDataEditorInit implements CalculationMo
 	}
 	/*.................................................................................................................*/
 	public Object doCommand(String commandName, String arguments, CommandChecker checker) {
-		if (checker.compare(this.getClass(), "Hires module to align sequences", "[name of module]", commandName, "doAlign")) {
-			if (table!=null && data !=null){
-				if (data.isEditInhibited()){
-					discreetAlert("This matrix is marked as locked against editing. To unlock, uncheck the menu item Matrix>Current Matrix>Editing Not Permitted");
-					return null;
+		if (checker.compare(this.getClass(), "Hires module to align sequences", "[name of module]", commandName, "doAligner")) {
+			DataAlterer tda= (DataAlterer)hireNamedEmployee(DataAlterer.class,  arguments);
+			if (tda!=null) {
+				MesquiteWindow w = table.getMesquiteWindow();
+				UndoReference undoReference = new UndoReference();
+				AlteredDataParameters alteredDataParameters = new AlteredDataParameters();
+				if (MesquiteTrunk.debugMode)
+					logln("Memory available before data alterer invoked: " + MesquiteTrunk.getMaxAvailableMemory());
+				int a = tda.alterData(data, table, undoReference, alteredDataParameters);
+				if (MesquiteTrunk.debugMode)
+					logln("Memory available after data alterer invoked: " + MesquiteTrunk.getMaxAvailableMemory());
+
+				if (a== ResultCodes.SUCCEEDED) {
+					table.repaintAll();
+					Notification notification = new Notification(MesquiteListener.DATA_CHANGED, alteredDataParameters.getParameters(), undoReference);
+					if (alteredDataParameters.getSubcodes()!=null)
+						notification.setSubcodes(alteredDataParameters.getSubcodes());
+					data.notifyListeners(this, notification);
 				}
-				aligner= (MultipleSequenceAligner)hireNamedEmployee(MultipleSequenceAligner.class, arguments);
-				if (aligner!=null) {
-					boolean a = alterData(data, table);
-					if (a) {
-						table.repaintAll();
-						data.notifyListeners(this, new Notification(MesquiteListener.DATA_CHANGED));
-						data.notifyInLinked(new Notification(MesquiteListener.DATA_CHANGED));
-					}
-					if (!separateThread) {
-						fireEmployee(aligner);
-					}
-				}
+				fireEmployee(tda); //Note: this assumes the alterer completes the job, i.e. is on same thread
+
 			}
-		}
+		}		
 		else
 			return  super.doCommand(commandName, arguments, checker);
 		return null;
 	}
 	
-	public void calculationCompleted (Object obj) {
-		if (obj.equals(alignmentMachine))
-			fireEmployee(aligner);
-	}
-	public void setSeparateThread(boolean separateThread) {
-		this.separateThread = separateThread;
-	}
-
-/*
-	public void setSeparateThread(boolean separateThread){
-		this.separateThread=separateThread;
-	}
-*/
-	/*.................................................................................................................*/
-	/** Called to alter data in those cells selected in table*/
-	public boolean alterData(CharacterData data, MesquiteTable table){
-		alignmentMachine = new AlignMultipleSequencesMachine(this,this, this,aligner);
-		return alignmentMachine.alignData(data,table);
-	}
+	
 	/*.................................................................................................................*/
 	public boolean showCitation() {
 		return false;

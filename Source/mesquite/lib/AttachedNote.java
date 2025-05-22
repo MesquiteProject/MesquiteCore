@@ -16,6 +16,10 @@ package mesquite.lib;
 import java.awt.*;
 import java.util.*;
 
+import mesquite.lib.misc.AttachedNotesVector;
+import mesquite.lib.ui.ImageLabel;
+import mesquite.lib.ui.MesquiteImage;
+
 /*
 time mod and created should not be allowed to be 0!
 /* ======================================================================== */

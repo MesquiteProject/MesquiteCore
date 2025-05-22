@@ -21,6 +21,16 @@ import java.util.*;
 import java.io.*;
 import mesquite.lib.*;
 import mesquite.lib.duties.*;
+import mesquite.lib.tree.Tree;
+import mesquite.lib.tree.TreeDisplay;
+import mesquite.lib.tree.TreeDisplayDrawnExtra;
+import mesquite.lib.tree.TreeDisplayExtra;
+import mesquite.lib.ui.Legend;
+import mesquite.lib.ui.MesquitePopup;
+import mesquite.lib.ui.MesquiteSubmenuSpec;
+import mesquite.lib.ui.MesquiteTool;
+import mesquite.lib.ui.MesquiteWindow;
+import mesquite.lib.ui.StringInABox;
 
 
 public class TreeLegendMaker extends TreeDisplayAssistantMA  {

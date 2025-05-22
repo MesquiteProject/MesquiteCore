@@ -22,7 +22,10 @@ import mesquite.lib.characters.*;
 import mesquite.lib.duties.*;
 
 /* ======================================================================== */
-public class FuseTMSequences extends FileAssistantM {
+public class FuseTMSequences extends FileAssistantFM {
+	public boolean loadModule(){
+		return false;
+	}
 	/*.................................................................................................................*/
 	public boolean startJob(String arguments, Object condition, boolean hiredByName) {
 		includeFuse();
@@ -48,9 +51,9 @@ public class FuseTMSequences extends FileAssistantM {
 
 		discreetAlert( message);
 		MesquiteModule fCoord = getFileCoordinator();
-		MesquiteCommand command = makeCommand("includeFile", fCoord);
-
-		command.doItMainThread(StringUtil.argumentMarker + "fuseTaxaCharBlocks", null, this);
+		MesquiteCommand command = makeCommand("includeFileFile", fCoord); //this should use the safer includeFileFuse
+		command.doItMainThread(StringUtil.argumentMarker + "fuseTaxaCharBlocks " +StringUtil.argumentMarker + "autodeleteDuplicateOrSubsetTaxa "+ StringUtil.argumentMarker + "justTheseBlocks.TAXA.DATA.CHARACTERS", null, this);
+		
 		getProject().showProjectWindow();
 		iQuit();
 

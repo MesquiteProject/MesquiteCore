@@ -60,6 +60,7 @@ public abstract class FileCoordinator extends MesquiteModule {
 	/** make a new blank MesquiteProject without user input. */
 	public abstract MesquiteFile createBlankProject();
 	
+	public abstract void showBasicWindows();
 	public abstract void refreshGraphicsProjectWindow();
 	public abstract void refreshProjectWindow();
 	public abstract void refreshInProjectWindow(FileElement element);
@@ -76,6 +77,8 @@ public abstract class FileCoordinator extends MesquiteModule {
 	/** make a MesquiteProject, using a module. */
 	public abstract MesquiteFile readProjectGeneral(String arguments);
 
+	public abstract void includeFile(String pathName, String importer, String arguments, int fileType, String fileDescriptionText); //make new/read new linked file
+	public abstract void includeFile(String pathName, Class importer, String arguments, int fileType, String fileDescriptionText); //make new/read new linked file
 	public abstract void wrapUpAfterFileRead(MesquiteFile f);  //call after read() methods of file interpreters called outside context of the file Coordinator's project/file reading
 	public abstract MesquiteFile getNEXUSFileForReading(String arguments, String message);
 

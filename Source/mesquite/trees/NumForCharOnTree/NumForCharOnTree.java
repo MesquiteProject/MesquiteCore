@@ -18,6 +18,10 @@ import java.awt.*;
 import mesquite.lib.*;
 import mesquite.lib.characters.*;
 import mesquite.lib.duties.*;
+import mesquite.lib.taxa.Taxa;
+import mesquite.lib.tree.MesquiteTree;
+import mesquite.lib.tree.Tree;
+import mesquite.lib.ui.MesquiteSubmenuSpec;
 
 /* ======================================================================== */
 public class NumForCharOnTree extends NumberForCharacter implements NumberForCharacterIncr, NumForCharTreeDep {
@@ -116,6 +120,7 @@ public class NumForCharOnTree extends NumberForCharacter implements NumberForCha
 		return temp;
 	}
 	/*.................................................................................................................*/
+	MesquiteInteger pos = new MesquiteInteger(0);
 	public Object doCommand(String commandName, String arguments, CommandChecker checker) {
 		if (checker.compare(this.getClass(), "Sets the source of trees", "[name of tree source module]", commandName, "setTreeSource")) {
 			TreeSource temp = (TreeSource)replaceEmployee(TreeSource.class, arguments, "Source of trees (for Character Value)", treeTask);
@@ -137,7 +142,7 @@ public class NumForCharOnTree extends NumberForCharacter implements NumberForCha
 
 		}
 		else if (checker.compare(this.getClass(), "Sets the tree to be the i'th one from the current tree source", "[number of tree to be used]", commandName, "setTreeNumber")) {
-			int ic = MesquiteInteger.fromFirstToken(arguments, stringPos);
+			int ic = MesquiteInteger.fromFirstToken(arguments, pos);
 			if (MesquiteInteger.isCombinable(ic)) {
 				currentTree = ic;
 				parametersChanged();

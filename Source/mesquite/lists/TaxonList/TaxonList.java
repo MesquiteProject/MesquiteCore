@@ -22,6 +22,12 @@ import mesquite.lib.characters.CharacterData;
 import mesquite.lib.duties.*;
 import mesquite.lists.lib.*;
 import mesquite.lib.table.*;
+import mesquite.lib.taxa.Taxa;
+import mesquite.lib.taxa.TaxaSelectionSet;
+import mesquite.lib.ui.AlertDialog;
+import mesquite.lib.ui.ColorDistribution;
+import mesquite.lib.ui.MesquiteSubmenuSpec;
+import mesquite.lib.ui.MesquiteWindow;
 
 /* ======================================================================== */
 public class TaxonList extends ListModule {
@@ -100,7 +106,7 @@ public class TaxonList extends ListModule {
 			mss2.setList(TaxonUtility.class);
 			MesquiteSubmenuSpec mss3 = addSubmenu(null, "Taxon Names", MesquiteModule.makeCommand("doNames",  this));
 			mss3.setList(TaxonNameAlterer.class);
-			addMenuItem( "Save selected as set...", makeCommand("saveSelectedRows", this));
+			addMenuItem( "Save selected as taxon set...", makeCommand("saveSelectedRows", this));
 			addMenuSeparator();
 
 			/* default columns*
@@ -110,10 +116,12 @@ public class TaxonList extends ListModule {
 				assistant.setUseMenubar(false);
 			}
 			/* removed as default v. 2. 01; returned for v. 2. 5 */
-			TaxonListAssistant assistant = (TaxonListAssistant)hireNamedEmployee(TaxonListAssistant.class, StringUtil.tokenize("#TaxonListCurrPartition"));
-			if (assistant!= null){
-				((TaxonListWindow)window).addListAssistant(assistant);
-				assistant.setUseMenubar(false);
+			if (!MesquiteThread.isScripting()) {
+				TaxonListAssistant assistant = (TaxonListAssistant)hireNamedEmployee(TaxonListAssistant.class, StringUtil.tokenize("#TaxonListCurrPartition"));
+				if (assistant!= null){
+					((TaxonListWindow)window).addListAssistant(assistant);
+					assistant.setUseMenubar(false);
+				}
 			}
 			/*	*/
 			resetContainingMenuBar();
@@ -359,13 +367,11 @@ class TaxonListWindow extends ListWindow {
 			setTitle("Taxa \"" + taxa.getName() + "\""); 
 	}
 	/*...............................................................................................................*/
-	NameReference colorNameRef = NameReference.getNameReference("color");
 	public void setRowNameColor(Graphics g, int row){
 		//		g.setColor(Color.black);
 		if (taxa!=null ) {
-			long c = taxa.getAssociatedLong(colorNameRef, row);
-			if (MesquiteLong.isCombinable(c))
-				g.setColor(ColorDistribution.getStandardColor((int)c));
+			if (taxa.getColor(row) != null)
+				g.setColor(taxa.getColor(row));
 		}
 	}
 	/*.................................................................................................................*/
@@ -462,11 +468,11 @@ class TaxonListWindow extends ListWindow {
 	public String getItemTypeName(){
 		return "Taxon";
 	}
-	public void setRowName(int row, String name){
+	public void setRowName(int row, String name, boolean update){
 		if (taxa!=null) {
 			String warning = taxa.checkNameLegality(row, name);
 			if (warning == null)
-				taxa.setTaxonName(row, name);
+				taxa.setTaxonName(row, name, update);
 			else if (ownerModule!=null)
 				ownerModule.discreetAlert( warning);
 		}

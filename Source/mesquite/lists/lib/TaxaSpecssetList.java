@@ -21,6 +21,9 @@ import mesquite.lib.characters.ProbabilityModelSet;
 import mesquite.lib.duties.*;
 import mesquite.lib.*;
 import mesquite.lib.table.*;
+import mesquite.lib.taxa.Taxa;
+import mesquite.lib.ui.ListDialog;
+import mesquite.lib.ui.MesquiteWindow;
 
 
 /* ======================================================================== */
@@ -80,10 +83,19 @@ public abstract class TaxaSpecssetList extends ListModule {
 			super.endJob();
 	}
 	/*.................................................................................................................*/
-	/* following required by ListModule*/
-  	 public Object getMainObject(){
-  	 	return taxa;
+	/* following to help subtypes make new specssets*/
+  	 public Object getTaxa(){
+  	 	return taxa; 
   	 }
+ 	/*.................................................................................................................*/
+ 	/* following required by ListModule*/
+   	 public Object getMainObject(){
+  	 	if (taxa==null)
+  	 		return null;
+  	 	else
+  	 		return taxa.getSpecSetsVector(getItemType());
+   	 }
+   	 
   	 public int getNumberOfRows(){
   	 	if (taxa==null)
   	 		return 0;
@@ -133,13 +145,13 @@ public abstract class TaxaSpecssetList extends ListModule {
 	   	 		taxa = t;
 	   	 		//if (taxa!=null)
 	   	 		//	taxa.addListener(this);
-    	 			((ListWindow)getModuleWindow()).setCurrentObject(taxa);
+    	 			((ListWindow)getModuleWindow()).setCurrentObject(taxa.getSpecSetsVector(getItemType()));
     	 			((ListWindow)getModuleWindow()).repaintAll();
 	   	 		return taxa;
    	 		}
     	 	}
     	 	else if (checker.compare(this.getClass(), "Returns the current taxa block", null, commandName, "getTaxa")) {
-    	 		return ((ListWindow)getModuleWindow()).getCurrentObject();
+    	 		return getTaxa();
     	 	}
     	 	else if (checker.compare(this.getClass(), "Stores the current specification set", null, commandName, "storeCurrent")) {
     	 		if (taxa!=null){
@@ -167,7 +179,7 @@ public abstract class TaxaSpecssetList extends ListModule {
    	 		}
     	 		//return ((ListWindow)getModuleWindow()).getCurrentObject();
     	 	}
-    	 	else if (checker.compare(this.getClass(), "Replaces a stored character specification set by the current one", null, commandName, "replaceWithCurrent")) {
+    	 	else if (checker.compare(this.getClass(), "Replaces a stored taxon set by the current one", null, commandName, "replaceWithCurrent")) {
     	 		if (taxa!=null){
     	 			MesquiteTable t = ((ListWindow)getModuleWindow()).getTable();
     	 			int numRows = t.numRowsSelected();

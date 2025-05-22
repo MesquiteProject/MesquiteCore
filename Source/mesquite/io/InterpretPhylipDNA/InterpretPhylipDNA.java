@@ -19,6 +19,7 @@ import java.awt.*;
 import mesquite.lib.*;
 import mesquite.lib.characters.*;
 import mesquite.lib.duties.*;
+import mesquite.lib.taxa.Taxa;
 import mesquite.categ.lib.*;
 import mesquite.io.lib.*;
 
@@ -60,7 +61,7 @@ public class InterpretPhylipDNA extends InterpretPhylip {
 		 return charTask.newCharacterData(taxa, 0, DNAData.DATATYPENAME);  //
 	}
 /*.................................................................................................................*/
-	public void appendPhylipStateToBuffer(CharacterData data, int ic, int it, StringBuffer outputBuffer){
+	public void appendPhylipStateToBuffer(CharacterData data, int ic, int it, MesquiteStringBuffer outputBuffer){
 		data.statesIntoStringBuffer(ic, it, outputBuffer, false);
 	}
 /*.................................................................................................................*/

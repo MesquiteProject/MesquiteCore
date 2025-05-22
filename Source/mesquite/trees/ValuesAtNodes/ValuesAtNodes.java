@@ -17,6 +17,15 @@ import java.util.*;
 import java.awt.*;
 import mesquite.lib.*;
 import mesquite.lib.duties.*;
+import mesquite.lib.taxa.Taxa;
+import mesquite.lib.tree.MesquiteTree;
+import mesquite.lib.tree.TDLegendWithColors;
+import mesquite.lib.tree.Tree;
+import mesquite.lib.tree.TreeDecorator;
+import mesquite.lib.tree.TreeDisplay;
+import mesquite.lib.tree.TreeDisplayDrawnExtra;
+import mesquite.lib.tree.TreeDisplayExtra;
+import mesquite.lib.ui.MesquiteSubmenuSpec;
 
 /* ======================================================================== */
 public class ValuesAtNodes extends TreeDisplayAssistantMA implements LegendHolder {
@@ -126,7 +135,7 @@ public class ValuesAtNodes extends TreeDisplayAssistantMA implements LegendHolde
 		return false;
 	}
 	public void employeeQuit(MesquiteModule m){
-		if(m==displayTask)
+	//	if(m==displayTask)
 			iQuit();
 	}
 	/*.................................................................................................................*/

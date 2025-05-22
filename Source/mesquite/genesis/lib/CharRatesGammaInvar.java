@@ -18,6 +18,8 @@ import java.util.*;
 import mesquite.lib.*;
 import mesquite.lib.characters.*;
 import mesquite.lib.duties.*;
+import mesquite.lib.ui.DoubleField;
+import mesquite.lib.ui.ExtensibleDialog;
 import mesquite.categ.lib.*;
 import java.lang.Math.*;
 import JSci.maths.statistics.*;

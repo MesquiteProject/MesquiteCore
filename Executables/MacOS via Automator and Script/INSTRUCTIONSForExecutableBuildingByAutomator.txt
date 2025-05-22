@@ -1,35 +1,133 @@
 Here is the procedure used to build the script-based Flex executable (initially made for Catalina and above).
-LAST USE AND VERSION August 2021
+LAST USE AND VERSION December 2024
 
-================== BUILDING EXECUTABLE
+================== BUILDING EXECUTABLE ============================================
 Building an executable with Automator.
 
 These are the task that the Automator app completes (see screenshot automatorForMesquiteExecutable.png):
 
-(1) remembers files dropped on it (seems to get only 1!)
-(2) makes Mesquite_Support_Files a new folder (if it doesn't exist) [to hold the file of standard out]
-(3) retrieves paths to file dropped on it, and passes into next stage
-(4) Applescript figures out where itself is (i.e. the executable), to figure out the path to Mesquite.jar. Also gets path to dropped file. Also reads text files indicating amount of memory to use, path to Java, and any Java flags to add. Composes these together into a string that can be easily parsed by next stage:
+====================================
+(1) remembers files dropped on it (Run AppleScript):
+
+-- This makes a list of the dropped files to remember and later save into a text file (need to wait in case need to set up the folder to receive the text file)
+on run {input, parameters}
+	set DELIMITER to (ASCII character 0) #to separate file paths, because NUL can't be in a file path
+	set inputFiles to ""
+	set inputList to input as list
+	
+	set isFirst to true
+	repeat with theItem in inputList
+		set droppedFile to POSIX path of theItem
+		if isFirst then
+			set inputFiles to droppedFile
+		else
+			set inputFiles to inputFiles & DELIMITER & droppedFile
+		end if
+		set isFirst to false
+	end repeat
+	
+	return inputFiles
+end run
+
+====================================
+(2) and stores those input files in variable droppedFromFinder (set Value of Variable)
+
+====================================
+(3) makes Mesquite_Support_Files a new folder (if it doesn't exist) [to hold the file of standard out]
+
+====================================
+(4) Applescript figures out where itself is (i.e. the executable). 
+
+-- this finds the path to this executable Automator app. The full path is modified into a token that is used as a folder name within Mesquite_Support_Files to store information specific to this copy of the executable. This is needed primarily to.store the list of files than needs opening and to store the process ID of the java instance to know if Mesquite needs starting up again
+
+on replace_text(this_text, search_string, replacement_string)
+	set prevTIDs to AppleScript's text item delimiters
+	set AppleScript's text item delimiters to the search_string
+	set the item_list to every text item of this_text
+	set AppleScript's text item delimiters to the replacement_string
+	set this_text to the item_list as string
+	set AppleScript's text item delimiters to prevTIDs
+	return this_text
+end replace_text
+on run {input, parameters}
+	
+	set encapsulatedPathToMe to POSIX path of (path to me)
+	set encapsulatedPathToMe to replace_text(encapsulatedPathToMe, "/", "#") -- this isn't guaranteed but in a non-perverse world it will work
+	
+	return encapsulatedPathToMe
+end run
+
+
+====================================
+(5) and stores that encapsulatedPathToMe as a variable
+
+====================================
+(6) makes new folder within Mesquite_support_files, for information concerning this copy of Mesquite, into which specific info like list of dropped files will be placed
+
+====================================
+(7) renames that new folder to encapsulatedPathToMe
+
+====================================
+(8) AppleScript retrieves the dropped files and prepared instructions for the subsequent shell script
+
+-- This does two things:
+-- (1) Prepare information to be passed into the bash shell script that opens Mesquite. This includes the paths to files containing information about memory use etc., and also the encapsulated path of the app
+-- (2) Now that the app's unique folder (named by the encapsulated path of the app) has been created in Mesquite_Support_Files, put the list of dropped file paths into a file filesToOpen.txt, for Mesquite to find and open.
+
 
 on getPath(this_text, stripLast)
-	set AppleScript's text item delimiters to the ":"
-	set the item_list to every text item of this_text
-	set num to the number of items in item_list
-	if stripLast then
-		set lasti to num - 2
-	else
-		set lasti to num
-	end if
-	set the item_list to items 2 through lasti of item_list
-	set AppleScript's text item delimiters to the "/"
-	set this_text to the item_list as string
-	set AppleScript's text item delimiters to ""
-	set this_text to "/" & this_text
-	return this_text
+	try
+		
+		set DELIMITER to ":" #(ASCII character 13)
+		set AppleScript's text item delimiters to DELIMITER
+		set the item_list to every text item of this_text
+		set num to the number of items in item_list
+		if stripLast then
+			set lasti to num - 2
+		else
+			set lasti to num
+		end if
+		set the item_list to items 2 through lasti of item_list
+		set AppleScript's text item delimiters to the "/"
+		set this_text to the item_list as string
+		set AppleScript's text item delimiters to ""
+		set this_text to "/" & this_text
+		return this_text
+	end try
+	return ""
 end getPath
+
+on writeTextToFile(theText, theFile)
+	try
+		set theFile to theFile as string
+		set theOpenedFile to open for access file theFile with write permission
+		write theText to theOpenedFile
+		close access theOpenedFile
+		return true
+	on error
+		try
+			close access file theFile
+		end try
+		return false
+	end try
+end writeTextToFile
+
+on replace_text(this_text, search_string, replacement_string)
+	set prevTIDs to AppleScript's text item delimiters
+	set AppleScript's text item delimiters to the search_string
+	set the item_list to every text item of this_text
+	set AppleScript's text item delimiters to the replacement_string
+	set this_text to the item_list as string
+	set AppleScript's text item delimiters to prevTIDs
+	return this_text
+end replace_text
 
 on run {input, parameters}
 	set whereAmI to getPath((path to me as text), true)
+	set encapsulatedPathToMe to POSIX path of (path to me)
+	set encapsulatedPathToMe to replace_text(encapsulatedPathToMe, "/", "#") -- this isn't guaranteed but in a non-perverse world it will work
+	
+	-- (1) Prepare information to be passed into the bash shell script that opens Mesquite. 
 	set javaLocFile to whereAmI & "/RunningOptionsForFlex/Mesquite-JavaToUse.txt"
 	set javaLoc to "java"
 	try
@@ -48,45 +146,120 @@ on run {input, parameters}
 		set lns to paragraphs of (read POSIX file flagsFile)
 		set flags to first item in lns
 	end try
-	#display dialog memory as text
 	set results to whereAmI
-	try
-		if input is not equal to {} then
-			set droppedFiles to getPath(input as text, false)
-			set results to results & ":" & droppedFiles
-		end if
-	end try
-	set results to javaLoc & ":" & flags & ":" &memory & ":" & results
+	set results to results & ":" & encapsulatedPathToMe --send into Mesquite the path to me rather than to the dropped files, so Mesquite knows where to look for filesToOpen.txt
+	
+	-- (2) Put the list of dropped file paths into a file filesToOpen.txt, for Mesquite to find and open
+	if input is not equal to {} then -- writing input files to file so Mesquite can find and open them
+		set droppedFilesAsText to replace_text(input as text, (ASCII character 0), linefeed) #NUL was used to separate file paths in first Applescript
+		set theFile to (((path to home folder) as string) & "Mesquite_Support_Files:" & encapsulatedPathToMe & ":filesLastRequested.txt")
+		writeTextToFile(input as text, theFile)
+		
+		-- putting list of files to open into file for Mesquite to find when it opens
+		set theFile to (((path to home folder) as string) & "Mesquite_Support_Files:" & encapsulatedPathToMe & ":filesToOpen.txt")
+		writeTextToFile(droppedFilesAsText, theFile)
+	end if
+	
+	set results to javaLoc & ":" & flags & ":" & memory & ":" & results
 	return results
 end run
 
-(5) Runs a shell script, taking as input the string from part (4):
 
-read whereAndWhat #where is Mesquite Folder, and what are dropped files
-echo $whereAndWhat > Mesquite_Support_Files/Mesquite_Flex_INSTRUCTIONS.txt
+====================================
+(9) runs a shell script, taking as input the string from part (8):
+
+
+### This script calls java to open Mesquite, if needed. It determines that it's not needed if the last saved process ID of Mesquite is still running
+
+### At this point:
+### Mesquite_Support_Files/ENCAPSULED_PATH_TO_THIS has been created to store info specific to this copy of the app. ENCAPSULED_PATH_TO_THIS is the full path of this app encapsulated by replacing / with # characters
+### Files to open are stored in Mesquite_Support_Files/ENCAPSULED_PATH_TO_THIS/filesToOpen.txt. 
+### The current process ID is stored in Mesquite_Support_Files/ENCAPSULED_PATH_TO_THIS/currentPID.txt. This may be a running instance, or it might be a now-stopped but crashed instance
+
+### Passed into here are (1) where is java, (2) flags to be used, (3) memory to be requested 
+
+### Flow in this script:
+### Read the current process ID recorded in currentPID.txt. If that PID is still running, then assume that there is no need to start Mesquite, and so stop this script. This would be 
+### If there is no PID file, or if its PID is stopped, then assume we need to continue and start Mesquite. 
+### After Mesquite starts, write its PID (obtained in script below as mesquite_PID) into Mesquite_Support_Files/ENCAPSULED_PATH_TO_THIS/currentPID.txt
+
+### In Mesquite:
+### The flag mqflex2 is passed to Mesquite so it knows that the arguments passed in are not files to be opened, but rather ENCAPSULED_PATH_TO_THIS in order to find the file listing files to be opened.
+### Mesquite looks for this file in ConsoleThread
+
+
+read whereAndWhat #where is Mesquite Folder, and what is the encapsulated path to me
+echo $whereAndWhat > Mesquite_Support_Files/Mesquite_Flex_ScriptInput.txt
 IFS=':' read -r -a arr <<< "$whereAndWhat"
 JAVALOC=${arr[0]}
 FLAGS=${arr[1]}
 MEMORY=${arr[2]}
 whereAmI=${arr[3]}
+encapsulatedPathToMe=${arr[4]} 
+
+# read PID previously recorded in file to see if it's still running
+PIDrecorded=$(head -n 1 Mesquite_Support_Files/"$encapsulatedPathToMe"/currentPID.txt)
+psResults=$(ps -p "$PIDrecorded" -o stat)
+IN="$psResults"
+runningStatus=(${IN//;/ })
+runningOrSleeping="${runningStatus[1]}"
+running="R"
+sleeping="S"
+if [ "$runningOrSleeping" == "$sleeping" ]; 
+then 
+echo "SLEEPING">> Mesquite_Support_Files/Mesquite_Flex_stdout.txt 
+echo "$PIDrecorded">> Mesquite_Support_Files/Mesquite_Flex_pid.txt 
+osascript -e "tell application \"System Events\"" -e "set processList to every process whose unix id is \"${PIDrecorded//\"/\\\"}\"" -e "repeat with proc in processList" -e "set the frontmost of proc to true" -e "end repeat" -e "end tell"
+elif [ "$runningOrSleeping" == "$running" ]; 
+then 
+echo "RUNNING">> Mesquite_Support_Files/Mesquite_Flex_stdout.txt 
+echo "$PIDrecorded">> Mesquite_Support_Files/Mesquite_Flex_pid.txt 
+osascript -e "tell application \"System Events\"" -e "set processList to every process whose unix id is \"${PIDrecorded//\"/\\\"}\"" -e "repeat with proc in processList" -e "set the frontmost of proc to true" -e "end repeat" -e "end tell"
+else
+
+
 if [[ ${#myvar} <1 ]]; #no flags passed in
-then
-	if [[ ${#arr[@]} > 4 ]];
 	then
-		droppedFiles=${arr[4]} #this gets just first file
-		"${JAVALOC}" --add-exports java.desktop/com.apple.eawt=ALL-UNNAMED -Xmx${MEMORY}000M -Xss8m -Djava.library.path=lib -Djri.ignore.ule="yes" -jar "$whereAmI/Mesquite.jar" "$droppedFiles" -mqflex > Mesquite_Support_Files/Mesquite_Flex_stdout.txt || "${JAVALOC}" -Xmx${MEMORY}000M -Xss8m -Djava.library.path=lib -Djri.ignore.ule="yes" -jar "$whereAmI/Mesquite.jar" "$droppedFiles" -mqflex > Mesquite_Support_Files/Mesquite_Flex_stdout.txt
-	else
-		"${JAVALOC}" --add-exports java.desktop/com.apple.eawt=ALL-UNNAMED -Xmx${MEMORY}000M -Xss8m -Djava.library.path=lib -Djri.ignore.ule="yes" -jar "$whereAmI/Mesquite.jar" -mqflex > Mesquite_Support_Files/Mesquite_Flex_stdout.txt || "${JAVALOC}" -Xmx${MEMORY}000M -Xss8m -Djava.library.path=lib -Djri.ignore.ule="yes" -jar "$whereAmI/Mesquite.jar" -mqflex > Mesquite_Support_Files/Mesquite_Flex_stdout.txt
-	fi
-else #flags passed in; use those
-	if [[ ${#arr[@]} > 4 ]];
-	then
-		droppedFiles=${arr[4]} #this gets just first file
-		"${JAVALOC}" ${FLAGS} -Xmx${MEMORY}000M -Xss8m -Djava.library.path=lib -Djri.ignore.ule="yes" -jar "$whereAmI/Mesquite.jar" "$droppedFiles" -mqflex > Mesquite_Support_Files/Mesquite_Flex_stdout.txt
-	else
-		"${JAVALOC}" ${FLAGS} -Xmx${MEMORY}000M -Xss8m -Djava.library.path=lib -Djri.ignore.ule="yes" -jar "$whereAmI/Mesquite.jar" -mqflex > Mesquite_Support_Files/Mesquite_Flex_stdout.txt
-	fi
+		#Java 9 or above: Following call uses --add-exports, which assumes Java 9 or above. If that fails, we'll later try Java 8
+		nohup "${JAVALOC}" --add-exports java.desktop/com.apple.eawt=ALL-UNNAMED -Xmx${MEMORY}000M -Xss8m -Djava.library.path=lib -Djri.ignore.ule="yes" -jar "$whereAmI/Mesquite.jar" "$encapsulatedPathToMe" -mqflex2 > Mesquite_Support_Files/Mesquite_Flex_stdout.txt 2>&1 &
+		mesquite_PID=$!
+		echo "CHECKING of Mesquite started with add-exports flag" >> Mesquite_Support_Files/stdout.txt
+		sleep 1
+		psResults=$(ps -p "$mesquite_PID" -o stat)
+		IN="$psResults"
+		runningStatus=(${IN//;/ })
+		runningOrSleeping="${runningStatus[1]}"
+		running="R"
+		sleeping="S"
+		if [ "$runningOrSleeping" == "$sleeping" ]; 
+		then 
+		started=TRUE 
+		elif [ "$runningOrSleeping" == "$running" ]; 
+		then 
+		started=TRUE
+		fi
+		if [ "$started" ]; 
+		then
+			echo "Mesquite started with add-exports." >> Mesquite_Support_Files/Mesquite_Support_Files/stdout.txt
+		else
+			#The add-exports failed; try instead without. This probably means we are starting Java 8
+			echo "Mesquite failed to started with add-exports; attempting without." >> Mesquite_Support_Files/stdout.txt
+			nohup "${JAVALOC}" -Xmx${MEMORY}000M -Xss8m -Djava.library.path=lib -Djri.ignore.ule="yes" -jar "$whereAmI/Mesquite.jar" "$encapsulatedPathToMe" -mqflex2 > Mesquite_Support_Files/Mesquite_Flex_stdout.txt 2>&1 &
+			mesquite_PID=$!
+		fi
+
+	else #flags passed in; use those
+		nohup "${JAVALOC}" ${FLAGS} -Xmx${MEMORY}000M -Xss8m -Djava.library.path=lib -Djri.ignore.ule="yes" -jar "$whereAmI/Mesquite.jar" "$encapsulatedPathToMe" -mqflex2 > Mesquite_Support_Files/Mesquite_Flex_stdout.txt 2>&1 &
+		mesquite_PID=$!
 fi
+
+echo "$mesquite_PID" >| Mesquite_Support_Files/"$encapsulatedPathToMe"/currentPID.txt
+
+fi
+
+#nohup used to disown process allowing backgrounign to make it continue
+
+# optionKeyDown=$(osascript -l JavaScript -e "ObjC.import('Cocoa'); ($.NSEvent.modifierFlags & $.NSEventModifierFlagOption) > 1")
 
 
 ================== CUSTOMIZING APP Bundle
@@ -100,48 +273,5 @@ to
 
 In the app bundle, Resources, add the file Mesquite.icns
 
-================== SIGNING EXECUTABLE
-Make duplicate of Mesquite app to be signed, and call it Mesquite.app
-
-Run the signBundle.sh script, i.e.:
-
-#!/bin/bash 
-xattr -cr Mesquite.app
-
-for f in $(find Mesquite.app/Contents); 
-do 
-	codesign -s "Developer ID Application: Wayne Maddison" $f;
-done
-
-codesign --force --deep --options=runtime -s "Developer ID Application: Wayne Maddison" Mesquite.app
-#codesign --force --options=runtime -s "Developer ID Application: Wayne Maddison" Mesquite.app
-codesign -d --verbose=4 Mesquite.app
-spctl --assess --verbose=4 --type execute Mesquite.app
-
-================== NOTARIZING EXECUTABLE
-====================================================
-NOTARIZING
-Zip using 
-	/usr/bin/ditto -c -k --keepParent Mesquite.app Mesquite.zip
-Submit for notarization using
-	xcrun altool --eval-app --primary-bundle-id org.mesquiteproject -u wmaddisn@zoology.ubc.ca -f Mesquite.zip
-
-Give not Apple-id password, but rather app-specific PASSWORD. (https://support.apple.com/en-us/HT204397)
-
-For regular Mesquite.app: #### (search for tukk)
-
-Will respond with a RequestUUID. To check status, enter (replace strange request uu id)
-
-	xcrun altool --eval-info <RequestUUID> -u wmaddisn@zoology.ubc.ca
-
-To get more details use  the URL given
-
-Somethow this might help also???
-xcrun altool --notarization-info <RequestUUID> -u wmaddisn@zoology.ubc.ca
-
-Once it's approved, run
-	xcrun stapler staple Mesquite.app
-
----------
-	xcrun altool --eval-info REPLACEWITHREQUESTUUID -u wmaddisn@zoology.ubc.ca
-
+================== SIGNING & NOTARIZING EXECUTABLE
+See separate file

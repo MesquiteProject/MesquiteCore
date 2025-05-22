@@ -18,6 +18,7 @@ import java.util.*;
 import mesquite.lib.*;
 import mesquite.lib.characters.*;
 import mesquite.lib.duties.*;
+import mesquite.lib.taxa.Taxa;
 
 /* ======================================================================== */
 /**This class provides some basic utilities for sets of states of categorical characters.  Many of the utilities are static to be used for basic

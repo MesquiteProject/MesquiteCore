@@ -20,6 +20,8 @@ import java.awt.*;
 import mesquite.lib.*;
 import mesquite.lib.duties.*;
 import mesquite.lib.table.*;
+import mesquite.lib.tree.Tree;
+import mesquite.lib.tree.TreeVector;
 
 /* ======================================================================== */
 public class TreeListPolyAssumption extends TreeListAssistant {

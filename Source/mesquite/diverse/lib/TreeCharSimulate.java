@@ -14,6 +14,7 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
 package mesquite.diverse.lib;
 
 import mesquite.lib.*;
+import mesquite.lib.taxa.Taxa;
 
 
 /* ======================================================================== */

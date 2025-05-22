@@ -21,6 +21,8 @@ import java.io.*;
 import mesquite.lib.*;
 import mesquite.lib.characters.*;
 import mesquite.lib.duties.*;
+import mesquite.lib.taxa.Taxa;
+import mesquite.lib.ui.ProgressIndicator;
 import mesquite.categ.lib.*;
 
 /* ======================================================================== 
@@ -240,7 +242,7 @@ public class ManageProteinChars extends CategMatrixManager {
 		if (file!=null && file.useDataBlocks){
 			int numTaxaToWrite = data.getNumTaxa();
 			if (!file.writeTaxaWithAllMissing)
-				numTaxaToWrite = data.numTaxaWithSomeApplicable(false, file.writeOnlySelectedTaxa, file.writeExcludedCharacters, file.fractionApplicable);
+				numTaxaToWrite = data.numTaxaWithSomeApplicable(false, file.writeOnlySelectedTaxa, file.writeExcludedCharacters, 1.0);
 			else if (file.writeOnlySelectedTaxa)
 				numTaxaToWrite = data.numSelectedTaxa();
 			blocks.append(" NTAX=" + numTaxaToWrite);

@@ -21,6 +21,9 @@ import java.awt.*;
 
 import mesquite.lib.*;
 import mesquite.lib.duties.*;
+import mesquite.lib.tree.Tree;
+import mesquite.lib.ui.ExtensibleDialog;
+import mesquite.lib.ui.RadioButtons;
 import mesquite.trees.lib.*;
 
 

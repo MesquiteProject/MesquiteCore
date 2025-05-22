@@ -17,23 +17,41 @@ package mesquite.lists.TreeListAttachment;
 import mesquite.lists.lib.*;
 import java.util.*;
 import java.awt.*;
+import java.awt.datatransfer.Clipboard;
+import java.awt.datatransfer.DataFlavor;
+import java.awt.datatransfer.Transferable;
+
+import mesquite.categ.lib.MolecularData;
 import mesquite.lib.*;
 import mesquite.lib.duties.*;
 import mesquite.lib.table.*;
+import mesquite.lib.taxa.Taxon;
+import mesquite.lib.tree.DisplayableBranchProperty;
+import mesquite.lib.tree.MesquiteTree;
+import mesquite.lib.tree.Tree;
+import mesquite.lib.tree.BranchProperty;
+import mesquite.lib.tree.TreeVector;
+import mesquite.lib.ui.ListDialog;
+import mesquite.lib.ui.SingleLineTextField;
 
 /* ======================================================================== */
 public class TreeListAttachment extends TreeListAssistant {
 	/*.................................................................................................................*/
 	public String getName() {
-		return "Attachment";
+		return "Attachment to Tree";
 	}
 	public String getExplanation() {
 		return "Displays an item attached to trees." ;
 	}
 	TreeVector treesBlock;
 	String nameOfAttached = null;
+	ListableVector names = new ListableVector();
+	MesquiteTable treeListTable;
 	/*.................................................................................................................*/
 	public boolean startJob(String arguments, Object condition, boolean hiredByName) {
+		addMenuItem( "Attachment to Show...", makeCommand("setAttached",  this));
+		addMenuItem( "New Attachment...", makeCommand("newAttachment",  this));
+		addMenuItem( "Paste Values into Selected", makeCommand("paste",  this));
 		return true;
 	}
 
@@ -47,48 +65,232 @@ public class TreeListAttachment extends TreeListAssistant {
 	}
 	/*.................................................................................................................*/
 	public Object doCommand(String commandName, String arguments, CommandChecker checker) {
-		if (checker.compare(this.getClass(), "Sets what attachment to show", "[name of attached to show]", commandName, "setAttached")) {
-			nameOfAttached = parser.getFirstToken(arguments);
+		if (checker.compare(this.getClass(), "Sets the name of the attached numbers to be used", "[name of attached]", commandName, "setAttached")) {
+			String name= parser.getFirstToken(arguments);
+			if (StringUtil.blank(name)){
+				reviewAttachmentsAvailable(names, treesBlock);
+				Listable L = ListDialog.queryList(containerOfModule(), "Attachment", "Which attachment to show?\n(This list may change as other tree sources are used or trees are read.)", MesquiteString.helpString, names, 0);
+				if (L!=null)
+					name = L.getName();
+			}
+			if (!StringUtil.blank(name)) {
+				nameOfAttached = name;
+				if (!MesquiteThread.isScripting()) parametersChanged();
+			}
+
+		}
+		else if (checker.compare(this.getClass(), "Adds a new attachment", "[]", commandName, "newAttachment")) {
+
+			String[] kinds = new String[]{ "Decimal number", "Integer number", "String of text", "Boolean (true/false)"};
+			MesquiteInteger selectedInDialog = new MesquiteInteger(0);
+			ListDialog dialog = new ListDialog(containerOfModule(), "New Attachment", "What kind of attachment to add to selected trees?", false,null, kinds, 8, selectedInDialog, "OK", null, false, true);
+			SingleLineTextField nameF = dialog.addTextField("Name of Attachment:", "", 30);
+			dialog.completeAndShowDialog(true);
+			boolean switchName = false;
+			if (dialog.buttonPressed.getValue() == 0)  {
+				int result = selectedInDialog.getValue();
+				String name = nameF.getText();
+				if (StringUtil.blank(name)) {
+					discreetAlert("You need to give a name to the attachment.");
+					return null;
+				}
+				if (result>=0){
+					switchName = true;
+					for (int i=0; i<treeListTable.getNumRows(); i++){
+							MesquiteTree tree = (MesquiteTree)treesBlock.getTree(i);
+							Object obj = tree.getAttachment(name);
+							if (obj == null){
+								if (result == 0)
+									obj = new MesquiteDouble(name, MesquiteDouble.unassigned);
+								else if (result == 1)
+									obj = new MesquiteLong(name, MesquiteLong.unassigned);
+								else if (result == 2)
+									obj = new MesquiteString(name, "");
+								else if (result == 3){
+									MesquiteBoolean mbool = new MesquiteBoolean();
+									mbool.setName(name);
+									obj = mbool;
+								}
+								tree.attachIfUniqueName(obj);
+						}
+					}
+				}
+				if (switchName)
+					nameOfAttached = name;
+			}
+			dialog.dispose();
+			if (switchName){
+				if (!MesquiteThread.isScripting()) parametersChanged();
+			}
+
+		}
+		else if (checker.compare(this.getClass(), "Pastes", "", commandName, "paste")) {
+			MesquiteBoolean success = pasteIntoRows(treeListTable);
+			if (StringUtil.notEmpty(success.getName()))
+				discreetAlert("Problem with pasting:" + success.getName());
+			if (!MesquiteThread.isScripting() && success.getValue()) parametersChanged();
 		}
 		else
 			return  super.doCommand(commandName, arguments, checker);
 		return null;
 	}
 
-	public void setTableAndTreeBlock(MesquiteTable table, TreeVector trees){
-		treesBlock = trees;
-		if (!MesquiteThread.isScripting()){
-			ListableVector v = new ListableVector();
-			if (nameOfAttached == null && treesBlock !=null){
-				for (int itree =0; itree < treesBlock.size(); itree++){
-					Tree tree = treesBlock.getTree(itree);
-					if (tree !=null && tree instanceof Attachable){
-						Vector at = ((Attachable)tree).getAttachments();
-						if (at !=null) {
-							for (int i =0; i < at.size(); i++){
-								Object obj = at.elementAt(i);
-								if (obj instanceof Listable) {
-									String name = ((Listable)obj).getName();
-									if (v.indexOfByNameIgnoreCase(name)<0) {
-										MesquiteString ms = new MesquiteString(name);
-										ms.setName(name);
-										v.addElement(ms, false);
-									}
-								}
+
+
+
+
+	Class getClassOfAttachment(TreeVector trees, String nameOfAttached){
+		Class c = null;
+		boolean conflict = false;
+		if (trees !=null){
+			for (int itree =0; itree < trees.size() && !conflict; itree++){
+				Tree tree = trees.getTree(itree);
+				if (tree !=null && tree instanceof Attachable){
+					Object a = ((MesquiteTree)tree).getAttachment(nameOfAttached);
+					if (a != null){
+						if (c == null)
+							c = a.getClass();
+						else if (c != a.getClass()) {
+							conflict = true;
+							c = Error.class;
+							break;
+						}
+					}
+				}
+			}
+		}
+		return c;
+	}
+	void reviewAttachmentsAvailable(ListableVector v, TreeVector trees){
+		names.removeAllElements(false);
+		if (trees !=null){
+			for (int itree =0; itree < trees.size(); itree++){
+				Tree tree = trees.getTree(itree);
+				if (tree !=null && tree instanceof Attachable){
+					Vector at = ((Attachable)tree).getAttachments();
+					if (at !=null) {
+						for (int i =0; i < at.size(); i++){
+							Object obj = at.elementAt(i);
+							String name = ((Listable)obj).getName();
+							if (v.indexOfByNameIgnoreCase(name)<0) {
+								MesquiteString ms = new MesquiteString(name);
+								ms.setName(name);
+								v.addElement(ms, false);
 							}
 						}
 					}
 				}
-				if (v.size()==0)
-					alert("Sorry, there is nothing attached to the trees to show");
-				else {
-					Listable L = ListDialog.queryList(containerOfModule(), "Select item", "What attachments to tree should be shown?", MesquiteString.helpString, v, 0);
-					if (L!=null)
-						nameOfAttached = L.getName();
-				} 
 			}
 		}
 	}
+	public void setTableAndTreeBlock(MesquiteTable table, TreeVector trees){
+		treesBlock = trees;
+		this.treeListTable = table;
+		if (!MesquiteThread.isScripting()){
+			reviewAttachmentsAvailable(names, trees);
+			if (names.size()==0)
+				alert("Sorry, there is nothing attached to the trees to show");
+			else {
+				Listable L = ListDialog.queryList(containerOfModule(), "Select item", "What attachments to tree should be shown?", MesquiteString.helpString, names, 0);
+				if (L!=null)
+					nameOfAttached = L.getName();
+			} 
+
+		}
+	}
+
+	/*...............................................................................................................*/
+	/** returns whether or not a cell of table is editable.*/
+	public boolean isCellEditable(int row){
+		return true;
+	}
+	/*...............................................................................................................*/
+	/** for those permitting editing, indicates user has edited to incoming string.*/
+	public void setString(int row, String s){
+
+		if (treesBlock==null || row < 0 || row >= treesBlock.size() || nameOfAttached == null)
+			return;
+		if (StringUtil.blank(s))
+			s = null;
+		Class classOfAttached = getClassOfAttachment(treesBlock, nameOfAttached);
+		if (classOfAttached == Error.class){
+			logln("Can't edit because this attachment is heterogenous among trees.");
+		}
+		else if (classOfAttached == null){
+			logln("Can't edit because this attachment appears to be undefined.");
+		}
+		else {
+			MesquiteTree tree = (MesquiteTree)treesBlock.getTree(row);
+			Object a = ((MesquiteTree)tree).getAttachment(nameOfAttached);
+			if (classOfAttached == MesquiteString.class){
+				MesquiteString mb = null;
+				if (a != null)
+					mb = (MesquiteString)a;
+				else
+					mb = new MesquiteString("");
+				mb.setValue(s);
+				if (a == null){
+					mb.setName(nameOfAttached);
+					tree.attachIfUniqueName(mb);
+				}
+			}
+			else if (classOfAttached == MesquiteDouble.class){
+				MesquiteDouble mb = null;
+				if (a != null)
+					mb = (MesquiteDouble)a;
+				else
+					mb = new MesquiteDouble();
+				mb.setValue(s);
+				if (a == null){
+					mb.setName(nameOfAttached);
+					tree.attachIfUniqueName(mb);
+				}
+			}
+			else if (classOfAttached == MesquiteInteger.class){
+				MesquiteInteger mb = null;
+				if (a != null)
+					mb = (MesquiteInteger)a;
+				else
+					mb = new MesquiteInteger();
+				mb.setValue(s);
+				if (a == null){
+					mb.setName(nameOfAttached);
+					tree.attachIfUniqueName(mb);
+				}
+			}
+			else if (classOfAttached == MesquiteLong.class){
+				MesquiteLong mb = null;
+				if (a != null)
+					mb = (MesquiteLong)a;
+				else
+					mb = new MesquiteLong();
+				mb.setValue(s);
+				if (a == null){
+					mb.setName(nameOfAttached);
+					tree.attachIfUniqueName(mb);
+				}
+			}
+			else if (classOfAttached == MesquiteBoolean.class){
+				MesquiteBoolean mb = null;
+				if (a != null)
+					mb = (MesquiteBoolean)a;
+				else
+					mb = new MesquiteBoolean();
+				mb.setValue(s);
+				if (a == null){
+					mb.setName(nameOfAttached);
+					tree.attachIfUniqueName(mb);
+				}
+			}
+	}
+
+		//cycle through trees to discover kind of attachment
+	}
+	/*
+	public Object getAttachment(String name){
+		return getAttachment(name, null);
+	}
+	 */
 	public String getTitle() {
 		if (nameOfAttached !=null)
 			return nameOfAttached;
@@ -121,6 +323,7 @@ public class TreeListAttachment extends TreeListAssistant {
 		if (tree ==null || !(tree instanceof MesquiteTree))
 			return "";
 		Object a = ((MesquiteTree)tree).getAttachment(nameOfAttached);
+		
 		if (a==null)
 			return "";
 		else

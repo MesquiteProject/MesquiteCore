@@ -29,6 +29,9 @@ import mesquite.align.lib.*;
 
 /* ======================================================================== */
 public class MuscleAlign extends ExternalSequenceAligner{
+	protected static String V3="V3";
+	protected static String V5="V5";
+	protected String appVariant = V3;
 	/*.................................................................................................................*/
 	/** returns whether this module is requesting to appear as a primary choice */
 	public boolean requestPrimaryChoice(){
@@ -69,9 +72,15 @@ public class MuscleAlign extends ExternalSequenceAligner{
 	 }
 	/*.................................................................................................................*/
 	public String getHelpURL(){
+		if (appInfoFile!=null) {
+			if (StringUtil.notEmpty(appInfoFile.getURL()))
+					return appInfoFile.getURL();
+		}
 		return "http://www.drive5.com/muscle/manual/";
 	}
-
+	public String getAppOfficialName() {
+		return "muscle";
+	}
 	/*.................................................................................................................*/
 	public String getHelpString() {
 	  String s =  " In the Muscle Options field, place any Muscle options you wish to use.  For example, if you wished to change the"
@@ -91,11 +100,53 @@ public class MuscleAlign extends ExternalSequenceAligner{
 		return "";
 	}
 	
-	public void appendDefaultOptions(StringBuffer shellScript, String inFilePath, String outFilePath, MolecularData data) {
-		if (scriptBased)
-			shellScript.append("  -in " + StringUtil.protectFilePathForUnix(inFilePath)+"  -out " + StringUtil.protectFilePathForUnix(outFilePath));
+	/*.................................................................................................................*/
+	public boolean appVariantMatches(String variant){
+		String s = getAppVariant();
+		if (StringUtil.notEmpty(s)) {
+			return s.equalsIgnoreCase(variant);
+		}
+		return false;
+	}
+	/*.................................................................................................................*/
+	public String getInputFileOption(){
+		if (appVariantMatches(V5))
+			return " -align ";
+		else 
+			return " -in ";
+		
+	}
+	/*.................................................................................................................*/
+	public String geOutputFileOption(){
+		if (appVariantMatches(V5))
+			return " -output ";
 		else
-			shellScript.append("  -in " + StringUtil.protectFilePathForUnix(inFilePath));
+			return " -out ";
+	}
+	/*.................................................................................................................*/
+	public Snapshot getSnapshot(MesquiteFile file) { 
+		Snapshot temp = super.getSnapshot(file);
+		if (temp == null)
+			temp = new Snapshot();
+		temp.addLine("optionsSet");
+		return temp;
+	}
+	/*.................................................................................................................*/
+	public Object doCommand(String commandName, String arguments, CommandChecker checker) {
+		if (checker.compare(this.getClass(), "Records that options set", "", commandName, "optionsSet")) {
+			optionsAlreadySet = true;
+		}
+		else
+			return  super.doCommand(commandName, arguments, checker);
+		return null;
+	}	
+	
+
+	public void appendDefaultOptions(StringBuffer shellScript, String inFilePath, String outFilePath, MolecularData data) {
+		if (scriptBased || appVariantMatches(V5))
+			shellScript.append(getInputFileOption() + StringUtil.protectFilePathForUnix(inFilePath)+geOutputFileOption() + StringUtil.protectFilePathForUnix(outFilePath));
+		else
+			shellScript.append(getInputFileOption() + StringUtil.protectFilePathForUnix(inFilePath));
 	}
 	
 	public String getDNAExportInterpreter () {

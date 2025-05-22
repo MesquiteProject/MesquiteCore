@@ -16,23 +16,19 @@ package mesquite.molec.PercentLowerCase;
 
 import mesquite.lib.*;
 import mesquite.lib.characters.*;
+import mesquite.lib.characters.CharacterData;
 import mesquite.lib.duties.*;
+import mesquite.lib.taxa.Taxa;
+import mesquite.lib.taxa.Taxon;
 import mesquite.categ.lib.*;
 
 /* ======================================================================== */
-public class PercentLowerCase extends NumberForTaxon {
-	public void getEmployeeNeeds(){  //This gets called on startup to harvest information; override this and inside, call registerEmployeeNeed
-		EmployeeNeed e = registerEmployeeNeed(MatrixSourceCoord.class, getName() + "  needs a source of characters.",
-		"The source of characters is arranged initially");
-	}
-	MatrixSourceCoord matrixSourceTask;
+public class PercentLowerCase extends NumberForTaxonAndMatrix {
+
 	Taxa currentTaxa = null;
 	MCharactersDistribution observedStates =null;
 	/*.................................................................................................................*/
 	public boolean startJob(String arguments, Object condition, boolean hiredByName) {
-		matrixSourceTask = (MatrixSourceCoord)hireCompatibleEmployee(MatrixSourceCoord.class, CategoricalState.class, "Source of character matrix (for percent lowercase)"); 
-		if (matrixSourceTask==null)
-			return sorry(getName() + " couldn't start because no source of character matrices was obtained.");
 		return true;
 	}
 
@@ -46,19 +42,16 @@ public class PercentLowerCase extends NumberForTaxon {
    	happening at inopportune times (e.g., while a long chart calculation is in mid-progress)*/
 	public void initialize(Taxa taxa){
 		currentTaxa = taxa;
-		matrixSourceTask.initialize(currentTaxa);
 	}
 
-	public void calculateNumber(Taxon taxon, MesquiteNumber result, MesquiteString resultString){
+	public void calculateNumber(Taxon taxon, MCharactersDistribution matrix, MesquiteNumber result, MesquiteString resultString){
 		if (result==null)
 			return;
 	   	clearResultAndLastResult(result);
 		Taxa taxa = taxon.getTaxa();
 		int it = taxa.whichTaxonNumber(taxon);
-		if (taxa != currentTaxa || observedStates == null ) {
-			observedStates = matrixSourceTask.getCurrentMatrix(taxa);
-			currentTaxa = taxa;
-		}
+		observedStates = matrix;
+		currentTaxa = taxa;
 		if (observedStates==null)
 			return;
 		CharacterData data = observedStates.getParentData();
@@ -102,6 +95,22 @@ public class PercentLowerCase extends NumberForTaxon {
 	public String getName() {
 		return "Proportion lower case codings in taxon";  
 	}
+	/*.................................................................................................................*/
+	public String getNameForMenuItem() {
+		return "Proportion lower case codings";  
+	}
+ 	public String getParameters() {
+		if (observedStates != null && getProject().getNumberCharMatricesVisible()>1){
+			CharacterData d = observedStates.getParentData();
+			if (d != null && d.getName()!= null) {
+				String n =  d.getName();
+				if (n.length()>12)
+					n = n.substring(0, 12); 
+				return "Prop. Lower Case (" + n + ")";
+			}
+		}
+		return "Prop. Lower Case";  
+   	 }
 
 	/*.................................................................................................................*/
 	/** returns the version number at which this module was first released.  If 0, then no version number is claimed.  If a POSITIVE integer
@@ -114,8 +123,8 @@ public class PercentLowerCase extends NumberForTaxon {
 	public boolean isPrerelease(){
 		return false;
 	}
-	public String getParameters() {
-		return "Proportion lower case codings in taxon in matrix from: " + matrixSourceTask.getParameters();
+	public String getVeryShortName() {
+		return "Prop. Lower Case";  
 	}
 	/*.................................................................................................................*/
 

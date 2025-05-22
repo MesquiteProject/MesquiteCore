@@ -58,7 +58,7 @@ public class ExportForBEAST extends ExportForBEASTLib {
    	 
  	/** returns an explanation of what the module does.*/
  	public String getExplanation() {
- 		return "Exports NEXUS files for use by BEAST2 and BEAUTi." ;
+ 		return "Exports NEXUS files for use by BEAST2 and BEAUTi.(Note: Taxon Selection Sets in Mesquite become Taxsets; the current Character groups/partition become Charsets.)" ;
    	 }
 	/*.................................................................................................................*/
    	 

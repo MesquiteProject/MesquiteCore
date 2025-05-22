@@ -3,8 +3,8 @@ package mesquite.io.InterpretFastaDNAByOTUID;
 import mesquite.io.InterpretFastaDNA.InterpretFastaDNA;
 import mesquite.lib.Parser;
 import mesquite.lib.StringUtil;
-import mesquite.lib.Taxa;
-import mesquite.lib.VoucherInfoFromOTUIDDB;
+import mesquite.lib.misc.VoucherInfoFromOTUIDDB;
+import mesquite.lib.taxa.Taxa;
 
 public class InterpretFastaDNAByOTUID extends InterpretFastaDNA {
 
@@ -35,7 +35,7 @@ public class InterpretFastaDNAByOTUID extends InterpretFastaDNA {
 			return -1;
 		String code = "";
 		for (int it=0; it<taxa.getNumTaxa(); it++) {
-			code = (String)taxa.getAssociatedObject(VoucherInfoFromOTUIDDB.voucherCodeRef, it);
+			code = (String)taxa.getAssociatedString(VoucherInfoFromOTUIDDB.voucherCodeRef, it);
 			if (codesMatch(code, token))
 						return it;
 		}
@@ -43,7 +43,7 @@ public class InterpretFastaDNAByOTUID extends InterpretFastaDNA {
 	}
 	/*.................................................................................................................*/
 	public String getName() {
-		return "FASTA (DNA/RNA) - Taxon Names Match OTU ID Code";
+		return "FASTA (DNA/RNA) - Taxon Names Match Taxon ID Code";
 	}
 
 }

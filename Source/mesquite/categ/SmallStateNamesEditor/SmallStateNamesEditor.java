@@ -24,6 +24,13 @@ import mesquite.lib.duties.*;
 import mesquite.categ.lib.*;
 import mesquite.charMatrices.lib.MatrixInfoExtraPanel;
 import mesquite.lib.table.*;
+import mesquite.lib.ui.ClosablePanelContainer;
+import mesquite.lib.ui.ColorDistribution;
+import mesquite.lib.ui.MQPanel;
+import mesquite.lib.ui.MQScrollPane;
+import mesquite.lib.ui.MQTextField;
+import mesquite.lib.ui.MesquiteWindow;
+import mesquite.lib.ui.StringInABox;
 
 public class SmallStateNamesEditor extends MatrixInfoPanelAssistantI  {
 	SStateNamesPanel panel;
@@ -114,7 +121,7 @@ class SStateNamesPanel extends MatrixInfoExtraPanel  {
 		super(container, "State Names");
 		statesBox =  new StringInABox("", null, 50);
 		charName = new NameField(this, -1);
-		pane = new ScrollPane(ScrollPane.SCROLLBARS_AS_NEEDED);
+		pane = new MQScrollPane(ScrollPane.SCROLLBARS_AS_NEEDED);
 		statesNames = new StatesField(this);
 		statesNames.setBackground(getBackground());
 		currentHeight = 100 + MINHEIGHT + charNameHeight;
@@ -255,7 +262,7 @@ class SStateNamesPanel extends MatrixInfoExtraPanel  {
 */
 }
 /*-----------------------------*/
-class StatesField extends Panel {
+class StatesField extends MQPanel {
 	NameField[] states;
 	SStateNamesPanel panel;
 	CategoricalData data;
@@ -344,7 +351,7 @@ class StatesField extends Panel {
 			}
 	}
 }
-class NameField extends TextField implements FocusListener {
+class NameField extends MQTextField implements FocusListener {
 	SStateNamesPanel panel;
 	int state = -1;
 	boolean somethingTyped;

@@ -21,6 +21,9 @@ import java.awt.event.*;
 import mesquite.lib.*;
 import mesquite.lib.duties.*;
 import mesquite.lib.table.*;
+import mesquite.lib.taxa.Taxa;
+import mesquite.lib.ui.ColorDistribution;
+import mesquite.lib.ui.MesquiteSubmenuSpec;
 
 /* ======================================================================== */
 public class ColorTaxon extends TaxaListAssistantI  {
@@ -31,7 +34,7 @@ public class ColorTaxon extends TaxaListAssistantI  {
 	String colorString = "Color Red";
 	long savedColor = currentColor;
 	MesquiteBoolean removeColor;
-	NameReference colorNameRef = NameReference.getNameReference("color");
+
 	public String getName() {
 		return "Color Taxa";
 	}
@@ -69,7 +72,7 @@ public class ColorTaxon extends TaxaListAssistantI  {
 	private void setColor(int it, long c){
 		if ( it<0)
 			return;
-		taxa.setAssociatedLong(colorNameRef, it, c);
+		taxa.setColor(it, ColorDistribution.getStandardColorAsHex((int)c));
 		table.redrawCell(-1,it);
 	}
 	/*.................................................................................................................*/

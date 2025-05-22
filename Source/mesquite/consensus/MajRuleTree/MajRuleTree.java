@@ -17,6 +17,9 @@ package mesquite.consensus.MajRuleTree;
 import java.awt.Checkbox;
 
 import mesquite.lib.duties.*;
+import mesquite.lib.tree.Tree;
+import mesquite.lib.ui.DoubleField;
+import mesquite.lib.ui.ExtensibleDialog;
 import mesquite.lib.*;
 import mesquite.consensus.lib.*;
 
@@ -29,7 +32,7 @@ public class MajRuleTree extends BasicTreeConsenser   {
 	MesquiteBoolean useWeights = new MesquiteBoolean(true);
 	Checkbox useWeightsBox;
 	Checkbox dumpTableBox;
-	boolean dumpTable = false;
+	MesquiteBoolean dumpTable = new MesquiteBoolean( false);
 	DoubleField frequencyField;
 
 
@@ -41,12 +44,7 @@ public class MajRuleTree extends BasicTreeConsenser   {
 	}
 	/*.................................................................................................................*/
 	public boolean startJob(String arguments, Object condition, boolean hiredByName) {
-		bipartitions = new BipartitionVector();
-		loadPreferences();
-		if (!MesquiteThread.isScripting()) 
-			if (!queryOptions()) 
-				return false;
-		return true;
+		return super.startJob(arguments, condition, hiredByName);
 	}
 	/*.................................................................................................................*/
 	public void processMorePreferences (String tag, String content) {
@@ -55,7 +53,7 @@ public class MajRuleTree extends BasicTreeConsenser   {
 		else if ("frequencyLimit".equalsIgnoreCase(tag))
 			frequencyLimit = MesquiteDouble.fromString(content);
 		else if ("dumpTable".equalsIgnoreCase(tag))
-			dumpTable = MesquiteBoolean.fromTrueFalseString(content);
+			dumpTable.setFromTrueFalseString(content);
 	}
 	/*.................................................................................................................*/
 	public String prepareMorePreferencesForXML () {
@@ -65,14 +63,56 @@ public class MajRuleTree extends BasicTreeConsenser   {
 		StringUtil.appendXMLTag(buffer, 2, "dumpTable", dumpTable);  
 		return buffer.toString();
 	}
+	
+	
+	/*.................................................................................................................*/
+	public Snapshot getSnapshot(MesquiteFile file) {
+		Snapshot temp = super.getSnapshot(file);
+
+		temp.addLine("useWeights " + useWeights.toOffOnString());
+		temp.addLine("dumpTable " + dumpTable.toOffOnString());
+		temp.addLine("frequencyLimit " + MesquiteDouble.toString(frequencyLimit));
+		return temp;
+	}
+	/*.................................................................................................................*/
+	public Object doCommand(String commandName, String arguments, CommandChecker checker) {
+		if (checker.compare(this.getClass(), "Sets frequency limit.", "[value]", commandName, "frequencyLimit")) {
+			double s = MesquiteDouble.fromString(parser.getFirstToken(arguments));
+			if (MesquiteDouble.isCombinable(s)){
+				frequencyLimit = s;
+				if (!MesquiteThread.isScripting())
+					parametersChanged(); 
+
+			}
+		}
+
+		else if (checker.compare(this.getClass(), "Sets whether or not to use weights.", "[on or off]", commandName, "useWeights")) {
+			boolean current = useWeights.getValue();
+			useWeights.toggleValue(parser.getFirstToken(arguments));
+			if (current!=useWeights.getValue()) {
+				parametersChanged();
+			}
+		}
+		else if (checker.compare(this.getClass(), "Sets whether or not to dumpTable.", "[true or false]", commandName, "dumpTable")) {
+			boolean current = dumpTable.getValue();
+			dumpTable.toggleValue(parser.getFirstToken(arguments));
+			if (current!=dumpTable.getValue()) {
+				parametersChanged();
+			}
+		}
+
+		else
+			return  super.doCommand(commandName, arguments, checker);
+		return null;
+	}
 	/*.................................................................................................................*/
 	public void queryOptionsSetup(ExtensibleDialog dialog) {
 		String helpString = "\n";
 		dialog.appendToHelpString(helpString);
 
 		useWeightsBox = dialog.addCheckBox("consider tree weights", useWeights.getValue());
-		frequencyField = dialog.addDoubleField("required frequency of clades: ", frequencyLimit, 5, 0.00, 1.00);
-		dumpTableBox = dialog.addCheckBox("write group frequency list", dumpTable);
+		frequencyField = dialog.addDoubleField("required frequency of clades: ", frequencyLimit, 5, 0.5, 1.00);
+		dumpTableBox = dialog.addCheckBox("write group frequency list", dumpTable.getValue());
 	}
 
 	/*.................................................................................................................*/
@@ -86,7 +126,7 @@ public class MajRuleTree extends BasicTreeConsenser   {
 			}
 			else
 				frequencyLimit=freq;
-		dumpTable = dumpTableBox.getState();
+		dumpTable.setValue( dumpTableBox.getState());
 	}
 
 
@@ -116,7 +156,7 @@ public class MajRuleTree extends BasicTreeConsenser   {
 	}
 	/*.................................................................................................................*/
  	public void afterConsensus() {
-		if (dumpTable)
+		if (dumpTable.getValue())
 			bipartitions.dump();
  	}
  

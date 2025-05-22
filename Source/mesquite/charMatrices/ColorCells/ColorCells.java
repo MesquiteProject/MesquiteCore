@@ -18,6 +18,10 @@ import java.awt.*;
 import mesquite.lib.*;
 import mesquite.lib.duties.*;
 import mesquite.lib.table.*;
+import mesquite.lib.ui.ColorDistribution;
+import mesquite.lib.ui.ColorRecord;
+import mesquite.lib.ui.MesquiteSubmenuSpec;
+import mesquite.lib.ui.MesquiteWindow;
 import mesquite.lib.characters.*;
 
 /*   to do:
@@ -44,7 +48,6 @@ public class ColorCells extends DataWindowAssistantID implements CellColorer, Ce
 	/*.................................................................................................................*/
 	public boolean startJob(String arguments, Object condition, boolean hiredByName){
 		if (containerOfModule() instanceof MesquiteWindow) {
-			colorNameRef = NameReference.getNameReference("color");
 			colorTool = new TableTool(this, "ColorCells", getPath(), "color.gif", 1,1,colorString, "This tool colors the cells of a matrix.  This has cosmetic effect only.. ", MesquiteModule.makeCommand("colorCell", this), null, null);
 			colorTool.setWorksOnColumnNames(true);
 			colorTool.setWorksOnRowNames(true);
@@ -69,7 +72,6 @@ public class ColorCells extends DataWindowAssistantID implements CellColorer, Ce
 	public boolean isSubstantive(){
 		return false;
 	}
-	NameReference colorNameRef = NameReference.getNameReference("color");
 	private void removeColor(int ic, int it, boolean notify){
 		setColor(ic, it, -1);
 		if (notify)
@@ -100,6 +102,8 @@ public class ColorCells extends DataWindowAssistantID implements CellColorer, Ce
 			return null;
 		return "Colors assigned by user";
 	}
+	
+	NameReference oldColourNameRef = NameReference.getNameReference("color");
 	private void setColor(int ic, int it, int c){
 		if (data == null)
 			return;
@@ -107,45 +111,43 @@ public class ColorCells extends DataWindowAssistantID implements CellColorer, Ce
 		}
 		else if (ic<0) { //taxon
 			if (c == -1)
-				data.getTaxa().setAssociatedLong(colorNameRef, it, MesquiteLong.unassigned);
+				data.getTaxa().setColor(it, (String)null); 
 			else
-				data.getTaxa().setAssociatedLong(colorNameRef, it, c);
+				data.getTaxa().setColor(it, ColorDistribution.getStandardColorAsHex(c));
 		}
 		else if (it < 0){ //character
 			if (c == -1)
-				data.setAssociatedLong(colorNameRef, ic, MesquiteLong.unassigned);
+				data.setColor(ic, (String)null); 
 			else
-				data.setAssociatedLong(colorNameRef, ic, c);
+				data.setColor(ic, ColorDistribution.getStandardColorAsHex(c));
 
 		}
 		else if (!MesquiteLong.isCombinable(c) || c<0){
-			data.setCellObject(colorNameRef, ic, it, null);
+			data.setCellObject(oldColourNameRef, ic, it, null);
 		}
 		else {
 			MesquiteInteger ms = new MesquiteInteger(c);
-			data.setCellObject(colorNameRef, ic, it, ms);
+			data.setCellObject(oldColourNameRef, ic, it, ms);
 		}
 		table.redrawCell(ic,it);
 	}
-	private long getColor(int ic, int it){
+	private Color getColor(int ic, int it){
 		if (data == null)
-			return 0;
+			return null;
 		if (ic<0){  //taxon
-			long c = data.getTaxa().getAssociatedLong(colorNameRef, it);
-			if (MesquiteLong.isCombinable(c))
-				return c;
+			return data.getTaxa().getColor(it);
 		}
 		else if (it<0){ //character
-			long c = data.getAssociatedLong(colorNameRef, ic);
-			if (MesquiteLong.isCombinable(c))
-				return c;
+			return data.getColor(ic);
 		}
 		else {
-			Object obj = data.getCellObject(colorNameRef, ic, it);
-			if (obj != null && obj instanceof MesquiteInteger)
-				return ((MesquiteInteger)obj).getValue();
+			Object obj = data.getCellObject(oldColourNameRef, ic, it);
+			if (obj != null && obj instanceof MesquiteInteger) {
+				int col = ((MesquiteInteger)obj).getValue();
+				return ColorDistribution.getStandardColor(col);
+			}
 		}
-		return MesquiteLong.unassigned;
+		return null;
 	}
 	/*.................................................................................................................*/
 	public void viewChanged(){
@@ -157,11 +159,7 @@ public class ColorCells extends DataWindowAssistantID implements CellColorer, Ce
 		return null;
 	}
 	public Color getCellColor(int ic, int it){
-		long color = getColor(ic, it);
-		if (MesquiteLong.isCombinable(color))
-			return ColorDistribution.getStandardColor((int)color);
-		else
-			return null;
+		return getColor(ic, it);
 	}
 	public void setTableAndData(MesquiteTable table, CharacterData data){
 		this.table = table;

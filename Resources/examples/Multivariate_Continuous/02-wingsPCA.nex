@@ -1,5 +1,5 @@
 #NEXUS
-[written Sun May 04 15:26:05 PDT 2008 by Mesquite  version 2.01+ (build j65) at Thrandina.local/10.0.1.8 (Wayne Maddison)]
+[written Sat Mar 22 12:31:05 PDT 2025 by Mesquite  version 3.9Dev+ (build 1047) at Amilaps.local/127.0.0.1]
 
 BEGIN TAXA;
 	TITLE Taxa;
@@ -15,7 +15,7 @@ END;
 BEGIN CHARACTERS;
 	TITLE  'Matrix in file "02-wingsPCA.nex"';
 	DIMENSIONS  NCHAR=4;
-	FORMAT DATATYPE = CONTINUOUS;
+	FORMAT DATATYPE = CONTINUOUS GAP = - MISSING = ?;
 CHARSTATELABELS 
 		1 V1,
 		2 V2,
@@ -78,57 +78,58 @@ CHARSTATELABELS
 END;
 BEGIN TREES;
 	Title 'Trees from "02-wingsPCA.nex"';
+	ID 0195b9fe581310;
 	LINK Taxa = Taxa;
 	TRANSLATE
-		1 nig1,
-		2 nig2,
-		3 nig3,
-		4 nig4,
-		5 nig5,
-		6 nig6,
-		7 nig7,
-		8 nig8,
-		9 nig9,
-		10 nig10,
-		11 nig11,
-		12 nig12,
-		13 met1,
-		14 met2,
-		15 met3,
-		16 met4,
-		17 met5,
-		18 met6,
-		19 met7,
-		20 met8,
-		21 met9,
-		22 met10,
-		23 met11,
-		24 met12,
-		25 moj1,
-		26 moj2,
-		27 moj3,
-		28 moj4,
-		29 moj5,
-		30 moj6,
-		31 moj7,
-		32 moj8,
-		33 moj9,
-		34 moj10,
-		35 moj11,
-		36 moj12,
-		37 pac1,
-		38 pac2,
-		39 pac3,
-		40 pac4,
-		41 pac5,
-		42 pac6,
-		43 pac7,
-		44 pac8,
-		45 pac9,
-		46 pac10,
-		47 pac11,
-		48 pac12;
-	TREE colored = (((1[%color = 5 ],(2[%color = 5 ],(3[%color = 5 ],(4[%color = 5 ],(5[%color = 5 ],(6[%color = 5 ],(7[%color = 5 ],(8[%color = 5 ],(9[%color = 5 ],(10[%color = 5 ],(11[%color = 5 ],12[%color = 5 ])[%color = 5 ])[%color = 5 ])[%color = 5 ])[%color = 5 ])[%color = 5 ])[%color = 5 ])[%color = 5 ])[%color = 5 ])[%color = 5 ])[%color = 5 ])[%color = 5 ],(13[%color = 8 ],(14[%color = 8 ],(15[%color = 8 ],(16[%color = 8 ],(17[%color = 8 ],(18[%color = 8 ],(19[%color = 8 ],(20[%color = 8 ],(21[%color = 8 ],(22[%color = 8 ],(23[%color = 8 ],24[%color = 8 ])[%color = 8 ])[%color = 8 ])[%color = 8 ])[%color = 8 ])[%color = 8 ])[%color = 8 ])[%color = 8 ])[%color = 8 ])[%color = 8 ])[%color = 8 ])[%color = 8 ]),((25[%color = 10 ],(26[%color = 10 ],(27[%color = 10 ],(28[%color = 10 ],(29[%color = 10 ],(30[%color = 10 ],(31[%color = 10 ],(32[%color = 10 ],(33[%color = 10 ],(34[%color = 10 ],(35[%color = 10 ],36[%color = 10 ])[%color = 10 ])[%color = 10 ])[%color = 10 ])[%color = 10 ])[%color = 10 ])[%color = 10 ])[%color = 10 ])[%color = 10 ])[%color = 10 ])[%color = 10 ])[%color = 10 ],(37[%color = 11 ],(38[%color = 11 ],(39[%color = 11 ],(40[%color = 11 ],(42[%color = 11 ],(41[%color = 11 ],(43[%color = 11 ],(44[%color = 11 ],(45[%color = 11 ],(46[%color = 11 ],(47[%color = 11 ],48[%color = 11 ])[%color = 11 ])[%color = 11 ])[%color = 11 ])[%color = 11 ])[%color = 11 ])[%color = 11 ])[%color = 11 ])[%color = 11 ])[%color = 11 ])[%color = 11 ])[%color = 11 ]));
+[0] 		1 nig1,
+[1] 		2 nig2,
+[2] 		3 nig3,
+[3] 		4 nig4,
+[4] 		5 nig5,
+[5] 		6 nig6,
+[6] 		7 nig7,
+[7] 		8 nig8,
+[8] 		9 nig9,
+[9] 		10 nig10,
+[10] 		11 nig11,
+[11] 		12 nig12,
+[12] 		13 met1,
+[13] 		14 met2,
+[14] 		15 met3,
+[15] 		16 met4,
+[16] 		17 met5,
+[17] 		18 met6,
+[18] 		19 met7,
+[19] 		20 met8,
+[20] 		21 met9,
+[21] 		22 met10,
+[22] 		23 met11,
+[23] 		24 met12,
+[24] 		25 moj1,
+[25] 		26 moj2,
+[26] 		27 moj3,
+[27] 		28 moj4,
+[28] 		29 moj5,
+[29] 		30 moj6,
+[30] 		31 moj7,
+[31] 		32 moj8,
+[32] 		33 moj9,
+[33] 		34 moj10,
+[34] 		35 moj11,
+[35] 		36 moj12,
+[36] 		37 pac1,
+[37] 		38 pac2,
+[38] 		39 pac3,
+[39] 		40 pac4,
+[40] 		41 pac5,
+[41] 		42 pac6,
+[42] 		43 pac7,
+[43] 		44 pac8,
+[44] 		45 pac9,
+[45] 		46 pac10,
+[46] 		47 pac11,
+[47] 		48 pac12;
+	TREE colored = (((1[&!color = #ff0000 ],(2[&!color = #ff0000 ],(3[&!color = #ff0000 ],(4[&!color = #ff0000 ],(5[&!color = #ff0000 ],(6[&!color = #ff0000 ],(7[&!color = #ff0000 ],(8[&!color = #ff0000 ],(9[&!color = #ff0000 ],(10[&!color = #ff0000 ],(11[&!color = #ff0000 ],12[&!color = #ff0000 ])[&!color = #ff0000 ])[&!color = #ff0000 ])[&!color = #ff0000 ])[&!color = #ff0000 ])[&!color = #ff0000 ])[&!color = #ff0000 ])[&!color = #ff0000 ])[&!color = #ff0000 ])[&!color = #ff0000 ])[&!color = #ff0000 ])[&!color = #ff0000 ],(13[&!color = #eef0aa ],(14[&!color = #eef0aa ],(15[&!color = #eef0aa ],(16[&!color = #eef0aa ],(17[&!color = #eef0aa ],(18[&!color = #eef0aa ],(19[&!color = #eef0aa ],(20[&!color = #eef0aa ],(21[&!color = #eef0aa ],(22[&!color = #eef0aa ],(23[&!color = #eef0aa ],24[&!color = #eef0aa ])[&!color = #eef0aa ])[&!color = #eef0aa ])[&!color = #eef0aa ])[&!color = #eef0aa ])[&!color = #eef0aa ])[&!color = #eef0aa ])[&!color = #eef0aa ])[&!color = #eef0aa ])[&!color = #eef0aa ])[&!color = #eef0aa ])[&!color = #eef0aa ]),((25[&!color = #a0522d ],(26[&!color = #a0522d ],(27[&!color = #a0522d ],(28[&!color = #a0522d ],(29[&!color = #a0522d ],(30[&!color = #a0522d ],(31[&!color = #a0522d ],(32[&!color = #a0522d ],(33[&!color = #a0522d ],(34[&!color = #a0522d ],(35[&!color = #a0522d ],36[&!color = #a0522d ])[&!color = #a0522d ])[&!color = #a0522d ])[&!color = #a0522d ])[&!color = #a0522d ])[&!color = #a0522d ])[&!color = #a0522d ])[&!color = #a0522d ])[&!color = #a0522d ])[&!color = #a0522d ])[&!color = #a0522d ])[&!color = #a0522d ],(37[&!color = #00ff00 ],(38[&!color = #00ff00 ],(39[&!color = #00ff00 ],(40[&!color = #00ff00 ],(42[&!color = #00ff00 ],(41[&!color = #00ff00 ],(43[&!color = #00ff00 ],(44[&!color = #00ff00 ],(45[&!color = #00ff00 ],(46[&!color = #00ff00 ],(47[&!color = #00ff00 ],48[&!color = #00ff00 ])[&!color = #00ff00 ])[&!color = #00ff00 ])[&!color = #00ff00 ])[&!color = #00ff00 ])[&!color = #00ff00 ])[&!color = #00ff00 ])[&!color = #00ff00 ])[&!color = #00ff00 ])[&!color = #00ff00 ])[&!color = #00ff00 ])[&!color = #00ff00 ]));
 
 END;
 
@@ -143,24 +144,16 @@ BEGIN LABELS;
 END;
 
 BEGIN SETS;
-	TAXPARTITION * UNTITLED  =  nig :  1 -  12, met :  13 -  24, moj :  25 -  36, pac :  37 -  48;
-	TAXPARTITION species  =  nig :  1 -  12, met :  13 -  24, moj :  25 -  36, pac :  37 -  48;
+	TAXPARTITION * UNTITLED  =  nig :  1- 12, met :  13- 24, moj :  25- 36, pac :  37- 48;
+	TAXPARTITION species  =  nig :  1- 12, met :  13- 24, moj :  25- 36, pac :  37- 48;
 
-END;
-
-BEGIN ASSUMPTIONS;
-	TYPESET * UNTITLED   =  Squared:  1 -  4;
-
-END;
-
-BEGIN MESQUITECHARMODELS;
-	ProbModelSet * UNTITLED   =  Brownian_default:  1 -  4;
 END;
 
 Begin MESQUITE;
 		MESQUITESCRIPTVERSION 2;
 		TITLE AUTO;
 		tell ProjectCoordinator;
+		timeSaved 1742671866014;
 		getEmployee #mesquite.minimal.ManageTaxa.ManageTaxa;
 		tell It;
 			setID 0 208212565903807533 WM114cbd522e46;
@@ -168,20 +161,49 @@ Begin MESQUITE;
 		getEmployee #mesquite.charMatrices.ManageCharacters.ManageCharacters;
 		tell It;
 			setID 0 124634251740354766 WM114cbd522f20;
-			checksum 0 578547273 WM114cbd522f20;
+			mqVersion 390;
+			checksumv 0 3 578547273 WM114cbd522f20  numChars 4   numItems 1   min 0.0471   max 2.244   sumSquares 266.99960935   NumFiles 1 NumMatrices 1;
+			mqVersion;
 		endTell;
 		getWindow;
 		tell It;
-			setResourcesState false true 100;
-			setPopoutState 400;
+			suppress;
+			setUniqueID 0195b9fe57e935;
 			setExplanationSize 0;
 			setAnnotationSize 0;
 			setFontIncAnnot 0;
 			setFontIncExp 0;
-			setSize 497 346;
-			setLocation 6 22;
+			setSize 461 314;
+			setLocation 6 25;
 			setFont SanSerif;
 			setFontSize 10;
+			getToolPalette;
+			tell It;
+			endTell;
+		endTell;
+		getEmployee  #mesquite.io.InterpretFastaDNA.InterpretFastaDNA;
+		tell It;
+			includeGaps true;
+			simplifyTaxonName false;
+			convertMultStateToMissing false;
+			writeExcludedCharacters true;
+			uniqueSuffix '';
+		endTell;
+		getEmployee  #mesquite.io.InterpretFastaDNAByOTUID.InterpretFastaDNAByOTUID;
+		tell It;
+			includeGaps false;
+			simplifyTaxonName false;
+			convertMultStateToMissing true;
+			writeExcludedCharacters true;
+			uniqueSuffix '';
+		endTell;
+		getEmployee  #mesquite.io.InterpretFastaProtein.InterpretFastaProtein;
+		tell It;
+			includeGaps false;
+			simplifyTaxonName false;
+			convertMultStateToMissing true;
+			writeExcludedCharacters true;
+			uniqueSuffix '';
 		endTell;
 		getEmployee  #mesquite.charMatrices.BasicDataWindowCoord.BasicDataWindowCoord;
 		tell It;
@@ -189,39 +211,66 @@ Begin MESQUITE;
 			tell It;
 				getWindow;
 				tell It;
+					setUniqueID 0195b9fe582136;
 					popAsTile false;
 					popOut;
 					setExplanationSize 20;
 					setAnnotationSize 20;
 					setFontIncAnnot 0;
 					setFontIncExp 0;
-					setSize 505 252;
 					setLocation 1 433;
 					setFont SanSerif;
 					setFontSize 10;
 					getToolPalette;
 					tell It;
+						setTool mesquite.charMatrices.BasicDataWindowMaker.BasicDataWindow.arrow;
 					endTell;
 					setTool mesquite.charMatrices.BasicDataWindowMaker.BasicDataWindow.arrow;
 					colorCells  #mesquite.charMatrices.ColorByState.ColorByState;
+				tell It;
+					setStateLimit 9;
+					toggleUniformMaximum on;
+				endTell;
+					colorRowNames  #mesquite.charMatrices.NoColor.NoColor;
+					colorColumnNames  #mesquite.charMatrices.CharGroupColor.CharGroupColor;
+					colorText  #mesquite.charMatrices.NoColor.NoColor;
 					setBackground White;
 					toggleShowNames on;
 					toggleShowTaxonNames on;
 					toggleTight off;
+					toggleThinRows off;
 					toggleShowChanges on;
 					toggleSeparateLines off;
 					toggleShowStates on;
+					toggleReduceCellBorders off;
 					toggleAutoWCharNames on;
+					toggleAutoTaxonNames off;
 					toggleShowDefaultCharNames off;
 					toggleConstrainCW on;
 					setColumnWidth 70;
 					toggleBirdsEye off;
+					toggleColorOnlyTaxonNames off;
+					toggleShowPaleGrid off;
+					toggleShowPaleCellColors off;
+					toggleShowPaleExcluded off;
+					togglePaleInapplicable on;
+					togglePaleMissing off;
+					toggleShowBoldCellText off;
 					toggleAllowAutosize on;
 					toggleColorsPanel off;
 					toggleLinkedScrolling on;
 					toggleScrollLinkedTables off;
 				endTell;
 				hideWindow;
+				getEmployee #mesquite.charMatrices.AlterData.AlterData;
+				tell It;
+					toggleBySubmenus off;
+				endTell;
+				getEmployee #mesquite.charMatrices.ColorCells.ColorCells;
+				tell It;
+					setColor Red;
+					removeColor off;
+				endTell;
 				getEmployee #mesquite.charMatrices.AnnotPanel.AnnotPanel;
 				tell It;
 					togglePanel off;
@@ -230,10 +279,13 @@ Begin MESQUITE;
 				tell It;
 					showStrip off;
 				endTell;
-				getEmployee #mesquite.charMatrices.ColorCells.ColorCells;
+				getEmployee #mesquite.charMatrices.SelSummaryStrip.SelSummaryStrip;
 				tell It;
-					setColor Red;
-					removeColor off;
+					showStrip off;
+				endTell;
+				getEmployee #mesquite.cont.ItemsEditorForInfoPanel.ItemsEditorForInfoPanel;
+				tell It;
+					panelOpen false;
 				endTell;
 			endTell;
 		endTell;
@@ -266,19 +318,21 @@ Begin MESQUITE;
 							tell It;
 								getWindow;
 								tell It;
+									setUniqueID 0195b9fe587538;
 									popAsTile false;
 									popOut;
 									setExplanationSize 20;
 									setAnnotationSize 20;
 									setFontIncAnnot 0;
 									setFontIncExp 0;
-									setSize 505 252;
+									setSize 468 558;
 									setLocation 3 433;
 									setFont SanSerif;
 									setFontSize 10;
 									getToolPalette;
 									tell It;
 									endTell;
+									toggleAutoRecalc on;
 									valuesByItems;
 									setChartType  #mesquite.charts.Histogram.Histogram;
 								tell It;
@@ -315,14 +369,15 @@ Begin MESQUITE;
 				tell It;
 					setX 1;
 					setY 2;
+					setUniqueID 0195b9fe585137;
 					popAsTile false;
 					popOut;
 					setExplanationSize 20;
 					setAnnotationSize 20;
 					setFontIncAnnot 0;
 					setFontIncExp 0;
-					setSize 493 470;
-					setLocation 526 22;
+					setSize 493 1010;
+					setLocation 526 25;
 					setFont SanSerif;
 					setFontSize 10;
 					getToolPalette;
@@ -349,14 +404,18 @@ Begin MESQUITE;
 			setPrevFileName '01-wingsPlot.nex';
 			getWindow;
 			tell It;
+					setUniqueID 0195b9fe58c139;
 					setExplanationSize 0;
 					setAnnotationSize 0;
 					setFontIncAnnot 0;
 					setFontIncExp 0;
-					setSize 497 329;
-					setLocation 6 22;
+					setSize 461 292;
+					setLocation 6 25;
 					setFont SanSerif;
 					setFontSize 10;
+					getToolPalette;
+					tell It;
+					endTell;
 					setActive;
 				setExplanation 'In the scatter plot, a Principal Components Analysis is shown of the Drosophila data from the previous example.  The bar chart shows character loadings on the different components.  Scroll with the blue arrows to see loadings on the other components.^n^n(This analysis is likewise phylogeny-free.)^n';
 				setTitle Principal_Components;
@@ -365,6 +424,15 @@ Begin MESQUITE;
 				setNextButtonName Next;
 			endTell;
 			showWindow;
+		endTell;
+		getWindow;
+		tell It;
+			setResourcesState false true 100;
+			findWindow 0195b9fe58c139;
+			tell It;
+				setAsFront;
+			endTell;
+			desuppress;
 		endTell;
 		endTell;
 end;

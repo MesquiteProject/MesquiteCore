@@ -20,6 +20,22 @@ import mesquite.categ.lib.CategoricalState;
 import mesquite.cont.lib.ContinuousState;
 import mesquite.lib.*;
 import mesquite.lib.characters.*;
+import mesquite.lib.taxa.Taxa;
+import mesquite.lib.tree.Tree;
+import mesquite.lib.tree.TreeDecorator;
+import mesquite.lib.tree.TreeDisplay;
+import mesquite.lib.tree.TreeDisplayDrawnExtra;
+import mesquite.lib.tree.TreeDisplayLegend;
+import mesquite.lib.tree.TreeDisplayRequests;
+import mesquite.lib.tree.TreeDrawing;
+import mesquite.lib.ui.ColorDialog;
+import mesquite.lib.ui.MQPanel;
+import mesquite.lib.ui.MQTextArea;
+import mesquite.lib.ui.MesquiteColorTable;
+import mesquite.lib.ui.MesquiteTool;
+import mesquite.lib.ui.MesquiteWindow;
+import mesquite.lib.ui.MiniScroll;
+import mesquite.lib.ui.StringInABox;
 
 /* ======================================================================== */
 public class TraceCharacterOperator extends TreeDisplayDrawnExtra implements CharHistoryContainer {
@@ -752,7 +768,7 @@ class TraceLegend extends TreeDisplayLegend {
 	}
 }
 
-class TCMPanel extends Panel {
+class TCMPanel extends MQPanel {
 	String message = "";
 	StringInABox box;
 	public TCMPanel(){
@@ -791,7 +807,7 @@ class TCMPanel extends Panel {
 	}
 }
 
-class SpecsPrintTextArea extends TextArea {
+class SpecsPrintTextArea extends MQTextArea {
 	public SpecsPrintTextArea(String s, int a, int b, int c){
 		super(s, a, b, c);
 	}

@@ -18,6 +18,17 @@ import java.awt.*;
 import java.awt.image.*;
 import mesquite.lib.*;
 import mesquite.lib.duties.*;
+import mesquite.lib.taxa.Taxa;
+import mesquite.lib.tree.Clade;
+import mesquite.lib.tree.MesquiteTree;
+import mesquite.lib.tree.Tree;
+import mesquite.lib.tree.TreeDisplay;
+import mesquite.lib.tree.TreeDisplayExtra;
+import mesquite.lib.tree.TreeTool;
+import mesquite.lib.ui.AlertDialog;
+import mesquite.lib.ui.MesquiteMenuItemSpec;
+import mesquite.lib.ui.MesquiteWindow;
+import mesquite.lib.ui.MiniStringEditor;
 
 /* ======================================================================== */
 public class NodeNamer extends TreeDisplayAssistantI {
@@ -172,7 +183,7 @@ class NodeNamerExtra extends TreeDisplayExtra implements Commandable  {
 						hideMiniEditor();
 						return null;
 					}
-					if (!MesquiteTree.cosmeticInternalNames){
+				/*	if (!MesquiteTree.cosmeticInternalNames){
 						int n = t.nodeOfLabel(arguments, true);
 						if (n<0) {
 							n = t.getTaxa().whichTaxonNumber(arguments, false);
@@ -181,7 +192,7 @@ class NodeNamerExtra extends TreeDisplayExtra implements Commandable  {
 						if (n!=editorNode && t.nodeExists(n)) // node with that label already exists
 							if (!AlertDialog.query(ownerModule.containerOfModule(), "Name already exists", "That name already exists for some other node or terminal taxon.  Assigning the label to this node may cause the tree to be interpreted as reticulate if later re-read from a file.  Continue?"))
 								return null;
-					}
+					} */
 					t.setNodeLabel(arguments, editorNode);
 					if (arguments != null){
 						Clade c = t.getTaxa().getClades().findClade(arguments);

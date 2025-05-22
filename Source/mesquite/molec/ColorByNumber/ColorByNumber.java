@@ -19,6 +19,10 @@ import mesquite.lib.*;
 import mesquite.lib.characters.*;
 import mesquite.lib.duties.*;
 import mesquite.lib.table.*;
+import mesquite.lib.ui.ColorDistribution;
+import mesquite.lib.ui.ColorRecord;
+import mesquite.lib.ui.MesquiteColorTable;
+import mesquite.lib.ui.MesquiteSubmenuSpec;
 import mesquite.cont.lib.*;
 
 /* ======================================================================== */
@@ -45,7 +49,7 @@ public class ColorByNumber extends DataWindowAssistantID implements CellColorer,
 		return true;
 	}
 	public boolean setActiveColors(boolean active){
-   	 	setActive(true);
+   	 	setActive(active);
  		if (active){
 			if (numCompatibleModulesAvailable(NumberForCharAndTaxon.class, stateClass, this)>0) {
 				mss = addSubmenu(null, "Values for Colors", ntC, NumberForCharAndTaxon.class);

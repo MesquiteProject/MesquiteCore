@@ -19,6 +19,13 @@ import java.awt.*;
 import java.io.*;
 import mesquite.lib.*;
 import mesquite.lib.duties.*;
+import mesquite.lib.taxa.Taxa;
+import mesquite.lib.taxa.TaxaBlock;
+import mesquite.lib.taxa.Taxon;
+import mesquite.lib.ui.AlertDialog;
+import mesquite.lib.ui.ListDialog;
+import mesquite.lib.ui.MesquiteSubmenuSpec;
+import mesquite.lists.lib.ListModule;
 import mesquite.assoc.lib.*;
 
 /* ========================================================================  */
@@ -29,16 +36,19 @@ public class ManageAssociations extends AssociationsManager {
 	public boolean startJob(String arguments, Object condition, boolean hiredByName) {
 		associationsVector = new ListableVector();
 		blocks = new ListableVector();
+		
+		loadPreferences();
 		return true;
 	}
- 	public String getKeywords(){
- 		return "genes species";
- 	}
- 	public void endJob(){
- 		associationsVector.dispose(true);
- 		blocks.dispose(true);
+	public String getKeywords(){
+		return "genes species";
+	}
+	public void endJob(){
+		associationsVector.dispose(true);
+		blocks.dispose(true);
+		//		nameParser = null;
 		super.endJob();
- 	}
+	}
 	public boolean isPrerelease(){
 		return false;
 	}
@@ -48,11 +58,13 @@ public class ManageAssociations extends AssociationsManager {
 			NexusBlock.equalizeOrdering(v, getProject().getNexusBlocks());
 		}
 	}
+	
 	/*.................................................................................................................*/
 	/** A method called immediately after the file has been read in.*/
 	public void projectEstablished() {
 		getFileCoordinator().addMenuItem(MesquiteTrunk.treesMenu, "New Association...", makeCommand("newAssociation",  this));
 		MesquiteSubmenuSpec mss = getFileCoordinator().addSubmenu(MesquiteTrunk.treesMenu, "Edit Association", makeCommand("editAssociation",  this), associationsVector);
+		getFileCoordinator().addSubmenu(MesquiteTrunk.treesMenu, "Make Populations (Containing Taxa) From", makeCommand("createTaxaAndAssociation",  this), PopulationsAndAssociationMaker.class);
 		getFileCoordinator().addMenuItem(MesquiteTrunk.treesMenu, "-", null);
 		super.projectEstablished();
 	}
@@ -61,14 +73,7 @@ public class ManageAssociations extends AssociationsManager {
 		if (e instanceof TaxaAssociation){
 			TaxaAssociation t = (TaxaAssociation)e;
 			editInTaxonList(t, false);
-			/*
-			for (int i=0; i<blocks.size(); i++){
-				AssociationsBlock ab = (AssociationsBlock)blocks.elementAt(i);
-				if (ab.getAssociation()==t){
-					edit(ab);
-					break;
-				}
-			}*/
+			
 		}
 		return null;
 	}
@@ -195,10 +200,16 @@ public class ManageAssociations extends AssociationsManager {
 				}
 			}
 			else if (code==MesquiteListener.PARTS_DELETED) {
+				boolean deleteContained = false;
 				for (int i = 0; i<associationsVector.size(); i++){
 					TaxaAssociation assoc = (TaxaAssociation)associationsVector.elementAt(i);
-					if (obj == assoc.getTaxa(0) || obj == assoc.getTaxa(1))
+					if (obj == assoc.getTaxa(0) || obj == assoc.getTaxa(1)){
+
+						boolean deleteAssociatesAlso = false;
+						if (obj == assoc.getTaxa(0))
+							deleteAssociatesAlso = true;
 						assoc.resetTaxaAfterChange();
+					}
 
 				}
 			}
@@ -264,7 +275,6 @@ public class ManageAssociations extends AssociationsManager {
 	private Object editInTaxonList(TaxaAssociation toBeEdited, boolean useFirst){
 		if (toBeEdited == null)
 			return null;
-		TaxaManager manageTaxa = (TaxaManager)findElementManager(Taxa.class);
 		int whichTaxa = 0;
 		if (!useFirst && !MesquiteThread.isScripting()){
 			String f = toBeEdited.getTaxa(0).getName();
@@ -279,27 +289,34 @@ public class ManageAssociations extends AssociationsManager {
 				fString = "First Block";
 				sString = "Second Block";
 			}
-			
+
 			boolean t = AlertDialog.query(containerOfModule(), "Which taxa?", "This is an association between a first block of taxa:\n\n\"" + f + "\"\n\n and a second block of taxa:\n\n\"" + s + "\"\n\nFrom the perspective of which block of taxa do you want to edit the association?", fString, sString, -1);
 			if (t)
 				whichTaxa = 0;
 			else
 				whichTaxa = 1;
 		}
-		MesquiteModule list = manageTaxa.getListOfTaxaModule(toBeEdited.getTaxa(whichTaxa), true);
-		
-
-
-		if (list == null) 
+		boolean success = showAssociationInTaxonList(toBeEdited.getTaxa(whichTaxa), toBeEdited, true);
+		if (!success)
 			return null;
+		
+		return toBeEdited;
+	}
+	
+	/*.................................................................................................................*/
+	public boolean showAssociationInTaxonList(Taxa taxa, TaxaAssociation association, boolean showEditor){
+		TaxaManager manageTaxa = (TaxaManager)findElementManager(Taxa.class);
+		MesquiteModule list = manageTaxa.getListOfTaxaModule(taxa, true);
+		if (list == null) 
+			return false;
 		//here ask each list imployee if they have this assocaition shown; otherwise finish script
 		EmployeeVector e = list.getEmployeeVector();
 		if (e != null){
 			for (int i = 0; i< e.size(); i++){
 				if (e.elementAt(i) instanceof mesquite.assoc.TaxonListAssoc.TaxonListAssoc){
 					mesquite.assoc.TaxonListAssoc.TaxonListAssoc t = (mesquite.assoc.TaxonListAssoc.TaxonListAssoc)e.elementAt(i);
-					if (t.isShowing(toBeEdited))
-						return toBeEdited;
+					if (t.isShowing(association))
+						return true;
 				}
 			}
 		}
@@ -309,17 +326,17 @@ public class ManageAssociations extends AssociationsManager {
 		String commands =  "getWindow; tell It; setSize 680 400; newAssistant  #mesquite.assoc.TaxonListAssoc.TaxonListAssoc; tell It;";
 		commands +=  "getEmployee #mesquite.assoc.StoredAssociations.StoredAssociations; tell It; setCurrentAssociationID ";
 		//here put number of this taxa assoc
-		commands +=  toBeEdited.getID();
+		commands +=  association.getID();
 		commands +=  "; endTell;";
-		commands +=  "endTell; endTell;";
+		commands +=  "showEditor true; endTell; endTell;";
 		pos.setValue(0);
 		CommandRecord cRecord = new CommandRecord(true);
 		CommandRecord prevR = MesquiteThread.getCurrentCommandRecord();
 		MesquiteThread.setCurrentCommandRecord(cRecord);
-		
+
 		p.execute(list, commands, pos, "", false);
 		MesquiteThread.setCurrentCommandRecord(prevR);
-		return toBeEdited;
+		return true;
 	}
 	/*.................................................................................................................*/
 	private Object edit(AssociationsBlock toBeEdited){
@@ -329,6 +346,35 @@ public class ManageAssociations extends AssociationsManager {
 		String newBlock = MesquiteString.queryMultiLineString(containerOfModule(), "Edit Assocation", "Edit TaxaAssociation block \"" + toBeEdited.getAssociation().getName() + "\"", s, 18, false, true);
 		if (newBlock!=null)
 			toBeEdited.setText(newBlock);
+		return null;
+	}
+
+
+	/*.................................................................................................................*/
+	private TaxaAssociation createNewPopulationTaxaBlockAndAssociation(String arguments){
+		PopulationsAndAssociationMaker makerModule= (PopulationsAndAssociationMaker)hireNamedEmployee(PopulationsAndAssociationMaker.class,  arguments);
+		if (makerModule!=null) {
+			boolean changed = false;
+			MesquiteProject project = getProject();
+			String helpString;
+			Taxa specimensTaxa= null;
+			ListableVector taxas = project.getTaxas();
+			if (project.getNumberTaxas()==1){
+				specimensTaxa = project.getTaxa(0);
+			} else {
+				helpString = "Please choose the set of taxa to be the contained taxa (e.g., specimen, gene, parasite). ";
+				specimensTaxa = (Taxa)ListDialog.queryList(containerOfModule(), "Select taxa", "Select the block of taxa for the individual specimen/gene copies.", helpString, taxas, 0);
+			}
+			ObjectContainer popTaxaContainer = new ObjectContainer();
+			TaxaAssociation association = makerModule.makePopulationsAndAssociation(specimensTaxa, popTaxaContainer);
+			//popTaxaContainer is not used, but it will contain the newly made taxa block
+			
+			fireEmployee(makerModule);
+			if (association != null){
+				showAssociationInTaxonList(specimensTaxa, association, false);
+			}
+			return association;
+		}
 		return null;
 	}
 	/*.................................................................................................................*/
@@ -384,11 +430,14 @@ public class ManageAssociations extends AssociationsManager {
 			return association;
 		}
 		else if (checker.compare(this.getClass(), "Creates a new Association block", null, commandName, "newAssociation")) {
-			
+
 			TaxaAssociation association = makeNewAssociation(null, null);
 			if (association == null)
 				return null;
 			return editInTaxonList(association, true);
+		}
+		else if (checker.compare(this.getClass(), "Asks employee to create a new taxa block (corresponding to populations) and an association block linking the specimens to the populations", "[name of maker module]", commandName, "createTaxaAndAssociation")) {
+			return createNewPopulationTaxaBlockAndAssociation(arguments);
 		}
 
 		else
@@ -397,6 +446,9 @@ public class ManageAssociations extends AssociationsManager {
 	}
 
 	public TaxaAssociation makeNewAssociation(Taxa taxaA, Taxa taxaB){
+		return makeNewAssociation(taxaA, taxaB, null);
+	}
+	public TaxaAssociation makeNewAssociation(Taxa taxaA, Taxa taxaB, String associationName){
 		/* get taxa A, taxa B */
 		MesquiteProject project = getProject();
 		if (project.getNumberTaxas()==1){
@@ -405,12 +457,24 @@ public class ManageAssociations extends AssociationsManager {
 		}
 		ListableVector taxas = project.getTaxas();
 		String helpString = "If you are interested in building this association between two sets of  taxa to reflect an association between species trees and gene trees, host and parasite, and the like, ";
-		helpString += "then we suggest you choose the first set of taxa to be the containing taxa (e.g., species, host), and the second set to be the contained taxa (e.g., gene, parasite). ";
-		
+		helpString += "then please choose the first set of taxa to be the containing taxa (e.g., species, host), and the second set to be the contained taxa (e.g., gene, parasite). ";
+
 		helpString += "\n\nIf, on the other hand, you are building the association between sets of taxa to link two matrices (e.g., two matrices from similar taxa but for different genes), ";
 		helpString += "then we suggest you choose the first set of taxa to be the master one, containing the 'official' names for the taxa.";
-		if (taxaA == null) 
-			taxaA = (Taxa)ListDialog.queryList(containerOfModule(), "Select taxa", "Select first block of taxa for the association, e.g. the containing or master taxa.  If you are analyzing gene trees within species trees, select here the species taxa block.", helpString, taxas, 0);
+		if (taxaA == null) {
+			if (project.getNumberTaxas()>2 || taxaB == null)
+			taxaA = (Taxa)ListDialog.queryList(containerOfModule(), "Select containing (primary) taxa", "Select the block of taxa that contain the other taxa, " 
+					+ "e.g. the populations or species (which contain the specimens or gene copies)."
+					+ "\n\nIf you are building the association for another purpose, then select now the primary or reference taxa block.", helpString, taxas, 0);
+			else {
+				int b = project.getTaxaNumber(taxaB);
+				if (b==0)
+					taxaA = project.getTaxa(1);
+				else
+					taxaA = project.getTaxa(0);
+			}
+				
+		}
 		if (taxaA == null)
 			return null;
 		if (taxaB == null){
@@ -422,7 +486,9 @@ public class ManageAssociations extends AssociationsManager {
 					if (t!= taxaA)
 						others[count++] = t;
 				}
-				taxaB = (Taxa)ListDialog.queryList(containerOfModule(), "Select taxa", "Select second block of taxa for the association, e.g. the contained taxa.  If you are analyzing gene trees within species trees, select here the genes taxa block.", helpString, others, 0);
+				taxaB = (Taxa)ListDialog.queryList(containerOfModule(), "Select contained (secondary) taxa", "Select the block of contained taxa, "
+						+"e.g. the specimens or gene copies (which are contained within the populations or species)."
+						+"\n\nIf you are building the association for another purpose, then select now the secondary taxa block.", helpString, others, 0);
 				if (taxaB==null)
 					return null;
 			}
@@ -438,7 +504,9 @@ public class ManageAssociations extends AssociationsManager {
 
 		if (taxaA==null ||taxaB==null || file == null)
 			return null;
-		String name = MesquiteString.queryString(containerOfModule(), "Name of Association", "Association", associationsVector.getUniqueName("Taxa Association"));
+		String name = associationName;
+		if (StringUtil.blank(associationName))
+			name = MesquiteString.queryString(containerOfModule(), "Name of Association", "Association", associationsVector.getUniqueName("Taxa Association"));
 		if (name==null)
 			return null;
 		if (StringUtil.blank(name))
@@ -446,14 +514,25 @@ public class ManageAssociations extends AssociationsManager {
 		resetAllMenuBars();
 		/* user choose title */
 		TaxaAssociation association = new TaxaAssociation();
-		associationsVector.addElement(association, false);
 		association.setTaxa(taxaA, 0);
 		association.setTaxa(taxaB, 1);
 		association.setName(name);
+		associationsVector.addElement(association, !MesquiteThread.isScripting());
 		AssociationsBlock toBeEdited = (AssociationsBlock)association.addToFile(file, project, this); 
 		if (blocks.indexOf(toBeEdited)<0)
 			blocks.addElement(toBeEdited, false);
 		return association;
+	}
+	public TaxaAssociation duplicateAssociation(TaxaAssociation association){
+		if (association == null)
+			return null;
+		TaxaAssociation newAssociation = association.cloneAssociation();
+		newAssociation.setName(association.getName() + " (duplicate)");
+		associationsVector.addElement(association, true);
+		AssociationsBlock newBlock = (AssociationsBlock)newAssociation.addToFile(association.getFile(), getProject(), this); 
+		blocks.addElement(newBlock, false);
+		
+		return newAssociation;
 	}
 	/*.................................................................................................................*/
 	public MesquiteFile chooseFile( Taxa taxa0, Taxa taxa1){  //changed 13 Dec 01 to specify data so as to do check on which file can be
@@ -504,13 +583,13 @@ public class ManageAssociations extends AssociationsManager {
 		boolean fuse = parser.hasFileReadingArgument(file.fileReadingArguments, "fuseTaxaCharBlocks");
 		if (fuse)
 			return null;
-		return processText(file, name, block.toString(), block, null, blockComments);
+		return processText(file, name, block.toString(), block, null, blockComments,  fileReadingArguments);
 	}
 	/*.................................................................................................................*/
-	public NexusBlock processText(MesquiteFile file, String name, String blockAsString, FileBlock block, NexusBlock current, StringBuffer blockComments){
+	public NexusBlock processText(MesquiteFile file, String name, String blockAsString, FileBlock block, NexusBlock current, StringBuffer blockComments, String  fileReadingArguments){
 		Parser commandParser = new Parser();
 		commandParser.setString(blockAsString);
-		MesquiteInteger startCharC = new MesquiteInteger(0);
+		MesquiteLong startCharC = new MesquiteLong(0);
 		TaxaAssociation association=null;
 		Taxa taxaA=null;
 		Taxa taxaB=null;
@@ -615,7 +694,7 @@ public class ManageAssociations extends AssociationsManager {
 				}
 			}
 			else if (current!=null && !(commandName.equalsIgnoreCase("BEGIN") || commandName.equalsIgnoreCase("END")  || commandName.equalsIgnoreCase("ENDBLOCK"))) 
-				readUnrecognizedCommand(file, current, name, block, commandName, s, blockComments, null);
+				readUnrecognizedCommand(file, current, name, block, commandName, s, blockComments, null,  fileReadingArguments);
 		}
 		//a.setAssociation(association);
 		return current;
@@ -624,14 +703,14 @@ public class ManageAssociations extends AssociationsManager {
 	public String getAssocBlock(TaxaAssociation association, AssociationsBlock aB){
 		String block = "";
 		block+="BEGIN TaxaAssociation;" + StringUtil.lineEnding() + "TITLE " + StringUtil.tokenize(association.getName()) + ";" + StringUtil.lineEnding();
-		Taxa taxaA =association.getTaxa(0);
-		Taxa taxaB =association.getTaxa(1);
-		block+="TAXA " + StringUtil.tokenize(taxaA.getName()) +  " ,  " + StringUtil.tokenize(taxaB.getName())+ ";"  + StringUtil.lineEnding();
+		Taxa containingTaxa =association.getTaxa(0);
+		Taxa containedTaxa =association.getTaxa(1);
+		block+="TAXA " + StringUtil.tokenize(containingTaxa.getName()) +  " ,  " + StringUtil.tokenize(containedTaxa.getName())+ ";"  + StringUtil.lineEnding();
 		block+="ASSOCIATES " + StringUtil.lineEnding();
 		String assoc = "";
 		boolean first = true;
-		for (int a=0; a<taxaA.getNumTaxa(); a++) {
-			Taxon taxonA = taxaA.getTaxon(a);
+		for (int a=0; a<containingTaxa.getNumTaxa(); a++) {
+			Taxon taxonA = containingTaxa.getTaxon(a);
 			if (association.getNumAssociates(taxonA)>0) {
 				if (!first)
 					assoc += " , ";
@@ -639,8 +718,8 @@ public class ManageAssociations extends AssociationsManager {
 				assoc += StringUtil.lineEnding();
 
 				assoc += "\t" + StringUtil.tokenize(taxonA.getName()) + " / ";
-				for (int b = 0; b<taxaB.getNumTaxa(); b++) {
-					Taxon taxonB = taxaB.getTaxon(b);
+				for (int b = 0; b<containedTaxa.getNumTaxa(); b++) {
+					Taxon taxonB = containedTaxa.getTaxon(b);
 					if (association.getAssociation(taxonA, taxonB))
 						assoc += " " + StringUtil.tokenize(taxonB.getName());
 
@@ -649,19 +728,12 @@ public class ManageAssociations extends AssociationsManager {
 		}
 		assoc += StringUtil.lineEnding();
 		if (assoc.length() == StringUtil.lineEnding().length()){
-			assoc += "[Adjust the following specification to indicate which taxa from the second block of taxa are associated which which taxa from the first block.  Note that as listed by default, all taxa from the second block are associated with the first taxon of the first block.]" + StringUtil.lineEnding() + StringUtil.lineEnding();
-			for (int a=0; a<taxaA.getNumTaxa(); a++) {
-				Taxon taxonA = taxaA.getTaxon(a);
+			assoc += "[Adjust the following specification to indicate which taxa from the second block of taxa are associated which which taxa from the first block.]" + StringUtil.lineEnding() + StringUtil.lineEnding();
+			for (int a=0; a<containingTaxa.getNumTaxa(); a++) {
+				Taxon taxonA = containingTaxa.getTaxon(a);
 				if (a>0)
 					assoc += " , " + StringUtil.lineEnding() ;
 				assoc += "\t" + StringUtil.tokenize(taxonA.getName()) + " / ";
-				if (a==0) 
-					for (int b = 0; b<taxaB.getNumTaxa(); b++) {
-						Taxon taxonB = taxaB.getTaxon(b);
-						assoc += " " + StringUtil.tokenize(taxonB.getName());
-
-					}
-				//assoc +=  StringUtil.lineEnding();
 			}
 			assoc += StringUtil.lineEnding();
 		}
@@ -704,7 +776,7 @@ class AssociationsBlock extends NexusBlockEditableRaw {
 	}
 	/** DOCUMENT */
 	public void setText(String n){
-		owner.processText(getFile(), getName(), n, null, this, null);
+		owner.processText(getFile(), getName(), n, null, this, null, null);
 		association.notifyListeners(this, new Notification(MesquiteListener.UNKNOWN));
 	}
 

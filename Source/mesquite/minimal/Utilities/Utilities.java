@@ -35,6 +35,7 @@ public class Utilities extends MesquiteInit  {
 	/*.................................................................................................................*/
 	public boolean startJob(String arguments, Object condition, boolean hiredByName) {
 		makeMenu("Utilities");
+		addMenuItem("Send Script to Mesquite...", makeCommand("sendScript", this));
 		hireAllEmployees(UtilitiesAssistant.class);
 		return true;
 	}
@@ -42,7 +43,13 @@ public class Utilities extends MesquiteInit  {
 	/*.................................................................................................................*/
 	/** Respond to commands sent to the window. */
 	public Object doCommand(String commandName, String arguments, CommandChecker checker) {
-		return  super.doCommand(commandName, arguments, checker);
+		if (checker.compare(this.getClass(), "Sends a script to Mesquite", null, commandName, "sendScript")) {
+				Puppeteer p = new Puppeteer(MesquiteTrunk.mesquiteTrunk);
+				p.dialogScript(MesquiteTrunk.mesquiteTrunk, MesquiteTrunk.mesquiteTrunk.containerOfModule(), "Mesquite");
+		}
+		else
+			return  super.doCommand(commandName, arguments, checker);
+		return null;
 	}
 }
 

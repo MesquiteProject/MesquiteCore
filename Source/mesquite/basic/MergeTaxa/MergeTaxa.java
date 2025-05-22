@@ -17,10 +17,16 @@ import java.util.*;
 import java.awt.*;
 
 import mesquite.lib.characters.*;
+import mesquite.assoc.lib.AssociationsManager;
+import mesquite.assoc.lib.TaxaAssociation;
 import mesquite.categ.lib.*;
 import mesquite.lib.*;
 import mesquite.lib.duties.*;
 import mesquite.lib.table.*;
+import mesquite.lib.taxa.Taxa;
+import mesquite.lib.ui.AlertDialog;
+import mesquite.lib.ui.ExtensibleDialog;
+import mesquite.lib.ui.RadioButtons;
 
 
 /* ======================================================================== */
@@ -245,7 +251,14 @@ public class MergeTaxa extends TaxonUtility {
 				}
 			}
 		}
-
+		
+		//Merging in taxa associations
+		AssociationsManager assocManager = (AssociationsManager)getFileCoordinator().findEmployeeWithDuty(AssociationsManager.class);
+		for (int iA = 0; iA < assocManager.getNumberOfAssociations(taxa); iA++){
+			TaxaAssociation assoc = assocManager.getAssociation(taxa, iA);
+			assoc.mergeTaxa(taxa, selected, destinationTaxon);
+			
+		}
 		taxa.setTaxonName(destinationTaxon, sb.toString());
 		if (reportRecord != null && !StringUtil.blank(report)){
 			reportRecord.append(report);

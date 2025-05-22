@@ -18,6 +18,9 @@ import java.io.*;
 import java.awt.*;
 import mesquite.lib.*;
 import mesquite.lib.duties.*;
+import mesquite.lib.ui.MesquiteSubmenuSpec;
+import mesquite.lib.ui.MesquiteTextWindow;
+import mesquite.lib.ui.MesquiteWindow;
 
 /* ======================================================================== */
 public class ManageFileComments extends FileInit {
@@ -39,7 +42,8 @@ public class ManageFileComments extends FileInit {
 		super.projectEstablished();
  	}
   	 
-	/*.................................................................................................................*
+	
+/*.................................................................................................................*
  	/** A method called immediately after the file has been read in or completely set up (if a new file).*
  	public void fileReadIn(MesquiteFile f) {
  		NexusBlock[] blocks = getProject().getNexusBlocks(FileCommentsBlock.class, f);
@@ -77,7 +81,7 @@ public class ManageFileComments extends FileInit {
 	}
   	 MesquiteInteger pos = new MesquiteInteger();
 	/*...................................................................................................................*/
-	public boolean readNexusCommand(MesquiteFile file, NexusBlock nBlock, String blockName, String command, MesquiteString comment){ 
+	public boolean readNexusCommand(MesquiteFile file, NexusBlock nBlock, String blockName, String command, MesquiteString comment, String fileReadingArguments){ 
 		if (blockName.equalsIgnoreCase("NOTES")) {
 			boolean fuse = parser.hasFileReadingArgument(file.fileReadingArguments, "fuseTaxaCharBlocks");
 			if (fuse)
@@ -96,7 +100,7 @@ public class ManageFileComments extends FileInit {
 	public NexusBlock readNexusBlock(MesquiteFile file, String name, FileBlock block, StringBuffer blockComments, String fileReadingArguments){
 		Parser commandParser = new Parser();
 		commandParser.setString(block.toString());
-		MesquiteInteger startCharC = new MesquiteInteger(0);
+		MesquiteLong startCharC = new MesquiteLong(0);
 		
 		String s =commandParser.getNextCommand(startCharC);
 		s =parser.getFirstToken(commandParser.getNextCommand(startCharC));

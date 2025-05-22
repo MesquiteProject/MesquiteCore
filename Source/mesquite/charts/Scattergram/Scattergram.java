@@ -19,6 +19,22 @@ import java.awt.*;
 import java.awt.event.*;
 import mesquite.lib.*;
 import mesquite.lib.duties.*;
+import mesquite.lib.ui.ChartExtra;
+import mesquite.lib.ui.ChartListener;
+import mesquite.lib.ui.ChartTool;
+import mesquite.lib.ui.Charter;
+import mesquite.lib.ui.ColorDistribution;
+import mesquite.lib.ui.DragRectangle;
+import mesquite.lib.ui.Legend;
+import mesquite.lib.ui.MQTextArea;
+import mesquite.lib.ui.MesquiteChart;
+import mesquite.lib.ui.MesquiteColorTable;
+import mesquite.lib.ui.MesquiteMenuItemSpec;
+import mesquite.lib.ui.MesquiteMenuSpec;
+import mesquite.lib.ui.MesquiteSubmenuSpec;
+import mesquite.lib.ui.MesquiteWindow;
+import mesquite.lib.ui.RotatedRectangle;
+import mesquite.lib.ui.StringInABox;
 import mesquite.cont.lib.*;
 
 /* ======================================================================== */
@@ -1051,7 +1067,7 @@ class ScattergramCharter extends Charter {
 		if (tool == chart.getArrowTool()){
 			xDown = xPixel;
 			yDown = yPixel;
-			dragRectangle = new DragRectangle(chart.getField().getGraphics(),xPixel, yPixel);
+			dragRectangle = new DragRectangle(chart.getField(), chart.getField().getGraphics(),xPixel, yPixel);
 			ListableVector extras = chart.getExtras();
 			for (int i=0; i<extras.size(); i++) {
 				((ChartExtra)extras.elementAt(i)).cursorTouchPoint(whichDown, findExactPoint(xPixel,yPixel, chart), null);
@@ -1113,7 +1129,7 @@ class ScattergramCharter extends Charter {
 		//arrow tool; handle selection
 		if (tool == chart.getArrowTool()){
 			if (dragRectangle!=null)
-				dragRectangle.drawRectangleUpDown();
+				dragRectangle.drawRectangleUp();
 			if (which == whichDown && MesquiteInteger.isNonNegative(which)) { // had touched directly on point before
 				if (MesquiteEvent.shiftKeyDown(modifiers)) {
 					if (isSelected(which))
@@ -1250,7 +1266,7 @@ class ScattergramCharter extends Charter {
 				if (!chart.getSelected().anyBitsOn()|| chart.getSelected().isBitOn(i))
 					return (Color.blue);
 				else
-					return (ColorDistribution.lightBlue);
+					return (ColorDistribution.veryLightBlue);
 			}
 			else{
 				if (!chart.getSelected().anyBitsOn()|| chart.getSelected().isBitOn(i))
@@ -1265,7 +1281,7 @@ class ScattergramCharter extends Charter {
 		if (!chart.getSelected().anyBitsOn() || chart.getSelected().isBitOn(i))
 			return (Color.black);
 		else
-			return (Color.gray);
+			return (Color.lightGray);
 
 	}
 	// redraws data point i.  Used currently only for march selection (to avoid entire redraw)
@@ -1593,7 +1609,7 @@ class ScattergramColorLegend extends Legend {
 			stateNames[i] = null;
 			legendColors[i] = null;
 		}
-		specsBox = new TextArea(" ", 2, 2, TextArea.SCROLLBARS_NONE);
+		specsBox = new MQTextArea(" ", 2, 2, TextArea.SCROLLBARS_NONE);
 		specsBox.setEditable(false);
 		if (module.showLegend.getValue())
 			specsBox.setVisible(false);

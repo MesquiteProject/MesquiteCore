@@ -19,6 +19,13 @@ import java.awt.*;
 
 import mesquite.lib.*;
 import mesquite.lib.duties.*;
+import mesquite.lib.taxa.Taxa;
+import mesquite.lib.tree.MesquiteTree;
+import mesquite.lib.tree.Tree;
+import mesquite.lib.tree.TreeVector;
+import mesquite.lib.ui.ListDialog;
+import mesquite.lib.ui.MesquiteMenuItemSpec;
+import mesquite.lib.ui.MesquiteSubmenuSpec;
 
 /** Supplies trees from tree blocks stored in the project.*/
 public class StoredTrees extends TreeSource implements MesquiteListener {
@@ -489,8 +496,11 @@ public class StoredTrees extends TreeSource implements MesquiteListener {
 		if (currentTreeBlock == null) {
 			
 			
-			if (getProject() != null && getProject().getNumberTaxas()==1 && !MesquiteThread.isScripting() && !laxMode)
+			if (getProject() != null && getProject().getNumberTaxas()==1 && !MesquiteThread.isScripting() && !laxMode){
 				logln("No current tree block for taxa " + taxa.getName() + "(Module: Stored Trees)");
+				if (MesquiteTrunk.developmentMode)
+					Debugg.printStackTrace();
+			}
 			if (!MesquiteThread.isScripting())
 				iQuit();
 			return -1;
@@ -504,11 +514,10 @@ public class StoredTrees extends TreeSource implements MesquiteListener {
 	}
 	boolean warned = false;
  	public String getNotesAboutTrees(Taxa taxa){
+		if (laxMode)
+			return "Tree being edited by hand.";
 		int code = checkTreeBlock(taxa, false);
 		if (code <0 || currentTreeBlock == null) {
-			if (laxMode)
-				return "Tree being edited by hand.";
-			else
 				return null;
 		}
 		String s = "Tree block: " + currentTreeBlock.getName();
@@ -520,11 +529,10 @@ public class StoredTrees extends TreeSource implements MesquiteListener {
 	/*.................................................................................................................*/
 	public Tree getCurrentTree(Taxa taxa) {
 		try {
+			if (laxMode)
+				return getDefaultTree(taxa);
 			int code = checkTreeBlock(taxa, false);
 			if (code <0) {
-				if (laxMode)
-					return getDefaultTree(taxa);
-				else
 					return null;
 			}
 			if (currentTreeBlock != null && currentTreeBlock.size()>0) {
@@ -676,9 +684,9 @@ public class StoredTrees extends TreeSource implements MesquiteListener {
 			else
 				tree = taxa.getDefaultTree();
 			if (tree.getName()!=null && !tree.getName().equals(""))
-				return "Tree \"" + tree.getName() + "\" from trees \"" + currentTreeBlock.getName() + "\" of file " + currentTreeBlock.getFileName() + "  [tree: " + tree + "]";
+				return "Tree \"" + tree.getName() + "\" from trees \"" + currentTreeBlock.getName() + "\" of file " + currentTreeBlock.getFileName() + "  (tree: " + tree + ")";
 			else
-				return "Tree # " + Integer.toString(MesquiteTree.toExternal(itree))  + " from trees \"" + currentTreeBlock.getName() + "\" of file " + currentTreeBlock.getFileName() + "  [tree: " + tree + "]";
+				return "Tree # " + Integer.toString(MesquiteTree.toExternal(itree))  + " from trees \"" + currentTreeBlock.getName() + "\" of file " + currentTreeBlock.getFileName() + "  (tree: " + tree + ")";
 		}
 		catch (NullPointerException e) {
 			return null;

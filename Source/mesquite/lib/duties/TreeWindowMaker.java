@@ -15,13 +15,15 @@ package mesquite.lib.duties;
 
 import java.awt.*;
 import mesquite.lib.*;
+import mesquite.lib.taxa.Taxa;
+import mesquite.lib.tree.TreeDisplay;
 
 
 /* ======================================================================== */
 /**Presents a single tree window.*/
 
 public abstract class TreeWindowMaker extends MesquiteModule   {
-
+	ListableVector branchPropertyList = new ListableVector();
    	 public Class getDutyClass() {
    	 	return TreeWindowMaker.class;
    	 }
@@ -34,7 +36,19 @@ public abstract class TreeWindowMaker extends MesquiteModule   {
   	public abstract TreeDisplay getTreeDisplay();
 	public abstract void transposeField();
  	public abstract boolean treeIsEdited();
- 	public String getDutyName() {
+  	public ListableVector getBranchPropertiesList(){
+  		return branchPropertyList;
+  	}
+	/** Returns true if other modules can control the orientation 
+	 * This might not be in control of this module; the DrawTree module hired might have already said no.*/
+	public abstract boolean allowsReorientation();
+	
+ 	public abstract int getPreferredOrientationForNewDisplay();
+ 	public abstract void setPreferredOrientationForNewDisplay(int orient);
+ 	public abstract int getPreferredBranchLengthsDisplay();
+ 	public abstract void setPreferredBranchLengthsDisplay(int orient);
+
+	public String getDutyName() {
  		return "Tree Window Maker";
    	 }
 

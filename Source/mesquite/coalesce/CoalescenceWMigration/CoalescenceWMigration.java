@@ -18,6 +18,12 @@ import java.util.*;
 import java.awt.*;
 import mesquite.lib.*;
 import mesquite.lib.duties.*;
+import mesquite.lib.taxa.Taxa;
+import mesquite.lib.taxa.Taxon;
+import mesquite.lib.tree.MesquiteTree;
+import mesquite.lib.tree.Tree;
+import mesquite.lib.ui.DoubleField;
+import mesquite.lib.ui.ExtensibleDialog;
 //import mesquite.coalesce.lib.*;
 import mesquite.assoc.lib.*;
 /** ======================================================================== */
@@ -253,7 +259,7 @@ boolean suppress = false;
 		//Will store which nodes in gene tree had migration events
 		/**/
 		NameReference nr = geneTree.makeAssociatedObjects("MigrationEvents");
-		ObjectArray migrated = geneTree.getWhichAssociatedObject(nr);
+		ObjectArray migrated = geneTree.getAssociatedObjects(nr);
 		migrated.resetSize(geneTree.getNumNodeSpaces());
 		for (int i= 0; i< migrated.getSize(); i++){
 			if (migrated.getValue(i) == null)
@@ -510,7 +516,7 @@ boolean suppress = false;
 			first = false;
 			return null;
 		}
-		widths = speciesTree.getWhichAssociatedDouble(widthNameReference);
+		widths = speciesTree.getAssociatedDoubles(widthNameReference);
 
 		MesquiteTree t=null;
 		if (geneTree==null || !(geneTree instanceof MesquiteTree))

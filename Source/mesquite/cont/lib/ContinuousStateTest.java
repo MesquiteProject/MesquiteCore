@@ -30,9 +30,9 @@ public class ContinuousStateTest extends CompatibilityTest {
 			return true;
 		if (obj instanceof CompatibilityTest)
 			return false;
-		if (!CharacterState.class.isAssignableFrom((Class)obj))
-			return true;
 		if (!(obj instanceof Class))
+			return true;
+		if (ContinuousState.class.isAssignableFrom((Class)obj) || ContinuousData.class.isAssignableFrom((Class)obj))
 			return true;
 		return ((((Class)obj).isAssignableFrom(ContinuousData.class)) || (((Class)obj).isAssignableFrom(ContinuousState.class)));
 	}

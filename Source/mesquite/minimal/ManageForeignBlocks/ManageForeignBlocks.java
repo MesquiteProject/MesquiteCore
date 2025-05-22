@@ -19,6 +19,7 @@ import java.io.*;
 import java.awt.*;
 import mesquite.lib.*;
 import mesquite.lib.duties.*;
+import mesquite.lib.ui.MesquiteMenuItemSpec;
 
 /** Manages unrecognized blocks in NEXUS data files (storing for editing or later rewriting) */
 public class ManageForeignBlocks extends MesquiteModule {
@@ -63,7 +64,7 @@ public class ManageForeignBlocks extends MesquiteModule {
 		String b = block.toString();
 
 		commandParser.setString(b);
-		MesquiteInteger startCharC = new MesquiteInteger(0);
+		MesquiteLong startCharC = new MesquiteLong(0);
 
 		String s =commandParser.getNextCommand(startCharC);
 		s =parser.getFirstToken(commandParser.getNextCommand(startCharC));

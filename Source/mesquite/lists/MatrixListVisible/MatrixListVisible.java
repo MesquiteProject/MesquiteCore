@@ -25,7 +25,7 @@ import mesquite.lib.duties.*;
 import mesquite.lib.table.*;
 
 /* ======================================================================== */
-public class MatrixListVisible extends DataSetsListAssistant implements MesquiteListener {
+public class MatrixListVisible extends CharMatricesListAssistant implements MesquiteListener {
 	/*.................................................................................................................*/
 	public String getName() {
 		return "Visibility of Matrix";

@@ -19,6 +19,8 @@ import mesquite.lib.*;
 import mesquite.lib.characters.*;
 import mesquite.lib.duties.*;
 import mesquite.lib.table.*;
+import mesquite.lib.ui.ColorDistribution;
+import mesquite.lib.ui.ColorRecord;
 import mesquite.categ.lib.*;
 
 /* ======================================================================== */
@@ -283,7 +285,7 @@ public class ColorMisaligned extends DataWindowAssistantID implements CellColore
 
 	/*.................................................................................................................*/
 	public boolean isPrerelease() {
-		return true;
+		return false;
 	}
 	public CompatibilityTest getCompatibilityTest(){
 		return new RequiresAnyDNAData();

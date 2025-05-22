@@ -17,6 +17,12 @@ package mesquite.diverse.CharIndepDivViewer;
 import java.awt.*;
 import mesquite.lib.*;
 import mesquite.lib.duties.*;
+import mesquite.lib.taxa.Taxa;
+import mesquite.lib.tree.Tree;
+import mesquite.lib.ui.MQTextArea;
+import mesquite.lib.ui.MesquiteSubmenuSpec;
+import mesquite.lib.ui.MesquiteWindow;
+import mesquite.lib.ui.MousePanel;
 import mesquite.diverse.lib.*;
 
 
@@ -199,7 +205,7 @@ class CADPanel extends MousePanel{
 	boolean calculating = false;
 	public CADPanel(){
 		super();
-		text = new TextArea(" ", 50, 50, TextArea.SCROLLBARS_VERTICAL_ONLY);
+		text = new MQTextArea(" ", 50, 50, TextArea.SCROLLBARS_VERTICAL_ONLY);
 		setLayout(null);
 		add(text);
 		text.setLocation(0,26);

@@ -20,6 +20,8 @@ import java.awt.*;
 import mesquite.lib.*;
 import mesquite.lib.characters.*;
 import mesquite.lib.duties.*;
+import mesquite.lib.ui.MesquiteMenuItemSpec;
+import mesquite.lib.ui.MesquiteSubmenuSpec;
 
 /** Coordinates the display of the spreadsheet editor window for character matrices.  This doesn't actually make the window (see BasicDataWindowMaker). */
 public class BasicDataWindowCoord extends FileInit {
@@ -229,7 +231,6 @@ public class BasicDataWindowCoord extends FileInit {
 			CharacterData data = findData(arguments, checker.getFile());
 			if (data == null)
 				return null;
-
 			//if no data window module active, hire one
 			DataWindowMaker mb = (DataWindowMaker)hireEmployee(DataWindowMaker.class, null);
 			if (mb!=null) {

@@ -20,6 +20,7 @@ import java.awt.*;
 import mesquite.lib.*;
 import mesquite.lib.characters.*;
 import mesquite.lib.duties.*;
+import mesquite.lib.ui.AlertDialog;
 import mesquite.stochchar.lib.*;
 
 
@@ -54,7 +55,7 @@ public class ProbModelSetList extends DataSpecssetList {
 	/*.................................................................................................................*/
     	 public Object doCommand(String commandName, String arguments, CommandChecker checker) {
 		if (checker.compare(this.getClass(), "Instructs user as how to make new probability model set", null, commandName, "newProbModelSet")){
-			Object obj = getMainObject();
+			Object obj = getCharacterMatrix();
 			if (!(obj instanceof CharacterData))
 				return null;
 			CharacterData data = (CharacterData)obj;

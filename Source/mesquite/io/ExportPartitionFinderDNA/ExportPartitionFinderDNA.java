@@ -27,10 +27,10 @@ import mesquite.lib.MesquiteInteger;
 import mesquite.lib.MesquiteProject;
 import mesquite.lib.MesquiteThread;
 import mesquite.lib.Parser;
-import mesquite.lib.Taxa;
-import mesquite.lib.TreeVector;
 import mesquite.lib.characters.CharacterData;
 import mesquite.lib.duties.FileInterpreterI;
+import mesquite.lib.taxa.Taxa;
+import mesquite.lib.tree.TreeVector;
 import mesquite.io.lib.*;
 
 
@@ -54,7 +54,7 @@ public class ExportPartitionFinderDNA extends ExportPartitionFinder {
 	}
 
 	/*.................................................................................................................*
-	public void appendPhylipStateToBuffer(CharacterData data, int ic, int it, StringBuffer outputBuffer){
+	public void appendPhylipStateToBuffer(CharacterData data, int ic, int it, MesquiteStringBuffer outputBuffer){
 		data.statesIntoStringBuffer(ic, it, outputBuffer, false);
 	}
 /*.................................................................................................................*/

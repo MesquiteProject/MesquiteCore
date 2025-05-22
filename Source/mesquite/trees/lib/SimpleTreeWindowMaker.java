@@ -17,10 +17,17 @@ import java.util.*;
 import java.awt.*;
 import mesquite.lib.*;
 import mesquite.lib.duties.*;
+import mesquite.lib.tree.Tree;
+import mesquite.lib.tree.TreeContext;
+import mesquite.lib.tree.TreeContextListener;
+import mesquite.lib.tree.TreeDisplay;
+import mesquite.lib.tree.TreeDisplayActive;
+import mesquite.lib.tree.TreeDisplayHolder;
+import mesquite.lib.ui.MesquiteWindow;
 import mesquite.assoc.lib.*;
 
 /* ======================================================================== */
-public abstract class SimpleTreeWindowMaker extends TWindowMaker implements TreeContext, TreeDisplayActive {
+public abstract class SimpleTreeWindowMaker extends TWindowMaker implements TreeContext, TreeDisplayActive, TreeDisplayHolder {
 	public void getEmployeeNeeds(){  //This gets called on startup to harvest information; override this and inside, call registerEmployeeNeed
 		EmployeeNeed e2 = registerEmployeeNeed(DrawTreeCoordinator.class,  getName() + " needs a module to draw trees.",
 		"The drawing coordinator is arranged automatically");
@@ -43,7 +50,7 @@ public abstract class SimpleTreeWindowMaker extends TWindowMaker implements Tree
 		Enumeration e = getEmployeeVector().elements();
 		while (e.hasMoreElements()) {
 			Object obj = e.nextElement();
-			if (obj instanceof TreeDisplayAssistantI || obj instanceof TreeDisplayAssistantDI) {
+			if (obj instanceof TreeDisplayAssistantDI) {
 				TreeDisplayAssistant tca = (TreeDisplayAssistant)obj;
 				simpleTreeWindow.addAssistant(tca);
 			}
@@ -51,6 +58,17 @@ public abstract class SimpleTreeWindowMaker extends TWindowMaker implements Tree
 		resetContainingMenuBar();
 		resetAllWindowsMenus();
 		simpleTreeWindow.sizeDisplays();
+		return true;
+	}
+	/*............................................................................. */
+	// can be overridden by modules to suppress their employers' menus, e.g. for a dependent window, so it doesn't have unexpected clutter
+	public boolean suppressMenuAncestors(){
+		return true;
+	}
+
+
+	/** Returns true if other modules can control the orientation */
+	public boolean allowsReorientation(){
 		return true;
 	}
 	protected abstract SimpleTreeWindow makeTreeWindow(SimpleTreeWindowMaker stwm, DrawTreeCoordinator dtwc);
@@ -107,10 +125,14 @@ public abstract class SimpleTreeWindowMaker extends TWindowMaker implements Tree
 	}
 	/*.................................................................................................................*/
 	public   void setTree(Tree tree, boolean suppressDrawing) {
+		if (simpleTreeWindow == null)
+			return;
 		simpleTreeWindow.setTree(tree, suppressDrawing);
 	}
 	/*.................................................................................................................*/
 	public void  suppressDrawing(boolean suppress){
+		if (simpleTreeWindow == null)
+			return;
 		simpleTreeWindow.getTreeDisplay().suppressDrawing(suppress);
 		if (!suppress)
 			simpleTreeWindow.getTreeDisplay().repaint();

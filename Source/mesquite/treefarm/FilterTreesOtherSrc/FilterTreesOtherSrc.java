@@ -19,6 +19,10 @@ import java.awt.*;
 
 import mesquite.lib.*;
 import mesquite.lib.duties.*;
+import mesquite.lib.taxa.Taxa;
+import mesquite.lib.tree.Tree;
+import mesquite.lib.ui.AlertDialog;
+import mesquite.lib.ui.MesquiteSubmenuSpec;
 import mesquite.treefarm.lib.*;
 
 /* ======================================================================== */

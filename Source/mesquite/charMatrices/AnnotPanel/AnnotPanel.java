@@ -19,7 +19,19 @@ import java.awt.event.*;
 import mesquite.lib.*;
 import mesquite.lib.characters.*;
 import mesquite.lib.duties.*;
+import mesquite.lib.misc.AttachedNotesVector;
 import mesquite.lib.table.*;
+import mesquite.lib.taxa.Taxa;
+import mesquite.lib.ui.AlertDialog;
+import mesquite.lib.ui.AnnotPanelOwner;
+import mesquite.lib.ui.AnnotationsPanel;
+import mesquite.lib.ui.ColorDistribution;
+import mesquite.lib.ui.ColorRecord;
+import mesquite.lib.ui.MesquiteButton;
+import mesquite.lib.ui.MesquiteMenuItemSpec;
+import mesquite.lib.ui.MesquiteSubmenuSpec;
+import mesquite.lib.ui.MesquiteWindow;
+
 import java.awt.image.*;
 
 
@@ -58,7 +70,7 @@ public class AnnotPanel extends DataWindowAssistantID implements CellColorer, Ce
 		return true;
 	}
 	public boolean setActiveColors(boolean active){
-		setActive(true);
+		setActive(active);
 		return true;  
 	}
 	/*.................................................................................................................*/

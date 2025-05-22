@@ -19,6 +19,11 @@ import java.awt.Choice;
 import java.awt.Label;
 
 import mesquite.lib.duties.*;
+import mesquite.lib.taxa.Taxa;
+import mesquite.lib.tree.Tree;
+import mesquite.lib.tree.Trees;
+import mesquite.lib.ui.ExtensibleDialog;
+import mesquite.lib.ui.ProgressIndicator;
 import mesquite.lib.*;
 
 
@@ -39,6 +44,7 @@ public abstract class BasicTreeConsenser extends IncrementalConsenser   {
 		if (!MesquiteThread.isScripting()) 
 			if (!queryOptions())
 				return false;
+		addMenuItem("Consensus Options...",  makeCommand("setOptions",  this));
 		return true;
 	}
 
@@ -63,6 +69,35 @@ public abstract class BasicTreeConsenser extends IncrementalConsenser   {
 		buffer.append(prepareMorePreferencesForXML());
 		preferencesSet = true;
 		return buffer.toString();
+	}
+	/*.................................................................................................................*/
+	public Snapshot getSnapshot(MesquiteFile file) {
+		Snapshot temp = new Snapshot();
+
+		temp.addLine("rooting " + rooting);
+		return temp;
+	}
+	/*.................................................................................................................*/
+	public Object doCommand(String commandName, String arguments, CommandChecker checker) {
+		if (checker.compare(this.getClass(), "Presents options dialog box.", "[on or off]", commandName, "setOptions")) {
+			boolean q = queryOptions();
+			if (q)
+				parametersChanged();
+
+		}
+		else if (checker.compare(this.getClass(), "Sets rooting choice.", "[value]", commandName, "rooting")) {
+			int s = MesquiteInteger.fromString(parser.getFirstToken(arguments));
+			if (MesquiteInteger.isCombinable(s)){
+				rooting = s;
+				if (!MesquiteThread.isScripting())
+					parametersChanged(); 
+
+			}
+		}
+
+		else
+			return  super.doCommand(commandName, arguments, checker);
+		return null;
 	}
 	
 	public void queryOptionsSetup(ExtensibleDialog dialog) {

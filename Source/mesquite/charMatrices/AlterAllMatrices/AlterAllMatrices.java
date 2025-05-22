@@ -22,6 +22,7 @@ import mesquite.lib.*;
 import mesquite.lib.characters.*;
 import mesquite.lib.duties.*;
 import mesquite.lib.table.*;
+import mesquite.lib.ui.MesquiteSubmenuSpec;
 
 /* ======================================================================== */
 public class AlterAllMatrices extends FileProcessor {
@@ -42,9 +43,9 @@ public class AlterAllMatrices extends FileProcessor {
 				return sorry(getName() + " couldn't start because the requested data alterer wasn't successfully hired.");
 		}
 		else if (!MesquiteThread.isScripting()) {
-			alterTask = (DataAlterer)hireEmployee(DataAlterer.class, "Transformer of matrices");
+			alterTask = (DataAlterer)hireEmployee(DataAlterer.class, "Alterer of matrices");
 			if (alterTask == null)
-				return sorry(getName() + " couldn't start because no tranformer module obtained.");
+				return sorry(getName() + " couldn't start because no matrix alterer module obtained.");
 		}
 		return true;
 	}
@@ -100,35 +101,37 @@ public class AlterAllMatrices extends FileProcessor {
    	}
 	/*.................................................................................................................*/
    	/** Called to alter file. */
-   	public boolean processFile(MesquiteFile file){
+   	public int processFile(MesquiteFile file){
    		if (alterTask == null)
-   			return false;
+   			return -1;
    		MesquiteProject proj = file.getProject();
    		if (proj == null)
-   			return false;
+   			return 0;
    		boolean success = false;
    		CompatibilityTest test = alterTask.getCompatibilityTest();
    		for (int im = 0; im < proj.getNumberCharMatrices(file); im++){
    			CharacterData data = proj.getCharacterMatrix(file, im);
-   			if (test.isCompatible(data.getStateClass(), getProject(), this)) {
-   				success = true;
-   				logln("About to alter matrix \"" + data.getName() + "\"");
+   			if (test == null || test.isCompatible(data.getStateClass(), getProject(), this)) {
+  				success = true;
+   				logln("Altering matrix \"" + data.getName() + "\"");
    				alterTask.alterData(data, null, null);  // do not measure success based upon whether data were altered.
    			}
    		}
-   			
-   		return success;
+   		if (success)
+   			return 0;
+   		logln("Alter matrix failed: " + data.getName() + " by " + alterTask.getName());
+   		return 1;
    	}
 	/*.................................................................................................................*/
 	 public String getName() {
-	return "Alter All Matrices";
+	return "Alter Matrices ";
 	 }
 		/*.................................................................................................................*/
 	 public String getNameAndParameters() {
 		 if (alterTask==null)
-			 return "Alter All Matrices";
+			 return "Alter Matrices";
 		 else
-			 return "Alter All Matrices (" + alterTask.getName() + ")";
+			 return alterTask.getNameAndParameters();
 	 }
 	/*.................................................................................................................*/
  	/** returns an explanation of what the module does.*/

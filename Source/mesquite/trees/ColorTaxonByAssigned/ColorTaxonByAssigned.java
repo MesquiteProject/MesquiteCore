@@ -17,6 +17,8 @@ import java.util.*;
 import java.awt.*;
 import mesquite.lib.*;
 import mesquite.lib.duties.*;
+import mesquite.lib.taxa.Taxa;
+import mesquite.lib.ui.ColorDistribution;
 
 /* ======================================================================== */
 public class ColorTaxonByAssigned extends TaxonNameStyler {
@@ -45,13 +47,11 @@ public class ColorTaxonByAssigned extends TaxonNameStyler {
  	}
  
  	/*.................................................................................................................*/
-	NameReference colorNameRef = NameReference.getNameReference("color");
 	
 	public Color getTaxonNameColor(Taxa taxa, int ic){
-		long c = taxa.getAssociatedLong(colorNameRef, ic);
-		if (MesquiteLong.isCombinable(c))
-			return  ColorDistribution.getStandardColor((int)c);
-		return null;
+		Color color = taxa.getColor(ic);
+		return color;
+	
 	}
 	/*.................................................................................................................*/
     	 public String getName() {

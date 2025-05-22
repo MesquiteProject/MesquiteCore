@@ -18,6 +18,8 @@ import java.awt.*;
 import mesquite.lib.*;
 import mesquite.lib.characters.*;
 import mesquite.lib.duties.*;
+import mesquite.lib.taxa.Taxa;
+import mesquite.lib.ui.MesquiteSubmenuSpec;
 
 /* ======================================================================== */
 public class NumForCharWithChar extends NumberForCharacter implements Incrementable{
@@ -115,6 +117,7 @@ public class NumForCharWithChar extends NumberForCharacter implements Incrementa
 		return temp;
 	}
 	/*.................................................................................................................*/
+	MesquiteInteger pos = new MesquiteInteger(0);
 	public Object doCommand(String commandName, String arguments, CommandChecker checker) {
 		if (checker.compare(this.getClass(), "Sets the module that calculates numbers for characters with another character", "[name of module]", commandName, "setNumberTask")) {
 			NumberFor2Characters temp =  (NumberFor2Characters)replaceEmployee(NumberFor2Characters.class, arguments, "Number for character with another character", numberTask);
@@ -157,7 +160,7 @@ public class NumForCharWithChar extends NumberForCharacter implements Incrementa
 			}
 		}
 		else if (checker.compare(this.getClass(), "Sets the character to use", "[character number]", commandName, "setCharacter")) {
-			int icNum = MesquiteInteger.fromFirstToken(arguments, stringPos);
+			int icNum = MesquiteInteger.fromFirstToken(arguments, pos);
 			if (!MesquiteInteger.isCombinable(icNum))
 				return null;
 			int ic = CharacterStates.toInternal(icNum);

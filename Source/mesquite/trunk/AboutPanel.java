@@ -18,10 +18,15 @@ import java.awt.event.*;
 import java.awt.image.*;
 import java.util.*;
 import mesquite.lib.*;
+import mesquite.lib.misc.HPanel;
+import mesquite.lib.ui.ColorDistribution;
+import mesquite.lib.ui.InfoBar;
+import mesquite.lib.ui.MQPanel;
+import mesquite.lib.ui.MesquiteWindow;
 
 /* ======================================================================== */
 /** The Panel containing the Mesquite logo on the startup window */
-public class AboutPanel extends Panel {
+public class AboutPanel extends MQPanel {
 	Image logo;
 	HPanel superimposed = null;
 	public AboutPanel (Image logo) {
@@ -40,7 +45,7 @@ public class AboutPanel extends Panel {
 		g.drawImage(logo,0,0,(ImageObserver)this);
 		
 		g.setColor(ColorDistribution.lightYellow);
-		g.drawString("Version " + MesquiteModule.getMesquiteVersion() + MesquiteModule.getBuildVersion() , 8,95); //was 15
+		g.drawString("Version " + MesquiteModule.getMesquiteVersion() + MesquiteModule.getBuildVersion(), 8,95); //was 15
 		if (MesquiteTrunk.mesquiteTrunk.isPrerelease())
 			g.drawString(MesquiteModule.getBuildDate() , 8,110); //was 15
 		if (StringUtil.notEmpty(MesquiteModule.getSpecialVersion()))
@@ -53,7 +58,7 @@ public class AboutPanel extends Panel {
 			g.drawImage(InfoBar.prereleaseImage,3,3,(ImageObserver)this);
 		}
 		g.drawString("http://www.mesquiteproject.org", 5,210);
-		g.drawString("Copyright (c) 1997-2023 W. & D. Maddison.", 5,225);
+		g.drawString("Copyright (c) 1997-2025 W. & D. Maddison.", 5,225);
 		
 		MesquiteWindow.uncheckDoomed(this);
 	}

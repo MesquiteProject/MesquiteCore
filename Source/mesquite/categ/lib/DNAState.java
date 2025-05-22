@@ -19,6 +19,7 @@ import java.util.*;
 import mesquite.lib.*;
 import mesquite.lib.characters.*;
 import mesquite.lib.duties.*;
+import mesquite.lib.taxa.Taxa;
 
 /* ======================================================================== */
 /** A subclass of CategoricalState set for DNA (max state enforced at 3). */

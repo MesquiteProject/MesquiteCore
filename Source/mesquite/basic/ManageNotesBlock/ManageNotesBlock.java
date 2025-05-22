@@ -21,6 +21,7 @@ import java.io.*;
 import mesquite.lib.*;
 import mesquite.lib.characters.CharacterData;
 import mesquite.lib.duties.*;
+import mesquite.lib.ui.ProgressIndicator;
 
 /** Manages the NOTES block of a NEXUS file */
 public class ManageNotesBlock extends FileInit {
@@ -99,7 +100,7 @@ End;
 					b.processLinkCTCommand( s, getProject(), parser);
 				}
 				else
-					readUnrecognizedCommand(file, b, "NOTES", block, commandName, s, blockComments, comment);
+					readUnrecognizedCommand(file, b, "NOTES", block, commandName, s, blockComments, comment,  fileReadingArguments);
 			}
 		}
 		if (!nbw && file.notesBugWarn){

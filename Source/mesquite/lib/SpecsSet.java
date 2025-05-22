@@ -35,6 +35,7 @@ public abstract class SpecsSet extends FileElement {
 		this.numParts = numParts;
 		totalCreated++;
 	}
+
 	public void dispose(){
 		totalDisposed++;
 		super.dispose();
@@ -63,6 +64,7 @@ public abstract class SpecsSet extends FileElement {
 	public void setChangedFromCloned(boolean ch){
  		setDirty(true);
 	}
+	public abstract boolean allDefault();
 	/*.................................................................................................................*/
 	public int getNumberOfParts(){
 		return numParts;
@@ -74,8 +76,17 @@ public abstract class SpecsSet extends FileElement {
 	/** Add num parts just after "starting" (filling with default values)  */
   	public abstract boolean addParts(int starting, int num);
 	/*.................................................................................................................*/
+  	
 	/** Delete parts specified  */
 	public abstract boolean deleteParts(int starting, int num);
+	/*.................................................................................................................*/
+  	
+	/** Delete parts specified  */
+	protected abstract boolean deletePartsFlagged(Bits toDelete);
+	/*.................................................................................................................*/
+  	
+	/** Delete parts specified  *
+	protected abstract boolean deletePartsBy Blocks(int[][] blocks);
 	/*.................................................................................................................*/
 	/** Move num parts starting at first, to just after parts justAfter  */
 	public abstract boolean moveParts(int starting, int num, int justAfter);

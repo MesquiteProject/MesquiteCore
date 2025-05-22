@@ -17,6 +17,12 @@ import java.awt.*;
 import java.awt.event.*;
 
 import mesquite.lib.*;
+import mesquite.lib.ui.MesquiteButton;
+import mesquite.lib.ui.MesquiteMenuItemSpec;
+import mesquite.lib.ui.MesquitePDFFile;
+import mesquite.lib.ui.MesquitePrintJob;
+import mesquite.lib.ui.MesquiteTool;
+import mesquite.lib.ui.MesquiteWindow;
 
 
 /* ======================================================================== */

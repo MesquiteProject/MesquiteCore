@@ -55,7 +55,7 @@ public class ManageCodonsBlock extends FileInit {
 	public NexusBlock readNexusBlock(MesquiteFile file, String name, FileBlock block, StringBuffer blockComments, String fileReadingArguments){
 		Parser commandParser = new Parser();
 		commandParser.setString(block.toString());
-		MesquiteInteger startCharC = new MesquiteInteger(0);
+		MesquiteLong startCharC = new MesquiteLong(0);
 		String s;
 		//CodonsBlock sB = new CodonsBlock(file, this); 
 		NexusBlock[] bs = getProject().getNexusBlocks(CodonsBlock.class, file);//added Sept 2011
@@ -72,7 +72,7 @@ public class ManageCodonsBlock extends FileInit {
 					sB.processLinkCTCommand( s, getProject(), parser);
 				}
 				else
-					readUnrecognizedCommand(file, sB, "CODONS", block, commandName, s, blockComments, null);
+					readUnrecognizedCommand(file, sB, "CODONS", block, commandName, s, blockComments, null,  fileReadingArguments);
 		}
 		return sB;
 	}

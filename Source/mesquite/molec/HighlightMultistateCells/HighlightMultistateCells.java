@@ -20,6 +20,8 @@ import mesquite.lib.*;
 import mesquite.lib.characters.*;
 import mesquite.lib.duties.*;
 import mesquite.lib.table.*;
+import mesquite.lib.ui.ColorDistribution;
+import mesquite.lib.ui.ColorRecord;
 import mesquite.categ.lib.*;
 
 
@@ -33,7 +35,7 @@ public class HighlightMultistateCells extends DataWindowAssistantID implements C
 		return true;
 	}
 	public boolean setActiveColors(boolean active){
-		setActive(true);
+		setActive(active);
 		return true; //TODO: check success
 	}
 	/*.................................................................................................................*/

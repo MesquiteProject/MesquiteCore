@@ -22,9 +22,14 @@ import java.awt.*;
 import mesquite.lib.*;
 import mesquite.lib.duties.*;
 import mesquite.lib.table.*;
+import mesquite.lib.taxa.Taxa;
+import mesquite.lib.taxa.Taxon;
+import mesquite.lib.ui.ExtensibleDialog;
+import mesquite.lib.ui.MesquiteColorTable;
+import mesquite.lib.ui.SingleLineTextField;
 
 /* ======================================================================== */
-public class NumForTaxaList extends TaxonListAssistant implements MesquiteListener {
+public class NumForTaxaList extends TaxonListAssistant implements MesquiteListener, Pausable {
 
 	/*.................................................................................................................*/
 	public String getName() {
@@ -38,14 +43,15 @@ public class NumForTaxaList extends TaxonListAssistant implements MesquiteListen
 	}
 	public void getEmployeeNeeds(){  //This gets called on startup to harvest information; override this and inside, call registerEmployeeNeed
 		EmployeeNeed e = registerEmployeeNeed(NumberForTaxon.class, getName()  + " needs a method to calculate a value for each of the taxa.",
-		"You can select a value to show in the Number For Taxa submenu of the Columns menu of the List of Taxa Window. ");
+				"You can select a value to show in the Number For Taxa submenu of the Columns menu of the List of Taxa Window. ");
 	}
 	/*.................................................................................................................*/
 	NumberForTaxon numberTask;
 	MesquiteBoolean shadeCells;
 	Taxa taxa;
-	boolean suppressed = false;
+	boolean suppressedByScript = false;
 	MesquiteTable table;
+
 	/*.................................................................................................................*/
 	public boolean startJob(String arguments, Object condition, boolean hiredByName) {
 		if (arguments !=null) {
@@ -88,6 +94,27 @@ public class NumForTaxaList extends TaxonListAssistant implements MesquiteListen
 		return temp;
 	}
 
+	/** Indicate what could be paused */
+	public void addPausables(Vector pausables) {
+		if (pausables != null)
+			pausables.addElement(this);
+	}
+	/** to ask Pausable to pause*/
+	public void pause() {
+		paused = true;
+	}
+	/** to ask a Pausable to unpause (i.e. to resume regular activity)*/
+	public void unpause() {
+		paused = false;
+		doCalcs();
+		parametersChanged(null);
+	}
+	/*.................................................................................................................*/
+	boolean paused = false;
+/*.................................................................................................................*/
+	boolean okToCalc() {
+		return !suppressedByScript && !paused;
+	}
 	/*.................................................................................................................*/
 	public boolean querySelectBounds(MesquiteNumber lessThan, MesquiteNumber moreThan) {
 		if (lessThan==null || moreThan==null || numberTask==null)
@@ -144,18 +171,46 @@ public class NumForTaxaList extends TaxonListAssistant implements MesquiteListen
 				table.redrawFullRow(i);
 			}
 		}
-		
-			taxa.notifyListeners(this, new Notification(MesquiteListener.SELECTION_CHANGED));
+
+		taxa.notifyListeners(this, new Notification(MesquiteListener.SELECTION_CHANGED));
 
 	}
 
+	
+	String[] legacyNfTModules = new String[] {
+			"#mesquite.molec.PropUnambigSites.PropUnambigSites", //this one is now called NumUnambigSites
+			"#mesquite.molec.CGBiasOfTaxon.CGBiasOfTaxon",
+			"#mesquite.molec.NumberPolyInTaxon.NumberPolyInTaxon",
+			"#mesquite.molec.NumberStopsInTaxon.NumberStopsInTaxon",
+			"#mesquite.molec.NumMissingData.NumMissingData",
+			"#mesquite.molec.PercentGapsInTaxon.PercentGapsInTaxon",
+			"#mesquite.molec.PercentLowerCase.PercentLowerCase",
+			"#mesquite.molec.PercentMissingInTaxon.PercentMissingInTaxon",
+			"#mesquite.molec.PropAmbiguousInTaxon.PropAmbiguousInTaxon",
+			"#mesquite.molec.SequenceLength.SequenceLength",
+			"#mesquite.align.AlignScoreForTaxon.AlignScoreForTaxon",
+			"#mesquite.align.AlignScoreForTaxonRC.AlignScoreForTaxonRC",
+			"#mesquite.categ.ProportionUniqueStates.ProportionUniqueStates",
+			"#mesquite.chromaseq.SequenceQuality.SequenceQuality",
+			"#mesquite.chromaseq.NumberOfReads.NumberOfReads"};
 	/*.................................................................................................................*/
 	public Object doCommand(String commandName, String arguments, CommandChecker checker) {
 		if (checker.compare(this.getClass(), "Sets module that calculates a number for a taxon", "[name of module]", commandName, "setValueTask")) {
+			int legacyTask = StringArray.indexOf(legacyNfTModules, arguments);
+			if (legacyTask>=0) { //This is an old script directly referring to the modules that have changed duty; now they are hired indirectly via NumForTaxonWMatrix
+				if (legacyTask == 0) //this one changed names
+					arguments = "#NumUnambigSites";
+				NumberForTaxon temp= (NumberForTaxon)replaceEmployee(NumberForTaxon.class, "#NumForTaxonWMatrix", "Number for a taxon", numberTask);
+				if (temp != null) {
+					MesquiteModule calculator = (MesquiteModule) temp.doCommand("numberTask", arguments, checker);
+					numberTask = temp;
+					return numberTask;
+				}
+			}
 			NumberForTaxon temp= (NumberForTaxon)replaceEmployee(NumberForTaxon.class, arguments, "Number for a taxon", numberTask);
 			if (temp!=null) {
 				numberTask = temp;
-				if (!suppressed){
+				if (okToCalc()){
 					doCalcs();
 					parametersChanged();
 				}
@@ -180,11 +235,11 @@ public class NumForTaxaList extends TaxonListAssistant implements MesquiteListen
 			}
 		}
 		else if (checker.compare(this.getClass(), "Suppresses calculation", null, commandName, "suppress")) {
-			suppressed = true;
+			suppressedByScript = true;
 		}
 		else if (checker.compare(this.getClass(), "Releases suppression of calculation", null, commandName, "desuppress")) {
-			if (suppressed){
-				suppressed = false;
+			if (suppressedByScript){
+				suppressedByScript = false;
 				outputInvalid();
 				doCalcs();
 				parametersChanged();
@@ -197,7 +252,7 @@ public class NumForTaxaList extends TaxonListAssistant implements MesquiteListen
 	public void setTableAndTaxa(MesquiteTable table, Taxa taxa){
 		this.table = table;
 		this.taxa = taxa;
-		if (!suppressed)
+		if (okToCalc())
 			doCalcs();
 	}
 	public String getTitle() {
@@ -219,7 +274,7 @@ public class NumForTaxaList extends TaxonListAssistant implements MesquiteListen
 	public void changed(Object caller, Object obj, Notification notification){
 		if (Notification.appearsCosmetic(notification))
 			return;
-		if (!suppressed){
+		if (okToCalc()){
 			outputInvalid();
 			doCalcs();
 			parametersChanged(notification);
@@ -227,7 +282,7 @@ public class NumForTaxaList extends TaxonListAssistant implements MesquiteListen
 	}
 	/*.................................................................................................................*/
 	public void employeeParametersChanged(MesquiteModule employee, MesquiteModule source, Notification notification) {
-		if (!suppressed){
+		if (okToCalc()){
 			outputInvalid();
 			doCalcs();
 			parametersChanged(notification);
@@ -240,7 +295,7 @@ public class NumForTaxaList extends TaxonListAssistant implements MesquiteListen
 	MesquiteNumber max = new MesquiteNumber();
 	/*.................................................................................................................*/
 	public void doCalcs(){
-		if (suppressed || numberTask==null || taxa == null)
+		if (!okToCalc() || numberTask==null || taxa == null)
 			return;
 		int numTaxa = taxa.getNumTaxa();
 		na.resetSize(numTaxa);
@@ -248,10 +303,10 @@ public class NumForTaxaList extends TaxonListAssistant implements MesquiteListen
 		explArray.resetSize(numTaxa);
 		MesquiteNumber mn = new MesquiteNumber();
 		MesquiteString expl = new MesquiteString();
-		
+
 		MesquiteTimer timer = new MesquiteTimer();
 		timer.start();
-		
+
 		for (int ic=0; ic<numTaxa; ic++) {
 			CommandRecord.tick("Number for taxon in taxon list; examining taxon " + ic);
 			Taxon taxon = taxa.getTaxon(ic);
@@ -260,6 +315,7 @@ public class NumForTaxaList extends TaxonListAssistant implements MesquiteListen
 			na.setValue(ic, mn);
 			explArray.setValue(ic, expl.getValue());
 		}
+		CommandRecord.tick("");
 		na.placeMinimumValue(min);
 		na.placeMaximumValue(max);
 	}

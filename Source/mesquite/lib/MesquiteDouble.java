@@ -16,13 +16,17 @@ package mesquite.lib;
 import java.awt.*;
 import java.text.*;
 import corejava.Format;
+import mesquite.lib.ui.EnglishDecimalFormatSymbols;
+import mesquite.lib.ui.MesquiteWindow;
+import mesquite.lib.ui.QueryDialogs;
+import mesquite.lib.ui.TwoStringsDialog;
 
 /*Last documented:  August 1999 */
 
 /* ======================================================================== */
 /** This double wrapper class is used to be able to pass doubles by reference and have the
 	original change as needed*/
-public class MesquiteDouble implements Listable {
+public class MesquiteDouble implements Listable, Nameable {
 	public static final double unassigned = Double.MAX_VALUE * 0.9999;
 	public static final double inapplicable = Double.MAX_VALUE * 0.99999;
 	public static final double infinite = Double.POSITIVE_INFINITY;
@@ -34,7 +38,8 @@ public class MesquiteDouble implements Listable {
 	static double log10 = Math.log(10.0);
 	public static long totalCreated = 0;
 	public static int defaultDigits = 8; //changed from 6, 17 Dec 01
-	
+	private boolean unanimous = true;
+
 	public MesquiteDouble(double value) {
 		this.value=value;
 		totalCreated++;
@@ -80,6 +85,32 @@ public class MesquiteDouble implements Listable {
 	/** Sets value to unassigned */
 	public void setToUnassigned() {
 		value=unassigned;
+	}
+	
+	public void resetVote(){ //should only be called before use of vote
+		setToUnassigned();
+		unanimous = true;
+
+	}
+	/** if unassigned, assign it the incoming. If incoming is different from previous assigned, unanimous is set to false and keep it there. Thus know if there is disagreemnt in a set */
+	public void vote(double value) {
+		if (value == unassigned)
+			return;
+		if (!unanimous)
+			return;
+		if (this.value == unassigned)
+			this.value = value;
+		else if (this.value != value)
+			unanimous = false;
+	}
+	public boolean isUnanimous(){ //should only be called after a good use of vote
+		return unanimous;
+	}
+	public double unanimousValue(){ //should only be called after a good use of vote
+		if (unanimous)
+			return value;
+		else
+			return unassigned;
 	}
 	/*--------------------------------CONVERSION--------------------------*/
 	/** Returns the double conversion of the passed integer, considering
@@ -704,9 +735,18 @@ public class MesquiteDouble implements Listable {
 	public static String toStringInRange(double d, double range) {  
 		double threshold = Math.abs(range)*0.0001; //if close enough to zero compared to range, call it that
 		double absD = Math.abs(d);
-		if (absD<threshold)
-			return "0.0";
-		return toStringDigitsSpecified(d, defaultDigits);
+		if (absD<threshold) {
+			if (range <=5)  //if total range is big enough, show as whole numbers when possible
+				return "0.0";
+			else
+				return "0";
+		}
+		String s = toStringDigitsSpecified(d, defaultDigits);
+		if (s.endsWith(".0")){
+			if (range>5)
+				return s.substring(0, s.length()-2);
+		}
+		return s;
 	}
 	/** Returns string version of value, showing the given number of digits.
 	 Returns "unassigned" etc. if needed*/

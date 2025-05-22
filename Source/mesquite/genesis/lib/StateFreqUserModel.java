@@ -18,6 +18,9 @@ import java.awt.*;
 import java.awt.event.*;
 import mesquite.lib.characters.*;
 import mesquite.lib.duties.*;
+import mesquite.lib.ui.DoubleField;
+import mesquite.lib.ui.ExtensibleDialog;
+import mesquite.lib.ui.MQPanel;
 import mesquite.categ.lib.*;
 import mesquite.cont.lib.*;
 
@@ -72,7 +75,7 @@ public abstract class StateFreqUserModel extends StateFreqModel implements Actio
 		for (int i=0; i<getNumStates(); i++) {
 			stateFreqField[i] = dialog.addDoubleField(""+CategoricalData.getDefaultStateSymbol(dataClass(),i)+":",getStateFreq(i), 10);
 		}
-		Panel moreButtons = new Panel();
+		Panel moreButtons = new MQPanel();
 		dialog.addAListenedButton("Equal",moreButtons,this);
 		dialog.addAListenedButton("Norm+-",moreButtons,this);
 		dialog.addAListenedButton("Norm*/",moreButtons,this);

@@ -20,6 +20,10 @@ import mesquite.lib.*;
 import mesquite.lib.characters.*;
 import mesquite.lib.duties.*;
 import mesquite.lib.table.*;
+import mesquite.lib.taxa.Taxa;
+import mesquite.lib.ui.MesquitePopup;
+import mesquite.lib.ui.MesquiteWindow;
+import mesquite.lib.ui.MousePanel;
 import mesquite.categ.lib.*;
 
 /* TODO: 
@@ -66,6 +70,7 @@ public class MatrixInfoTool extends DataWindowAssistantI {
 		this.data = data;
 		taxa = data.getTaxa();
 	}
+
 	/*.................................................................................................................*/
 	public int getApplicableNonMissing(int ic, int it, boolean before){
 		int count = 0;
@@ -93,78 +98,48 @@ public class MatrixInfoTool extends DataWindowAssistantI {
 			return;
 		popup.addItem(s, this, command, Integer.toString(response));
 	}
-	/*.................................................................................................................*/
-	public void moveToNext(boolean next) { 
-		if (data == null || table ==null || !MesquiteInteger.isCombinable(column) || !MesquiteInteger.isCombinable(row))
-			return;
-		boolean selectionChange = false;
-		int icCurrent = column;
-		if (next) {
-			if (!MesquiteInteger.isCombinable(icCurrent))
-				icCurrent = -1;
-			for (int ic=icCurrent+1; ic<data.getNumChars(); ic++) {
-				if (!data.isInapplicable(ic, row)){
-					table.scrollToColumn(ic);
-					break;
-				}
-			}
-		} else {
-			if (!MesquiteInteger.isCombinable(icCurrent))
-				icCurrent = data.getNumChars();
-			for (int ic=icCurrent-1; ic>=0; ic--) {
-				if (!data.isInapplicable(ic, row)){
-					table.scrollToColumn(ic);
-					break;
-				}
-			}
-		}
-		column = MesquiteInteger.unassigned;
-		row = MesquiteInteger.unassigned;
-	}
 	int column = MesquiteInteger.unassigned;
 	int row = MesquiteInteger.unassigned;
 	/*.................................................................................................................*/
+	void infoPopupMenu (String arguments) {
+		if (table!=null && data !=null && taxa!=null){
+			MesquiteInteger io = new MesquiteInteger(0);
+			column= MesquiteInteger.fromString(arguments, io);
+			row= MesquiteInteger.fromString(arguments, io);
+			int responseNumber = 0;
+			if (popup==null)
+				popup = new MesquitePopup(window.getGraphicsArea());
+			popup.removeAll();
+			addToPopup("Taxon: " + taxa.getTaxonName(row)+", character: " + (column+1), responseNumber++);
+			addToPopup("-", responseNumber++);
+
+			int applicableNonMissingBefore = getApplicableNonMissing(column, row,true);
+			int applicableNonMissingAfter = getApplicableNonMissing(column, row,false);
+			int totalApplicableNonMissing = applicableNonMissingBefore + applicableNonMissingAfter;
+			if (!data.isUnassigned(column, row) && !data.isInapplicable(column, row))
+				totalApplicableNonMissing++;
+
+			addToPopup("Total number of " + data.getNameOfCellEntry(2)+ ": " + totalApplicableNonMissing, responseNumber++);
+			addToPopup("Number to left: " + applicableNonMissingBefore + " " + data.getNameOfCellEntry(applicableNonMissingBefore), responseNumber++);
+			addToPopup("Number to right: " + applicableNonMissingAfter + " " + data.getNameOfCellEntry(applicableNonMissingAfter), responseNumber++);
+			//addToPopup("-", responseNumber++);
+			//addToPopup("Scroll to previous", moveToPrevCommand, responseNumber++);
+			//addToPopup("Scroll to next", moveToNextCommand, responseNumber++);
+			if (data instanceof DNAData){
+				addToPopup("-", responseNumber++);
+				addToPopup("Frequencies within character: ", responseNumber++);
+				addToPopup("   "+ ((DNAData)data).getStateFrequencyString(column), responseNumber++);
+
+			}
+			popup.showPopup(table.getColumnX(column), table.getRowY(row));
+		}
+	}
+	/*.................................................................................................................*/
 	public Object doCommand(String commandName, String arguments, CommandChecker checker) {
 		if (checker.compare(this.getClass(), "move touched cell or selected cells", "[column touched] [row touched] [percent horizontal] [percent vertical] [modifiers]", commandName, "matrixInfo")) {
-			if (table!=null && data !=null && taxa!=null){
-				MesquiteInteger io = new MesquiteInteger(0);
-				column= MesquiteInteger.fromString(arguments, io);
-				row= MesquiteInteger.fromString(arguments, io);
-				int responseNumber = 0;
-				if (popup==null)
-					popup = new MesquitePopup(window.getGraphicsArea());
-				popup.removeAll();
-				addToPopup("Taxon: " + taxa.getTaxonName(row)+", character: " + (column+1), responseNumber++);
-				addToPopup("-", responseNumber++);
-
-				int applicableNonMissingBefore = getApplicableNonMissing(column, row,true);
-				int applicableNonMissingAfter = getApplicableNonMissing(column, row,false);
-				int totalApplicableNonMissing = applicableNonMissingBefore + applicableNonMissingAfter;
-				if (!data.isUnassigned(column, row) && !data.isInapplicable(column, row))
-					totalApplicableNonMissing++;
-
-				addToPopup("Total number of " + data.getNameOfCellEntry(2)+ ": " + totalApplicableNonMissing, responseNumber++);
-				addToPopup("Number to left: " + applicableNonMissingBefore + " " + data.getNameOfCellEntry(applicableNonMissingBefore), responseNumber++);
-				addToPopup("Number to right: " + applicableNonMissingAfter + " " + data.getNameOfCellEntry(applicableNonMissingAfter), responseNumber++);
-				addToPopup("-", responseNumber++);
-				addToPopup("Scroll to previous", moveToPrevCommand, responseNumber++);
-				addToPopup("Scroll to next", moveToNextCommand, responseNumber++);
-				if (data instanceof DNAData){
-					addToPopup("-", responseNumber++);
-					addToPopup("Frequencies within character: ", responseNumber++);
-					addToPopup("   "+ ((DNAData)data).getStateFrequencyString(column), responseNumber++);
-
-				}
-				popup.showPopup(table.getColumnX(column), table.getRowY(row));
-			}
+			infoPopupMenu(arguments);
 		}
 		else if (checker.compare(this.getClass(), "Responds to choice of popup menu", "[choice number]", commandName, "respond")) {
-		}
-		else if (checker.compare(this.getClass(), "Move to Previous", "", commandName, "moveToPrev")) {
-			moveToNext(false);
-		}
-		else if (checker.compare(this.getClass(), "Move to Next", "", commandName, "moveToNext")) {
-			moveToNext(true);
 		}
 		else
 			return  super.doCommand(commandName, arguments, checker);

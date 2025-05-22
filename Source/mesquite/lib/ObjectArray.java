@@ -10,15 +10,16 @@ Mesquite's web site is http://mesquiteproject.org
 
 This source code and its compiled class files are free and modifiable under the terms of 
 GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
-*/
+ */
 package mesquite.lib;
 
 import java.awt.*;
 import java.text.*;
+import java.util.Vector;
 
 
 /* ======================================================================== */
-public class ObjectArray implements Listable {
+public class ObjectArray implements Listable, Nameable {
 	Object[] values;
 	NameReference name=null;
 	public ObjectArray(int num){
@@ -30,7 +31,7 @@ public class ObjectArray implements Listable {
 	//intially for MesquiteTree to know if info applies to node or branch ancestral to node
 	boolean between = false;
 	public void setBetweenness(boolean b){
-		between = true;  
+		between = b;  
 	}
 	public boolean isBetween(){
 		return between;
@@ -41,6 +42,9 @@ public class ObjectArray implements Listable {
 			return name.getValue();
 		else
 			return "";
+	}
+	public void setName(String n){
+		name = NameReference.getNameReference(n);
 	}
 	/*...........................................................*/
 	public void setNameReference(NameReference nr){
@@ -53,6 +57,32 @@ public class ObjectArray implements Listable {
 	public void zeroArray(){
 		for (int i=0; i<values.length; i++)
 			values[i] =  null;
+	}
+
+
+	public boolean oneKindOfObject(){ //returns null if they vary; must be exact match
+		Class classFound =null;
+		for (int i=0; i<values.length; i++) {
+			if (values[i] != null){
+				if (classFound == null)
+					classFound = values[i].getClass();
+				else if (classFound != values[i].getClass())
+					return false;
+			}
+		}
+		return true;
+	}
+	public Class getCommonClass(){ //returns null if they vary; must be exact match
+		Class classFound =null;
+		for (int i=0; i<values.length; i++) {
+			if (values[i] != null){
+				if (classFound == null)
+					classFound = values[i].getClass();
+				else if (classFound != values[i].getClass())
+					return null;
+			}
+		}
+		return classFound;
 	}
 	/*...........................................................*/
 	public void copyTo(ObjectArray d){
@@ -123,6 +153,99 @@ public class ObjectArray implements Listable {
 		values = deleteParts(values, starting, num);
 		return true;
 	}
+	/*...........................................................*
+	public void deletePartsBy Blocks(int[][] blocks) {
+		values = deletePartsBy Blocks(values, blocks);
+	}
+	/*...........................................................*
+	public static Object[] deletePartsBy Blocks(Object[] d, int[][] blocks) {
+		if (d == null)
+			return d;
+		if (blocks == null || blocks.length == 0)
+			return d;
+		int availableSlot = blocks[0][0];
+		//First shift storage toward the start of the array. Later, we'll delete the leftovers at the end.
+		for (int block = 0; block<blocks.length; block++) {
+			int startOfPreserved = blocks[block][1]+1;
+			int endOfPreserved = d.length-1;
+			if (block+1<blocks.length) //there's another block coming afterward
+				endOfPreserved = blocks[block+1][0]-1;
+			for (int ic=startOfPreserved; ic<=endOfPreserved; ic++) {
+				d[availableSlot] = d[ic];
+				availableSlot++;
+			}
+		}
+		//Next, trim leftovers
+		int newNum = availableSlot;
+		Object[] newD = new Object[newNum];
+		for (int i=0; i<newNum; i++) 
+			newD[i] = d[i];
+		return newD;
+	}
+	/*...........................................................*
+	public static Object[] deletePartsBy Blocks(Object[] d, int[][] blocks, ObjectSpecsSet specsSet) {
+		if (d == null)
+			return d;
+		if (blocks == null || blocks.length == 0)
+			return d;
+		int availableSlot = blocks[0][0];
+		//First shift storage toward the start of the array. Later, we'll delete the leftovers at the end.
+		for (int block = 0; block<blocks.length; block++) {
+			int startOfPreserved = blocks[block][1]+1;
+			int endOfPreserved = d.length-1;
+			if (block+1<blocks.length) //there's another block coming afterward
+				endOfPreserved = blocks[block+1][0]-1;
+			for (int ic=startOfPreserved; ic<=endOfPreserved; ic++) {
+				d[availableSlot] = d[ic];
+				availableSlot++;
+			}
+		}
+		//Next, trim leftovers
+		int newNum = availableSlot;
+		Object[] newD =  specsSet.getNewPropertyStorage(newNum);
+		for (int i=0; i<newNum; i++) 
+			newD[i] = d[i];
+		return newD;
+	}
+	/*...........................................................*/
+	public void deletePartsFlagged(Bits toDelete) {
+		values = deletePartsFlagged(values, toDelete);
+	}
+	/*...........................................................*/
+	public static Object[] deletePartsFlagged(Object[] d, Bits toDelete) {
+		return deletePartsFlagged(d, toDelete, null);
+	}
+	/*...........................................................*/
+	public static Object[] deletePartsFlagged(Object[] d, Bits toDelete, ObjectSpecsSet specsSet) {
+		if (d == null)
+			return null;
+		if (toDelete == null)
+			return d;
+		int toFill =toDelete.nextBit(0, true); //find next to be cleared
+		if (toFill <0)
+			return d;
+		Bits flags = toDelete.cloneBits(); 
+		int source = flags.nextBit(toFill, false); //find source to move into it
+		int highestFilled = toFill-1;
+		while (source >=0 && source < d.length && toFill >=0) { //First, compact storage toward the start of the array.
+			d[toFill] = d[source]; //move content from source to place
+			highestFilled = toFill;
+			flags.setBit(source, true); // set to available to receive
+			toFill =flags.nextBit(++toFill, true);
+			source =flags.nextBit(++source, false);	
+		}
+		//Next, trim leftovers
+		int newNum = highestFilled+1;
+		Object[] newD = null;
+		if (specsSet == null)
+			newD = new Object[newNum];
+		else
+			newD =  specsSet.getNewPropertyStorage(newNum);
+
+		for (int i=0; i<newNum; i++) 
+			newD[i] = d[i];
+		return newD;
+	}
 	/*...........................................................*/
 	public static Object[] addParts(Object[] values, int starting, int num){
 		if (num<=0 || values == null)
@@ -152,7 +275,7 @@ public class ObjectArray implements Listable {
 			num = values.length-starting;
 		int newNumParts = values.length-num;
 		Object[] newValues = new Object[newNumParts];
-		
+
 		for (int i=0; i<starting; i++) {
 			newValues[i] = values[i];
 		}
@@ -188,12 +311,12 @@ public class ObjectArray implements Listable {
 			return false;
 
 		Object[] newValues = new Object [values.length];
-		
+
 		if (starting>justAfter){
 			int count =0;
 			for (int i=0; i<=justAfter; i++)
 				newValues[count++]=values[i];
-			
+
 			for (int i=starting; i<=starting+num-1; i++)
 				newValues[count++]=values[i];
 			for (int i=justAfter+1; i<=starting-1; i++)
@@ -205,7 +328,7 @@ public class ObjectArray implements Listable {
 			int count =0;
 			for (int i=0; i<=starting-1; i++)
 				newValues[count++]=values[i];
-			
+
 			for (int i=starting+num; i<=justAfter; i++)
 				newValues[count++]=values[i];
 			for (int i=starting; i<=starting+num-1; i++)

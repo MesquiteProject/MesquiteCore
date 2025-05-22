@@ -19,6 +19,9 @@ import java.util.*;
 import mesquite.lib.*;
 import mesquite.lib.characters.*;
 import mesquite.lib.duties.*;
+import mesquite.lib.taxa.Taxa;
+import mesquite.lib.ui.AlertDialog;
+import mesquite.lib.ui.ProgressIndicator;
 import mesquite.meristic.lib.*;
 
 /* ======================================================================== 
@@ -248,7 +251,7 @@ public class ManageMeristicChars extends CharMatrixManager {
 	public void writeCharactersBlock(CharacterData data, CharactersBlock cB, MesquiteFile file, ProgressIndicator progIndicator){
 		MeristicData cData = (MeristicData)data;
 		//StringBuffer blocks = new StringBuffer(cData.getNumChars()*cData.getNumTaxa()*10*cData.getNumItems());
-		StringBuffer line = new StringBuffer(cData.getNumChars()*10*cData.getNumItems());
+		MesquiteStringBuffer line = new MesquiteStringBuffer(cData.getNumChars()*10L*cData.getNumItems());
 		file.write("BEGIN CHARACTERS");
 		if (data.getAnnotation()!=null && !file.useSimplifiedNexus) 
 			file.write("[!" + StringUtil.tokenize(data.getAnnotation()) + "]");

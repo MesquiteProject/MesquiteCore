@@ -20,92 +20,73 @@ import mesquite.lib.duties.*;
 import mesquite.molec.lib.*;
 
 /* ======================================================================== */
-public class GBLOCKSSelector extends CharacterSelector {
+public class GBLOCKSSelector extends MesquiteInit {
 
+/*This module has been replaced by a new system. However, this remains merely to transfer the old preferences to  FlagByGLBOCKS */
 
-	MesquiteString xmlPrefs= new MesquiteString();
-	String xmlPrefsString = null;
-
-	GBLOCKSCalculator gblocksCalculator;
-
-
+	public static boolean prefsTransferred = false;   
+	public static boolean prefsRead = false;   
+	public static double IS = MesquiteDouble.inapplicable;   // fraction of identical residues that is upper boundary for non-conserved sequences
+	public static double FS = MesquiteDouble.inapplicable;  // fraction of identical residues that is upper boundary for conserved sequences
+	public static int CP = MesquiteInteger.inapplicable;  //block size limit for non-conserved blocks
+	public static int BL = MesquiteInteger.inapplicable;  //  small region block size limit 
+	public static double gapThreshold = MesquiteDouble.inapplicable;   // the fraction of gaps allowed at a site
+	public static boolean chooseAmbiguousSites;
+	public static boolean countWithinApplicable;   // count fractions of identical residues only within those taxa without gaps at a site
+	public static boolean chooseAmbiguousSitesRead = false;
+	public static boolean countWithinApplicableRead = false;   
+	public static GBLOCKSSelector instanceOfMe;
 	/*.................................................................................................................*/
 	public boolean startJob(String arguments, Object condition, boolean hiredByName) {
-		loadPreferences(xmlPrefs);
-		xmlPrefsString = xmlPrefs.getValue();
-		gblocksCalculator = new GBLOCKSCalculator(this, xmlPrefsString);
+		loadPreferences();
+		instanceOfMe = this;  //so that new version can ask this to delete its old preferences.
 		return true;
 	}
 	/*.................................................................................................................*/
+	public void prefsCaptured() {
+		storePreferences();
+		prefsRead = false;
+	}
+	/*.................................................................................................................*
+		/*.................................................................................................................*/
+	public void processSingleXMLPreference (String tag, String content) {
+		prefsRead = true;
+		if ("PrefsCapturedByNewerVersion".equalsIgnoreCase(tag)) 
+			prefsTransferred = true;
+		if ("IS".equalsIgnoreCase(tag)) 
+			IS = MesquiteDouble.fromString(content);
+		if ("FS".equalsIgnoreCase(tag)) 
+			FS = MesquiteDouble.fromString(content);
+		if ("CP".equalsIgnoreCase(tag)) 
+			CP = MesquiteInteger.fromString(content);
+		if ("BL".equalsIgnoreCase(tag)) 
+			BL = MesquiteInteger.fromString(content);
+		if ("gapThreshold".equalsIgnoreCase(tag)) 
+			gapThreshold = MesquiteDouble.fromString(content);
+
+		if ("chooseAmbiguousSites".equalsIgnoreCase(tag)) {
+			chooseAmbiguousSites = MesquiteBoolean.fromTrueFalseString(content);
+			chooseAmbiguousSitesRead= true;
+		}
+		if ("countWithinApplicable".equalsIgnoreCase(tag)) {
+			countWithinApplicable = MesquiteBoolean.fromTrueFalseString(content);
+			countWithinApplicableRead=true;
+		}
+	}
 
 	public String preparePreferencesForXML () {
-		StringBuffer buffer = new StringBuffer();
-		if (gblocksCalculator!=null){
-			String s = gblocksCalculator.preparePreferencesForXML();
-			if (StringUtil.notEmpty(s))
-				buffer.append(s);
-		}
+		
+		StringBuffer buffer = new StringBuffer(200);
+		StringUtil.appendXMLTag(buffer, 2, "PrefsCapturedByNewerVersion", "");  
+
 		return buffer.toString();
-	}
-
-
-
-	/*.................................................................................................................*/
-	public boolean isPrerelease(){
-		return false;
-	}
-	/*.................................................................................................................*/
-	/** returns whether this module is requesting to appear as a primary choice */
-	public boolean requestPrimaryChoice(){
-		return true;  
-	}
-
-
-	/*.................................................................................................................*/
-	/** Called to select characters*/
-	public void selectCharacters(CharacterData data){
-		if (data!=null && data.getNumChars()>0){
-
-			if (!gblocksCalculator.queryOptions(this, "Select"))
-				return;
-
-			boolean[] setToSelect = new boolean[data.getNumChars()];
-
-			StringBuffer results = new StringBuffer();
-			if (gblocksCalculator.markCharacters(data, this, setToSelect, results)) {
-				if (employer.okToInteractWithUser(CAN_PROCEED_ANYWAY, ""))
-					logln(results.toString());
-
-				// ======  now select the characters chosen
-				for (int ic=0; ic<data.getNumChars() && ic<setToSelect.length; ic++)
-					if (setToSelect[ic]==gblocksCalculator.getChooseAmbiguousSites())
-						data.setSelected(ic, true);
-
-
-				data.notifyListeners(this, new Notification(MesquiteListener.SELECTION_CHANGED));
-			}
-		}
 	}
 	/*.................................................................................................................*/
 	public String getName() {
-		return "GBLOCKS Selector";
+		return "Old GBLOCKS Selector preference capturer";
 	}
 	/*.................................................................................................................*/
-	public String getNameForMenuItem() {
-		return "GBLOCKS Selector...";
-	}
-	/*.................................................................................................................*/
-	/** returns an explanation of what the module does.*/
-	public String getExplanation() {
-		return "Selects characters according to an extended version of the GBLOCKS algorithm (Castresana, 2000)." ;
-	}
-	/*.................................................................................................................*/
-	/** returns the version number at which this module was first released.  If 0, then no version number is claimed.  If a POSITIVE integer
-	 * then the number refers to the Mesquite version.  This should be used only by modules part of the core release of Mesquite.
-	 * If a NEGATIVE integer, then the number refers to the local version of the package, e.g. a third party package*/
-	public int getVersionOfFirstRelease(){
-		return 303;  
-	}
+
 
 }
 

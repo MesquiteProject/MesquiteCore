@@ -24,6 +24,8 @@ import mesquite.lib.characters.*;
 import mesquite.lib.duties.*;
 import mesquite.categ.lib.*;
 import mesquite.lib.table.*;
+import mesquite.lib.ui.DoubleField;
+import mesquite.lib.ui.ExtensibleDialog;
 import mesquite.align.lib.*;
 
 
@@ -37,6 +39,7 @@ public class ShiftOtherToMatch extends CategDataAlterer  implements AltererAlign
 	int it2= MesquiteInteger.unassigned;
 	boolean preferencesSet = false;
 	boolean reverseComplementIfNecessary = true;
+	boolean shiftOneBlockOnly = false;
 	
 	/*.................................................................................................................*/
 	public boolean startJob(String arguments, Object condition, boolean hiredByName) {
@@ -46,7 +49,7 @@ public class ShiftOtherToMatch extends CategDataAlterer  implements AltererAlign
 	/*.................................................................................................................*/
 	/** returns whether this module is requesting to appear as a primary choice */
    	public boolean requestPrimaryChoice(){
-   		return true;  
+   		return false;  
    	}
 	/*.................................................................................................................*/
 	public void processSingleXMLPreference (String tag, String content) {
@@ -54,7 +57,10 @@ public class ShiftOtherToMatch extends CategDataAlterer  implements AltererAlign
 			matchFraction = MesquiteDouble.fromString(content);
 		}
 		else if ("reverseComplementIfNecessary".equalsIgnoreCase(tag)) {
-			reverseComplementIfNecessary = MesquiteBoolean.fromOffOnString(content);
+			reverseComplementIfNecessary = MesquiteBoolean.fromTrueFalseString(content);
+		}
+		else if ("shiftOneBlockOnly".equalsIgnoreCase(tag)) {
+			shiftOneBlockOnly = MesquiteBoolean.fromTrueFalseString(content);
 		}
 	
 		preferencesSet = true;
@@ -64,6 +70,7 @@ public String preparePreferencesForXML () {
 		StringBuffer buffer = new StringBuffer(200);
 		StringUtil.appendXMLTag(buffer, 2, "matchFraction", matchFraction);  
 		StringUtil.appendXMLTag(buffer, 2, "reverseComplementIfNecessary", reverseComplementIfNecessary);  
+		StringUtil.appendXMLTag(buffer, 2, "shiftOneBlockOnly", shiftOneBlockOnly);  
 
 		preferencesSet = true;
 		return buffer.toString();
@@ -92,6 +99,7 @@ public boolean queryOptions(int it, int max) {
 		DoubleField matchFractionField = queryFilesDialog.addDoubleField ("Fraction of Match", matchFraction, 6, 0.00001, 1.0);
 		
 		Checkbox reverseSequencesCheckBox = queryFilesDialog.addCheckBox("Reverse complement sequences if necessary", reverseComplementIfNecessary);
+		Checkbox shiftOneBlockOnlyBox = queryFilesDialog.addCheckBox("Shift only a single block of data", shiftOneBlockOnly);
 		
 		queryFilesDialog.completeAndShowDialog(true);
 		if (buttonPressed.getValue()==0)  {
@@ -99,6 +107,7 @@ public boolean queryOptions(int it, int max) {
 			it1 = it1Field.getValue()-1;
 			it2 = it2Field.getValue()-1;
 			reverseComplementIfNecessary = reverseSequencesCheckBox.getState();
+			shiftOneBlockOnly = shiftOneBlockOnlyBox.getState();
 			storePreferences();
 		}
 		queryFilesDialog.dispose();
@@ -128,15 +137,15 @@ public boolean queryOptions(int it, int max) {
 
 	/*.................................................................................................................*/
    	/** Called to alter data in those cells selected in table*/
-   	public boolean alterData(CharacterData data, MesquiteTable table,  UndoReference undoReference){
+   	public int alterData(CharacterData data, MesquiteTable table,  UndoReference undoReference){
 		if (data==null || table==null)
-			return false;
+			return -10;
 		MesquiteInteger row = new MesquiteInteger();
 		MesquiteInteger firstColumn = new MesquiteInteger();  // this is the first column selected in the block
 		MesquiteInteger lastColumn = new MesquiteInteger();  // this is the last column selected
 		if (table.onlySingleRowBlockSelected(row,firstColumn, lastColumn)) {
 			if (!queryOptions(row.getValue(), data.getNumTaxa()-1))
-					return false;
+					return ResultCodes.USER_STOPPED;
 			MesquiteBoolean dataChanged = new MesquiteBoolean (false);
 			MesquiteInteger charAdded = new MesquiteInteger(0);
 
@@ -155,10 +164,21 @@ public boolean queryOptions(int it, int max) {
 						match = findMatch(data,table, row.getValue(), firstColumn.getValue(), lastColumn.getValue(), it,matchStart,matchEnd);  // added 31 October 2015
 					}
 					if (match) {
-						int added = data.shiftAllCells(firstColumn.getValue()-matchStart.getValue(), it, true, true, true, dataChanged,charAdded, null);
+						int added = 0;
+						if (shiftOneBlockOnly) {
+							int startBlock = data.getStartofBlock(matchStart.getValue(), it, true);
+							int endBlock = data.getEndofBlock(matchStart.getValue(), it, true);
+							int distance = firstColumn.getValue()-matchStart.getValue();
+							Bits whichTaxa = new Bits(data.getNumTaxa());
+							whichTaxa.clearAllBits();
+							whichTaxa.setBit(it);
+							added = data.moveCells(startBlock, endBlock, distance, whichTaxa, true, false, true, false, dataChanged, charAdded, null);
+						} else {
+							added = data.shiftAllCells(firstColumn.getValue()-matchStart.getValue(), it, true, true, true, dataChanged,charAdded, null);
+						}
 						if (charAdded.isCombinable() && charAdded.getValue()!=0 && data instanceof DNAData) {
 							((DNAData)data).assignCodonPositionsToTerminalChars(charAdded.getValue());
-//							((DNAData)data).assignGeneticCodeToTerminalChars(charAdded.getValue());
+							//							((DNAData)data).assignGeneticCodeToTerminalChars(charAdded.getValue());
 						}
 						if (added!=0)
 							someAdded=true;
@@ -176,12 +196,14 @@ public boolean queryOptions(int it, int max) {
 					table.selectBlock(firstColumn.getValue(), row.getValue(), lastColumn.getValue(), row.getValue());  //Wayne: why doesn't this select a block in the matrix?
 				}
 			}
-			return dataChanged.getValue();
+			if ( dataChanged.getValue())
+				return ResultCodes.SUCCEEDED;
+			return ResultCodes.MEH;
 		}
 		else {
-   			discreetAlert( "A portion of only one sequence can be selected.");
-			return false;
-   		}
+			discreetAlert( "A portion of only one sequence can be selected.");
+			return -13;
+		}
    	}
    	
 	/*.................................................................................................................*/

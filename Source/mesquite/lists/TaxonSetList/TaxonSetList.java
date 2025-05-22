@@ -21,6 +21,10 @@ import java.awt.*;
 import mesquite.lib.*;
 import mesquite.lib.duties.*;
 import mesquite.lib.table.*;
+import mesquite.lib.taxa.Taxa;
+import mesquite.lib.taxa.TaxaSelectionSet;
+import mesquite.lib.ui.AlertDialog;
+import mesquite.lib.ui.MesquiteSubmenuSpec;
 
 /* ======================================================================== */
 public class TaxonSetList extends TaxaSpecssetList {
@@ -37,7 +41,7 @@ public class TaxonSetList extends TaxaSpecssetList {
 	}
 	/*.................................................................................................................*/
 	public int currentTaxa = 0;
-	public Taxa taxa = null;
+	//public Taxa taxa = null;
 	TaxaSpecsListWindow window;
 	/*.................................................................................................................*/
 	public boolean startJob(String arguments, Object condition, boolean hiredByName) {
@@ -58,6 +62,13 @@ public class TaxonSetList extends TaxaSpecssetList {
 			((ListWindow)getModuleWindow()).addListAssistant(assistant);
 			assistant.setUseMenubar(false);
 		}
+		MesquiteSubmenuSpec mss2 = addSubmenu(null, "Utilities", MesquiteModule.makeCommand("doUtility",  this));
+		mss2.setList(TaxonsetsListUtility.class);
+
+	}
+	/*.................................................................................................................*/
+	public boolean rowsMovable(){
+		return true;
 	}
 	/*.................................................................................................................*/
 	public Class getItemType(){
@@ -75,9 +86,23 @@ public class TaxonSetList extends TaxaSpecssetList {
 		return null;
 	}
 	/*.................................................................................................................*/
+
 	public Object doCommand(String commandName, String arguments, CommandChecker checker) {
-		if (checker.compare(this.getClass(), "Instructs user as how to make new taxon set (TAXSET)", null, commandName, "newTaxSet")){
-			if (taxa !=null &&AlertDialog.query(containerOfModule(), "New Taxon Set", "To make a new taxon set (TAXSET), go to the List of Taxa window, select the taxa you want in the set, then choose Save Selected As Set.  Would you like to go to the List of Taxa window now?", "OK", "Cancel")) {
+		if (checker.compare(this.getClass(), "Hires utility module to operate on the taxon sets", "[name of module]", commandName, "doUtility")) {
+
+			if (taxa !=null){  // these are the taxa associated with this list
+				MesquiteTable table = ((ListWindow)getModuleWindow()).getTable();
+				TaxonsetsListUtility tda= (TaxonsetsListUtility)hireNamedEmployee(TaxonsetsListUtility.class, arguments);
+				if (tda!=null) {
+							boolean a = tda.operateOnTaxa(taxa, table);
+				if (!tda.pleaseLeaveMeOn())
+					fireEmployee(tda);
+				}
+
+			}
+		}
+		else if (checker.compare(this.getClass(), "Instructs user as how to make new taxon set (TAXSET)", null, commandName, "newTaxSet")){
+			if (taxa !=null &&AlertDialog.query(containerOfModule(), "New Taxon Set", "To make a new taxon set (TAXSET), go to the List of Taxa window, select the taxa you want in the set, then choose List>Save selected as set.  Would you like to go to the List of Taxa window now?", "OK", "Cancel")) {
 				Object obj = taxa.doCommand("showMe", null, checker);
 			}
 		}

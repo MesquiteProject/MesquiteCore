@@ -28,6 +28,8 @@ import mesquite.lib.characters.*;
 import mesquite.lib.duties.*;
 import mesquite.categ.lib.*;
 import mesquite.lib.table.*;
+import mesquite.lib.ui.ExtensibleDialog;
+import mesquite.lib.ui.SingleLineTextField;
 import mesquite.align.lib.*;
 
 /* ======================================================================== */
@@ -71,6 +73,41 @@ public class MAFFTAlign extends ExternalSequenceAligner implements ItemListener{
 		return "MAFFT";
 	}
 
+	public String getAppOfficialName() {
+		return "mafft";
+	}
+	/*.................................................................................................................*/
+	public Snapshot getSnapshot(MesquiteFile file) { 
+		Snapshot temp = super.getSnapshot(file);
+		if (temp == null)
+			temp = new Snapshot();
+		temp.addLine("setAlignmentMethod " + alignmentMethod);  
+		temp.addLine("setAlignmentMethodText " + ParseUtil.tokenize(alignmentMethodText));  
+		temp.addLine("setUseMaxCores " + useMaxCores);
+		temp.addLine("optionsSet");
+		return temp;
+	}
+	/*.................................................................................................................*/
+	public Object doCommand(String commandName, String arguments, CommandChecker checker) {
+		if (checker.compare(this.getClass(), "Sets the alignment method", "[number]", commandName, "setAlignmentMethod")) {
+			alignmentMethod = MesquiteInteger.fromString(parser.getFirstToken(arguments));
+		}
+		else if (checker.compare(this.getClass(), "Sets the text of the alignment method", "[text]", commandName, "setAlignmentMethodText")) {
+			String temp = parser.getFirstToken(arguments);
+			if (temp != null)
+				alignmentMethodText = temp;
+		}
+		else if (checker.compare(this.getClass(), "Sets whether to use maximum number of cores", "[true or false]", commandName, "setUseMaxCores")) {
+			useMaxCores = MesquiteBoolean.fromTrueFalseString(parser.getFirstToken(arguments));
+		}
+		else if (checker.compare(this.getClass(), "Records that options set", "", commandName, "optionsSet")) {
+			optionsAlreadySet = true;
+		}
+		else
+			return  super.doCommand(commandName, arguments, checker);
+		return null;
+	}	
+	
 	/*.................................................................................................................*/
 	public void processSingleXMLPreference (String tag, String content) {
 		if ("alignmentMethod".equalsIgnoreCase(tag)) {
@@ -102,6 +139,11 @@ public class MAFFTAlign extends ExternalSequenceAligner implements ItemListener{
 	}
 	/*.................................................................................................................*/
 	public String getHelpURL(){
+		if (appInfoFile!=null) {
+			if (StringUtil.notEmpty(appInfoFile.getURL()))
+					return appInfoFile.getURL();
+		}
+			
 		return "http://mafft.cbrc.jp/alignment/software/manual/manual.html";
 	}
 
@@ -176,7 +218,7 @@ public class MAFFTAlign extends ExternalSequenceAligner implements ItemListener{
 	}
 /*.................................................................................................................*/
 	public void queryProgramOptions(ExtensibleDialog dialog) {
-		useMaxThreadsCheckBox = dialog.addCheckBox("use maximum number of computer cores", useMaxCores);
+		useMaxThreadsCheckBox = dialog.addCheckBox("let MAFFT choose number of computer cores to use", useMaxCores);
 		
 		alignmentMethodChoice = dialog.addPopUpMenu("Suggested Methods", new String[] {"Default",  "L-INS-i", "G-INSI-i", "E-INS-i", "FFT-NS-i 2", "FFT-NS-i 1000", "FFT-NS-2", "FFT-NS-1", "NW-NS-i", "NW-NS-2", "NW-NS-PartTree-1"}, alignmentMethod);
 		alignmentTextField = dialog.addTextField("Basic alignment method", alignmentMethodText, 40);
@@ -210,7 +252,10 @@ public class MAFFTAlign extends ExternalSequenceAligner implements ItemListener{
 		String options = "";
 		if (useMaxCores)
 			options+=" --thread -1 ";
-		options += " " + alignmentMethodText + " ";
+		if (alignmentMethodText == null)
+			options += " ";
+		else
+			options += " " + alignmentMethodText + " ";
 		return options;
 	}
 

@@ -19,6 +19,9 @@ import java.awt.*;
 
 import mesquite.lib.*;
 import mesquite.lib.duties.*;
+import mesquite.lib.taxa.Taxa;
+import mesquite.lib.taxa.TaxaStringsSet;
+import mesquite.lib.ui.MesquiteSubmenuSpec;
 
 public class ManageArchivedTaxonNames extends SpecsSetManager {
 	final static String listOfAlternativeNameSetsName = "List of Alternative Name Sets";
@@ -194,7 +197,7 @@ public class ManageArchivedTaxonNames extends SpecsSetManager {
 		return MesquiteInteger.unassigned;
 	}
 	/*.................................................................................................................*/
-	public boolean readNexusCommand(MesquiteFile file, NexusBlock nBlock, String blockName, String command, MesquiteString comment){ 
+	public boolean readNexusCommand(MesquiteFile file, NexusBlock nBlock, String blockName, String command, MesquiteString comment, String fileReadingArguments){ 
 		if (blockName.equalsIgnoreCase("NOTES")) {
 			MesquiteInteger startCharT = new MesquiteInteger(0);
 

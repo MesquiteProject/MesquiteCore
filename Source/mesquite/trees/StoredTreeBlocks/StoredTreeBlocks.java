@@ -19,6 +19,9 @@ import java.awt.*;
 
 import mesquite.lib.*;
 import mesquite.lib.duties.*;
+import mesquite.lib.taxa.Taxa;
+import mesquite.lib.tree.TreeVector;
+import mesquite.lib.ui.ListDialog;
 
 /** Supplies tree blocks stored in the projects.*/
 public class StoredTreeBlocks extends TreeBlockSource implements MesquiteListener {

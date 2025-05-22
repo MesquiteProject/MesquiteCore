@@ -21,6 +21,8 @@ import mesquite.io.lib.*;
 import mesquite.lib.*;
 import mesquite.lib.characters.*;
 import mesquite.lib.duties.CharactersManager;
+import mesquite.lib.taxa.Taxa;
+import mesquite.lib.tree.TreeUtil;
 
 public class ExportFusedPhylip extends InterpretPhylip {
 
@@ -65,7 +67,7 @@ public class ExportFusedPhylip extends InterpretPhylip {
 		return null;  //not needed as can't import
 	}
 	/*.................................................................................................................*/
-	public void appendPhylipStateToBuffer(CharacterData data, int ic, int it, StringBuffer outputBuffer){
+	public void appendPhylipStateToBuffer(CharacterData data, int ic, int it, MesquiteStringBuffer outputBuffer){
 		data.statesIntoStringBuffer(ic, it, outputBuffer, false);
 	}
 	boolean exportRAxMLModelFile = true;
@@ -99,15 +101,15 @@ public class ExportFusedPhylip extends InterpretPhylip {
 		return true;
 	}
 	/*.................................................................................................................*/
-	public String getTranslationTablePath(){
-		return getExportedFileDirectory()+IOUtil.translationTableFileName;
+	public String getTranslationTablePath(String filePath){
+		return getExportedFileDirectory(filePath)+ TreeUtil.translationTableFileName;
 	}
 	/*.................................................................................................................*/
-	public void writeExtraFiles(Taxa taxa){
+	public void writeExtraFiles(Taxa taxa, String mainFilePath){
 		if (useTranslationTable) {
 			String table = ((SimpleNamesTaxonNamer)taxonNamer).getTranslationTable(taxa);
 			if (StringUtil.notEmpty(table)) {
-				String filePath = getTranslationTablePath();
+				String filePath = getTranslationTablePath(mainFilePath);
 				if (StringUtil.notEmpty(filePath))
 					MesquiteFile.putFileContents(filePath, table, true);
 			}

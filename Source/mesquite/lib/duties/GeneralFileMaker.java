@@ -13,28 +13,19 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
 */
 package mesquite.lib.duties;
 
-import java.awt.*;
+
 import mesquite.lib.*;
 
 
 /* ======================================================================== */
-/**Modules that can establish a new project*/
+/**Modules that can establish a new project by reading a single file*/
 
-public abstract class GeneralFileMaker extends MesquiteModule  {
-   	 public Class getDutyClass() {
-   	 	return GeneralFileMaker.class;
-   	 }
- 	public String getDutyName() {
- 		return "Establisher of new projects";
-   	}
- 	
+public interface GeneralFileMaker  {
+
    	/** make a new    MesquiteProject.*/
  	public abstract MesquiteProject establishProject(String arguments);
 
 
-   	public boolean isSubstantive(){
-   		return false;  
-   	}
 }
 
 

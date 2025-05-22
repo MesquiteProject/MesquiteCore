@@ -18,6 +18,10 @@ import java.awt.*;
 
 import mesquite.lib.*;
 import mesquite.lib.duties.*;
+import mesquite.lib.taxa.Taxa;
+import mesquite.lib.tree.AdjustableTree;
+import mesquite.lib.tree.Tree;
+import mesquite.lib.ui.ExtensibleDialog;
 
 /* ======================================================================== */
 public class GraftTree extends TreeAltererMult {
@@ -76,7 +80,7 @@ public class GraftTree extends TreeAltererMult {
 	/*.................................................................................................................*/
 	/** returns whether this module is requesting to appear as a primary choice */
 	public boolean requestPrimaryChoice(){
-		return true;  
+		return false;  
 	}
 	/*.................................................................................................................*/
 	public boolean overlap(int[] a, int[] b){

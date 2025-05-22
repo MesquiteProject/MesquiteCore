@@ -19,6 +19,8 @@ package mesquite.treefarm.CutSelectedTaxa;
 import java.awt.*;
 import mesquite.lib.*;
 import mesquite.lib.duties.*;
+import mesquite.lib.taxa.Taxa;
+import mesquite.lib.tree.AdjustableTree;
 
 /* ======================================================================== */
 public class CutSelectedTaxa extends TreeAltererMult {
@@ -69,7 +71,7 @@ public class CutSelectedTaxa extends TreeAltererMult {
 		}
 		if (!taxa.anySelected()) {
  			if (!unselectedAlreadyWarned)
- 				discreetAlert("Before trees can be rerooted using the selected taxa as outgroups, some taxa must be selected");
+ 				discreetAlert("Before taxa can be cut, some taxa must be selected");
  			unselectedAlreadyWarned = true;
 			return false;
 		}

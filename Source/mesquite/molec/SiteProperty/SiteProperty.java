@@ -18,6 +18,7 @@ import java.awt.*;
 import mesquite.lib.*;
 import mesquite.lib.characters.*;
 import mesquite.lib.duties.*;
+import mesquite.lib.ui.MesquiteSubmenuSpec;
 import mesquite.categ.lib.*;
 import mesquite.cont.lib.ContinuousStateTest;
 import mesquite.molec.lib.*;

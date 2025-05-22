@@ -19,13 +19,19 @@ import mesquite.lists.lib.*;
 import java.util.*;
 import java.awt.*;
 
+import mesquite.basic.ManageTaxaPartitions.ManageTaxaPartitions;
 import mesquite.lib.*;
 import mesquite.lib.characters.*;
 import mesquite.lib.duties.*;
 import mesquite.lib.table.*;
+import mesquite.lib.taxa.TaxaGroup;
+import mesquite.lib.taxa.TaxaGroupVector;
+import mesquite.lib.taxa.TaxaPartition;
+import mesquite.lib.ui.MesquiteWindow;
 
 /* ======================================================================== */
 public class TaxonGroupList extends ListModule {
+
 	public void getEmployeeNeeds(){  //This gets called on startup to harvest information; override this and inside, call registerEmployeeNeed
 		EmployeeNeed e = registerEmployeeNeed(TaxonGroupListAssistant.class, "The List of Taxon Groups window can display columns showing information for each taxon group.",
 				"You can request that columns be shown using the Columns menu of the List of Taxon Groups Window. ");
@@ -33,15 +39,18 @@ public class TaxonGroupList extends ListModule {
 	TaxaGroupVector groups;
 	/*.................................................................................................................*/
 	public boolean startJob(String arguments, Object condition, boolean hiredByName) {
-		addMenuItem("New Taxon Group...", MesquiteModule.makeCommand("newGroup",  this));
+		addMenuItem("New Group Label...", MesquiteModule.makeCommand("newGroup",  this));
+		ManageTaxaPartitions manageTaxPart = (ManageTaxaPartitions)findElementManager(TaxaPartition.class);
+		addMenuItem("Import Group Labels & Colors from File...", MesquiteModule.makeCommand("importLabels",  manageTaxPart));
+		addMenuItem("Export Group Labels & Colors to File...", MesquiteModule.makeCommand("exportLabels",  manageTaxPart));
 		return true;
 	}
 	public boolean showing(Object obj){
 		return (getModuleWindow()!=null && obj == groups);
 	}
 	public void endJob(){
-	//	if (groups != null)
-	//		groups.removeListener(this);
+		//	if (groups != null)
+		//		groups.removeListener(this);
 
 		super.endJob();
 	}
@@ -52,7 +61,7 @@ public class TaxonGroupList extends ListModule {
 		}
 		setModuleWindow(new TaxonGroupListWindow(this));
 		groups = (TaxaGroupVector)getProject().getFileElement(TaxaGroupVector.class, 0);
-//		groups.addListener(this);
+		//		groups.addListener(this);
 		((TaxonGroupListWindow)getModuleWindow()).setObject(groups);
 
 		makeMenu("List");
@@ -87,17 +96,19 @@ public class TaxonGroupList extends ListModule {
 	}
 	/*.................................................................................................................*/
 	public Object doCommand(String commandName, String arguments, CommandChecker checker) {
-		if (checker.compare(this.getClass(), "Creates a new group", "[]", commandName, "newGroup")) {
+		if (checker.compare(this.getClass(), "Creates a new group label", "[]", commandName, "newGroup")) {
 			MesquiteFile file = getProject().chooseFile( "Select file to which to add the new group label"); 
-			TaxaGroup group= TaxaListPartitionUtil.createNewTaxonGroup(this, file);   
+			TaxaGroup group= TaxaGroup.createNewTaxonGroup(this, file);   
 			if (group!=null){
 				((TaxonGroupListWindow)getModuleWindow()).getTable().repaint(); 
 				parametersChanged();
 			}
 			return group;
 		}
+		
 		else
 			return  super.doCommand(commandName, arguments, checker);
+		//return null;
 	}
 	/*.................................................................................................................*/
 	/** passes which object changed*
@@ -147,10 +158,10 @@ public class TaxonGroupList extends ListModule {
 		return TaxonGroupListAssistant.class;
 	}
 	public String getItemTypeName(){
-		return "Taxon Group";
+		return "Taxon Group Label";
 	}
 	public String getItemTypeNamePlural(){
-		return "Taxon Groups";
+		return "Taxon Group Labels";
 	}
 	/*.................................................................................................................*/
 	public boolean rowsDeletable(){
@@ -160,7 +171,7 @@ public class TaxonGroupList extends ListModule {
 		TaxaGroup group = ((TaxonGroupListWindow)getModuleWindow()).getTaxonGroup(row);
 		if (group!=null){
 			group.deleteMe(false);
-			
+
 			group.dispose();
 			return true;
 
@@ -206,7 +217,6 @@ public class TaxonGroupList extends ListModule {
 	/*.................................................................................................................*/
 	/** Requests a getModuleWindow() to close.  In the process, subclasses of MesquiteWindow might close down their owning MesquiteModules etc.*/
 	public void windowGoAway(MesquiteWindow whichWindow) {
-		//Debug.println("disposing of getModuleWindow()");
 		if (whichWindow == null)
 			return;
 		whichWindow.hide();
@@ -236,7 +246,7 @@ class TaxonGroupListWindow extends ListWindow implements MesquiteListener {
 	to be self-titling so that when things change (names of files, tree blocks, etc.)
 	they can reset their titles properly*/
 	public void resetTitle(){
-		setTitle("Taxon Groups"); 
+		setTitle("Taxon Group Labels"); 
 	}
 	/*.................................................................................................................*/
 	public Object getCurrentObject(){
@@ -265,20 +275,23 @@ class TaxonGroupListWindow extends ListWindow implements MesquiteListener {
 		}
 		return null;
 	}
-	public boolean interceptRowNameTouch(int row, int regionInCellH, int regionInCellV, int modifiers){
+	public boolean interceptRowNameTouch(int row, EditorPanel editorPanel, int x, int y, int modifiers){
 		TaxaGroup group = getTaxonGroup(row);
 		if (group!=null){
 			getTable().editRowNameCell(row);
+			return true;
 		}
-		return true;
+		return false;
 	}
-	public void setRowName(int row, String name){
+	public void setRowName(int row, String name, boolean update){
 		TaxaGroup group = getTaxonGroup(row);
 		if (group!=null){
 			group.setName(name);
-			
+
+			if (update){
 			resetAllTitles();
 			getOwnerModule().resetAllMenuBars();
+			}
 
 		}
 	}

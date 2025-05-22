@@ -1,0 +1,48 @@
+January 2025
+
+First, make sure info.plist lists Mesquite.icns under CFBundleIconFile
+And add Mesquite.icns to Resources
+
+////////
+PREP for signing and notarizing
+make application specific password at https://appleid.apple.com
+App-specific password for mesquite app (named mesquiteApp on appleid.apple.com): yaqq-lyhv-qtnq-supk
+
+
+make credentials specific for mesquiteApp
+xcrun notarytool store-credentials --apple-id "waynemaddison58@gmail.com" --team-id 8LT29UFQPL --password yaqq-lyhv-qtnq-supk
+
+ (indicate profile name as mesquiteApp)
+
+ Check submission histories xcrun notarytool history  --keychain-profile "mesquiteApp"
+/////////
+
+
+SIGNING Mesquite.app
+
+
+codesign --force --deep --options=runtime -s "Developer ID Application: Wayne Maddison" Mesquite.app
+codesign -d --verbose=4 Mesquite.app
+spctl --assess --verbose=4 --type execute Mesquite.app
+/usr/bin/ditto -c -k --keepParent Mesquite.app Mesquite.zip
+
+
+=====
+
+NOTARIZING
+xcrun notarytool submit --keychain-profile "mesquiteApp" Mesquite.zip
+
+Will respond with a SUBMISSION_ID. 
+
+To check status, do these: (replace SUBMISSION_ID with submissin id tetured)
+xcrun notarytool info --keychain-profile "mesquiteApp" SUBMISSION_ID
+xcrun notarytool log --keychain-profile "mesquiteApp" SUBMISSION_ID
+
+e.g.:
+xcrun notarytool info --keychain-profile "mesquiteApp" 08763341-4e26-4d1f-bb8c-00a9834c6fde
+xcrun notarytool log --keychain-profile "mesquiteApp" 08763341-4e26-4d1f-bb8c-00a9834c6fde
+
+
+AFTER SIGNED AND NOTARIZED
+
+xcrun stapler staple Mesquite.app

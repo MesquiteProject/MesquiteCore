@@ -20,6 +20,7 @@ import java.awt.*;
 import mesquite.lib.*;
 import mesquite.lib.characters.*;
 import mesquite.lib.duties.*;
+import mesquite.lib.ui.AlertDialog;
 
 /* ======================================================================== */
 public class CharPartitionList extends DataSpecssetList {
@@ -61,7 +62,7 @@ public class CharPartitionList extends DataSpecssetList {
 	/*.................................................................................................................*/
 	public Object doCommand(String commandName, String arguments, CommandChecker checker) {
 		if (checker.compare(this.getClass(), "Instructs user as how to make new character partition", null, commandName, "newCharPartition")){
-			Object obj = getMainObject();
+			Object obj = getCharacterMatrix();
 			if (!(obj instanceof CharacterData))
 				return null;
 			CharacterData data = (CharacterData)obj;

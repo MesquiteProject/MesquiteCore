@@ -16,6 +16,8 @@ package mesquite.lib.characters;
 import java.awt.*;
 import java.util.*;
 import mesquite.lib.duties.*;
+import mesquite.lib.ui.ListDialog;
+import mesquite.lib.ui.MesquiteWindow;
 import mesquite.lib.*;
 
 /*Last documented:  May 2000 */

@@ -19,6 +19,26 @@ import java.awt.event.*;
 import mesquite.lib.*;
 import mesquite.lib.characters.*;
 import mesquite.lib.duties.*;
+import mesquite.lib.taxa.Taxa;
+import mesquite.lib.tree.MesquiteTree;
+import mesquite.lib.tree.Tree;
+import mesquite.lib.tree.TreeDecorator;
+import mesquite.lib.tree.TreeDisplay;
+import mesquite.lib.tree.TreeDisplayDrawnExtra;
+import mesquite.lib.tree.TreeDisplayExtra;
+import mesquite.lib.tree.TreeDisplayLegend;
+import mesquite.lib.tree.TreeReference;
+import mesquite.lib.ui.ColorDistribution;
+import mesquite.lib.ui.ExtensibleDialog;
+import mesquite.lib.ui.MQPanel;
+import mesquite.lib.ui.MQTextArea;
+import mesquite.lib.ui.MesquiteColorTable;
+import mesquite.lib.ui.MesquiteMenuItemSpec;
+import mesquite.lib.ui.MesquiteSubmenuSpec;
+import mesquite.lib.ui.MesquiteWindow;
+import mesquite.lib.ui.MiniScroll;
+import mesquite.lib.ui.ProgressIndicator;
+import mesquite.lib.ui.StringInABox;
 import mesquite.categ.lib.*;
 
 
@@ -1284,7 +1304,7 @@ class TraceLegend extends TreeDisplayLegend {
 			stateNames[i] = null;
 			legendColors[i] = null;
 		}
-		specsBox = new TextArea(" ", 2, 2, TextArea.SCROLLBARS_NONE);
+		specsBox = new MQTextArea(" ", 2, 2, TextArea.SCROLLBARS_NONE);
 		specsBox.setEditable(false);
 		if (traceModule.showLegend())// && traceModule.showReconstruct.getValue())
 			specsBox.setVisible(false);
@@ -1456,7 +1476,7 @@ class TraceLegend extends TreeDisplayLegend {
 	}
 }
 
-class TCMPanel extends Panel {
+class TCMPanel extends MQPanel {
 	String message = "";
 	StringInABox box;
 	public TCMPanel(){

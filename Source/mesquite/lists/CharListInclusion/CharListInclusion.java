@@ -21,6 +21,9 @@ import mesquite.lib.*;
 import mesquite.lib.characters.*;
 import mesquite.lib.duties.*;
 import mesquite.lib.table.*;
+import mesquite.lib.ui.ColorDistribution;
+import mesquite.lib.ui.ListDialog;
+import mesquite.lib.ui.MesquiteMenuItemSpec;
 
 /* ======================================================================== */
 public class CharListInclusion extends CharListAssistant {
@@ -41,7 +44,7 @@ public class CharListInclusion extends CharListAssistant {
 	public boolean startJob(String arguments, Object condition, boolean hiredByName) {
 		addMenuItem("Include", makeCommand("include", this));
 		addMenuItem("Exclude", makeCommand("exclude", this));
-		addMenuItem("Reverse", makeCommand("reverse", this));
+		addMenuItem("Invert", makeCommand("reverse", this));
 		addMenuSeparator();
 		return true;
 	}
@@ -79,6 +82,7 @@ public class CharListInclusion extends CharListAssistant {
 			parametersChanged();
 		}
 	}
+	MesquiteInteger pos = new MesquiteInteger(0);
 	/*.................................................................................................................*/
 	public Object doCommand(String commandName, String arguments, CommandChecker checker) {
 		if (checker.compare(this.getClass(), "Sets the selected characters to included", null, commandName, "include")) {
@@ -87,7 +91,7 @@ public class CharListInclusion extends CharListAssistant {
 		else if (checker.compare(this.getClass(), "Sets the selected characters to excluded", null, commandName, "exclude")) {
 			doChange(1);
 		}
-		else if (checker.compare(this.getClass(), "Reverses the inclusion status of the selected characters", null, commandName, "reverse")) {
+		else if (checker.compare(this.getClass(), "Inverts the inclusion status of the selected characters", null, commandName, "reverse")) {
 			doChange(2);
 		}
 		else if (checker.compare(this.getClass(), "Stores the current inclusion status of all the characters as a character inclusion set", null, commandName, "storeCurrent")) {
@@ -128,7 +132,7 @@ public class CharListInclusion extends CharListAssistant {
 		}
 		else if (checker.compare(this.getClass(), "Loads the stored inclusion set to be the current one", "[number of inclusion set to load]", commandName, "loadToCurrent")) {
 			if (data !=null) {
-				int which = MesquiteInteger.fromFirstToken(arguments, stringPos);
+				int which = MesquiteInteger.fromFirstToken(arguments, pos);
 				if (MesquiteInteger.isCombinable(which)){
 					SpecsSetVector ssv = data.getSpecSetsVector(CharInclusionSet.class);
 					if (ssv!=null) {

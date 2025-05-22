@@ -19,6 +19,10 @@ import java.awt.*;
 import mesquite.lib.*;
 import mesquite.lib.duties.*;
 import mesquite.lib.table.*;
+import mesquite.lib.taxa.Taxa;
+import mesquite.lib.taxa.TaxaSelectionSet;
+import mesquite.lib.ui.ListDialog;
+import mesquite.lib.ui.MesquiteSubmenuSpec;
 
 /* ======================================================================== */
 public class TaxaSelCoordinator extends TaxaSelectCoordinator {
@@ -32,7 +36,7 @@ public class TaxaSelCoordinator extends TaxaSelectCoordinator {
 	public boolean startJob(String arguments, Object condition, boolean hiredByName) {
 		addMenuItem("Select All Taxa", makeCommand("selectAll",  this));
 		addMenuItem("Deselect All Taxa", makeCommand("deselectAll",  this));
-		addMenuItem("Reverse taxon selection", makeCommand("reverse",  this));
+		addMenuItem("Invert taxon selection", makeCommand("reverse",  this));
 		return true;
   	 }
 	/*.................................................................................................................*/
@@ -57,7 +61,7 @@ public class TaxaSelCoordinator extends TaxaSelectCoordinator {
 				table.repaintAll();
     	 		}
     	 	}
-    	 	else if (checker.compare(this.getClass(), "Reverses the taxon selection", null, commandName, "reverse")) {
+    	 	else if (checker.compare(this.getClass(), "Inverts the taxon selection", null, commandName, "reverse")) {
 			if (taxa !=null && table!=null) {
  				for (int i=0; i<taxa.getNumTaxa(); i++)
  					taxa.setSelected(i, !taxa.getSelected(i));
@@ -66,35 +70,35 @@ public class TaxaSelCoordinator extends TaxaSelectCoordinator {
     	 		}
     	 	}
     	 	else if (checker.compare(this.getClass(), "Selects taxa in the set", null, commandName, "selectSet")) {
-			if (taxa !=null && table!=null) {
-				int whichSet = MesquiteInteger.fromString(parser.getFirstToken(arguments));
-	 			SpecsSetVector ssv = taxa.getSpecSetsVector(TaxaSelectionSet.class);
- 				if (ssv!=null) {
- 					TaxaSelectionSet chosen;
-  	 				if (!MesquiteInteger.isCombinable(whichSet))
-	 					chosen = (TaxaSelectionSet)ListDialog.queryList(containerOfModule(), "Set taxa selection", "Select taxa of which set?", MesquiteString.helpString,ssv, 0);
+    	 		if (taxa !=null && table!=null) {
+    	 			int whichSet = MesquiteInteger.fromString(parser.getFirstToken(arguments));
+    	 			SpecsSetVector ssv = taxa.getSpecSetsVector(TaxaSelectionSet.class);
+    	 			if (ssv!=null) {
+    	 				TaxaSelectionSet chosen;
+    	 				if (!MesquiteInteger.isCombinable(whichSet))
+    	 					chosen = (TaxaSelectionSet)ListDialog.queryList(containerOfModule(), "Set taxa selection", "Select taxa of which set?", MesquiteString.helpString,ssv, 0);
     	 				else 
-	    	 				chosen = (TaxaSelectionSet)ssv.getSpecsSet(whichSet);
-	    	 			if (chosen!=null){
-	    	 				for (int i=0; i<taxa.getNumTaxa(); i++)
-	    	 					taxa.setSelected(i, chosen.isBitOn(i));
-						taxa.notifyListeners(this, new Notification(MesquiteListener.SELECTION_CHANGED));
-	 					table.repaintAll();
-	    	 				return chosen;
-	    	 			}
+    	 					chosen = (TaxaSelectionSet)ssv.getSpecsSet(whichSet);
+    	 				if (chosen!=null){
+    	 					for (int i=0; i<taxa.getNumTaxa(); i++)
+    	 						taxa.setSelected(i, chosen.isBitOn(i));
+    	 					taxa.notifyListeners(this, new Notification(MesquiteListener.SELECTION_CHANGED));
+    	 					table.repaintAll();
+    	 					return chosen;
+    	 				}
     	 			}
     	 		}
     	 	}
     	 	else if (checker.compare(this.getClass(), "Hires taxon selection module to operate on the taxa", "[name of module]", commandName, "doSelectTaxa")) {
-   	 		if (table!=null && taxa !=null){
-	    	 		TaxonSelector tda= (TaxonSelector)hireNamedEmployee(TaxonSelector.class, arguments);
-				if (tda!=null) {
-					tda.selectTaxa(taxa);
-	 	   			table.repaintAll();
-					if (!tda.pleaseLeaveMeOn())
-						fireEmployee(tda);
-				}
-			}
+    	 		if (table!=null && taxa !=null){
+    	 			TaxonSelector tda= (TaxonSelector)hireNamedEmployee(TaxonSelector.class, arguments);
+    	 			if (tda!=null) {
+    	 				tda.selectTaxa(taxa);
+    	 				table.repaintAll();
+    	 				if (!tda.pleaseLeaveMeOn())
+    	 					fireEmployee(tda);
+    	 			}
+    	 		}
     	 	}
     	 	else
     	 		return  super.doCommand(commandName, arguments, checker);
@@ -113,7 +117,7 @@ public class TaxaSelCoordinator extends TaxaSelectCoordinator {
 			deleteMenuItem(mss);
 		if (mssc!=null)
 			deleteMenuItem(mssc);
-		mss = addSubmenu(null, "Taxa Set", makeCommand("selectSet",  this), taxa.getSpecSetsVector(TaxaSelectionSet.class));
+		mss = addSubmenu(null, "Select Taxa in Taxa Set", makeCommand("selectSet",  this), taxa.getSpecSetsVector(TaxaSelectionSet.class));
 		mssc = addSubmenu(null, "Select Taxa", MesquiteModule.makeCommand("doSelectTaxa",  this));
 		mssc.setList(TaxonSelector.class);
 	}

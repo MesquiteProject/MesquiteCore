@@ -28,7 +28,7 @@ public class CharactersGroup extends GroupLabel {
 		return false;
 	}
 
-	/*.................................................................................................................*/
+	/*.................................................................................................................*
 	public void editMe(){
 			GroupDialog d = new GroupDialog(getProject(),getProject().getCoordinatorModule().containerOfModule(), "Edit Character Group", getName(), getColor(), getSymbol(), supportsSymbols());
 			d.completeAndShowDialog();
@@ -49,6 +49,7 @@ public class CharactersGroup extends GroupLabel {
 		
 		
 	}
+	*/
 }
 
 

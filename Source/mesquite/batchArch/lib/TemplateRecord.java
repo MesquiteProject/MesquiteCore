@@ -20,6 +20,7 @@ import java.awt.event.*;
 import java.io.*;
 import mesquite.lib.*;
 import mesquite.lib.duties.*;
+import mesquite.lib.tree.Tree;
 
 
 public class TemplateRecord  implements Listable, Explainable {

@@ -18,6 +18,15 @@ import java.awt.event.*;
 import java.awt.image.*;
 import java.util.*;
 import mesquite.lib.*;
+import mesquite.lib.misc.HPanel;
+import mesquite.lib.ui.ColorDistribution;
+import mesquite.lib.ui.ExtensibleDialog;
+import mesquite.lib.ui.MQScrollPane;
+import mesquite.lib.ui.MesquiteImage;
+import mesquite.lib.ui.MesquitePanel;
+import mesquite.lib.ui.MesquiteTool;
+import mesquite.lib.ui.MesquiteWindow;
+import mesquite.lib.ui.ThermoPanel;
 
 
 /* ======================================================================== */
@@ -262,7 +271,7 @@ class SplashPanel extends MesquitePanel {
 }
 
 /* ======================================================================== */
-class AboutScrollPane extends ScrollPane{
+class AboutScrollPane extends MQScrollPane{
 	public AboutScrollPane (int scrollPolicy) {
 		super(scrollPolicy);
 	}

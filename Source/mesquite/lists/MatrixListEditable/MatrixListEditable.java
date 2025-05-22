@@ -25,7 +25,7 @@ import mesquite.lib.duties.*;
 import mesquite.lib.table.*;
 
 /* ======================================================================== */
-public class MatrixListEditable extends DataSetsListAssistant implements MesquiteListener {
+public class MatrixListEditable extends CharMatricesListAssistant implements MesquiteListener {
 	/*.................................................................................................................*/
 	public String getName() {
 		return "Editability of Matrix";

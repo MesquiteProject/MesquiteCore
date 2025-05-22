@@ -24,6 +24,8 @@ import mesquite.lib.characters.*;
 import mesquite.lib.duties.*;
 import mesquite.categ.lib.*;
 import mesquite.lib.table.*;
+import mesquite.lib.ui.DoubleField;
+import mesquite.lib.ui.ExtensibleDialog;
 
 /* ======================================================================== */
 public class RandomFillWithMissing extends CategDataAlterer implements AltererRandomizations {
@@ -68,10 +70,10 @@ public class RandomFillWithMissing extends CategDataAlterer implements AltererRa
 	}
 	/*.................................................................................................................*/
 	/** Called to alter data in those cells selected in table*/
-	public boolean alterData(CharacterData data, MesquiteTable table, UndoReference undoReference){
+	public int alterData(CharacterData data, MesquiteTable table, UndoReference undoReference){
 		if (!MesquiteThread.isScripting())
 			if (!queryOptions())
-				return false;
+				return ResultCodes.USER_STOPPED;
 		return alterContentOfCells(data,table, undoReference);
 	}
 

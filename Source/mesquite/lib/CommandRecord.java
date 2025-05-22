@@ -16,6 +16,10 @@ package mesquite.lib;
 import java.awt.*;
 import java.util.*;
 import mesquite.lib.duties.*;
+import mesquite.lib.ui.MesquiteDialog;
+import mesquite.lib.ui.MesquiteDialogParent;
+import mesquite.lib.ui.MesquiteWindow;
+import mesquite.lib.ui.ProgressIndicator;
 
 /* ��������������������������� commands ������������������������������� */
 /* includes commands,  buttons, miniscrolls */
@@ -30,7 +34,7 @@ public class CommandRecord extends Listened {
 	Thread thread;
 	public static long numInstances =0; 
 	long id = 0; 
-	private boolean warnModuleNotFound = true;  
+	private boolean warnModuleNotFound = MesquiteTrunk.debugMode;  
 	private boolean warnObjectToldNull = true;
 	private boolean emergencyRehire = false;
 	private boolean cancelled = false;
@@ -100,7 +104,7 @@ public class CommandRecord extends Listened {
 	}
 */
 	public MesquiteDialogParent getWizard(){
-		if (wizard != null && wizard.alreadyDisposed)  //just in case no one told me
+		if (wizard != null && wizard.isAlreadyDisposed())  //just in case no one told me
 			wizard = null;
 		return wizard;
 	}

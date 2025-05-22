@@ -22,12 +22,19 @@ import java.util.Vector;
 
 import mesquite.lib.duties.ElementManager;
 import mesquite.lib.duties.FileCoordinator;
+import mesquite.lib.misc.HNode;
+import mesquite.lib.taxa.Taxa;
+import mesquite.lib.tree.TreeVector;
+import mesquite.lib.ui.AlertDialog;
+import mesquite.lib.ui.ColorTheme;
+import mesquite.lib.ui.MesquitePopup;
+import mesquite.lib.ui.MesquiteWindow;
 
 
 
 /* ======================================================================== */
 /** A class for file elements.  It must remember the file to which it is associated.*/
-public class FileElement extends AssociableWithSpecs implements Identifiable, Listable, Renamable, FileDirtier, HNode, Explainable, Annotatable, Doomable, Disposable, Showable  {
+public class FileElement extends AssociableWithSpecs implements Identifiable, Listable, Nameable, FileDirtier, HNode, Explainable, Annotatable, Doomable, Disposable, Showable  {
 	/** Element was disposed (returned by close()).*/
 	public static final int OK = 0;
 	/** Element is in use (returned by close()).*/
@@ -324,11 +331,11 @@ public class FileElement extends AssociableWithSpecs implements Identifiable, Li
 		elementManager = manager;  //IF MANAGER NULL then find one
 
 		if (proj == null && f == null) {
-			MesquiteMessage.warnProgrammer("WARNING: addToFile called with null file and project");
+			MesquiteMessage.warnProgrammer("WARNING: addToFile called  on " + getClass() + "  " + getName() + " with null file and project");
 			return null;
 		}
 		else if ((proj != null && f != null && f.getProject()!=proj)) {
-			MesquiteMessage.warnProgrammer("WARNING: addToFile called with file (" + f.getName()+ ") not belonging to project (" + proj.getName() + ")");
+			MesquiteMessage.warnProgrammer("WARNING: addToFile called  on " + getClass() + "  " + getName() + " with file (" + f.getName()+ ") not belonging to project (" + proj.getName() + ")");
 			return null;
 		}
 		this.file=f; //IF FILE NULL THEN USE home of proj
@@ -350,7 +357,7 @@ public class FileElement extends AssociableWithSpecs implements Identifiable, Li
 		project.incrementProjectWindowSuppression();
 		project.addFileElement(this);
 		file.addFileElement(this);
-		if (elementManager!=null)
+		if (elementManager!=null) // && !(f!=null && f.temporaryUseOnly)) ////not currently used. For reentrancy issues, but may have other means to bypass.
 			nexusBlock = elementManager.elementAdded(this);
 		broadCastElementAdded(project.getCoordinatorModule(), elementManager);
 		project.refreshProjectWindow();

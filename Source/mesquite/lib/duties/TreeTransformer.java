@@ -15,6 +15,7 @@ package mesquite.lib.duties;
 
 import java.awt.*;
 import mesquite.lib.*;
+import mesquite.lib.tree.AdjustableTree;
 
 
 /* ======================================================================== */
@@ -31,13 +32,14 @@ public abstract class TreeTransformer extends MesquiteModule  {
 	 public String getFunctionIconPath(){
    		 return getRootImageDirectoryPath() + "functionIcons/treeWindowUtil.gif";
    	 }
-	//Returns true if calling code is responsible for notifying listeners of tree.  This is the old version and is present here for compatibility; it should be considered deprecated.  Old classes will override this
+	/*Returns true if calling code is responsible for notifying listeners of tree.  This is the old version and is present here for compatibility; it should be considered deprecated.  Old classes will override this
 	public boolean transformTree(AdjustableTree tree, MesquiteString resultString){
 		return false;
 	}
 	/**/
-	
-	//Should be overridden; when previous version is deleted in future, this will be abstract.  returns whether successfully transformed.
+		public abstract boolean transformTree(AdjustableTree tree, MesquiteString resultString, boolean notify);
+
+	/*Should be overridden; when previous version is deleted in future, this will be abstract.  returns whether successfully transformed.
 	public boolean transformTree(AdjustableTree tree, MesquiteString resultString, boolean notify){
 		
 		if (transformTree(tree, resultString)){
@@ -47,6 +49,7 @@ public abstract class TreeTransformer extends MesquiteModule  {
 		return true;
 		
 	}
+	*/
 }
 
 

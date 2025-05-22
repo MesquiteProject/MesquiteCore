@@ -18,6 +18,9 @@ import java.util.*;
 import java.awt.*;
 import mesquite.lib.*;
 import mesquite.lib.duties.*;
+import mesquite.lib.tree.MesquiteTree;
+import mesquite.lib.tree.Tree;
+import mesquite.lib.ui.ColorDistribution;
 import mesquite.treefarm.lib.*;
 
 /* ======================================================================== */
@@ -61,14 +64,11 @@ public class RandomBranchMoves extends RndTreeModifier {
     	 	return null;
     	 }
 	/*.................................................................................................................*/
-	NameReference colorNameRef = NameReference.getNameReference("color");
 	private void setColor(Tree tree, int node){
 		if (tree == null || !(tree instanceof Associable))
 			return;
 		Associable aTree = (Associable)tree;
-		if (aTree.getWhichAssociatedLong(colorNameRef)==null)
-			aTree.makeAssociatedLongs("color");
-		aTree.setAssociatedLong(colorNameRef, node, ColorDistribution.numberOfRed, true);
+		aTree.setColor(node, "#ff0000");
 	}
 	/*.................................................................................................................*/
    	 public void modifyTree(Tree tree, MesquiteTree modified, RandomBetween rng){

@@ -18,6 +18,8 @@ import java.util.*;
 import java.awt.*;
 import mesquite.lib.*;
 import mesquite.lib.duties.*;
+import mesquite.lib.taxa.Taxa;
+import mesquite.lib.tree.TreeVector;
 import mesquite.distance.lib.*;
 
 /* ======================================================================== */
@@ -126,9 +128,9 @@ public class ClusterAnalysis extends TreeInferer implements Incrementable {  //I
    	}
    	
 	/*.................................................................................................................*/
-  	public void fillTreeBlock(TreeVector treeList, int numberIfUnlimited){
+  	public int fillTreeBlock(TreeVector treeList, int numberIfUnlimited){
   		if (treeList==null)
-  			return;
+  			return ResultCodes.INPUT_NULL;
    		Taxa taxa = treeList.getTaxa();
    		distanceTask.initialize(taxa);
  		TaxaDistance dist = distanceTask.getTaxaDistance(taxa);
@@ -137,6 +139,7 @@ public class ClusterAnalysis extends TreeInferer implements Incrementable {  //I
   		
 		treeList.setName("Trees from " + clusterer.getName() + " cluster analysis (Distance: " + distanceTask.getName() + ")");
 		treeList.setAnnotation ("Parameters: "  + getParameters() + ";  " + clusterer.getParameters() + "  Distance: " + distanceTask.getParameters(), false);
+		return ResultCodes.SUCCEEDED;
   	}
 	/*.................................................................................................................*/
    	public String getParameters() {

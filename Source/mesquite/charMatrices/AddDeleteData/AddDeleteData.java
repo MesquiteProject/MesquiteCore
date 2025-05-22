@@ -21,6 +21,11 @@ import mesquite.lib.*;
 import mesquite.lib.characters.*;
 import mesquite.lib.duties.*;
 import mesquite.lib.table.*;
+import mesquite.lib.taxa.Taxa;
+import mesquite.lib.ui.AlertDialog;
+import mesquite.lib.ui.InfoBar;
+import mesquite.lib.ui.MesquiteMenuItemSpec;
+import mesquite.lib.ui.MesquiteWindow;
 
 /*
  * to do: - how to add to end of matrix using this tool?
@@ -158,7 +163,10 @@ public class AddDeleteData extends DataWindowAssistantI implements KeyListener {
 				if (!MesquiteThread.isScripting() && !AlertDialog.query(containerOfModule(),"Delete characters?","Are you sure you want to delete the selected characters?","Yes", "No"))
 					return;
 				Vector blocks = new Vector();
-				int count = 0;
+				
+				/* old
+				 *
+				 *
 				while (table.anyColumnSelected()) {  // DELETING COLUMNS
 					count++;
 					int lastOfBlock = table.lastColumnSelected();
@@ -173,6 +181,28 @@ public class AddDeleteData extends DataWindowAssistantI implements KeyListener {
 						blocks.addElement(new int[] { firstOfBlock, lastOfBlock - firstOfBlock + 1 }); // do as series of contiguous blocks
 					}
 				}
+				/**/
+				//
+
+				/* new efficient version  that uses deletePartsFlagged so as not to have to do in pieces*/
+				Bits toBeDeleted = new Bits(data.getNumChars());
+		
+				while (table.anyColumnSelected()) {  // DELETING COLUMNS
+					int lastOfBlock = table.lastColumnSelected();
+					int firstOfBlock = table.startOfLastColumnBlockSelected();
+					if (lastOfBlock >= 0) {
+						for (int i = firstOfBlock; i <= lastOfBlock; i++) {
+							table.deselectColumn(i);
+							data.setSelected(i, false);
+							toBeDeleted.setBit(i, true);
+						}
+						blocks.addElement(new int[] { firstOfBlock, lastOfBlock - firstOfBlock + 1 }); // do as series of contiguous blocks
+					}
+				}
+				data.deletePartsFlagged(toBeDeleted, false);
+				data.deleteInLinkedFlagged(toBeDeleted, false);
+				/*	*/
+		
 
 				if (blocks.size() == 1) {
 					data.notifyListeners(this, new Notification(MesquiteListener.PARTS_DELETED, (int[]) blocks.elementAt(0))); // do as series of contiguous blocks

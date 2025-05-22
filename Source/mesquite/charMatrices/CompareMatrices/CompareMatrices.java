@@ -18,9 +18,12 @@ import java.awt.*;
 import mesquite.lib.*;
 import mesquite.lib.characters.*;
 import mesquite.lib.duties.*;
+import mesquite.lib.taxa.Taxa;
+import mesquite.lib.taxa.Taxon;
+import mesquite.lib.ui.ListDialog;
 
 /* ======================================================================== */
-public class CompareMatrices extends DataUtility { 
+public class CompareMatrices extends DataUtilityNoAlterer { 
 	CharacterData data;
 	TextDisplayer displayer;
 	/*.................................................................................................................*/
@@ -30,7 +33,7 @@ public class CompareMatrices extends DataUtility {
 	/*.................................................................................................................*/
 	/** returns whether this module is requesting to appear as a primary choice */
    	public boolean requestPrimaryChoice(){
-   		return true;  
+   		return false;  
    	}
 	/*.................................................................................................................*/
    	 public boolean isPrerelease(){
@@ -82,31 +85,50 @@ public class CompareMatrices extends DataUtility {
 				CharacterState cs1 = null;
 				CharacterState cs2 = null;
 				for (int it = 0; it<data.getNumTaxa() && it<oData.getNumTaxa() && !differenceFound; it++){
+					boolean firstInTaxon = true;
 					for (int ic = 0; ic<data.getNumChars() && ic<oData.getNumChars() && !differenceFound; ic++){
 						cs1 = data.getCharacterState(cs1, ic, it);
 						cs2 = oData.getCharacterState(cs2, ic, it);
-						if (!cs1.equals(cs2)) {
+						if (!cs1.equals(cs2, false, true)) {
+							if (firstInTaxon){
+								log("taxon " + (it+1) + ", characters: ");
+								firstInTaxon = false;
+							}
+							log(" " + (ic+1) + ": " + cs1 + "≠" + cs2);
 							differenceFound = true;
 							result+= "  The first difference of characters is in taxon " + Taxon.toExternal(it) + " (" + taxa.getTaxonName(it) +  ") and character " + CharacterStates.toExternal(ic) + " (" + data.getName() + ": " + cs1.toString() + "; " + oData.getName() + ": " + cs2.toString() + ")" + StringUtil.lineEnding();
 						}
 					}
+					if (!firstInTaxon)
+						logln("");
 				}
 				differenceFound = true;
 			}
 			else {
-				
 				CharacterState cs1 = null;
 				CharacterState cs2 = null;
-				for (int it = 0; it<data.getNumTaxa() && it<oData.getNumTaxa(); it++){
-					for (int ic = 0; ic<data.getNumChars() && ic<oData.getNumChars(); ic++){
+				int numStateDiffs = 0;
+				for (int it = 0; it<data.getNumTaxa() && it<oData.getNumTaxa() && numStateDiffs <1000; it++){
+					boolean firstInTaxon = true;
+					for (int ic = 0; ic<data.getNumChars() && ic<oData.getNumChars() && numStateDiffs <1000; ic++){
 						cs1 = data.getCharacterState(cs1, ic, it);
 						cs2 = oData.getCharacterState(cs2, ic, it);
-						if (!cs1.equals(cs2)) {
+						if (!cs1.equals(cs2, false, true)) {
+							if (firstInTaxon){
+								log("taxon " + (it+1) + ", characters: ");
+								firstInTaxon = false;
+							}
+							numStateDiffs++;
 							differenceFound = true;
+							log(" " + (ic+1) + ": " + cs1 + "≠" + cs2);
 							result+= "Taxon " + Taxon.toExternal(it) + " (" + taxa.getTaxonName(it) +  "); character " + CharacterStates.toExternal(ic) + " differs (" + data.getName() + ": " + cs1.toString() + "; " + oData.getName() + " with " + cs2.toString() + ")" + StringUtil.lineEnding();
 						}
 					}
+					if (!firstInTaxon)
+						logln("");
 				}
+				if (numStateDiffs>999)
+					result += "More than 1000 differences found; suspending comparison.\n";
 			}
 			if (!differenceFound)
 				result+= "No differences were detected";

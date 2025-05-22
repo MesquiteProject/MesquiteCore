@@ -21,6 +21,14 @@ import java.awt.*;
 import mesquite.lib.*;
 import mesquite.lib.characters.*;
 import mesquite.lib.duties.*;
+import mesquite.lib.taxa.Taxa;
+import mesquite.lib.taxa.Taxon;
+import mesquite.lib.taxa.TaxonNamer;
+import mesquite.lib.tree.MesquiteTree;
+import mesquite.lib.tree.Tree;
+import mesquite.lib.tree.TreeVector;
+import mesquite.lib.ui.ListDialog;
+import mesquite.lib.ui.ProgressIndicator;
 import mesquite.lib.*;
 import mesquite.lib.characters.*;
 import mesquite.io.lib.*;
@@ -170,7 +178,7 @@ public abstract class InterpretHennig86Base extends FileInterpreterITree {
 			readClade(tree, sprouted, treeParser, valuesAtNodes, namer);
 			boolean keepGoing = true;
 			while (keepGoing) {
-				int loc = treeParser.getPosition();
+				long loc = treeParser.getPosition();
 				String next = treeParser.getNextToken();
 				if (")".equals(next)) {  
 					keepGoing = false;
@@ -179,7 +187,7 @@ public abstract class InterpretHennig86Base extends FileInterpreterITree {
 					 if ("=".equals(next)) {
 						next = treeParser.getNextToken();
 						int value = MesquiteInteger.fromString(next);
-						tree.setAssociatedDouble(valuesAtNodes, node, 0.01*value, true);  // value will be a percentage
+						tree.setAssociatedDouble(valuesAtNodes, node, 0.01*value);  // value will be a percentage
 
 					} else
 						treeParser.setPosition(loc);
@@ -238,7 +246,7 @@ public abstract class InterpretHennig86Base extends FileInterpreterITree {
 		String token;
 		String quote = null;
 		char c;
-		int linePos;
+		long linePos;
 		parser.setString(line);
 		Tree tree = null;
 		long totalLength = line.length();
@@ -253,15 +261,15 @@ public abstract class InterpretHennig86Base extends FileInterpreterITree {
 				while (c!='\'' && c!='\0') {
 					c = parser.nextDarkChar();
 				}
-				quote = line.substring(linePos,parser.getPosition()-1);  // saving entire quoted section  TODO: place in trees block
+				quote = line.substring((int)linePos,(int)(parser.getPosition()-1));  // saving entire quoted section  TODO: place in trees block
 				if (quoteString!=null && StringUtil.notEmpty(quote))
-					quoteString.setValue(line.substring(linePos,parser.getPosition()-1));
-				int startPos = linePos-1;
-				int endPos = parser.getPosition()-1;
+					quoteString.setValue(line.substring((int)linePos,(int)parser.getPosition()-1));
+				long startPos = linePos-1;
+				long endPos = parser.getPosition()-1;
 				if (endPos>line.length())
 					endPos=line.length()-1;
 				if (startPos<= endPos && startPos>=0 && endPos<=line.length())
-					line = StringUtil.removePiece(line, startPos, endPos);  // removing first quote
+					line = StringUtil.removePiece(line, (int)startPos, (int)endPos);  // removing first quote
 				parser.setString(line);
 				//parser.setPosition(0);
 			}	
@@ -451,7 +459,7 @@ public abstract class InterpretHennig86Base extends FileInterpreterITree {
 		return exportTotalElements;
 	}
 	/*.................................................................................................................*/
-	public StringBuffer getDataAsFileText(MesquiteFile file, CharacterData data) {
+	public MesquiteStringBuffer getDataAsFileText(MesquiteFile file, CharacterData data) {
 		Taxa taxa = data.getTaxa();
 		CategoricalData catData = null;
 		if (data instanceof CategoricalData)
@@ -462,12 +470,11 @@ public abstract class InterpretHennig86Base extends FileInterpreterITree {
 		if (file != null){
 			writeTaxaWithAllMissing = file.writeTaxaWithAllMissing;
 			writeExcludedCharacters = file.writeExcludedCharacters;
-			fractionApplicable = file.fractionApplicable;
 			writeCharLabels = file.writeCharLabelInfo;
 		}
 
 
-		StringBuffer outputBuffer = new StringBuffer(taxa.getNumTaxa()*(20 + data.getNumChars()));
+		MesquiteStringBuffer outputBuffer = new MesquiteStringBuffer(taxa.getNumTaxa()*(20L + data.getNumChars()));
 		if (getIncludeQuotes())
 			availableCommands[3].appendCommandToStringBuffer(outputBuffer, taxa, data, progIndicator);  //quote
 		if (data.getStateClass()==DNAData.class && !isTNT())
@@ -501,7 +508,7 @@ public abstract class InterpretHennig86Base extends FileInterpreterITree {
 		progIndicator.start();
 
 
-		StringBuffer outputBuffer = getDataAsFileText(file, data);  //ccode
+		MesquiteStringBuffer outputBuffer = getDataAsFileText(file, data);  //ccode
 		if (outputBuffer==null)
 			return false;
 
@@ -595,8 +602,8 @@ abstract class HennigNonaCommand {
 		}
 	}
 	/*.................................................................................................................*/
-	public void appendCommandToStringBuffer(StringBuffer outputBuffer, Taxa taxa, CharacterData charData, ProgressIndicator progIndicator){
-	}
+	//XYXYXY
+	public abstract void appendCommandToStringBuffer(MesquiteStringBuffer outputBuffer, Taxa taxa, CharacterData charData, ProgressIndicator progIndicator);
 }
 /*========================================================*/
 
@@ -751,7 +758,7 @@ class HennigCCODE extends HennigNonaCommand {
 		return s;
 	}
 	/*.................................................................................................................*/
-	public void appendCommandToStringBuffer(StringBuffer outputBuffer, Taxa taxa, CharacterData charData, ProgressIndicator progIndicator){
+	public void appendCommandToStringBuffer(MesquiteStringBuffer outputBuffer, Taxa taxa, CharacterData charData, ProgressIndicator progIndicator){
 		int numChars = charData.getNumChars();
 		String ccode="";
 
@@ -935,7 +942,7 @@ class HennigQUOTE extends HennigNonaCommand {
 		return true;
 	}
 	/*.................................................................................................................*/
-	public void appendCommandToStringBuffer(StringBuffer outputBuffer, Taxa taxa, CharacterData charData, ProgressIndicator progIndicator){
+	public void appendCommandToStringBuffer(MesquiteStringBuffer outputBuffer, Taxa taxa, CharacterData charData, ProgressIndicator progIndicator){
 		if (!StringUtil.blank(charData.getAnnotation())) {
 			outputBuffer.append(getCommandName()+" ");
 			outputBuffer.append(charData.getAnnotation());
@@ -973,7 +980,7 @@ class HennigNSTATES extends HennigNonaCommand {
 		return true;
 	}
 	/*.................................................................................................................*/
-	public void appendCommandToStringBuffer(StringBuffer outputBuffer, Taxa taxa, CharacterData charData, ProgressIndicator progIndicator){
+	public void appendCommandToStringBuffer(MesquiteStringBuffer outputBuffer, Taxa taxa, CharacterData charData, ProgressIndicator progIndicator){
 		outputBuffer.append(getCommandName()+" ");
 		if (charData instanceof DNAData) 
 			outputBuffer.append("dna");
@@ -1046,7 +1053,7 @@ class HennigCNAMES extends HennigNonaCommand {
 		return true;
 	}
 	/*.................................................................................................................*/
-	public void appendCommandToStringBuffer(StringBuffer outputBuffer, Taxa taxa, CharacterData charData, ProgressIndicator progIndicator){
+	public void appendCommandToStringBuffer(MesquiteStringBuffer outputBuffer, Taxa taxa, CharacterData charData, ProgressIndicator progIndicator){
 		CategoricalData catData = null;
 		if (charData instanceof CategoricalData)
 			catData = (CategoricalData)charData;
@@ -1136,12 +1143,12 @@ class HennigCOMMENTS extends HennigNonaCommand {
 		return true;
 	}
 	/*.................................................................................................................*/
-	public void appendCommandToStringBuffer(StringBuffer outputBuffer, Taxa taxa, CharacterData charData, ProgressIndicator progIndicator){
+	public void appendCommandToStringBuffer(MesquiteStringBuffer outputBuffer, Taxa taxa, CharacterData charData, ProgressIndicator progIndicator){
 		int numChars = charData.getNumChars();
 		int numTaxa = taxa.getNumTaxa();
 		int charCounter = 0;
 		int totalCounter = 0;
-		int startPos = outputBuffer.length();
+		long startPos = outputBuffer.length();
 
 		incrementAndUpdateProgIndicator(progIndicator,"Exporting comments");
 		for (int it = 0; it<numTaxa; it++){
@@ -1187,7 +1194,7 @@ abstract class HennigXDREAD extends HennigNonaCommand {
 		TaxaManager taxaTask = (TaxaManager)ownerModule.findElementManager(Taxa.class);
 		CharactersManager charTask = (CharactersManager)ownerModule.findElementManager(CharacterData.class);
 
-		Taxa taxa = taxaTask.makeNewTaxa("Taxa", 0, false);
+		Taxa taxa = taxaTask.makeNewTaxaBlock("Taxa", 0, false);
 		taxa.addToFile(file, ownerModule.getProject(), taxaTask);
 
 		InterpretHennig86Base interpretHN = (InterpretHennig86Base)ownerModule;
@@ -1207,12 +1214,12 @@ abstract class HennigXDREAD extends HennigNonaCommand {
 
 		c = parser.nextDarkChar();
 		if (c=='\'')  {   // we have a leading quote in the XREAD command
-			int linePos = parser.getPosition();
+			long linePos = parser.getPosition();
 			c = parser.nextDarkChar();
 			while (c!='\'' && c!='\0') {   // TODO: check if at end
 				c = parser.nextDarkChar();
 			}
-			String quote = parser.getString().substring(linePos,parser.getPosition()-1);  // saving entire quoted section  TODO: place in appropriate place
+			String quote = parser.getString().substring((int)linePos,(int)parser.getPosition()-1);  // saving entire quoted section  TODO: place in appropriate place
 			newData.setAnnotation(quote, false);
 		}
 		else {   //need to backtrack
@@ -1417,7 +1424,7 @@ abstract class HennigXDREAD extends HennigNonaCommand {
 			return stateString+standardTNTSymbolForState(CategoricalState.minimum(s));
 	}
 	/*.................................................................................................................*/
-	public void appendStateToBuffer(int ic, int it, StringBuffer outputBuffer, CharacterData data){
+	public void appendStateToBuffer(int ic, int it, MesquiteStringBuffer outputBuffer, CharacterData data){
 		CategoricalData catData = null;
 		if (data instanceof CategoricalData)
 			catData= (CategoricalData)data;
@@ -1437,7 +1444,7 @@ abstract class HennigXDREAD extends HennigNonaCommand {
 			outputBuffer.append(statesToStringDefaultSymbols(catData, ic,it,'[',']',(char)Character.UNASSIGNED, (char)Character.UNASSIGNED));
 	}
 	/*.................................................................................................................*/
-	public void appendCommandToStringBuffer(StringBuffer outputBuffer, Taxa taxa, CharacterData charData, ProgressIndicator progIndicator){
+	public void appendCommandToStringBuffer(MesquiteStringBuffer outputBuffer, Taxa taxa, CharacterData charData, ProgressIndicator progIndicator){
 		int numTaxa = taxa.getNumTaxa();
 		int numChars = charData.getNumChars();
 
@@ -1461,7 +1468,6 @@ abstract class HennigXDREAD extends HennigNonaCommand {
 		int countTaxa = 0;
 		for (int it = 0; it<numTaxa; it++)
 			if ((!fileInterpreter.writeOnlySelectedTaxa || taxa.getSelected(it)) && (fileInterpreter.writeTaxaWithAllMissing || charData.hasDataForTaxon(it, fileInterpreter.writeExcludedCharacters)))
-				if (fileInterpreter.fractionApplicable==1.0 || charData.getFractionApplicableInTaxon(it, fileInterpreter.writeExcludedCharacters)>=fileInterpreter.fractionApplicable) 
 					countTaxa++;
 		int numTaxaWrite = countTaxa;
 
@@ -1469,8 +1475,7 @@ abstract class HennigXDREAD extends HennigNonaCommand {
 		outputBuffer.append(Integer.toString(numTaxaWrite)+fileInterpreter.getLineEnding());
 
 		for (int it = 0; it<numTaxa; it++){
-			if ((!fileInterpreter.writeOnlySelectedTaxa || taxa.getSelected(it)) && (fileInterpreter.writeTaxaWithAllMissing || charData.hasDataForTaxon(it, fileInterpreter.writeExcludedCharacters)))
-				if (fileInterpreter.fractionApplicable==1.0 || charData.getFractionApplicableInTaxon(it, fileInterpreter.writeExcludedCharacters)>=fileInterpreter.fractionApplicable) {
+			if ((!fileInterpreter.writeOnlySelectedTaxa || taxa.getSelected(it)) && (fileInterpreter.writeTaxaWithAllMissing || charData.hasDataForTaxon(it, fileInterpreter.writeExcludedCharacters))) {
 					incrementAndUpdateProgIndicator(progIndicator,"Exporting data matrix");
 					String name = null;
 					if (ownerModule.taxonNamer!=null)
@@ -1697,7 +1702,7 @@ class HennigTREAD extends HennigNonaCommand {
 	}
 
 	/*.................................................................................................................*/
-	public void appendCommandToStringBuffer(StringBuffer outputBuffer, Taxa taxa, CharacterData charData, ProgressIndicator progIndicator){
+	public void appendCommandToStringBuffer(MesquiteStringBuffer outputBuffer, Taxa taxa, CharacterData charData, ProgressIndicator progIndicator){
 		Listable[] treeVectors = fileInterpreter.getProject().getCompatibleFileElements(TreeVector.class, taxa);
 		TreeVector treeVector;
 		if (treeVectors.length==0)

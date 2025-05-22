@@ -21,9 +21,12 @@ import mesquite.lib.*;
 import mesquite.lib.duties.*;
 import mesquite.lib.characters.*;
 import mesquite.lib.table.*;
+import mesquite.lib.ui.ExtensibleDialog;
+import mesquite.lib.ui.MesquiteColorTable;
+import mesquite.lib.ui.SingleLineTextField;
 
 /* ======================================================================== */
-public class NumForCharMatrixList extends DataSetsListAssistant implements MesquiteListener  {
+public class NumForCharMatrixList extends CharMatricesListAssistant implements MesquiteListener, Pausable  {
 	/*.................................................................................................................*/
 	public String getName() {
 		return "Number for Matrix (in List of Character Matrices window)";
@@ -36,11 +39,12 @@ public class NumForCharMatrixList extends DataSetsListAssistant implements Mesqu
 	}
 	public void getEmployeeNeeds(){  //This gets called on startup to harvest information; override this and inside, call registerEmployeeNeed
 		EmployeeNeed e = registerEmployeeNeed(NumberForMatrix.class, getName() + " needs a method to calculate a value for each of the character matrices.",
-		"You can select a value to show in the Number For Character Matrices submenu of the Columns menu of the List of Character Matrices Window. ");
+				"You can select a value to show in the Number For Character Matrices submenu of the Columns menu of the List of Character Matrices Window. ");
 	}
 	NumberForMatrix numberTask;
 	MesquiteBoolean shadeCells = new MesquiteBoolean(false);
 	MesquiteTable table;
+
 	/*.................................................................................................................*/
 	public boolean startJob(String arguments, Object condition, boolean hiredByName) {
 		if (arguments !=null) {
@@ -48,17 +52,19 @@ public class NumForCharMatrixList extends DataSetsListAssistant implements Mesqu
 			if (numberTask==null) {
 				return sorry("Number for character matrix (for list) can't start because the requested module was not successfully hired");
 			}
-			return true;
 		}
+		else {
 		numberTask = (NumberForMatrix)hireEmployee(NumberForMatrix.class, "Value to calculate for character matrix (for List of Matrices window)");
 		if (numberTask==null) {
 			return sorry("Number for character matrix (for list) can't start because the no calculating module was successfully hired");
 		}
+		}
 		shadeCells.setValue(false);
-		addCheckMenuItem(null, "Color Cells", makeCommand("toggleShadeCells",  this), shadeCells);
+		addCheckMenuItem(null, "Color Cells", makeCommand("toggleShadeCells",  this), shadeCells); 
 		addMenuItem(null, "Select based on value...", makeCommand("selectBasedOnValue",  this));
 		return true;
 	}
+
 	/** Returns whether or not it's appropriate for an employer to hire more than one instance of this module.  
  	If false then is hired only once; second attempt fails.*/
 	public boolean canHireMoreThanOnce(){
@@ -68,6 +74,27 @@ public class NumForCharMatrixList extends DataSetsListAssistant implements Mesqu
 	public void employeeQuit(MesquiteModule m){
 		iQuit();
 	}
+	/** Indicate what could be paused */
+	public void addPausables(Vector pausables) {
+		if (pausables != null)
+			pausables.addElement(this);
+	}
+	/** to ask Pausable to pause*/
+	public void pause() {
+		paused = true;
+	}
+	/** to ask a Pausable to unpause (i.e. to resume regular activity)*/
+	public void unpause() {
+		paused = false;
+		doCalcs();
+		parametersChanged(null);
+	}
+	/*.................................................................................................................*/
+	boolean paused = false;
+	boolean okToCalc() {
+		return !paused;
+	}
+
 	public void setTableAndObject(MesquiteTable table, Object obj){
 		if (datas !=null)
 			datas.removeListener(this);
@@ -163,7 +190,7 @@ public class NumForCharMatrixList extends DataSetsListAssistant implements Mesqu
 				table.redrawFullRow(i);
 			}
 		}
-		
+
 		datas.notifyListeners(this, new Notification(MesquiteListener.SELECTION_CHANGED));
 
 	}
@@ -226,7 +253,7 @@ public class NumForCharMatrixList extends DataSetsListAssistant implements Mesqu
 	MesquiteNumber max = new MesquiteNumber();
 	/*.................................................................................................................*/
 	public void doCalcs(){
-		if (numberTask==null || datas == null)
+		if (!okToCalc() || numberTask==null || datas == null)
 			return;
 		outputInvalid();
 		int numBlocks = datas.size();
@@ -258,8 +285,11 @@ public class NumForCharMatrixList extends DataSetsListAssistant implements Mesqu
 	}
 	public String getWidestString(){
 		if (numberTask==null)
-			return "888888";
-		return numberTask.getVeryShortName()+"   ";
+			return "88888888";
+		String name = numberTask.getVeryShortName()+"   ";
+		if (StringUtil.blank(name) || name.length()<8)
+			return "88888888";
+		return name;
 	}
 	/*.................................................................................................................*/
 	/** returns whether this module is requesting to appear as a primary choice */

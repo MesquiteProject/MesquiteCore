@@ -34,6 +34,13 @@ import mesquite.lib.*;
 import mesquite.lib.characters.*;
 import mesquite.lib.duties.*;
 import mesquite.lib.table.*;
+import mesquite.lib.taxa.Taxa;
+import mesquite.lib.ui.AlertDialog;
+import mesquite.lib.ui.ColorDistribution;
+import mesquite.lib.ui.ExtensibleDialog;
+import mesquite.lib.ui.MesquiteMenuItem;
+import mesquite.lib.ui.MesquitePopup;
+import mesquite.lib.ui.SingleLineTextField;
 
 /* ======================================================================== */
 public class TaxaListHasData extends TaxonListAssistant  {
@@ -215,7 +222,7 @@ public class TaxaListHasData extends TaxonListAssistant  {
 				return null;
 			int it = MesquiteInteger.fromString(parser.getFirstToken(arguments));
 			if (MesquiteInteger.isCombinable(it)) {
-				StringBuffer sb = new StringBuffer();
+				MesquiteStringBuffer sb = new MesquiteStringBuffer();
 				data.copyDataFromRowIntoBuffer(it, sb);
 				if (StringUtil.notEmpty(sb.toString())) {
 					localCopyDataClipboard = sb.toString();
@@ -505,6 +512,7 @@ public class TaxaListHasData extends TaxonListAssistant  {
 	/*...............................................................................................................*/
 	/** for those permitting editing, indicates user has edited to incoming string.*/
 	public void setString(int row, String s){
+// QZ ZQ how does one edit the genbank number here? Can we use pasteIntoSelected as in TreeListAttachment?
 
 		if (StringUtil.blank(s))
 			setNote(row, null, CharacterData.taxonMatrixNotesRef);
@@ -514,33 +522,19 @@ public class TaxaListHasData extends TaxonListAssistant  {
 			setNote(row, s, CharacterData.taxonMatrixNotesRef);
 	}
 
-	/*...............................................................................................................*
-	void setNote(int row, String s){
-		if (tInfo == null)
-			return;
-		tInfo.setAssociatedObject(MolecularData.genBankNumberRef, row, s);
-	}
-	/*...............................................................................................................*
-	String getNote(int row, NameReference nameRef){
-		if (tInfo == null)
-			return null;
-		Object obj = tInfo.getAssociatedObject(MolecularData.genBankNumberRef, row);
-		if (obj == null || !(obj instanceof String))
-			return null;
-		return (String)obj;
-	}
+	
 	/*...............................................................................................................*/
 	void setNote(int row, String s, NameReference nameRef){
 		if (tInfo == null)
 			return;
-		tInfo.setAssociatedObject(nameRef, row, s);
+		tInfo.setAssociatedString(nameRef, row, s);
 	}
 	/*...............................................................................................................*/
 	String getNote(int row, NameReference nameRef){
 		if (tInfo == null)
 			return null;
-		Object obj = tInfo.getAssociatedObject(nameRef, row);
-		if (obj == null || !(obj instanceof String))
+		String obj = tInfo.getAssociatedString(nameRef, row);
+		if (obj == null)
 			return null;
 		return (String)obj;
 	}

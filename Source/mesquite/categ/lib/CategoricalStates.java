@@ -18,6 +18,9 @@ import java.util.*;
 import mesquite.lib.*;
 import mesquite.lib.characters.*;
 import mesquite.lib.duties.*;
+import mesquite.lib.taxa.Taxa;
+import mesquite.lib.tree.Tree;
+import mesquite.lib.ui.ColorDistribution;
 
 
 /* ======================================================================== */
@@ -252,13 +255,13 @@ public abstract class CategoricalStates extends CharacterStates {
    		NameReference p = NameReference.getNameReference(paradigm);
    		DefaultReference dR = CategoricalData.findDefaultReference(p);
    		if (dR==null) {
-   			MesquiteMessage.println("Default model not found :" + paradigm);
+   			//MesquiteMessage.println("Default model not found :" + paradigm);
    			return null;
    		}
    		else {
    			CharacterModel cm = file.getCharacterModel(dR.getDefault());
-   			if (cm==null) 
-   				MesquiteMessage.println("Default model not found / " + dR.getDefault());
+   		//	if (cm==null) 
+   			//	MesquiteMessage.println("Default model not found / " + dR.getDefault());
    			return cm;
    		}
    	}
@@ -374,7 +377,7 @@ public abstract class CategoricalStates extends CharacterStates {
 				return s;
 			}
 			else if (ic>=0 && !(this instanceof CategoricalHistory)){  // treat as if terminal, not history
-				StringBuffer sb = new StringBuffer();
+				MesquiteStringBuffer sb = new MesquiteStringBuffer();
 				data.statesIntoStringBufferCore(ic, getState(node), sb, true);
 				return sb.toString();
 			}

@@ -17,6 +17,14 @@ import java.awt.*;
 import java.util.*;
 import mesquite.lib.*;
 import mesquite.lib.duties.*;
+import mesquite.lib.tree.Tree;
+import mesquite.lib.tree.TreeDisplay;
+import mesquite.lib.tree.TreeDisplayExtra;
+import mesquite.lib.tree.TreeTool;
+import mesquite.lib.ui.MesquiteImage;
+import mesquite.lib.ui.MesquiteWindow;
+import mesquite.lib.ui.MiniStringEditor;
+import mesquite.lib.ui.StringInABox;
 
 /* ======================================================================== */
 public class ConstrainNodeAge extends TreeDisplayAssistantI {
@@ -38,7 +46,7 @@ public class ConstrainNodeAge extends TreeDisplayAssistantI {
 	} 
 	/*.................................................................................................................*/
 	public   TreeDisplayExtra createTreeDisplayExtra(TreeDisplay treeDisplay) {
-		BranchNotesToolExtra newPj = new BranchNotesToolExtra(this, treeDisplay);
+		ConstrainNodesToolExtra newPj = new ConstrainNodesToolExtra(this, treeDisplay);
 		extras.addElement(newPj);
 		return newPj;
 	}
@@ -60,7 +68,7 @@ public class ConstrainNodeAge extends TreeDisplayAssistantI {
 }
 
 /* ======================================================================== */
-class BranchNotesToolExtra extends TreeDisplayExtra implements Commandable  {
+class ConstrainNodesToolExtra extends TreeDisplayExtra implements Commandable  {
 	TreeTool nodeAgeConstrTool;
 	ConstrainNodeAge nodeAgeConstrModule;
 	//MesquiteLabel message;
@@ -71,7 +79,7 @@ class BranchNotesToolExtra extends TreeDisplayExtra implements Commandable  {
 	Image anchor;
 	Font small = new Font("SanSerif", Font.PLAIN, 9);
 
-	public BranchNotesToolExtra (ConstrainNodeAge ownerModule, TreeDisplay treeDisplay) {
+	public ConstrainNodesToolExtra (ConstrainNodeAge ownerModule, TreeDisplay treeDisplay) {
 		super(ownerModule, treeDisplay);
 		anchor = MesquiteImage.getImage(ownerModule.getPath() + "anchor.gif");
 		nodeAgeConstrModule = ownerModule;
@@ -175,13 +183,13 @@ class BranchNotesToolExtra extends TreeDisplayExtra implements Commandable  {
 	public   void setTree(Tree tree) {
 	}
 	String getConstraints(Tree tree, int node){
-		return (String)tree.getAssociatedObject(ConstrainNodeAge.nodeAgeConstrRef, node);
+		return (String)tree.getAssociatedString(ConstrainNodeAge.nodeAgeConstrRef, node);
 	}
 	Parser parser = new Parser();
 
 	void setNote(Tree tree, int node, String note){
 		if (tree instanceof Associable){
-			((Associable)tree).setAssociatedObject(ConstrainNodeAge.nodeAgeConstrRef, node, note);
+			((Associable)tree).setAssociatedString(ConstrainNodeAge.nodeAgeConstrRef, node, note);
 			((Associable)tree).notifyListeners(this, new Notification(MesquiteListener.ANNOTATION_CHANGED));
 
 		}

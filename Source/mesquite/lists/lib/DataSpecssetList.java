@@ -21,6 +21,9 @@ import mesquite.lib.*;
 import mesquite.lib.characters.*;
 
 import mesquite.lib.table.*;
+import mesquite.lib.taxa.Taxa;
+import mesquite.lib.ui.ListDialog;
+import mesquite.lib.ui.MesquiteWindow;
 
 /* ======================================================================== */
 public abstract class DataSpecssetList extends ListModule {
@@ -97,6 +100,13 @@ public abstract class DataSpecssetList extends ListModule {
 	/*.................................................................................................................*/
 	/* following required by ListModule*/
   	 public Object getMainObject(){
+  		 if (data == null)
+  	 		return null;
+  	 	return data.getSpecSetsVector(getItemType());
+  	 }
+	/*.................................................................................................................*/
+	/* For individual specs set lists to make new ones etc*/
+  	 public Object getCharacterMatrix(){
   	 	return data;
   	 }
   	 public int getNumberOfRows(){
@@ -145,12 +155,17 @@ public abstract class DataSpecssetList extends ListModule {
     	 		currentDataSet = MesquiteInteger.fromString(arguments, new MesquiteInteger(0));
     	 		if (getModuleWindow()!=null && MesquiteInteger.isCombinable(currentDataSet) && currentDataSet<getProject().getNumberCharMatrices(checker.getFile())) {
 				data = getProject().getCharacterMatrix(checker.getFile(), currentDataSet);
-    	 			((ListWindow)getModuleWindow()).setCurrentObject(data);
+    	 			((ListWindow)getModuleWindow()).setCurrentObject(data.getSpecSetsVector(getItemType())); 
     	 			((ListWindow)getModuleWindow()).repaintAll();
     	 		}
     	 	}
     	 	else if (checker.compare(this.getClass(), "Returns the current data matrix", null, commandName, "getData")) {
-    	 		return ((ListWindow)getModuleWindow()).getCurrentObject();
+    	 		Object o = ((ListWindow)getModuleWindow()).getCurrentObject(); 
+    	 		if (o instanceof SpecsSetVector) {//Debugg.println -- make sure this handles all types returned
+    	 			SpecsSetVector ssv = (SpecsSetVector)o;
+    	 			o = (CharacterData)ssv.getObjectCharacterized();
+    	 		}
+    	 		return o;
     	 	}
     	 	else if (checker.compare(this.getClass(), "Stores the current specification set", null, commandName, "storeCurrent")) {
     	 		if (data!=null){

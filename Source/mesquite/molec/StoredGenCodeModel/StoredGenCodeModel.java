@@ -17,6 +17,7 @@ package mesquite.molec.StoredGenCodeModel;
 import mesquite.lib.*;
 import mesquite.lib.characters.*;
 import mesquite.lib.duties.*;
+import mesquite.lib.ui.MesquiteSubmenuSpec;
 import mesquite.parsimony.lib.*;
 import mesquite.molec.lib.*;
 

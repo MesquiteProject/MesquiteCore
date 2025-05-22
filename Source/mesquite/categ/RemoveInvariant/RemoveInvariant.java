@@ -43,26 +43,29 @@ public class RemoveInvariant extends DataAlterer  implements AltererWholeCharact
 		bits.clearAllBits();
 		for (int ic = 0; ic<cData.getNumChars(); ic++){  // first let's record which ones need deletion
 			if (!cData.charIsVariable(ic, false)) {
+				removedSome = true;
 				bits.setBit(ic);
 			}
 		}
-
-		removedSome = cData.deleteCharacters(bits, "Removing invariant characters; counting down ", false);
-		cData.deleteInLinked(bits,"Removing invariant characters; counting down ", false);
+		
+		cData.deletePartsFlagged(bits, false);
+		cData.deleteInLinkedFlagged(bits, false);
 		return removedSome;
 	}
 
 	/*.................................................................................................................*/
    	/** Called to alter data in those cells selected in table*/
-   	public boolean alterData(CharacterData cData, MesquiteTable table,  UndoReference undoReference){
+   	public int alterData(CharacterData cData, MesquiteTable table,  UndoReference undoReference){
 		if (!(cData instanceof CategoricalData))
-			return false;
+			return ResultCodes.INCOMPATIBLE_DATA;
 		CategoricalData data = (CategoricalData)cData;
 		int oldNumChars = data.getNumChars();
 		removeCharactersThatAreInvariant(data);
 		
 		logln("" + (oldNumChars-data.getNumChars()) +  " characters removed");
-		return true;
+		if (oldNumChars != data.getNumChars())
+			return ResultCodes.SUCCEEDED;
+			return ResultCodes.MEH;
    	}
 	/*.................................................................................................................*/
   	 public boolean showCitation() {

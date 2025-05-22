@@ -20,9 +20,11 @@ import java.awt.*;
 import mesquite.lib.*;
 import mesquite.lib.duties.*;
 import mesquite.lib.table.*;
+import mesquite.lib.tree.Tree;
+import mesquite.lib.tree.TreeVector;
 
 /* ======================================================================== */
-public class BooleanForTreeList extends TreeListAssistant implements MesquiteListener {
+public class BooleanForTreeList extends TreeListAssistant implements MesquiteListener, Pausable{
 	/*.................................................................................................................*/
 	public String getName() {
 		return "Boolean for Tree (in List of Trees window)";
@@ -119,6 +121,27 @@ public class BooleanForTreeList extends TreeListAssistant implements MesquiteLis
 		return booleanTask.getVeryShortName();
 	}
 	/*.................................................................................................................*/
+	/** Indicate what could be paused */
+	public void addPausables(Vector pausables) {
+		if (pausables != null)
+			pausables.addElement(this);
+	}
+	/** to ask Pausable to pause*/
+	public void pause() {
+		paused = true;
+	}
+	/** to ask a Pausable to unpause (i.e. to resume regular activity)*/
+	public void unpause() {
+		paused = false;
+		doCalcs();
+		parametersChanged(null);
+	}
+	/*.................................................................................................................*/
+	boolean paused = false;
+	boolean okToCalc() {
+		return  !paused;
+	}
+	/*.................................................................................................................*/
 	/** passes which object is being disposed (from MesquiteListener interface)*/
 	public void disposing(Object obj){
 		if (obj == treesBlock)
@@ -151,7 +174,7 @@ public class BooleanForTreeList extends TreeListAssistant implements MesquiteLis
 	StringArray explArray = new StringArray(0);
 	/*.................................................................................................................*/
 	public void doCalcs(){
-		if (suppressed || booleanTask==null || treesBlock == null)
+		if (!okToCalc() || suppressed || booleanTask==null || treesBlock == null)
 			return;
 		int numTrees = treesBlock.size();
 		booleanList.resetSize(numTrees);

@@ -18,6 +18,9 @@ import java.util.*;
 import java.awt.*;
 import mesquite.lib.*;
 import mesquite.lib.duties.*;
+import mesquite.lib.taxa.Taxa;
+import mesquite.lib.tree.MesquiteTree;
+import mesquite.lib.tree.Tree;
 
 /** Creates a random tree such that each distinct labelled topology is equally probable. */
 public class EquiprobableTrees extends TreeSimulate {

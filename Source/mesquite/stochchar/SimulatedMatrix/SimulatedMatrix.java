@@ -19,6 +19,10 @@ import java.awt.event.*;
 import mesquite.lib.*;
 import mesquite.lib.characters.*;
 import mesquite.lib.duties.*;
+import mesquite.lib.taxa.Taxa;
+import mesquite.lib.tree.Tree;
+import mesquite.lib.ui.MesquiteMenuItemSpec;
+import mesquite.lib.ui.MesquiteSubmenuSpec;
 
 /* ======================================================================== */
 public class SimulatedMatrix extends CharMatrixSource implements Incrementable {
@@ -356,7 +360,7 @@ public class SimulatedMatrix extends CharMatrixSource implements Incrementable {
 				if (lastTree !=null)
 					s+= "; most recent tree: " + lastTree.getName();
 				
-				return s + " [seed for matrix sim. " + originalSeed + "]";
+				return s + " (seed for matrix sim. " + originalSeed + ")";
 			}
 			else
 				return "";

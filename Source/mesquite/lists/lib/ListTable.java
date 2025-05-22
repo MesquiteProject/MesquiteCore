@@ -22,6 +22,12 @@ import mesquite.lib.duties.*;
 import mesquite.lib.*;
 import mesquite.lib.characters.*;
 import mesquite.lib.table.*;
+import mesquite.lib.taxa.Taxa;
+import mesquite.lib.tree.TreeVector;
+import mesquite.lib.ui.AlertDialog;
+import mesquite.lib.ui.ColorDistribution;
+import mesquite.lib.ui.MesquitePopup;
+import mesquite.lib.ui.MesquiteTool;
 
 
 /* ======================================================================== */
@@ -29,8 +35,8 @@ public class ListTable extends MesquiteTable {
 	ListWindow window;
 	LTCellAnnotation cellAnnotatable;
 	ListModule ownerModule;
-	public ListTable (int numRowsTotal, int numColumnsTotal, int totalWidth, int totalHeight, int columnNamesWidth, ListWindow window, ListModule ownerModule) {
-		super(numRowsTotal, numColumnsTotal, totalWidth, totalHeight, columnNamesWidth, window.getColorScheme(), true,false);
+	public ListTable (int numRowsTotal, int numColumnsTotal, int totalWidth, int totalHeight, int rowNamesWidth, ListWindow window, ListModule ownerModule) {  //QZ ZQ   rowNamesWidth was columnNamesWidth
+		super(numRowsTotal, numColumnsTotal, totalWidth, totalHeight, rowNamesWidth, window.getColorScheme(), true,false);
 		this.window = window;
 		cellAnnotatable = new LTCellAnnotation(ownerModule, window);
 		this.ownerModule = ownerModule;
@@ -90,6 +96,7 @@ public class ListTable extends MesquiteTable {
 				if (b.numBitsOn()==1 && b.firstBitOn() == after){
 					return;
 				}
+				Vector v = window.getOwnerModule().pauseAllPausables();
 				Associable assoc = (Associable)window.getCurrentObject();
 				long[] fullChecksumBefore = null;
 				if (assoc instanceof CharacterData)
@@ -105,9 +112,11 @@ public class ListTable extends MesquiteTable {
 				while (i<getNumRows()){
 					if (b.isBitOn(i)) {
 						if (assoc instanceof CharacterData && !asked && ((CharacterData)assoc).isMolecularSequence() && i!=after) {
-							if (!AlertDialog.query(window, "Move?", "These are molecular sequences.  Are you sure you want to move the sites to a different location?  It cannot be undone.", "Move", "Cancel"))
+							if (!AlertDialog.query(window, "Move?", "These are molecular sequences.  Are you sure you want to move the sites to a different location?  It cannot be undone.", "Move", "Cancel")) {
+								window.getOwnerModule().unpauseAllPausables(v);
 								return;
-							asked = true;
+						}
+						asked = true;
 						}
 						deselectRow(i);
 						b.clearBit(i);
@@ -120,6 +129,7 @@ public class ListTable extends MesquiteTable {
 					else
 						i++;
 				}
+
 				
 				if (assoc instanceof TreeVector)
 					((TreeVector)assoc).resetAssignedNumbers();
@@ -136,6 +146,7 @@ public class ListTable extends MesquiteTable {
 				*/
 				synchronizeRowSelection(((Associable)window.getCurrentObject()));
 				assoc.notifyListeners(this, new Notification(MesquiteListener.PARTS_MOVED, undoReference));
+				window.getOwnerModule().unpauseAllPausables(v);
 				if (window.owner.resetMenusOnNameChange()){
 					//MesquiteWindow.resetAllTitles();
 					window.owner.getProject().refreshProjectWindow();
@@ -243,6 +254,8 @@ public class ListTable extends MesquiteTable {
 				s = assistant.getStringForRow(row); 
 			}
 			catch (NullPointerException e){
+				if (MesquiteTrunk.developmentMode)
+					System.err.println("NPE in drawMatrixCell of ListTable");
 			}
 		
 		if (assistant.useString(row) && s!=null) {
@@ -310,7 +323,7 @@ public class ListTable extends MesquiteTable {
 		g.setClip(clip);
 	}
 	/*...............................................................................................................*/
-	public void cellTouched(int column, int row, int regionInCellH, int regionInCellV, int modifiers, int clickCount) {
+	public void cellTouched(int column, int row, EditorPanel editorPanel, int x, int y, int modifiers, int clickCount) {
 		window.setAnnotation("", null);
 		if (!window.interceptCellTouch(column, row, modifiers)){
 		
@@ -325,37 +338,37 @@ public class ListTable extends MesquiteTable {
 					} else 
 					if (!assistant.arrowTouchInRow(g, row, getLeftOfColumn(column), getTopOfRow(row), clickCount>1, modifiers)){
 						if (assistant.isCellEditable(row)) {
-							super.cellTouched(column, row, regionInCellH,  regionInCellV,  modifiers,  clickCount);
+							super.cellTouched(column, row, editorPanel, x, y,  modifiers,  clickCount);
 						}
 						else
-							rowTouched(true,row,regionInCellH, regionInCellV, modifiers);
+							rowTouched(true,row,editorPanel, x, y, modifiers);
 					}
 				}
 				else
-					rowTouched(true,row,regionInCellH, regionInCellV, modifiers);
+					rowTouched(true,row,editorPanel, x, y, modifiers);
 
 			}
 			else
-				((TableTool)window.getCurrentTool()).cellTouched(column, row, regionInCellH, regionInCellV, modifiers);
+				((TableTool)window.getCurrentTool()).cellTouched(column, row, editorPanel, x, y, modifiers);
 		}
 	}
 	/*...............................................................................................................*/
-	public void cellDrag(int column, int row, int regionInCellH, int regionInCellV, int modifiers) {
+	public void cellDrag(int column, int row, EditorPanel editorPanel, int x, int y, int modifiers) {
 		if (window.getCurrentTool()== window.arrowTool) 
-			super.cellDrag(column, row, regionInCellH,  regionInCellV, modifiers);
+			super.cellDrag(column, row, editorPanel, x, y, modifiers);
 		else
-		((TableTool)window.getCurrentTool()).cellDrag(column, row, regionInCellH,  regionInCellV, modifiers);
+		((TableTool)window.getCurrentTool()).cellDrag(column, row, editorPanel, x, y, modifiers);
 	}
 	/*...............................................................................................................*/
-	public void cellDropped(int column, int row, int regionInCellH, int regionInCellV, int modifiers) {
+	public void cellDropped(int column, int row, EditorPanel editorPanel, int x, int y, int modifiers) {
 		/*
 		if (window.getCurrentTool()== window.arrowTool) 
 			rowTouched(row, modifiers);
 		else  */
-		   	((TableTool)window.getCurrentTool()).cellDropped(column, row, regionInCellH, regionInCellV, modifiers);
+		   	((TableTool)window.getCurrentTool()).cellDropped(column, row, editorPanel, x, y, modifiers);
 	}
-	public void rowTouched(boolean asArrow, int row, int regionInCellH, int regionInCellV, int modifiers) {
-		super.rowTouched(asArrow,  row, regionInCellH, regionInCellV, modifiers);
+	public void rowTouched(boolean asArrow, int row, EditorPanel editorPanel, int x, int y, int modifiers) {
+		super.rowTouched(asArrow,  row, editorPanel, x, y, modifiers);
 		//if (getRowAssociable() != null) 
 		//	synchronizeRowSelection(getRowAssociable());
 		showAnnotationAndExplanation(row);
@@ -376,11 +389,11 @@ public class ListTable extends MesquiteTable {
 		super.setFocusedCell(column, row);
 	}
 	/*...............................................................................................................*/
-	public void rowNameTouched(int row, int regionInCellH, int regionInCellV, int modifiers, int clickCount) {
+	public void rowNameTouched(int row, EditorPanel editorPanel, int x, int y, int modifiers, int clickCount) {
 		showAnnotationAndExplanation(row);
 		if (window.getCurrentTool()== window.arrowTool) {
-			if (!window.interceptRowNameTouch(row, regionInCellH, regionInCellV, modifiers)) {
-				if (row >= 0 && MesquiteEvent.commandOrControlKeyDown(modifiers)){
+			if (!window.interceptRowNameTouch(row, editorPanel, x, y, modifiers)) {
+				if (row >= 0 && MesquiteEvent.rightClick(modifiers)){
 					Object a = ownerModule.getMainObject();
 					if (a instanceof ListableVector){
 						ListableVector v = (ListableVector)a;
@@ -406,19 +419,19 @@ public class ListTable extends MesquiteTable {
 				if (clickCount>1 && isRowNameEditable(row)){
 					window.setCurrentTool(window.ibeamTool);
 					window.getPalette().setCurrentTool(window.ibeamTool); 
-					((TableTool)window.getCurrentTool()).cellTouched(-1, row, regionInCellH, regionInCellV, modifiers);
+					((TableTool)window.getCurrentTool()).cellTouched(-1, row, editorPanel, x, y, modifiers);
 				}
 				else {
-					super.rowNameTouched(row,  regionInCellH,  regionInCellV, modifiers,clickCount);
+					super.rowNameTouched(row,  editorPanel, x, y, modifiers,clickCount);
 				}
 			}
 		}
 		else
-		   ((TableTool)window.getCurrentTool()).cellTouched(-1, row, regionInCellH, regionInCellV, modifiers);
+		   ((TableTool)window.getCurrentTool()).cellTouched(-1, row, editorPanel, x, y, modifiers);
 		 
 	}
-	public void superRowNameTouched(int row, int regionInCellH, int regionInCellV, int modifiers, int clickCount){
-		super.rowNameTouched(row, regionInCellH, regionInCellV, modifiers,clickCount);
+	public void superRowNameTouched(int row, EditorPanel editorPanel, int x, int y, int modifiers, int clickCount){
+		super.rowNameTouched(row, editorPanel, x, y, modifiers,clickCount);
 	}
 	/*...............................................................................................................*/
 	public boolean getDropDown(int column, int row){
@@ -436,10 +449,9 @@ public class ListTable extends MesquiteTable {
 		return true;
 	}
 	/*...............................................................................................................*/
-	public void columnNameTouched(int column, int regionInCellH, int regionInCellV, int modifiers, int clickCount) {
+	public void columnNameTouched(int column, EditorPanel editorPanel, int x, int y, int modifiers, int clickCount) {
 		window.setAnnotation("", null);
 		ListAssistant assistant = window.findAssistant(column);
-
 		if (assistant!=null) {
 			assistant.showPopUp(getColumnNamesPanel(), getLeftOfColumn(column), getColumnNamesRowHeight()+8);
 		}
@@ -477,6 +489,7 @@ public class ListTable extends MesquiteTable {
 	}
 	/*...............................................................................................................*/
 	public void mouseExitedCell(int modifiers, int column,int subColumn,int row, int subRow,MesquiteTool tool){
+		window.setAnnotation(null);
 		if (row == -1 && column>=0){//column names
 				window.setExplanation("");
 		}
@@ -495,13 +508,19 @@ public class ListTable extends MesquiteTable {
 			return window.getRowName(row);
 	}
 	/*...............................................................................................................*/
-	public void returnedRowNameText(int row, String s){
+	public void returnedRowNameText(int row, String s, boolean update){
 		if (s!=null && !s.equals(window.getRowName(row))) {
 			String oldName = window.getRowName(row);
-			window.setRowName(row, s);
+			window.setRowName(row, s, update);
 			window.setUndoer(ownerModule.getSingleNameUndoInstructions(row,oldName, s));
 		}
 		
+	}
+	public void rowNamesReturned() {
+		if (window.owner.resetMenusOnNameChange()){
+			window.resetAllTitles();
+			window.owner.resetAllMenuBars();
+		}
 	}
 	/*...............................................................................................................*/
 	public void returnedMatrixText(int column, int row, String s){

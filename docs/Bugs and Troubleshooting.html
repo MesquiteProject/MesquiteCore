@@ -41,8 +41,8 @@
     <td width="51%"><strong id="PackageTitle">Mesquite</strong></td>
     <td width="33%" align="right"><div id="subtitle"><!-- InstanceBeginEditable name="subtitle" -->Bugs and Troubleshooting<!-- InstanceEndEditable --></div></td>
     <td width="2%">&nbsp;</td>
-    <td width="14%">Version 3.81<br />
-      April 2023<br /></td>
+    <td width="14%">Version 4.0beta<br />
+      May 2025<br /></td>
   </tr>
 </table>
 
@@ -120,7 +120,8 @@
   			<tr><td><a href="javascript:pageLink('Character%20Evolution.html');">Character Evolution</a></td></tr>
   			<tr><td><a href="javascript:pageLink('Align.html');">Sequence Alignment</a></td></tr>
   			<tr><td><a href="javascript:pageLink('Analyzing%20Molecular%20Data.html');">Molecular Data</a></td></tr>
-  			<tr><td><a href="javascript:pageLink('Diversification.html');">Diversification</a></td></tr>
+    			<tr><td><a href="javascript:pageLink('Managing%20Genomic%20Data.html');">Phylogenomic Data</a></td></tr>
+ 			<tr><td><a href="javascript:pageLink('Diversification.html');">Diversification</a></td></tr>
   			<tr><td><a href="javascript:pageLink('Gene%20Trees.html');">Gene Trees</a></td></tr>
   			<tr><td><a href="javascript:pageLink('Simulations%20&%20Randomizations.html');">Simulations &amp; Randomizations</a></td></tr>
   			<tr><td><a href="javascript:pageLink('Analyzing%20Continuous%20Characters.html');">Continuous Characters</a></td></tr>
@@ -133,7 +134,8 @@
     <div class="CollapsiblePanelContent" style="display: block">
   		<table width="100%" border="0" cellpadding="1">
   			<tr><td><a href="javascript:pageLink('Managing%20Molecular%20Data.html');">Managing Molecular Data</a></td></tr>
-  			<tr><td><a href="javascript:pageLink('Managing%20Continuous%20Data.html');">Managing Continuous Data</a></td></tr>
+   			<tr><td><a href="javascript:pageLink('Managing%20Genomic%20Data.html');">Managing Phylogenomic Data</a></td></tr>
+ 			<tr><td><a href="javascript:pageLink('Managing%20Continuous%20Data.html');">Managing Continuous Data</a></td></tr>
   			<tr><td><a href="javascript:pageLink('Interactions%20with%20Other%20Programs.html');">Interactions with other programs</a></td></tr>
 		</table>
     </div>
@@ -215,7 +217,7 @@
 <div style="text-align: center"><img src="files/thassus.jpg" alt="thassus.jpg" title="thassus.jpg" /></div><br />
 <br />
 That there will be bugs in Mesquite is inevitable. Mesquite is a large project, about 1500 pages of source code when printed single spaced at 7 point font (about 120,000 or more lines of source; over 5MB of ASCII text). We don't have a big team of people working on it; most of it was written by one or two people. We apologize for the bugs that remain, and look forward to your bug reports and efforts to aid us make Mesquite useful.<br />
-If you think you have found a bug in Mesquite, please report it on the <a  href="https://sun.zoology.ubc.ca:442/mailman/listinfo/mesquitelist" rel="nofollow">Mesquite mailing list</a>. Partly to foster a community of users, and partly for efficiency, we are encouraging users to sign up to the mailing list via which they can report bugs and post queries about using Mesquite. Once you've signed up, you can send a message to the list. As a second choice, you can send a note to us at <strong>info {at} mesquiteproject.org</strong>.<br />
+If you think you have found a bug in Mesquite, please report it on the <a  href="https://groups.google.com/g/mesquite-project">Mesquite Google Group</a>. Partly to foster a community of users, and partly for efficiency, we are encouraging users to join the group via which they can report bugs and post queries about using Mesquite. Once you've signed up, you can post without moderation. As a second choice, you can send a note to us at <strong>info {at} mesquiteproject.org</strong>.<br />
 <br />
 If we don't know about a bug, it is unlikely that it will be fixed. It might be natural to presume that we know about all the bugs in Mesquite, but it is not possible for us to have tried out every combination of options on every computer environment with every data matrix, model, etc. If you are not sure if it is a bug (a large number of users blame themselves when they encounter a bug, presuming it is something they have done wrong), please report it anyway. Even if your apparent &quot;bug&quot; is a mistake you made, your mistake might indicate a poorly designed interface that should be corrected.<br />
 <br />
@@ -228,25 +230,14 @@ If you're reporting a bug, it's important that you are able to specify, as preci
 <h2 id="toc4"><a name="Perhaps you can fix the bugs yourself!-Java bugs that affect Mesquite"></a><a name="knownVMBugs"></a>Java bugs that affect Mesquite</h2>
  Below are problems in Java on various operating systems that affect Mesquite. If these problems annoy you, please contact those responsible for your Java virtual machine.<br />
 <hr />
-<h3 id="toc5"><a name="Perhaps you can fix the bugs yourself!-Java bugs that affect Mesquite-MacOS X"></a>MacOS X</h3>
- The recommended configuration for Mesquite on Mac OS X is OS X 10.5 or newer with the latest Java. There are various screen redraw and crashing bugs in earlier versions of OS X and Java.<br />
-If at any point Mesquite quits spontaneously and OS X puts up a dialog that says that Mesquite has unexpectedly quit, this is what is called a &quot;JVM crash&quot;. Technically it is not supposed to be possible for Mesquite to do this, and thus it represents a bug in Java and not a bug in Mesquite. Nonetheless, we would like to know about it, because we may be able to find a way to avoid the JVM bug.<br />
-<br />
-<h3 id="toc6"><a name="Perhaps you can fix the bugs yourself!-Java bugs that affect Mesquite-MacOS X running Java 1.3.1"></a>MacOS X running Java 1.3.1</h3>
- Mesquite 2 does not run under Java 1.3 or earlier.<br />
-<br />
-<h3 id="toc7"><a name="Perhaps you can fix the bugs yourself!-Java bugs that affect Mesquite-MacOS X 10.0 through 10.2"></a>MacOS X 10.0 through 10.2</h3>
- We have not tested Mesquite 2 under these earlier versions of MacOS X.<br />
-<br />
-<h3 id="toc8"><a name="Perhaps you can fix the bugs yourself!-Java bugs that affect Mesquite-Mac OS 9"></a>Mac OS 9</h3>
- Mesquite 2 does not function on Mac OS 9, because it requires Java 1.4.<br />
-<br />
+<h3 id="toc5"><a name="Perhaps you can fix the bugs yourself!-Java bugs that affect Mesquite-MacOS X"></a>macOS</h3>
+Mesquite behaves reasonably well on the macOS.
 <br />
 <hr />
 <h3 id="toc9"><a name="Perhaps you can fix the bugs yourself!-Java bugs that affect Mesquite-Windows"></a>Windows</h3>
- <ul><li>Windows bounce up and down as menus change (a rapid shrink &amp; expansion). This is due to a design flaw either in Windows or the Java VM; there is nothing we can do about it.</li><li>When you try to start Mesquite, you get a message that says it can't find Java. The JAVA_HOME may not be set properly on your machine To set it, go to System Properties (right click on My Computer and select Properties); Advanced tab; Environment Variables; look for Java_Home in the System variables window and edit it so that it points to the correct location of the latest Java installation.</li></ul><hr />
+ <ul><li>A bug in Oracle Java caused a great slowdown when inverted graphics were used (e.g., to highlight branches in trees). Because of this, we have disabled inverted graphics in Windows and used other, less attractive graphics options. You can turn the inverted graphics back on using File>Defaults>Permit Inverted Graphics (XORMode). </li></ul><hr />
 <h3 id="toc10"><a name="Perhaps you can fix the bugs yourself!-Java bugs that affect Mesquite-Linux/Unix etc"></a>Linux/Unix etc</h3>
- <ul><li>Window sizes and placements sometimes are inappropriate under some window managers. Some window managers refuse to let Mesquite have control over window size and placement, and choose what appear to be random sizes and placements of windows. This is not in our control. Try changing your window manager. We have found that the default installations for KDE and Gnome of Red Hat 7 work well with Mesquite.</li><li>Messages about Fonts not found on startup may be given. The problem is that you need to install a supposedly optional package of fonts in order that the default installation of Sun's Java VM work properly (see <a  href="http://java.sun.com/products/jdk/1.2/changes.html#sunw" rel="nofollow">http://java.sun.com/products/jdk/1.2/changes.html#sunw</a>). We would have thought that if the default installation of a product claims to support a program but doesn't, then that would be considered a bug. Sun considered this to be not a bug, although they seem to have fixed it...</li></ul>
+ <ul><li>In Ubuntu and the Oracle JDKs 9-24, there is a frequent crash of the graphics system because of a StackOverflowError on validate/validateTree/setFont. The effect is to make Mesquite freeze or slow down. This appears to be a bug in the Java itself, not in Mesquite. We have tried to mitigate it, but have not succeeded yet. We are working on it. If you happen to use Linux and don't have this problem, please tell us via the Google Group or info {at} mesquiteproject.org.</li></ul>
 <!-- InstanceEndEditable -->
 
     
@@ -254,7 +245,7 @@ If at any point Mesquite quits spontaneously and OS X puts up a dialog that says
     </div>
 	<!-- This clearing element should immediately follow the #mainContent div in order to force the #container div to contain all child floats --><br class="clearfloat" />
   <div id="footer">
-    <p> ©2023 Wayne P. Maddison &amp;  David R. Maddison </p>
+    <p> ©2025 Wayne P. Maddison &amp;  David R. Maddison </p>
   <!-- end #footer --></div>
 <!-- end #container --></div>
 

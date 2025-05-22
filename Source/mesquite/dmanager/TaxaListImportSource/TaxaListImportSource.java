@@ -19,6 +19,7 @@ import java.util.*;
 import mesquite.lib.*;
 import mesquite.lib.duties.*;
 import mesquite.lib.table.*;
+import mesquite.lib.taxa.Taxa;
 
 /* ======================================================================== */
 public class TaxaListImportSource extends TaxonListAssistant  {
@@ -40,7 +41,7 @@ public class TaxaListImportSource extends TaxonListAssistant  {
 	public String getStringForTaxon(int ic){
 		String s = null;
 		if (taxa != null) {
-			Object b  = taxa.getAssociatedObject(importSourceRef, ic); //+1 because zero based
+			Object b  = taxa.getAssociatedString(importSourceRef, ic); //+1 because zero based
 			if (b instanceof String)
 				s = (String)b;
 		}

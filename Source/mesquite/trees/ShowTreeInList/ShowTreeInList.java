@@ -21,12 +21,16 @@ import java.awt.event.*;
 import mesquite.lib.*;
 import mesquite.lib.duties.*;
 import mesquite.lib.table.*;
+import mesquite.lib.tree.TreeVector;
 
 /* ======================================================================== */
 public class ShowTreeInList extends TreeListInit  {
 	TreeVector trees;
 	MesquiteTable table;
 	TableTool tool;
+	public boolean loadModule(){
+		return false;
+	}
 	public String getName() {
 		return "Show Tree";
 	}
@@ -59,7 +63,6 @@ public class ShowTreeInList extends TreeListInit  {
 		return temp;
 	}
 	TreeWindowMaker getTreeWindowModule(){
-	
 		mesquite.trees.BasicTreeWindowCoord.BasicTreeWindowCoord treeWindowCoord = (mesquite.trees.BasicTreeWindowCoord.BasicTreeWindowCoord)findNearestModuleWithDuty(mesquite.trees.BasicTreeWindowCoord.BasicTreeWindowCoord.class);
 		MesquiteModule[] treeWindowMakers = treeWindowCoord.getImmediateEmployeesWithDuty(mesquite.trees.BasicTreeWindowMaker.BasicTreeWindowMaker.class);
 		if (treeWindowMakers != null && treeWindowMakers.length>0){
@@ -74,7 +77,6 @@ public class ShowTreeInList extends TreeListInit  {
 				}
 			}
 		}
-		
 		TreeWindowMaker mod = treeWindowCoord.makeWindowShowingTrees(trees.getTaxa(), trees);
 		return mod;
 		

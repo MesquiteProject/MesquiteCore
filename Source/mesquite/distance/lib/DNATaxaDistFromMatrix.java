@@ -19,6 +19,7 @@ import java.awt.Checkbox;
 
 import mesquite.lib.*;
 import mesquite.lib.characters.*;
+import mesquite.lib.ui.ExtensibleDialog;
 import mesquite.categ.lib.*;
 import mesquite.cont.lib.GeographicStateTest;
 import mesquite.distance.lib.*;

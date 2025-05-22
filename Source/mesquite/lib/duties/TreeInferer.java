@@ -17,6 +17,14 @@ import java.awt.Button;
 import java.awt.Checkbox;
 
 import mesquite.lib.*;
+import mesquite.lib.taxa.Taxa;
+import mesquite.lib.taxa.TaxaSelectionSet;
+import mesquite.lib.tree.AdjustableTree;
+import mesquite.lib.tree.Tree;
+import mesquite.lib.tree.TreeDisplay;
+import mesquite.lib.tree.TreeVector;
+import mesquite.lib.ui.ExtensibleDialog;
+import mesquite.lib.ui.MesquiteWindow;
 import mesquite.trees.lib.*;
 
 
@@ -26,9 +34,12 @@ are subclasses of the subclass TreeSource*/
 
 public abstract class TreeInferer extends TreeBlockFiller {
 	protected boolean userAborted=false;
+	protected boolean userCancelled = false;
 	Listened listened;
 	TWindowMaker tWindowMaker;
 	 MesquiteBoolean autoSaveFile = new MesquiteBoolean(false);
+	 
+	 
 
 	 
 	public Class getDutyClass() {
@@ -45,6 +56,8 @@ public abstract class TreeInferer extends TreeBlockFiller {
 		return "";
 	}
 	
+	
+
 	/*.................................................................................................................*/
 	public String getTitleOfTextCommandLink() {
 		return "";
@@ -63,6 +76,18 @@ public abstract class TreeInferer extends TreeBlockFiller {
 	/*.................................................................................................................*/
 	public  void setUserAborted(){
 		userAborted=true;
+	}
+	/*.................................................................................................................*/
+	public  boolean getUserAborted(){
+		return userAborted;
+	}
+	/*.................................................................................................................*/
+	public  void setUserCancelled(){
+		userCancelled=true;
+	}
+	/*.................................................................................................................*/
+	public  boolean getUserCancelled(){
+		return userCancelled;
 	}
 	public String getMessageIfUserAbortRequested () {
 		return "";
@@ -101,6 +126,9 @@ public abstract class TreeInferer extends TreeBlockFiller {
 	public boolean canGiveIntermediateResults(){
 		return false;
 	}
+	public String getInferenceDetails() {
+		return "";
+	}
 	public Tree getLatestTree(Taxa taxa, MesquiteNumber score, MesquiteString titleForWindow){
 		if (score != null)
 			score.setToUnassigned();
@@ -109,6 +137,15 @@ public abstract class TreeInferer extends TreeBlockFiller {
 	public boolean canStoreLatestTree(){
 		Tree latestTree = getLatestTree(null, null, null);
 		return latestTree!=null;
+	}
+	public TreeVector getCurrentMultipleTrees(Taxa taxa, MesquiteString titleForWindow){
+		return null;
+	}
+	public boolean canStoreMultipleCurrentTrees(){
+		TreeVector currentTrees = getCurrentMultipleTrees(null, null);
+		if (currentTrees==null)
+			return false;
+		return currentTrees.size()>0;
 	}
 	
 	public String getTreeBlockName(boolean completedRun){
@@ -160,7 +197,7 @@ public abstract class TreeInferer extends TreeBlockFiller {
 		if (tree instanceof AdjustableTree) {
 			((AdjustableTree)tree).standardize(outgroupSet, false);
 		}
-		showIntermediatesWindow();
+		prepareIntermediatesWindow();
 		if (tree != null && tWindowMaker != null){ 
 			tWindowMaker.setTree(tree);
 			MesquiteWindow w = tWindowMaker.getModuleWindow();
@@ -195,7 +232,9 @@ public abstract class TreeInferer extends TreeBlockFiller {
 		if (listened != null)
 			listened.notifyListeners(this, new Notification(MesquiteListener.NEW_RESULTS));
 	}
-	public void showIntermediatesWindow(){
+	
+//This is used for just single current tree; a different system is used in ZephyrRunner for consensus trees
+	public MesquiteWindow prepareIntermediatesWindow(){
 		if (tWindowMaker == null) {
 			tWindowMaker = (TWindowMaker)hireNamedEmployee(TWindowMaker.class, "#ObedientTreeWindow");
 			String commands = getExtraTreeWindowCommands(false, MesquiteLong.unassigned);
@@ -207,8 +246,10 @@ public abstract class TreeInferer extends TreeBlockFiller {
 				Puppeteer p = new Puppeteer(this);
 				p.execute(w, commands, new MesquiteInteger(0), "end;", false);
 			}
+			return w;
 		}
-		
+		else
+			return tWindowMaker.getModuleWindow();
 	}
 	
 	Checkbox autoSaveFileCheckbox =  null;
@@ -221,7 +262,7 @@ public abstract class TreeInferer extends TreeBlockFiller {
 	
 	// given the opportunity to fill in options for user
 	public  void addItemsToDialogPanel(ExtensibleDialog dialog){
-		autoSaveFileCheckbox = dialog.addCheckBox("auto-save file after inference", autoSaveFile.getValue());
+		autoSaveFileCheckbox = dialog.addCheckBox("Auto-save file after inference", autoSaveFile.getValue());
 	}
 	public boolean optionsChosen(){
 		if (autoSaveFileCheckbox!=null)

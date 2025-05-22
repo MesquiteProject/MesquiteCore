@@ -15,6 +15,8 @@ package mesquite.lib.duties;
 
 import java.awt.*;
 import mesquite.lib.*;
+import mesquite.lib.ui.ChartListener;
+import mesquite.lib.ui.Charter;
 
 
 /* ======================================================================== */

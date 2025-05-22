@@ -14,8 +14,8 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
 package mesquite.lib.duties;
 
 import mesquite.lib.CommandRecord;
-import mesquite.lib.Taxa;
 import mesquite.lib.characters.CharacterData;
+import mesquite.lib.taxa.Taxa;
 
 public interface ReadFileFromString {
 

@@ -16,6 +16,7 @@ package mesquite.distance.lib;
 import java.awt.*;
 import java.util.*;
 import mesquite.lib.duties.*;
+import mesquite.lib.taxa.Taxa;
 import mesquite.lib.*;
 
 

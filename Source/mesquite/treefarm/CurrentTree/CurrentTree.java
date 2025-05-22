@@ -18,6 +18,8 @@ import java.util.*;
 import java.awt.*;
 import mesquite.lib.*;
 import mesquite.lib.duties.*;
+import mesquite.lib.taxa.Taxa;
+import mesquite.lib.tree.Tree;
 
 /** Supplies a tree from a current tree window.*/
 public class CurrentTree extends TreeSource {

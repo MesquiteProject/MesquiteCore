@@ -16,6 +16,7 @@ package mesquite.lib;
 import java.awt.*;
 
 import mesquite.lib.characters.CharacterModel;
+import mesquite.lib.characters.ProbabilityModelSet;
 
 /*==========================  Mesquite Basic Class Library    ==========================*/
 /*===  the basic classes used by the trunk of Mesquite and available to the modules
@@ -60,6 +61,17 @@ public abstract class ObjectSpecsSet  extends SpecsSet {
 		return properties;
 	}
 	/*.................................................................................................................*/
+	public boolean allDefault(){ //NOTE: the problem here is that "default" in getDefaultProperty may be context specific
+		for (int i=0; i<getNumberOfParts(); i++) {
+			if (!hasDefaultProperty(i))
+				return false;
+		}
+		return true;
+	}
+	public boolean hasDefaultProperty(int ic) {
+		return getProperty(ic) == getDefaultProperty(ic);
+	}
+	/*.................................................................................................................*/
 	/** returns property for specified character*/
 	public Object getProperty(int index) {
 		if (index>= 0 && index< properties.length)
@@ -79,7 +91,7 @@ public abstract class ObjectSpecsSet  extends SpecsSet {
 		this.defaultProperty = defaultProperty;
 	}
 	/*.................................................................................................................*/
-	/** Gets default model specified for ModelSet*/
+	/** Gets default model specified for ModelSet. ic passed in case the question is what should it inherit from the previous character!!*/
 	public Object getDefaultProperty(int ic) {
 		return getDefaultProperty();
 	}
@@ -140,6 +152,24 @@ public abstract class ObjectSpecsSet  extends SpecsSet {
 		}
 		properties = newProperties;
 		numParts = newNumParts;
+		return true;
+	}
+	/*.................................................................................................................*/
+	/** Deletes parts flagged in Bits.*/
+	protected boolean deletePartsFlagged(Bits toBeDeleted){ 
+		setDirty(true);
+ 		properties = ObjectArray.deletePartsFlagged(properties, toBeDeleted, this); //need to getPropertyStrange
+ 		numParts = properties.length;
+		return true;
+	}
+	/*.................................................................................................................*/
+	/** Deletes parts by blocks.
+	 * blocks[i][0] is start of block; blocks[i][1] is end of block
+	 * Assumes that these blocks are in sequence, non-overlapping, etc!!! *
+	protected boolean deletePartsBy Blocks(int[][] blocks){ 
+		setDirty(true);
+ 		properties = ObjectArray.deletePartsBy Blocks(properties, blocks, this); //neeed to getPropertyStrange
+ 		numParts = properties.length;
 		return true;
 	}
 	/*...........................................................*/

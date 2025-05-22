@@ -19,7 +19,13 @@ import java.awt.*;
 import mesquite.lib.*;
 import mesquite.lib.characters.*;
 import mesquite.lib.duties.*;
+import mesquite.lib.tree.MesquiteTree;
+import mesquite.lib.tree.Tree;
+import mesquite.lib.tree.TreeDisplay;
+import mesquite.lib.tree.TreeDrawing;
 //import mesquite.rhetenor.*;
+import mesquite.lib.ui.ColorDistribution;
+import mesquite.lib.ui.GraphicsUtil;
 
 /* ======================================================================== */
 public class PlotTree extends AnalyticalDrawTree {
@@ -80,8 +86,12 @@ public class PlotTree extends AnalyticalDrawTree {
 	/*.................................................................................................................*/
 	public   TreeDrawing createTreeDrawing(TreeDisplay treeDisplay, int numTaxa) {
 		PlotTreeDrawing treeDrawing =  new PlotTreeDrawing (treeDisplay, numTaxa, this, spotSize);
+		treeDisplay.collapsedCladeNameAtLeftmostAncestor = false;
 		drawings.addElement(treeDrawing);
 		return treeDrawing;
+	}
+	public Vector getDrawings(){
+		return drawings;
 	}
 	/** Returns true if other modules can control the orientation */
 	public boolean allowsReorientation(){
@@ -114,7 +124,7 @@ public class PlotTree extends AnalyticalDrawTree {
 					PlotTreeDrawing treeDrawing = (PlotTreeDrawing)obj;
 		    	 			spotSize = newDiameter;
 		    	 			treeDrawing.spotsize=newDiameter;
-		    	 			treeDrawing.treeDisplay.setMinimumTaxonNameDistance(treeDrawing.spotsize/2, 4);
+		    	 			treeDrawing.treeDisplay.setMinimumTaxonNameDistanceFromTip(treeDrawing.spotsize/2, 4);
 		    	 			parametersChanged();
 	    	 		}
     	 		}
@@ -217,12 +227,12 @@ class PlotTreeDrawing extends TreeDrawing  {
  	public static final int inset=1;
 	private boolean ready=false;
 	private int foundBranch;
-	private NameReference colorNameRef;
+
 	public PlotTreeDrawing (TreeDisplay treeDisplay, int numTaxa, PlotTree ownerModule, int spotSize) {
 		super(treeDisplay, MesquiteTree.standardNumNodeSpaces(numTaxa));
 		this.spotsize = spotSize;
-		colorNameRef = NameReference.getNameReference("Color");
-	    	treeDisplay.setMinimumTaxonNameDistance(spotsize/2, 4);
+
+	    	treeDisplay.setMinimumTaxonNameDistanceFromTip(spotsize/2, 4);
 		treeDisplay.setOrientation(TreeDisplay.FREEFORM);
 		this.ownerModule = ownerModule;
 		this.treeDisplay = treeDisplay;
@@ -261,6 +271,8 @@ class PlotTreeDrawing extends TreeDrawing  {
 	}
 	/*_________________________________________________*/
 	private   void drawLines(Tree tree, Graphics g, int node) {
+		if (tree.withinCollapsedClade(node))
+			return;
 		if (tree.nodeExists(node)) {
 			g.setColor(treeDisplay.getBranchColor(node));
 			Composite composite = 	treeDisplay.setBranchTransparency(g, node);
@@ -308,6 +320,8 @@ class PlotTreeDrawing extends TreeDrawing  {
 	
 	/*_________________________________________________*/
 	private   void drawSpots(Tree tree, Graphics g, int node) {
+		if (tree.withinCollapsedClade(node))
+			return;
 		if (tree.nodeExists(node)) {
 			g.setColor(treeDisplay.getBranchColor(node));
 			Composite composite = 	treeDisplay.setBranchTransparency(g, node);
@@ -354,7 +368,7 @@ class PlotTreeDrawing extends TreeDrawing  {
 	        		resetNumNodes(tree.getNumNodeSpaces());
 	        	if (!tree.nodeExists(getDrawnRoot()))
 	        		setDrawnRoot(tree.getRoot());
-			ownerModule.nodeLocsTask.calculateNodeLocs(treeDisplay,  tree, getDrawnRoot(),  treeDisplay.getField()); 
+			ownerModule.nodeLocsTask.calculateNodeLocs(treeDisplay,  tree, getDrawnRoot()); 
 		}
 	}
 	/*_________________________________________________*/
@@ -389,9 +403,7 @@ class PlotTreeDrawing extends TreeDrawing  {
 			GraphicsUtil.fillOval(g, x[node]- s/2 + 2, y[node]- s/2 + 2, s - 4, s - 4);
 		}
 	}
-	/*_________________________________________________*/
-	public  void fillTerminalBox(Tree tree, int node, Graphics g) {
-	}
+	
 	/*_________________________________________________*/
 	public  void fillTerminalBoxWithColors(Tree tree, int node, ColorDistribution colors, Graphics g){
 	}

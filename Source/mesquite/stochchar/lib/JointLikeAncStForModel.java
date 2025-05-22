@@ -16,6 +16,7 @@ package mesquite.stochchar.lib;
 import java.awt.*;
 import mesquite.lib.*;
 import mesquite.lib.characters.*;
+import mesquite.lib.tree.Tree;
 
 
 /* ======================================================================== */

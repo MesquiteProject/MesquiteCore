@@ -18,6 +18,8 @@ import java.awt.*;
 import mesquite.lib.*;
 import mesquite.lib.characters.*;
 import mesquite.lib.duties.*;
+import mesquite.lib.taxa.Taxa;
+import mesquite.lib.taxa.Taxon;
 import mesquite.categ.lib.*;
 
 
@@ -91,7 +93,7 @@ public class InterpretPOYDNA extends FileInterpreterI {
 
 		int numTaxa = taxa.getNumTaxa();
 		int numChars = data.getNumChars();
-		StringBuffer outputBuffer = new StringBuffer(numTaxa*(20 + numChars));
+		MesquiteStringBuffer outputBuffer = new MesquiteStringBuffer(numTaxa*(20 + numChars));
 		
 		for (int it = 0; it<numTaxa; it++){
 			if (!writeOnlySelectedTaxa || (taxa.getSelected(it))){
@@ -99,7 +101,7 @@ public class InterpretPOYDNA extends FileInterpreterI {
 				outputBuffer.append(StringUtil.cleanseStringOfFancyChars(taxa.getTaxonName(it),true,false) +getLineEnding());  // 1. 1: hanged to this in response to Kip Will's posting
 				for (int ic = 0; ic<numChars; ic++) {
 					if (!writeOnlySelectedData || (data.getSelected(ic))){
-						int currentSize = outputBuffer.length();
+						long currentSize = outputBuffer.length();
 						if (!data.isInapplicable(ic,it)) {
 							data.statesIntoStringBuffer(ic, it, outputBuffer, false);
 						}

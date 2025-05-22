@@ -17,6 +17,15 @@ import java.awt.*;
 import java.util.*;
 import java.io.*;
 import mesquite.lib.duties.*;
+import mesquite.lib.ui.ImageOwner;
+import mesquite.lib.ui.MesquiteCMenuItemSpec;
+import mesquite.lib.ui.MesquiteCheckMenuItem;
+import mesquite.lib.ui.MesquiteDialog;
+import mesquite.lib.ui.MesquiteMenuItem;
+import mesquite.lib.ui.MesquiteMenuItemSpec;
+import mesquite.lib.ui.MesquiteSubmenu;
+import mesquite.lib.ui.MesquiteSubmenuSpec;
+import mesquite.lib.ui.ProgressIndicator;
 
 /* ��������������������������� commands ������������������������������� */
 /*
@@ -45,7 +54,7 @@ public class CommandChecker {
 
 	boolean includeParameters = true;
 	
-	boolean warnIfNoResponse = true;
+	public boolean warnIfNoResponse = true;
 
 	boolean LIMode = false;
 
@@ -67,7 +76,7 @@ public class CommandChecker {
 	public static CommandChecker defaultChecker;
 	public static CommandChecker quietDefaultChecker;
 
-	static CommandChecker defaultSkipChecker;
+	public static CommandChecker defaultSkipChecker;
 	static {
 		registeredClasses = new Vector();
 		representingClasses = new Vector();
@@ -180,6 +189,17 @@ public class CommandChecker {
 			MesquiteSubmenuSpec.checkerMS = null;
 		}
 		return checker;
+	}
+
+	/** a Kludge to add an extra endTell; so that old scripts may be read more gracefully;
+	 * see NumForTaxonList
+	 * */
+	String extraPending = null;
+	public void rememberExtraPending(String s) {
+		extraPending = s;
+	}
+	public String getExtraPending() {
+		return extraPending;
 	}
 
 	/**
@@ -602,6 +622,8 @@ public class CommandChecker {
 
 	/* ................................................................................................................. */
 	void addToDutyClasses(Class duty) {
+		if (duty == null)
+			return;
 		int numDuties = dutyClasses.size();
 		int found = -1;
 		for (int d = 0; d < numDuties && found != -2; d++) {
@@ -1007,7 +1029,7 @@ public class CommandChecker {
 		} else if (item instanceof MesquiteSubmenu) {
 			if (label)
 				ex += "<li><b>" + item.getLabel() + "</b>";
-			MesquiteSubmenu mmi = (MesquiteSubmenu) item;
+		MesquiteSubmenu mmi = (MesquiteSubmenu) item;
 			long id = mmi.getOwnerModuleID();
 			ex += getModuleReference(id);
 			if (mmi.getCommand() != null)

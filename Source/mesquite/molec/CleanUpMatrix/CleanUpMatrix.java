@@ -10,6 +10,9 @@ import mesquite.lib.characters.*;
 import mesquite.lib.duties.*;
 import mesquite.categ.lib.*;
 import mesquite.lib.table.*;
+import mesquite.lib.taxa.Taxa;
+import mesquite.lib.ui.ExtensibleDialog;
+import mesquite.lib.ui.RadioButtons;
 import mesquite.align.lib.*;
 
 
@@ -113,7 +116,7 @@ public String preparePreferencesForXML () {
   			MolecularDataUtil.reverseComplementSequencesIfNecessary(data, module, taxa, 0, taxa.getNumTaxa(), referenceSequence, false, false, false);
    		if (multipleSequenceAlignment){
    			if (aligner==null)
-   				aligner= (CategDataAlterer)hireNamedEmployee(CategDataAlterer.class, "#MultipleAlignService");
+   				aligner= (CategDataAlterer)hireNamedEmployee(CategDataAlterer.class, "#AMultipleAlignService");
    			if (aligner!=null)
    				aligner.alterData(data, null,  null);
    		} else
@@ -128,23 +131,23 @@ public String preparePreferencesForXML () {
 	}
 	/*.................................................................................................................*/
    	/** Called to alter data in those cells selected in table*/
-   	public boolean alterData(CharacterData data, MesquiteTable table,  UndoReference undoReference){
+   	public int alterData(CharacterData data, MesquiteTable table,  UndoReference undoReference){
 		if (data==null)
-			return false;
+			return -10;
 		if (okToInteractWithUser(CAN_PROCEED_ANYWAY, "Querying about options")){ //need to check if can proceed
    			if (!queryOptions(data.getNumTaxa()))
-   				return false;
+   				return ResultCodes.USER_STOPPED;
 		}
 
 		if (!(data instanceof DNAData))
-			return false;
+			return ResultCodes.INCOMPATIBLE_DATA;
 	//	try{
 		processData((DNAData)data,data.getTaxa());
 //		}
 //		catch (ArrayIndexOutOfBoundsException e){
 //			return false;
 //		}
-		return true;
+		return ResultCodes.SUCCEEDED;
    	}
    	
 	/*.................................................................................................................*/

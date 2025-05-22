@@ -17,6 +17,9 @@ import java.util.Random;
 import mesquite.lib.*;
 import mesquite.lib.duties.CharSourceCoordObed;
 import mesquite.lib.duties.NumberFor2CharAndTree;
+import mesquite.lib.tree.MesquiteTree;
+import mesquite.lib.tree.Tree;
+import mesquite.lib.ui.MesquiteSubmenuSpec;
 import mesquite.treefarm.lib.*;
 
 /** This module is basically a random tree modifier, but it works by hiring another one, and only invoking it on a tree with a particular probability */

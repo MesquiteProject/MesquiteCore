@@ -18,11 +18,11 @@ import mesquite.lib.*;
 
 
 /* ======================================================================== */
-/**This class of modules assigns node locations for circular trees (orientation CIRCULAR).
-Example subclass: NodeLocsCircular */
 
 public abstract class NodeLocsFree extends NodeLocs  {
-	
+	public boolean loadModule(){
+		return false;
+	}
  	public String getDutyName() {
  		return "Node Location (Freeform)";
    	 }

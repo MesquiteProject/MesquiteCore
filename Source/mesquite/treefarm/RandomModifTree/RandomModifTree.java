@@ -16,6 +16,10 @@ package mesquite.treefarm.RandomModifTree;
 
 
 import mesquite.lib.*;
+import mesquite.lib.taxa.Taxa;
+import mesquite.lib.tree.MesquiteTree;
+import mesquite.lib.tree.Tree;
+import mesquite.lib.ui.MesquiteSubmenuSpec;
 import mesquite.treefarm.lib.*;
 
 /* ======================================================================== */
@@ -153,7 +157,7 @@ public class RandomModifTree extends SourceModifiedTree {
    	}
 	/*.................................................................................................................*/
    	public String getParameters() {
-   		return"Randomly modifying tree from: " + getBasisTreeSource().getParameters() + ". [seed: " + originalSeed + "]";
+   		return"Randomly modifying tree from: " + getBasisTreeSource().getParameters() + ". (seed: " + originalSeed + ")";
    	}
 	/*.................................................................................................................*/
     	 public String getName() {

@@ -15,6 +15,9 @@ package mesquite.treefarm.EmailTree;
 
 import mesquite.lib.*;
 import mesquite.lib.duties.*;
+import mesquite.lib.tree.TextTree;
+import mesquite.lib.tree.Tree;
+
 import java.net.*;
 
 /** ======================================================================== */

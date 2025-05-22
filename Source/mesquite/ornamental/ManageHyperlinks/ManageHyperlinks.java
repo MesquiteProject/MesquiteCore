@@ -19,6 +19,9 @@ import java.awt.*;
 import mesquite.lib.*;
 import mesquite.lib.characters.*;
 import mesquite.lib.duties.*;
+import mesquite.lib.taxa.Taxa;
+import mesquite.lib.tree.Clade;
+import mesquite.lib.tree.Clades;
 
 /* ======================================================================== */
 public class ManageHyperlinks extends FileInit /*implements ElementManager*/ {
@@ -51,9 +54,9 @@ public class ManageHyperlinks extends FileInit /*implements ElementManager*/ {
 				Taxa taxa = getProject().getTaxa(i);
 				if (taxa.getFile() == file) {
 					for (int it = 0; it<taxa.getNumTaxa(); it++){
-						Object obj = taxa.getAssociatedObject(linkNameRef, it);
-						if (obj!=null && obj instanceof String){
-							s += "\tHYPERLINK TAXA = " + StringUtil.tokenize(taxa.getName()) + " TAXON = " + it + " URL = " + StringUtil.tokenize((String)obj) + ";" + StringUtil.lineEnding();
+						String obj = taxa.getAssociatedString(linkNameRef, it);
+						if (obj!=null ){
+							s += "\tHYPERLINK TAXA = " + StringUtil.tokenize(taxa.getName()) + " TAXON = " + it + " URL = " + StringUtil.tokenize(obj) + ";" + StringUtil.lineEnding();
 							found = true;
 						}
 					}
@@ -93,7 +96,7 @@ public class ManageHyperlinks extends FileInit /*implements ElementManager*/ {
 	}
 	NameReference linkNameRef = NameReference.getNameReference("hyperlink");
 	/*.................................................................................................................*/
-	public boolean readNexusCommand(MesquiteFile file, NexusBlock nBlock, String blockName, String command, MesquiteString comment){ 
+	public boolean readNexusCommand(MesquiteFile file, NexusBlock nBlock, String blockName, String command, MesquiteString comment, String fileReadingArguments){ 
 		if (blockName.equalsIgnoreCase("NOTES")) {
 			boolean fuse = parser.hasFileReadingArgument(file.fileReadingArguments, "fuseTaxaCharBlocks");
 			if (fuse)
@@ -168,9 +171,7 @@ public class ManageHyperlinks extends FileInit /*implements ElementManager*/ {
 									}
 								}
 								else {
-									if (taxa.getWhichAssociatedObject(linkNameRef)==null)
-										taxa.makeAssociatedObjects("hyperlink");
-									taxa.setAssociatedObject(linkNameRef, taxonNumber, pathName);
+									taxa.setAssociatedString(linkNameRef, taxonNumber, pathName);
 								}
 							}
 						}

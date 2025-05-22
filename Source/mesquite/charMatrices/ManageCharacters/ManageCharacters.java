@@ -24,6 +24,15 @@ import mesquite.lib.*;
 import mesquite.lib.characters.*;
 import mesquite.lib.characters.CharacterData;
 import mesquite.lib.duties.*;
+import mesquite.lib.taxa.Taxa;
+import mesquite.lib.taxa.Taxon;
+import mesquite.lib.ui.AlertDialog;
+import mesquite.lib.ui.ExtensibleExplDialog;
+import mesquite.lib.ui.ListDialog;
+import mesquite.lib.ui.MesquiteMenuItemSpec;
+import mesquite.lib.ui.MesquiteSubmenuSpec;
+import mesquite.lib.ui.SingleLineTextField;
+import mesquite.lib.ui.StringIntegerListDlog;
 
 /**  Manages character matrices, including reading and writing from files (for which it relies on managers of the particular data types).
 This has some methods and classes for recording the history of changes of the cells of the matrix.  These functions are not yet publicly available. */
@@ -356,8 +365,11 @@ public class ManageCharacters extends CharactersManager {
 	/*.................................................................................................................*/
 	public CharacterData newCharacterData(Taxa taxa, int numChars, String dataType) {
 		CharMatrixManager manager = findCharacterTypeManager(dataType);
-		if (manager == null )
+		if (manager == null ){
+			if (MesquiteTrunk.developmentMode)
+				System.err.println("No manager for matrices of type " + dataType  + " found");
 			return null;
+		}
 		return manager.getNewData(taxa, numChars);
 	}
 	/*.................................................................................................................*/
@@ -553,7 +565,7 @@ public class ManageCharacters extends CharactersManager {
 					long id = MesquiteLong.fromString(parser.getNextToken());
 					if (MesquiteLong.isCombinable(id))
 						taxa = getProject().getTaxaByID(id);
-					arguments = arguments.substring(parser.getPosition(), arguments.length());
+					arguments = arguments.substring((int)parser.getPosition(), arguments.length());
 				}
 				if (taxa == null)
 					taxa = getProject().chooseTaxa(containerOfModule(), "For which block of taxa do you want to create a new character matrix?");
@@ -823,7 +835,7 @@ public class ManageCharacters extends CharactersManager {
 
 				MesquiteInteger buttonPressed = new MesquiteInteger(1);
 				ExtensibleExplDialog makeLinkedDialog = new ExtensibleExplDialog(containerOfModule(), "Make Linked Matrix",buttonPressed);
-				makeLinkedDialog.setExplainable(new MesquiteString("With this you create a new character matrix that is linked to an existing one.  By being linked, the two matrices are constrained to have the same number of characters.  If characters are deleted from or added to one matrix, the corresponding characters will be deleted from or added to the other.")); 
+				makeLinkedDialog.setExplainable(new MesquiteStringExplainable("With this you create a new character matrix that is linked to an existing one.  By being linked, the two matrices are constrained to have the same number of characters.  If characters are deleted from or added to one matrix, the corresponding characters will be deleted from or added to the other.")); 
 				java.awt.List types = makeLinkedDialog.addList(dataClassesAvailable(), new MesquiteInteger(0), "Make new character matrix of what type?");
 				SingleLineTextField nameTaxa = makeLinkedDialog.addTextField("Name of new matrix", "Character Matrix", 30);
 				java.awt.List linkTo = makeLinkedDialog.addList(getProject().getCharacterMatrices(), new MesquiteInteger(0), "Link new matrix to which matrix?");
@@ -1080,7 +1092,7 @@ public class ManageCharacters extends CharactersManager {
 	}
 	
 	public MesquiteModule showListOfCharacterMatrices(String arguments){
-		String concatMessage = "To concatenate matrices, select their rows in the List of Character Matrices window, and choose List>Utilities>Concatenate Selected Matrices.";
+		String concatMessage = "To concatenate matrices, select their rows in the List of Character Matrices window, and choose List>Utilities>Concatenate Matrices.";
 		//Check to see if already has lister for this
 		for (int i = 0; i<getNumberOfEmployees(); i++) {
 			Object e=getEmployeeVector().elementAt(i);
@@ -1305,14 +1317,14 @@ public class ManageCharacters extends CharactersManager {
 									found = true;
 								}
 							}
-							//look through all attached objects
-							int numObs = as.getNumberAssociatedObjects();
+							//look through all attached strings
+							int numStrs = as.getNumberAssociatedStrings();
 
-							for (int v = 0; v<numObs; v++){  
-								ObjectArray array = as.getAssociatedObjects(v);
-								Object c = array.getValue(it);
+							for (int v = 0; v<numStrs; v++){  
+								StringArray array = as.getAssociatedStrings(v);
+								String c = array.getValue(it);
 
-								if (c != null && c instanceof String){
+								if (StringUtil.notEmpty(c)){
 									s.append(suppTMTokenAbbrev);
 									s.append(taxonTokenAbbrev);
 									s.append(Integer.toString(CharacterStates.toExternal(it)));
@@ -1323,7 +1335,16 @@ public class ManageCharacters extends CharactersManager {
 									s.append(eL);
 									found = true;
 								}
-								else if (c != null && c instanceof String[] && ((String[])c).length>0){
+							}
+
+							//look through all attached objects
+							int numObs = as.getNumberAssociatedObjects();
+
+							for (int v = 0; v<numObs; v++){  
+								ObjectArray array = as.getAssociatedObjects(v);
+								Object c = array.getValue(it);
+
+								if (c != null && c instanceof String[] && ((String[])c).length>0){
 									s.append(suppTMTokenAbbrev);
 									s.append(taxonTokenAbbrev);
 									s.append(Integer.toString(CharacterStates.toExternal(it)));
@@ -1338,11 +1359,7 @@ public class ManageCharacters extends CharactersManager {
 									s.append(eL);
 									found = true;
 								}
-
 							}
-
-
-
 						}
 					}
 					for (int ic = 0; ic<data.getNumChars(); ic++){
@@ -1415,14 +1432,14 @@ public class ManageCharacters extends CharactersManager {
 								found = true;
 							}
 						}
-						//look through all attached objects
-						int numObs = data.getNumberAssociatedObjects();
+						//look through all attached Strings
+						int numStrs = data.getNumberAssociatedStrings();
 
-						for (int v = 0; v<numObs; v++){  
-							ObjectArray array = data.getAssociatedObjects(v);
+						for (int v = 0; v<numStrs; v++){  
+							StringArray array = data.getAssociatedStrings(v);
 							if (!commentsRef.equals(array.getNameReference())){
-								Object c = array.getValue(ic);
-								if (c != null && c instanceof String){
+								String c = array.getValue(ic);
+								if (c != null){
 									s.append(suppTokenAbbrev);
 									s.append(characterTokenAbbrev);
 									s.append(Integer.toString(CharacterStates.toExternal(ic)));
@@ -1433,7 +1450,16 @@ public class ManageCharacters extends CharactersManager {
 									s.append(eL);
 									foundForChar = true;
 								}
-								else if (c != null && c instanceof String[] && ((String[])c).length>0){
+							}
+						}
+						//look through all attached objects
+						int numObs = data.getNumberAssociatedObjects();
+
+						for (int v = 0; v<numObs; v++){  
+							ObjectArray array = data.getAssociatedObjects(v);
+							if (!commentsRef.equals(array.getNameReference())){
+								Object c = array.getValue(ic);
+								if (c != null && c instanceof String[] && ((String[])c).length>0){
 									s.append(suppTMTokenAbbrev);
 									s.append(characterTokenAbbrev);
 									s.append(Integer.toString(CharacterStates.toExternal(ic)));
@@ -1607,8 +1633,8 @@ public class ManageCharacters extends CharactersManager {
 	 * TaxonListHadData module. After version 3.1, these were separated into different objects, in order to maintain the veracity
 	 * of the GenBank data.
 	 /*...................................................................................................................*/
-	void cleanUpGenBankAssociatedObject (Associable as, int whichTaxon, String genBankNote){
-		String newNote="";
+	void cleanUpGenBankAssociatedStrings (Associable as, int whichTaxon, String genBankNote){
+		String newNote=null;
 		while (!StringUtil.blank(genBankNote) && genBankNote.indexOf("(")>=0){
 			int start = genBankNote.indexOf("(");
 			int end = genBankNote.indexOf(")");
@@ -1617,15 +1643,22 @@ public class ManageCharacters extends CharactersManager {
 				firstBit = genBankNote.substring(0, start);
 			newNote=genBankNote.substring(start,end+1);
 			genBankNote = firstBit + genBankNote.substring(end+1, genBankNote.length());
+			genBankNote = StringUtil.stripLeadingWhitespace(genBankNote);
+			genBankNote = StringUtil.stripTrailingWhitespace(genBankNote);
 		}
-		 as.setAssociatedObject(MolecularData.genBankNumberRef, whichTaxon, genBankNote);
-		 as.setAssociatedObject(CharacterData.taxonMatrixNotesRef, whichTaxon, newNote);
+		if (genBankNote != null){
+			genBankNote = StringUtil.stripLeadingWhitespace(genBankNote);
+			genBankNote = StringUtil.stripTrailingWhitespace(genBankNote);
+		 as.setAssociatedString(MolecularData.genBankNumberRef, whichTaxon, genBankNote);
+		}
+		if (newNote != null)
+			as.setAssociatedString(CharacterData.taxonMatrixNotesRef, whichTaxon, newNote);
 	}
 
 	
 	NameReference origIndexRef = NameReference.getNameReference("OrigIndex");
 	 /*...................................................................................................................*/
-	 public boolean readNexusCommand(MesquiteFile file, NexusBlock nBlock, String blockName, String command, MesquiteString comment){ 
+	 public boolean readNexusCommand(MesquiteFile file, NexusBlock nBlock, String blockName, String command, MesquiteString comment, String fileReadingArguments){ 
 		 if (blockName.equalsIgnoreCase("NOTES")) {
 			 boolean fuse = parser.hasFileReadingArgument(file.fileReadingArguments, "fuseTaxaCharBlocks");
 			 MesquiteProject project = file.getProject();
@@ -1702,7 +1735,7 @@ public class ManageCharacters extends CharactersManager {
 				 String string = null;
 				 Vector strings = new Vector(); //to store string array
 				 String name = null;
-				 stringPos.setValue(parser.getPosition());
+				 stringPos.setValue((int)parser.getPosition());
 				 String[][] subcommands  = ParseUtil.getSubcommands(command, stringPos);
 				 if (subcommands == null || subcommands.length == 0 || subcommands[0] == null || subcommands[0].length == 0)
 					 return false;
@@ -1901,7 +1934,7 @@ public class ManageCharacters extends CharactersManager {
 									 }
 								 }
 								 else {
-									 String s = (String)data.getAssociatedObject(NameReference.getNameReference(name), whichCharacter);
+									 String s = (String)data.getAssociatedString(NameReference.getNameReference(name), whichCharacter);
 									 if (s != null && !s.equals(string)) {
 										 file.notesBugWarn = true;
 										 file.notesBugVector.addElement("Character " + (whichCharacter+1) + " in taxon " + (whichTaxon+1) + "(*)");
@@ -1914,20 +1947,20 @@ public class ManageCharacters extends CharactersManager {
 								 if (code == 4) {
 									 Associable as = data.getTaxaInfo(true);
 
-									 Object previous = as.getAssociatedObject(NameReference.getNameReference(name), whichTaxon);
+									 String previous = as.getAssociatedString(NameReference.getNameReference(name), whichTaxon);
 									 if (!StringUtil.blank((String)previous))
 										 string = (String)previous + "; " + string;
 									 if (name.equals(MolecularData.genBankNumberName)) {  // let's clean it up because of Mesquite 3.1 and before's confounding of GenBank numbers and other annotations
-											cleanUpGenBankAssociatedObject (as, whichTaxon, string);  
+											cleanUpGenBankAssociatedStrings (as, whichTaxon, string);  
 									 }
 									 else
-										 as.setAssociatedObject(NameReference.getNameReference(name), whichTaxon, string);
+										 as.setAssociatedString(NameReference.getNameReference(name), whichTaxon, string);
 								 }
 								 else
 									 data.setCellObject(NameReference.getNameReference(name), whichCharacter, whichTaxon, string);
 							 }
 							 else
-								 data.setAssociatedObject(NameReference.getNameReference(name), whichCharacter, string);
+								 data.setAssociatedString(NameReference.getNameReference(name), whichCharacter, string);
 							 return true;
 						 }
 						 else if (strings.size()>0){
@@ -1964,10 +1997,14 @@ public class ManageCharacters extends CharactersManager {
 	 }
 	 /*.................................................................................................................*/
 	 public NexusBlock readNexusBlock(MesquiteFile file, String name, FileBlock block, StringBuffer blockComments, String fileReadingArguments){
+			if (parser.hasFileReadingArgument(fileReadingArguments, "readOneMatrixOnly") && getProject().getNumberCharMatrices(file)>0){
+				logln("Character matrix skipped");
+				return skipNexusBlock(file, name, block, null, fileReadingArguments);
+			}
 		 CharacterData data=null;
-		 Parser commandParser = new Parser();
-		 commandParser.setString(block.toString());
-		 MesquiteInteger startCharC = new MesquiteInteger(0);
+		 NEXUSFileParser commandParser = new NEXUSFileParser(block);
+
+		// MesquiteLong startCharC = new MesquiteLong(0);
 		 String title=null;
 		 //String commandString;
 		 Taxa taxa= null;
@@ -1983,18 +2020,17 @@ public class ManageCharacters extends CharactersManager {
 			 title = getProject().getCharacterMatrices().getUniqueName("Matrix in file \"" + file.getName() + "\"");
 		 boolean fuse = parser.hasFileReadingArgument(fileReadingArguments, "fuseTaxaCharBlocks");
 
-		 /*Problem: for most parts of block lineends are white, even if interleaved.  But Matrix must be pulled in
-		with lineends as dark if interleave.  How to do this?  Best to remember previous stringpos, and once matrix
-		pulled in, if interleave go back and set stringpos and reread with lineends dark*/
-		 int previousPos = startCharC.getValue();
+
 		 boolean taxaLinkFound = false;
 		 boolean newTaxaFlag = false;
 
 		 String commandName = null;
-		 while (!commandParser.blankByCurrentWhitespace(commandName=commandParser.getNextCommandName(startCharC))) {
+		 boolean lookForEnd = commandParser.readDirectFromFile;
+		 boolean endReached = false; 
+		 while (!(lookForEnd && endReached) && !commandParser.blankByCurrentWhitespace(commandName=commandParser.getNextCommandNameWithoutConsuming())) {
 			 CommandRecord.tick("Reading " + commandName);
-			 if (commandName.equalsIgnoreCase("DIMENSIONS")) {
-				 String com = commandParser.getNextCommand(startCharC);
+		if (commandName.equalsIgnoreCase("DIMENSIONS")) {
+				 String com = commandParser.getNextCommand();
 				 if (StringUtil.indexOfIgnoreCase(com, "newtaxa")>=0)
 					 newTaxaFlag = true;
 				 parser.setString(com); 
@@ -2015,13 +2051,13 @@ public class ManageCharacters extends CharactersManager {
 				 //numChars = MesquiteInteger.fromString(parser.getTokenNumber(4));
 			 }
 			 else if (commandName.equalsIgnoreCase("TITLE")) {
-				 parser.setString(commandParser.getNextCommand(startCharC)); 
+				 parser.setString(commandParser.getNextCommand()); 
 				 title = parser.getTokenNumber(2);
 				 logln("Reading CHARACTERS block " + title);
 
 			 }
 			 else if (commandName.equalsIgnoreCase("LINK")) {
-				 parser.setString(commandParser.getNextCommand(startCharC)); 
+				 parser.setString(commandParser.getNextCommand()); 
 				 if ("TAXA".equalsIgnoreCase(parser.getTokenNumber(2))) {
 					 taxaLinkFound = true;
 					 String taxaTitle = parser.getTokenNumber(4);
@@ -2049,7 +2085,7 @@ public class ManageCharacters extends CharactersManager {
 				 }
 
 				 logln(" for taxa block " + taxa.getName());
-				 data = processFormat(file, taxa, commandParser.getNextCommand(startCharC), numChars, title, fileReadingArguments);
+				 data = processFormat(file, taxa, commandParser.getNextCommand(), numChars, title, fileReadingArguments);
 				 if (data==null) {
 					 alert("Sorry, the CHARACTERS block could not be read, possibly because it is of an unrecognized format.  You may need to activate or install other modules that would allow you to read the data block");
 					 return null;
@@ -2065,7 +2101,7 @@ public class ManageCharacters extends CharactersManager {
 			 }
 			 else if (commandName.equalsIgnoreCase("OPTIONS")) {
 				 stringPos.setValue(0);
-				 String commandString = commandParser.getNextCommand(startCharC);
+				 String commandString = commandParser.getNextCommand();
 				 String subCommand = ParseUtil.getToken(commandString, stringPos);
 				 while ((subCommand = ParseUtil.getToken(commandString, stringPos)) !=null){
 					 if ("LINKCHARACTERS".equalsIgnoreCase(subCommand)){
@@ -2083,8 +2119,13 @@ public class ManageCharacters extends CharactersManager {
 					 alert("Error in NEXUS file:  CHARLABELS before FORMAT statement");
 				 }
 				 else {
-					 MesquiteInteger stc = new MesquiteInteger(startCharC.getValue());
+					 /*
+					 MesquiteLong stc = new MesquiteLong(startCharC.getValue());
 					 parser.setString(commandParser.getNextCommand(stc)); 
+					 //				parser.setString(commandParser.getNextCommand(startCharC)); 
+					  * */
+					 parser.setString(commandParser.getNextCommand()); 
+					 
 					 parser.getNextToken();
 					 String cN = parser.getNextToken();
 					 int charNumber = 0;
@@ -2092,36 +2133,38 @@ public class ManageCharacters extends CharactersManager {
 						 data.setCharacterName(charNumber++, cN);
 						 cN = parser.getNextToken();
 					 }
-					 commandParser.getNextCommand(startCharC); //eating up the full command
+					 //commandParser.getNextCommand(startCharC); //eating up the full command
 				 }
 			 }
 			 else if (commandName.equalsIgnoreCase("MATRIX")) {
+				 if (NEXUSFileParser.verbose)  Debugg.println("###############  MATRIX");
 				 if (data==null) {
 					 alert("Error in NEXUS file:  Matrix without FORMAT statement");
 				 }
 				 else if (data.getMatrixManager()!=null) {
 					 if (data.interleaved) {    
-						 startCharC.setValue(previousPos);
+						 //startCharC.setValue(previousPos);
 						 commandParser.setLineEndingsDark(true);
-						 commandParser.setPosition(previousPos);
-						 commandParser.getNextToken();
 					 }
 					 boolean wassave = data.saveChangeHistory;
 					 data.saveChangeHistory = false;
+					 if (NEXUSFileParser.verbose) Debugg.println("  [[[[[[[[[[[[ processMatrix");
 					 data.getMatrixManager().processMatrix(taxa, data, commandParser, numChars, false, 0, newTaxaFlag, fuse, file);
+					 if (NEXUSFileParser.verbose)  Debugg.println("  ]]]]]]]]]]]] processMatrix");
 					 if (data.interleaved) 
 						 commandParser.setLineEndingsDark(false);
-					 startCharC.setValue(commandParser.getPosition());
-					 String token = commandParser.getNextCommand();
-					 if (token == null || !token.equals(";"))
-						 commandParser.setPosition(startCharC.getValue());
+					 commandParser.consumeNextIfSemicolon();
 					 data.saveChangeHistory = wassave;
 				 }
 			 }
 			 else if (commandName.equalsIgnoreCase("IDS")) {
-				 //			parser.setString(commandParser.getNextCommand(startCharC)); 
-				 MesquiteInteger stc = new MesquiteInteger(startCharC.getValue());
+				 /*
+				 MesquiteLong stc = new MesquiteLong(startCharC.getValue());
 				 parser.setString(commandParser.getNextCommand(stc)); 
+				 //				parser.setString(commandParser.getNextCommand(startCharC)); 
+				  * */
+				 parser.setString(commandParser.getNextCommand()); 
+				 
 				 parser.getNextToken();
 				 String cN = parser.getNextToken();
 				 int charNumber = 0;
@@ -2132,12 +2175,16 @@ public class ManageCharacters extends CharactersManager {
 					 cN = parser.getNextToken();
 				 }
 
-				 commandParser.getNextCommand(startCharC); //eating up the full command
+				// commandParser.getNextCommand(startCharC); //eating up the full command
 			 }
 			 else if (commandName.equalsIgnoreCase("BLOCKID")) {
-				 MesquiteInteger stc = new MesquiteInteger(startCharC.getValue());
+				 /*
+				 MesquiteLong stc = new MesquiteLong(startCharC.getValue());
 				 parser.setString(commandParser.getNextCommand(stc)); 
 				 //				parser.setString(commandParser.getNextCommand(startCharC)); 
+				  * */
+				 parser.setString(commandParser.getNextCommand()); 
+				 
 				 parser.getNextToken();
 				 String cN = parser.getNextToken();
 				 if (cN != null && !cN.equals(";")){
@@ -2145,19 +2192,29 @@ public class ManageCharacters extends CharactersManager {
 						 data.setUniqueID(cN);
 					 cN = parser.getNextToken();
 				 }
-				 commandParser.getNextCommand(startCharC); //eating up the full command
+				// commandParser.getNextCommand(startCharC); //eating up the full command
 			 }
 			 else if (!(commandName.equalsIgnoreCase("BEGIN") || commandName.equalsIgnoreCase("END")  || commandName.equalsIgnoreCase("ENDBLOCK"))) {
 				 boolean success = false;
-				 String commandString = commandParser.getNextCommand(startCharC);
+				 
+				 if (NEXUSFileParser.verbose)
+					 Debugg.println("###############<<<  " + commandParser.getFilePosition());
+				 String commandString = commandParser.getNextCommand();
+				 if (NEXUSFileParser.verbose)
+					 Debugg.println("###############>>>>>  " + commandParser.getFilePosition() + " " + commandString);
+				 if (NEXUSFileParser.verbose)
+					 Debugg.println("############ (next is  " + commandParser.getNextCommandNameWithoutConsuming() + " ");
 				 if (data !=null && data.getMatrixManager()!=null)
 					 success = data.getMatrixManager().processCommand(data, commandName, commandString);
-				 if (!success && b != null) 
-					 readUnrecognizedCommand(file,b, name, block, commandName, commandString, blockComments, null);
+				 if (!success && b != null) {
+					 readUnrecognizedCommand(file,b, name, block, commandName, commandString, blockComments, null, fileReadingArguments);
+				 }
 			 }
-			 else
-				 commandParser.getNextCommand(startCharC); //eating up the full command
-			 previousPos = startCharC.getValue();
+			 else {
+				 commandParser.getNextCommand(); //eating up the full command
+				 if (lookForEnd)
+					 endReached = commandName.equalsIgnoreCase("END")  || commandName.equalsIgnoreCase("ENDBLOCK");
+			 }
 		 }
 		 if (!fuse && StringUtil.blank(title))
 			 data.setName(getProject().getCharacterMatrices().getUniqueName("Untitled (" + data.getDataTypeName() + ")"));

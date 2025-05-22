@@ -18,6 +18,9 @@ import java.awt.*;
 import mesquite.lib.*;
 import mesquite.lib.characters.*;
 import mesquite.lib.duties.*;
+import mesquite.lib.taxa.Taxa;
+import mesquite.lib.tree.Tree;
+import mesquite.lib.ui.ListDialog;
 
 /* ======================================================================== */
 /**Suppliies numbers for each node of a tree.*/
@@ -80,7 +83,7 @@ public class NumForNodesAttached extends NumbersForNodes {
 	   	clearResultAndLastResult(result);
 		rememberChoices(tree);
 	   	if (tree != null) {
-			DoubleArray da = tree.getWhichAssociatedDouble(NameReference.getNameReference(valueName.getValue()));
+			DoubleArray da = tree.getAssociatedDoubles(NameReference.getNameReference(valueName.getValue()));
 			if (da == null)
 				return;
 			result.resetSize(da.getSize());

@@ -15,6 +15,7 @@ package mesquite.search.InvariantsTreeSearch;
 /*~~  */
 
 import mesquite.lib.*;
+import mesquite.lib.analysis.InvariantsAnalysis;
 import mesquite.search.lib.*;
 
 /* ======================================================================== */

@@ -23,6 +23,8 @@ import mesquite.lib.*;
 import mesquite.lib.characters.*;
 import mesquite.lib.duties.*;
 import mesquite.lib.table.*;
+import mesquite.lib.ui.MesquiteCursor;
+import mesquite.lib.ui.MesquiteWindow;
 import mesquite.categ.lib.*;
 import mesquite.align.lib.*;
 
@@ -309,7 +311,7 @@ public  class SelectedBlockMover extends MultiBlockMoveBase {
 		public void turningOff(){
 		}
 
-		public void cursorInCell(int modifiers, int column, int row, int regionInCellH, int regionInCellV, EditorPanel panel){
+		public void cursorInCell(int modifiers, int column, int row, EditorPanel editorPanel, int x, int y){
 			if (table.isCellSelected(column, row))  {
 				setCurrentStandardCursor(null);
 			}

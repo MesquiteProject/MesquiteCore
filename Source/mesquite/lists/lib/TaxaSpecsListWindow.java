@@ -10,7 +10,7 @@ Mesquite's web site is http://mesquiteproject.org
 
 This source code and its compiled class files are free and modifiable under the terms of 
 GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
-*/
+ */
 package mesquite.lists.lib;
 
 import java.awt.*;
@@ -18,6 +18,7 @@ import java.awt.event.*;
 import java.util.*;
 
 import mesquite.lib.duties.*;
+import mesquite.lib.taxa.Taxa;
 import mesquite.lib.*;
 
 /* ======================================================================== */
@@ -36,7 +37,7 @@ public class TaxaSpecsListWindow extends ListWindow implements MesquiteListener 
 		setCurrentObject(taxa);
 		taxa.addListener(this);
 	}
-	
+
 	/*.................................................................................................................*/
 	/** When called the window will determine its own title.  MesquiteWindows need
 	to be self-titling so that when things change (names of files, tree blocks, etc.)
@@ -46,19 +47,24 @@ public class TaxaSpecsListWindow extends ListWindow implements MesquiteListener 
 			setTitle(((TaxaSpecssetList)ownerModule).getItemTypeNamePlural() + " of " + taxa.getName() ); //TODO: file???
 		else if (taxa==null)
 			setTitle(((TaxaSpecssetList)ownerModule).getItemTypeNamePlural() + " (taxa NULL)" ); 
-		
+
 	}
-	/*.................................................................................................................*/
-	public Object getCurrentObject(){
+	/*.................................................................................................................*
+	public Object getCurrentObject(){this is handled by MesquiteWindow's reference as stored below
 		return taxa;
 	}
+	 */
 	public void setCurrentObject(Object obj){
 		if (obj instanceof Taxa) {
 			taxa = (Taxa)obj;
 			resetTitle();
+			if (taxa != null)
+				super.setCurrentObject(taxa.getSpecSetsVector(((TaxaSpecssetList)ownerModule).getItemType()));
 		}
+		else
+			super.setCurrentObject(obj);
 	}
-	public void setRowName(int row, String name){
+	public void setRowName(int row, String name, boolean update){
 		if (taxa!=null) {
 			SpecsSet ss = taxa.getSpecsSet(row, ((TaxaSpecssetList)ownerModule).getItemType());
 			if (ss!=null)
@@ -129,8 +135,8 @@ public class TaxaSpecsListWindow extends ListWindow implements MesquiteListener 
 		}
 		super.changed(caller, obj, notification);
 	}
-	
-	
+
+
 }
 
 

@@ -23,6 +23,18 @@ import mesquite.externalCommunication.lib.PythonUtil;
 import mesquite.lib.*;
 import mesquite.lib.duties.*;
 import mesquite.lib.simplicity.InterfaceManager;
+import mesquite.lib.tree.MesquiteTree;
+import mesquite.lib.tree.TreeDisplay;
+import mesquite.lib.ui.AlertDialog;
+import mesquite.lib.ui.ColorTheme;
+import mesquite.lib.ui.FontUtil;
+import mesquite.lib.ui.GraphicsUtil;
+import mesquite.lib.ui.MesquiteDialog;
+import mesquite.lib.ui.MesquiteFrame;
+import mesquite.lib.ui.MesquiteSubmenu;
+import mesquite.lib.ui.MesquiteSubmenuSpec;
+import mesquite.lib.ui.MesquiteWindow;
+import mesquite.parsimony.lib.ParsAncStatesForModel;
 import mesquite.stochchar.lib.MargLikelihoodForModel;
 
 /** Controls some of Mesquite's default settings (like fonts in windows). */
@@ -40,8 +52,8 @@ public class Defaults extends MesquiteInit  {
 				"The defaults are presented in the Defaults submenu of the File menu.");
 	}
 	/*.................................................................................................................*/
-	MesquiteBoolean respectFileSpecificResourceWidth, useOtherChoices, console, askSeed, errorReports, useReports, suppressXORMode;
-	MesquiteBoolean taxonTruncTrees, taxonT0TreesWarned, taxonT0Trees, printTreeNameByDefault;
+	MesquiteBoolean respectFileSpecificResourceWidth, useOtherChoices, console, askSeed, useReports, permitXOR;
+	MesquiteBoolean taxonTruncTrees, permitSpaceUnderscoreEquivalentTrees, printTreeNameByDefault;
 	MesquiteBoolean tabbedWindows, debugMode, wizards, logAll, phoneHome, secondaryChoicesOnInDialogs, subChoicesOnInDialogs, tilePopouts; 
 	MesquiteString themeName;
 	StringArray themes;
@@ -51,21 +63,21 @@ public class Defaults extends MesquiteInit  {
 		askSeed = new MesquiteBoolean(false);
 		console = new MesquiteBoolean(MesquiteTrunk.mesquiteTrunk.logWindow.isConsoleMode());
 		logAll = new MesquiteBoolean(MesquiteCommand.logEverything);
-		suppressXORMode = new MesquiteBoolean(GraphicsUtil.useXOR);
+		permitXOR = new MesquiteBoolean(GraphicsUtil.permitXOR);
 		wizards = new MesquiteBoolean(MesquiteDialog.useWizards);
 		tabbedWindows = new MesquiteBoolean(MesquiteWindow.compactWindows);
 		//tilePopouts = new MesquiteBoolean(MesquiteFrame.popIsTile);
 		taxonTruncTrees = new MesquiteBoolean(MesquiteTree.permitTruncTaxNames);
-		taxonT0Trees = new MesquiteBoolean(MesquiteTree.permitT0Names);
-		taxonT0TreesWarned = new MesquiteBoolean(false);
+		permitSpaceUnderscoreEquivalentTrees = new MesquiteBoolean(MesquiteTree.permitSpaceUnderscoreEquivalent);
 		printTreeNameByDefault = new MesquiteBoolean(TreeDisplay.printTreeNameByDefault);
 		debugMode = new MesquiteBoolean(false);
 		phoneHome = new MesquiteBoolean(MesquiteTrunk.phoneHome);
-		errorReports = new MesquiteBoolean(MesquiteTrunk.reportErrors);
 		useReports = new MesquiteBoolean(MesquiteTrunk.reportUse);
 		secondaryChoicesOnInDialogs = new MesquiteBoolean(true);
 		subChoicesOnInDialogs = new MesquiteBoolean(true);
 		respectFileSpecificResourceWidth = new MesquiteBoolean(MesquiteFrame.respectFileSpecificResourceWidth);
+		ParsAncStatesForModel.countStepsInTermPolymorphisms = new MesquiteBoolean(true);
+
 		//useDotPrefs = new MesquiteBoolean(MesquiteModule.prefsDirectory.toString().indexOf(".Mesquite_Prefs")>=0);
 		loadPreferences();
 		EmployerEmployee.useOtherChoices = useOtherChoices.getValue();
@@ -78,8 +90,8 @@ public class Defaults extends MesquiteInit  {
 		MesquiteTrunk.setupSubmenu.setFilterable(false);
 		MesquiteTrunk.mesquiteTrunk.addCheckMenuItemToSubmenu(MesquiteTrunk.fileMenu, MesquiteTrunk.defaultsSubmenu,"Open Windows as Tabs", makeCommand("toggleTabbedWindows",  this), tabbedWindows);
 		MesquiteTrunk.mesquiteTrunk.addCheckMenuItemToSubmenu(MesquiteTrunk.fileMenu, MesquiteTrunk.defaultsSubmenu,"Use Wizard-style Dialogs", makeCommand("toggleWizards",  this), wizards);
-		MesquiteTrunk.mesquiteTrunk.addCheckMenuItemToSubmenu(MesquiteTrunk.fileMenu, MesquiteTrunk.defaultsSubmenu,"Check for Notices on Mesquite Web Site", makeCommand("togglePhoneHome",  this), phoneHome);
-		MesquiteTrunk.mesquiteTrunk.addCheckMenuItemToSubmenu(MesquiteTrunk.fileMenu, MesquiteTrunk.defaultsSubmenu,"Send Error Reports to Mesquite Server", makeCommand("toggleErrorReports",  this), errorReports);
+		MesquiteTrunk.mesquiteTrunk.addCheckMenuItemToSubmenu(MesquiteTrunk.fileMenu, MesquiteTrunk.defaultsSubmenu,"Contact Mesquite Server on Startup", makeCommand("togglePhoneHome",  this), phoneHome);
+		MesquiteTrunk.mesquiteTrunk.addCheckMenuItemToSubmenu(MesquiteTrunk.fileMenu, MesquiteTrunk.defaultsSubmenu,"Send Error Reports Automatically to Mesquite Server", makeCommand("toggleErrorReports",  this), MesquiteException.reportErrorsAutomatically);
 		MesquiteTrunk.mesquiteTrunk.addCheckMenuItemToSubmenu(MesquiteTrunk.fileMenu, MesquiteTrunk.defaultsSubmenu,"Send Usage Reports to Mesquite Server", makeCommand("toggleUseReports",  this), useReports);
 		MesquiteTrunk.mesquiteTrunk.addCheckMenuItemToSubmenu(MesquiteTrunk.fileMenu, MesquiteTrunk.defaultsSubmenu,"Use Log Window for Commands", makeCommand("toggleConsoleMode",  this), console);
 		MesquiteTrunk.mesquiteTrunk.addCheckMenuItemToSubmenu(MesquiteTrunk.fileMenu, MesquiteTrunk.defaultsSubmenu,"Log All Commands", makeCommand("toggleLogAll",  this), logAll);
@@ -115,11 +127,11 @@ public class Defaults extends MesquiteInit  {
 		sm = MesquiteTrunk.mesquiteTrunk.addSubmenu(MesquiteTrunk.defaultsSubmenu,"Project Panel Font Size", makeCommand("setProjectPanelFontSize",  this), MesquiteSubmenu.getFontSizeList());		
 		sm.setFilterable(false);
 		MesquiteTrunk.mesquiteTrunk.addCheckMenuItemToSubmenu(MesquiteTrunk.fileMenu, MesquiteTrunk.defaultsSubmenu,"Use File-Specific Project Panel Width", makeCommand("respectFileSpecificResourceWidth",  this), respectFileSpecificResourceWidth);
-		if (MesquiteTrunk.isMacOSX()  && System.getProperty("os.version").indexOf("10.4")>=0)
-			MesquiteTrunk.mesquiteTrunk.addCheckMenuItemToSubmenu(MesquiteTrunk.fileMenu, MesquiteTrunk.defaultsSubmenu,"Suppress Inverted Highlights", makeCommand("toggleXORMode",  this), suppressXORMode);
+		MesquiteTrunk.mesquiteTrunk.addCheckMenuItemToSubmenu(MesquiteTrunk.fileMenu, MesquiteTrunk.defaultsSubmenu,"Permit Inverted Highlights (XORMode)", makeCommand("toggleXORMode",  this), permitXOR);
 		MesquiteTrunk.mesquiteTrunk.addCheckMenuItemToSubmenu(MesquiteTrunk.fileMenu, MesquiteTrunk.defaultsSubmenu, "Ask for Random Number Seeds", makeCommand("toggleAskSeed",  this), askSeed);
+		MesquiteTrunk.mesquiteTrunk.addCheckMenuItemToSubmenu(MesquiteTrunk.fileMenu, MesquiteTrunk.defaultsSubmenu, "Count Steps in Polymorphisms with Unord/Ord Parsimony", makeCommand("toggleCountStepsInTermPolymorphisms",  this), ParsAncStatesForModel.countStepsInTermPolymorphisms);
 		MesquiteTrunk.mesquiteTrunk.addCheckMenuItemToSubmenu(MesquiteTrunk.fileMenu, MesquiteTrunk.defaultsSubmenu, "Permit Partial Names in Tree Reading", makeCommand("togglePartNamesTrees",  this), taxonTruncTrees);
-		MesquiteTrunk.mesquiteTrunk.addCheckMenuItemToSubmenu(MesquiteTrunk.fileMenu, MesquiteTrunk.defaultsSubmenu, "Permit t0=taxon 1, t1=taxon 2, etc. Names in Tree Reading", makeCommand("toggleT0NamesTrees",  this), taxonT0Trees);
+		MesquiteTrunk.mesquiteTrunk.addCheckMenuItemToSubmenu(MesquiteTrunk.fileMenu, MesquiteTrunk.defaultsSubmenu, "Permit Spaces and Underscores Equivalent in Tree Reading", makeCommand("toggleSpaceUnderscoreTrees",  this), permitSpaceUnderscoreEquivalentTrees);
 		MesquiteTrunk.mesquiteTrunk.addCheckMenuItemToSubmenu(MesquiteTrunk.fileMenu, MesquiteTrunk.defaultsSubmenu, "Print Tree Names by Default", makeCommand("printTreeNameByDefault",  this), printTreeNameByDefault);
 		MesquiteTrunk.mesquiteTrunk.addItemToSubmenu(MesquiteTrunk.fileMenu, MesquiteTrunk.defaultsSubmenu, "Matrix Limits for Undo...", makeCommand("setMaxMatrixSizeUndo",  this));
 		MesquiteTrunk.mesquiteTrunk.addItemToSubmenu(MesquiteTrunk.fileMenu, MesquiteTrunk.defaultsSubmenu, "Python Settings...", makeCommand("pythonSettings",  this));
@@ -134,6 +146,7 @@ public class Defaults extends MesquiteInit  {
 	}
 
 	public void endJob(){
+		
 		storePreferences();
 		super.endJob();
 	}
@@ -151,14 +164,12 @@ public class Defaults extends MesquiteInit  {
 			//if (prefs.length>2 && prefs[2] !=null) //post 2. 01 changed name to switch factory default to false
 			//		useOtherChoices.setValue("useOther".equalsIgnoreCase(prefs[2]));
 			if (prefs.length>3 && prefs[3] !=null)
-				MesquiteTrunk.suggestedDirectory = prefs[3];
+				MesquiteTrunk.setSuggestedDirectory(prefs[3]);
 			if (prefs.length>4 && prefs[4] !=null)
 				askSeed.setValue("askSeed".equalsIgnoreCase(prefs[4]));
 			if (prefs.length>5 && prefs[5] !=null){
-				if (MesquiteTrunk.isMacOSX()  && System.getProperty("os.version").indexOf("10.4")>=0){
-					suppressXORMode.setValue("suppressXORMode".equalsIgnoreCase(prefs[5]));
-					GraphicsUtil.useXOR = !suppressXORMode.getValue();
-				}
+					permitXOR.setValue("permitXOR".equalsIgnoreCase(prefs[5]));
+					GraphicsUtil.permitXOR = permitXOR.getValue();
 			}
 			if (prefs.length>6 && prefs[6] !=null){
 				taxonTruncTrees.setValue("permitTruncTaxonNamesTrees".equalsIgnoreCase(prefs[6]));
@@ -194,38 +205,24 @@ public class Defaults extends MesquiteInit  {
 			askSeed.setValue(content);
 			RandomBetween.askSeed = askSeed.getValue();
 		}
-		else if ("suppressXORMode".equalsIgnoreCase(tag)){
-			if (MesquiteTrunk.isMacOSX()  && System.getProperty("os.version").indexOf("10.4")>=0){
-				suppressXORMode.setValue(content);
-				GraphicsUtil.useXOR = !suppressXORMode.getValue();
-			}
+		else if ("countStepsInTermPolymorphisms".equalsIgnoreCase(tag)){
+			ParsAncStatesForModel.countStepsInTermPolymorphisms.setValue(content);
+		}
+		else if ("permitXOR".equalsIgnoreCase(tag)){
+				permitXOR.setValue(content);
+				GraphicsUtil.permitXOR = permitXOR.getValue();
 		}
 		else if ("taxonTruncTrees".equalsIgnoreCase(tag)){
 			taxonTruncTrees.setValue(content);
 			MesquiteTree.permitTruncTaxNames = taxonTruncTrees.getValue();
 		}
-		else if ("taxonT0Trees".equalsIgnoreCase(tag)){
-			taxonT0Trees.setValue(content);
-			if (taxonT0Trees.getValue() && !taxonT0TreesWarned.getValue()){
-				String message ="Reading of tree descriptions is set to permit t0, t1, t2 as default taxon names.  This option can be dangerous if you are reading a file without translation tables.  We recommend to turn this option off (now, or in menu File>Defaults>Permit t0=taxon 1, ...) unless you specifically need it.";
-				if (MesquiteThread.isScripting())
-					logln(message);
-				else {
-					boolean answer = AlertDialog.query(containerOfModule(), "Tree reading", message, "OK, permit t0...", "No, be careful, turn off", 2);
-					if (!answer)
-						taxonT0Trees.setValue(false);
-				}
-				taxonT0TreesWarned.setValue(true);
-			}
-
-			MesquiteTree.permitT0Names = taxonT0Trees.getValue();
+		else if ("permitSpaceUnderscoreEquivalentTrees".equalsIgnoreCase(tag)){
+			permitSpaceUnderscoreEquivalentTrees.setValue(content);
+			MesquiteTree.permitSpaceUnderscoreEquivalent = permitSpaceUnderscoreEquivalentTrees.getValue();
 		}
 		else if ("printTreeNameByDefault".equalsIgnoreCase(tag)){
 			printTreeNameByDefault.setValue(content);
 			TreeDisplay.printTreeNameByDefault = printTreeNameByDefault.getValue();
-		}
-		else if ("taxonT0TreesWarned".equalsIgnoreCase(tag)){
-			taxonT0TreesWarned.setValue(content);
 		}
 		else if ("maxLinesOfAnyElementInPanelQueried".equalsIgnoreCase(tag)){
 			MesquiteBoolean q = new MesquiteBoolean();
@@ -264,9 +261,8 @@ public class Defaults extends MesquiteInit  {
 			phoneHome.setValue(content);
 			MesquiteTrunk.phoneHome = phoneHome.getValue();
 		}
-		else if ("errorReports".equalsIgnoreCase(tag)){
-			errorReports.setValue(content);
-			MesquiteTrunk.reportErrors = errorReports.getValue();
+		else if ("autoErrorReports".equalsIgnoreCase(tag)){
+			MesquiteException.reportErrorsAutomatically.setValue(content);
 		}
 		else if ("useReports".equalsIgnoreCase(tag)){
 			useReports.setValue(content);
@@ -312,7 +308,7 @@ public class Defaults extends MesquiteInit  {
 				MesquiteFrame.resourcesFontSize = defFontSize;
 		}
 		else if ("suggestedDirectory".equalsIgnoreCase(tag)){
-			MesquiteTrunk.suggestedDirectory = StringUtil.cleanXMLEscapeCharacters(content);
+			MesquiteTrunk.setSuggestedDirectory(StringUtil.cleanXMLEscapeCharacters(content));
 		}
 		else if ("python2Path".equalsIgnoreCase(tag)){
 			PythonUtil.python2Path = StringUtil.cleanXMLEscapeCharacters(content);
@@ -330,14 +326,14 @@ public class Defaults extends MesquiteInit  {
 		StringUtil.appendXMLTag(buffer, 2, "maxLinesOfAnyElementInPanelQueried", FileCoordinator.maxLinesOfAnyElementInPanelQueried);
 		StringUtil.appendXMLTag(buffer, 2, "maxLinesOfMatricesTreeBlocksSeparateInPanel", FileCoordinator.maxLinesOfMatricesTreeBlocksSeparateInPanel);
 		StringUtil.appendXMLTag(buffer, 2, "useOtherChoicesInMenus", useOtherChoices);   
-		StringUtil.appendXMLTag(buffer, 2, "suggestedDirectory", MesquiteTrunk.suggestedDirectory);
+		StringUtil.appendXMLTag(buffer, 2, "suggestedDirectory", MesquiteTrunk.getSuggestedDirectory());
 		StringUtil.appendXMLTag(buffer, 2, "python2Path", PythonUtil.python2Path);
 		StringUtil.appendXMLTag(buffer, 2, "python3Path", PythonUtil.python3Path);
 		StringUtil.appendXMLTag(buffer, 2, "askSeed", askSeed);   
-		StringUtil.appendXMLTag(buffer, 2, "suppressXORMode", suppressXORMode);   
+		StringUtil.appendXMLTag(buffer, 2, "permitXOR", permitXOR);   
+		StringUtil.appendXMLTag(buffer, 2, "countStepsInTermPolymorphisms", ParsAncStatesForModel.countStepsInTermPolymorphisms);  
 		StringUtil.appendXMLTag(buffer, 2, "taxonTruncTrees", taxonTruncTrees);   
-		StringUtil.appendXMLTag(buffer, 2, "taxonT0TreesWarned", taxonT0TreesWarned);   
-		StringUtil.appendXMLTag(buffer, 2, "taxonT0Trees", taxonT0Trees);   
+		StringUtil.appendXMLTag(buffer, 2, "permitSpaceUnderscoreEquivalentTrees", permitSpaceUnderscoreEquivalentTrees);   
 		StringUtil.appendXMLTag(buffer, 2, "printTreeNameByDefault", printTreeNameByDefault);   
 		StringUtil.appendXMLTag(buffer, 2, "tabbedWindows", tabbedWindows);   
 		StringUtil.appendXMLTag(buffer, 2, "respectFileSpecificResourceWidth", respectFileSpecificResourceWidth);   
@@ -345,7 +341,7 @@ public class Defaults extends MesquiteInit  {
 		StringUtil.appendXMLTag(buffer, 2, "debugMode", debugMode);   
 		StringUtil.appendXMLTag(buffer, 2, "wizards", wizards);   
 		StringUtil.appendXMLTag(buffer, 2, "phoneHome", phoneHome);   
-		StringUtil.appendXMLTag(buffer, 2, "errorReports", errorReports);   
+		StringUtil.appendXMLTag(buffer, 2, "autoErrorReports", MesquiteException.reportErrorsAutomatically);   
 		StringUtil.appendXMLTag(buffer, 2, "useReports", useReports);   
 		StringUtil.appendXMLTag(buffer, 2, "showSecondaryChoicesInDialogs", secondaryChoicesOnInDialogs);   
 		StringUtil.appendXMLTag(buffer, 2, "subChoicesOnInDialogs", subChoicesOnInDialogs);   
@@ -587,10 +583,9 @@ public class Defaults extends MesquiteInit  {
 			return phoneHome;
 		}
 		else if (checker.compare(getClass(), "Sets whether to send error reports to Mesquite server", null, commandName, "toggleErrorReports")) {
-			errorReports.toggleValue(null);
-			MesquiteTrunk.reportErrors = errorReports.getValue();
+			MesquiteException.reportErrorsAutomatically.toggleValue(null);
 			storePreferences();
-			return errorReports;
+			return MesquiteException.reportErrorsAutomatically;
 		}
 		else if (checker.compare(getClass(), "Sets whether to send use reports to Mesquite server", null, commandName, "toggleUseReports")) {
 			useReports.toggleValue(null);
@@ -605,10 +600,10 @@ public class Defaults extends MesquiteInit  {
 			return wizards;
 		}
 		else if (checker.compare(getClass(), "Sets whether to use xor mode", null, commandName, "toggleXORMode")) {
-			suppressXORMode.toggleValue(null);
-			GraphicsUtil.useXOR = !suppressXORMode.getValue();
+			permitXOR.toggleValue(null);
+			GraphicsUtil.permitXOR = permitXOR.getValue();
 			resetAllMenuBars();
-			return suppressXORMode;
+			return permitXOR;
 		}
 		else if (checker.compare(getClass(), "Sets whether to permit taxon name truncation in trees", null, commandName, "togglePartNamesTrees")) {
 			taxonTruncTrees.toggleValue(null);
@@ -617,17 +612,13 @@ public class Defaults extends MesquiteInit  {
 			storePreferences();
 			return taxonTruncTrees;
 		}
-		else if (checker.compare(getClass(), "Sets whether to permit taxon names being expressed as t0, t1, t2 in trees", null, commandName, "toggleT0NamesTrees")) {
-			taxonT0Trees.toggleValue(null);
-			MesquiteTree.permitT0Names = taxonTruncTrees.getValue();
-			if (taxonT0Trees.getValue() && !taxonT0TreesWarned.getValue()){
-				discreetAlert("Reading of tree descriptions is set to permit t0, t1, t2 as default taxon names.  This option can be dangerous if you are reading a file without translation tables.  We recommend to turn this option off (in menu File>Defaults>Permit t0=taxon 1, ...) unless you specifically need it.");
-				taxonT0TreesWarned.setValue(true);
-			}
+		else if (checker.compare(getClass(), "Sets whether to permit spaces and underscores to be equivalent in taxon names in trees", null, commandName, "toggleSpaceUnderscoreTrees")) {
+			permitSpaceUnderscoreEquivalentTrees.toggleValue(null);
+			MesquiteTree.permitSpaceUnderscoreEquivalent = permitSpaceUnderscoreEquivalentTrees.getValue();
 
 			resetAllMenuBars();
 			storePreferences();
-			return taxonT0Trees;
+			return permitSpaceUnderscoreEquivalentTrees;
 		}
 		else if (checker.compare(getClass(), "Sets whether names of trees will be printed on tree by default", null, commandName, "printTreeNameByDefault")) {
 			printTreeNameByDefault.toggleValue(null);
@@ -676,6 +667,13 @@ public class Defaults extends MesquiteInit  {
 			RandomBetween.askSeed = askSeed.getValue();
 			storePreferences();
 			return askSeed;
+		}
+		else if (checker.compare(getClass(), "Sets whether to count steps in terminal polymorphisms in parsimony calculations.", null, commandName, "toggleCountStepsInTermPolymorphisms")) {
+			
+			ParsAncStatesForModel.countStepsInTermPolymorphisms.toggleValue(null);
+			discreetAlert("You will need to re-initiate any calculations or restart Mesquite for this change to take effect.");
+			storePreferences();
+			return ParsAncStatesForModel.countStepsInTermPolymorphisms;
 		}
 		else
 			return  super.doCommand(commandName, arguments, checker);

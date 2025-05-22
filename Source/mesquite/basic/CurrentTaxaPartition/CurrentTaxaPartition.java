@@ -18,6 +18,8 @@ import java.util.*;
 import java.awt.*;
 import mesquite.lib.*;
 import mesquite.lib.duties.*;
+import mesquite.lib.taxa.Taxa;
+import mesquite.lib.taxa.TaxaPartition;
 
 /** Supplies the current partition of taxa. */
 public class CurrentTaxaPartition extends TaxaPartitionSource implements MesquiteListener {
@@ -45,6 +47,7 @@ public class CurrentTaxaPartition extends TaxaPartitionSource implements Mesquit
 			currentPartition.removeListener(this);
 		super.endJob();
   	 }
+	/*.................................................................................................................*/
 	/** passes which object was disposed*/
 	public void disposing(Object obj){
 		if (obj == currentTaxa || obj == currentPartition)
@@ -57,6 +60,7 @@ public class CurrentTaxaPartition extends TaxaPartitionSource implements Mesquit
 		if (obj == currentTaxa || obj == currentPartition)
 			parametersChanged(notification);
 	}
+	/*.................................................................................................................*/
    	/** returns partition for taxa */
    	public TaxaPartition getPartition(Taxa taxa){
 		if (currentTaxa != taxa) {

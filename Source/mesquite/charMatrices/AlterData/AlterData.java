@@ -26,12 +26,16 @@ import mesquite.lib.characters.*;
 import mesquite.lib.characters.CharacterData;
 import mesquite.lib.duties.*;
 import mesquite.lib.table.*;
+import mesquite.lib.ui.MesquiteMenuItemSpec;
+import mesquite.lib.ui.MesquiteMenuSpec;
+import mesquite.lib.ui.MesquiteSubmenuSpec;
+import mesquite.lib.ui.MesquiteWindow;
 
 /* ======================================================================== */
-public class AlterData extends DataWindowAssistantI implements CalculationMonitor, SeparateThreadStorage {
+public class AlterData extends DataWindowAssistantI  {
 	public void getEmployeeNeeds(){  //This gets called on startup to harvest information; override this and inside, call registerEmployeeNeed
 		EmployeeNeed e2 = registerEmployeeNeed(DataAlterer.class, getName() + " needs a particular method to alter data in the Character Matrix Editor.",
-				"These options are available in the Alter/Transform submenu of the Matrix menu of the Character Matrix Editor");
+				"These options are available in the Alter submenu of the Matrix menu of the Character Matrix Editor");
 		e2.setPriority(2);
 	}
 	MesquiteTable table;
@@ -40,16 +44,21 @@ public class AlterData extends DataWindowAssistantI implements CalculationMonito
 	MesquiteMenuSpec alterMenu; 
 	MesquiteMenuSpec alterMenu2; 
 	
-	MultipleSequenceAligner aligner;
-	AlignMultipleSequencesMachine alignmentMachine;
+	/*
+	 *January 2025:  Special handling of alignment stripped from here, with consequence that all alterers are assumed to operate on main thread.
+	 *In future could allow alterers to work on separate threads, but would need to require alterers to indicate whether they want to work on a separate thread.
+	 * For the moment, it's assumed they work on one thread
 	boolean separateThread = false;
-
+	
+	implements CalculationMonitor, SeparateThreadStorage
+*/
+	
 //	MesquiteCMenuItemSpec bySMmi; 
 
 	//Specify various interfaces here
-	String[] labels = new String[]{ "Whole Character Add/Remove", "Align/Shift/Reverse Data", "Transformations","Basic Data Cell Manipulation", "DNA/RNA Data Cell Manipulation", "Convert Gap/Missing/Polymorph/Uncertain", "Randomizations"};
-	Class[] interfaces = new Class[]{AltererWholeCharacterAddRemove.class, AltererAlignShift.class, AltererContinuousTransformations.class, AltererSimpleCell.class, AltererDNACell.class, AltererConvertGapMissPolyUncert.class,  AltererRandomizations.class};
-	boolean[] asSubmenu = new boolean[]{false,false,false,true, true, true, true};
+	String[] labels = new String[]{ "Whole Character Add/Remove", "Align/Shift/Reverse Data", "Transformations", "Metadata", "Basic Data Cell Manipulation", "DNA/RNA Data Cell Manipulation", "Convert Gap/Missing/Polymorph/Uncertain", "Randomizations"};
+	Class[] interfaces = new Class[]{AltererWholeCharacterAddRemove.class, AltererAlignShift.class, AltererContinuousTransformations.class, AltererMetadata.class, AltererSimpleCell.class, AltererDNACell.class, AltererConvertGapMissPolyUncert.class,  AltererRandomizations.class};
+	boolean[] asSubmenu = new boolean[]{false,false,false, true, true, true, true, true};
 
 
 	MesquiteSubmenuSpec[] submenu = new MesquiteSubmenuSpec[interfaces.length+1];
@@ -63,22 +72,14 @@ public class AlterData extends DataWindowAssistantI implements CalculationMonito
 		qualificationsTest = new OtherAltererQualificationsTest(interfaces);
 		bySubmenus = new MesquiteBoolean(false);
 		alterMenu = makeMenu("Alter");
-		//alterMenu = addAuxiliaryMenu("Alter");
 		buildMenu();
 
-		//OLD
-		//mss = addSubmenu(null, "OLD Alter/Transform", makeCommand("doAlter",  this));
-		//mss.setList(DataAlterer.class);
 		return true;
 	}
 
 	/*.................................................................................................................*/
 	void buildMenu(){
-//		if (bySMmi != null)
-//			bySMmi.releaseBoolean();
 		deleteAllMenuItems();
-//		bySMmi = addCheckMenuItem(alterMenu, "Show As Submenus", makeCommand("toggleBySubmenus",  this), bySubmenus);
-//		addMenuItem(alterMenu, "-", null);
 		
 		
 		for (int i=0; i< interfaces.length; i++) {
@@ -95,14 +96,12 @@ public class AlterData extends DataWindowAssistantI implements CalculationMonito
 
 		submenu[interfaces.length] = addSubmenu(alterMenu, "Other Alterations", makeCommand("doAlter",  this), DataAlterer.class);
 		submenu[interfaces.length].setQualificationsTest(qualificationsTest);
-
+		resetContainingMenuBar();
 	}
 	/*.................................................................................................................*/
 	void setCompatibilityForMatrix(){
 		if (data == null)
 			return;
-		//OLD
-		//mss.setCompatibilityCheck(data.getStateClass());
 
 	if (bySubmenus.getValue()){
 			//SUBMENUS
@@ -123,24 +122,22 @@ public class AlterData extends DataWindowAssistantI implements CalculationMonito
 	public boolean isPrerelease(){
 		return false;
 	}
-	public void calculationCompleted (Object obj) {
-		if (obj.equals(alignmentMachine))
-			fireEmployee(aligner);
-	}
-	public void setSeparateThread(boolean separateThread) {
-		this.separateThread = separateThread;
-	}
-
+	
 	private void addItemsOfInterface(MesquiteMenuSpec menu, Class alterInterface, String title, QualificationsTest qualificationsTest){
-		if (getNumMenuItemSpecs()>0)
+		Class dataClass  = null;
+		if (data !=null)
+			dataClass = data.getClass();
+		int numModules = MesquiteTrunk.mesquiteModulesInfoVector.getNumModulesOfDuty(alterInterface, dataClass, this);
+		if (numModules <=0)
+			return;
+		if (getNumMenuItemSpecs()>0) {
 			addMenuItem(menu, "-", null);
+		}
 		addMenuItem(menu, title, null);
 		MesquiteMenuItemSpec mmis = addModuleMenuItems(menu, makeCommand("doAlter",  this), alterInterface);
 		mmis.setQualificationsTest(qualificationsTest);
-		if (alterInterface==AltererAlignShift.class) {
-			mss = addSubmenu(menu, "Align Multiple Sequences", makeCommand("doAlign",  this));
-			mss.setList(MultipleSequenceAligner.class);
-		}
+
+
 	}
 	/*.................................................................................................................*/
 	public void setTableAndData(MesquiteTable table, CharacterData data){
@@ -150,7 +147,7 @@ public class AlterData extends DataWindowAssistantI implements CalculationMonito
 		resetContainingMenuBar();
 		if (data!=null)
 			data.addListener(this);
-
+		buildMenu();
 	}
 
 	/* possible alterers:
@@ -188,49 +185,26 @@ public class AlterData extends DataWindowAssistantI implements CalculationMonito
 					return null;
 				}
 				DataAlterer tda= (DataAlterer)hireNamedEmployee(DataAlterer.class, arguments);
+				
 				if (tda!=null) {
 					MesquiteWindow w = table.getMesquiteWindow();
 					UndoReference undoReference = new UndoReference();
 					AlteredDataParameters alteredDataParameters = new AlteredDataParameters();
 					if (MesquiteTrunk.debugMode)
 						logln("Memory available before data alterer invoked: " + MesquiteTrunk.getMaxAvailableMemory());
-					boolean a = tda.alterData(data, table, undoReference, alteredDataParameters);
+					int a = tda.alterData(data, table, undoReference, alteredDataParameters);
 					if (MesquiteTrunk.debugMode)
 						logln("Memory available after data alterer invoked: " + MesquiteTrunk.getMaxAvailableMemory());
 
-					if (a) {
+					if (a== ResultCodes.SUCCEEDED) {
 						table.repaintAll();
 						Notification notification = new Notification(MesquiteListener.DATA_CHANGED, alteredDataParameters.getParameters(), undoReference);
 						if (alteredDataParameters.getSubcodes()!=null)
 							notification.setSubcodes(alteredDataParameters.getSubcodes());
 						data.notifyListeners(this, notification);
 					}
-					if (!tda.pleaseLeaveMeOn()) {
-						fireEmployee(tda);
-					}
-				}
-			}
-		}
-		else 	if (checker.compare(this.getClass(), "Hires module to align sequences", "[name of module]", commandName, "doAlign")) {
-			if (table!=null && data !=null){
-				if (data.isEditInhibited()){
-					discreetAlert("This matrix is marked as locked against editing. To unlock, uncheck the menu item Matrix>Current Matrix>Editing Not Permitted");
-					return null;
-				}
-				if (!(data instanceof MolecularData)){
-					discreetAlert("This matrix is not a molecular matrix; it can't be aligned.");
-					return null;
-				}
-				aligner= (MultipleSequenceAligner)hireNamedEmployee(MultipleSequenceAligner.class, arguments);
-				if (aligner!=null) {
-					boolean a = alignData(data, table);
-					if (a) {
-						table.repaintAll();
-						data.notifyListeners(this, new Notification(MesquiteListener.DATA_CHANGED));
-						data.notifyInLinked(new Notification(MesquiteListener.DATA_CHANGED));
-					}
-					if (!separateThread) {
-						fireEmployee(aligner);
+					if (!tda.pleaseLeaveMeOn()) {  
+						fireEmployee(tda); //Note: this assumes the alterer completes the job, i.e. is on same thread
 					}
 				}
 			}
@@ -248,12 +222,7 @@ public class AlterData extends DataWindowAssistantI implements CalculationMonito
 			return  super.doCommand(commandName, arguments, checker);
 		return null;
 	}
-	/*.................................................................................................................*/
-	/** Called to alter data in those cells selected in table*/
-	public boolean alignData(CharacterData data, MesquiteTable table){
-		alignmentMachine = new AlignMultipleSequencesMachine(this, this, this, aligner);
-		return alignmentMachine.alignData(data,table);
-	}
+	
 
 	/*.................................................................................................................*/
 	public String getName() {

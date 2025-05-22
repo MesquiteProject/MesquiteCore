@@ -17,6 +17,8 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
 import mesquite.lists.lib.*;
 import mesquite.lib.*;
 import mesquite.lib.table.*;
+import mesquite.lib.taxa.Taxa;
+import mesquite.lib.ui.MesquiteMenuItemSpec;
 import mesquite.opentree.lib.*;
 
 
@@ -124,7 +126,7 @@ import mesquite.opentree.lib.*;
 		/** for those permitting editing, indicates user has edited to incoming string.*/
 		public void setString(int row, String s){
 			if (taxa!=null) {
-				taxa.setAssociatedObject(OpenTreeUtil.nonExemplarRef, row, s);
+				taxa.setAssociatedString(OpenTreeUtil.nonExemplarRef, row, s);
 			}
 			
 		}

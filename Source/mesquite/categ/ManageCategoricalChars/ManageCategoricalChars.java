@@ -10,7 +10,7 @@ Mesquite's web site is http://mesquiteproject.org
 
 This source code and its compiled class files are free and modifiable under the terms of 
 GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
-*/
+ */
 package mesquite.categ.ManageCategoricalChars;
 
 import java.util.*;
@@ -20,16 +20,18 @@ import java.io.*;
 import mesquite.lib.*;
 import mesquite.lib.characters.*;
 import mesquite.lib.duties.*;
+import mesquite.lib.taxa.Taxa;
+import mesquite.lib.ui.ProgressIndicator;
 import mesquite.categ.lib.*;
 
 /* ======================================================================== 
 Manages matrices of categorical characters (excluding molecular sequences)*/
 public class ManageCategoricalChars extends CharMatrixManager {
-	
+
 	public boolean startJob(String arguments, Object condition, boolean hiredByName){
 		return true;
 	}
-	
+
 	/*.................................................................................................................*/
 	public boolean isPrerelease(){
 		return false;
@@ -57,16 +59,16 @@ public class ManageCategoricalChars extends CharMatrixManager {
 	}
 	/*.................................................................................................................*/
 	public CharacterData processFormat(MesquiteFile file, Taxa taxa, String dataType, String formatCommand, MesquiteInteger stringPos, int numChars, String title, String fileReadingArguments) {
-	//	MesquiteProject proj=null;
-	//	if (file!=null)
-	//		proj = file.getProject();
+		//	MesquiteProject proj=null;
+		//	if (file!=null)
+		//		proj = file.getProject();
 		CategoricalData data= null;
 		if (stringPos == null)
 			stringPos = new MesquiteInteger(0);
 		//@@@@@@@@@@@@@@@@@@@@
 		boolean fuse = parser.hasFileReadingArgument(fileReadingArguments, "fuseTaxaCharBlocks");
 		boolean merging = false;
-		
+
 		if (fuse){
 			String message = "In the file being imported, there is a matrix called \"" + title + "\". Mesquite will either fuse this matrix into the matrix you select below, or it will import that matrix as new, separate matrix.";
 			data = (CategoricalData)getProject().chooseData(containerOfModule(), null, taxa, CategoricalState.class, message,  true, "Fuse with Selected Matrix", "Add as New Matrix");
@@ -74,8 +76,8 @@ public class ManageCategoricalChars extends CharMatrixManager {
 				data.addCharacters(data.getNumChars()-1, numChars - data.getNumChars(), false);
 			if (data != null)
 				file.characterDataNameTranslationTable.addElement(new MesquiteString(title, data.getName()), false);
-			
-			
+
+
 		}
 		if (data == null) {
 			if (taxa == null)
@@ -93,31 +95,58 @@ public class ManageCategoricalChars extends CharMatrixManager {
 		}
 		//@@@@@@@@@@@@@@@@@@@@
 		data.interleaved = false;   //reset default in case this is fused
-		
+
 		String tok = ParseUtil.getToken(formatCommand, stringPos);
 		while (tok != null && !tok.equals(";")) {
 			if (tok.equalsIgnoreCase("TRANSPOSE")) {
-				alert("Sorry, Transposed matrices of categorical characters can't yet be read");
-				return null;
+				int p = stringPos.getValue();
+				boolean uhOh = true;
+				String e = ParseUtil.getToken(formatCommand, stringPos); //eating up = ?
+				if ("=".equals(e)){
+					String t = ParseUtil.getToken(formatCommand, stringPos);
+					if (t!=null && t.equalsIgnoreCase("no")) {
+						uhOh = false;
+					}
+				}
+				else
+					stringPos.setValue(p);
+				if (uhOh) {
+					alert("Sorry, Mesquite does not support transposed matrices of categorical characters.");
+					return null;
+				}
 			}
-		
+
 			else if (tok.equalsIgnoreCase("format")) { 
 			}
 			else if (tok.equalsIgnoreCase("RESPECTCASE")) {
 				//ignored for the moment 1.05 toDo
 			}
-		
+
 			else if (tok.equalsIgnoreCase("INTERLEAVE")) {
 				int sp = stringPos.getValue();
 				String e = ParseUtil.getToken(formatCommand, stringPos); //eating up = ?
 				if ("=".equals(e)){
 					String y = ParseUtil.getToken(formatCommand, stringPos); //yes or no ?
 					data.interleaved = ("yes".equalsIgnoreCase(y));
-						
+
 				}
 				else {
 					stringPos.setValue(sp);
 					data.interleaved = true;
+				}
+			}
+			else if (tok.equalsIgnoreCase("NOLABELS")) { 
+				discreetAlert("Mesquite does not support the NOLABELS option.");
+				return null;
+			}
+			else if (tok.equalsIgnoreCase("LABELS")) { 
+				ParseUtil.getToken(formatCommand, stringPos); //eating up =
+				String t = ParseUtil.getToken(formatCommand, stringPos);
+				if (t!=null) {
+					if (t.equalsIgnoreCase("RIGHT")) {
+						discreetAlert("Mesquite does not support the LABELS=RIGHT option.");
+						return null;
+					}
 				}
 			}
 			else if (tok.equalsIgnoreCase("MISSING")) { 
@@ -252,7 +281,7 @@ public class ManageCategoricalChars extends CharMatrixManager {
 						((CategoricalData)data).setStateName(charNumber-1, stateNumber, stateName);
 					stateNumber++;
 				}
-				
+
 				cN = parser.getNextToken();
 			}
 			return true;
@@ -297,7 +326,7 @@ public class ManageCategoricalChars extends CharMatrixManager {
 					}
 					ssl += ", " + StringUtil.lineEnding();
 				}
-				
+
 			}
 			if (found)
 				sS += ssl + "\t; " + StringUtil.lineEnding();
@@ -305,7 +334,7 @@ public class ManageCategoricalChars extends CharMatrixManager {
 		}
 		if (file.useSimplifiedNexus) //1. 12 so that MrBayes won't choke on exported file
 			return "";
-		
+
 		String csl = "\tCHARSTATELABELS " + StringUtil.lineEnding();
 		boolean found = false;
 		String end = StringUtil.lineEnding() + "\t\t"; //StringUtil.lineEnding()
@@ -330,7 +359,7 @@ public class ManageCategoricalChars extends CharMatrixManager {
 						String sn = dData.getStateName(i, s);
 						if (sn!=null) {
 							foundInCharacter = true;
-						
+
 							cslC += spacers + " " + StringUtil.tokenize(sn);
 							spacers = "";
 						}
@@ -352,7 +381,7 @@ public class ManageCategoricalChars extends CharMatrixManager {
 	/*.................................................................................................................*/
 	public void writeCharactersBlock(CharacterData data, CharactersBlock cB, MesquiteFile file, ProgressIndicator progIndicator){
 		String endLine =";" + StringUtil.lineEnding();
-		StringBuffer line = new StringBuffer(2*data.getNumChars());
+		MesquiteStringBuffer line = new MesquiteStringBuffer(2L*data.getNumChars());
 		if (file == null)
 			file = data.getFile();
 		if (file == null)
@@ -380,7 +409,7 @@ public class ManageCategoricalChars extends CharMatrixManager {
 		if (file.useDataBlocks) {
 			int numTaxaToWrite = data.getNumTaxa();
 			if (!file.writeTaxaWithAllMissing)
-				numTaxaToWrite = data.numTaxaWithSomeApplicable(false, file.writeOnlySelectedTaxa, file.writeExcludedCharacters, file.fractionApplicable);
+				numTaxaToWrite = data.numTaxaWithSomeApplicable(false, file.writeOnlySelectedTaxa, file.writeExcludedCharacters, 1.0);
 			else if (file.writeOnlySelectedTaxa)
 				numTaxaToWrite = data.numSelectedTaxa();
 			file.write(" NTAX=" + numTaxaToWrite);
@@ -451,7 +480,7 @@ public class ManageCategoricalChars extends CharMatrixManager {
 							line.append('?');
 						else {
 							data.statesIntoNEXUSStringBuffer(ic, it, line);
-								
+
 						}
 						tot++;
 						totInTax++;
@@ -480,7 +509,7 @@ public class ManageCategoricalChars extends CharMatrixManager {
 		file.write("END;" + StringUtil.lineEnding());
 		if (progIndicator!=null) progIndicator.setText("Finished writing matrix");
 
-	//	file.write( blocks.toString());
+		//	file.write( blocks.toString());
 	}
 
 	/*.................................................................................................................*/
@@ -488,7 +517,7 @@ public class ManageCategoricalChars extends CharMatrixManager {
 		return new CategNexusCommandTest();
 	}
 	/*...................................................................................................................*/
-	public boolean readNexusCommand(MesquiteFile file, NexusBlock nBlock, String blockName, String command, MesquiteString comment){ 
+	public boolean readNexusCommand(MesquiteFile file, NexusBlock nBlock, String blockName, String command, MesquiteString comment, String fileReadingArguments){ 
 		if (blockName.equalsIgnoreCase("NOTES")) {
 			boolean fuse = parser.hasFileReadingArgument(file.fileReadingArguments, "fuseTaxaCharBlocks");
 			if (fuse)
@@ -498,7 +527,7 @@ public class ManageCategoricalChars extends CharMatrixManager {
 			if  (commandName.equalsIgnoreCase("TEXT")){
 				int integer = MesquiteInteger.unassigned;
 				String name = null;
-				stringPos.setValue(parser.getPosition());
+				stringPos.setValue((int)parser.getPosition());  // could overflow
 				String[][] subcommands  = ParseUtil.getSubcommands(command, stringPos);
 				if (subcommands == null || subcommands.length == 0 || subcommands[0] == null || subcommands[0].length == 0)
 					return false;
@@ -507,7 +536,7 @@ public class ManageCategoricalChars extends CharMatrixManager {
 				String text = null;
 				Taxa taxa = nBlock.getDefaultTaxa();
 				CharacterData data = nBlock.getDefaultCharacters();
-				
+
 				for (int i=0; i<subcommands[0].length; i++){
 					String subC = subcommands[0][i];
 					if ("TAXA".equalsIgnoreCase(subC)) {
@@ -525,7 +554,7 @@ public class ManageCategoricalChars extends CharMatrixManager {
 					}
 					else if ("CHARACTERS".equalsIgnoreCase(subC)) {
 						String token = subcommands[1][i];
-						 CharacterData t = getProject().findCharacterMatrix(file, taxa, token);
+						CharacterData t = getProject().findCharacterMatrix(file, taxa, token);
 						if (t!=null)
 							data = t;
 						else
@@ -559,12 +588,12 @@ public class ManageCategoricalChars extends CharMatrixManager {
 						return true;
 					}
 				}
-				
+
 			}
 			else if  (commandName.equalsIgnoreCase("ANS")){
 				int integer = MesquiteInteger.unassigned;
 				String name = null;
-				stringPos.setValue(parser.getPosition());
+				stringPos.setValue((int)parser.getPosition());
 				String[][] subcommands  = ParseUtil.getSubcommands(command, stringPos);
 				if (subcommands == null || subcommands.length == 0 || subcommands[0] == null || subcommands[0].length == 0)
 					return false;
@@ -573,7 +602,7 @@ public class ManageCategoricalChars extends CharMatrixManager {
 				String text = null;
 				Taxa taxa = nBlock.getDefaultTaxa();
 				CharacterData data = nBlock.getDefaultCharacters();
-				
+
 				for (int i=0; i<subcommands[0].length; i++){
 					String subC = subcommands[0][i];
 					if ("TAXA".equalsIgnoreCase(subC)) {
@@ -591,7 +620,7 @@ public class ManageCategoricalChars extends CharMatrixManager {
 					}
 					else if ("CHARACTERS".equalsIgnoreCase(subC)) {
 						String token = subcommands[1][i];
-						 CharacterData t = getProject().findCharacterMatrix(file, taxa, token);
+						CharacterData t = getProject().findCharacterMatrix(file, taxa, token);
 						if (t!=null)
 							data = t;
 						else
@@ -625,7 +654,7 @@ public class ManageCategoricalChars extends CharMatrixManager {
 						return true;
 					}
 				}
-				
+
 			}
 		}
 		return false;
@@ -665,17 +694,17 @@ public class ManageCategoricalChars extends CharMatrixManager {
 	}
 
 	/*.................................................................................................................*/
-    	 public String getName() {
+	public String getName() {
 		return "Manage categorical character matrices";
-   	 }
-   	 
+	}
+
 	/*.................................................................................................................*/
- 	/** returns an explanation of what the module does.*/
- 	public String getExplanation() {
- 		return "Manages categorical data matrices (including read/write in NEXUS file)." ;
-   	 }
+	/** returns an explanation of what the module does.*/
+	public String getExplanation() {
+		return "Manages categorical data matrices (including read/write in NEXUS file)." ;
+	}
 }
-	
+
 /* ======================================================================== */
 /** An object of this kind can be returned by getNexusCommandTest that will be stored in the modulesinfo vector and used
 to search for modules that can read a particular command in a particular block.  (Much as the NexusBlockObject.)*/
@@ -687,7 +716,7 @@ class CategNexusCommandTest extends NexusCommandTest  {
 		if (b){
 			pos.setValue(0);
 			String firstToken = ParseUtil.getFirstToken(command,  pos);
-			
+
 			String[][] subcommands  = ParseUtil.getSubcommands(command, pos);
 			if (subcommands == null)
 				return false;

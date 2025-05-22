@@ -2,6 +2,23 @@ package mesquite.minimal.Simplicity;
 
 import mesquite.lib.*;
 import mesquite.lib.simplicity.InterfaceManager;
+import mesquite.lib.ui.ColorDistribution;
+import mesquite.lib.ui.ColorTheme;
+import mesquite.lib.ui.MQComponent;
+import mesquite.lib.ui.MQComponentHelper;
+import mesquite.lib.ui.MQJScrollPane;
+import mesquite.lib.ui.MQPanel;
+import mesquite.lib.ui.MQScrollPane;
+import mesquite.lib.ui.MQTextArea;
+import mesquite.lib.ui.MesqJEditorPane;
+import mesquite.lib.ui.MesquiteImage;
+import mesquite.lib.ui.MesquiteMenuItem;
+import mesquite.lib.ui.MesquitePopup;
+import mesquite.lib.ui.MesquiteSubmenu;
+import mesquite.lib.ui.MesquiteTool;
+import mesquite.lib.ui.MesquiteWindow;
+import mesquite.lib.ui.MessagePanel;
+import mesquite.lib.ui.MousePanel;
 
 import java.awt.*;
 import java.util.*;
@@ -43,7 +60,7 @@ public class SimplifyControlWindow extends MesquiteWindow implements SystemWindo
 		instructionsPanel.setBackground(Color.white);
 		instructionsPanel.setForeground(Color.black);
 		instructionsPanel.setText(instructions);
-		instructionsScrollPane = new  JScrollPane(); 
+		instructionsScrollPane = new  MQJScrollPane(); 
 		instructionsScrollPane.getViewport().add( instructionsPanel,  BorderLayout.CENTER ); 
 		instructionsScrollPane.setVisible(true);
 		instructionsScrollPane.setBounds(0, modePanelHeight, getWidth(), getHeight()-modePanelHeight);
@@ -142,7 +159,7 @@ public class SimplifyControlWindow extends MesquiteWindow implements SystemWindo
 	}
 	public Object doCommand(String commandName, String arguments, CommandChecker checker) {
 		if (checker.compare(this.getClass(), "Shows instructions", null, commandName, "showInstructions")) {
-			MesquiteModule.mesquiteTrunk.alertHTML(instructions, "Simplification Instructions", "Simplification Instructions", 600, 600);
+			MesquiteModule.mesquiteTrunk.alertHTML(MesquiteModule.mesquiteTrunk.containerOfModule().getParentFrame(), instructions, "Simplification Instructions", "Simplification Instructions", 600, 600);
 		}
 		else
 			return  super.doCommand(commandName, arguments, checker);
@@ -221,7 +238,7 @@ class MovePanel extends MousePanel {
 	}
 }
 /* ======================================================================== */
-class ClassesPane extends ScrollPane{
+class ClassesPane extends MQScrollPane{
 
 	public ClassesPane () {
 		super(ScrollPane.SCROLLBARS_AS_NEEDED);
@@ -313,7 +330,7 @@ class TrianglePanel extends MousePanel {
 	}
 }
 
-class OuterPackagesPanel extends Panel {
+class OuterPackagesPanel extends MQPanel {
 	PackagesPanel packagesPanel;
 	public OuterPackagesPanel(PackagesPanel pp){
 		packagesPanel = pp;
@@ -326,8 +343,8 @@ class OuterPackagesPanel extends Panel {
 class PackagesPanel extends MousePanel implements ItemListener {
 	Listable[] v;
 	int h = 30;
-	TextArea explanation = new TextArea("", 20, 20, TextArea.SCROLLBARS_NONE);
-	Font fontBig = new Font("SanSerif", Font.BOLD, 14);
+	TextArea explanation = new MQTextArea("", 20, 20, TextArea.SCROLLBARS_NONE);
+	Font fontBig = new Font("SansSerif", Font.BOLD, 14);
 	SimplifyControlWindow w;
 	public PackagesPanel(SimplifyControlWindow w){
 		super();
@@ -545,8 +562,8 @@ class PackagesPanel extends MousePanel implements ItemListener {
 }
 
 /*.................................................................................................................*/
-
-class PackageCheckbox extends JCheckBox implements Listable, MouseListener {
+//Includes workaround for Linux graphics StackOverflowError [Search for MQLINUX]
+class PackageCheckbox extends JCheckBox implements MQComponent, Listable, MouseListener {
 	String pkg = null;
 	String expl = null;
 	String name = null;
@@ -585,6 +602,92 @@ class PackageCheckbox extends JCheckBox implements Listable, MouseListener {
 	}
 	public void mouseReleased(MouseEvent e){
 	}
+	//###########################################################
+	/*################################################################
+	 *  The following overrides were built to avoid the frequent StackOverflowErrors on Linux Java post-1.8, 
+	 *  but were extended in part to other OSs. See also others satisfying MQComponent interface.
+	 */		
+	MQComponentHelper helper = new MQComponentHelper(this);
+	public MQComponentHelper getHelper(){
+		return helper;
+	}
+	public void superValidate(){
+		super.validate();
+	}
+	public void superSetBounds(int x, int y, int w, int h){
+		super.setBounds(x,y,w,h);
+	}
+	public void superSetFont (Font f){
+	super.setFont(f);
+	}
+	public void superSetSize (int w, int h){
+		super.setSize(w,h);
+	}
+	public void superSetLocation (int x, int y){
+		super.setLocation(x,y);
+	}
+	public Dimension superGetPreferredSize(){
+		return super.getPreferredSize();
+	}
+	public void superLayout(){
+		super.layout();
+	}
+	public void superInvalidate(){
+		super.invalidate();
+	}
+	/* - - - - - - */
+	public void invalidate (){
+		if (helper == null)
+			superInvalidate();
+		else
+			helper.invalidate();
+	}
+
+	public void setFont (Font f){
+		if (helper == null)
+			superSetFont(f);
+		else
+			helper.setFont(f);
+	}
+	public void setSize (int w, int h){
+		if (helper == null)
+			superSetSize(w,h);
+		else
+			helper.setSize(w, h);
+	}
+	public void setLocation (int x, int y){
+		if (helper == null)
+			superSetLocation(x, y);
+		else
+			helper.setLocation(x,y);
+	}
+	public Dimension getPreferredSize() {
+		if (helper == null)
+			return superGetPreferredSize();
+		else
+			return helper.getPreferredSize();
+	}
+	public void layout(){
+		if (helper == null)
+			superLayout();
+		else
+			helper.layout();
+	}
+	public void validate(){
+		if (helper == null)
+			superValidate();
+		else
+			helper.validate();
+	}
+	public void setBounds(int x, int y, int w, int h){
+		if (helper == null)
+			superSetBounds(x,y,w,h);
+		else
+			helper.setBounds(x,y,w,h);
+	}
+	/*###########################################################*/
+	//###########################################################
+
 }
 /*.................................................................................................................*/
 class SaveRenameDeleteButton extends LoadSaveDeleteButton {
@@ -727,7 +830,7 @@ class EditModeButton extends Checkbox implements ItemListener {
 }
 
 /*.................................................................................................................*/
-class ModePanel extends Panel implements ItemListener {
+class ModePanel extends MQPanel implements ItemListener {
 	CheckboxGroup cbg;
 	Checkbox powerCB, simplerCB;
 	SimplifyControlWindow w;
@@ -872,7 +975,7 @@ class ModePanel extends Panel implements ItemListener {
 		
 	}
 }
-class ClassHeadersPanel extends Panel  {
+class ClassHeadersPanel extends MQPanel  {
 	Font fontBig = new Font("SansSerif", Font.BOLD, 12);
 	Font fontSmall = new Font("SansSerif", Font.PLAIN, 10);
 	/*.................................................................................................................*/

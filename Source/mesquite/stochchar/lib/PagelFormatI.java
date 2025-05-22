@@ -19,6 +19,13 @@ import java.awt.*;
 import mesquite.lib.*;
 import mesquite.lib.characters.*;
 import mesquite.lib.duties.*;
+import mesquite.lib.taxa.Taxa;
+import mesquite.lib.taxa.Taxon;
+import mesquite.lib.tree.AdjustableTree;
+import mesquite.lib.tree.MesquiteTree;
+import mesquite.lib.tree.Tree;
+import mesquite.lib.tree.TreeVector;
+import mesquite.lib.ui.ProgressIndicator;
 import mesquite.categ.lib.*;
 
 /* ============  a file interpreter for Pagel's format files; extended to handle files for programs Discrete and Multistate ============*/
@@ -65,7 +72,7 @@ public abstract class PagelFormatI extends FileInterpreterI {
 			TaxaManager taxaTask = (TaxaManager)findElementManager(Taxa.class);
 			 CharactersManager charTask = (CharactersManager)findElementManager(CharacterData.class);
 			
-			Taxa taxa = taxaTask.makeNewTaxa(getProject().getTaxas().getUniqueName("Taxa from Pagel format file"), 0, false);
+			Taxa taxa = taxaTask.makeNewTaxaBlock(getProject().getTaxas().getUniqueName("Taxa from Pagel format file"), 0, false);
 			taxa.addToFile(file, getProject(), taxaTask);
 			CategoricalData data = (CategoricalData)charTask.newCharacterData(taxa, 0, CategoricalData.DATATYPENAME);
 			data.addToFile(file, getProject(), null);
@@ -75,7 +82,7 @@ public abstract class PagelFormatI extends FileInterpreterI {
 			TreeVector trees = new TreeVector(taxa);
 			trees.setName("Trees imported from Pagel file");
 			int numChars = 1;
-			StringBuffer sb = new StringBuffer(1000);
+			MesquiteStringBuffer sb = new MesquiteStringBuffer(1000);
 			file.readLine(sb);
 			String line = sb.toString();
 			Vector nodes = new Vector();
@@ -137,7 +144,7 @@ public abstract class PagelFormatI extends FileInterpreterI {
 				String commands = "makeTreeWindow " + getProject().getTaxaReferenceExternal(taxa) + "  #BasicTreeWindowMaker; tell It; ";
 				commands += "setTreeSource  #StoredTrees; tell It; setTaxa " + getProject().getTaxaReferenceExternal(taxa) + " ;  setTreeBlock 1; endTell; ";
 				commands += "getTreeDrawCoordinator #BasicTreeDrawCoordinator; tell It; suppress; setTreeDrawer #BallsNSticks; ";
-				commands += "tell It;  getEmployee #NodeLocsStandard; tell It; branchLengthsToggle on; ";
+				commands += "tell It;  getEmployee #NodeLocsStandard; tell It; branchLengthsDisplay 1; ";
 				commands += " endTell; endTell; desuppress; endTell; getTreeWindow; tell It; setLocation 200 60; ";
 				commands += "newAssistant  #TraceCharacterHistory; tell It; suspend; setHistorySource  #RecAncestralStates;";
 				commands += "tell It; getCharacterSource  #CharSrcCoordObed; tell It; setCharacterSource #StoredCharacters; endTell;";
@@ -225,7 +232,7 @@ public abstract class PagelFormatI extends FileInterpreterI {
 		}
 	}
 	/** Outputs internal nodes.*/
-	protected void outputInternals(Tree tree, int node, int[] numbers, StringBuffer buffer, StringBuffer equivalenceBuffer) {
+	protected void outputInternals(Tree tree, int node, int[] numbers, MesquiteStringBuffer buffer, StringBuffer equivalenceBuffer) {
 		for (int d = tree.firstDaughterOfNode(node); tree.nodeExists(d); d = tree.nextSisterOfNode(d))
 			 outputInternals(tree, d, numbers, buffer, equivalenceBuffer);
 		if (tree.nodeIsInternal(node)) {

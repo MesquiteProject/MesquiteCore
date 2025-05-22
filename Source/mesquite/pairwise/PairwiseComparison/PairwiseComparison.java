@@ -16,10 +16,25 @@ package mesquite.pairwise.PairwiseComparison;
 
 import java.util.*;
 import java.awt.*;
+import java.awt.event.KeyEvent;
 
 import mesquite.lib.*;
 import mesquite.lib.characters.*;
 import mesquite.lib.duties.*;
+import mesquite.lib.taxa.Taxa;
+import mesquite.lib.tree.LabelsAtNodes;
+import mesquite.lib.tree.Tree;
+import mesquite.lib.tree.TreeDisplay;
+import mesquite.lib.tree.TreeDisplayDrawnExtra;
+import mesquite.lib.tree.TreeDisplayExtra;
+import mesquite.lib.tree.TreeDisplayLegend;
+import mesquite.lib.ui.ColorDistribution;
+import mesquite.lib.ui.MQTextArea;
+import mesquite.lib.ui.MesquiteLabel;
+import mesquite.lib.ui.MesquiteMenuItemSpec;
+import mesquite.lib.ui.MesquiteSubmenuSpec;
+import mesquite.lib.ui.MesquiteWindow;
+import mesquite.lib.ui.MiniScroll;
 import mesquite.pairwise.lib.*;
 
 /* ======================================================================== */
@@ -89,7 +104,8 @@ public class PairwiseComparison extends TreeDisplayAssistantMA {
 		addMenuItem( "Next Character (Dep.)", makeCommand("nextCharacterB",  this));
 		addMenuItem( "Previous Character (Dep.)", makeCommand("previousCharacterB",  this));
 		addMenuSeparator();
-		addMenuItem( "Next Pairing", makeCommand("nextPairing",  this));
+		MesquiteMenuItemSpec mNP = addMenuItem( "Next Pairing", makeCommand("nextPairing",  this));
+		mNP.setShortcut(KeyEvent.VK_RIGHT); //right
 		addCheckMenuItem(null, "Show states", MesquiteModule.makeCommand("showStates",  this), showStates);
 		addMenuItem( "Close Pairwise Comparison", makeCommand("closeShowPairs",  this));
 		addMenuSeparator();
@@ -518,6 +534,8 @@ class PairwiseDisplayer extends TreeDisplayDrawnExtra {
 	}
 	/*.................................................................................................................*/
 	private void drawTerminalStuff(int N, Tree tree, Graphics g) {
+		if (tree.withinCollapsedClade(N))
+			return;
 		if (tree == null || g == null || treeDisplay == null || treeDisplay.getTreeDrawing() == null || observedStatesA == null || observedStatesB == null)
 			return;
 		for (int d = tree.firstDaughterOfNode(N); tree.nodeExists(d); d = tree.nextSisterOfNode(d))
@@ -663,17 +681,17 @@ class PairwiseDisplayer extends TreeDisplayDrawnExtra {
 			else if (category == NEGATIVE)
 				g.setColor(Color.red);
 			else if (category == NEUTRAL)
-				g.setColor(ColorDistribution.lightBlue);
+				g.setColor(Color.orange);
 			else
-				g.setColor(Color.blue);
+				g.setColor(ColorDistribution.lightOrange);
 			//g.setColor(new Color(Color.HSBtoRGB((float)(i * 1.0 /numTaxa),(float)1.0,(float)1.0)));
 			int thisNode = t1;
-			while (tree.nodeExists(thisNode) && thisNode!= path.getBase() && thisNode!=drawnRoot) {
+			while (tree.nodeExists(thisNode) && thisNode!= path.getBase() && thisNode!=drawnRoot && !tree.withinCollapsedClade(thisNode)) {
 				treeDisplay.getTreeDrawing().fillBranch(tree, thisNode, g);
 				thisNode=tree.motherOfNode(thisNode);
 			}
 			thisNode = t2;
-			while (tree.nodeExists(thisNode) && thisNode!= path.getBase() && thisNode!=drawnRoot) {
+			while (tree.nodeExists(thisNode) && thisNode!= path.getBase() && thisNode!=drawnRoot && !tree.withinCollapsedClade(thisNode)) {
 				treeDisplay.getTreeDrawing().fillBranch(tree, thisNode, g);
 				thisNode=tree.motherOfNode(thisNode);
 			}
@@ -873,7 +891,7 @@ class ShowPairsLegend extends TreeDisplayLegend {
 		//characterAScroll.setBackground(Color.cyan);
 		characterAScroll.setLocation(2,scrollStart);
 		characterAScroll.setColor(Color.blue);
-		AMessageBox = new TextArea("", 1, 1, TextArea.SCROLLBARS_NONE);
+		AMessageBox = new MQTextArea("", 1, 1, TextArea.SCROLLBARS_NONE);
 		AMessageBox.setVisible(false);
 		AMessageBox.setBackground(Color.white);
 		AMessageBox.setEditable(false);
@@ -885,7 +903,7 @@ class ShowPairsLegend extends TreeDisplayLegend {
 		//characterBScroll.setBackground(Color.cyan);
 		characterBScroll.setLocation(2,AMessageBox.getBounds().y+AMessageBox.getBounds().height+4);
 		characterBScroll.setColor(Color.blue);
-		BMessageBox = new TextArea("", 1, 1, TextArea.SCROLLBARS_NONE);
+		BMessageBox = new MQTextArea("", 1, 1, TextArea.SCROLLBARS_NONE);
 		BMessageBox.setEditable(false);
 		BMessageBox.setVisible(false);
 		BMessageBox.setBackground(Color.white);
@@ -897,7 +915,7 @@ class ShowPairsLegend extends TreeDisplayLegend {
 		//pairingScroll.setBackground(Color.cyan);
 		pairingScroll.setLocation(2,BMessageBox.getBounds().y+BMessageBox.getBounds().height+4); 
 		pairingScroll.setColor(Color.blue);
-		pairingMessageBox = new TextArea("", 1, 1, TextArea.SCROLLBARS_NONE);
+		pairingMessageBox = new MQTextArea("", 1, 1, TextArea.SCROLLBARS_NONE);
 		pairingMessageBox.setVisible(false);
 		pairingMessageBox.setEditable(false);
 		pairingMessageBox.setBackground(Color.white);

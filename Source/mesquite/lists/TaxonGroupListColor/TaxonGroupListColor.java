@@ -10,7 +10,7 @@ Mesquite's web site is http://mesquiteproject.org
 
 This source code and its compiled class files are free and modifiable under the terms of 
 GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
-*/
+ */
 package mesquite.lists.TaxonGroupListColor;
 
 import java.awt.Color;
@@ -24,6 +24,10 @@ import mesquite.lib.*;
 import mesquite.lib.characters.CharInclusionSet;
 import mesquite.lib.characters.CharacterData;
 import mesquite.lib.table.MesquiteTable;
+import mesquite.lib.taxa.TaxaGroup;
+import mesquite.lib.taxa.TaxaGroupVector;
+import mesquite.lib.ui.ColorDistribution;
+import mesquite.lib.ui.MesquiteSymbol;
 import mesquite.lists.lib.*;
 
 /* ======================================================================== */
@@ -160,6 +164,10 @@ public class TaxonGroupListColor extends TaxonGroupListAssistant  {
 	public Object doCommand(String commandName, String arguments, CommandChecker checker) {
 		if (checker.compare(this.getClass(), "Sets the color", null, commandName, "setColor")) {
 			String newColorText = parser.getFirstToken(arguments);
+			if (table != null && !table.anyCellInColumnSelectedAnyWay(getListModule().getMyColumn(this))){
+				discreetAlert("One or more rows must be selected to set their color");
+				return null;
+			}
 			if (StringUtil.blank(newColorText)){   //TODO: what if not blank???
 				specifyColor();
 			}

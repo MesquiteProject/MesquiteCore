@@ -16,6 +16,8 @@ package mesquite.meristic.lib;
 import java.awt.*;
 import java.util.*;
 import mesquite.lib.duties.*;
+import mesquite.lib.taxa.Taxa;
+import mesquite.lib.ui.ListDialog;
 import mesquite.lib.*;
 import mesquite.lib.characters.*;
 import mesquite.cont.lib.ItemContainer;
@@ -62,8 +64,8 @@ public abstract class MeristicStates  extends CharacterStates implements ItemCon
    			return null;
    		else {
    			CharacterModel cm = file.getCharacterModel(dR.getDefault());
-   			if (cm==null) 
-   				MesquiteMessage.println("Default model not found / " + dR.getDefault());
+   			//if (cm==null) 
+   			//	MesquiteMessage.println("Default model not found / " + dR.getDefault());
    			return cm;
    		}
    	}

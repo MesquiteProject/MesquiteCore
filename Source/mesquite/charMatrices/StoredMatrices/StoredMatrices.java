@@ -20,6 +20,9 @@ import java.awt.*;
 import mesquite.lib.*;
 import mesquite.lib.characters.*;
 import mesquite.lib.duties.*;
+import mesquite.lib.taxa.Taxa;
+import mesquite.lib.ui.ListDialog;
+import mesquite.lib.ui.MesquiteSubmenuSpec;
 
 /** Supplies character matrices stored in the project.*/
 public class StoredMatrices extends CharMatrixSource implements MesquiteListener {
@@ -39,6 +42,7 @@ public class StoredMatrices extends CharMatrixSource implements MesquiteListener
 		if (!StringUtil.blank(sPurpose))
 			sPurpose = " (" + sPurpose + ")";
 		else sPurpose = "";
+
 		if (condition!=null) {
 			dataName = new MesquiteString();
 			if (condition instanceof Class)   //NOTE: class should be subclass of CharacterState, not CharacterData!!!
@@ -70,20 +74,27 @@ public class StoredMatrices extends CharMatrixSource implements MesquiteListener
 	/*.................................................................................................................*/
 	private void setDataClass(Class dataClass){
 		boolean filter = false;
-		CharacterState cs=null;
-		try {
-			cs = (CharacterState)dataClass.newInstance();
-
+		Class matrixClassSought = null;
+		if (CharacterData.class.isAssignableFrom(dataClass)) {
+			matrixClassSought = dataClass;
 			filter = true;
 		}
-		catch (IllegalAccessException e){
-			alert("iae 17m"); 
-		}
-		catch (InstantiationException e){
-			alert("ie 17m"); 
+		else {
+			CharacterState cs=null;
+			try {
+				cs = (CharacterState)dataClass.newInstance();
+				matrixClassSought = cs.getCharacterDataClass();
+				filter = true;
+			}
+			catch (IllegalAccessException e){
+				alert("iae 17m"); 
+			}
+			catch (InstantiationException e){
+				alert("ie 17m"); 
+			}
 		}
 		if (filter && mss != null)
-			mss.setListableFilter(cs.getCharacterDataClass());
+			mss.setListableFilter(matrixClassSought);
 	}
 	/*.................................................................................................................*/
 	public boolean isPrerelease(){
@@ -159,23 +170,23 @@ public class StoredMatrices extends CharMatrixSource implements MesquiteListener
 				data = null;
 				return;
 			}
-			
+
 			if (taxa !=null && taxa.isDoomed()) {
 				taxa = null;
 				if (!okToInteractWithUser(CAN_PROCEED_ANYWAY, "Taxa block that is in use has been deleted"))  
 					return;
-				
+
 				logln("Taxa null or being disposed; StoredMatrices will quit.");
 				iQuit();
 				return;
-				
+
 			}
 			data = null;
 			dataName.setReferentID(null);
 			dataName.setValue("No matrix is currently in use");
 			if (!okToInteractWithUser(CAN_PROCEED_ANYWAY, "Character matrix that is in use has been deleted"))  
 				return;
-			
+
 			MesquiteModule.showLogWindow(true);
 
 			MesquiteMessage.warnUser("A character data matrix in use (" + whatIsMyPurpose() + ") has been deleted.  Another matrix will be sought.");  
@@ -200,7 +211,7 @@ public class StoredMatrices extends CharMatrixSource implements MesquiteListener
 			data.addListener(this);
 			dataName.setReferentID(Long.toString(data.getID()));
 			dataName.setValue(data.getName());
-			
+
 			parametersChanged();
 		}
 	}

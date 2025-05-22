@@ -20,10 +20,18 @@ import java.awt.*;
 import mesquite.lib.*;
 import mesquite.lib.characters.CharactersBlock;
 import mesquite.lib.duties.*;
+import mesquite.lib.taxa.Taxa;
+import mesquite.lib.taxa.TaxaBlock;
+import mesquite.lib.ui.AlertDialog;
+import mesquite.lib.ui.ExtensibleDialog;
+import mesquite.lib.ui.MesquiteFrame;
+import mesquite.lib.ui.MesquiteWindow;
+import mesquite.lib.ui.ProgressIndicator;
 
 
 /** A file interpreter for a NEXUS file format.  Sends blocks to various managing modules for reading.  */
 public class InterpretNEXUS extends NexusFileInterpreter implements NEXUSInterpreter {
+
 	public String getName() {
 		return "NEXUS file";
 	}
@@ -145,7 +153,7 @@ public class InterpretNEXUS extends NexusFileInterpreter implements NEXUSInterpr
 						neededHeight = i;  //remember height of nR if it's the heighest one yet.
 				}
 			}
-			
+
 			if (neededHeight < index){ //nb needs to jump to height; move it
 				blocks.removeElement(nb, false);
 				blocks.insertElementAt(nb, neededHeight, false);
@@ -279,7 +287,7 @@ public class InterpretNEXUS extends NexusFileInterpreter implements NEXUSInterpr
 	/*.................................................................................................................*/
 	MesquiteInteger pos = new MesquiteInteger();
 	/*.................................................................................................................*/
-	public void readFile(MesquiteProject mf, MesquiteFile mNF, String arguments) {
+	public void readFile(MesquiteProject mProj, MesquiteFile mNF, String arguments) {
 		incrementMenuResetSuppression();
 		int length = (int)mNF.existingLength();
 		int readToNow = 0;
@@ -289,10 +297,17 @@ public class InterpretNEXUS extends NexusFileInterpreter implements NEXUSInterpr
 		if (mt instanceof MesquiteThread) 
 			progIndicator = ((MesquiteThread)mt).getProgressIndicator();
 		if (progIndicator ==null) {
-			progIndicator = new ProgressIndicator(mf,"Reading File "+ mNF.getName(), mNF.existingLength());
+			progIndicator = new ProgressIndicator(mProj,"Reading File "+ mNF.getName(), mNF.existingLength());
 			piMine = true;
 			if (mt instanceof MesquiteThread)
 				((MesquiteThread)mt).setProgressIndicator(progIndicator);
+		}
+		if (!parser.hasAnyFileReadingArguments(arguments) && !mNF.blockForRecentRereading) //needs to have not file reading arguments to go in list for reopening
+			mNF.okForRecentRereading = true;
+		String[] justTheseBlocks = null;
+		if (parser.hasFileReadingArgument(arguments, "justTheseBlocks")){
+			String whichBlocks = parser.getFileReadingArgumentSubtype(arguments, "justTheseBlocks");
+			justTheseBlocks = StringUtil.delimitedTokensToStrings(whichBlocks, '.', false);
 		}
 		progIndicator.setButtonMode(ProgressIndicator.FLAG_AND_HIDE);
 		progIndicator.start();
@@ -308,6 +323,8 @@ public class InterpretNEXUS extends NexusFileInterpreter implements NEXUSInterpr
 						alert("Not a valid NEXUS file (first token is \"" + token + "\"");
 					}
 					else {
+						MesquiteTimer fileReadTimer = new MesquiteTimer();
+						fileReadTimer.start();
 						FileBlock block;
 						boolean abort = false;
 						boolean mesquiteBlockFound = false;
@@ -319,30 +336,36 @@ public class InterpretNEXUS extends NexusFileInterpreter implements NEXUSInterpr
 						int buttonMode = progIndicator.getButtonMode();
 						String buttonName = progIndicator.getStopButtonName();
 						while (!abort && !StringUtil.blank(block = mNF.getNextBlock( blockName, fileComments, blockComments))) {
-							CommandRecord.tick("Reading block " + blockName);
-							if ("Mesquite".equalsIgnoreCase(blockName.getValue())) {
-								mesquiteBlockFound = true;
-								mf.virginProject = false;
-								progIndicator.setButtonMode(ProgressIndicator.OFFER_CONTINUE_FORCEQUIT);
-								progIndicator.setStopButtonName("Emergency Stop");
+							if (justTheseBlocks == null || StringArray.indexOfIgnoreCase(justTheseBlocks, blockName.getValue())>=0){
+								CommandRecord.tick("Reading block " + blockName);
+								
+								if ("Mesquite".equalsIgnoreCase(blockName.getValue())) {
+									mesquiteBlockFound = true;
+									mProj.virginProject = false;
+									progIndicator.setButtonMode(ProgressIndicator.OFFER_CONTINUE_FORCEQUIT);
+									progIndicator.setStopButtonName("Emergency Stop");
+								}
+								else
+									progIndicator.setButtonMode(ProgressIndicator.FLAG_AND_HIDE);
+							/*	if (mNF.mrBayesReadingMode && "Trees".equalsIgnoreCase(blockName.getValue())){
+									mNF.setTranslatedCharacter('[', '<');
+									mNF.setTranslatedCharacter(']', '>');
+								}*/
+								progIndicator.setText("Processing block: " + blockName.getValue(), false, true);
+								NexusBlock nb = sendBlockToReader(mProj, mNF, block, blockName.getValue(), length, readToNow, blockComments, arguments);
+								/*if (false && mNF.mrBayesReadingMode && "Trees".equalsIgnoreCase(blockName.getValue())){
+									mNF.clearTranslatedCharacter('[');
+									mNF.clearTranslatedCharacter(']');
+								}*/
+								progIndicator.setText("Reading next block", false);
+								progIndicator.toFront();
+								readToNow += block.getNumCommands();
+								if (mNF.getFileAborted())
+									abort = true;
 							}
-							else
-								progIndicator.setButtonMode(ProgressIndicator.FLAG_AND_HIDE);
-							if (mNF.mrBayesReadingMode && "Trees".equalsIgnoreCase(blockName.getValue())){
-								mNF.setTranslatedCharacter('[', '<');
-								mNF.setTranslatedCharacter(']', '>');
-							}
-							progIndicator.setText("Processing block: " + blockName.getValue(), false, true);
-							NexusBlock nb = sendBlockToReader(mf, mNF, block, blockName.getValue(), length, readToNow, blockComments, arguments);
-							if (false && mNF.mrBayesReadingMode && "Trees".equalsIgnoreCase(blockName.getValue())){
-								mNF.clearTranslatedCharacter('[');
-								mNF.clearTranslatedCharacter(']');
-							}
-							progIndicator.setText("Reading next block", false);
-							progIndicator.toFront();
-							readToNow += block.getNumCommands();
-							if (mNF.getFileAborted())
-								abort = true;
+							else //a block that justTheseBlocks is requesting be skipped
+								skipNexusBlock(mNF, blockName.getValue(), block, null, arguments);
+
 						}
 						progIndicator.setScriptingFile(sF);
 						progIndicator.setButtonMode(buttonMode);
@@ -356,6 +379,7 @@ public class InterpretNEXUS extends NexusFileInterpreter implements NEXUSInterpr
 							mNF.close();
 							resetAllMenuBars();
 							decrementMenuResetSuppression();
+							fileReadTimer.end();
 							return;
 						}
 						if (fileComments.length()>0) {
@@ -364,36 +388,29 @@ public class InterpretNEXUS extends NexusFileInterpreter implements NEXUSInterpr
 							else
 								mNF.setAnnotation(fileComments.toString(), false);
 						}
-						if (!mesquiteBlockFound && (mNF == mf.getHomeFile())) {
-							MesquiteModule mb = getProject().getCoordinatorModule();
-							if (mb != null){
-								MesquiteWindow mw = mb.getModuleWindow();
-								if (mw != null)
-									mw.setWindowSize(700, 500);
-								if (getProject().getNumberCharMatrices()>0){
-									MesquiteModule mbb = findNearestColleagueWithName("Data Window Coordinator");
-									if (mbb != null)
-										mbb.doCommand("showDataWindow", "0", CommandChecker.defaultChecker);
-								}
-								else if (getProject().getNumberTaxas()>0){
-									MesquiteModule mbb = findNearestColleagueWithName("Manage TAXA blocks");
-									if (mbb != null)
-										mbb.doCommand("showTaxa", "0", CommandChecker.defaultChecker);
-								}
-							}
 
-						}
+						if (mesquiteBlockFound && (mNF == mProj.getHomeFile()))
+							mProj.openedWithoutMesquiteBlock = false;
+						
 						progIndicator.goAway();
-						if (!MesquiteFile.suppressReadWriteLogging) 
-							logln("File reading complete (file " + mNF.getFileName() + ")");
+						fileReadTimer.end();
+
+						if (!MesquiteFile.suppressReadWriteLogging) {
+							String timeS = "";
+							long acTime = fileReadTimer.getAccumulatedTime();
+							if (acTime>10000)
+								timeS = " in " + MesquiteTimer.getHoursMinutesSecondsFromMilliseconds(acTime);
+							logln("File reading complete (file " + mNF.getFileName() + ")" + timeS);
+						}
 					}
+
 				}
 			}
 			catch (MesquiteException e){
 			}
 			mNF.closeReading();
 			//mNF.reportTimes();
-			if (mNF.foreignElements.size()>0){
+			if (mNF.foreignElements.size()>0 && !parser.hasFileReadingArgument(arguments, "noWarnUnrecognized")){
 
 
 				logln("");
@@ -405,10 +422,10 @@ public class InterpretNEXUS extends NexusFileInterpreter implements NEXUSInterpr
 			}
 			mNF.foreignElements = null;
 		}
-		if (mf.windowToActivate !=null) {
-			MesquiteWindow w = mf.windowToActivate;
+		if (mProj.windowToActivate !=null) {
+			MesquiteWindow w = mProj.windowToActivate;
 			if (w.isPoppedOut() && !w.getPopAsTile()){
-				MesquiteFrame f = mf.getCoordinatorModule().getModuleWindow().getParentFrame();
+				MesquiteFrame f = mProj.getCoordinatorModule().getModuleWindow().getParentFrame();
 				MesquiteWindow pw = f.frontMostInLocation(MesquiteFrame.MAIN);
 				if (pw != null)
 					w = pw;
@@ -419,7 +436,7 @@ public class InterpretNEXUS extends NexusFileInterpreter implements NEXUSInterpr
 				f.setAsFrontWindow(w);
 				f.showFrontWindow();
 			}
-			mf.windowToActivate = null;
+			mProj.windowToActivate = null;
 		}
 		String s = null;
 		if ((s = mNF.getOpenAsUntitled())!=null ){
@@ -439,8 +456,9 @@ public class InterpretNEXUS extends NexusFileInterpreter implements NEXUSInterpr
 			MesquiteFrame f = getProject().getFrame();
 			f.checkScriptedWindowSizes();
 		}
+		MesquiteTrunk.recentFileRecord(mNF, true);  //updating that it's ok to reread in REcent
 		decrementMenuResetSuppression();
-		
+
 	}
 	/*.................................................................................................................*/
 	private int  getNumberCharMatricesWithAssignedID(long ref) {   //MOVE TO InterpretNEXUS
@@ -630,6 +648,9 @@ public class InterpretNEXUS extends NexusFileInterpreter implements NEXUSInterpr
 			addendum = fsText.getText();
 		exportDialog.dispose();
 	}	
+	public void queryLocalOptions () {
+		getExportOptions(false, false);
+	}
 	/*.................................................................................................................*/
 	/** Called to see if file ready to be written.*/
 	void checkIntegrityForWriting(MesquiteModule module, MesquiteFile file) {
@@ -658,6 +679,7 @@ public class InterpretNEXUS extends NexusFileInterpreter implements NEXUSInterpr
 			}
 			checkIntegrityForWriting(getFileCoordinator(), mNF);
 			mNF.setIsNexus(true);
+			
 			ListableVector blocks = getProject().getNexusBlocks();
 			MesquiteTimer time = new MesquiteTimer();
 			time.start();
@@ -712,7 +734,7 @@ public class InterpretNEXUS extends NexusFileInterpreter implements NEXUSInterpr
 	/*public boolean usesNEXUSflavor(){
 		return true;
 	}
-*/
+	 */
 
 }
 

@@ -34,15 +34,15 @@ public class ShuffleStates extends DataAlterer implements AltererRandomizations{
 	}
 		
    	/** Called to alter data in those cells selected in table*/
-   	public boolean alterData(CharacterData data, MesquiteTable table,  UndoReference undoReference){
+   	public int alterData(CharacterData data, MesquiteTable table,  UndoReference undoReference){
    			boolean did=false;
    			if (data == null)
-   				return false;
+   				return -10;
    			UndoInstructions undoInstructions = data.getUndoInstructionsAllMatrixCells(new int[] {UndoInstructions.NO_CHAR_TAXA_CHANGES});
    	 		if (table==null){
 					for (int i=0; i<data.getNumChars(); i++)
 						shuffleCells(data, i, 0, data.getNumTaxa()-1);
-					return true;
+					return 0;
    	 		}
    			if (table.anythingSelected()) {
 				for (int i=0; i<table.getNumColumns(); i++) {
@@ -62,7 +62,7 @@ public class ShuffleStates extends DataAlterer implements AltererRandomizations{
 						for (int j=minTax; j<=maxTax; j++)
 							if (!table.isCellSelectedAnyWay(i,j)) {
 								alert("Sorry, can't shuffle the states when selection of taxa is discontinuous within any character");
-								return false;
+								return -2;
 							}
 				}
 				for (int i=0; i<table.getNumColumns(); i++) {
@@ -97,7 +97,9 @@ public class ShuffleStates extends DataAlterer implements AltererRandomizations{
    					undoReference.setResponsibleModule(this);
    				}
    			}
-			return did;
+			if (did)
+				return ResultCodes.SUCCEEDED;
+				return ResultCodes.MEH;
 			
    	}
 

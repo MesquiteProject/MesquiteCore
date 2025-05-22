@@ -1,0 +1,33 @@
+To Run Mesquite on Linux
+
+SYSTEM REQUIREMENTS
+To run Mesquite, you need Java installed.  The version of Mesquite you have here requires on Java 9 or higher, though we strongly recommend JDK 21 or higher from oracle.com. 
+
+BUG WITH LINUX JAVA
+Linux users might notice some strange behaviour because of a bug with Java, though we have tried to mitigate its effects. We have found in Ubuntu an occasional infinite recursion (StackOverflowError) in all Java versions (up to JDK 23) compatible with Mesquite 4. We believe it's due to a problem in Java itself. We have attempted to isolate its effects, but you may notice occasional long pauses. Also, the file Mesquite_Running_Errors.txt may be produced and reach a large size during a run if many errors occur. 
+
+If Mesquite actually crashes as you are running it, perhaps 
+
+RUNNING MESQUITE
+Run Mesquite by double clicking mesquite.sh, right-click selecting it and choosing Run As A Program,  or running mesquite.sh from the command line like this:
+	./mesquite.sh
+
+You may want to edit this to request more memory using  options like "-Xmx8000M -Xss8m" (see below).
+
+Alternatively, run it from the command line by cd'ing into Mesquite_Folder and then giving a command like this:
+
+   java -Xmx1000M -Xss4m -Djava.library.path=lib -Djri.ignore.ule="yes" -jar Mesquite.jar
+
+The part -Xmx1000M indicates how much heap memory to give to Mesquite in general. With more heap memory Mesquite can handle more trees, bigger matrices, bigger charts, and so on.
+
+The part -Xss4m indicates how much stack memory to give to each thread.  With more stack memory, Mesquite can handle bigger trees, e.g. more than 5000 taxa.  To be able to handle 10000 taxa, you may need to increase this to 4m or more.
+
+Here is an example configuration:
+
+	java -Xmx4000M -Xss16m -d64 -Djava.library.path=lib -Djri.ignore.ule="yes" -jar Mesquite.jar
+
+This gives much memory to Mesquite, but 4000 MB (= 4 GB) memory exceeds the ability of 32 bit Java.  For that reason the command -d64 was added, to indicate you want to use 64 bit java.  
+
+If you run Mesquite directly from the command line, you can replace “java” by the full path to the Java executable.  
+
+

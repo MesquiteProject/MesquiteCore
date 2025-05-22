@@ -19,50 +19,70 @@ import java.util.Vector;
 /*==========================  Mesquite Basic Class Library    ==========================*/
 /*===  the basic classes used by the trunk of Mesquite and available to the modules
 /* ======================================================================== */
-/** Set of sets, e.g. all of the model sets or weight sets associated with a data matrix.  Thus, all of the model sets are housed in
-one SpecsSetVector.  All of the weight sets are housed in another, and so on.  Each of these SpecsSetVectors is housed
-in the Vector specsVectors of CharacterData.  The different vectors are distinguished by a name associated with them.*/
-public class SpecsSetVector extends ListableVector  {
+/**
+ * Set of sets, e.g. all of the model sets or weight sets associated with a data matrix. Thus, all of the model sets are housed in one SpecsSetVector. All of the weight sets are housed in another, and so on. Each of these SpecsSetVectors is housed in the Vector specsVectors of a CharacterData or Taxa. The different vectors are distinguished by a name associated with them.
+ */
+public class SpecsSetVector extends ListableVector {
 	SpecsSet current;
+
 	Class type;
+
 	String typeName;
-	public SpecsSetVector  (String typeName) {
+
+	Object objectCharacterized;
+
+	public SpecsSetVector(String typeName) {
 		super();
 		this.typeName = typeName;
 	}
-	public String getTypeName(){
+
+	public void setObjectCharacterized(Object obj) { // CharacterData or Taxa to which specsssets in this vector refer
+		objectCharacterized = obj;
+	}
+
+	public Object getObjectCharacterized() {// CharacterData or Taxa to which specsssets in this vector refer
+		return objectCharacterized;
+	}
+
+	public String getTypeName() {
 		return typeName;
 	}
-	public int getNumSpecsSets() {  
+
+	public int getNumSpecsSets() {
 		return size();
 	}
-	public SpecsSet getSpecsSet(int i){
-		if (i>=0 && i<size())
-			return (SpecsSet)elementAt(i);
+
+	public SpecsSet getSpecsSet(int i) {
+		if (i >= 0 && i < size())
+			return (SpecsSet) elementAt(i);
 		return null;
 	}
-	public void doom(){
+
+	public void doom() {
 		doomed = true;
-	  		for (int i=0; i<size(); i++) {
-	  			SpecsSet s = (SpecsSet)elementAt(i);
-	  			if (s!=null)
-	  				s.doom();
-	  		}
-  		
-  		super.doom();
+		for (int i = 0; i < size(); i++) {
+			SpecsSet s = (SpecsSet) elementAt(i);
+			if (s != null)
+				s.doom();
+		}
+
+		super.doom();
 	}
-	
-	public SpecsSet getCurrentSpecsSet(){
+
+	public SpecsSet getCurrentSpecsSet() {
 		return current;
 	}
-	public void loadSpecsSetToCurrent(int index){
-		if (index>=0 && index<size())
-			setCurrentSpecsSet((SpecsSet)elementAt(index));
+
+	public void loadSpecsSetToCurrent(int index) {
+		if (index >= 0 && index < size())
+			setCurrentSpecsSet((SpecsSet) elementAt(index));
 	}
-	public void setCurrentSpecsSet(SpecsSet specsSet){
+
+	public void setCurrentSpecsSet(SpecsSet specsSet) {
 		current = specsSet;
 	}
-	public SpecsSet storeCurrentSpecsSet(){
+
+	public SpecsSet storeCurrentSpecsSet() {
 		if (current == null)
 			return null;
 		SpecsSet c = current.cloneSpecsSet();
@@ -71,38 +91,35 @@ public class SpecsSetVector extends ListableVector  {
 		addSpecSet(c);
 		return c;
 	}
-	public void replaceStoredSpecsSet(SpecsSet oldOne, SpecsSet replacement){
-		if (replacement ==null)
+
+	public void replaceStoredSpecsSet(SpecsSet oldOne, SpecsSet replacement) {
+		if (replacement == null)
 			return;
 		SpecsSet clone = replacement.cloneSpecsSet();
 		String name = replacement.getName();
 		clone.setName(oldOne.getName());
 		replaceElement(oldOne, clone, true);
 	}
-	/**returns name of item stored; e.g. "Parsimony Model" ,  "Weight", "Inclusion", "Selection"
-	public String getName() {  
-		return name;
-	}
-	public void setName(String name){
-		this.name = name;
-	}
-	*/
-	/**returns type of item stored; e.g. ParsimonyModelSet.class, WeightSet.class*/
-	public Class getType() {  
+
+	/**
+	 * returns name of item stored; e.g. "Parsimony Model" , "Weight", "Inclusion", "Selection" public String getName() { return name; } public void setName(String name){ this.name = name; }
+	 */
+	/** returns type of item stored; e.g. ParsimonyModelSet.class, WeightSet.class */
+	public Class getType() {
 		return type;
 	}
-	public void setType(Class type){
+
+	public void setType(Class type) {
 		this.type = type;
 	}
-	
+
 	/** Add specs set to vector */
-	public void addSpecSet(Listable specsSet){
+	public void addSpecSet(Listable specsSet) {
 		addElement(specsSet, true);
 	}
+
 	/** remove specs set from vector */
-	public void removeSpecSet(Listable specsSet){ //if current, change current
+	public void removeSpecSet(Listable specsSet) { // if current, change current
 		removeElement(specsSet, true);
 	}
 }
-
-

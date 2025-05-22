@@ -18,6 +18,10 @@ import java.util.*;
 import java.awt.*;
 import mesquite.lib.*;
 import mesquite.lib.duties.*;
+import mesquite.lib.taxa.Taxa;
+import mesquite.lib.tree.MesquiteTree;
+import mesquite.lib.tree.Tree;
+import mesquite.lib.tree.TreeVector;
 import mesquite.lists.lib.*;
 
 /* ======================================================================== */
@@ -65,6 +69,8 @@ public class AlterLengths extends TreeListUtility {
    	public boolean requestPrimaryChoice(){
    		return true;  
    	}
+   	
+   	boolean firstTime = true;
    	/** Called to operate on the data in all cells.  Returns true if data altered*/
    	public boolean operateOnTrees(TreeVector trees){
    		if (trees == null)
@@ -79,7 +85,7 @@ public class AlterLengths extends TreeListUtility {
    		else if (numTrees>500)
    			dotFreq=10;
 
-
+   		firstTime = true;
 		
 		for (int j=0; j<numTrees; j++){
 			if (doAll || trees.getSelected(j)){
@@ -89,6 +95,7 @@ public class AlterLengths extends TreeListUtility {
 			   		if (j % dotFreq == 0)
 			   			log(".");
  					boolean success = alterTask.transformTree((MesquiteTree)tree, null, false);
+ 					firstTime = false;
  				}
 			}
 		}
@@ -98,6 +105,11 @@ public class AlterLengths extends TreeListUtility {
 		return true;
 		
 	}
+   	
+	public boolean okToInteractWithUser(int howImportant, String messageToUser){
+		return firstTime;
+	}
+
 }
 
 

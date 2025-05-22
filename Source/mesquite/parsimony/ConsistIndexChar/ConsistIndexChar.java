@@ -23,6 +23,8 @@ import mesquite.categ.lib.RequiresAnyCategoricalData;
 import mesquite.lib.*;
 import mesquite.lib.characters.*;
 import mesquite.lib.duties.*;
+import mesquite.lib.tree.MesquiteTree;
+import mesquite.lib.tree.Tree;
 import mesquite.parsimony.lib.*;
 
 /* ======================================================================== */

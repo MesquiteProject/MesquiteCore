@@ -177,5 +177,71 @@ public class Object2DArray implements Listable {
 		return d;
 	}
 	/*...........................................................*/
+	public static Object[][] deleteColumnsFlagged(Object[][] d, Bits toDelete) {
+		if (d == null)
+			return null;
+		if (d.length <= 0)
+			return d;
+		int numRows= d[0].length;
+		if (numRows == 0)
+			return d;
+		if (toDelete == null)
+			return d;
+
+		int toFill =toDelete.nextBit(0, true); //find next to be cleared
+		if (toFill <0)
+			return d;
+		Bits flags = toDelete.cloneBits(); 
+		int source = flags.nextBit(toFill, false); //find source to move into it
+		int highestFilled = toFill-1; //
+		while (source >=0 && source < d.length && toFill >=0) { //First, compact storage toward the start of the array.
+			for (int it=0; it<numRows; it++)
+				d[toFill][it] = d[source][it]; //move content from source to place
+			highestFilled = toFill;
+			flags.setBit(source, true); // set to available to receive
+			toFill =flags.nextBit(++toFill, true);
+			source =flags.nextBit(++source, false);	
+		}
+		//Next, trim leftovers
+		int newNumColumns = highestFilled+1;
+		Object[][] newMatrix=new Object[newNumColumns][numRows];
+		for (int ic=0; ic<newNumColumns; ic++) 
+			for (int it=0; it<numRows && it< d[ic].length; it++) 
+				newMatrix[ic][it] = d[ic][it];
+		return newMatrix;
+	}	/*...........................................................*
+	public static Object[][] deleteColumnsBy Blocks(Object[][] d, int[][] blocks){
+		if (d == null)
+			return null;
+		if (d.length <= 0)
+			return d;
+		if (blocks == null || blocks.length == 0)
+			return d;
+		
+		int numRows= d[0].length;
+		int availableSlot = blocks[0][0];
+
+		//First shift storage toward the start of the array. Later, we'll delete the leftovers at the end.
+		for (int block = 0; block<blocks.length; block++) {
+			int startOfPreserved = blocks[block][1]+1;
+			int endOfPreserved = d.length-1;
+			if (block+1<blocks.length) //there's another block coming afterward
+				endOfPreserved = blocks[block+1][0]-1;
+			for (int ic=startOfPreserved; ic<=endOfPreserved; ic++) {
+				for (int it=0; it<numRows && it< d[ic].length; it++) {
+					d[availableSlot][it] = d[ic][it];
+				}
+				availableSlot++;
+			}
+		}
+		//Next, trim leftovers
+		int newNumColumns = availableSlot;
+		Object[][] newMatrix=new Object[newNumColumns][numRows];
+		for (int ic=0; ic<newNumColumns; ic++) 
+			for (int it=0; it<numRows && it< d[ic].length; it++) 
+			newMatrix[ic][it] = d[ic][it];
+		return newMatrix;
+}
+	/*...........................................................*/
 }
 

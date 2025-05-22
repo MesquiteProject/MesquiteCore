@@ -20,6 +20,8 @@ import mesquite.lib.*;
 import mesquite.lib.characters.*;
 import mesquite.lib.duties.*;
 import mesquite.lib.table.*;
+import mesquite.lib.taxa.Taxa;
+import mesquite.lib.ui.ExtensibleDialog;
 import mesquite.molec.lib.*;
 import mesquite.charMatrices.CharMatrixCoordIndep.CharMatrixCoordIndep;
 

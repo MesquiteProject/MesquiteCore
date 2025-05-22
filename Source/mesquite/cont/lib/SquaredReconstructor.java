@@ -16,6 +16,7 @@ package mesquite.cont.lib;
 import java.awt.*;
 import java.util.*;
 import mesquite.lib.duties.*;
+import mesquite.lib.tree.Tree;
 import mesquite.lib.*;
 import mesquite.lib.characters.*;
 /*=========================================================================*/

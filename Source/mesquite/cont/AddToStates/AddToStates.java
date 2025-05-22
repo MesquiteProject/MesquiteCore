@@ -42,17 +42,17 @@ public class AddToStates extends ContDataAlterer  implements AltererContinuousTr
 	/*.................................................................................................................*/
 	/** returns whether this module is requesting to appear as a primary choice */
    	public boolean requestPrimaryChoice(){
-   		return true;  
+   		return false;  
    	}
    	/** Called to alter data in those cells selected in table*/
-   	public boolean alterData(CharacterData data, MesquiteTable table, UndoReference undoReference){
+   	public int alterData(CharacterData data, MesquiteTable table, UndoReference undoReference){
 			if (!(data instanceof ContinuousData))
-				return false;
+				return ResultCodes.INCOMPATIBLE_DATA;
 			double d = MesquiteDouble.queryDouble(containerOfModule(), "Add value", "Add to values in matrix:", translateAmount);
 			if (MesquiteDouble.isCombinable(d))
 				translateAmount = d;
 			else
-				return false;
+				return ResultCodes.USER_STOPPED;
 			return alterContentOfCells(data,table, undoReference); //todo: in future pass object here which will be passed to alterCell; avoids sloppy practice of relying on "global" variable translateAmount
    	}
 

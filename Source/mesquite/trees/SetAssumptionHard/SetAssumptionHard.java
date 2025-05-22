@@ -16,6 +16,7 @@ package mesquite.trees.SetAssumptionHard;
 import java.awt.*;
 import mesquite.lib.*;
 import mesquite.lib.duties.*;
+import mesquite.lib.tree.AdjustableTree;
 
 /* ======================================================================== */
 public class SetAssumptionHard extends TreeAltererMult {
@@ -31,7 +32,7 @@ public class SetAssumptionHard extends TreeAltererMult {
 	/*.................................................................................................................*/
 	/** returns whether this module is requesting to appear as a primary choice */
    	public boolean requestPrimaryChoice(){
-   		return true;  
+   		return false;  
    	}
 	/*.................................................................................................................*/
 	public  boolean transformTree(AdjustableTree tree, MesquiteString resultString, boolean notify){

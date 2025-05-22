@@ -11,7 +11,6 @@
 	<classpathentry kind="lib" path="Resources/jars/byte-buddy-agent-1.7.8.jar"/>
 	<classpathentry kind="lib" path="Resources/jars/commons-codec-1.11.jar"/>
 	<classpathentry kind="lib" path="Resources/jars/commons-httpclient-3.1.jar"/>
-	<classpathentry kind="lib" path="Resources/jars/commons-io-2.11.0.jar"/>
 	<classpathentry kind="lib" path="Resources/jars/commons-lang3-3.12.0.jar"/>
 	<classpathentry kind="lib" path="Resources/jars/commons-logging-1.2.jar"/>
 	<classpathentry kind="lib" path="Resources/jars/commons-math3-3.6.1.jar"/>
@@ -25,5 +24,7 @@
 	<classpathentry kind="lib" path="Resources/jars/JSci.zip"/>
 	<classpathentry kind="lib" path="Resources/jars/MRJToolkitStubs.zip"/>
 	<classpathentry kind="lib" path="Resources/jars/pal.zip"/>
+	<classpathentry kind="lib" path="Resources/jars/Ninja.jar"/>
+	<classpathentry kind="lib" path="Resources/jars/commons-io-2.18.0.jar"/>
 	<classpathentry kind="output" path="Mesquite_Folder"/>
-</classpath>
+</classpath> 

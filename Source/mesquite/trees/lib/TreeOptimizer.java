@@ -15,6 +15,11 @@ package mesquite.trees.lib;
 
 import mesquite.lib.*;
 import mesquite.lib.duties.*;
+import mesquite.lib.taxa.Taxa;
+import mesquite.lib.tree.AdjustableTree;
+import mesquite.lib.tree.MesquiteTree;
+import mesquite.lib.ui.MesquiteDialog;
+import mesquite.lib.ui.ProgressIndicator;
 import JSci.maths.statistics.*;
 
 public class TreeOptimizer {

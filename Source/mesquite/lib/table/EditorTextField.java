@@ -17,13 +17,16 @@ import java.awt.*;
 import java.awt.event.*;
 import mesquite.lib.*;
 import mesquite.lib.characters.CharacterData;
+import mesquite.lib.ui.ColorDistribution;
+import mesquite.lib.ui.MQTextField;
+import mesquite.lib.ui.MesquiteWindow;
 
 import java.util.*;
 
 
 /* ======================================================================== */
 /** A text field that is moved from place to place as the text is edited in a panel of a MesquiteTable.*/
-public class EditorTextField extends TextField  {
+public class EditorTextField extends MQTextField  {
 	int row, column;
 	EditorPanel panel;
 	boolean editing;
@@ -78,7 +81,7 @@ public class EditorTextField extends TextField  {
 		Graphics g = getGraphics();
 		if (g==null)
 			return;
-		fontMetrics = g.getFontMetrics(getFont());
+		fontMetrics = g.getFontMetrics(getFont()); 
 		g.dispose();
 	}
 

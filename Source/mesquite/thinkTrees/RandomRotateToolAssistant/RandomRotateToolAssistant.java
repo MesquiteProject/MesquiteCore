@@ -20,6 +20,13 @@ import java.awt.image.*;
 import mesquite.coalesce.InsertNode.InsertNode;
 import mesquite.lib.*;
 import mesquite.lib.duties.*;
+import mesquite.lib.tree.AdjustableTree;
+import mesquite.lib.tree.MesquiteTree;
+import mesquite.lib.tree.Tree;
+import mesquite.lib.tree.TreeDisplay;
+import mesquite.lib.tree.TreeDisplayExtra;
+import mesquite.lib.tree.TreeTool;
+import mesquite.lib.ui.MesquiteWindow;
 
 /* ======================================================================== */
 public class RandomRotateToolAssistant extends TreeDisplayAssistantI {

@@ -37,7 +37,7 @@ Begin MESQUITE;
 				toggleFileNames off;
 				setPrevButtonName Previous;
 				setNextButtonName Return_to_Intro;
-				addFileLink Go_to_file_on_website  'http://mesquiteproject.org/mesquite/salticidae/salticidae.nex';
+				addFileLink Go_to_file_on_website  'http://mesquiteproject.org/readFileFromWeb/salticidae.nex';
 			endTell;
 			showWindow;
 		endTell;

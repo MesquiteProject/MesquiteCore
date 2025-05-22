@@ -21,6 +21,9 @@ import java.awt.*;
 import mesquite.lib.*;
 import mesquite.lib.duties.*;
 import mesquite.lib.table.*;
+import mesquite.lib.taxa.Taxa;
+import mesquite.lib.taxa.TaxaPartition;
+import mesquite.lib.ui.AlertDialog;
 
 /* ======================================================================== */
 public class TaxaPartitionList extends TaxaSpecssetList {
@@ -67,10 +70,11 @@ public class TaxaPartitionList extends TaxaSpecssetList {
 	public String getItemTypeNamePlural(){
 		return "Taxa partitions";
 	}
-	/* following required by ListModule*/
+	/* following required by ListModule*
 	public Object getMainObject(){
 		return taxa;
 	}
+	*/
 	public SpecsSet makeNewSpecsSet(Taxa taxa){
 		if (taxa != null)
 			return new TaxaPartition("Partition", taxa.getNumTaxa(), null, taxa);

@@ -21,6 +21,12 @@ import mesquite.lib.*;
 import mesquite.lib.characters.*;
 import mesquite.lib.characters.CharacterData;
 import mesquite.lib.duties.*;
+import mesquite.lib.misc.AttachedNotesVector;
+import mesquite.lib.taxa.Taxa;
+import mesquite.lib.ui.AlertDialog;
+import mesquite.lib.ui.ColorDistribution;
+import mesquite.lib.ui.MesquiteColorTable;
+import mesquite.parsimony.lib.ParsimonyModelSet;
 
 /* ======================================================================== */
 /** A subclass of CharacterData for data stored as Categorical sets (e.g, "{0, 2}").  Associated with the CharacterState subclass CategoricalState.*/
@@ -95,7 +101,7 @@ public class CategoricalData extends CharacterData {
 		}
 		return count;
 	}
-	
+
 	public void getDataBlockBoundaries(int it, int icStart, int icEnd, int whichBlock, MesquiteInteger blockStart, MesquiteInteger blockEnd) {
 		if (blockStart==null || blockEnd==null) 
 			return;
@@ -271,7 +277,7 @@ public class CategoricalData extends CharacterData {
 	public void copyDataBlock(CharacterData sourceData, int icSourceStart,  int itSourceStart, int icStart, int icEnd, int itStart, int itEnd){
 		if (sourceData == null)
 			return;
-		
+
 		for (int ic=icStart; ic<=icEnd; ic++){
 			for (int it=itStart; it<=itEnd; it++) {
 				int itSource = it-itStart+itSourceStart;
@@ -325,7 +331,7 @@ public class CategoricalData extends CharacterData {
 	}
 
 	/*..........................................  CategoricalData  ..................................................*/
-	/**clone this CharacterData and return new copy.  Does not clone the associated specs sets etc.*/ //TODO: here should use super.setToClone(data) to handle specssets etc.???
+	/**clone this CharacterData and return new copy.  Now clones the associated specs sets etc.*/
 	public CharacterData cloneData(){
 		CategoricalData data = new CategoricalData(matrixManager, numTaxa, numChars, getTaxa());
 		if (symbols!=null)
@@ -333,6 +339,8 @@ public class CategoricalData extends CharacterData {
 				data.setSymbolDirect(i, symbols[i]);
 			}
 		for (int ic=0; ic<numChars; ic++){
+			if (characterHasName(ic))
+				data.setCharacterName(ic, getCharacterName(ic));
 			if (hasStateNames() && hasStateNames(ic))
 				for (int i = 0; i <= CategoricalState.maxCategoricalState; i++)
 					if (hasStateName(ic,i))
@@ -347,6 +355,7 @@ public class CategoricalData extends CharacterData {
 			if (getSelected(ic))
 				data.setSelected(ic, true);
 		}
+		data.setAssociateds(this);
 		data.resetCellMetadata();
 		return data;
 	}
@@ -367,6 +376,8 @@ public class CategoricalData extends CharacterData {
 				data.setSymbolDirect(i, symbols[i]);
 			}
 		for (int ic=icStart; ic<=icEnd; ic++){
+			if (characterHasName(ic))
+			data.setCharacterName(ic, getCharacterName(ic));
 			if (hasStateNames())
 				for (int i = 0; i <= CategoricalState.maxCategoricalState; i++)
 					data.setStateName(ic-icStart,i,getStateName(ic,i));
@@ -391,7 +402,7 @@ public class CategoricalData extends CharacterData {
 			return n;
 		if (matrix == null && matrixShort == null)
 			dataIntegrityAlert("Categorical data with null internal matrix. getNumTaxa() = " + n + " name " + getName() + " file " + getFile());
-		else if (MesquiteThread.isThreadBelongingToMesquite() && MesquiteThread.numFilesBeingRead==0 ){  //since files read on other thread, suppress warnings
+		else if (MesquiteThread.isMesquiteOrConsoleThread() && MesquiteThread.numFilesBeingRead==0 ){  //since files read on other thread, suppress warnings
 			if (matrix != null && matrix.length>0 && matrix[0] !=null && matrix[0].length != n)
 				dataIntegrityAlert("Categorical matrix with incorrect record of number of taxa. getNumTaxa() = " + n + " matrix[0].length " + matrix[0].length + " name " + getName() + " file " + getFile());
 			else if (matrixShort != null && matrixShort.length>0 && matrixShort[0] !=null && matrixShort[0].length != n)
@@ -412,7 +423,7 @@ public class CategoricalData extends CharacterData {
 			return 0;
 		}
 		else if (matrix != null && matrix.length !=n){
-			if (MesquiteThread.isThreadBelongingToMesquite() && MesquiteThread.numFilesBeingRead==0 && notifyIfError && !charNumChanging) //since files read on other thread, suppress warnings
+			if (MesquiteThread.isMesquiteOrConsoleThread() && MesquiteThread.numFilesBeingRead==0 && notifyIfError && !charNumChanging) //since files read on other thread, suppress warnings
 				dataIntegrityAlert("Categorical matrix with incorrect record of number of characters. getNumChar() = " + n + " matrix.length " + matrix.length + " nAdd = " + nAdd + " nDel = " + nDel + " nMove = " + nMove + " name " + getName() + " file " + getFile());
 			if (matrix.length>n)
 				return n;
@@ -420,7 +431,7 @@ public class CategoricalData extends CharacterData {
 				return matrix.length;
 		}
 		else if (matrixShort != null && matrixShort.length !=n){
-			if (MesquiteThread.isThreadBelongingToMesquite() && MesquiteThread.numFilesBeingRead==0 && notifyIfError && !charNumChanging) //since files read on other thread, suppress warnings
+			if (MesquiteThread.isMesquiteOrConsoleThread() && MesquiteThread.numFilesBeingRead==0 && notifyIfError && !charNumChanging) //since files read on other thread, suppress warnings
 				dataIntegrityAlert("Categorical matrix with incorrect record of number of characters. getNumChar() = " + n + " matrixShort.length " + matrixShort.length + " nAdd = " + nAdd + " nDel = " + nDel + " nMove = " + nMove + " name " + getName() + " file " + getFile());
 			if (matrixShort.length>n)
 				return n;
@@ -708,6 +719,39 @@ public class CategoricalData extends CharacterData {
 			stateAnnotations = newStateAnnotations;
 		}
 		return super.deleteParts(starting, num);
+	}
+
+	/*..........................................  CategoricalData  ..................................................*/
+	/** deletes characters flagged for deletion in Bits*/
+	protected boolean deletePartsFlagged(Bits toDelete){
+		incrementStatesVersion();
+		if (!usingShortMatrix())
+			matrix = Long2DArray.deleteColumnsFlagged(matrix, toDelete);
+		else
+			matrixShort = Short2DArray.deleteColumnsFlagged(matrixShort, toDelete);
+
+		stateNames = StringArray.deleteColumnsFlagged(stateNames, toDelete);
+		stateNotes = StringArray.deleteColumnsFlagged(stateNotes, toDelete);
+		stateAnnotations = Object2DArray.deleteColumnsFlagged(stateAnnotations, toDelete);
+		return super.deletePartsFlagged(toDelete);
+	}
+	/*..........................................  CategoricalData  ..................................................*/
+	/** deletes characters by blocks; for kth block, deletes numInBlock[k] characters from (and including) position startOfBlock[k]; returns true iff successful.
+	 * Assumes that these blocks are in sequence!!!*
+	protected boolean deletePartsBy Blocks(int[][] blocks){
+
+		incrementStatesVersion();
+		if (!usingShortMatrix())
+			matrix = Long2DArray.deleteColumnsBy Blocks(matrix, blocks);
+		else
+			matrixShort = Short2DArray.deleteColumnsBy Blocks(matrixShort, blocks);
+
+		stateNames = StringArray.deleteColumnsBy Blocks(stateNames, blocks);
+		stateNotes = StringArray.deleteColumnsBy Blocks(stateNotes, blocks);
+		stateAnnotations = Object2DArray.deleteColumnsBy Blocks(stateAnnotations, blocks);
+
+		//numChars = newNumChars; don't do this since super.deleteCharacters needs to remember old number
+		return super.deletePartsBy Blocks(blocks);
 	}
 	/*..........................................  CategoricalData  ..................................................*/
 	/**Adds num taxa after position "starting"; returns true iff successful.*/
@@ -1271,8 +1315,8 @@ public class CategoricalData extends CharacterData {
 		return (CategoricalState.hasMultipleStates(s));
 	}
 
-	
-	
+
+
 	/*..........................................    ..................................................*/
 	/** returns whether any cell in the matrix has multiple states or is missing*/
 	public  boolean hasMultistateOrUncertaintyOrMissing(boolean countMissing, boolean considerOnlySelectedTaxa){
@@ -1949,7 +1993,7 @@ public class CategoricalData extends CharacterData {
 	/*-----------------------------------------------------------*/
 	/** checks to see if the two characters have identical distributions of states */
 	public boolean samePattern(int oic, int ic){
-		
+
 		for (int it=0; it<numTaxa; it++) {
 			if (!sameState(oic, it, ic, it))
 				return false;
@@ -1959,7 +2003,7 @@ public class CategoricalData extends CharacterData {
 	/*-----------------------------------------------------------*/
 	/** Sets all cells in a character to inapplicable */
 	public void clearCharacter(int ic){
-		
+
 		for (int it=0; it<numTaxa; it++) {
 			setToInapplicable(ic,it);
 		}
@@ -1967,7 +2011,7 @@ public class CategoricalData extends CharacterData {
 	/*-----------------------------------------------------------*/
 	/** Sets all cells in a taxon to inapplicable */
 	public void clearTaxon(int it){
-		
+
 		for (int ic=0; ic<numChars; ic++) {
 			setToInapplicable(ic,it);
 		}
@@ -1980,7 +2024,7 @@ public class CategoricalData extends CharacterData {
 			if (cData.stateNames == null) {  // incoming stateNames is null
 				if (stateNames!=null)  // this state names is not null, so lets set the values to null
 					for (int is = 0; is<= CategoricalState.maxCategoricalState; is++) 
-							setStateName(ic, is, null);
+						setStateName(ic, is, null);
 			}
 			else {
 				for (int is = 0; is<= CategoricalState.maxCategoricalState; is++) {
@@ -2035,7 +2079,7 @@ public class CategoricalData extends CharacterData {
 			return Integer.toString(state);
 	}
 	/*..........................................CategoricalData................*/
-	/** returns a long containing all of the states of a character.*/
+	/** returns a long containing all of the states of a character.*
 	public long getAllStates(int ic, boolean selectedOnly){
 		CategoricalState state=null;
 		long allstates =0L;
@@ -2045,6 +2089,17 @@ public class CategoricalData extends CharacterData {
 				if (!CategoricalState.isUnassigned(state.getValue()) && !CategoricalState.isInapplicable(state.getValue()))
 					allstates |= state.getValue();
 			}
+		return allstates;
+	}
+	/*..........................................CategoricalData................*/
+	/** returns a long containing all of the states of a character.*/
+	public long getAllStates(int ic, boolean selectedOnly){
+		long allstates =0L;
+		for (int it=0; it<numTaxa; it++) 
+			if (!selectedOnly || getTaxa().getSelected(it)) {
+				allstates |= getStateRaw(ic, it);
+			}
+		allstates = allstates & CategoricalState.statesBitsMask;
 		return allstates;
 	}
 	/*..........................................CategoricalData................*/
@@ -2125,7 +2180,7 @@ public class CategoricalData extends CharacterData {
 				if (array1[i]!=array2[i])
 					return false;
 		return true;
-		
+
 	}
 	/*..........................................CategoricalData................*/
 	/** returns a String summarizing the frequencies of states of a character .*/
@@ -2166,6 +2221,40 @@ public class CategoricalData extends CharacterData {
 		}
 		return sb.toString();
 	}
+
+	/*This calculates using unordered parsimony model regardless of model assigned
+	 */
+	public boolean charIsUnorderedInformative(int ic) {
+		long allstates =0L;
+		int maxState = CategoricalState.maxCategoricalState;
+		if (usingShortMatrix())
+			maxState = 10;
+		boolean[] duplicated = new boolean[maxState+1];
+		for (int it=0; it<numTaxa; it++) { 
+			long statesRaw = getStateRaw(ic, it);
+			if (!CategoricalState.isUncertain(statesRaw)) {
+				long states = statesRaw & CategoricalState.statesBitsMask;
+				if (states != 0L){//there's a state there
+					long intersectionWithPrevious = states & allstates;
+					if (intersectionWithPrevious != 0L) { //one seen before
+						int numDup = 0;
+						for (int e=0; e<= maxState; e++) {
+							if (((1L<<e)&intersectionWithPrevious)!=0L)  //test bit
+								duplicated[e] = true;
+							if (duplicated[e])
+								numDup++;
+						}
+						if (numDup>1)
+							return true;
+
+					}
+					allstates |= states;
+				}
+			}
+		}
+
+		return false;
+	}
 	/*..........................................CategoricalData................*/
 	public static DefaultReference findDefaultReference(NameReference paradigm){
 		if (defaultModels == null) {
@@ -2202,8 +2291,8 @@ public class CategoricalData extends CharacterData {
 			return null;
 		else {
 			CharacterModel cm = getProject().getCharacterModel(dR.getDefault());
-			if (cm==null) 
-				MesquiteMessage.println("Default model not found / " + dR.getDefault());
+			//if (cm==null) 
+			//	MesquiteMessage.println("Default model not found / " + dR.getDefault());
 			return cm;
 		}
 	}
@@ -2217,7 +2306,7 @@ public class CategoricalData extends CharacterData {
 	/*..........................................  CategoricalData  ..................................................*/
 	/** appends to buffer string describing the state(s) specified in the long array s.  The first element in s is presumed (for the sake of state symbols
 	 * and state names) to correspond to character ic. */
-	public void statesIntoStringBufferCore(int ic, long[] s, StringBuffer sb, boolean forDisplay, boolean includeInapplicable, boolean includeUnassigned){
+	public void statesIntoStringBufferCore(int ic, long[] s, MesquiteStringBuffer sb, boolean forDisplay, boolean includeInapplicable, boolean includeUnassigned){
 		for (int i=0; i<s.length; i++) {
 			statesIntoStringBufferCore(ic+i, s[i],  sb, forDisplay, includeInapplicable, includeUnassigned);
 		}
@@ -2225,12 +2314,12 @@ public class CategoricalData extends CharacterData {
 
 	/*..........................................  CategoricalData  ..................................................*/
 	/** appends to buffer string describing the state(s) of character ic in taxon it. �*/
-	public void statesIntoStringBufferCore(int ic, long s, StringBuffer sb, boolean forDisplay){
+	public void statesIntoStringBufferCore(int ic, long s, MesquiteStringBuffer sb, boolean forDisplay){
 		statesIntoStringBufferCore(ic,s,sb,forDisplay, true, true);
 	}
 	/*..........................................  CategoricalData  ..................................................*/
 	/** appends to buffer string describing the state(s) of character ic in taxon it. �*/
-	public void statesIntoStringBufferCore(int ic, long s, StringBuffer sb, boolean forDisplay, boolean includeInapplicable, boolean includeUnassigned){
+	public void statesIntoStringBufferCore(int ic, long s, MesquiteStringBuffer sb, boolean forDisplay, boolean includeInapplicable, boolean includeUnassigned){
 		if (s==CategoricalState.inapplicable) {
 			if (includeInapplicable)
 				sb.append(getInapplicableSymbol());
@@ -2263,7 +2352,7 @@ public class CategoricalData extends CharacterData {
 	}
 	/*..........................................  CategoricalData  ..................................................*/
 	/** appends to buffer string describing the state(s) of character ic in taxon it.�*/
-	public void statesIntoStringBuffer(int ic, int it, StringBuffer sb, boolean forDisplay, boolean includeInapplicable, boolean includeUnassigned){
+	public void statesIntoStringBuffer(int ic, int it, MesquiteStringBuffer sb, boolean forDisplay, boolean includeInapplicable, boolean includeUnassigned){
 		if (notInStorage(ic, it)) //illegal check
 			return;
 		long s = getStateRaw(ic, it);
@@ -2271,12 +2360,12 @@ public class CategoricalData extends CharacterData {
 	}
 	/*..........................................  CategoricalData  ..................................................*/
 	/** appends to buffer string describing the state(s) of character ic in taxon it.�*/
-	public void statesIntoStringBuffer(int ic, int it, StringBuffer sb, boolean forDisplay){
+	public void statesIntoStringBuffer(int ic, int it, MesquiteStringBuffer sb, boolean forDisplay){
 		statesIntoStringBuffer(ic,it,sb, forDisplay, true, true);
 	}
 	/*..........................................  CategoricalData  ..................................................*/
 	/** appends to buffer string describing the state(s) of character ic in taxon it.�*/
-	public void statesIntoStringBuffer(int ic, int it, StringBuffer sb, String separatorForMultistate, String bracketForMultistateStart, String bracketForMultistateEnd){
+	public void statesIntoStringBuffer(int ic, int it, MesquiteStringBuffer sb, String separatorForMultistate, String bracketForMultistateStart, String bracketForMultistateEnd){
 		if (notInStorage(ic, it)) //illegal check
 			return;
 		long s = getStateRaw(ic, it);
@@ -2306,6 +2395,52 @@ public class CategoricalData extends CharacterData {
 	}
 	/*..........................................  CategoricalData  ..................................................*/
 	/** appends to buffer string describing the state(s) of character ic in taxon it. �*/
+	public void statesIntoNEXUSStringBuffer(int ic, int it, MesquiteStringBuffer sb){
+		if (notInStorage(ic, it)) //illegal check
+			return;
+		boolean first=true;
+		long s = getStateRaw(ic, it);
+		if (s == 0L || s == CategoricalState.impossible)
+			sb.append('!');
+		else if (s==CategoricalState.inapplicable)
+			sb.append(getInapplicableSymbol());
+		else if (s==CategoricalState.unassigned)
+			sb.append(getUnassignedSymbol());
+		else {
+			int card =0;
+			long current = sb.length();
+			for (int e=0; e<=CategoricalState.maxCategoricalState; e++) {
+				if (CategoricalState.isElement(s, e)) {
+					card++;
+					if (!first) {
+						sb.append(' ');
+					}
+					sb.append(getStateSymbol(ic, e));
+					first=false;
+				}
+			}
+			if (card>1) {
+				if (CategoricalState.isUncertain(s)) {
+					sb.insert(current,'{');
+					sb.append('}');
+				}
+				else {
+					sb.insert(current,'(');
+					sb.append(')');
+				}
+			}
+			if (first){ //nothing written!  Write illegal character so that change will not go unnoticed
+				sb.append('!');
+				if (ic == 0 && it == 0)
+					ecount = 0;
+				if (ecount++<100)
+					MesquiteMessage.warnProgrammer("ERROR: nothing written for character " + (ic+1) + " taxon " + (it+1) + " state as long: " + s + "  (matrix " + getName() + ")");
+			}
+		}
+	}
+	int ecount = 0;
+	/*..........................................  CategoricalData  ..................................................*/
+	/** appends to buffer string describing the state(s) of character ic in taxon it. �*
 	public void statesIntoNEXUSStringBuffer(int ic, int it, StringBuffer sb){
 		if (notInStorage(ic, it)) //illegal check
 			return;
@@ -2349,7 +2484,6 @@ public class CategoricalData extends CharacterData {
 			}
 		}
 	}
-	int ecount = 0;
 
 	/*..........................................  CategoricalData  ..................................................*/
 	CategoricalState tempState = (CategoricalState)makeCharacterState(); //a utility CategoricalState for the fromChar method, which isn't static
@@ -2435,9 +2569,9 @@ public class CategoricalData extends CharacterData {
 
 		else { //String is not from editor; assume it's from matrix in NEXUS file.  Thus, assume symbols, not names
 			boolean done = false;
-			int loc = parser.getPosition();
+			long loc = parser.getPosition();
 			parser.setPunctuationString(null);
-			StringBuffer s = parser.getBuffer(); 
+			MesquiteStringBuffer s = parser.getBuffer(); 
 			while (loc<s.length() && !done) {
 				char c = s.charAt(loc++); //get next dark character
 				boolean wasWhitespace = false;
@@ -2507,9 +2641,9 @@ public class CategoricalData extends CharacterData {
 		long stateSet = 0;
 		int multi = 0;
 		boolean done = false;
-		int loc = parser.getPosition();
+		long loc = parser.getPosition();
 		parser.setPunctuationString(null);
-		StringBuffer s = parser.getBuffer(); 
+		MesquiteStringBuffer s = parser.getBuffer(); 
 		while (loc<s.length() && !done) {
 			char c = s.charAt(loc++); //get next dark character
 			long obviousState = obviousFromChar(c);
@@ -2522,8 +2656,7 @@ public class CategoricalData extends CharacterData {
 				boolean wasWhitespace = false;
 				while ((wasWhitespace=parser.whitespace(c))  && c!=0 && loc<s.length())
 					c = s.charAt(loc++);
-
-				if (!wasWhitespace){
+				if (!wasWhitespace || parser.lineEndCharacter(c)){
 					if (parser.lineEndCharacter(c)) {
 						char r = parser.charOnDeck(1);
 						//if next character is also lineEndCharacter but of opposite sort (i.e. \n instead of \r) then eat it up

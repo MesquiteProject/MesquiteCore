@@ -20,6 +20,8 @@ import java.awt.*;
 import mesquite.lib.*;
 import mesquite.lib.duties.*;
 import mesquite.lib.table.*;
+import mesquite.lib.taxa.Taxa;
+import mesquite.lib.taxa.TaxaSelectionSet;
 
 /* ======================================================================== */
 public class TaxaSetListNum extends TaxaSetListAssistant implements MesquiteListener {
@@ -38,12 +40,18 @@ public class TaxaSetListNum extends TaxaSetListAssistant implements MesquiteList
 	}
 
 	public void setTableAndObject(MesquiteTable table, Object obj){
-		if (taxa !=null)
-			taxa.removeListener(this);
-		if (obj instanceof Taxa)
-			taxa = (Taxa)obj;
-		if (taxa !=null)
-			taxa.addListener(this);
+		Object t = obj;
+		if (obj instanceof SpecsSetVector) {
+			t = ((SpecsSetVector)obj).getObjectCharacterized();
+		}
+		if (t instanceof Taxa) {
+			if (taxa !=null)
+				taxa.removeListener(this);
+			taxa = (Taxa)t;
+			if (taxa !=null)
+				taxa.addListener(this);
+		}
+
 		//table would be used if selection needed
 	}
 	/*.................................................................................................................*/

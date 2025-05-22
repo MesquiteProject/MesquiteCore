@@ -1,0 +1,32 @@
+<?xml version="1.0"?>
+<mesquite>
+	<humanName>IQ-TREE</humanName> <!-- required -->
+	<internalName>IQ-TREE</internalName> <!-- required -->
+	<!-- replacements in sequence -->
+	<replacement> 
+		<before>"</before>
+		<after>'</after>
+	</replacement> 
+	<replacement> 
+		<before>gCF / gDF1 / gDF2 / gDFP</before>
+		<after>'gCF/gDF1/gDF2/gDFP'</after>
+	</replacement> 
+	<replacement> 
+		<before>gCF_N / gDF1_N / gDF2_N / gDFP_N</before>
+		<after>'gCF N/gDF1 N/gDF2 N/gDFP N'</after>
+	</replacement> 
+	<replacement> 
+		<before>sCF / sDF1 / sDF2</before>
+		<after>'sCF/sDF1/sDF2'</after>
+	</replacement> 
+	<replacement> 
+		<before>sCF_N / sDF1_N / sDF2_N</before>
+		<after>'sCF N/sDF1 N/sDF2 N'</after>
+	</replacement> 
+	<replacement> 
+		<before> / </before>
+		<after>/</after>
+	</replacement> 
+
+</mesquite>
+

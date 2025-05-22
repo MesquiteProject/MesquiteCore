@@ -18,6 +18,13 @@ import java.awt.event.*;
 import java.util.*;
 import mesquite.lib.*;
 import mesquite.lib.duties.*;
+import mesquite.lib.ui.ColorDistribution;
+import mesquite.lib.ui.MQPanel;
+import mesquite.lib.ui.MQTextArea;
+import mesquite.lib.ui.MesquiteTool;
+import mesquite.lib.ui.MesquiteWindow;
+import mesquite.lib.ui.MousePanel;
+import mesquite.lib.ui.WindowButton;
 
 /* ======================================================================== */
 
@@ -263,6 +270,7 @@ class ExamplesNavigatorWindow extends MesquiteWindow implements TextListener {
 	FieldPanel nextPanel, prevPanel, titlePanel;
 	TitlePanel buttons;
 	Panel extras;
+	MesquiteCommand fileLinkCommand, showPageCommand, nextCommand, prevCommand;
 
 	//TextField prevLabel;
 	//TextField nextLabel;
@@ -274,11 +282,14 @@ class ExamplesNavigatorWindow extends MesquiteWindow implements TextListener {
 		setBackground(ColorDistribution.lightGreen);
 		contents = getGraphicsArea();
 		contents.setLayout(new BorderLayout());
-
-		explanation= new TextArea("", 12, 12, TextArea.SCROLLBARS_VERTICAL_ONLY);
+		fileLinkCommand = new MesquiteCommand("fileLink", module);
+		showPageCommand = new MesquiteCommand("showPage", module);
+		nextCommand = new MesquiteCommand("next", module);
+		prevCommand = new MesquiteCommand("prev", module);
+		explanation= new MQTextArea("", 12, 12, TextArea.SCROLLBARS_VERTICAL_ONLY);
 		contents.add("Center", explanation);
 		explanation.setBackground(Color.white);
-		controls = new Panel();
+		controls = new MQPanel();
 		buttons = new TitlePanel(this);
 		controls.setLayout(new BorderLayout());
 		controls.setBackground(ColorDistribution.lightGreen);
@@ -292,7 +303,7 @@ class ExamplesNavigatorWindow extends MesquiteWindow implements TextListener {
 		next.setFont(df);
 		prev.setFont(df);
 
-		textFields = new Panel();
+		textFields = new MQPanel();
 
 		nextPanel = new FieldPanel(true, nextName, module.nextProjectName, this, null, false);
 		nextPanel.setVisible(true);
@@ -309,7 +320,7 @@ class ExamplesNavigatorWindow extends MesquiteWindow implements TextListener {
 		textFields.add("South", prevPanel);
 		controls.add("Center", textFields);
 
-		extras = new Panel();
+		extras = new MQPanel();
 		extras.setLayout(extrasLayout = new GridLayout(0, 1));
 		extras.setVisible(true);
 
@@ -452,9 +463,9 @@ class ExamplesNavigatorWindow extends MesquiteWindow implements TextListener {
 	}
 	public void go(String path, boolean fileLink) {
 		if (fileLink)
-			getOwnerModule().doCommand("fileLink", StringUtil.tokenize(path), CommandChecker.defaultChecker);
+			fileLinkCommand.doItMainThread(ParseUtil.tokenize(path), null, this);
 		else
-			getOwnerModule().doCommand("showPage", StringUtil.tokenize(path),  CommandChecker.defaultChecker);
+			showPageCommand.doItMainThread(ParseUtil.tokenize(path), null, this);
 	}
 	Vector links = new Vector();
 	GridLayout extrasLayout;
@@ -504,10 +515,10 @@ class ExamplesNavigatorWindow extends MesquiteWindow implements TextListener {
 		if (getOwnerModule()==null)
 			return;
 		if (label.equalsIgnoreCase(nextName)) {
-			getOwnerModule().doCommand("Next", null,  CommandChecker.defaultChecker);
+			nextCommand.doItMainThread(null, null, this);
 		}
 		else if (label.equalsIgnoreCase(prevName)) {
-			getOwnerModule().doCommand("Prev", null,  CommandChecker.defaultChecker);
+			prevCommand.doItMainThread(null, null, this);
 		}
 	}
 	/*.................................................................................................................*/
@@ -578,7 +589,7 @@ class ExamplesNavigatorWindow extends MesquiteWindow implements TextListener {
 	}
 }
 
-class FieldPanel extends Panel implements ActionListener {
+class FieldPanel extends MQPanel implements ActionListener {
 	TextField label, text; 
 	LinkPanel linkPanel;
 	public FieldPanel (boolean labelEditable, String initialLabel, String initialText, TextListener listener, LinkPanel linkPanel, boolean removeButton){
@@ -627,7 +638,7 @@ class FieldPanel extends Panel implements ActionListener {
 }
 
 
-class LinkPanel extends Panel implements ActionListener, TextListener {
+class LinkPanel extends MQPanel implements ActionListener, TextListener {
 	String title;
 	String path;
 	LinkBanner banner;

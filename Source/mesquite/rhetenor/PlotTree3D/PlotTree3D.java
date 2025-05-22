@@ -10,7 +10,7 @@ Mesquite's web site is http://mesquiteproject.org
 
 This source code and its compiled class files are free and modifiable under the terms of 
 GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
-*/
+ */
 package mesquite.rhetenor.PlotTree3D;
 /*~~  */
 
@@ -19,13 +19,19 @@ import java.awt.*;
 import mesquite.lib.*;
 import mesquite.lib.characters.*;
 import mesquite.lib.duties.*;
+import mesquite.lib.tree.MesquiteTree;
+import mesquite.lib.tree.Tree;
+import mesquite.lib.tree.TreeDisplay;
+import mesquite.lib.tree.TreeDrawing;
+import mesquite.lib.ui.ColorDistribution;
+import mesquite.lib.ui.GraphicsUtil;
 import mesquite.rhetenor.lib.*;
 
 /* ======================================================================== */
 public class PlotTree3D extends AnalyticalDrawTree {
 	public void getEmployeeNeeds(){  //This gets called on startup to harvest information; override this and inside, call registerEmployeeNeed
 		EmployeeNeed e = registerEmployeeNeed(NodeLocsPlot3D.class, getName() + "  needs a method to calculate positions of nodes.",
-		"The method to calculate positions is arranged initially");
+				"The method to calculate positions is arranged initially");
 	}
 
 	NodeLocsPlot3D nodeLocsTask;
@@ -38,7 +44,7 @@ public class PlotTree3D extends AnalyticalDrawTree {
 		if (nodeLocsTask == null)
 			return sorry(getName() + " couldn't start because no node location plotter module was obtained.");
 		drawings = new Vector();
- 		addMenuItem( "Spot Size...", makeCommand("setSpotDiameter",  this));
+		addMenuItem( "Spot Size...", makeCommand("setSpotDiameter",  this));
 		showInternals = new MesquiteBoolean(true);
 		showTerminals = new MesquiteBoolean(true);
 		showTree = new MesquiteBoolean(true);
@@ -47,138 +53,142 @@ public class PlotTree3D extends AnalyticalDrawTree {
 		addCheckMenuItem(null, "Show Branches", makeCommand("toggleShowTree",  this), showTree);
 		showFog = new MesquiteBoolean(true);
 		addCheckMenuItem(null, "Use Fog", makeCommand("toggleFog",  this), showFog);
- 		return true;
- 	 }
-  	 
- 	public void employeeQuit(MesquiteModule m){
- 			iQuit();
- 	}
+		return true;
+	}
+
+	public void employeeQuit(MesquiteModule m){
+		iQuit();
+	}
 	/*.................................................................................................................*/
 	public   TreeDrawing createTreeDrawing(TreeDisplay treeDisplay, int numTaxa) {
 		PlotTreeDrawing treeDrawing =  new PlotTreeDrawing (treeDisplay, numTaxa, this, spotSize);
+		treeDisplay.collapsedCladeNameAtLeftmostAncestor = false;
 		drawings.addElement(treeDrawing);
 		return treeDrawing;
 	}
-  
+	public Vector getDrawings(){
+		return drawings;
+	}
+
 	/** Returns true if other modules can control the orientation */
 	public boolean allowsReorientation(){
 		return false;
 	}
 	/*.................................................................................................................*/
-  	 public Snapshot getSnapshot(MesquiteFile file) {
-   	 	Snapshot temp = new Snapshot();
-  	 	temp.addLine("setNodeLocs " , nodeLocsTask);
-  	 	temp.addLine("setSpotDiameter " + spotSize);
-  	 	temp.addLine("toggleShowTerminals " + showTerminals.toOffOnString());
-  	 	temp.addLine("toggleShowInternals " + showInternals.toOffOnString());
-   	 	temp.addLine("toggleShowTree " + showTree.toOffOnString());
-  	 	temp.addLine("toggleFog " + showFog.toOffOnString());
-  	 	return temp;
-  	 }
+	public Snapshot getSnapshot(MesquiteFile file) {
+		Snapshot temp = new Snapshot();
+		temp.addLine("setNodeLocs " , nodeLocsTask);
+		temp.addLine("setSpotDiameter " + spotSize);
+		temp.addLine("toggleShowTerminals " + showTerminals.toOffOnString());
+		temp.addLine("toggleShowInternals " + showInternals.toOffOnString());
+		temp.addLine("toggleShowTree " + showTree.toOffOnString());
+		temp.addLine("toggleFog " + showFog.toOffOnString());
+		return temp;
+	}
 	MesquiteInteger pos = new MesquiteInteger();
 	/*.................................................................................................................*/
-    	 public Object doCommand(String commandName, String arguments, CommandChecker checker) {
-    	 	if (checker.compare(this.getClass(), "Sets diameter of spots at nodes", "[diameter]", commandName, "setSpotDiameter")) {
+	public Object doCommand(String commandName, String arguments, CommandChecker checker) {
+		if (checker.compare(this.getClass(), "Sets diameter of spots at nodes", "[diameter]", commandName, "setSpotDiameter")) {
 			int newDiameter = MesquiteInteger.fromFirstToken(arguments, pos);
 			if (!MesquiteInteger.isCombinable(newDiameter))
 				newDiameter = MesquiteInteger.queryInteger(containerOfModule(), "Set spot diameter", "Spot Diameter:", spotSize, 6, 100);
-    	 			
-    	 		if (newDiameter>6 && newDiameter<100 && newDiameter!=spotSize) {
+
+			if (newDiameter>6 && newDiameter<100 && newDiameter!=spotSize) {
 				Enumeration e = drawings.elements();
 				while (e.hasMoreElements()) {
 					Object obj = e.nextElement();
 					PlotTreeDrawing treeDrawing = (PlotTreeDrawing)obj;
-		    	 			spotSize = newDiameter;
-		    	 			treeDrawing.spotsize=newDiameter;
-		    	 			treeDrawing.treeDisplay.setMinimumTaxonNameDistance(treeDrawing.spotsize/2, 4);
-		    	 			parametersChanged();
-	    	 		}
-    	 		}
-    	 		
-    	 	}
-    	 	else if (checker.compare(this.getClass(), "Sets whether or not internal nodes are shown", "[on = show;  off]", commandName, "toggleShowInternals")) {
-    	 		showInternals.toggleValue(parser.getFirstToken(arguments));
-	 		 parametersChanged();
+					spotSize = newDiameter;
+					treeDrawing.spotsize=newDiameter;
+					treeDrawing.treeDisplay.setMinimumTaxonNameDistanceFromTip(treeDrawing.spotsize/2, 4);
+					parametersChanged();
+				}
+			}
+
+		}
+		else if (checker.compare(this.getClass(), "Sets whether or not internal nodes are shown", "[on = show;  off]", commandName, "toggleShowInternals")) {
+			showInternals.toggleValue(parser.getFirstToken(arguments));
+			parametersChanged();
 			Enumeration e = drawings.elements();
 			while (e.hasMoreElements()) {
 				Object obj = e.nextElement();
 				PlotTreeDrawing treeDrawing = (PlotTreeDrawing)obj;
 				treeDrawing.treeDisplay.repaint();
-    	 		}
-    	 	}
-   	 	else if (checker.compare(this.getClass(), "Sets whether or not terminal nodes are shown", "[on = show;  off]", commandName, "toggleShowTerminals")) {
-    	 		showTerminals.toggleValue(parser.getFirstToken(arguments));
-	 		 parametersChanged();
+			}
+		}
+		else if (checker.compare(this.getClass(), "Sets whether or not terminal nodes are shown", "[on = show;  off]", commandName, "toggleShowTerminals")) {
+			showTerminals.toggleValue(parser.getFirstToken(arguments));
+			parametersChanged();
 			Enumeration e = drawings.elements();
 			while (e.hasMoreElements()) {
 				Object obj = e.nextElement();
 				PlotTreeDrawing treeDrawing = (PlotTreeDrawing)obj;
 				treeDrawing.treeDisplay.repaint();
-    	 		}
-    	 	}
-    	 	else if (checker.compare(this.getClass(), "Sets whether or not the tree is shown", "[on = show;  off]", commandName, "toggleShowTree")) {
-    	 		showTree.toggleValue(parser.getFirstToken(arguments));
-	 		 parametersChanged();
+			}
+		}
+		else if (checker.compare(this.getClass(), "Sets whether or not the tree is shown", "[on = show;  off]", commandName, "toggleShowTree")) {
+			showTree.toggleValue(parser.getFirstToken(arguments));
+			parametersChanged();
 			Enumeration e = drawings.elements();
 			while (e.hasMoreElements()) {
 				Object obj = e.nextElement();
 				PlotTreeDrawing treeDrawing = (PlotTreeDrawing)obj;
 				treeDrawing.treeDisplay.repaint();
-    	 		}
-    	 	}
-    	 	else if (checker.compare(this.getClass(), "Sets whether or not to show distant nodes as if in fog", "[on = show;  off]", commandName, "toggleFog")) {
-    	 		showFog.toggleValue(parser.getFirstToken(arguments));
-	 		 parametersChanged();
+			}
+		}
+		else if (checker.compare(this.getClass(), "Sets whether or not to show distant nodes as if in fog", "[on = show;  off]", commandName, "toggleFog")) {
+			showFog.toggleValue(parser.getFirstToken(arguments));
+			parametersChanged();
 			Enumeration e = drawings.elements();
 			while (e.hasMoreElements()) {
 				Object obj = e.nextElement();
 				PlotTreeDrawing treeDrawing = (PlotTreeDrawing)obj;
 				treeDrawing.treeDisplay.repaint();
-    	 		}
-    	 	}
-    	 	else if (checker.compare(this.getClass(), "Sets the module that calculates the node locations", "[name of module]", commandName, "setNodeLocs")) {
+			}
+		}
+		else if (checker.compare(this.getClass(), "Sets the module that calculates the node locations", "[name of module]", commandName, "setNodeLocs")) {
 			NodeLocsPlot3D temp= (NodeLocsPlot3D)replaceEmployee(NodeLocsPlot3D.class, arguments, "Method choose node locations", nodeLocsTask);
-    	 		if (temp!=null) {
-    	 		 	nodeLocsTask=temp;
-    	 		 	parametersChanged();
+			if (temp!=null) {
+				nodeLocsTask=temp;
+				parametersChanged();
 				Enumeration e = drawings.elements();
 				while (e.hasMoreElements()) {
 					Object obj = e.nextElement();
 					PlotTreeDrawing treeDrawing = (PlotTreeDrawing)obj;
 					treeDrawing.treeDisplay.repaint();
-	    	 		}
-    	 		 }
-	    	 	return temp;
- 		}
-    	 	else {
- 			return  super.doCommand(commandName, arguments, checker);
+				}
+			}
+			return temp;
+		}
+		else {
+			return  super.doCommand(commandName, arguments, checker);
 		}
 		return null;
-   	 }
+	}
 	/*.................................................................................................................*/
-    	 public String getName() {
+	public String getName() {
 		return "Plot Tree 3D";
-   	 }
-   	 
+	}
+
 	/*.................................................................................................................*/
 	/** returns whether this module is requesting to appear as a primary choice */
-   	public boolean requestPrimaryChoice(){
-   		return true;  
-   	}
+	public boolean requestPrimaryChoice(){
+		return true;  
+	}
 	/*.................................................................................................................*/
-   	 
- 	/** returns an explanation of what the module does.*/
- 	public String getExplanation() {
- 		return "Draws trees plotted in a three dimensional space." ;
-   	 }
+
+	/** returns an explanation of what the module does.*/
+	public String getExplanation() {
+		return "Draws trees plotted in a three dimensional space." ;
+	}
 	/*.................................................................................................................*/
-   	public boolean isSubstantive(){
-   		return true;
-   	}
+	public boolean isSubstantive(){
+		return true;
+	}
 	/*.................................................................................................................*/
-   	public boolean isPrerelease(){
-   		return false;
-   	}
+	public boolean isPrerelease(){
+		return false;
+	}
 }
 
 /* ======================================================================== */
@@ -188,17 +198,15 @@ class PlotTreeDrawing extends TreeDrawing  {
 	public int edgewidth = 4;
 	public int spotsize = 24;
 	int oldNumTaxa = 0;
- 	public static final int inset=1;
+	public static final int inset=1;
 	private boolean ready=false;
 	private int foundBranch;
 	double[] zScores;
 	int[] nodes;
-	private NameReference colorNameRef;
 	public PlotTreeDrawing (TreeDisplay treeDisplay, int numTaxa, PlotTree3D ownerModule, int spotSize) {
 		super(treeDisplay, MesquiteTree.standardNumNodeSpaces(numTaxa));
 		this.spotsize = spotSize;
-		colorNameRef = NameReference.getNameReference("Color");
-	    	treeDisplay.setMinimumTaxonNameDistance(spotsize/2, 4);
+		treeDisplay.setMinimumTaxonNameDistanceFromTip(spotsize/2, 4);
 		treeDisplay.setOrientation(TreeDisplay.FREEFORM);
 		this.ownerModule = ownerModule;
 		this.treeDisplay = treeDisplay;
@@ -214,7 +222,7 @@ class PlotTreeDrawing extends TreeDrawing  {
 		lineBaseY[node]=y[tree.motherOfNode(node)];
 		lineBaseX[node]=x[tree.motherOfNode(node)];
 	}
-	
+
 	double minimumZ, maximumZ;
 	private Color applyFog(Color c, int node){
 		if (!ownerModule.showFog.getValue())
@@ -243,12 +251,12 @@ class PlotTreeDrawing extends TreeDrawing  {
 			zScores[count.getValue()] = z[node];
 			nodes[count.getValue()] = node;
 			count.increment();
-			
+
 		}
 		for (int d = tree.firstDaughterOfNode(node); tree.nodeExists(d); d = tree.nextSisterOfNode(d))
 			survey(tree, d, zScores, nodes, count);
 	}
-	
+
 	/*_________________________________________________*/
 	/** Draw highlight for branch node */
 	public void drawHighlight(Tree tree, int node, Graphics g, boolean flip){
@@ -267,9 +275,10 @@ class PlotTreeDrawing extends TreeDrawing  {
 	}
 	/*_________________________________________________*/
 	private   void drawLine(Tree tree, Graphics g, int node) {
+		if (tree.withinCollapsedClade(node))
+			return;
 		if (tree.nodeExists(node)) {
 			g.setColor(applyFog(treeDisplay.getBranchColor(node), node));
-				
 			if (node == tree.getRoot()) {
 			}
 			else if (tree.motherOfNode(node) == tree.getRoot() && !tree.getRooted() && !tree.nodeIsPolytomous( tree.getRoot() )) {
@@ -287,24 +296,28 @@ class PlotTreeDrawing extends TreeDrawing  {
 					}
 				}
 			}
-			else  if (MesquiteDouble.isCombinable(lineTipX[node]) && MesquiteDouble.isCombinable(lineBaseX[node]) && MesquiteDouble.isCombinable(lineTipY[node]) && MesquiteDouble.isCombinable(lineBaseY[node])) {
-				GraphicsUtil.drawLine(g,lineTipX[node]+1, lineTipY[node], lineBaseX[node]+1, lineBaseY[node]);
-				GraphicsUtil.drawLine(g,lineTipX[node], lineTipY[node], lineBaseX[node], lineBaseY[node]);
-				GraphicsUtil.drawLine(g,lineTipX[node], lineTipY[node]+1, lineBaseX[node], lineBaseY[node]+1);
-				GraphicsUtil.drawLine(g,lineTipX[node]+1, lineTipY[node]+1, lineBaseX[node]+1, lineBaseY[node]+1);
+			else  {
+				if (MesquiteDouble.isCombinable(lineTipX[node]) && MesquiteDouble.isCombinable(lineBaseX[node]) && MesquiteDouble.isCombinable(lineTipY[node]) && MesquiteDouble.isCombinable(lineBaseY[node])) {
+					GraphicsUtil.drawLine(g,lineTipX[node]+1, lineTipY[node], lineBaseX[node]+1, lineBaseY[node]);
+					GraphicsUtil.drawLine(g,lineTipX[node], lineTipY[node], lineBaseX[node], lineBaseY[node]);
+					GraphicsUtil.drawLine(g,lineTipX[node], lineTipY[node]+1, lineBaseX[node], lineBaseY[node]+1);
+					GraphicsUtil.drawLine(g,lineTipX[node]+1, lineTipY[node]+1, lineBaseX[node]+1, lineBaseY[node]+1);
+				}
 			}
-			
+
 		}
 	}
 	/*_________________________________________________*/
 	private boolean getDrawNode(Tree tree, int node) {
+		if (tree.withinCollapsedClade(node))
+			return false;
 		return (tree.nodeIsTerminal(node) && ownerModule.showTerminals.getValue())|| (!tree.nodeIsTerminal(node) && ownerModule.showInternals.getValue());
 	}
 	/*_________________________________________________*/
 	private   void drawSpots(Tree tree, Graphics g, int node) {
 		if (tree.nodeExists(node)) {
 			g.setColor(applyFog(treeDisplay.getBranchColor(node), node));
-				
+
 			if (getDrawNode(tree,node)){
 				if (node == tree.getRoot()) {
 					if (tree.getRooted()) {
@@ -326,36 +339,36 @@ class PlotTreeDrawing extends TreeDrawing  {
 	private int bumpUp(int i){
 		return i + (255-i)/4;
 	}
-int count = 0;
+	int count = 0;
 	/*_________________________________________________*/
 	public   void recalculatePositions(Tree tree) {
-	        if (MesquiteTree.OK(tree) && !ownerModule.isDoomed()) {
-	        	if (tree.getNumNodeSpaces()!=numNodes)
-	        		resetNumNodes(tree.getNumNodeSpaces());
-	        	if (!tree.nodeExists(getDrawnRoot()))
-	        		setDrawnRoot(tree.getRoot());
-			ownerModule.nodeLocsTask.calculateNodeLocs(treeDisplay,  tree, getDrawnRoot(),  treeDisplay.getField()); //Graphics g removed as parameter May 02
+		if (MesquiteTree.OK(tree) && !ownerModule.isDoomed()) {
+			if (tree.getNumNodeSpaces()!=numNodes)
+				resetNumNodes(tree.getNumNodeSpaces());
+			if (!tree.nodeExists(getDrawnRoot()))
+				setDrawnRoot(tree.getRoot());
+			ownerModule.nodeLocsTask.calculateNodeLocs(treeDisplay,  tree, getDrawnRoot()); //Graphics g removed as parameter May 02
 		}
 	}
 	/*_________________________________________________*/
 	public   void drawTree(Tree tree, int drawnRoot, Graphics g) {
-	        if (MesquiteTree.OK(tree)) {
-	        	if (tree.getNumNodeSpaces()!=numNodes) {
-	        		resetNumNodes(tree.getNumNodeSpaces());
-	        	}
-	        	if (zScores == null || zScores.length !=tree.getNumNodeSpaces()){
-	        		zScores = new double[tree.getNumNodeSpaces()];
-	        		nodes = new int[tree.getNumNodeSpaces()];
-	        	}
-	        	DoubleArray.deassignArray(zScores);
-	        	IntegerArray.deassignArray(nodes);
-	        	g.setColor(treeDisplay.branchColor);
+		if (MesquiteTree.OK(tree)) {
+			if (tree.getNumNodeSpaces()!=numNodes) {
+				resetNumNodes(tree.getNumNodeSpaces());
+			}
+			if (zScores == null || zScores.length !=tree.getNumNodeSpaces()){
+				zScores = new double[tree.getNumNodeSpaces()];
+				nodes = new int[tree.getNumNodeSpaces()];
+			}
+			DoubleArray.deassignArray(zScores);
+			IntegerArray.deassignArray(nodes);
+			g.setColor(treeDisplay.branchColor);
 			//ownerModule.nodeLocsTask.calculateNodeLocs(treeDisplay,  tree, drawnRoot,  treeDisplay.getField()); //Graphics g removed as parameter May 02
 			minimumZ = MesquiteDouble.unassigned;
 			maximumZ = MesquiteDouble.unassigned;
 			MesquiteInteger count = new MesquiteInteger(0);
 			survey(tree, drawnRoot, zScores, nodes, count);
-			
+
 			for (int i=1; i<zScores.length; i++) {
 				for (int j= i-1; j>=0  &&  zScores[j]<zScores[j+1]; j--) {
 					if (MesquiteDouble.isCombinable(zScores[j]) && MesquiteDouble.isCombinable(zScores[j+1])){
@@ -369,7 +382,7 @@ int count = 0;
 				}
 			}
 			calculateLines(tree, drawnRoot);
-	       	 	//drawSpots(tree, g, drawnRoot);  
+			//drawSpots(tree, g, drawnRoot);  
 
 			for (int i=0; i<nodes.length; i++) {
 				if (tree.nodeExists(nodes[i])) {
@@ -390,9 +403,9 @@ int count = 0;
 				}
 			}
 
-	       	 }
-	   }
-	
+		}
+	}
+
 	/*_________________________________________________*/
 	private boolean inSpot(int node, int h, int v){
 		int s = getSpotSize(node);
@@ -428,9 +441,7 @@ int count = 0;
 			GraphicsUtil.fillOval(g, x[node]- s/2 + 2, y[node]- s/2 + 2, s - 4, s - 4);
 		}
 	}
-	/*_________________________________________________*/
-	public  void fillTerminalBox(Tree tree, int node, Graphics g) {
-	}
+	
 	/*_________________________________________________*/
 	public  void fillTerminalBoxWithColors(Tree tree, int node, ColorDistribution colors, Graphics g){
 	}
@@ -448,14 +459,14 @@ int count = 0;
 					int startAngle=90;
 					double totalFreq=0;
 					for (int i=0; i<numColors; i++) totalFreq += colors.getWeight(i);
-					
+
 					int arcAngle = 360/(numColors);
 					int s = getSpotSize(node);
 					for (int i=0; i<numColors; i++) {
 						Color color;
 						if ((color = colors.getColor(i, !tree.anySelected()|| tree.getSelected(node)))!=null)
 							g.setColor(applyFog(color, node));
-						
+
 						arcAngle = (int)((colors.getWeight(i)/totalFreq)*360);
 						GraphicsUtil.fillArc(g, x[node]- s/2 + 2, y[node]- s/2 + 2, s - 4, s - 4, startAngle, arcAngle);
 						startAngle+=arcAngle;
@@ -472,7 +483,7 @@ int count = 0;
 			fillSpot(g,node);
 		}
 	}
-	   
+
 	/*_________________________________________________*/
 	private void ScanBranches(Tree tree, int node, int x, int y)
 	{
@@ -490,14 +501,14 @@ int count = 0;
 	}
 	/*_________________________________________________*/
 	public   int findBranch(Tree tree, int drawnRoot, int x, int y, MesquiteDouble fraction) { 
-	        if (MesquiteTree.OK(tree) && ready) {
-	        	foundBranch=0;
-	       		 ScanBranches(tree, drawnRoot, x, y);
-	       		 return foundBranch;
-	       	}
-	       	return 0;
+		if (MesquiteTree.OK(tree) && ready) {
+			foundBranch=0;
+			ScanBranches(tree, drawnRoot, x, y);
+			return foundBranch;
+		}
+		return 0;
 	}
-	
+
 	/*_________________________________________________*/
 	public void reorient(int orientation) {
 		treeDisplay.setOrientation(orientation);
@@ -507,13 +518,13 @@ int count = 0;
 	public void setEdgeWidth(int edw) {
 		edgewidth = edw;
 	}
-/*New code Feb.22.07 allows eavesdropping on edgewidth by the TreeDrawing oliver*/ //TODO: delete new code comments
+	/*New code Feb.22.07 allows eavesdropping on edgewidth by the TreeDrawing oliver*/ //TODO: delete new code comments
 	/*_________________________________________________*/
 	public int getEdgeWidth() {
 		return edgewidth;
 	}
-/*End new code Feb.22.07 oliver*/
+	/*End new code Feb.22.07 oliver*/
 }
-	
+
 
 

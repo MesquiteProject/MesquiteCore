@@ -26,6 +26,11 @@ import mesquite.correl.lib.*;
 import mesquite.lib.*;
 import mesquite.lib.characters.AdjustableDistribution;
 import mesquite.lib.characters.CharacterDistribution;
+import mesquite.lib.tree.Tree;
+import mesquite.lib.ui.ExtensibleDialog;
+import mesquite.lib.ui.MesquiteSubmenuSpec;
+import mesquite.lib.ui.ProgressIndicator;
+import mesquite.lib.ui.RadioButtons;
 
 public class Pagel94 extends Pagel94Calculator {
 

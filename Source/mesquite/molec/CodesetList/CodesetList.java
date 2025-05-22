@@ -17,6 +17,7 @@ package mesquite.molec.CodesetList;
 import mesquite.lists.lib.*;
 import mesquite.lib.*;
 import mesquite.lib.characters.*;
+import mesquite.lib.ui.AlertDialog;
 import mesquite.molec.lib.*;
 
 /* ======================================================================== */
@@ -51,7 +52,7 @@ public class CodesetList extends DataSpecssetList {
 	/*.................................................................................................................*/
 	public Object doCommand(String commandName, String arguments, CommandChecker checker) {
 		if (checker.compare(this.getClass(), "Instructs user as how to make new genetic code set (CODESET)", null, commandName, "newCodeset")){
-			Object obj = getMainObject();
+			Object obj = getCharacterMatrix();
 			if (!(obj instanceof CharacterData))
 				return null;
 			CharacterData data = (CharacterData)obj;

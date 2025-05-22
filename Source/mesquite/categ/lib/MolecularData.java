@@ -22,6 +22,9 @@ import mesquite.lib.characters.CharacterStates;
 import mesquite.lib.characters.DefaultReference;
 import mesquite.lib.characters.ModelSet;
 import mesquite.lib.duties.*;
+import mesquite.lib.taxa.Taxa;
+import mesquite.lib.taxa.Taxon;
+import mesquite.lib.ui.Mesquite3DIntPoint;
 import mesquite.molec.lib.*;
 
 import java.util.*;
@@ -169,6 +172,73 @@ public class MolecularData extends CategoricalData {
 			}
 		}
 		return super.addParts(starting, num);
+	}
+	/*-----------------------------------------------------------*/
+	/** deletes characters flagged for deletion in Bits*/
+	protected boolean deletePartsFlagged(Bits toDelete){
+		/*Deleting characters; deal with inversions. 
+		 * This does  it sequentially last block to first block,
+		 * but this calculation doesn't compress matrices, so it's OK in efficiency*/
+		
+		if (inversions != null){
+			int[][] blocks = toDelete.getBlocks(-1);
+			for (int k = blocks.length-1; k>=0; k--) {
+				int starting = blocks[k][0];
+				int num = blocks[k][1]-starting+1;
+				for (int it = 0; it<inversions.length && it< getNumTaxa(); it++){
+					for (int ip = 0; ip< inversions[it].size(); ip++){
+						Mesquite3DIntPoint p = (Mesquite3DIntPoint)inversions[it].elementAt(ip);
+						if (starting <= p.x){//deletion will affect point
+							if (p.x < starting+num) //point is being deleted also
+								p.x = starting;  //snap left edge of flip to right margin of deleted area
+							else
+								p.x -= num; //push to left
+						}
+						if (starting <= p.y){//deletion will affect point
+							if (p.y < starting+num) //point is being deleted also
+								p.y = starting-1;   //snap right edge of flip to left margin of deleted area-1
+							else
+								p.y -= num; //push to left
+						}
+					}
+				}
+			}
+		}
+		return super.deletePartsFlagged(toDelete);
+	}
+
+		/*-----------------------------------------------------------*/
+	/** deletes characters by blocks; for kth block, deletes numInBlock[k] characters from (and including) position startOfBlock[k]; returns true iff successful.
+	 * Assumes that these blocks are in sequence!!!*
+	protected boolean deletePartsBy Blocks(int[][] blocks){
+		/*Deleting characters; deal with inversions. 
+		 * This does  it sequentially last block to first block,
+		 * but this calculation doesn't compress matrices, so it's OK in efficiency*
+		if (inversions != null){
+			for (int k = blocks.length-1; k>=0; k--) {
+				int starting = blocks[k][0];
+				int num = blocks[k][1]-starting+1;
+				for (int it = 0; it<inversions.length && it< getNumTaxa(); it++){
+					for (int ip = 0; ip< inversions[it].size(); ip++){
+						Mesquite3DIntPoint p = (Mesquite3DIntPoint)inversions[it].elementAt(ip);
+						if (starting <= p.x){//deletion will affect point
+							if (p.x < starting+num) //point is being deleted also
+								p.x = starting;  //snap left edge of flip to right margin of deleted area
+							else
+								p.x -= num; //push to left
+						}
+						if (starting <= p.y){//deletion will affect point
+							if (p.y < starting+num) //point is being deleted also
+								p.y = starting-1;   //snap right edge of flip to left margin of deleted area-1
+							else
+								p.y -= num; //push to left
+						}
+					}
+				}
+			}
+		}
+
+		return super.deletePartsBy Blocks(blocks);
 	}
 	/*-----------------------------------------------------------*/
 	/** deletes num characters from (and including) position "starting"; returns true iff successful.  Should be overridden by particular subclasses, but this called via super so it can clean up.*/
@@ -467,15 +537,25 @@ public class MolecularData extends CategoricalData {
 			}
 
 		}
-		
+
 /*...............................................................................................................*/
 	/** Sets the GenBank number of a particular taxon in this data object. */
 	public void setGenBankNumber(int it, String s){
 		Taxon taxon = getTaxa().getTaxon(it);
 		Associable tInfo = getTaxaInfo(true);
 		if (tInfo != null && taxon != null) {
-			tInfo.setAssociatedObject(MolecularData.genBankNumberRef, it, s);
+			tInfo.setAssociatedString(MolecularData.genBankNumberRef, it, s);
 		}
+	}
+	/*...............................................................................................................*/
+	/** Gets the GenBank number of a particular taxon in this data object. */
+	public String getGenBankNumber(int it){
+		Taxon taxon = getTaxa().getTaxon(it);
+		Associable tInfo = getTaxaInfo(true);
+		if (tInfo != null && taxon != null) {
+			return tInfo.getAssociatedString(MolecularData.genBankNumberRef, it);
+		}
+		return null;
 	}
 
 	/* ..........................................  .................................................. */
@@ -531,16 +611,16 @@ public class MolecularData extends CategoricalData {
 		}
 	}
 
-	public  StringBuffer getSequenceAsFasta(boolean includeGaps,boolean convertMultStateToMissing, int it) {
+	public  MesquiteStringBuffer getSequenceAsFasta(boolean includeGaps,boolean convertMultStateToMissing, int it) {
 		return getSequenceAsFasta(includeGaps, convertMultStateToMissing, it, getTaxa().getTaxonName(it));
 	}
-	
-	public  StringBuffer getSequenceAsFasta(boolean includeGaps,boolean convertMultStateToMissing, int it, String sequenceName) {
+
+	public  MesquiteStringBuffer getSequenceAsFasta(boolean includeGaps,boolean convertMultStateToMissing, int it, String sequenceName) {
 		Taxa taxa = getTaxa();
 
 		int numTaxa = taxa.getNumTaxa();
 		int numChars = getNumChars();
-		StringBuffer outputBuffer = new StringBuffer(numTaxa*(20 + numChars));
+		MesquiteStringBuffer outputBuffer = new MesquiteStringBuffer(numTaxa*(20 + numChars));
 		boolean isProtein = this instanceof ProteinData;
 
 		int counter = 1;
@@ -550,7 +630,7 @@ public class MolecularData extends CategoricalData {
 			outputBuffer.append(sequenceName);
 			outputBuffer.append(StringUtil.lineEnding());
 			for (int ic = 0; ic<numChars; ic++) {
-				int currentSize = outputBuffer.length();
+				long currentSize = outputBuffer.length();
 				boolean wroteMoreThanOneSymbol = false;
 				if (isUnassigned(ic, it) || (convertMultStateToMissing && isProtein && isMultistateOrUncertainty(ic, it)))
 					outputBuffer.append(getUnassignedSymbol());

@@ -19,6 +19,9 @@ import java.awt.*;
 import mesquite.lib.*;
 import mesquite.lib.characters.*;
 import mesquite.lib.duties.*;
+import mesquite.lib.taxa.Taxa;
+import mesquite.lib.tree.Tree;
+import mesquite.lib.ui.MesquiteSubmenuSpec;
 
 /* ======================================================================== */
 public class SimAncestralStates extends CharHistorySource {
@@ -215,7 +218,7 @@ public class SimAncestralStates extends CharHistorySource {
 			String s =  "Simulator: " + simulatorTask.getName();
 			if (lastTree !=null)
 				s+= "; most recent tree: " + lastTree.getName();
-			return s + " [seed " + originalSeed + "]";
+			return s + " (seed " + originalSeed + ")";
 		}
 		else
 			return "";

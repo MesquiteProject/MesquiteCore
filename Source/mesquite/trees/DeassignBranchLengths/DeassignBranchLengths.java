@@ -17,6 +17,8 @@ import java.util.*;
 import java.awt.*;
 import mesquite.lib.*;
 import mesquite.lib.duties.*;
+import mesquite.lib.tree.AdjustableTree;
+import mesquite.lib.tree.MesquiteTree;
 
 /* ======================================================================== */
 public class DeassignBranchLengths extends BranchLengthsAltererMult {
@@ -33,7 +35,11 @@ public class DeassignBranchLengths extends BranchLengthsAltererMult {
    	 public boolean isPrerelease(){
    	 	return false;
    	 }
-   
+ 	/*.................................................................................................................*/
+   	 public boolean requestPrimaryChoice(){
+   	 	return true;
+   	 }
+
 	/*.................................................................................................................*/
 	public  boolean transformTree(AdjustableTree tree, MesquiteString resultString, boolean notify){
   	 		if (tree instanceof MesquiteTree) {

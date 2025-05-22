@@ -52,6 +52,11 @@ public abstract class DataSearcher extends MesquiteModule  {
 	public void unsuccessfulSearchMessage(){
 	}
 	
+	/*.................................................................................................................*/
+	/** message once search has been fully invoked.  */
+	public void searchInvokedMessage(){
+	}
+	
 	/** Returns the number of separate processings that are needed after each search.   E.g., LocalBlaster can require multiple
 	 * processings if several local databases are searched.  */
 	public int getNumberOfProcessingPassesPerSearch() {
@@ -102,7 +107,9 @@ public abstract class DataSearcher extends MesquiteModule  {
  			}
  			if (!did)
 				discreetAlert( "Sorry, to use the search you need to have one or more stretches of character states (e.g. a section of sequence) selected in one or more taxa.");
-		}
+ 			else
+ 	 			searchInvokedMessage();
+ 		}
 		return did;
    	}
 	/*.................................................................................................................*/

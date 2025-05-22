@@ -16,13 +16,16 @@ package mesquite.lib;
 import java.awt.*;
 
 import mesquite.consensus.lib.Bipartition;
+import mesquite.lib.ui.MesquiteWindow;
+import mesquite.lib.ui.QueryDialogs;
+import mesquite.lib.ui.TwoIntegersDialog;
 
 /*Last documented:  August 1999 */
 
 /* ======================================================================== */
 /**This int wrapper class is used to be able to pass integers by reference and have the
 	original change as needed*/
-public class MesquiteInteger implements Listable{
+public class MesquiteInteger implements Listable, Nameable{
 	public static final int unassigned = Integer.MIN_VALUE+1;
 	public static final int impossible = Integer.MAX_VALUE - 1;
 	public static final int finite = Integer.MAX_VALUE-3;
@@ -31,7 +34,8 @@ public class MesquiteInteger implements Listable{
 	public static final int inapplicable = Integer.MAX_VALUE -2;
 	private int value;
 	public static long totalCreated = 0;
-	
+	private boolean unanimous = true;
+
 	public MesquiteInteger (String name, int value) {
 		this.name = name;
 		this.value=value;
@@ -39,6 +43,10 @@ public class MesquiteInteger implements Listable{
 	}
 	public MesquiteInteger(int value) {
 		this.value=value;
+		totalCreated++;
+	}
+	public MesquiteInteger(long value) { //for backwards compatibility connected with long string positions
+		this.value=(int)value;
 		totalCreated++;
 	}
 	public MesquiteInteger() {
@@ -55,8 +63,16 @@ public class MesquiteInteger implements Listable{
 		this.value=value;
 	}
 	/** Sets value */
+	public void setValue(long value) {//for backwards compatibility connected with long string positions
+		this.value=(int)value;
+	}
+	/** Sets value */
 	public void setValue(String s) {
 		this.value=fromString(s);
+	}
+	public static void setValue(MesquiteInteger b, int value) { //so that setting can be done in line whether or not null
+		if (b != null)
+			b.setValue(value);
 	}
 	/** Adds one to value */
 	public void increment() {
@@ -74,6 +90,33 @@ public class MesquiteInteger implements Listable{
 	public void decrement(int decrementValue) {
 		value-= decrementValue;
 	}
+	
+	public void resetVote(){ //should only be called before use of vote
+		setToUnassigned();
+		unanimous = true;
+}
+	/** if unassigned, assign it the incoming. If incoming is different from previous assigned, unanimous is set to false and keep it there. Thus know if there is disagreemnt in a set */
+	public void vote(int value) {
+		if (value == unassigned)
+			return;
+		if (!unanimous)
+			return;
+		if (this.value == unassigned)
+			this.value = value;
+		else if (this.value != value)
+			unanimous = false;
+	}
+	public boolean isUnanimous(){ //should only be called after a good use of vote
+		return unanimous;
+	}
+	public int unanimousValue(){ //should only be called after a good use of vote
+		if (unanimous)
+			return value;
+		else
+			return unassigned;
+	}
+
+	
 	/** Sets value to unassigned */
 	public void setToUnassigned() {
 		value=unassigned;
@@ -433,6 +476,10 @@ public class MesquiteInteger implements Listable{
 		if (name == null)
 		return toString();
 		else return name;
+	}
+	/** Sets value */
+	public void setName(String name) {
+		this.name=name;
 	}
 	/** Returns string version of this value.  Returns "unassigned" etc. if needed*/
 	public String toString() {

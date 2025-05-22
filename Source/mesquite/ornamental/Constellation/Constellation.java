@@ -19,6 +19,13 @@ import java.awt.*;
 
 import mesquite.lib.*;
 import mesquite.lib.duties.*;
+import mesquite.lib.tree.MesquiteTree;
+import mesquite.lib.tree.Tree;
+import mesquite.lib.tree.TreeDisplay;
+import mesquite.lib.tree.TreeDrawing;
+import mesquite.lib.ui.ColorDistribution;
+import mesquite.lib.ui.GraphicsUtil;
+import mesquite.lib.ui.RotatedRectangle;
 import mesquite.trees.BallsNSticks.BallsNSticks;
 
 /* ======================================================================== */
@@ -40,18 +47,26 @@ public class Constellation extends DrawTree {
  		addMenuItem( "Spot Size...", makeCommand("setSpotDiameter",  this));
  		return true;
  	 }
+	
+	public boolean loadModule(){
+		return false;
+	}
   	 
  	 public void employeeQuit(MesquiteModule m){
  	 	iQuit();
  	 }
 	public   TreeDrawing createTreeDrawing(TreeDisplay treeDisplay, int numTaxa) {
 		ConstellationDrawing treeDrawing=  new ConstellationDrawing (treeDisplay, numTaxa, this);
+		treeDisplay.collapsedCladeNameAtLeftmostAncestor = true;
 		drawings.addElement(treeDrawing);
 		return treeDrawing;
 	}
 	/** Returns true if other modules can control the orientation */
 	public boolean allowsReorientation(){
 		return false;
+	}
+	public Vector getDrawings(){
+		return drawings;
 	}
 	/*.................................................................................................................*/
   	 public Snapshot getSnapshot(MesquiteFile file) { 
@@ -73,7 +88,7 @@ public class Constellation extends DrawTree {
 					Object obj = e.nextElement();
 					ConstellationDrawing treeDrawing = (ConstellationDrawing)obj;
     	 				treeDrawing.spotsize=newDiameter;
-    	 				treeDrawing.treeDisplay.setMinimumTaxonNameDistance(treeDrawing.spotsize/2, 4);
+    	 				treeDrawing.treeDisplay.setMinimumTaxonNameDistanceFromTip(treeDrawing.spotsize/2, 4);
     	 			}
 	 				parametersChanged();
     	 		}
@@ -116,7 +131,7 @@ class ConstellationDrawing extends TreeDrawing  {
 	
 	public ConstellationDrawing (TreeDisplay treeDisplay, int numTaxa, Constellation ownerModule) {
 		super(treeDisplay, MesquiteTree.standardNumNodeSpaces(numTaxa));
-	    	treeDisplay.setMinimumTaxonNameDistance(spotsize/2, 4);
+	    	treeDisplay.setMinimumTaxonNameDistanceFromTip(spotsize/2, 4);
 		treeDisplay.setOrientation(TreeDisplay.FREEFORM);
 		this.ownerModule = ownerModule;
 		this.treeDisplay = treeDisplay;
@@ -165,6 +180,8 @@ class ConstellationDrawing extends TreeDrawing  {
 	}
 	/*_________________________________________________*/
 	private   void drawOneBranch(Tree tree, Graphics g, int node, int drawnRoot) {
+		if (tree.withinCollapsedClade(node))
+			return;
 		if (tree.nodeExists(node)) {
 			//g.setColor(Color.black);//for testing
 			g.setColor(treeDisplay.getBranchColor(node));
@@ -245,7 +262,7 @@ class ConstellationDrawing extends TreeDrawing  {
 	        		resetNumNodes(tree.getNumNodeSpaces());
 	        	if (!tree.nodeExists(getDrawnRoot()))
 	        		setDrawnRoot(tree.getRoot());
-			ownerModule.nodeLocsTask.calculateNodeLocs(treeDisplay,  tree, getDrawnRoot(),  treeDisplay.getField()); //Graphics g removed as parameter May 02
+			ownerModule.nodeLocsTask.calculateNodeLocs(treeDisplay,  tree, getDrawnRoot()); //Graphics g removed as parameter May 02
 		}
 	}
 	/*_________________________________________________*/
@@ -282,9 +299,6 @@ class ConstellationDrawing extends TreeDrawing  {
 	/*_________________________________________________*/
 	private void fillSpot(Graphics g, int node){
 		GraphicsUtil.fillOval(g, x[node]- spotsize/2 + 2, y[node]- spotsize/2 + 2, spotsize - 4, spotsize - 4, true);
-	}
-	/*_________________________________________________*/
-	public  void fillTerminalBox(Tree tree, int node, Graphics g) {
 	}
 	/*_________________________________________________*/
 	public  void fillTerminalBoxWithColors(Tree tree, int node, ColorDistribution colors, Graphics g){

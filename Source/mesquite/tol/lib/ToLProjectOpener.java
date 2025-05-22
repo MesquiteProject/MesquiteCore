@@ -19,6 +19,11 @@ package mesquite.tol.lib;
 import java.net.*;
 import mesquite.lib.*;
 import mesquite.lib.duties.*;
+import mesquite.lib.taxa.Taxa;
+import mesquite.lib.taxa.Taxon;
+import mesquite.lib.tree.MesquiteTree;
+import mesquite.lib.tree.TreeVector;
+
 import org.dom4j.*;
 
 public class ToLProjectOpener  {
@@ -98,7 +103,7 @@ public class ToLProjectOpener  {
 		boolean[] hasChildren = new boolean[numTaxa];
 		ToLUtil.getTerminals(root, names, leaves, hasChildren, new MesquiteString(), new MesquiteInteger(0));
 		TaxaManager taxaTask = (TaxaManager)ownerModule.findElementManager(Taxa.class);
-		Taxa taxa = taxaTask.makeNewTaxa("Taxa from ToL", numTaxa, false);
+		Taxa taxa = taxaTask.makeNewTaxaBlock("Taxa from ToL", numTaxa, false);
 		NameReference notesRef = NameReference.getNameReference("notes");
 //		NameReference leavesRef = NameReference.getNameReference("ToLLeaves");
 //		NameReference hasChildrenRef = NameReference.getNameReference("ToLHadChildren");

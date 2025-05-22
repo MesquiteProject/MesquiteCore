@@ -19,6 +19,12 @@ import java.util.*;
 import java.io.*;
 import mesquite.lib.*;
 import mesquite.lib.duties.*;
+import mesquite.lib.ui.ColorDistribution;
+import mesquite.lib.ui.MQPanel;
+import mesquite.lib.ui.MQTextArea;
+import mesquite.lib.ui.MesquiteSubmenuSpec;
+import mesquite.lib.ui.MesquiteWindow;
+import mesquite.lib.ui.WindowButton;
 
 /* ======================================================================== */
 
@@ -173,7 +179,7 @@ class NextProjectWindow extends MesquiteWindow {
 		contents.setLayout(new BorderLayout());
 		contents.setBackground(ColorDistribution.lightGreen);
 		
-		explanation= new TextArea("", 8, 3, TextArea.SCROLLBARS_NONE);
+		explanation= new MQTextArea("", 8, 3, TextArea.SCROLLBARS_NONE);
 		tF= new TextField();
    	 	if (!StringUtil.blank(module.nextProjectName))
    	 		tF.setText(module.nextProjectName);
@@ -182,7 +188,7 @@ class NextProjectWindow extends MesquiteWindow {
 		contents.add("North", tF);
 		contents.add("Center", explanation);
 		tF.setVisible(true);
-		Panel buttons = new Panel();
+		Panel buttons = new MQPanel();
 		Font f = explanation.getFont();
  		if (f!=null){
 	 		Font fontToSet = new Font (f.getName(), f.getStyle(), f.getSize()+4);

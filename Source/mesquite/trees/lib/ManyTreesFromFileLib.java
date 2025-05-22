@@ -19,6 +19,12 @@ import java.util.*;
 import java.awt.*;
 import mesquite.lib.*;
 import mesquite.lib.duties.*;
+import mesquite.lib.taxa.Taxa;
+import mesquite.lib.tree.MesquiteTree;
+import mesquite.lib.tree.Tree;
+import mesquite.lib.tree.TreeVector;
+import mesquite.lib.ui.AlertDialog;
+import mesquite.lib.ui.ProgressIndicator;
 
 /** Supplies trees from tree blocks in a file.  Reads trees only when needed; hence suitable for files with too many trees to be held in memory at once, but slower than StoredTrees.*/
 public abstract class ManyTreesFromFileLib extends TreeSource implements MesquiteListener, PathHolder {
@@ -852,7 +858,7 @@ public abstract class ManyTreesFromFileLib extends TreeSource implements Mesquit
 		boolean treeDescriptionBad = (currentTreeName == null);
 		parser.getNextToken(); //eat up "equals"
 		if (processTree)
-			treeDescription=treeCommand.substring(parser.getPosition(), treeCommand.length());
+			treeDescription=treeCommand.substring((int)parser.getPosition(), treeCommand.length());
 		if (treeDescription== null || treeDescription.length()<=2)
 			return null;
 		MesquiteTree thisTree =t; //t is supplied mostly for skipping trees
@@ -872,7 +878,7 @@ public abstract class ManyTreesFromFileLib extends TreeSource implements Mesquit
 					cPos.setValue(wpos+2);
 					String num = ParseUtil.getToken(commentString, cPos);
 					String slash = ParseUtil.getToken(commentString, cPos);
-					String denom = ParseUtil.getToken(commentString, cPos, null, "$");
+					String denom = ParseUtil.getToken(commentString, cPos, null, "$");  //ZQ what was this? It seems to be prepared for a special sort of Newick comment involving $. Example file? (re: changes in parser
 					double w = 0;
 					if (slash !=null && "/".equals(slash))
 						w = 1.0*(MesquiteInteger.fromString(num))/(MesquiteInteger.fromString(denom));

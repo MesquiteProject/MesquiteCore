@@ -14,8 +14,8 @@ package mesquite.thinkTrees.AlphabeticTaxonNames;
 
 import mesquite.lib.MesquiteString;
 import mesquite.lib.MesquiteThread;
-import mesquite.lib.Taxa;
 import mesquite.lib.duties.TaxonNameAlterer;
+import mesquite.lib.taxa.Taxa;
 
 public class AlphabeticTaxonNames extends TaxonNameAlterer {
 

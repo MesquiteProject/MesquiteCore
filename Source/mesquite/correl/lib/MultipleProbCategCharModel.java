@@ -20,10 +20,10 @@ import mesquite.categ.lib.CategoricalState;
 import mesquite.categ.lib.DNAState;
 import mesquite.lib.MesquiteDouble;
 import mesquite.lib.Optimizer;
-import mesquite.lib.Tree;
 import mesquite.lib.characters.CharacterModel;
 import mesquite.lib.characters.CharacterState;
 import mesquite.lib.characters.CharacterStatesHolder;
+import mesquite.lib.tree.Tree;
 import mesquite.stochchar.lib.TreeDataModelBundle;
 
 /* ======================================================================== */

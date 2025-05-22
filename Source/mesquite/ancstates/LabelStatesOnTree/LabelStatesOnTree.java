@@ -18,6 +18,11 @@ import java.awt.*;
 import mesquite.lib.*;
 import mesquite.lib.characters.*;
 import mesquite.lib.duties.*;
+import mesquite.lib.tree.Tree;
+import mesquite.lib.tree.TreeDecorator;
+import mesquite.lib.tree.TreeDisplay;
+import mesquite.lib.tree.TreeDisplayExtra;
+import mesquite.lib.ui.ColorDistribution;
 
 /* ======================================================================== */
 public class LabelStatesOnTree extends DisplayStatesAtNodes {
@@ -82,6 +87,8 @@ class LabelStatesDecorator extends TreeDecorator {
 	}
 	/*.................................................................................................................*/
 	public   void labelNode(int N,  Tree tree, CharacterHistory statesAtNodes, CharacterDistribution observedStates, Graphics g) {
+		if (tree.withinCollapsedClade(N))
+			return;
 		for (int d = tree.firstDaughterOfNode(N); tree.nodeExists(d); d = tree.nextSisterOfNode(d))
 				labelNode(d, tree, statesAtNodes, observedStates, g);
 		int nodeX = (int)treeDisplay.getTreeDrawing().x[N];  // integer node approximation

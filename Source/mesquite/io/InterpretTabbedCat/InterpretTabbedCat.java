@@ -17,6 +17,10 @@ import java.util.*;
 import mesquite.lib.*;
 import mesquite.lib.characters.*;
 import mesquite.lib.duties.*;
+import mesquite.lib.taxa.Taxa;
+import mesquite.lib.taxa.Taxon;
+import mesquite.lib.ui.AlertDialog;
+import mesquite.lib.ui.ProgressIndicator;
 import mesquite.categ.lib.*;
 
 /* ============  a file interpreter for tabbed continuous files ============*/
@@ -57,7 +61,7 @@ public class InterpretTabbedCat extends FileInterpreterI {
 			TaxaManager taxaTask = (TaxaManager)findElementManager(Taxa.class);
 			CharactersManager charTask = (CharactersManager)findElementManager(CharacterData.class);
 
-			Taxa taxa = taxaTask.makeNewTaxa(getProject().getTaxas().getUniqueName("Taxa"), 0, false);
+			Taxa taxa = taxaTask.makeNewTaxaBlock(getProject().getTaxas().getUniqueName("Taxa"), 0, false);
 			taxa.addToFile(file, getProject(), taxaTask);
 			CharacterData data = charTask.newCharacterData(taxa, 0,CategoricalData.DATATYPENAME);
 			boolean wassave = data.saveChangeHistory;
@@ -65,7 +69,7 @@ public class InterpretTabbedCat extends FileInterpreterI {
 			data.addToFile(file, getProject(), null);
 
 			int numTaxa = 0;
-			StringBuffer sb = new StringBuffer(1000);
+			MesquiteStringBuffer sb = new MesquiteStringBuffer(1000);
 			file.readLine(sb);
 			String line = sb.toString();
 

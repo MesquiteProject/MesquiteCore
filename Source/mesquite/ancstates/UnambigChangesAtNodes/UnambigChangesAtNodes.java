@@ -17,6 +17,8 @@ import mesquite.categ.lib.*;
 import mesquite.lib.*;
 import mesquite.lib.characters.*;
 import mesquite.lib.duties.*;
+import mesquite.lib.tree.MesquiteTree;
+import mesquite.lib.tree.Tree;
 
 public class UnambigChangesAtNodes extends NumbersForNodesAndHistory {
 

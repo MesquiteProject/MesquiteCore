@@ -19,13 +19,17 @@ import java.awt.*;
 import mesquite.lib.*;
 import mesquite.lib.characters.*;
 import mesquite.lib.duties.*;
+import mesquite.lib.taxa.Taxa;
+import mesquite.lib.tree.Tree;
+import mesquite.lib.tree.TreeUtil;
+import mesquite.lib.tree.TreeVector;
 import mesquite.categ.lib.*;
 import mesquite.io.lib.*;
 
 
 /* ============  a file interpreter for phylip trees ============*/
 
-public abstract class InterpretPhylipTrees extends InterpretPhylip {
+public abstract class InterpretPhylipTrees extends InterpretPhylip  {
 /*.................................................................................................................*/
 	public void setPhylipState(CharacterData data, int ic, int it, char c){
 		//only deals with trees
@@ -50,7 +54,7 @@ public abstract class InterpretPhylipTrees extends InterpretPhylip {
 		 return null;  //
 	}
 /*.................................................................................................................*/
-	public void appendPhylipStateToBuffer(CharacterData data, int ic, int it, StringBuffer outputBuffer){
+	public void appendPhylipStateToBuffer(CharacterData data, int ic, int it, MesquiteStringBuffer outputBuffer){
 		//
 	}
 /*.................................................................................................................*/
@@ -79,7 +83,7 @@ public abstract class InterpretPhylipTrees extends InterpretPhylip {
 			TaxaManager taxaTask = (TaxaManager)findElementManager(Taxa.class);
 			if (taxaTask==null) 
 				return;
-			taxa = taxaTask.makeNewTaxa("Taxa", 0, false);
+			taxa = taxaTask.makeNewTaxaBlock("Taxa", 0, false);
 			taxa.addToFile(file, getProject(), taxaTask);
 			enlargeTaxaBlock = true;
 		}
@@ -89,19 +93,21 @@ public abstract class InterpretPhylipTrees extends InterpretPhylip {
 			if (StringUtil.notEmpty(arguments) && arguments.indexOf("useStandardizedTaxonNames")>=0)
 				taxonNamer = new SimpleNamesTaxonNamer();
 				
-			TreeVector trees = IOUtil.readPhylipTrees(this,mf, file, null, null, taxa, enlargeTaxaBlock, taxonNamer,getTreeNameBase(), true);
+			TreeVector trees = TreeUtil.readNewickTreeFile(file, null, taxa, enlargeTaxaBlock, taxonNamer,arguments, getTreeNameBase());
+			if (trees != null)
+				trees.addToFile(file,mf,(TreesManager)findElementManager(TreeVector.class));
 			importExtraFiles(file,taxa, trees);
 			finishImport(null, file, false );
 		}
 		decrementMenuResetSuppression();
 	}
 	/*.................................................................................................................*/
-	protected void exportTrees(Taxa taxa, TreeVector treeVector, StringBuffer outputBuffer) { 
+	protected void exportTrees(Taxa taxa, TreeVector treeVector, MesquiteStringBuffer outputBuffer) { 
 		Tree tree;
 		if (treeVector !=null && treeVector.size()>0) {
 			for (int iTree = 0; iTree < treeVector.size(); iTree++) {
 				tree = (Tree)treeVector.elementAt(iTree);
-				outputBuffer.append(tree.writeTreeSimpleByNames());  //or Tree.BY_NUMBERS  or Tree.BY_NAMES
+				outputBuffer.append(tree.writeTreeSimpleByNamesWithProperties());  //or Tree.BY_NUMBERS  or Tree.BY_NAMES
 				// if do it BY_NAMES, make sure you truncate the taxon names to 10 characters!!
 				outputBuffer.append(getLineEnding());
 			}

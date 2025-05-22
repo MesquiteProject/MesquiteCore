@@ -15,6 +15,11 @@ package mesquite.lib;
 
 import java.awt.*;
 
+import mesquite.lib.ui.AlertDialog;
+import mesquite.lib.ui.ExtensibleDialog;
+import mesquite.lib.ui.MesquiteCMenuItemSpec;
+import mesquite.lib.ui.MesquiteWindow;
+
 /*==========================  Mesquite Basic Class Library    ==========================*/
 /*===  the basic classes used by the trunk of Mesquite and available to the modules
 /* ���������������������������bits������������������������������� */
@@ -22,12 +27,13 @@ import java.awt.*;
 /* ======================================================================== */
 /** This boolean wrapper class is used to be able to pass integers by reference and have the
 	original change as needed.*/
-public class MesquiteBoolean implements Listable {
+public class MesquiteBoolean implements Listable, Nameable {
 	private boolean value;
 	private MesquiteCMenuItemSpec cmis = null;
 	public static MesquiteBoolean TRUE, FALSE;
 	private String name = null;
 	private boolean unassigned = true;
+	private boolean unanimous = true;
 	static {
 		TRUE = new MesquiteBoolean(true);
 		FALSE = new MesquiteBoolean(false);
@@ -64,6 +70,10 @@ public class MesquiteBoolean implements Listable {
 		value = false;
 	}
 
+	public static void setValue(MesquiteBoolean b, boolean value) { //so that setting can be done in line whether or not null
+		if (b != null)
+			b.setValue(value);
+	}
 	public void setValue(boolean value) {
 		unassigned = false;
 		if (value != this.value) {
@@ -85,6 +95,10 @@ public class MesquiteBoolean implements Listable {
 		if (b.equalsIgnoreCase("true"))
 			v= true;
 		else if (b.equalsIgnoreCase("false"))
+			v = false;
+		else if (b.equalsIgnoreCase("on"))
+			v= true;
+		else if (b.equalsIgnoreCase("off"))
 			v = false;
 		else {
 			value = false;
@@ -110,11 +124,19 @@ public class MesquiteBoolean implements Listable {
 				setValue(true);
 			else if  ("off".equalsIgnoreCase(arguments))
 				setValue(false);
+			else if ("true".equalsIgnoreCase(arguments))
+				setValue(true);
+			else if  ("false".equalsIgnoreCase(arguments))
+				setValue(false);
 			else {
 				 String s = ParseUtil.getFirstToken(arguments, pos);
 				 if ("on".equalsIgnoreCase(s))
 					setValue(true);
 				else if  ("off".equalsIgnoreCase(s))
+					setValue(false);
+				else if ("true".equalsIgnoreCase(s))
+					setValue(true);
+				else if  ("false".equalsIgnoreCase(s))
 					setValue(false);
 				else
 					toggleValue();
@@ -127,6 +149,31 @@ public class MesquiteBoolean implements Listable {
 		if (cmis!=null) {
 			MesquiteTrunk.resetCheckMenuItems();
 		}
+	}
+	public void resetVote(){ //should only be called before use of vote
+		unassigned = true;
+		unanimous = true;
+	}
+	/** if unassigned, assign it the incoming. If incoming is different from previous assigned, set to impossible and keep it there. Thus know if there is disagreemnt in a set */
+	public void vote(boolean value) {
+		if (!unanimous)
+			return;
+		if (unassigned)
+			setValue(value);
+		else if (this.value != value){
+			setValue(false);
+			unanimous = false;
+		}
+	}
+	public boolean isUnanimous(){ //should only be called after a good use of vote
+		return unanimous;
+	}
+
+	public boolean unanimousValue(){ //should only be called after a good use of vote
+		if (unanimous)
+			return value;
+		else
+			return false;
 	}
 	public void bindMenuItem(MesquiteCMenuItemSpec cmis) {
 		this.cmis = cmis;

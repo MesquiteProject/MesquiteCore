@@ -24,6 +24,8 @@ import mesquite.lib.duties.*;
 import mesquite.categ.lib.*;
 import mesquite.charMatrices.lib.MatrixInfoExtraPanel;
 import mesquite.lib.table.*;
+import mesquite.lib.ui.ClosablePanelContainer;
+import mesquite.lib.ui.MQTextArea;
 
 public class SequenceInfoEditor extends MatrixInfoPanelAssistantI  {
 	SequenceInfoPanel panel;
@@ -123,7 +125,7 @@ class SequenceInfoPanel extends MatrixInfoExtraPanel  {
 		super.setMatrixAndTable(data, table);
 		this.cData = (CategoricalData)data;
 		info = data.getTaxaInfo(true);
-		siRef = info.makeAssociatedObjects("SequenceInfo");
+		siRef = info.makeAssociatedStrings("SequenceInfo");
 		container.requestHeightChange(this);
 		repaint();
 	}
@@ -143,7 +145,7 @@ class SequenceInfoPanel extends MatrixInfoExtraPanel  {
 		else {
 			message = "";
 			if (it >= 0 && it < data.getNumTaxa()) {
-				Object o = info.getAssociatedObject(siRef, it);
+				Object o = info.getAssociatedString(siRef, it);
 				if (o != null && o instanceof String){
 					infoArea.setText((String)o, ic, it);
 				}
@@ -185,7 +187,7 @@ class SequenceInfoPanel extends MatrixInfoExtraPanel  {
 				MesquiteMessage.warnProgrammer("rIT/it mismatch in seqinfopanel");
 				return;
 			}
-			info.setAssociatedObject(siRef, it, text);	
+			info.setAssociatedString(siRef, it, text);	
 		}
 	}
 	
@@ -223,7 +225,7 @@ class SequenceInfoPanel extends MatrixInfoExtraPanel  {
 
 }
 
-class NoteField extends TextArea implements FocusListener {
+class NoteField extends MQTextArea implements FocusListener {
 	SequenceInfoPanel panel;
 	boolean somethingTyped;
 	int ic = -1;

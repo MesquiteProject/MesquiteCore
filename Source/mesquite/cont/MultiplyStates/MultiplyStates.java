@@ -34,18 +34,18 @@ public class MultiplyStates extends ContDataAlterer  implements AltererContinuou
 	/*.................................................................................................................*/
 	/** returns whether this module is requesting to appear as a primary choice */
    	public boolean requestPrimaryChoice(){
-   		return true;  
+   		return false;  
    	}
    	/** Called to alter data in those cells selected in table*/
-   	public boolean alterData(CharacterData data, MesquiteTable table, UndoReference undoReference){
+   	public int alterData(CharacterData data, MesquiteTable table, UndoReference undoReference){
    			boolean did=false;
 			if (!(data instanceof ContinuousData))
-				return false;
+				return ResultCodes.INCOMPATIBLE_DATA;
 			double d = MesquiteDouble.queryDouble(containerOfModule(), "Multiply values", "Multiply values in matrix by:", scalingFactor); //todo: have dialog also ask to what item; also in other similar ContDataAlterer's
 			if (MesquiteDouble.isCombinable(d))
 				scalingFactor = d;
 			else
-				return false;
+				return ResultCodes.USER_STOPPED;
 			return alterContentOfCells(data,table, undoReference);
    	}
 

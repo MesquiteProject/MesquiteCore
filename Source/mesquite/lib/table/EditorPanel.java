@@ -17,6 +17,11 @@ import java.awt.*;
 import java.awt.event.*;
 
 import mesquite.lib.*;
+import mesquite.lib.ui.ColorDistribution;
+import mesquite.lib.ui.ColorTheme;
+import mesquite.lib.ui.GraphicsUtil;
+import mesquite.lib.ui.MesquitePanel;
+import mesquite.lib.ui.MesquitePopup;
 
 /* ======================================================================== */
 /** A superclass for the panels that make up a MesquiteTable.  Has an editable text field that can be repositioned over a cell.*/
@@ -60,6 +65,7 @@ public abstract class EditorPanel extends MesquitePanel {
 			return startOfColumn(column)+tb.columnWidths[column];
 	}
 	public int endOfLastColumn() {
+		try {
 		int lastColumn = tb.getLastColumn();
 		if (lastColumn<0)
 			return 0;
@@ -67,6 +73,10 @@ public abstract class EditorPanel extends MesquitePanel {
 			return startOfColumn(lastColumn)+tb.columnWidths[lastColumn];
 		else
 			return startOfColumn(lastColumn);
+		}
+		catch (Exception e){
+		}
+		return -1;
 	}
 	public int startOfRow(int row) {
 		if (row<tb.firstRowVisible)

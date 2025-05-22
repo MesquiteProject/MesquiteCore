@@ -19,6 +19,8 @@ import java.awt.*;
 import mesquite.lib.*;
 import mesquite.lib.characters.*;
 import mesquite.lib.duties.*;
+import mesquite.lib.taxa.Taxa;
+import mesquite.lib.taxa.Taxon;
 import mesquite.assoc.lib.*;
 import mesquite.basic.ManageTaxaPartitions.*;
 import mesquite.categ.lib.*;
@@ -29,7 +31,7 @@ import mesquite.cont.lib.*;
 public class ExportFusedMatrixNEXUS extends FileInterpreterI {
 	public void getEmployeeNeeds(){  //This gets called on startup to harvest information; override this and inside, call registerEmployeeNeed
 		EmployeeNeed e = registerEmployeeNeed(AssociationSource.class, getName() + "  needs information to indicate how taxa in different blocks are associated.",
-		"The source of information as to how taxa taxa in different blocks are associated is arranged on export");
+				"The source of information as to how taxa taxa in different blocks are associated is arranged on export");
 	}
 	/*.................................................................................................................*/
 	AssociationSource associationTask;
@@ -86,7 +88,7 @@ public class ExportFusedMatrixNEXUS extends FileInterpreterI {
 	boolean generateMBBlock = true;
 	String lineEnding;
 	boolean simplifyNames = false;
-	
+
 	boolean removeExcluded = false;
 
 	public boolean getExportOptions(boolean dataSelected, boolean taxaSelected){
@@ -214,7 +216,7 @@ public class ExportFusedMatrixNEXUS extends FileInterpreterI {
 				else
 					totNumChars += data.getNumChars();
 				logln("Fused matrix will contain " + numToAdd + " characters from matrix " + data.getName());
-				
+
 			}
 		}
 		return totNumChars;
@@ -246,7 +248,7 @@ public class ExportFusedMatrixNEXUS extends FileInterpreterI {
 		return null;
 	}
 	/*.................................................................................................................*/
-	void composeForTaxon(Vector datas, Taxon[] components, int iTaxaBlock, StringBuffer buffer, boolean master, Class dataSuperclass){
+	void composeForTaxon(Vector datas, Taxon[] components, int iTaxaBlock, MesquiteStringBuffer buffer, boolean master, Class dataSuperclass){
 		if (!master && (components == null || components.length == 0)){ //no representatives in this taxa block; write gaps for those matrices
 			Taxa taxa = getProject().getTaxa(iTaxaBlock);
 			int numMatrices = getNumberQueuedCharMatrices(datas, taxa, dataSuperclass);
@@ -298,7 +300,7 @@ public class ExportFusedMatrixNEXUS extends FileInterpreterI {
 		}
 	}
 	/*.................................................................................................................*/
-	void composeForMasterTaxon(Vector datas, Taxa masterTaxa, int it, Taxon[][] components, StringBuffer buffer, Class dataSuperclass){
+	void composeForMasterTaxon(Vector datas, Taxa masterTaxa, int it, Taxon[][] components, MesquiteStringBuffer buffer, Class dataSuperclass){
 		String taxonName = masterTaxa.getTaxonName(it);
 		if (simplifyNames)
 			buffer.append(StringUtil.simplifyIfNeededForOutput(taxonName,true)+ "   ");
@@ -338,7 +340,7 @@ public class ExportFusedMatrixNEXUS extends FileInterpreterI {
 		return s;
 	}
 	/*.................................................................................................................*/
-	void fillMatrix(MesquiteFile file, Taxa masterTaxa, StringBuffer buffer, StringBuffer mrBayesBlockBuffer, Class dataSuperclass){
+	void fillMatrix(MesquiteFile file, Taxa masterTaxa, MesquiteStringBuffer buffer, StringBuffer mrBayesBlockBuffer, Class dataSuperclass){
 		if (masterTaxa == null || buffer==null)
 			return;
 		if (mrBayesBlockBuffer == null)
@@ -350,17 +352,19 @@ public class ExportFusedMatrixNEXUS extends FileInterpreterI {
 		}
 
 		buffer.append("#NEXUS" + lineEnding + lineEnding + "begin data;" + lineEnding);
-		StringBuffer[] taxaStrings = new StringBuffer[masterTaxa.getNumTaxa()];
+		MesquiteStringBuffer[] taxaStrings = new MesquiteStringBuffer[masterTaxa.getNumTaxa()];
 		StringBuffer dataTypesBuffer = new StringBuffer();
-		
+
 		ManageTaxaPartitions manageTaxaPartitions = (ManageTaxaPartitions)findNearestColleagueWithDuty(mesquite.basic.ManageTaxaPartitions.ManageTaxaPartitions.class);
 		StringBuffer labelsBuffer = null;
 		if (manageTaxaPartitions!=null) {
-			labelsBuffer = new StringBuffer(lineEnding + "BEGIN LABELS;"+lineEnding);
 			String labels = manageTaxaPartitions.getNexusCommands(file, "LABELS");
-			labelsBuffer.append(labels + lineEnding + "END;" + lineEnding);
+			if (StringUtil.notEmpty(labels)){
+				labelsBuffer = new StringBuffer(lineEnding + "BEGIN LABELS;"+lineEnding);
+				labelsBuffer.append(labels + lineEnding + "END;" + lineEnding);
+			}
 		}
-		
+
 		StringBuffer NEXUSpartitionBuffer = new StringBuffer(lineEnding + "BEGIN SETS;" + lineEnding);
 		NEXUSpartitionBuffer.append(lineEnding+ manageTaxaPartitions.getNexusCommands(file, "SETS"));
 		NEXUSpartitionBuffer.append(lineEnding+ "\tCHARPARTITION * matrices = ");
@@ -368,7 +372,7 @@ public class ExportFusedMatrixNEXUS extends FileInterpreterI {
 
 		Vector datas = new Vector();
 		for (int it=0; it< masterTaxa.getNumTaxa(); it++)
-			taxaStrings[it] = new StringBuffer(100);
+			taxaStrings[it] = new MesquiteStringBuffer(100);
 
 		Taxon[][][] components = new Taxon[masterTaxa.getNumTaxa()][project.getNumberTaxas()][];
 		needsComma = false;
@@ -483,10 +487,10 @@ public class ExportFusedMatrixNEXUS extends FileInterpreterI {
 			if (!getExportOptions(false, false))
 				return false;
 		Taxa masterTaxa = (Taxa)getProject().chooseTaxa(containerOfModule(), "Select master block of taxa", false);
-		StringBuffer buffer = new StringBuffer(500);
+		MesquiteStringBuffer buffer = new MesquiteStringBuffer(500);
 		StringBuffer mrBayesBlockBuffer = new StringBuffer();
 		fillMatrix(file, masterTaxa, buffer, mrBayesBlockBuffer, CategoricalState.class);
-		
+
 
 
 		saveExportedFileWithExtension(buffer, arguments, "nex");

@@ -20,6 +20,19 @@ import java.awt.*;
 import mesquite.lib.*;
 import mesquite.lib.characters.*;
 import mesquite.lib.duties.*;
+import mesquite.lib.tree.MesquiteTree;
+import mesquite.lib.tree.Tree;
+import mesquite.lib.tree.TreeDisplay;
+import mesquite.lib.tree.TreeDisplayBkgdExtra;
+import mesquite.lib.tree.TreeDisplayExtra;
+import mesquite.lib.tree.TreeDisplayLegend;
+import mesquite.lib.ui.ColorDistribution;
+import mesquite.lib.ui.MQTextArea;
+import mesquite.lib.ui.MesquiteSubmenuSpec;
+import mesquite.lib.ui.MesquiteWindow;
+import mesquite.lib.ui.MiniScroll;
+import mesquite.lib.ui.MiniSlider;
+import mesquite.lib.ui.TextRotator;
 import mesquite.rhetenor.lib.*;
 
 /* ======================================================================== */
@@ -589,7 +602,7 @@ public class NodeLocs3DPlot extends NodeLocsPlot3D {
 
 	}
 	/*_________________________________________________*/
-	public void calculateNodeLocs(TreeDisplay treeDisplay, Tree tree, int drawnRoot, Rectangle rect) { 
+	public void calculateNodeLocs(TreeDisplay treeDisplay, Tree tree, int drawnRoot) { 
 		if (hide ||  isDoomed())
 			return;
 		if (MesquiteTree.OK(tree)) {
@@ -778,7 +791,7 @@ public class NodeLocs3DPlot extends NodeLocsPlot3D {
 			double midY = XrYr[1][numNodes];
 			minY.setValue(midY - (longAxis/2));
 			maxY.setValue(midY + (longAxis/2));
-			pixels = MesquiteInteger.minimum(rect.width, rect.height) - 2*margin;
+			pixels = MesquiteInteger.minimum(treeDisplay.getField().width, treeDisplay.getField().height) - 2*margin;
 			summarizeBad(4);
 			calcNodeLocs(tree, drawnRoot, pixels, numbersH, numbersV, numbersD); //calculate pixel node locations from NumberArrays
 			summarizeBad(5);
@@ -909,7 +922,7 @@ public class NodeLocs3DPlot extends NodeLocsPlot3D {
 
 
 
-class NodeLocs3DPlotExtra extends TreeDisplayBkgdExtra {
+class NodeLocs3DPlotExtra extends TreeDisplayExtra implements TreeDisplayBkgdExtra {
 	public NodeLocs3DPlotLegend legend;
 	NodeLocs3DPlot locsModule;
 	public String parameters = "";
@@ -937,7 +950,7 @@ class NodeLocs3DPlotExtra extends TreeDisplayBkgdExtra {
 	}
 	/*.................................................................................................................*/
 	boolean legendMade = false;
-	public   void drawOnTree(Tree tree, int drawnRoot, Graphics g) {
+	public   void drawUnderTree(Tree tree, int drawnRoot, Graphics g) {
 		locsModule.drawAxes(g, this);
 		if (legend!=null){
 			legend.adjustLocation();
@@ -951,10 +964,16 @@ class NodeLocs3DPlotExtra extends TreeDisplayBkgdExtra {
 		}
 	}
 	/*.................................................................................................................*/
-	public   void printOnTree(Tree tree, int drawnRoot, Graphics g) {
-		drawOnTree(tree, drawnRoot, g);
+	public   void printUnderTree(Tree tree, int drawnRoot, Graphics g) {
+		drawUnderTree(tree, drawnRoot, g);
 	}
 
+	/*.................................................................................................................*/
+	public   void drawOnTree(Tree tree, int drawnRoot, Graphics g) {
+	}
+	/*.................................................................................................................*/
+	public   void printOnTree(Tree tree, int drawnRoot, Graphics g) {
+	}
 	/*.................................................................................................................*/
 	public   void setTree(Tree tree) {
 		if (!legendMade && legend == null) {
@@ -1005,7 +1024,7 @@ class NodeLocs3DPlotLegend extends TreeDisplayLegend {
 		this.setHorizontal =ownerModule.setThetaCommand;
 		this.setMagnification =ownerModule.setDCommand;
 		this.pD = pD;
-		text = new TextArea("", 3, 3, TextArea.SCROLLBARS_VERTICAL_ONLY);
+		text = new MQTextArea("", 3, 3, TextArea.SCROLLBARS_VERTICAL_ONLY);
 		add(text);
 		text.setLocation(30, 4);
 		text.setSize(legendWidth-30-4, legendHeight -80);

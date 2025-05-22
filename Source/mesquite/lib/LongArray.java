@@ -22,11 +22,11 @@ import java.awt.*;
 
 /* ======================================================================== */
 
-public class LongArray implements Listable {
+public class LongArray implements Listable, Nameable {
 	long[] values;
 	NameReference name=null;
 	int autoExpandAmount = 0;
-	
+
 	public LongArray(int num){	
 		this(num, 0);
 	}
@@ -37,12 +37,12 @@ public class LongArray implements Listable {
 			values[i] =  MesquiteLong.unassigned;
 		this.autoExpandAmount = autoExpandAmount;
 	}
-		
+
 	//used for Associables that might need to record whether reference is to part or in between part
 	//intially for MesquiteTree to know if info applies to node or branch ancestral to node
 	boolean between = false;
 	public void setBetweenness(boolean b){
-		between = true;  
+		between = b;  
 	}
 	public boolean isBetween(){
 		return between;
@@ -260,6 +260,64 @@ public class LongArray implements Listable {
 		return newValues;
 	}
 	/*...........................................................*/
+	public void deletePartsFlagged(Bits toDelete) {
+		values = deletePartsFlagged(values, toDelete);
+	}
+	/*...........................................................*/
+	public static long[] deletePartsFlagged(long[] d, Bits toDelete) {
+		if (d == null)
+			return null;
+		if (toDelete == null)
+			return d;
+		int toFill =toDelete.nextBit(0, true); //find next to be cleared
+		if (toFill <0)
+			return d;
+		Bits flags = toDelete.cloneBits(); 
+		int source = flags.nextBit(toFill, false); //find source to move into it
+		int highestFilled = toFill-1;
+		while (source >=0 && source < d.length && toFill >=0) { //First, compact storage toward the start of the array.
+			d[toFill] = d[source]; //move content from source to place
+			highestFilled = toFill;
+			flags.setBit(source, true); // set to available to receive
+			toFill =flags.nextBit(++toFill, true);
+			source =flags.nextBit(++source, false);	
+		}
+		//Next, trim leftovers
+		int newNum = highestFilled+1;
+		long[] newD = new long[newNum];
+		for (int i=0; i<newNum; i++) 
+			newD[i] = d[i];
+		return newD;
+	}	/*...........................................................*
+	public void deletePartsBy Blocks(int[][] blocks) {
+		values = deletePartsBy Blocks(values, blocks);
+	}
+	/*...........................................................*
+	public static long[] deletePartsBy Blocks(long[] d, int[][] blocks) {
+		if (d == null)
+			return d;
+		if (blocks == null || blocks.length == 0)
+			return d;
+		int availableSlot = blocks[0][0];
+		//First shift storage toward the start of the array. Later, we'll delete the leftovers at the end.
+		for (int block = 0; block<blocks.length; block++) {
+			int startOfPreserved = blocks[block][1]+1;
+			int endOfPreserved = d.length-1;
+			if (block+1<blocks.length) //there's another block coming afterward
+				endOfPreserved = blocks[block+1][0]-1;
+			for (int ic=startOfPreserved; ic<=endOfPreserved; ic++) {
+				d[availableSlot] = d[ic];
+				availableSlot++;
+			}
+		}
+		//Next, trim leftovers
+		int newNum = availableSlot;
+		long[] newD = new long[newNum];
+		for (int i=0; i<newNum; i++) 
+			newD[i] = d[i];
+		return newD;
+	}
+	/*...........................................................*/
 	public static long[] getMoveParts(long[] d, int starting, int num, int justAfter) {
 		if (d==null || num<=0 || starting<0 || starting>=d.length)
 			return d;
@@ -353,6 +411,9 @@ public class LongArray implements Listable {
 			return name.getValue();
 		else
 			return "";
+	}
+	public void setName(String n){
+		name = NameReference.getNameReference(n);
 	}
 	/*...........................................................*/
 	public void setNameReference(NameReference nr){

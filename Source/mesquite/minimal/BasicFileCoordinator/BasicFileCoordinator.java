@@ -18,9 +18,30 @@ import java.util.*;
 import java.awt.*;
 
 import mesquite.charMatrices.lib.MatrixInfoExtraPanel;
+import mesquite.io.lib.TryNexusFirstTreeFileInterpreter;
 import mesquite.lib.*;
 import mesquite.lib.characters.CharacterData;
 import mesquite.lib.duties.*;
+import mesquite.lib.taxa.Taxa;
+import mesquite.lib.tree.MesquiteTree;
+import mesquite.lib.tree.Tree;
+import mesquite.lib.tree.TreeVector;
+import mesquite.lib.ui.AlertDialog;
+import mesquite.lib.ui.ChartWindow;
+import mesquite.lib.ui.ColorTheme;
+import mesquite.lib.ui.ExtensibleDialog;
+import mesquite.lib.ui.ListDialog;
+import mesquite.lib.ui.MesquiteDialog;
+import mesquite.lib.ui.MesquiteFrame;
+import mesquite.lib.ui.MesquiteMenuItemSpec;
+import mesquite.lib.ui.MesquiteMenuSpec;
+import mesquite.lib.ui.MesquiteSubmenuSpec;
+import mesquite.lib.ui.MesquiteWindow;
+import mesquite.lib.ui.RadioButtons;
+import mesquite.lib.ui.SingleLineTextField;
+import mesquite.lists.TaxonList.TaxonList;
+import mesquite.lists.lib.TaxonListAssistant;
+import mesquite.trees.ChronogramDisplay.ChronogramDisplay;
 
 /** The "vice president" of the Mesquite system (the MesquiteTrunk module "Mesquite" being the president).  One of these is hired to coordinate each project.
 Should actually be named ProjectCoordinator.*/
@@ -85,24 +106,11 @@ public class BasicFileCoordinator extends FileCoordinator implements PackageIntr
 		return true;
 	}
 
-	/*.................................................................................................................*/
-	public String preparePreferencesForXML () {
-		StringBuffer buffer = new StringBuffer();
-		StringUtil.appendXMLTag(buffer, 2, "suggestedDirectory", MesquiteTrunk.suggestedDirectory);  
-		return buffer.toString();
-	}
-
-	/*.................................................................................................................*/
-	public void processSingleXMLPreference (String tag, String content) {
-		if ("suggestedDirectory".equalsIgnoreCase(tag)){
-			MesquiteTrunk.suggestedDirectory = StringUtil.cleanXMLEscapeCharacters(content);
-		}
-	}
 
 	/*.................................................................................................................*/
 	public void processPreferencesFromFile (String[] prefs) {
 		if (prefs!=null && prefs.length>0) {
-			MesquiteTrunk.suggestedDirectory = prefs[0];
+			MesquiteTrunk.setSuggestedDirectory(prefs[0]);
 		}
 	}
 	/*.................................................................................................................*/
@@ -196,7 +204,7 @@ public class BasicFileCoordinator extends FileCoordinator implements PackageIntr
 		p.setFrame(pw.getParentFrame());
 		setModuleWindow(pw);
 		if (Thread.currentThread() instanceof ProjectReadThread)
-			pw.setWindowSize(2, 500);
+			pw.setWindowSize(2, 200);
 		else
 			pw.setWindowSize(700, 500);
 		pw.setWindowLocation(8,8, false); //TODO: should set staggered positions
@@ -246,6 +254,8 @@ public class BasicFileCoordinator extends FileCoordinator implements PackageIntr
 		addModuleMenuItems(MesquiteTrunk.analysisMenu, makeCommand("newAssistant",  this), FileAssistantA.class);
 
 		broadcastProjectEstablished(this);
+		MesquiteTrunk.recentFileRecord(p.getHomeFile(), true);
+
 		p.refreshProjectWindow();
 		p.decrementProjectWindowSuppression();
 		return p;
@@ -342,7 +352,10 @@ public class BasicFileCoordinator extends FileCoordinator implements PackageIntr
 							}
 							if (!showSubstantiveWindow){
 								showProjectWindow();
-								mTaxa.doCommand("showTaxa","0", CommandChecker.defaultChecker);
+								Object mb = (Object)mTaxa.doCommand("showTaxa","0", CommandChecker.defaultChecker);
+								if (mb instanceof TaxonList){
+									((TaxonList)mb).doCommand("newAssistant", "#TaxonListCurrPartition", CommandChecker.defaultChecker);
+								}
 							}
 
 						}
@@ -538,36 +551,34 @@ public class BasicFileCoordinator extends FileCoordinator implements PackageIntr
 		else
 			message = "Open URL as independent project:";
 
-		MesquiteFile thisFile =MesquiteFile.open(local, pathName, message, MesquiteTrunk.suggestedDirectory);
+		MesquiteFile thisFile =MesquiteFile.open(local, pathName, message, MesquiteTrunk.getSuggestedDirectory());
 		if (thisFile!=null && (thisFile.isLocal() && thisFile.existingLength()<=0)) { 
 			alert("Error: File is empty.");
 			return null;
 		}
 
 		if (thisFile!=null){
-			MesquiteTrunk.suggestedDirectory = thisFile.getDirectoryName();
+			MesquiteTrunk.setSuggestedDirectory(thisFile.getDirectoryName());
 			storePreferences();
 		}
 
 		MesquiteTrunk.mesquiteTrunk.refreshBrowser(MesquiteProject.class);
 
-		boolean imp = false; //was it imported???
+		boolean importing = false; //was it imported???
 
 		if (thisFile!=null && !StringUtil.blank(thisFile.getFileName())) {
 
 			logln("Location: " + thisFile.getDirectoryName() + thisFile.getFileName());
 			logln("");
 
-			FileInterpreter fileInterp;
-
-
+			FileInterpreter fileInterp= null;
 
 			//first try nexus.  If can't be read, then make list and query user...
 			NexusFileInterpreter nfi = (NexusFileInterpreter)findImmediateEmployeeWithDuty(NexusFileInterpreter.class);
-			if (importerSubclass== null && nfi!=null && nfi.canReadFile(thisFile))  
+			if ((importerSubclass== null || importerSubclass == TryNexusFirstTreeFileInterpreter.class)  && nfi!=null && nfi.canReadFile(thisFile))  
 				fileInterp = nfi;
-			else {
-				imp = true;
+			if (fileInterp == null) {
+				importing = true;
 				fileInterp = findImporter(thisFile, 0, importerSubclass, arguments);
 			}
 			if (fileInterp !=null) {
@@ -608,10 +619,15 @@ public class BasicFileCoordinator extends FileCoordinator implements PackageIntr
 					// "Import" or "Translate"  Open Special NEXUS File
 					// behaviour: autosave or not
 
+					if (p.openedWithoutMesquiteBlock)
+						showBasicWindows();
+					p.openedWithoutMesquiteBlock = false;
 					p.fileSaved(thisFile);  // If used import system, then doesn't add extension or save file if it was some type of NEXUS file 
-					if (imp && (!(fileInterp instanceof NEXUSInterpreter)) && local && parser.tokenIndexOfIgnoreCase(arguments, "suppressImportFileSave")<0){//was imported; change name
+					if (importing && (!(fileInterp instanceof NEXUSInterpreter)) && local && parser.tokenIndexOfIgnoreCase(arguments, "suppressImportFileSave")<0){//was imported; change name
+						boolean autosaveImported = parser.hasFileReadingArgument(arguments, "autosaveImported");
+
 						thisFile.changeLocation(thisFile.getDirectoryName(), thisFile.getFileName()+".nex");
-						if (MesquiteThread.isScripting() || thisFile.changeLocation("Save imported file as NEXUS file")) {
+						if (MesquiteThread.isScripting() || (autosaveImported || thisFile.changeLocation("Save imported file as NEXUS file"))) {
 							afterProjectRead();
 							writeFile(thisFile); 
 						}
@@ -640,17 +656,8 @@ public class BasicFileCoordinator extends FileCoordinator implements PackageIntr
 			p.refreshProjectWindow();
 		if (noWindowsShowing()){
 			doCommand("showWindow", null, CommandChecker.defaultChecker); //TODO: will this always be non-scripting???
-			if (imp){
-				if (getProject().getNumberCharMatrices()>0){
-					MesquiteModule mbb = findEmployeeWithName("Data Window Coordinator");
-					if (mbb != null)
-						mbb.doCommand("showDataWindow", "0", CommandChecker.defaultChecker);
-				}
-				else if (getProject().getNumberTaxas()>0){
-					MesquiteModule mbb = findEmployeeWithName("Manage TAXA blocks");
-					if (mbb != null)
-						mbb.doCommand("showTaxa", "0", CommandChecker.defaultChecker);
-				}
+			if (importing){
+				showBasicWindows();
 			}
 		}
 
@@ -661,6 +668,54 @@ public class BasicFileCoordinator extends FileCoordinator implements PackageIntr
 		}
 		MesquiteTrunk.mesquiteTrunk.refreshBrowser(MesquiteProject.class);
 		return thisFile;
+	}
+
+	public void showBasicWindows(){
+		MesquiteWindow mw = getModuleWindow();
+		if (mw != null)
+			mw.setWindowSize(1000, 800);
+
+		MesquiteModule mbb = (MesquiteModule)findElementManager(Taxa.class);
+		if (mbb != null)
+			mbb.doCommand("showTaxa", "0", CommandChecker.defaultChecker);
+
+		if (getProject().getNumberCharMatrices()>3){
+			mbb = findEmployeeWithName("#ManageCharacters");
+			if (mbb != null)
+				mbb.doCommand("showDatasList", null, CommandChecker.defaultChecker);
+		}
+		else if (getProject().getNumberCharMatrices()>0){
+			mbb = findEmployeeWithName("#BasicDataWindowCoord");
+			if (mbb != null) {
+				for (int im = 0; im< getProject().getNumberCharMatrices(); im++)
+					mbb.doCommand("showDataWindow", "" + im, CommandChecker.defaultChecker);
+			}
+		}
+		else {
+			mbb = (MesquiteModule)findElementManager(TreeVector.class);
+			if (mbb != null) {
+				if (getProject().getNumberTreeVectors()==1) {
+					Object obj = mbb.doCommand("showTreesInWindow", "" + 0 + " \'autoShowPropertiesList;\'", CommandChecker.defaultChecker);
+					if (obj != null && obj instanceof MesquiteModule){
+						TreeVector trees = getProject().getTreesByNumber(0);
+						if (trees.size()>0){
+						Tree t = trees.getTree(0);
+							if (t instanceof MesquiteTree){
+								MesquiteTree tree = (MesquiteTree)t;
+								if (tree.getAssociatedObjects(ChronogramDisplay.errorBarNameRef)!= null){
+									((MesquiteModule)obj).doCommand("newAssistant", "#mesquite.trees.ChronogramDisplay.ChronogramDisplay", CommandChecker.defaultChecker);
+								}
+							}
+						}
+					}
+					//					newAssistant  #mesquite.trees.ChronogramDisplay.ChronogramDisplay;
+				}
+				else if (getProject().getNumberTreeVectors()>1) {
+					mbb.doCommand("showTreeBlocks", null, CommandChecker.defaultChecker);
+
+				}
+			}
+		}
 	}
 	/*.................................................................................................................*/
 	public MesquiteFile readProjectGeneral(String arguments) { 
@@ -696,16 +751,19 @@ public class BasicFileCoordinator extends FileCoordinator implements PackageIntr
 				p.decrementProjectWindowSuppression();
 			}
 			resetAllMenuBars();
+
 		}
 		decrementMenuResetSuppression();
 		if (p==null){
-			fireEmployee(e);
+			fireEmployee((MesquiteModule)e);
 			iQuit();
 			return null;
 		}
 		MesquiteFile thisFile = p.getHomeFile();
-		if (noWindowsShowing())
+		if (noWindowsShowing()){
 			doCommand("showWindow", null, CommandChecker.defaultChecker); //TODO: will this always be non-scripting???
+			showBasicWindows();
+		}
 		if (thisFile != null && thisFile.getCloseAfterReading()){
 			closeFile(thisFile);
 			MesquiteTrunk.mesquiteTrunk.refreshBrowser(MesquiteProject.class);
@@ -715,6 +773,7 @@ public class BasicFileCoordinator extends FileCoordinator implements PackageIntr
 			saveAllFiles();
 			p.autosave = false;
 		}
+		//MesquiteTrunk.recentFileRecord(p.getHomeFile(), true);
 		MesquiteTrunk.mesquiteTrunk.refreshBrowser(MesquiteProject.class);
 		return thisFile;
 	}
@@ -734,7 +793,6 @@ public class BasicFileCoordinator extends FileCoordinator implements PackageIntr
 		if (MesquiteThread.isScripting()) {
 			ObjectContainer f = new ObjectContainer();
 			FileRead pt = new FileRead(pathName, importer, arguments, fileType,   this, 0, f, fileDescriptionText);
-
 			pt.run();
 			MesquiteFile mf = (MesquiteFile)f.getObject();
 			f.setObject(null);
@@ -748,6 +806,19 @@ public class BasicFileCoordinator extends FileCoordinator implements PackageIntr
 			pt.setCommandRecord(MesquiteThread.getCurrentCommandRecord());
 			pt.start();
 			return null;
+		}
+	}
+	/*.................................................................................................................*/
+	/*.................................................................................................................*/
+	public void includeFile(String pathName, Class importer, String arguments, int fileType, String fileDescriptionText){ //make new/read new linked file
+		FileRead pt = new FileRead(pathName, null, arguments, fileType,   this, 1, null, fileDescriptionText);
+		pt.setFileInterpreter(importer);
+		if (MesquiteThread.isScripting()) {
+			pt.run();
+		}
+		else {
+			MesquiteThread mt = new MesquiteThread(pt);
+			mt.start();
 		}
 	}
 	/*.................................................................................................................*/
@@ -769,6 +840,7 @@ public class BasicFileCoordinator extends FileCoordinator implements PackageIntr
 		cleanFusedReadingSuppressions();
 		getProject().decrementProjectWindowSuppression();
 	}
+	
 	void cleanFusedReadingSuppressions(){
 		int num = getProject().getNumberCharMatrices();
 		for (int im = 0; im< num; im++){
@@ -928,6 +1000,22 @@ public class BasicFileCoordinator extends FileCoordinator implements PackageIntr
 		}
 	}
 	/*.................................................................................................................*/
+	/** A method called immediately before a file is to be written.*/
+	void broadcastFileSavingFinished(MesquiteModule module, MesquiteFile f) {
+		if (module==null)
+			return;
+		EmployeeVector e = module.getEmployeeVector();
+		if (e==null)
+			return;
+		for (int i = 0; i<e.size(); i++) {
+			MesquiteModule employee = (MesquiteModule)e.elementAt(i);
+			if (employee!=null){
+				employee.fileWritingFinished(f);
+				broadcastFileSavingFinished(employee, f);
+			}
+		}
+	}
+	/*.................................................................................................................*/
 	/** THIS APPEARS NO LONGER USED*/
 	public String userPutFile(){
 		MainThread.incrementSuppressWaitWindow();
@@ -983,8 +1071,10 @@ public class BasicFileCoordinator extends FileCoordinator implements PackageIntr
 					iQuit();
 				}
 				else {
-					fileCloseRequested();
-					if (!getProject().isDirty()) {
+					boolean close = fileCloseRequested();
+					if (!close)  //WAYNECHECK
+						return false;
+					if (!getProject().isDirty() || getProject().getIgnoreDirtWhenCloseRequested()) {
 						waitWriting(null);
 						logln("Closing " + getProject().getName());
 						getProject().isDoomed = true;
@@ -1044,6 +1134,7 @@ public class BasicFileCoordinator extends FileCoordinator implements PackageIntr
 				}
 			}
 		}
+		MesquiteTrunk.cleanRecentFiles();
 		decrementMenuResetSuppression();
 		return true;
 	}
@@ -1072,21 +1163,30 @@ public class BasicFileCoordinator extends FileCoordinator implements PackageIntr
 	public void revertToSaved(boolean queryIfDirty){
 		boolean siga = false;
 		if (!queryIfDirty)
-			siga = true;
+			siga = fileCloseRequested(); //If you're just supposed to close reegardless, still need to check other modules
 		else if (!MesquiteThread.isScripting()){
 			if (getProject() == null || getProject().getHomeFile() == null)
-				siga = false;
-			else if (getProject().isDirty()){
-				if (getProject().getNumberLinkedFiles()>1){
-					String hfn = getProject().getHomeFileName();
-					siga = AlertDialog.query(containerOfModule(), "Discard unsaved changes?", "Do you want to discard all unsaved changes in all linked files and revert to the saved version of the home file (" + hfn + ")?", "Discard Changes", "Cancel");
+				siga = false; //can't revert
+			else {
+				boolean otherModulesOKWithClosing = fileCloseRequested(); //Debugg.println should pass sometjhing to learn if user was already pstered?
+				// if not, no need to ask further and leave siga set to false
+				if (otherModulesOKWithClosing){
+					if (getProject().isDirty() || getProject().getIgnoreDirtWhenCloseRequested()){ //ok, dirty, so need to ask
+						// so we need to ask because it's dirty, but fl
+						if (getProject().getNumberLinkedFiles()>1){
+							String hfn = getProject().getHomeFileName();
+							siga = AlertDialog.query(containerOfModule(), "Discard unsaved changes?", "Do you want to discard all unsaved changes in all linked files and revert to the saved version of the home file (" + hfn + ")?", "Discard Changes", "Cancel");
+						}
+						else
+							siga = AlertDialog.query(containerOfModule(), "Discard unsaved changes?", "Do you want to discard all unsaved changes and revert to the saved version of the file?", "Discard Changes", "Cancel");
+					}
+					else
+						siga = true;
 				}
-				else
-					siga = AlertDialog.query(containerOfModule(), "Discard unsaved changes?", "Do you want to discard all unsaved changes and revert to the saved version of the file?", "Discard Changes", "Cancel");
 			}
-			else
-				siga = true;
 		}
+		else
+			siga = true; //if scripting, just close it
 		if (siga){
 			MesquiteTrunk.mesquiteTrunk.openFile(getProject().getHomeFile().getPath());
 			iQuit();
@@ -1136,7 +1236,11 @@ public class BasicFileCoordinator extends FileCoordinator implements PackageIntr
 		else
 			fi = getProject().getFileByID(id);
 		if (fi != null) { 
-			saveFile(fi);
+			if (!getProject().getHomeFile().fileExists()){ //no longer exists! user must have changed directories
+				saveFileAs(id);
+			}
+			else 
+				saveFile(fi);
 
 		}
 		else 
@@ -1187,6 +1291,7 @@ public class BasicFileCoordinator extends FileCoordinator implements PackageIntr
 			if (fi.changeLocation("Save file")) {
 				fi.setWriteProtected(false);
 				writeFile(fi);
+				MesquiteTrunk.setSuggestedDirectory(fi.getDirectoryName());
 			}
 		}
 		//TODO: change titles of windows and menu items!!!
@@ -1218,6 +1323,9 @@ public class BasicFileCoordinator extends FileCoordinator implements PackageIntr
 			boolean success = nMF.changeLocation("Save file");
 			if (!success)
 				return;
+			else
+				MesquiteTrunk.setSuggestedDirectory(nMF.getDirectoryName());
+
 		}
 		broadcastFileAboutToBeSaved(this, nMF);
 		Runtime rt = Runtime.getRuntime();
@@ -1225,10 +1333,12 @@ public class BasicFileCoordinator extends FileCoordinator implements PackageIntr
 
 		NexusFileInterpreter nfi = (NexusFileInterpreter)findImmediateEmployeeWithDuty(NexusFileInterpreter.class);
 		if (nfi!=null) {
+
 			nfi.writeFile(getProject(), nMF);
 		}
 		else 
 			MesquiteMessage.println("File interpreter not found to write file " + nMF.getName());
+		broadcastFileSavingFinished(this, nMF);
 	}
 	/*.................................................................................................................*/
 	/** Finds the first employee in the heirarchy that manages a particular subclass of FileElement */
@@ -1315,8 +1425,6 @@ public class BasicFileCoordinator extends FileCoordinator implements PackageIntr
 			}
 		}
 
-		TextDisplayer fd = displayText(fileContents, fileName);  //TODO: should say if scripting
-
 		MesquiteModule[] fInterpreters = null;
 		if (importerSubclass != null)
 			fInterpreters = getImmediateEmployeesWithDuty(importerSubclass);
@@ -1333,8 +1441,6 @@ public class BasicFileCoordinator extends FileCoordinator implements PackageIntr
 				count++;
 		}
 		if (count == 0 ){
-			if (fd!=null)
-				fireEmployee(fd);
 			return null;
 		}
 		MesquiteModule[] fInterpretersCanImport = new MesquiteModule[count];
@@ -1344,6 +1450,9 @@ public class BasicFileCoordinator extends FileCoordinator implements PackageIntr
 			if (((FileInterpreterI)fInterpreters[i]).canImport(arguments) && (fInterpreters[i] instanceof ReadFileFromString || !mustReadFromString) && stateOK)
 				fInterpretersCanImport[count++] = fInterpreters[i];
 		}
+		if (fInterpretersCanImport.length == 1)
+			return (FileInterpreterI)fInterpretersCanImport[0];
+		TextDisplayer fd = displayText(fileContents, fileName);  //TODO: should say if scripting
 		fInterpretersCanImport = prioritize(fInterpretersCanImport, FileInterpreterI.class);
 		boolean fuse = parser.hasFileReadingArgument(arguments, "fuseTaxaCharBlocks");
 		String message = "Please choose an interpreter for this file";
@@ -1417,7 +1526,18 @@ public class BasicFileCoordinator extends FileCoordinator implements PackageIntr
 		}
 		return temp;
 	}
-	/*.................................................................................................................*/
+	public Snapshot getLateSnapshot(MesquiteFile file) { 
+		Snapshot temp = new Snapshot();
+		if (pw != null){
+			temp.addLine("getWindow");
+			temp.addLine("tell It");
+			temp.incorporate(pw.getLateSnapshot(file), true);
+			temp.addLine("endTell");
+
+		}
+
+		return temp;
+	}	/*.................................................................................................................*/
 	public void showInitTreeWindow(Taxa taxa, boolean force){
 		MesquiteModule btwc = findEmployeeWithName("#BasicTreeWindowCoord", true);
 		if (btwc !=null) {
@@ -1457,6 +1577,7 @@ public class BasicFileCoordinator extends FileCoordinator implements PackageIntr
 			return null;
 		return s;
 	}
+
 	/*.................................................................................................................*/
 	public Object doCommand(String commandName, String arguments, CommandChecker checker) {
 		if (checker.compare(this.getClass(), "Returns the total number of character data matrices stored in the project", null, commandName, "getNumberOfDataSets")) {
@@ -1536,7 +1657,7 @@ public class BasicFileCoordinator extends FileCoordinator implements PackageIntr
 			String path = filterIfMarkedArgument(parser.getFirstToken(arguments));
 			String importer = filterIfMarkedArgument(parser.getNextToken());
 			String failureText = parser.getNextToken();
-			includeFile(path, importer, arguments, 1, failureText);
+			includeFile(path, importer, arguments + " @justTheseBlocks.TAXA.DATA.TREES", 1, failureText);
 		}
 		else if (checker.compare(this.getClass(), "Create a new linked file", "[path to file]", commandName, "newLinkedFile")) {
 			MesquiteFile file = (newLinkedFile(parser.getFirstToken(arguments)));
@@ -1576,6 +1697,33 @@ public class BasicFileCoordinator extends FileCoordinator implements PackageIntr
 		else if (checker.compare(this.getClass(), "Hires new file assistant module", "[name of module]", commandName, "newAssistant")) {
 			return (FileAssistant)hireNamedEmployee(FileAssistant.class, arguments);
 		}
+		//QZ: make general system?
+		else if (checker.compare(this.getClass(), "Explains the Include & Merge menu items", "[]", commandName, "explainIncludeChoices")) {
+			String explanation = "<h3>Including &amp; Merging Other Files</h3>These menu items allow you to bring information — e.g., taxa, matrices and trees — from other files "
+					+ "into your already-open project, so that it can be used alongside the information already in the project. The options are built for different purposes, "
+					+ "and have different limitations. Here are their explanations.<br><br>";
+			explanation += "<b>Including Taxa, Matrices & sometimes Trees</b><br>";
+			explanation += "<ul><li><b>Include File</b>— Reads a file and copies its information into the current project file. "
+					+ "When you save the project file, this new information is saved into the main project file. Does not attempt to add to fuse new information into existing taxa blocks or matrices "
+					+"(for which, see Quick Merge or Careful Merge Taxa &amp; Matrices)."
+					+ " The incoming file is read in the context of the current file." 
+					+" If the incoming file has conflicting or incomplete information, it may be read improperly.</li><br> ";
+			explanation += "<li><b>Link File</b>— Reads a file and adds its information to that of the current project, as with Include File. "
+					+ "However, the incoming file remains separate. Any changes in its information are saved in the separate file.</li><br> ";
+			MesquiteMenuItemSpec mmis = new MesquiteMenuItemSpec(null, "", module, null);  //temporary; doesn't get registered; just helps find compatible modules
+			mmis.setList(FileAssistantFM.class);
+			MesquiteModuleInfo mbi = null;
+			while ((mbi = getNextCompatibleModuleOfDuty(mbi, mmis)) != null) 
+				explanation += "<li><b>" + StringUtil.protectForXML(mbi.getNameForMenuItem()) + "</b>— " + StringUtil.protectForXML(mbi.getExplanation()) + "</li><br>";
+			explanation += "</ul><b>Including Trees</b><br><ul>";
+			mmis.setList(FileAssistantTM.class);
+			mbi = null;
+			while ((mbi = getNextCompatibleModuleOfDuty(mbi, mmis)) != null) 
+				explanation += "<li><b>" + StringUtil.protectForXML(mbi.getNameForMenuItem()) + "</b>— " + StringUtil.protectForXML(mbi.getExplanation()) + "</li><br>";
+			explanation += "</ul></body></html>";
+		//AlertDialog.noticeHTML(containerOfModule(), "Including & Merging Other Files", explanation, 500, 500, null);
+			alertHTML(containerOfModule().getParentFrame(), explanation,"Including & Merging Other Files", null, 600, 500);
+		}
 		else if (checker.compare(this.getClass(), "Save all files in project", null, commandName, "saveFiles")) {  //all files in project
 			String fileNames ="";
 			if (proj == null)
@@ -1605,14 +1753,14 @@ public class BasicFileCoordinator extends FileCoordinator implements PackageIntr
 		else if (checker.compare(this.getClass(), "Gives information about the project", null, commandName, "getInfo")) {
 			String st = "This represents a project, which currently represents information from ";
 			if (proj.getNumberLinkedFiles() == 1) {
-				st = "The current file is " + proj.getHomeFileName();
+				st = "The current file is\n\n  " + proj.getHomeFileName();
 				if (!StringUtil.blank(proj.getHomeDirectoryName()))
-					st += ", located at " + proj.getHomeDirectoryName() + ".";
+					st += ",\n\nlocated at\n\n  " + proj.getHomeDirectoryName() + ".";
 			}
 			else {
-				st = "The current project includes " + proj.getNumberLinkedFiles() + " files.  The home file of the project is " + proj.getHomeFileName();
+				st = "The current project includes " + proj.getNumberLinkedFiles() + " files.  The home file of the project is\n\n" + proj.getHomeFileName() +"\n\n";
 				if (!StringUtil.blank(proj.getHomeDirectoryName()))
-					st += ", located at " + proj.getHomeDirectoryName() + ".";
+					st += ", located at\n\n" + proj.getHomeDirectoryName() + ".";
 				String[] s = proj.getFiles().getStrings();
 
 
@@ -1973,6 +2121,7 @@ class FileRead implements CommandRecordHolder, Runnable {
 	int category;
 	int fileType;
 	String fileDescriptionText = null;
+	Class fileInterpClass;
 	public FileRead (String path, String importer, String arguments, int fileType,  BasicFileCoordinator ownerModule, int category, ObjectContainer f, String filePurposeText) {
 		this.f = f;
 		this.arguments = arguments;
@@ -1986,11 +2135,9 @@ class FileRead implements CommandRecordHolder, Runnable {
 		this.fileType = fileType;
 		//setCurrent(1);
 	}
-	/*
-	public MesquiteFile getFile(){
-	 	return linkedFile;
+	public void setFileInterpreter(Class fileInterp){
+		this.fileInterpClass =fileInterp;
 	}
-	 */
 	public CommandRecord getCommandRecord(){
 
 		return comRec;
@@ -2021,6 +2168,7 @@ class FileRead implements CommandRecordHolder, Runnable {
 	}
 	/*.................................................................................................................*/
 	public MesquiteFile readLinkedFile(String pathName){ //make new/read new linked file//TODO: should say if scripting
+
 		MesquiteFile linkedFile;
 		if (ownerModule == null || ownerModule.getProject() == null)
 			return null;
@@ -2063,8 +2211,10 @@ class FileRead implements CommandRecordHolder, Runnable {
 				f.setObject(linkedFile);
 			ownerModule.getProject().addFile(linkedFile);
 			linkedFile.setProject(ownerModule.getProject());
-			FileInterpreter fileInterp =null;
-			if (!StringUtil.blank(importer))
+			FileInterpreter fileInterp = null;
+			if (fileInterpClass != null)
+				fileInterp = (FileInterpreter)ownerModule.findEmployeeWithDuty(fileInterpClass);
+			else if (!StringUtil.blank(importer))
 				fileInterp = (FileInterpreter)ownerModule.findEmployeeWithName(importer);
 			NexusFileInterpreter nfi = (NexusFileInterpreter)ownerModule.findImmediateEmployeeWithDuty(NexusFileInterpreter.class);
 			if (fileInterp!=null) {

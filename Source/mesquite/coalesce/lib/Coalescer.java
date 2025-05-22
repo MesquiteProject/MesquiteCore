@@ -15,6 +15,7 @@ package mesquite.coalesce.lib;
 import java.awt.*;
 import java.util.*;
 import mesquite.lib.*;
+import mesquite.lib.tree.MesquiteTree;
 
 
 /* ======================================================================== */

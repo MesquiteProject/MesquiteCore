@@ -24,6 +24,13 @@ import mesquite.lib.*;
 import mesquite.lib.characters.*;
 import mesquite.lib.characters.CharacterData;
 import mesquite.lib.duties.*;
+import mesquite.lib.taxa.Taxa;
+import mesquite.lib.tree.TreeVector;
+import mesquite.lib.ui.ExtensibleDialog;
+import mesquite.lib.ui.MesquiteSubmenuSpec;
+import mesquite.lib.ui.ProgressIndicator;
+import mesquite.lib.ui.RadioButtons;
+import mesquite.lib.ui.SingleLineTextField;
 import mesquite.charMatrices.lib.*;
 
 public class SaveMatrixCopies extends FileInit implements ItemListener {
@@ -86,6 +93,7 @@ public class SaveMatrixCopies extends FileInit implements ItemListener {
 		decrementMenuResetSuppression();
 	}
 
+	//code also used in CharMatricesListExport
 	public void saveFile(String exporterName, MesquiteFile file, String fileName, String directoryPath, boolean usePrevious, FileCoordinator coord){
 		if (exporterName.equals("NEXUS file"))
 			coord.writeFile(file);
@@ -193,14 +201,13 @@ public class SaveMatrixCopies extends FileInit implements ItemListener {
 					num = MesquiteInteger.fromString(numReps.getText());
 				if (!MesquiteInteger.isCombinable(num)) 
 					return bailOut(null, characterSourceTask, null);
+				exporterString = exporterChoice.getSelectedItem();
+				dialog.dispose();
 				boolean useBaseNameForFiles = useBaseName.getValue() == 1;
 				String directoryPath = MesquiteFile.chooseDirectory("Where to save files?"); //MesquiteFile.saveFileAsDialog("Base name for files (files will be named <name>1.nex, <name>2.nex, etc.)", baseName);
 				if (StringUtil.blank(directoryPath))
 					return bailOut(null, characterSourceTask, null);
 				String basePath = directoryPath + MesquiteFile.fileSeparator ; //+ baseName;
-				exporterString = exporterChoice.getSelectedItem();
-
-				dialog.dispose();
 				useBaseName.removeItemListener(this);
 				dialog = null;
 

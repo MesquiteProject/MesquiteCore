@@ -19,6 +19,8 @@ import mesquite.diverse.DivCategCharMLCalculator.DivCategCharMLCalculator;
 import mesquite.lib.*;
 import mesquite.lib.characters.CharacterDistribution;
 import mesquite.lib.duties.NumberForCharAndTree;
+import mesquite.lib.tree.Tree;
+import mesquite.lib.ui.ParametersDialog;
 import mesquite.diverse.lib.*;
 
 public class DiversCategCharLikelihood extends NumForCharAndTreeDivers {
@@ -98,7 +100,7 @@ public class DiversCategCharLikelihood extends NumForCharAndTreeDivers {
     }
     boolean setParam(MesquiteParameter p, MesquiteParameter[] params, Parser parser){
         final double newValue = MesquiteDouble.fromString(parser);
-        int loc = parser.getPosition();
+        long loc = parser.getPosition();
         String token = parser.getNextToken();
         if (token != null && "=".equals(token)){
             int con = MesquiteInteger.fromString(parser);

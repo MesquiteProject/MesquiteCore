@@ -16,6 +16,10 @@ package mesquite.lib.duties;
 import java.awt.*;
 
 import mesquite.lib.*;
+import mesquite.lib.taxa.Taxa;
+import mesquite.lib.taxa.TaxaSelectionSet;
+import mesquite.lib.tree.Tree;
+import mesquite.lib.tree.TreeVector;
 
 
 /* ======================================================================== */
@@ -35,6 +39,9 @@ public abstract class TreeSearcher extends MesquiteModule  {
 	}
 	public String getMessageIfUserAbortRequested () {
 		return null;
+	}
+	public String getInferenceDetails() {
+		return "";
 	}
 
 
@@ -60,6 +67,8 @@ public abstract class TreeSearcher extends MesquiteModule  {
    	happening at inopportune times (e.g., while a long chart calculation is in mid-progress)*/
    	public abstract boolean initialize(Taxa taxa);
 
+   	
+	 
 	 public TreeInferer getTreeInferer() {
 		 return treeInferer;
 	 }
@@ -84,28 +93,33 @@ public abstract class TreeSearcher extends MesquiteModule  {
 	 public String getExtraIntermediateTreeWindowCommands (){
 		 return "";
 	 }
+	 
+	 
 
    	 /** Fills the passed tree block with trees. */
-  	public abstract void fillTreeBlock(TreeVector treeList);
-  	  
+  	public abstract int fillTreeBlock(TreeVector treeList);
+  	 
 	public void setNumberTask(NumberForTree numTask){
 	}
   	
    	public boolean isReconnectable(){
    		return false;
    	}
-	
-	 public boolean canGiveIntermediateResults(){
-   		 return false;
-   	 }
- 	public Tree getLatestTree(Taxa taxa, MesquiteNumber score, MesquiteString titleForWindow){
-   		 if (score != null)
-   			 score.setToUnassigned();
-   		 return null;
-   	 }
-	 protected void newResultsAvailable(TaxaSelectionSet outgroupTaxSet){
- 		 if (getEmployer() instanceof TreeInferer){
- 			 ((TreeInferer)getEmployer()).newResultsAvailable(outgroupTaxSet);
+
+   	public boolean canGiveIntermediateResults(){
+   		return false;
+   	}
+   	public Tree getLatestTree(Taxa taxa, MesquiteNumber score, MesquiteString titleForWindow){
+   		if (score != null)
+   			score.setToUnassigned();
+   		return null;
+   	}
+   	public TreeVector getCurrentMultipleTrees(Taxa taxa, MesquiteString titleForWindow){
+   		return null;
+   	}
+   	protected void newResultsAvailable(TaxaSelectionSet outgroupTaxSet){
+   		if (getEmployer() instanceof TreeInferer){
+   			((TreeInferer)getEmployer()).newResultsAvailable(outgroupTaxSet);
  		 }
  	 }
 	 //Override in subclasses

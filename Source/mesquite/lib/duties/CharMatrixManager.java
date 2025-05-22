@@ -17,6 +17,11 @@ import java.awt.*;
 
 import mesquite.lib.*;
 import mesquite.lib.characters.*;
+import mesquite.lib.taxa.Taxa;
+import mesquite.lib.taxa.Taxon;
+import mesquite.lib.ui.AlertDialog;
+import mesquite.lib.ui.ColorDistribution;
+import mesquite.lib.ui.ProgressIndicator;
 
 
 /* ======================================================================== */
@@ -66,9 +71,10 @@ public abstract class CharMatrixManager extends MesquiteModule   {
 	public void setLogVerbose(boolean logVerbose) {	
 		this.logVerbose = logVerbose;
 	}
+
 	/*.................................................................................................................*/
 	/** Process the matrix, placing data into passed CharacterData object */
-	public void processMatrix(Taxa taxa, mesquite.lib.characters.CharacterData data, Parser parser, int numChars, boolean nameTaxa, int firstTaxon, boolean makeNewTaxaIfNeeded, boolean fuse, MesquiteFile fileBeingRead) {
+	public void processMatrix(Taxa taxa, mesquite.lib.characters.CharacterData data, NEXUSFileParser parser, int numChars, boolean nameTaxa, int firstTaxon, boolean makeNewTaxaIfNeeded, boolean fuse, MesquiteFile fileBeingRead) {
 		if (data == null)
 			return;
 		if (taxa == null)
@@ -83,9 +89,8 @@ public abstract class CharMatrixManager extends MesquiteModule   {
 			extraTaxon = numTaxa;
 			taxa.addTaxa(numTaxa-1, 1, false);
 			data.addTaxa(numTaxa-1, 1);
-			NameReference colorNameRef = NameReference.getNameReference("color");
 			for (int it = extraTaxon; it<taxa.getNumTaxa(); it++)
-				taxa.setAssociatedLong(colorNameRef, it, 8, true);
+				taxa.setColor(it, ColorDistribution.hexFromColor(ColorDistribution.paleGoldenRod)); //paleGoldenRod
 		}
 		if (numChars<0 || !MesquiteInteger.isCombinable(numChars))
 			numChars = data.getNumChars();
@@ -93,13 +98,15 @@ public abstract class CharMatrixManager extends MesquiteModule   {
 		int PREFEREXISTING = 1;
 		int PREFERINCOMING = 0;
 		int SEPARATENOTOVERWRITE = 2;
-		NameReference colorNameRef = NameReference.getNameReference("color");
 		MesquiteTimer readTime = new MesquiteTimer();
 		MesquiteTimer totalTime = new MesquiteTimer();
 
 		totalTime.start();
 		if (data.interleaved) {  //vvvvvvvv  INTERLEAVED #################################################################
 			boolean warned = false;
+
+			//	if (FileParser.READ_MATRIX_DIRECT_FROM_FILE)  //Debugg.println
+			//		alert("Reading of interleaved files is currently broken. Please change FileParser.READ_MATRIX_DIRECT_FROM_FILE to false and try again");
 			int[] currentCharacter = new int[taxa.getNumTaxa()];
 			for (int i=firstTaxon; i<taxa.getNumTaxa(); i++) currentCharacter[i] =0;
 			boolean done = false;
@@ -115,17 +122,16 @@ public abstract class CharMatrixManager extends MesquiteModule   {
 			int OVERWRITE = 2;
 			int warnChimera = -1;
 
-			while (!done && !(isEndLine(taxonName=parser.getNextToken()))) {
+			while (!done && !(isEndLine(taxonName=parser.getNextToken(false)))) {
 				parser.setLineEndingsDark(true);
-
-				if (nameTaxa && it<taxa.getNumTaxa() && taxa.whichTaxonNumber(taxonName,false,false)>=0){ // this name already exists in taxon block
+				if (nameTaxa && it<taxa.getNumTaxa() && taxa.whichTaxonNumber(taxonName,false,false)>=0){ // this name already exists in taxa block
 					if (fuse){
 						if (toDelete || AlertDialog.query(containerOfModule(), "Duplicated taxa", "Some taxon names in the file being read are the same as some already in the project for the taxa block \"" + taxa.getName() + "\". Do you want to merge these taxa? (example of duplicated name: " + taxonName + ").  WARNING: if these taxa have data in matrices that you are fusing to existing matrices, then the taxon will take on the newly fused values. (cmm1)")){
 							taxa.setTaxonNameNoWarnNoNotify(it, deleteID);
 							toDelete = true;
 						}
 						else 
-							taxa.setTaxonName(it,taxonName);
+							taxa.setTaxonName(it,taxonName, false);  
 					} 
 					else {
 						if (!warned)
@@ -136,20 +142,19 @@ public abstract class CharMatrixManager extends MesquiteModule   {
 						}
 						warned=true;
 						if (nameTaxa)  
-							taxa.setTaxonName(it,taxonName);
+							taxa.setTaxonName(it,taxonName, false);  
 					}
 				}
 				else if (nameTaxa && it<taxa.getNumTaxa())  
-					taxa.setTaxonName(it,taxonName);
-
+					taxa.setTaxonName(it,taxonName, false);  
 				int whichTaxon = lastTaxonNumber+1;
 				if (!taxonName.equalsIgnoreCase(taxa.getTaxonName(whichTaxon)))
 					whichTaxon = taxa.whichTaxonNumberRev(taxonName, false);  //use reverse order lookup in case newly added taxa with identical names as previous
 				if (whichTaxon == -1) {
 					if (!warned) {
-						MesquiteMessage.warnUser("Unrecognized taxon name: " + taxonName + " in matrix ");
+						MesquiteMessage.warnUser("Unrecognized taxon name: \"" + taxonName + "\" in matrix " + data.getName());
 						if (problem == null)
-							problem = "Unrecognized taxon name: " + taxonName + " in matrix ";
+							problem = "Unrecognized taxon name: \"" + taxonName + "\" in matrix " + data.getName();
 						MesquiteModule.showLogWindow(true);
 					}
 					whichTaxon = it % taxa.getNumTaxa();
@@ -165,24 +170,17 @@ public abstract class CharMatrixManager extends MesquiteModule   {
 						data.deassign(icc, extraTaxon);
 					CharacterState csTEST = null;
 					while (ice<numChars && response!=mesquite.lib.characters.CharacterData.EOL) {
-						int prevPos = parser.getPosition();
 						readTime.start();
-						response = data.setStateQuickNexusReading(ice, extraTaxon, parser);
+						response = data.setStateQuickNexusReading(ice, extraTaxon, parser.getParserAtCurrentPosition());
 						readTime.end();
 						csTEST = data.getCharacterState(csTEST, ice, extraTaxon);
 						ice++;
 
 						if (response == CharacterData.ERROR){
-							problem = " taxon " + (whichTaxon +1);
-							int curPos = parser.getPosition();
-							parser.setPosition(prevPos);
-							String chunk = parser.getPieceOfLine(10);
-							parser.setPosition(curPos);
-							problem += " (section of matrix as stored: \"" + chunk + "\")";
+							problem = " taxon " + (whichTaxon +1) + " character " + (ice+1);
 							data.problemReading = problem;
 						}
 					}
-
 
 					if (data.hasDataForTaxon(extraTaxon)){  //something read in.  Now transfer to correct taxon
 						int numRead = ice;
@@ -223,18 +221,12 @@ public abstract class CharMatrixManager extends MesquiteModule   {
 				}   // ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^  FUSE
 				else {
 					while (whichTaxon<currentCharacter.length && currentCharacter[whichTaxon]<numChars && response!=mesquite.lib.characters.CharacterData.EOL) {
-						int prevPos = parser.getPosition();
 						int ic = currentCharacter[whichTaxon];
 						readTime.start();
-						response = data.setStateQuickNexusReading(ic, whichTaxon, parser);
+						response = data.setStateQuickNexusReading(ic, whichTaxon, parser.getParserAtCurrentPosition());
 						readTime.end();
 						if (response == CharacterData.ERROR){
 							problem = " taxon " + (whichTaxon +1) + ", character " + (ic + 1);
-							int curPos = parser.getPosition();
-							parser.setPosition(prevPos);
-							String chunk = parser.getPieceOfLine(10);
-							parser.setPosition(curPos);
-							problem += " (section of matrix as stored: \"" + chunk + "\")";
 							data.problemReading = problem;
 						}
 						if (response !=mesquite.lib.characters.CharacterData.EOL)
@@ -250,8 +242,6 @@ public abstract class CharMatrixManager extends MesquiteModule   {
 						done = false;
 				parser.setLineEndingsDark(false);
 				it++;
-
-
 			}
 			if (fuse){
 				taxa.deleteTaxa(extraTaxon, 1, false);
@@ -276,13 +266,16 @@ public abstract class CharMatrixManager extends MesquiteModule   {
 			taxa.notifyListeners(this, new Notification(MesquiteListener.PARTS_ADDED));
 			parser.setLineEndingsDark(false);
 		} //^^^^^^^^  INTERLEAVED #################################################################
+		
+		
 		else {  //vvvvvvvv NOT INTERLEAVED #################################################################
 			String deleteID = MesquiteTrunk.getUniqueIDBase() + taxa.getID();
 			boolean toDelete = false;
 			String problem = null;
 			int lastTaxonNumber = -1;
 
-			for (int it=firstTaxon; it<taxa.getNumTaxa() && !isEndLine(taxonName=parser.getNextToken()); it++) {
+			if (NEXUSFileParser.verbose) Debugg.println("###############  CMM ");
+			for (int it=firstTaxon; it<taxa.getNumTaxa() && !isEndLine(taxonName=parser.getNextToken(false)); it++) {
 
 				boolean preserveNewTaxon = false;
 				int whichTaxon = -1;
@@ -290,7 +283,7 @@ public abstract class CharMatrixManager extends MesquiteModule   {
 					whichTaxon = taxa.whichTaxonNumberRev(taxonName, false);  //use reverse order lookup in case newly added taxa with identical names as previous
 					if (whichTaxon<0){ //name only if absent
 						if (nameTaxa)
-							taxa.setTaxonName(it,taxonName);
+							taxa.setTaxonName(it,taxonName, false);  
 					}
 					else {
 						if (nameTaxa){
@@ -299,12 +292,12 @@ public abstract class CharMatrixManager extends MesquiteModule   {
 								toDelete = true;
 							}
 							else 
-								taxa.setTaxonName(it,taxonName);
+								taxa.setTaxonName(it,taxonName, false);  
 						}
 					}
 				}
 				else if (nameTaxa){
-					taxa.setTaxonName(it,taxonName);
+					taxa.setTaxonName(it,taxonName, false);  
 				}
 				whichTaxon = lastTaxonNumber+1;
 				if (!taxonName.equalsIgnoreCase(taxa.getTaxonName(whichTaxon)))
@@ -321,12 +314,13 @@ public abstract class CharMatrixManager extends MesquiteModule   {
 						taxon.setName(taxonName);
 					}
 					else {
-						MesquiteMessage.warnUser("Unrecognized taxon name: " + taxonName + " in matrix ");
+						MesquiteMessage.warnUser("Unrecognized taxon name: \"" + taxonName + "\" in matrix " + data.getName());
 						MesquiteModule.showLogWindow(true);
 						whichTaxon = it;
 					}
 				}
 				CommandRecord.tick("Reading character states for " + taxa.getTaxonName(whichTaxon));
+				if (NEXUSFileParser.verbose)  Debugg.println("###############  CMM1");
 				int ic=0;
 				lastTaxonNumber = whichTaxon;
 				if (fuse){ //vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv    FUSE
@@ -336,17 +330,14 @@ public abstract class CharMatrixManager extends MesquiteModule   {
 						data.deassign(icc, extraTaxon);
 
 					while (ic<numChars) {
-						int prevPos = parser.getPosition();
 						readTime.start();
-						int response = data.setStateQuickNexusReading(ic++, extraTaxon, parser);
+						int response =  data.setStateQuickNexusReading(ic, whichTaxon, parser.getParserAtCurrentPosition());
+						while (response == CharacterData.EOL)//current little parser didn't have enough; get more
+							response = data.setStateQuickNexusReading(ic, whichTaxon, parser.getParserAtCurrentPosition());
+						ic++;
 						readTime.end();
 						if (response == CharacterData.ERROR){
 							problem = " taxon " + (whichTaxon +1) + ", character " + (ic);
-							int curPos = parser.getPosition();
-							parser.setPosition(prevPos);
-							String chunk = parser.getPieceOfLine(10);
-							parser.setPosition(curPos);
-							problem += " (section of matrix as stored: \"" + chunk + "\")";
 							data.problemReading = problem;
 						}
 					}
@@ -360,12 +351,12 @@ public abstract class CharMatrixManager extends MesquiteModule   {
 							//	(PREFEREXISTING; PREFERINCOMING;  SEPARATENOTOVERWRITE)
 							if (overwritingRule == SEPARATENOTOVERWRITE){  //don't deassign extra taxon, and invent new taxon and change value of extraTaxon
 								preserveNewTaxon = true;
-								taxa.setTaxonName(extraTaxon, taxa.getUniqueName(taxa.getTaxonName(whichTaxon)+" (for " + data.getName() + ", from file " + fileBeingRead.getFileName() + ")"));
-								taxa.setAssociatedLong(colorNameRef, extraTaxon, 13, true);
+								taxa.setTaxonName(extraTaxon, taxa.getUniqueName(taxa.getTaxonName(whichTaxon)+" (for " + data.getName() + ", from file " + fileBeingRead.getFileName() + ")"), false);
+								taxa.setColor(extraTaxon, ColorDistribution.hexFromColor(Color.cyan));
 								int numTaxa = taxa.getNumTaxa();
 								taxa.addTaxa(numTaxa-1, 1, false);  //this is for future
 								data.addTaxa(numTaxa-1, 1);
-								taxa.setTaxonName(numTaxa, deleteID);
+								taxa.setTaxonName(numTaxa, deleteID, false); 
 							}
 
 						}
@@ -392,29 +383,27 @@ public abstract class CharMatrixManager extends MesquiteModule   {
 				} // ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^  FUSE
 				else {
 					while (ic<numChars) {
-						int prevPos = parser.getPosition();
 						readTime.start();
-						int response = data.setStateQuickNexusReading(ic++, whichTaxon, parser);
+						int response =  data.setStateQuickNexusReading(ic, whichTaxon, parser.getParserAtCurrentPosition());
+						while (response == CharacterData.EOL)//current little parser didn't have enough; get more
+							response = data.setStateQuickNexusReading(ic, whichTaxon, parser.getParserAtCurrentPosition());
+						ic++;
 						readTime.end();
 						if (response == CharacterData.ERROR){
 							problem = " taxon " + (whichTaxon +1) + ", character " + (ic);
-							int curPos = parser.getPosition();
-							parser.setPosition(prevPos);
-							String chunk = parser.getPieceOfLine(10);
-							parser.setPosition(curPos);
-							problem += " (section of matrix as stored: \"" + chunk + "\")";
 							data.problemReading = problem;
 						}
 					}
 				}
 
 				if (fuse && preserveNewTaxon)
-						extraTaxon++;
-						
+					extraTaxon++;
+
 			}
+			//		MatrixFileParser.verbose = true; //Debugg.println delete
 			if (fuse){
-					taxa.deleteTaxa(extraTaxon, 1, false); 
-					data.deleteTaxa(extraTaxon, 1);
+				taxa.deleteTaxa(extraTaxon, 1, false); 
+				data.deleteTaxa(extraTaxon, 1);
 			}
 			if (problem != null){
 				discreetAlert("There was a problem reading the character matrix " + data.getName() + ".  It appears that the file is corrupt (" + problem + ").");
@@ -432,19 +421,20 @@ public abstract class CharMatrixManager extends MesquiteModule   {
 			taxa.notifyListeners(this, new Notification(MesquiteListener.PARTS_ADDED));
 		}  //^^^^^^^^ NOT INTERLEAVED #################################################################
 
+
 		totalTime.end();
 	}
-	
+
 	NameReference orRef = NameReference.getNameReference("Overwritten");
 	private void markAsOverwritten(CharacterData data, int whichTaxon, MesquiteFile fileBeingRead){
 		Associable tInfo = data.getTaxaInfo(true);
 
-		Object obj = tInfo.getAssociatedObject(orRef, whichTaxon);
+		Object obj = tInfo.getAssociatedString(orRef, whichTaxon);
 		String s = "";
 		if (obj != null && obj instanceof String)
 			s = "; " + (String)obj;
 		s = "Overwritten by states from file " + fileBeingRead.getFileName() + " on " + getDateAndTime() + s;
-		tInfo.setAssociatedObject(orRef, whichTaxon, s);
+		tInfo.setAssociatedString(orRef, whichTaxon, s);
 
 		MesquiteMessage.warnUser("NOTE: Previous states in matrix \"" + data.getName() + "\" for taxon " + (whichTaxon+1) + " (" + data.getTaxa().getTaxonName(whichTaxon) + ") overwritten using states from file " + fileBeingRead.getFileName());
 

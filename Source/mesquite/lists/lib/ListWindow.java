@@ -14,16 +14,32 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
 package mesquite.lists.lib;
 
 import java.awt.*;
+
 import java.awt.datatransfer.Clipboard;
 import java.awt.datatransfer.DataFlavor;
 import java.awt.datatransfer.Transferable;
 import java.awt.event.*;
 import java.util.*;
+import java.awt.List;
 
 import mesquite.lib.duties.*;
+import mesquite.lib.misc.MesquiteCollator;
 import mesquite.lib.*;
 import mesquite.lib.characters.*;
 import mesquite.lib.table.*;
+import mesquite.lib.ui.AlertDialog;
+import mesquite.lib.ui.ExtensibleDialog;
+import mesquite.lib.ui.InfoBar;
+import mesquite.lib.ui.MesquiteButton;
+import mesquite.lib.ui.MesquiteCheckMenuItem;
+import mesquite.lib.ui.MesquiteMenuItem;
+import mesquite.lib.ui.MesquiteMenuItemSpec;
+import mesquite.lib.ui.MesquiteMenuSpec;
+import mesquite.lib.ui.MesquitePopup;
+import mesquite.lib.ui.MesquiteSubmenuSpec;
+import mesquite.lib.ui.MesquiteTool;
+import mesquite.lib.ui.MesquiteWindow;
+import mesquite.lib.ui.SingleLineTextField;
 
 
 /* ======================================================================== */
@@ -62,12 +78,11 @@ public abstract class ListWindow extends TableWindow implements KeyListener, Mes
 		ownerModule.setModuleWindow(this);
 		owner = ownerModule;
 		int numItems = owner.getNumberOfRows();
-		table = new ListTable (numItems, 0, windowWidth, windowHeight, 130, this, ownerModule);
+		table = new ListTable (numItems, 0, windowWidth, windowHeight, MesquiteTable.DEFAULTROWNAMEWIDTH, this, ownerModule);
 		setCurrentObject(owner.getMainObject());
 		if (getCurrentObject() instanceof Associable)
 			table.setRowAssociable((Associable)getCurrentObject());
 		collator = new MesquiteCollator();
-
 		//TODO:  note: strangely enough, the commands of the arrow tools are not used, since it uses default behavior of table
 		String selectExplanation = "Select items in table.  If a single cell in the table is touched, and that cell is editable, then you will be given a little box in which you can edit the ";
 		selectExplanation += "contents of the cell.  By holding down shift while clicking, the selection will be extended from the first to the last touched cell. ";
@@ -119,9 +134,9 @@ public abstract class ListWindow extends TableWindow implements KeyListener, Mes
 		//ownerModule.addMenuSeparator();
 		if (owner.rowsAddable())
 			ownerModule.addMenuItem( "Add " + owner.getItemTypeNamePlural() + "...", ownerModule.makeCommand("addRows", this));
-		if (owner.rowsShowable())
+	/*	if (owner.rowsShowable())
 			ownerModule.addMenuItem( "Show Selected " + owner.getItemTypeNamePlural(), showCommand = ownerModule.makeCommand("showSelectedRows", this));
-	
+*/
 		if (owner.rowsDeletable()) {
 			ownerModule.addMenuItem( "Delete Selected " + owner.getItemTypeNamePlural(), deleteCommand = ownerModule.makeCommand("deleteSelectedRows", this));
 			MesquiteWindow.addKeyListener(this, this);
@@ -138,7 +153,11 @@ public abstract class ListWindow extends TableWindow implements KeyListener, Mes
 		setShowAnnotation(true);
 		table.requestFocusInWindow();
 		MesquiteWindow.addKeyListener(this, table);
+		addKeyListenerToAll(table, getPalette(), true);
 		resetTitle();
+		if (ownerModule.rowsShowable()){
+			MesquiteModule assistant= (MesquiteModule)ownerModule.hireNamedEmployee(MesquiteModule.class, "#ShowItemInList");
+		}
 	}
 	public void requestFocus(){
 		if (table!=null)
@@ -209,8 +228,9 @@ public abstract class ListWindow extends TableWindow implements KeyListener, Mes
 			temp.addLine("toggleNonMatching " + nonMatching.toOffOnString());
 		if (deselectWandTouched.getValue()!=defaultDeselectWandTouched)
 			temp.addLine("toggleDeselectWandTouched " + deselectWandTouched.toOffOnString());
-		temp.addLine("useTargetValue " + useTargetValue.toOffOnString());
+		//temp.addLine("useTargetValue " + useTargetValue.toOffOnString());
 		temp.addLine("setTargetValue " + StringUtil.tokenize(targetValue));
+		temp.addLine("setWandColumn " + wandColumn);
 
 		for (int i = 0; i<ownerModule.getNumberOfEmployees(); i++) { //if employee is number for character list, then hire indirectly its 
 			MesquiteModule e=(MesquiteModule)ownerModule.getEmployeeVector().elementAt(i);
@@ -219,9 +239,10 @@ public abstract class ListWindow extends TableWindow implements KeyListener, Mes
 			}
 		}
 		temp.incorporate(super.getSnapshot(file), false);
+		temp.addLine("reviewColumnWidths");
 		return temp;
 	}
-	public abstract void setRowName(int row, String name);
+	public abstract void setRowName(int row, String name, boolean update);
 	public abstract String getRowName(int row);
 	public abstract String getRowNameForSorting(int row);
 	public int getSingleNameUndoConstant() {
@@ -239,7 +260,7 @@ public abstract class ListWindow extends TableWindow implements KeyListener, Mes
 		return table.cellsEditableByDefault();
 	}
 	/*...............................................................................................................*/
-	/** returns whether or not a row name of table is editable.*/
+	/** returns whether or not a row name of table is editable. Received in setRowName*/
 	public boolean isRowNameEditable(int row){
 		return table.checkRowNameEditable(row);
 	}
@@ -272,31 +293,181 @@ public abstract class ListWindow extends TableWindow implements KeyListener, Mes
 				} 
 			} 
 		} 
-	} 
+	}
+
+	/*------------------------------ MAGIC WAND ------------------------------------*/
+	int wandColumn = -1;
+	void enterAndUseTargetValue() {
+
+		MesquiteInteger buttonPressed = new MesquiteInteger(1);
+		ExtensibleDialog dialog = new ExtensibleDialog(ownerModule.containerOfModule(), "Select by Target Value",buttonPressed);  //MesquiteTrunk.mesquiteTrunk.containerOfModule()
+
+		dialog.addLabel("Column for target value");
+		String[] cols = new String[table.getNumColumns()];
+		for (int i=0; i<table.getNumColumns(); i++)
+			cols[i] = table.getColumnNameText(i);
+		MesquiteInteger colChosen = null;
+		if (wandColumn >= table.getNumColumns())
+			wandColumn = -1;
+		if (wandColumn >=0)
+			colChosen = new MesquiteInteger(wandColumn);
+		List columnsList = dialog.addList (cols, colChosen, null, 6);
+		SingleLineTextField target = dialog.addTextField("Target value to find in column:", targetValue, 8);
+
+		Checkbox eq = dialog.addCheckBox("Equal", equals.getValue());
+		Checkbox gT = dialog.addCheckBox("Greater than", greaterThan.getValue());
+		Checkbox lT = dialog.addCheckBox("Less than", lessThan.getValue());
+		dialog.addHorizontalLine(1);
+		Checkbox we = dialog.addCheckBox("Within existing selection", withinExistingSelection.getValue());
+		Checkbox nm = dialog.addCheckBox("Choose non-matching", nonMatching.getValue());
+		Checkbox des = dialog.addCheckBox("Deselect rather than select", deselectWandTouched.getValue());
+
+		dialog.completeAndShowDialog(true);
+		boolean doIt = false;
+		if (buttonPressed.getValue()==0) {
+			if (!(StringUtil.blank(target.getText()) && columnsList.getSelectedIndex()>=0))
+				doIt = true;
+			equals.setValue(eq.getState());
+			greaterThan.setValue(gT.getState());
+			lessThan.setValue(lT.getState());
+			targetValue = target.getText();
+			withinExistingSelection.setValue(we.getState());
+			nonMatching.setValue(nm.getState());
+			deselectWandTouched.setValue(des.getState());
+			wandColumn = columnsList.getSelectedIndex();
+
+		}
+		dialog.dispose();
+		if (doIt)
+			selectByWandCriteria(target.getText(), columnsList.getSelectedIndex(), -1, des.getState(), we.getState(), nm.getState(), false, gT.getState(), lT.getState(), eq.getState());
+	}
+	boolean satisfiesCriteria(String one, String two, boolean greaterThn, boolean lessThn, boolean equalsTo){
+		if (StringUtil.blank(one) && StringUtil.blank(two))
+			return true;
+		if (StringUtil.blank(one) || StringUtil.blank(two))
+			return false;
+		if (equalsTo && one.equals(two))
+			return true;
+		double dOne = MesquiteDouble.fromString(one);
+		double dTwo = MesquiteDouble.fromString(two);
+		if (MesquiteDouble.isCombinable(dOne) && MesquiteDouble.isCombinable(dTwo)) {
+			if (greaterThn && (dTwo>dOne))
+				return true;
+			if (lessThn && (dTwo<dOne))
+				return true;
+			if (equalsTo && dTwo==dOne)
+				return true;
+			return false;
+		}
+		int order = collator.compare(one, two);
+		if (greaterThn && (order == -1))
+			return true;
+		if (lessThn && (order == 1))
+			return true;
+		if (equalsTo && (order == 0))
+			return true;
+		return false;
+	}
+	private void selectByWandCriteria(String textTarget, int column, int row, boolean deselects, boolean withinExisting, boolean chooseNonMatching, boolean shifted, boolean greaterThn, boolean lessThn, boolean equalsTo) {
+		if (getCurrentObject() instanceof Associable){
+			Associable assoc = (Associable)getCurrentObject();
+			boolean withinSelection = false;
+			if (row>=0)
+				withinSelection = withinExisting && assoc.getSelected(row); 
+			else
+				withinSelection = withinExisting; 
+			if (shifted && !withinSelection && !deselects)  
+				assoc.deselectAll();
+			table.offAllEdits();
+			int count = 0;
+			for (int i=0; i<table.getNumRows(); i++){
+				boolean satisfies = satisfiesCriteria(textTarget, table.getMatrixText(column, i), greaterThn, lessThn, equalsTo);
+				if (chooseNonMatching)
+					satisfies = !satisfies;
+				if (withinSelection) {
+					if (assoc.getSelected(i)){
+						if (!deselects)
+							assoc.setSelected(i, satisfies);
+						else if (satisfies)
+							assoc.setSelected(i, false);
+					}
+				}
+				else if (satisfies) {
+					assoc.setSelected(i, !deselects);
+				}
+				if (assoc.getSelected(i))
+					count++;
+			}
+			ownerModule.logln("" + count + " items are now selected");
+			assoc.notifyListeners(this, new Notification(MesquiteListener.SELECTION_CHANGED));
+		}
+		else {
+			boolean withinSelection = false;
+			if (row>=0)
+				withinSelection = withinExisting && table.isRowSelected(row);
+			else 
+				withinSelection = withinExisting;
+
+			if (shifted && !withinSelection && !deselects)
+				table.deselectAll();
+			table.offAllEdits();
+			int count = 0;
+			for (int i=0; i<table.getNumRows(); i++){
+				boolean satisfies = satisfiesCriteria(textTarget, table.getMatrixText(column, i), greaterThn, lessThn, equalsTo);
+				if (chooseNonMatching)
+					satisfies = !satisfies;
+				if (withinSelection) {
+					if (table.isRowSelected(i)){
+						if (!deselects)
+							if (satisfies)
+								table.selectRow(i);
+							else
+								table.deselectRow(i);
+						else if (satisfies)
+							table.deselectRow(i);
+					}
+				}
+				else if (satisfies) {
+					if (!deselects)
+						table.selectRow(i);
+					else
+						table.deselectRow(i);
+				}
+				if (table.isRowSelected(i))
+					count++;
+			}
+			ownerModule.logln("" + count + " rows are now selected");
+			table.repaintAll();
+		}	
+	}
 	/*.................................................................................................................*/
 	private void doWandTouch(String arguments){
 		MesquiteInteger io = new MesquiteInteger(0);
 		int column= MesquiteInteger.fromString(arguments, io);
 		int row= MesquiteInteger.fromString(arguments, io);
 		if (MesquiteInteger.isNonNegative(column)&& (MesquiteInteger.isNonNegative(row))) {  // it is in a real row and column that matters for the wand
+			wandColumn = column;
 			String text = "";
-			if (useTargetValue.getValue())
+			if (useTargetValue.getValue())  //this shouldn't actually happen any more.
 				text = targetValue;
 			else 
 				text = table.getMatrixText(column, row);
 			boolean deselects =deselectWandTouched.getValue();
 
+			selectByWandCriteria(text, column, row, deselects, withinExistingSelection.getValue(), nonMatching.getValue(), arguments.indexOf("shift")<0, greaterThan.getValue(), lessThan.getValue(), equals.getValue());
+
+			/*
 			if (getCurrentObject() instanceof Associable){
 				Associable assoc = (Associable)getCurrentObject();
 				boolean withinSelection = false;
 				if (row>=0)
-					withinSelection = withinExistingSelection.getValue() && assoc.getSelected(row);
-				if (arguments.indexOf("shift")<0 && !withinSelection && !deselects)
+					withinSelection = withinExistingSelection.getValue() && assoc.getSelected(row); //@@@@@@PARAM
+				if (arguments.indexOf("shift")<0 && !withinSelection && !deselects)  //@@@@@@PARAM
 					assoc.deselectAll();
 				table.offAllEdits();
 				int count = 0;
 				for (int i=0; i<table.getNumRows(); i++){
-					boolean satisfies = satisfiesCriteria(text, table.getMatrixText(column, i));
+					boolean satisfies = satisfiesCriteria(text, table.getMatrixText(column, i), greaterThan.getValue(), lessThan.getValue(), equals.getValue());
 					if (nonMatching.getValue())
 						satisfies = !satisfies;
 					if (withinSelection) {
@@ -325,7 +496,7 @@ public abstract class ListWindow extends TableWindow implements KeyListener, Mes
 				table.offAllEdits();
 				int count = 0;
 				for (int i=0; i<table.getNumRows(); i++){
-					boolean satisfies = satisfiesCriteria(text, table.getMatrixText(column, i));
+					boolean satisfies = satisfiesCriteria(text, table.getMatrixText(column, i), greaterThan.getValue(), lessThan.getValue(), equals.getValue());
 					if (nonMatching.getValue())
 						satisfies = !satisfies;
 					if (withinSelection) {
@@ -350,7 +521,7 @@ public abstract class ListWindow extends TableWindow implements KeyListener, Mes
 				}
 				ownerModule.logln("" + count + " rows are now selected");
 				table.repaintAll();
-			}
+			} */
 		}
 	}
 	/*.................................................................................................................*/
@@ -390,11 +561,17 @@ public abstract class ListWindow extends TableWindow implements KeyListener, Mes
 				MesquiteCheckMenuItem deselectWandTouchedItem = new MesquiteCheckMenuItem("Deselect rather than Select", ownerModule, MesquiteModule.makeCommand("toggleDeselectWandTouched", this), null, null);
 				deselectWandTouchedItem.set(deselectWandTouched.getValue());
 				popup.add(deselectWandTouchedItem);
-				MesquiteCheckMenuItem useTargetValueMenuItem = new MesquiteCheckMenuItem("Use Entered Target Value", ownerModule, MesquiteModule.makeCommand("useTargetValue", this), null, null);
-				useTargetValueMenuItem.set(useTargetValue.getValue());
-				popup.add(useTargetValueMenuItem);
+				/*
+				 * MesquiteCheckMenuItem useEnteredTargetValueMenuItem = new MesquiteCheckMenuItem("Use Entered Target Value", ownerModule, MesquiteModule.makeCommand("useTargetValue", this), null, null);
+
+				useEnteredTargetValueMenuItem.set(useTargetValue.getValue());
+				popup.add(useEnteredTargetValueMenuItem);
 				MesquiteMenuItem setTargetValueMenuItem = new MesquiteMenuItem("Set Target Value...", ownerModule, MesquiteModule.makeCommand("setTargetValue", this));
 				popup.add(setTargetValueMenuItem);
+				 */
+
+				MesquiteMenuItem useTargetValueMenuItem = new MesquiteMenuItem("Specify and Use Target Value...", ownerModule, MesquiteModule.makeCommand("enterAndUseTargetValue", this));
+				popup.add(useTargetValueMenuItem);
 				popup.showPopup(x,y+6);
 			}
 		}
@@ -429,10 +606,16 @@ public abstract class ListWindow extends TableWindow implements KeyListener, Mes
 			deselectWandTouched.toggleValue(ParseUtil.getFirstToken(arguments, io));
 		}
 		else if (checker.compare(this.getClass(), "Sets whether to select according to a set target value", null, commandName, "useTargetValue")) {
-				boolean current = useTargetValue.getValue();
-				MesquiteInteger io = new MesquiteInteger(0);
-				useTargetValue.toggleValue(ParseUtil.getFirstToken(arguments, io));
-	}
+			//ignored in v.4
+		}
+		else if (checker.compare(this.getClass(), "Sets the wand column last used", "[number]", commandName, "setWandColumn")) {
+			MesquiteInteger io = new MesquiteInteger(0);
+			int s = MesquiteInteger.fromString(ParseUtil.getFirstToken(arguments, io));
+			if (MesquiteInteger.isCombinable(s)){
+				wandColumn = s;
+			}
+
+		}
 		else if (checker.compare(this.getClass(), "Sets the target value", null, commandName, "setTargetValue")) {
 			String target = ParseUtil.getFirstToken(arguments, new MesquiteInteger(0));
 			if (StringUtil.blank(target) && !MesquiteThread.isScripting()){
@@ -442,7 +625,10 @@ public abstract class ListWindow extends TableWindow implements KeyListener, Mes
 			}
 			targetValue = target;
 
-	}
+		}
+		else if (checker.compare(this.getClass(), "Sets and uses a target value", null, commandName, "enterAndUseTargetValue")) {
+			enterAndUseTargetValue();
+		}
 		else if (checker.compare(this.getClass(), "Applies the magic wand tool to select like values", "[column touched] [row touched]", commandName, "wandTouch")) {
 			doWandTouch(arguments);
 		}
@@ -461,7 +647,7 @@ public abstract class ListWindow extends TableWindow implements KeyListener, Mes
 			UndoInstructions undoInstructions = new UndoInstructions(UndoInstructions.PARTS_MOVED,assoc);
 			undoInstructions.recordPreviousOrder(assoc);
 			UndoReference undoReference = new UndoReference(undoInstructions, ownerModule);
-			
+
 			if (column>=0 && row >=0) {
 				long[] fullChecksumBefore=null;
 				if (assoc instanceof CharacterData) {
@@ -471,6 +657,7 @@ public abstract class ListWindow extends TableWindow implements KeyListener, Mes
 							return null;
 				}
 
+				Vector v = owner.pauseAllPausables();
 				String[] text = new String[assoc.getNumberOfParts()];
 				for (int i=0; i<assoc.getNumberOfParts(); i++) {
 					text[i] = table.getMatrixText(column, i);
@@ -489,13 +676,14 @@ public abstract class ListWindow extends TableWindow implements KeyListener, Mes
 				}
 				processPostSwap(assoc);
 				assoc.notifyListeners(this, new Notification(MesquiteListener.PARTS_MOVED, undoReference));
+				owner.unpauseAllPausables(v);
 				if (assoc instanceof CharacterData){
 					long[] fullChecksumAfter = ((CharacterData)assoc).getIDOrderedFullChecksum();
 					((CharacterData)assoc).compareChecksums(fullChecksumBefore, fullChecksumAfter, true, "sorting of characters");
 				}
 			}
 			else if (column == -1 && row >=0) { //row names selected; sort by name
-				
+
 				long[] fullChecksumBefore=null;
 				if (assoc instanceof CharacterData) {
 					fullChecksumBefore = ((CharacterData)assoc).getIDOrderedFullChecksum();
@@ -503,6 +691,7 @@ public abstract class ListWindow extends TableWindow implements KeyListener, Mes
 						if (!AlertDialog.query(this, "Sort Characters", "Are you sure you want to reorder the sequences?  It cannot be undone.", "Sort", "Cancel", 2))
 							return null;
 				}
+				Vector v = owner.pauseAllPausables();
 				String[] text = new String[assoc.getNumberOfParts()];
 				for (int i=0; i<assoc.getNumberOfParts(); i++) {
 					text[i] = getRowNameForSorting(i);
@@ -519,6 +708,7 @@ public abstract class ListWindow extends TableWindow implements KeyListener, Mes
 						m.elementsReordered((ListableVector)assoc);
 				}
 				assoc.notifyListeners(this, new Notification(MesquiteListener.PARTS_MOVED, undoReference));
+				owner.unpauseAllPausables(v);
 				if (assoc instanceof CharacterData){
 					long[] fullChecksumAfter = ((CharacterData)assoc).getIDOrderedFullChecksum();
 					((CharacterData)assoc).compareChecksums(fullChecksumBefore, fullChecksumAfter, true, "sorting of characters");
@@ -531,6 +721,10 @@ public abstract class ListWindow extends TableWindow implements KeyListener, Mes
 		}
 		else if (checker.compare(this.getClass(), "Deletes the selected rows", null, commandName, "deleteSelectedRows")) {
 			deleteSelectedRows(true);
+			return null;
+		}
+		else if (checker.compare(this.getClass(), "Reviews column widths", null, commandName, "reviewColumnWidths")) {
+			reviewColumnWidths();
 			return null;
 		}
 		else if (checker.compare(this.getClass(), "Inverts which rows are selected", null, commandName, "invertSelection")) {
@@ -561,10 +755,10 @@ public abstract class ListWindow extends TableWindow implements KeyListener, Mes
 				e.printStackTrace();
 			}
 			for (int im = 0; im < table.getNumRows(); im++){
-				if (StringArray.indexOf(clipboard, table.getRowNameTextForDisplay(im))>=0){
+				if (StringArray.indexOf(clipboard, table.getRowNameTextForDisplay(im))>=0 || StringArray.indexOfTabbedToken(clipboard, table.getRowNameTextForDisplay(im), 0)>=0){
 					table.selectRow(im);
-				if (table.getRowAssociable() != null)
-					table.getRowAssociable().setSelected(im, true);
+					if (table.getRowAssociable() != null)
+						table.getRowAssociable().setSelected(im, true);
 				}
 			}
 			table.repaintAll();
@@ -581,8 +775,10 @@ public abstract class ListWindow extends TableWindow implements KeyListener, Mes
 			int justAfter= MesquiteInteger.fromString(arguments, io);
 			if (!MesquiteInteger.isCombinable(justAfter))
 				justAfter = MesquiteInteger.queryInteger(this, "Move selected", "After which row should the selected rows be moved (enter 0 to move to first place)?", 0,  0, table.getNumRows()*10);
+			Vector v = owner.pauseAllPausables();
 			if (MesquiteInteger.isCombinable(justAfter))
 				table.selectedRowsDropped(justAfter-1); //-1 to convert to internal representation
+			owner.unpauseAllPausables(v);
 		}
 		else if (checker.compare(this.getClass(), "Adds rows (and their corresponding objects)", "[number of rows to add]", commandName, "addRows")) {
 			MesquiteInteger io = new MesquiteInteger(0);
@@ -590,8 +786,10 @@ public abstract class ListWindow extends TableWindow implements KeyListener, Mes
 			int first = table.getNumRows();
 			if (!MesquiteInteger.isCombinable(num))
 				num = MesquiteInteger.queryInteger(this, "Add", "Add how many?", 1);
+			Vector v = owner.pauseAllPausables();
 			if (MesquiteInteger.isCombinable(num)){
 				addRows(num);
+				owner.unpauseAllPausables(v);
 				//					addRowsNotify(first, num);
 			}
 		}
@@ -624,6 +822,7 @@ public abstract class ListWindow extends TableWindow implements KeyListener, Mes
 			return  super.doCommand(commandName, arguments, checker);
 		return null;
 	}
+
 	boolean compare(boolean greaterThan, String one, String two){
 		if (one == null || two == null)
 			return false;
@@ -651,31 +850,6 @@ public abstract class ListWindow extends TableWindow implements KeyListener, Mes
 	}
 	public void processPostSwap(Associable assoc){
 	}
-	boolean satisfiesCriteria(String one, String two){
-		if (StringUtil.blank(one) && StringUtil.blank(two))
-			return true;
-		if (StringUtil.blank(one) || StringUtil.blank(two))
-			return false;
-		if (equals.getValue() && one.equals(two))
-			return true;
-		double dOne = MesquiteDouble.fromString(one);
-		double dTwo = MesquiteDouble.fromString(two);
-		if (MesquiteDouble.isCombinable(dOne) && MesquiteDouble.isCombinable(dTwo)) {
-			if (greaterThan.getValue() && (dTwo>dOne))
-				return true;
-			if (lessThan.getValue() && (dTwo<dOne))
-				return true;
-			return false;
-		}
-		int order = collator.compare(one, two);
-		if (greaterThan.getValue() && (order == -1))
-			return true;
-		if (lessThan.getValue() && (order == 1))
-			return true;
-		if (equals.getValue() && (order == 0))
-			return true;
-		return false;
-	}
 	public void addListAssistant(ListAssistant assistant) {
 		if (assistant !=null) {
 			assistant.setTableAndObject(table, getCurrentObject());
@@ -694,6 +868,7 @@ public abstract class ListWindow extends TableWindow implements KeyListener, Mes
 				}
 				table.setColumnWidth(table.getNumColumns()-1, w);
 			}
+			reviewColumnWidths();
 		}
 	}
 	public void reviewColumnNumber() {
@@ -803,7 +978,7 @@ public abstract class ListWindow extends TableWindow implements KeyListener, Mes
 	public boolean interceptCellTouch(int  column, int row, int modifiers){
 		return false;
 	}
-	public boolean interceptRowNameTouch(int row, int regionInCellH, int regionInCellV, int modifiers){
+	public boolean interceptRowNameTouch(int row, EditorPanel editorPanel, int x, int y, int modifiers){
 		return false;
 	}
 	public void deleteSelectedColumns() {
@@ -975,9 +1150,10 @@ public abstract class ListWindow extends TableWindow implements KeyListener, Mes
 			if (!AlertDialog.query(this, "Delete?",message, "Yes", "No"))
 				return;
 			MenuOwner.incrementMenuResetSuppression();
+			Vector v = owner.pauseAllPausables();
 			if (ownerModule != null && ownerModule.getProject() != null)
 				ownerModule.getProject().incrementProjectWindowSuppression();
-			
+
 
 			int count =0;
 			int currentNumRows = owner.getNumberOfRows();
@@ -987,6 +1163,7 @@ public abstract class ListWindow extends TableWindow implements KeyListener, Mes
 			int row = currentNumRows-1;
 			int firstInBlockDeleted = -1;
 			int lastInBlockDeleted = -1;
+
 			while(row>=0) {
 				if (table.isRowSelected(row) && owner.rowDeletable(row)){  // we've found a selected one
 					lastInBlockDeleted = row;
@@ -1000,13 +1177,15 @@ public abstract class ListWindow extends TableWindow implements KeyListener, Mes
 				}
 				row--;
 			}
+
 			row = currentNumRows-1;
 			firstInBlockDeleted = -1;
 			lastInBlockDeleted = -1;
 			((Listened)getCurrentObject()).incrementNotifySuppress();
-			
-	
-				
+
+
+
+			//Note that this method is overridden in CharacterList so as to be able to use the deletePartsFlagged system
 			while(row>=0) {
 				if (table.isRowSelected(row) && owner.rowDeletable(row)){  // we've found a selected one
 					lastInBlockDeleted = row;
@@ -1032,6 +1211,7 @@ public abstract class ListWindow extends TableWindow implements KeyListener, Mes
 
 			if (ownerModule != null && ownerModule.getProject() != null)
 				ownerModule.getProject().decrementProjectWindowSuppression();
+			owner.unpauseAllPausables(v);
 			MenuOwner.decrementMenuResetSuppression();
 		}
 		else

@@ -18,6 +18,12 @@ import java.awt.*;
 import mesquite.lib.*;
 import mesquite.lib.characters.*;
 import mesquite.lib.duties.*;
+import mesquite.lib.taxa.Taxa;
+import mesquite.lib.tree.Tree;
+import mesquite.lib.ui.MQTextArea;
+import mesquite.lib.ui.MesquiteSubmenuSpec;
+import mesquite.lib.ui.MesquiteWindow;
+import mesquite.lib.ui.MousePanel;
 import mesquite.diverse.lib.*;
 
 
@@ -148,7 +154,7 @@ public class CharAssocDivViewer extends TreeWindowAssistantA    {
 			}
 		}
 		else if (checker.compare(this.getClass(), "Sets the character to use", "[character number]", commandName, "setCharacter")) {
-			int icNum = MesquiteInteger.fromFirstToken(arguments, stringPos);
+			int icNum = MesquiteInteger.fromFirstToken(arguments, pos);
 			if (!MesquiteInteger.isCombinable(icNum))
 				return null;
 			int ic = CharacterStates.toInternal(icNum);
@@ -282,7 +288,7 @@ class CADPanel extends MousePanel{
 	int labelHeight = 52;
 	public CADPanel(){
 		super();
-		text = new TextArea(" ", 50, 50, TextArea.SCROLLBARS_VERTICAL_ONLY);
+		text = new MQTextArea(" ", 50, 50, TextArea.SCROLLBARS_VERTICAL_ONLY);
 		setLayout(null);
 		add(text);
 		text.setLocation(0,labelHeight);

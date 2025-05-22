@@ -1,0 +1,27 @@
+<?xml version="1.0"?>
+<mesquite>
+	<humanName>ASTRAL 3, 4</humanName> <!-- required -->
+	<internalName>ASTRAL</internalName> <!-- required -->
+	<!-- At least one element of the following must be present -->
+	<punctuation>,={}&gt;&lt;</punctuation> 
+	<!-- replacements in sequence -->
+	<replacement> 
+		<before>;</before>
+		<after>,</after>
+	</replacement> 
+	<replacement> 
+		<before>,</before>
+		<after>;</after>
+		<where>last</where>
+	</replacement> 
+	<replacement> 
+		<before>'[</before>
+		<after>&lt;</after>
+	</replacement> 
+	<replacement> 
+		<before>]'</before>
+		<after>&gt;</after>
+	</replacement> 
+
+</mesquite>
+

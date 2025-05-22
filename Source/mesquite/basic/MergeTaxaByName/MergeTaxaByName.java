@@ -21,6 +21,10 @@ import mesquite.lib.characters.CharacterData;
 import mesquite.categ.lib.*;
 import mesquite.lib.*;
 import mesquite.lib.duties.*;
+import mesquite.lib.taxa.Taxa;
+import mesquite.lib.ui.AlertDialog;
+import mesquite.lib.ui.ExtensibleDialog;
+import mesquite.lib.ui.SingleLineTextField;
 import mesquite.basic.MergeTaxa.*;
 
 
@@ -74,7 +78,7 @@ public class MergeTaxaByName extends MergeTaxa {
 	/*.................................................................................................................*/
 	/** Called to operate on the taxa in the block.  Returns true if taxa altered*/
 	public  boolean operateOnTaxa(Taxa taxa){
-		//Debugg.println: constrain by selected taxa
+		//fossilized Debugg.println: constrain by selected taxa
 
 		int numMatrices = getProject().getNumberCharMatrices(taxa);
 		boolean nonCategFound = false;
@@ -165,7 +169,7 @@ public class MergeTaxaByName extends MergeTaxa {
 	/*.................................................................................................................*/
 	/**Returns true if the module is to appear in menus and other places in which users can choose, and if can be selected in any way other than by direct request*/
 	public boolean loadModule(){
-		return false; 		//Debugg.println: not ready for prime time
+		return false; 		//fossilized Debugg.println: not ready for prime time
 
 	}
 

@@ -19,6 +19,8 @@ import java.awt.*;
 import mesquite.lib.*;
 import mesquite.lib.characters.*;
 import mesquite.lib.duties.*;
+import mesquite.lib.taxa.Taxa;
+import mesquite.lib.ui.MesquiteSubmenuSpec;
 import mesquite.charMatrices.lib.*;
 
 /* ======================================================================== */
@@ -168,7 +170,7 @@ public class RandomModRespMatrices extends SourceModRespectiveMatrix {
    			origName = "matrix " + matrix.getParentData().getName();
    		else
    			origName = "unknown matrix";
-		return "Matrix modification: " + origName + ". [seed: " + originalSeed + "]";
+		return "Matrix modification: " + origName + ". (seed: " + originalSeed + ")";
    	}
 	/*.................................................................................................................*/
     	 public String getName() {

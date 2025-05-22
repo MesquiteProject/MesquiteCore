@@ -10,14 +10,16 @@ Mesquite's web site is http://mesquiteproject.org
 
 This source code and its compiled class files are free and modifiable under the terms of 
 GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
-*/
+ */
 package mesquite.lib;
 
 import java.awt.*;
 
+import mesquite.lib.misc.MesquiteCollator;
+
 
 /* ======================================================================== */
-public class StringArray implements StringLister, Listable {
+public class StringArray implements StringLister, Listable, Nameable {
 	String[] values;
 	int maxFilled = -1;
 	NameReference name=null;
@@ -25,6 +27,15 @@ public class StringArray implements StringLister, Listable {
 		values = new String[num];
 		for (int i=0; i<num; i++)
 			values[i] =  null;
+	}
+	//used for Associables that might need to record whether reference is to part or in between part
+	//intially for MesquiteTree to know if info applies to node or branch ancestral to node
+	boolean between = false;
+	public void setBetweenness(boolean b){
+		between = b;  
+	}
+	public boolean isBetween(){
+		return between;
 	}
 	/*...........................................................*/
 	public String[] getStrings(){
@@ -67,7 +78,7 @@ public class StringArray implements StringLister, Listable {
 				array[j+1]=temp;
 			}
 		}
-		
+
 	}
 	/*...........................................................*/
 	public String getValue(int index){
@@ -137,6 +148,21 @@ public class StringArray implements StringLister, Listable {
 		return -1;
 	}
 	/*...........................................................*/
+	public static boolean exists(String[]s, String match){
+		return (indexOf(s,match)>=0);
+	}
+	/*...........................................................*/
+	public static int indexOfTabbedToken(String[]s, String match, int whichToken){
+		if (match == null || s==null)
+			return -1;
+		for (int i=0; i<s.length; i++) {
+			String firstCol = StringUtil.getTabbedToken(s[i], whichToken);
+			if (match.equals(firstCol))
+				return i;
+		}
+		return -1;
+	}
+	/*...........................................................*/
 	public static int indexOfIgnoreCase(java.util.Vector v, String match){
 		if (match == null)
 			return -1;
@@ -167,6 +193,20 @@ public class StringArray implements StringLister, Listable {
 				return i;
 		return -1;
 	}
+	/*...........................................................*/
+	public static int indexOfIgnoreCaseInSecondArray(String[][] s, int columnNumber, String match, boolean underlinesEqualsBlanks){
+		if (StringUtil.blank(match) || s==null || s.length == 0 || columnNumber>=s[0].length || columnNumber<0)
+			return -1;
+		for (int row = 0; row<s.length; row++) {
+			if (match.equalsIgnoreCase(s[row][columnNumber]))
+				return row;
+			if (underlinesEqualsBlanks && StringUtil.stringsEqualIgnoreCaseIgnoreBlanksUnderlines(match, s[row][columnNumber]))
+				return row;
+
+		}
+		return -1;
+	}
+
 	/*...........................................................*/
 	public int indexOf(String match){
 		if (match == null)
@@ -204,7 +244,15 @@ public class StringArray implements StringLister, Listable {
 	public int getSize() {
 		return values.length;
 	}
-	
+
+	/*...........................................................*/
+	public void copyTo(StringArray d){
+		if (d==null || d.values.length!=values.length)
+			return;
+		for (int i=0; i<values.length; i++)
+			d.values[i] =  values[i];
+	}
+	/*...........................................................*/
 	/** Concatenates the two String arrays together */
 	public static String[] concatenate(String[] d1, String[] d2) {
 		if (d1==null && d2==null)
@@ -227,10 +275,10 @@ public class StringArray implements StringLister, Listable {
 		}
 		if (newNumParts==0)
 			return null;
-		
+
 		String[] newValues = new String[newNumParts];
-		
-		
+
+
 		if (d1!=null)
 			for (int i=0; i< d1Length; i++) {
 				newValues[i] = d1[i];
@@ -253,10 +301,10 @@ public class StringArray implements StringLister, Listable {
 			starting = -1;
 		if (starting>d.length) 
 			starting = d.length-1;
-		
+
 		int newNumParts = d.length+num;
 		String[] newValues = new String[newNumParts];
-		
+
 		for (int i=0; i<= starting; i++) {
 			newValues[i] = d[i];
 		}
@@ -273,6 +321,139 @@ public class StringArray implements StringLister, Listable {
 		String[] sa = addParts(d,-1,1);
 		sa[0]=s;
 		return sa;
+	}
+	/*...........................................................*/
+	public static String[] addToEnd(String[] d, String s) {
+		String[] sa = addParts(d,d.length-1,1);
+		sa[sa.length-1]=s;
+		return sa;
+	}
+	/*...........................................................*/
+	public void deletePartsFlagged(Bits toDelete) {
+		values = deletePartsFlagged(values, toDelete);
+	}
+	/*...........................................................*/
+	public static String[] deletePartsFlagged(String[] d, Bits toDelete) {
+		if (d == null)
+			return null;
+		if (toDelete == null)
+			return d;
+		int toFill =toDelete.nextBit(0, true); //find next to be cleared
+		if (toFill <0)
+			return d;
+		Bits flags = toDelete.cloneBits(); 
+		int source = flags.nextBit(toFill, false); //find source to move into it
+		int highestFilled = toFill-1;
+		while (source >=0 && source < d.length && toFill >=0) { //First, compact storage toward the start of the array.
+			d[toFill] = d[source]; //move content from source to place
+			highestFilled = toFill;
+			flags.setBit(source, true); // set to available to receive
+			toFill =flags.nextBit(++toFill, true);
+			source =flags.nextBit(++source, false);	
+		}
+		//Next, trim leftovers
+		int newNum = highestFilled+1;
+		String[] newD = new String[newNum];
+		for (int i=0; i<newNum; i++) 
+			newD[i] = d[i];
+		return newD;
+	}
+	/*...........................................................*/
+	public static String[][] deleteColumnsFlagged(String[][] d, Bits toDelete) {
+		if (d == null)
+			return null;
+		if (d.length <= 0)
+			return d;
+		int numRows= d[0].length;
+		if (numRows == 0)
+			return d;
+		if (toDelete == null)
+			return d;
+
+		int toFill =toDelete.nextBit(0, true); //find next to be cleared
+		if (toFill <0)
+			return d;
+		Bits flags = toDelete.cloneBits(); 
+		int source = flags.nextBit(toFill, false); //find source to move into it
+		int highestFilled = toFill-1; //
+		while (source >=0 && source < d.length && toFill >=0) { //First, compact storage toward the start of the array.
+			for (int it=0; it<numRows; it++)
+				d[toFill][it] = d[source][it]; //move content from source to place
+			highestFilled = toFill;
+			flags.setBit(source, true); // set to available to receive
+			toFill =flags.nextBit(++toFill, true);
+			source =flags.nextBit(++source, false);	
+		}
+		//Next, trim leftovers
+		int newNumColumns = highestFilled+1;
+		String[][] newMatrix=new String[newNumColumns][numRows];
+		for (int ic=0; ic<newNumColumns; ic++) 
+			for (int it=0; it<numRows && it< d[ic].length; it++) 
+				newMatrix[ic][it] = d[ic][it];
+		return newMatrix;
+	}
+	/*...........................................................*
+	public void deletePartsBy Blocks(int[][] blocks) {
+		values = deletePartsBy Blocks(values, blocks);
+	}
+	/*...........................................................*
+	public static String[] deletePartsBy Blocks(String[] d, int[][] blocks) {
+		if (d == null)
+			return d;
+		if (blocks == null || blocks.length == 0)
+			return d;
+
+		int availableSlot = blocks[0][0];
+		//First shift storage toward the start of the array. Later, we'll delete the leftovers at the end.
+		for (int block = 0; block<blocks.length; block++) {
+			int startOfPreserved = blocks[block][1]+1;
+			int endOfPreserved = d.length-1;
+			if (block+1<blocks.length) //there's another block coming afterward
+				endOfPreserved = blocks[block+1][0]-1;
+			for (int ic=startOfPreserved; ic<=endOfPreserved; ic++) {
+				d[availableSlot] = d[ic];
+				availableSlot++;
+			}
+		}
+		//Next, trim leftovers
+		int newNum = availableSlot;
+		String[] newD = new String[newNum];
+		for (int i=0; i<newNum; i++) 
+			newD[i] = d[i];
+		return newD;
+	}
+	/*...........................................................*
+	public static String[][] deleteColumnsBy Blocks(String[][] d, int[][] blocks){
+		if (d == null)
+			return null;
+		if (d.length <= 0)
+			return d;
+		if (blocks == null || blocks.length == 0)
+			return d;
+		
+		int numRows= d[0].length;
+		int availableSlot = blocks[0][0];
+
+		//First shift storage toward the start of the array. Later, we'll delete the leftovers at the end.
+		for (int block = 0; block<blocks.length; block++) {
+			int startOfPreserved = blocks[block][1]+1;
+			int endOfPreserved = d.length-1;
+			if (block+1<blocks.length) //there's another block coming afterward
+				endOfPreserved = blocks[block+1][0]-1;
+			for (int ic=startOfPreserved; ic<=endOfPreserved; ic++) {
+				for (int it=0; it<numRows && it< d[ic].length; it++) {
+					d[availableSlot][it] = d[ic][it];
+				}
+				availableSlot++;
+			}
+		}
+		//Next, trim leftovers
+		int newNumColumns = availableSlot;
+		String[][] newMatrix=new String[newNumColumns][numRows];
+		for (int ic=0; ic<newNumColumns; ic++) 
+			for (int it=0; it<numRows && it< d[ic].length; it++) 
+			newMatrix[ic][it] = d[ic][it];
+		return newMatrix;
 	}
 	/*...........................................................*/
 	public void deleteParts(int starting, int num) {
@@ -298,6 +479,15 @@ public class StringArray implements StringLister, Listable {
 	/*...........................................................*/
 	public void moveParts(int starting, int num, int justAfter) {
 		moveParts(values, starting, num, justAfter);
+	}
+	/*...........................................................*/
+	public boolean swapParts(int first, int second) {
+		if (first<0 || first>=values.length || second<0 || second>=values.length) 
+			return false;
+		String temp = values[first];
+		values[first] = values[second];
+		values[second] = temp;
+		return true;
 	}
 	/*...........................................................*/
 	public static void swapParts(String[] d, int first, int second) {
@@ -340,7 +530,7 @@ public class StringArray implements StringLister, Listable {
 			int count =0;
 			for (int i=0; i<=justAfter; i++)
 				newValues[count++]=d[i];
-			
+
 			for (int i=starting; i<=starting+num-1; i++)
 				newValues[count++]=d[i];
 			for (int i=justAfter+1; i<=starting-1; i++)
@@ -352,7 +542,7 @@ public class StringArray implements StringLister, Listable {
 			int count =0;
 			for (int i=0; i<=starting-1; i++)
 				newValues[count++]=d[i];
-			
+
 			for (int i=starting+num; i<=justAfter; i++)
 				newValues[count++]=d[i];
 			for (int i=starting; i<=starting+num-1; i++)
@@ -381,7 +571,7 @@ public class StringArray implements StringLister, Listable {
 				int count =0;
 				for (int i=0; i<=justAfter; i++)
 					newValues[count++]=d[column][i];
-				
+
 				for (int i=starting; i<=starting+num-1; i++)
 					newValues[count++]=d[column][i];
 				for (int i=justAfter+1; i<=starting-1; i++)
@@ -393,7 +583,7 @@ public class StringArray implements StringLister, Listable {
 				int count =0;
 				for (int i=0; i<=starting-1; i++)
 					newValues[count++]=d[column][i];
-				
+
 				for (int i=starting+num; i<=justAfter; i++)
 					newValues[count++]=d[column][i];
 				for (int i=starting; i<=starting+num-1; i++)
@@ -479,7 +669,7 @@ public class StringArray implements StringLister, Listable {
 	public void setName(String nr){
 		name = NameReference.getNameReference(nr);
 	}
-		/*...........................................................*/
+	/*...........................................................*/
 	public void setNameReference(NameReference nr){
 		name = nr;
 	}

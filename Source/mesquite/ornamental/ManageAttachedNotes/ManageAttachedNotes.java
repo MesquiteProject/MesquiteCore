@@ -19,6 +19,10 @@ import java.awt.*;
 
 import mesquite.lib.*;
 import mesquite.lib.duties.*;
+import mesquite.lib.misc.AttachedNotesVector;
+import mesquite.lib.taxa.Taxa;
+import mesquite.lib.taxa.Taxon;
+import mesquite.lib.ui.ImageLabel;
 import mesquite.lib.characters.*;
 import mesquite.categ.lib.*;
 
@@ -70,7 +74,7 @@ public class ManageAttachedNotes extends FileInit /*implements ElementManager*/ 
 				if (taxa.getFile() == file) {
 					if (project.getNumberTaxas()>1) //note shift in 1. 06 to "current matrix and taxa" to avoid having to repeat in each note
 						context.append("\tTAXA = " +  StringUtil.tokenize(taxa.getName(), null, tokSB) + eL);
-					ObjectArray taxNotes = taxa.getWhichAssociatedObject(ref);
+					ObjectArray taxNotes = taxa.getAssociatedObjects(ref);
 					for (int it = 0; it<taxa.getNumTaxa(); it++){
 						if (taxNotes != null){
 							Object obj = taxNotes.getValue(it);
@@ -109,7 +113,7 @@ public class ManageAttachedNotes extends FileInit /*implements ElementManager*/ 
 						else  //note shift in 1. 06 to "current matrix and taxa" to avoid having to repeat in each note
 							context.append("\tCHARACTERS = " +  StringUtil.tokenize(data.getName(), null, tokSB) + eL);
 					}
-					ObjectArray charImages = data.getWhichAssociatedObject(ref);
+					ObjectArray charImages = data.getAssociatedObjects(ref);
 					if (charImages !=null){
 						for (int ic = 0; ic<data.getNumChars(); ic++){
 							Object obj = charImages.getValue(ic);
@@ -298,7 +302,7 @@ public class ManageAttachedNotes extends FileInit /*implements ElementManager*/ 
 	boolean oldWarnedM = false;
 	boolean oldWarned = false;
 	/*.................................................................................................................*/
-	public boolean readNexusCommand(MesquiteFile file, NexusBlock nBlock, String blockName, String command, MesquiteString comment){ 
+	public boolean readNexusCommand(MesquiteFile file, NexusBlock nBlock, String blockName, String command, MesquiteString comment, String fileReadingArguments){ 
 		if (blockName.equalsIgnoreCase("NOTES")) {
 			boolean fuse = parser.hasFileReadingArgument(file.fileReadingArguments, "fuseTaxaCharBlocks");
 			if (fuse)
@@ -349,7 +353,7 @@ public class ManageAttachedNotes extends FileInit /*implements ElementManager*/ 
 					String whichItem = (ParseUtil.getToken(command, startCharT)); // name of taxon/etc
 					stateNumber = MesquiteInteger.fromString(whichItem);
 				}
-				else if (token.equalsIgnoreCase(AttachedNote.CHARACTERS) || token.equalsIgnoreCase("CHARACTERS")) {
+				else if (token.equalsIgnoreCase(AttachedNote.CHARACTERS) || token.equalsIgnoreCase("CHARACTERS")) { 
 					dummy =ParseUtil.getToken(command, startCharT); // =
 					String matrixName = (ParseUtil.getToken(command, startCharT));
 					//logln("   for taxa " + taxaTitle);

@@ -19,6 +19,8 @@ import java.awt.*;
 import mesquite.lib.*;
 import mesquite.lib.characters.*;
 import mesquite.lib.duties.*;
+import mesquite.lib.taxa.Taxa;
+import mesquite.lib.taxa.TaxaPartition;
 import mesquite.cont.lib.*;
 import mesquite.rhetenor.lib.*;
 

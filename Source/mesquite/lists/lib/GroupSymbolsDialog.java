@@ -17,6 +17,11 @@ package mesquite.lists.lib;
 import java.util.*;
 import java.awt.*;
 import mesquite.lib.*;
+import mesquite.lib.ui.ExtensibleDialog;
+import mesquite.lib.ui.MesquiteSymbol;
+import mesquite.lib.ui.MesquiteWindow;
+import mesquite.lib.ui.SymbolsVector;
+
 import java.awt.event.*;
 
 import javax.swing.JLabel;

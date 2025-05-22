@@ -17,6 +17,7 @@ import java.util.*;
 import java.awt.*;
 import mesquite.lib.*;
 import mesquite.lib.duties.*;
+import mesquite.lib.tree.Tree;
 
 //new 1.04
 /* ======================================================================== */

@@ -19,6 +19,7 @@ import java.awt.*;
 import mesquite.lib.*;
 import mesquite.lib.characters.*;
 import mesquite.lib.duties.*;
+import mesquite.lib.ui.ListDialog;
 import mesquite.cont.lib.*;
 
 /* ======================================================================== */

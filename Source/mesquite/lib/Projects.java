@@ -15,6 +15,10 @@ package mesquite.lib;
 
 import java.awt.*;
 import mesquite.lib.duties.*;
+import mesquite.lib.misc.HNode;
+import mesquite.lib.ui.ColorDistribution;
+import mesquite.lib.ui.MesquiteWindow;
+
 import java.util.*;
 
 
@@ -23,7 +27,7 @@ import java.util.*;
 /** A class with a vector storing the projects currently active (one instantiation of this belongs to MesquiteTrunk)*/
 public class Projects implements HNode {
 	
-	Vector projects;
+	ListableVector projects;
 	boolean[] colorsUsed;
 	public static int projectsAdded = 0;//to catch memory leaks
 	public static int projectsRemoved = 0; //to catch memory leaks
@@ -34,13 +38,29 @@ public class Projects implements HNode {
 			colorsUsed = new boolean[32];
 		for (int i=0; i<colorsUsed.length; i++)
 			colorsUsed[i]=false;
-		projects = new Vector(1);
+		projects = new ListableVector(1);
 	}
 	
+	public Listable[] getProjectsArray(){
+		return projects.getElementArray();
+	}
 	public int getNumProjects(){
 		return projects.size();
 	}
-	
+	public MesquiteFile findFile(String targetPath) {
+		if (targetPath == null)
+			return null;
+		for (int i=0; i<projects.size(); i++){
+			MesquiteProject project =(MesquiteProject)projects.elementAt(i);
+			for (int k=0; k<project.getNumberLinkedFiles(); k++) {
+				MesquiteFile file = project.getFile(k);
+				if (targetPath.equals(file.getPath()))
+						return file;
+			}
+		}
+		return null;
+		
+	}
 	/** Get p'th project. */
 	public MesquiteProject getProject(int p) {
 		if (p>=0 && p<projects.size())
@@ -58,7 +78,7 @@ public class Projects implements HNode {
 	}
 	/** Add project to the list of projects. */
 	public void addProject(MesquiteProject project) {
-		projects.addElement(project);
+		projects.addElement(project, false);
 		projectsAdded++;
 		MesquiteTrunk.mesquiteTrunk.refreshBrowser(MesquiteProject.class);
 	}
@@ -88,7 +108,7 @@ public class Projects implements HNode {
 	}
 	/** Remove project from list of projects.  The File Coordinator is responsible for disposing of the files within the project. */
 	public void removeProject(MesquiteProject project) {
-		projects.removeElement(project);
+		projects.removeElement(project, false);
 		projectsRemoved++;
 		resetColorsAvailable();
 		MesquiteTrunk.mesquiteTrunk.refreshBrowser(MesquiteProject.class);

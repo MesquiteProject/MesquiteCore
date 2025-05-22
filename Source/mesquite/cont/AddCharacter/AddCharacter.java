@@ -18,6 +18,7 @@ import java.util.*;
 import java.awt.*;
 
 import mesquite.lib.table.*;
+import mesquite.lib.taxa.Taxa;
 import mesquite.lib.*;
 import mesquite.lib.characters.*;
 import mesquite.lib.duties.*;
@@ -45,9 +46,9 @@ public class AddCharacter extends ContDataAlterer {
    		return false;  
    	}
    	/** Called to alter data in those cells selected in table*/
-   	public boolean alterData(CharacterData data, MesquiteTable table, UndoReference undoReference){
+   	public int alterData(CharacterData data, MesquiteTable table, UndoReference undoReference){
 		if (!(data instanceof ContinuousData))
-			return false;
+			return ResultCodes.INCOMPATIBLE_DATA;
  			Taxa taxa = data.getTaxa();
    			addingIC=characterSourceTask.queryUserChoose(taxa, "from which to add states");
    			addingCharacter = (ContinuousDistribution)characterSourceTask.getCharacter(taxa, addingIC); 

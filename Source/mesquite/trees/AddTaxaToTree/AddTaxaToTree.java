@@ -17,6 +17,10 @@ import java.util.*;
 import java.awt.*;
 import mesquite.lib.*;
 import mesquite.lib.duties.*;
+import mesquite.lib.taxa.Taxa;
+import mesquite.lib.taxa.Taxon;
+import mesquite.lib.tree.AdjustableTree;
+import mesquite.lib.ui.ListDialog;
 
 /* ======================================================================== */
 public class AddTaxaToTree extends TreeAlterer {

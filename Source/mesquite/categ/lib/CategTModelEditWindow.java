@@ -19,6 +19,9 @@ import mesquite.lib.*;
 import mesquite.lib.characters.*;
 import mesquite.lib.duties.*;
 import mesquite.lib.table.*;
+import mesquite.lib.ui.ColorDistribution;
+import mesquite.lib.ui.MesquiteWindow;
+import mesquite.lib.ui.ToolPalette;
 /*=======================================================*/
 /** A window that contains a table in which to edit a CategTModel.  Used for Stepmatrix editing, but could also be used for other similar models */
 public class CategTModelEditWindow extends TableWindow implements MesquiteListener {
@@ -346,30 +349,30 @@ class CategTModelTable extends MesquiteTable {
 		g.drawString(model.getStateSymbol(row), x+2, y+h-2);
 	}
 	/*...............................................................................................................*/
-	public void cellTouched(int column, int row, int regionInCellH, int regionInCellV, int modifiers, int clickCount) {
+	public void cellTouched(int column, int row, EditorPanel editorPanel, int x, int y, int modifiers, int clickCount) {
 		if (column==row && !diagonalEditable)
 			return;
 		if (window.getCurrentTool().isArrowTool()) 
-			super.cellTouched(column, row, regionInCellH, regionInCellV, modifiers, clickCount);
+			super.cellTouched(column, row, editorPanel, x, y, modifiers, clickCount);
 		else
-			((TableTool)window.getCurrentTool()).cellTouched(column, row, regionInCellH, regionInCellV, modifiers);
+			((TableTool)window.getCurrentTool()).cellTouched(column, row, editorPanel, x, y, modifiers);
 		repaintAll();
 	}
 	/*...............................................................................................................*/
-	public void cellDrag(int column, int row, int regionInCellH, int regionInCellV, int modifiers) {
+	public void cellDrag(int column, int row, EditorPanel editorPanel, int x, int y, int modifiers) {
 		if (window.getCurrentTool().isArrowTool()) 
-			super.cellDrag(column, row, regionInCellH,  regionInCellV, modifiers);
+			super.cellDrag(column, row, editorPanel, x, y, modifiers);
 		else
-		((TableTool)window.getCurrentTool()).cellDrag(column, row, regionInCellH,  regionInCellV, modifiers);
+		((TableTool)window.getCurrentTool()).cellDrag(column, row, editorPanel, x, y, modifiers);
 	}
 	/*...............................................................................................................*/
-	public void cellDropped(int column, int row, int regionInCellH, int regionInCellV, int modifiers) {
+	public void cellDropped(int column, int row, EditorPanel editorPanel, int x, int y, int modifiers) {
 		if (column==row && !diagonalEditable)
 			return;
 		if (window.getCurrentTool().isArrowTool()) 
-			super.cellDropped(column, row,  regionInCellH,  regionInCellV, modifiers);
+			super.cellDropped(column, row,  editorPanel, x, y, modifiers);
 		else
-		  ((TableTool)window.getCurrentTool()).cellDropped(column, row, regionInCellH, regionInCellV, modifiers);
+		  ((TableTool)window.getCurrentTool()).cellDropped(column, row, editorPanel, x, y, modifiers);
 	}
 }
 

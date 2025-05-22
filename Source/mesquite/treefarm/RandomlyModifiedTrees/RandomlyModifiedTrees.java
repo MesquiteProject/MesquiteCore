@@ -18,6 +18,10 @@ import java.util.*;
 import java.awt.*;
 import mesquite.lib.*;
 import mesquite.lib.duties.*;
+import mesquite.lib.taxa.Taxa;
+import mesquite.lib.tree.MesquiteTree;
+import mesquite.lib.tree.Tree;
+import mesquite.lib.ui.MesquiteSubmenuSpec;
 import mesquite.treefarm.lib.*;
 
 /* ======================================================================== */
@@ -180,7 +184,7 @@ public class RandomlyModifiedTrees extends TreeSource {
    	public String getParameters() {
    		if (treeSourceTask == null || modifierTask == null)
    			return "Randomly modifying trees";
-   		return"Randomly modifying trees from: " + treeSourceTask.getParameters() + ". Modifications: " + modifierTask.getParameters() + ". [seed: " + originalSeed + "]";
+   		return"Randomly modifying trees from: " + treeSourceTask.getParameters() + ". Modifications: " + modifierTask.getParameters() + ". (seed: " + originalSeed + ")";
    	}
 	/*.................................................................................................................*/
     	 public String getName() {

@@ -15,6 +15,10 @@ package mesquite.search.OtherTreeSearch;
 /*~~  */
 
 import mesquite.lib.*;
+import mesquite.lib.analysis.BayesianAnalysis;
+import mesquite.lib.analysis.DistanceAnalysis;
+import mesquite.lib.analysis.LikelihoodAnalysis;
+import mesquite.lib.analysis.ParsimonyAnalysis;
 import mesquite.lib.duties.CharStatesForNodes;
 import mesquite.lib.duties.TreeSearcher;
 import mesquite.search.lib.*;

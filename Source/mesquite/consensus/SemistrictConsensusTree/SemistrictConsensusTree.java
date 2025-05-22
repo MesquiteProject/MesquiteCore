@@ -16,6 +16,7 @@ package mesquite.consensus.SemistrictConsensusTree;
 
 import mesquite.consensus.lib.*;
 import mesquite.lib.*;
+import mesquite.lib.tree.Tree;
 
 	/* ======================================================================== */
 	/** Does semistrict consensus .*/

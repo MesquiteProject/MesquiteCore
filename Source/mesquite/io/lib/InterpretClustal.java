@@ -18,6 +18,9 @@ import java.awt.*;
 import mesquite.lib.*;
 import mesquite.lib.characters.*;
 import mesquite.lib.duties.*;
+import mesquite.lib.taxa.Taxa;
+import mesquite.lib.taxa.Taxon;
+import mesquite.lib.ui.ProgressIndicator;
 import mesquite.categ.lib.*;
 
 
@@ -51,9 +54,9 @@ public abstract class InterpretClustal extends FileInterpreterI {
 	/*.................................................................................................................*/
 	public abstract CharacterData createData(CharactersManager charTask, Taxa taxa);
 	/*.................................................................................................................*/
-	StringBuffer sb = new StringBuffer(1000);
+	MesquiteStringBuffer sb = new MesquiteStringBuffer(1000);
 	public String skipBlankLines(MesquiteFile file, Parser parser, String line){
-		while ((line!=null) && StringUtil.blank(line,"*.:")) {
+		while ((line!=null) && StringUtil.blankWithExtraWhitespaceChars(line,"*.:")) {
 			if (!file.readLine(sb))
 				break; 
 			line = sb.toString();
@@ -73,7 +76,7 @@ public abstract class InterpretClustal extends FileInterpreterI {
 			TaxaManager taxaTask = (TaxaManager)findElementManager(Taxa.class);
 			CharactersManager charTask = (CharactersManager)findElementManager(CharacterData.class);
 
-			Taxa taxa = taxaTask.makeNewTaxa("Taxa", 0, false);
+			Taxa taxa = taxaTask.makeNewTaxaBlock("Taxa", 0, false);
 			taxa.addToFile(file, getProject(), taxaTask);
 			CategoricalData data = (CategoricalData)createData(charTask,taxa);
 
@@ -92,7 +95,7 @@ public abstract class InterpretClustal extends FileInterpreterI {
 			int block = 1;
 			int ic = 0;
 			String line = null;
-			StringBuffer sb = new StringBuffer(1000);
+			MesquiteStringBuffer sb = new MesquiteStringBuffer(1000);
 			file.readLine(sb);   // reads first line
 			file.readLine(sb);   // reads first line of data
 			line = sb.toString();
@@ -150,7 +153,7 @@ public abstract class InterpretClustal extends FileInterpreterI {
 				file.readLine(sb);
 				line = sb.toString();		
 
-				if (StringUtil.blank(line,"*.:")) {  // at end of block
+				if (StringUtil.blankWithExtraWhitespaceChars(line,"*.:")) {  // at end of block
 					line = skipBlankLines(file, parser,line);
 					parser.setString(line);
 					firstBlock=false;

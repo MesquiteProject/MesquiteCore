@@ -17,6 +17,7 @@ package mesquite.distance.K2PDistance;
 
 import mesquite.lib.*;
 import mesquite.lib.characters.*;
+import mesquite.lib.taxa.Taxa;
 import mesquite.categ.lib.*;
 import mesquite.distance.lib.*;
 

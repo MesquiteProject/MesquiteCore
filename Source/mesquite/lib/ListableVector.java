@@ -18,6 +18,9 @@ import java.util.*;
 
 import mesquite.lib.characters.CharacterStates;
 import mesquite.lib.characters.CodonPositionsSet;
+import mesquite.lib.taxa.TaxaGroupVector;
+import mesquite.lib.tree.TreeVector;
+import mesquite.lib.ui.HTMLDescribable;
 
 /* ======================================================================== */
 /*Vector of listable objects along with a simple, currently stupid system to display the list*/
@@ -94,6 +97,15 @@ public class ListableVector extends FileElement implements StringLister, Command
 	public String getTypeName(){
 		return "Listable Vector";
 	}
+	
+	public ListableVector clone(){
+		ListableVector lv = new ListableVector();
+		for (int i=0; i<size(); i++)
+			lv.addElement(elementAt(i), false);
+		return lv;
+		
+	}
+	
 	public Listable getElement(String name){
 		if (name==null)
 			return null;
@@ -141,6 +153,17 @@ public class ListableVector extends FileElement implements StringLister, Command
 		String temp = "";
 		for (int i=0; i<size(); i++) {
 			Object obj = elementAt(i);
+			if (obj instanceof SpecialListName)
+				temp += ((SpecialListName)obj).getListName() + StringUtil.lineEnding();
+			else
+				temp += ((Listable)obj).getName() + StringUtil.lineEnding();
+		}
+		return temp;
+	}
+	public static String getList(Listable[] array){
+		String temp = "";
+		for (int i=0; i<array.length; i++) {
+			Object obj = array[i];
 			if (obj instanceof SpecialListName)
 				temp += ((SpecialListName)obj).getListName() + StringUtil.lineEnding();
 			else
@@ -245,8 +268,12 @@ public class ListableVector extends FileElement implements StringLister, Command
 	}
 	public Listable[] getListables(){
 		Listable[] temp = new Listable[size()];
+		try {
 		for (int i=0; i<size(); i++)
 			temp[i]= (Listable)elementAt(i);
+		}
+		catch (Exception e){
+		}
 		return temp;
 	}
 	public String[] getStrings(){
@@ -263,6 +290,13 @@ public class ListableVector extends FileElement implements StringLister, Command
 			if (names[i] !=null)
 				s += " \"" + names[i].getName() + "\" ";
 		return s + " ]";
+	}
+	
+	public String toString() {
+		String first = "";
+			if (objects!= null & objects.size()>0)
+				first = " (elem.0 of class " + objects.elementAt(0).getClass() + ")";
+		return super.toString() + first;
 	}
 	/*-------------ListableVector----------------*/
 	public void addElements(ListableVector objects, boolean notify) {
@@ -356,8 +390,10 @@ public class ListableVector extends FileElement implements StringLister, Command
 			deleteParts(vec.indexOf(obj), 1);
 		vec.removeElement(obj);
 		numElements = vec.size();
-		if (vec.indexOf(obj)>=0)
+		if (vec.indexOf(obj)>=0){
+		Debugg.printStackTrace();
 			MesquiteMessage.warnProgrammer("object removed from listableVector but other copy remains " + this.getClass().toString() + "  " + obj);
+		}
 		if (notify)
 			notifyListeners(this, new Notification(MesquiteListener.PARTS_DELETED));
 	}
@@ -589,6 +625,16 @@ public class ListableVector extends FileElement implements StringLister, Command
 		}
 		return -1;
 	}
+	public static int indexOfByName(Listable[] listables, String name){
+		if (name==null || listables == null)
+			return -1;
+		for (int i=0; i<listables.length; i++) {
+			Listable obj = listables[i];
+			if (name.equals(obj.getName()))
+				return i;
+		}
+		return -1;
+	}
 	public  int indexOfByName(String name){
 		if (name==null)
 			return -1;
@@ -797,6 +843,19 @@ public class ListableVector extends FileElement implements StringLister, Command
 	}
 
 	/*...........................................................*/
+	public static void sort(String[] array){
+		if (array==null || array.length<=1)
+			return;
+		
+		for (int i=1; i<array.length; i++) {
+			for (int j= i-1; j>=0 && collator.compare(array[j], array[j+1])>0 ; j--) {
+				String temp = array[j];
+				array[j] = array[j+1];
+				array[j+1]=temp;
+			}
+		}
+		
+	}
 	public static void sort(int[] array){
 		if (array==null || array.length<=1)
 			return;
@@ -820,8 +879,6 @@ public class ListableVector extends FileElement implements StringLister, Command
 						array[j] = array[j+1];
 						array[j+1]=temp;
 					
-				
-				
 			}
 		}
  	}

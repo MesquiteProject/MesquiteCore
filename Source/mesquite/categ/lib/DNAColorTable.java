@@ -18,6 +18,7 @@ import java.awt.Color;
 import java.util.*;
 import mesquite.lib.*;
 import mesquite.lib.characters.*;
+import mesquite.lib.ui.MesquiteColorTable;
 
 
 

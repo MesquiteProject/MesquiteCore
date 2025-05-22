@@ -4,6 +4,9 @@ Mesquite_Folder/
 *.iml
 .project
 .settings/
+org.eclipse.jdt.core.prefs
+org.eclipse.jdt.ui.prefs
+org.eclipse.ltk.core.refactoring.prefs
 
 # Compiled source #
 ###################
@@ -39,8 +42,6 @@ Mesquite_Folder/
 .Trashes
 ehthumbs.db
 Thumbs.db
-.classpath
 .gitignore
-/.classpath
 /.gitignore
 /target/

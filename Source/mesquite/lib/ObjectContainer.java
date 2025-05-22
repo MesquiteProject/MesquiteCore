@@ -19,7 +19,7 @@ import java.text.*;
 
 /* ======================================================================== */
 /**An object that holds a reference to another object; to pass as argument into method and have filled in response*/
-public class ObjectContainer implements Listable {
+public class ObjectContainer implements Listable, Nameable {
 	Object object;
 	static int totalCreated = 0;
 	int id = 0;  

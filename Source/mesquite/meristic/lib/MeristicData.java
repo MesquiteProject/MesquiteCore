@@ -20,6 +20,9 @@ import java.util.zip.*;
 import mesquite.cont.lib.ContinuousState;
 import mesquite.cont.lib.ItemContainer;
 import mesquite.lib.duties.*;
+import mesquite.lib.taxa.Taxa;
+import mesquite.lib.ui.ColorDistribution;
+import mesquite.lib.ui.MesquiteColorTable;
 import mesquite.lib.*;
 import mesquite.lib.characters.*;
 /* ======================================================================== */
@@ -395,8 +398,9 @@ public class MeristicData extends CharacterData implements ItemContainer {
 			return false;
 		if (num+starting>numChars)
 			num = numChars-starting;
-		int newNumChars =numChars-num;
+		int newNumChars =numChars-num; //don't updated numChars yet; do it in superclass
 
+		incrementStatesVersion();
 		Vector newMatrices = new Vector();
 		for (int item = 0; item<getNumItems(); item++){
 			Integer2DArray newMatrix = new Integer2DArray(newNumChars, numTaxa);
@@ -417,6 +421,27 @@ public class MeristicData extends CharacterData implements ItemContainer {
 		matrices.removeAllElements();
 		matrices = newMatrices;
 		return super.deleteParts(starting, num);
+	}
+	/*..........................................MeristicData................*/
+	/** deletes characters flagged for deletion in Bits*/
+	protected boolean deletePartsFlagged(Bits toDelete){
+		incrementStatesVersion();
+		for (int item = 0; item<getNumItems(); item++){
+			Integer2DArray matrix = ((Integer2DArray)matrices.elementAt(item));
+			matrix.deleteColumnsFlagged(toDelete);
+		}
+		return super.deletePartsFlagged(toDelete);
+	}
+	/*..........................................MeristicData................*/
+	/** deletes characters by blocks; for kth block, deletes numInBlock[k] characters from (and including) position startOfBlock[k]; returns true iff successful.
+	 * Assumes that these blocks are in sequence!!!*
+	protected boolean deletePartsBy Blocks(int[][] blocks){
+		incrementStatesVersion();
+		for (int item = 0; item<getNumItems(); item++){
+			Integer2DArray matrix = ((Integer2DArray)matrices.elementAt(item));
+			matrix.deleteColumnsBy Blocks(blocks);
+		}
+		return super.deletePartsBy Blocks(blocks);
 	}
 	/*..........................................MeristicData................*/
 	/**swaps characters first and second.*/
@@ -642,15 +667,15 @@ public class MeristicData extends CharacterData implements ItemContainer {
 	}
 
 	/** appends to buffer string describing the state(s) of character ic in taxon it.*/
-	public void statesIntoStringBuffer(int ic, int it, StringBuffer sb, boolean forDisplay){
+	public void statesIntoStringBuffer(int ic, int it, MesquiteStringBuffer sb, boolean forDisplay){
 		statesIntoStringBuffer(ic,it,sb,forDisplay,true,true);
 	}
 	/** appends to buffer string describing the state(s) of character ic in taxon it.*/
-	public void statesIntoStringBuffer(int ic, int it, StringBuffer sb, boolean forDisplay, boolean includeInapplicable, boolean includeUnassigned){
+	public void statesIntoStringBuffer(int ic, int it, MesquiteStringBuffer sb, boolean forDisplay, boolean includeInapplicable, boolean includeUnassigned){
 		sb.append(statesToString(ic, it, forDisplay)); //TODO: use buffer
 	}
 	/** appends to buffer string describing the state(s) of character ic in taxon it.*/
-	public void statesIntoNEXUSStringBuffer(int ic, int it, StringBuffer sb){
+	public void statesIntoNEXUSStringBuffer(int ic, int it, MesquiteStringBuffer sb){
 		sb.append(statesToString(ic, it, false));  //TODO: use buffer
 	}
 	float[] hsb = new float[3];
@@ -846,7 +871,7 @@ public class MeristicData extends CharacterData implements ItemContainer {
 				result.setValue("String blank in setState");
 			return ERROR;
 		}
-		StringBuffer s = parser.getBuffer();
+		MesquiteStringBuffer s = parser.getBuffer();
 		boolean dirt = false;
 		if (s.length() == 1){
 			char c= s.charAt(0);
@@ -894,7 +919,7 @@ public class MeristicData extends CharacterData implements ItemContainer {
 		boolean done = false;
 		int item = 0;
 		String t = null;
-		int prev = parser.getPosition();
+		long prev = parser.getPosition();
 		//MesquiteInteger pos = new MesquiteInteger(parser.getPosition()); //how to avoid this instantiation but be reentrant safe?
 		while (!done){
 			parser.setPosition(prev);
@@ -1078,7 +1103,7 @@ public class MeristicData extends CharacterData implements ItemContainer {
 	/*..........................................MeristicData................*/
 	/** dump the matrix to the log*/
 	public void logMatrix(){
-		StringBuffer matrixString= new StringBuffer();
+		MesquiteStringBuffer matrixString= new MesquiteStringBuffer();
 		for (int it=0; it<numTaxa; it++) {
 			matrixString.append(getTaxa().getTaxon(it).getName() + "  ");
 			for (int ic=0; ic<numChars; ic++)
@@ -1160,8 +1185,8 @@ public class MeristicData extends CharacterData implements ItemContainer {
 			return null;
 		else {
 			CharacterModel cm = getProject().getCharacterModel(dR.getDefault());
-			if (cm==null) 
-				MesquiteMessage.println("Default model not found / " + dR.getDefault());
+			//if (cm==null) 
+			//	MesquiteMessage.println("Default model not found / " + dR.getDefault());
 			return cm;
 		}
 	}

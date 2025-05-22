@@ -17,6 +17,18 @@ import mesquite.lib.*;
 
 public class PhoneHomeRecord implements Listable {
 	
+	/*
+	 * 
+	 * The following are in MesquiteModule:
+	public static String versionReportURL =  "http://startup.mesquiteproject.org/mesquite/mesquiteStartup.php"; //(see PhoneHomeThread, checkForMessagesFromAllHomes)
+	public static String errorReportURL =  "http://error.mesquiteproject.org/mesquite/mesquiteError.php"; //see exceptionAlert in MesquiteModule
+	public static String prereleaseErrorReportURL =  "http://error.mesquiteproject.org/mesquite/mesquitePrereleaseError.php"; //see exceptionAlert in MesquiteModule
+	public static String beansReportURL = "http://beans.mesquiteproject.org/mesquite/mesquiteBeans.php";
+	
+	//See Mesquite.java for notices.xml URLs
+	//See Installer for updates.xml URLs
+
+	 * */
 	private int lastVersionUsed = 0;
 	private int lastNotice = 0;
 	private int lastNoticeForMyVersion = 0;

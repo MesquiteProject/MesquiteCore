@@ -18,6 +18,11 @@ import java.awt.*;
 import java.awt.image.*;
 import mesquite.lib.*;
 import mesquite.lib.duties.*;
+import mesquite.lib.ui.ColorDistribution;
+import mesquite.lib.ui.MesquiteSubmenuSpec;
+import mesquite.lib.ui.MesquiteTextWindow;
+import mesquite.lib.ui.MesquiteWindow;
+import mesquite.lib.ui.QueryDialogs;
 
 /* ======================================================================== */
 public class TextWindowMaker extends FileAssistantN {
@@ -45,6 +50,7 @@ public class TextWindowMaker extends FileAssistantN {
 		addMenuItem("Delete Note", makeCommand("deleteNote", this));
  		resetContainingMenuBar();
  		resetAllWindowsMenus();
+ 		
  		return true;
   	 }
 	 

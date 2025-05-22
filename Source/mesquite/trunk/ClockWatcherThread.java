@@ -20,6 +20,9 @@ import java.io.*;
 import mesquite.lib.*;
 import mesquite.*;
 import mesquite.lib.duties.*;
+import mesquite.lib.ui.MesquiteDialog;
+import mesquite.lib.ui.MesquiteWindow;
+import mesquite.lib.ui.ProgressIndicator;
 
 /* ======================================================================== */
 public class ClockWatcherThread extends Thread {
@@ -33,7 +36,7 @@ public class ClockWatcherThread extends Thread {
 		this.mesquite = mesquite;
 		setPriority(Thread.MIN_PRIORITY);
 	}
-	
+
 	void doDelayedRepaints(){
 		//Repainting any window on special repaint queue
 		for (int iw = MesquiteWindow.delayedRepaintQueue.size()-1;  iw>=0; iw--){
@@ -45,7 +48,7 @@ public class ClockWatcherThread extends Thread {
 			}
 		}
 	}
-	
+
 	public void run() {
 		long sleepCount = 0;
 		boolean reportThreads = false;
@@ -58,7 +61,7 @@ public class ClockWatcherThread extends Thread {
 				sleepCount = 0;
 			else
 				sleepCount++;
-			
+
 			//sleep is down in a series of bouts. This is a kludge to let some functions happen at each bout (delayed repaint) but others be after each sleep
 			for (int iBout = 0; iBout<numBoutsPerSleep; iBout++){
 				try {
@@ -70,15 +73,14 @@ public class ClockWatcherThread extends Thread {
 				}
 			}
 			MesquiteTrunk.checkForResetCheckMenuItems();
-			
+
 			//Surveying windows to reset graphically after first shown (bugs in some macOS versions)
 			if (sleptLong || sleepCount % (sleep/catnap) == 1) {
 				MesquiteThread.surveyDoomedIndicators();
-				if (MesquiteTrunk.isMacOSX())
 					MesquiteThread.surveyNewWindows();
 			}
-			
-			
+
+
 			//Surveying threads for progressindicators, need to put up "command is executing"
 			MesquiteThread[] mThreads = new MesquiteThread[MesquiteThread.threads.size()];
 			try {
@@ -88,6 +90,31 @@ public class ClockWatcherThread extends Thread {
 			catch (Exception e){
 			}
 
+			try {
+				if (MesquiteTrunk.startedFromFlex2) {
+					String filesToOpenPath = System.getProperty("user.home") + MesquiteFile.fileSeparator + "Mesquite_Support_Files" + MesquiteFile.fileSeparator + MesquiteTrunk.encapsulatedPathOfExecutable+ MesquiteFile.fileSeparator + "filesToOpen.txt";
+
+					if (MesquiteFile.fileExists(filesToOpenPath)) {
+
+						String[] files = MesquiteFile.getFileContentsAsStrings(filesToOpenPath);
+
+						MesquiteFile.deleteFile(filesToOpenPath);
+
+						Thread.sleep(40);
+						if (files != null) {
+							for (int i=0; i<files.length; i++) {
+								if (MesquiteTrunk.mesquiteTrunk.applicationHandler9 != null)
+									MesquiteTrunk.mesquiteTrunk.applicationHandler9.handleOpenFile(files[i]);
+								/* Old macOS (pre Java 9) handling of file opening. Disabling until someone complains
+								 * else
+									EAWTHandler.handleOpenFile(files[i]);*/
+							}
+						}
+					}
+				}
+			}
+			catch (InterruptedException e){
+			}
 			sleepTime = sleep;
 			sleepCount++;
 			for (int i=0; i<mThreads.length && mThreads[i]!=null; i++){  //go through current threads
@@ -117,7 +144,7 @@ public class ClockWatcherThread extends Thread {
 							try {
 								if (thread.getProgressIndicator() == null && thread.getSpontaneousIndicator()) {
 									ProgressIndicator pi;
-							
+
 									thread.setProgressIndicator(pi = new ProgressIndicator(null, "Command is executing", "A command is executing.", 0, "Emergency Cancel")); //"Cancel Command");
 									pi.setSecondaryMessage("Thread " + thread.getClass().getName() + " id " + thread.getID());
 									pi.setIsFromWatcher(true);
@@ -167,7 +194,7 @@ public class ClockWatcherThread extends Thread {
 		}
 	}
 
-	
+
 }
 
 

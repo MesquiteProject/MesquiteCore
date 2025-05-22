@@ -21,6 +21,10 @@ import java.awt.*;
 import mesquite.consensus.lib.StrictConsenser;
 import mesquite.lib.*;
 import mesquite.lib.duties.*;
+import mesquite.lib.tree.MesquiteTree;
+import mesquite.lib.tree.Tree;
+import mesquite.lib.ui.ExtensibleDialog;
+import mesquite.lib.ui.MesquiteMenuItemSpec;
 
 public class TopologyCongruent extends BooleanForTree {
 	OneTreeSource constraintTreeSource;
@@ -71,7 +75,7 @@ public class TopologyCongruent extends BooleanForTree {
 		dialog.addLabel(getName() + " Options");
 
 		Checkbox exactMatchCheck = dialog.addCheckBox("Topology must be exact match", exactMatch.getValue());
-		Checkbox onlyInCommonCheck = dialog.addCheckBox("Only terminal consider taxa in common", onlyConsiderTaxaInCommon.getValue());
+		Checkbox onlyInCommonCheck = dialog.addCheckBox("Only consider terminal taxa in common", onlyConsiderTaxaInCommon.getValue());
 
 		dialog.completeAndShowDialog(true);
 		if (buttonPressed.getValue()==0)  {

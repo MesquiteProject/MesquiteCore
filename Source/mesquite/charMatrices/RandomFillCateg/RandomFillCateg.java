@@ -23,6 +23,8 @@ import mesquite.lib.characters.*;
 import mesquite.lib.duties.*;
 import mesquite.categ.lib.*;
 import mesquite.lib.table.*;
+import mesquite.lib.ui.DoubleField;
+import mesquite.lib.ui.ExtensibleDialog;
 
 /* ======================================================================== */
 public class RandomFillCateg extends CategDataAlterer implements AltererRandomizations {
@@ -41,7 +43,7 @@ public class RandomFillCateg extends CategDataAlterer implements AltererRandomiz
 	/*.................................................................................................................*/
 	/** returns whether this module is requesting to appear as a primary choice */
 	public boolean requestPrimaryChoice(){
-		return true;  
+		return false;  
 	}
 	/*.................................................................................................................*/
 	public boolean queryOptions(boolean queryMaxState) {
@@ -82,9 +84,9 @@ public class RandomFillCateg extends CategDataAlterer implements AltererRandomiz
 	}
 	/*.................................................................................................................*/
 	/** Called to alter data in those cells selected in table*/
-	public boolean alterData(CharacterData data, MesquiteTable table, UndoReference undoReference){
+	public int alterData(CharacterData data, MesquiteTable table, UndoReference undoReference){
 		if (!(data instanceof CategoricalData))
-			return false;
+			return ResultCodes.INCOMPATIBLE_DATA;
 		boolean queryState=false;
 		if (data instanceof DNAData)
 			maxState = 3;
@@ -96,7 +98,7 @@ public class RandomFillCateg extends CategDataAlterer implements AltererRandomiz
 		}
 		if (!MesquiteThread.isScripting())
 			if (!queryOptions(queryState))
-				return false;
+				return ResultCodes.USER_STOPPED;
 		/*		else {
 				maxState = MesquiteInteger.queryInteger(containerOfModule(), "Maximum State", "Each state is chosen equiprobably when filling the matrix randomly.  What should be the maximum state value?", 1, 1, 50, true);
 				if (!MesquiteInteger.isCombinable(maxState))

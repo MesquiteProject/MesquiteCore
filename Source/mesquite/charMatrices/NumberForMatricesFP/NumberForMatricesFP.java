@@ -17,6 +17,7 @@ package mesquite.charMatrices.NumberForMatricesFP;
 import mesquite.lib.*;
 import mesquite.lib.characters.*;
 import mesquite.lib.duties.*;
+import mesquite.lib.ui.MesquiteSubmenuSpec;
 
 /* ======================================================================== */
 public class NumberForMatricesFP extends FileProcessor {
@@ -89,20 +90,18 @@ public class NumberForMatricesFP extends FileProcessor {
    	}
 	/*.................................................................................................................*/
    	/** Called to alter file. */
-   	public boolean processFile(MesquiteFile file, MesquiteString notice){
+   	public int processFile(MesquiteFile file, MesquiteString notice){
    		if (notice == null)
-   			return false;
+   			return -1;
    		MesquiteProject proj = file.getProject();
    		if (proj == null)
-   			return false;
-   		boolean success = false;
+   			return -1;
    		CompatibilityTest test = numberTask.getCompatibilityTest();
    		MesquiteNumber result = new MesquiteNumber();
    		boolean first = true;
    		for (int im = 0; im < proj.getNumberCharMatrices(file); im++){
    			CharacterData data = proj.getCharacterMatrix(file, im);
    			if (test == null || test.isCompatible(data.getStateClass(), getProject(), this)) {
-   				success = true;
    				result.setToUnassigned();
   				numberTask.calculateNumber(data.getMCharactersDistribution(), result, null); 
   				if (!first)
@@ -113,7 +112,7 @@ public class NumberForMatricesFP extends FileProcessor {
    			}
    		}
    			
-   		return success;
+   		return 0;
    	}
 	/*.................................................................................................................*/
 	 public String getName() {

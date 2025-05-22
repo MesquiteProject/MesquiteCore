@@ -23,6 +23,12 @@ import java.awt.geom.Rectangle2D;
 
 import mesquite.lib.*;
 import mesquite.lib.duties.*;
+import mesquite.lib.tree.MesquiteTree;
+import mesquite.lib.tree.Tree;
+import mesquite.lib.tree.TreeDisplay;
+import mesquite.lib.tree.TreeDrawing;
+import mesquite.lib.ui.ColorDistribution;
+import mesquite.lib.ui.GraphicsUtil;
 
 /* ======================================================================== */
 public class CircularTree extends DrawTree {
@@ -52,12 +58,16 @@ public class CircularTree extends DrawTree {
 	/*----------------------------------------------------------------------------*/
 	public   TreeDrawing createTreeDrawing(TreeDisplay treeDisplay, int numTaxa) {
 		CircleTreeDrawing treeDrawing =  new CircleTreeDrawing (treeDisplay, numTaxa, this);
+		treeDisplay.collapsedCladeNameAtLeftmostAncestor = true;
 		drawings.addElement(treeDrawing);
 		return treeDrawing;
 	}
 	/** Returns true if other modules can control the orientation */
 	public boolean allowsReorientation(){
 		return false;
+	}
+	public Vector getDrawings(){
+		return drawings;
 	}
 	/*.................................................................................................................*/
 	public Snapshot getSnapshot(MesquiteFile file) { 
@@ -79,7 +89,7 @@ public class CircularTree extends DrawTree {
 					Object obj = e.nextElement();
 					CircleTreeDrawing treeDrawing = (CircleTreeDrawing)obj;
 					treeDrawing.setEdgeWidth(newWidth);
-					treeDrawing.treeDisplay.setMinimumTaxonNameDistance(newWidth, 6); 
+					treeDrawing.treeDisplay.setMinimumTaxonNameDistanceFromTip(newWidth, 6); 
 				}
 				if (!MesquiteThread.isScripting()) parametersChanged();
 			}
@@ -125,7 +135,6 @@ class CircleTreeDrawing extends TreeDrawing  {
 	BasicStroke defaultStroke;
 
 	private int foundBranch;
-	NameReference triangleNameRef;
 
 	public CircleTreeDrawing (TreeDisplay treeDisplay, int numTaxa, CircularTree ownerModule) {
 		super(treeDisplay, MesquiteTree.standardNumNodeSpaces(numTaxa));
@@ -134,13 +143,12 @@ class CircleTreeDrawing extends TreeDrawing  {
 		}
 		catch (Throwable t){
 		}
-		triangleNameRef = NameReference.getNameReference("triangled");
 		this.ownerModule = ownerModule;
 		this.treeDisplay = treeDisplay;
 		treeDisplay.setOrientation(TreeDisplay.CIRCULAR);
 		oldNumTaxa = numTaxa;
 		namesFollowLines = true;
-		treeDisplay.setMinimumTaxonNameDistance(edgewidth, 6); //better if only did this if tracing on
+		treeDisplay.setMinimumTaxonNameDistanceFromTip(edgewidth, 6); //better if only did this if tracing on
 		ready = true;
 	}
 	public void resetNumNodes(int numNodes){
@@ -161,9 +169,9 @@ class CircleTreeDrawing extends TreeDrawing  {
 		polar.length = Math.sqrt((loc.x-center.x) *(loc.x-center.x) + (center.y-loc.y)*(center.y-loc.y));
 		polar.angle = Math.asin((loc.x-center.x)/polar.length);
 	}
-	/*----------------------------------------------------------------------------*/
 	//	makeSlantedRectangle(branchPoly[node], loc, polarLength[node]-polarLength[motherN]+edgewidth, angle[node], edgewidth);
 	private void makeBranchPoly(Path2D.Double poly, double[] polarlength, double[] angle, int node, int motherN, int width){
+		poly.reset();
 		Point2D.Double loc = new Point2D.Double();
 		Point2D.Double w = new Point2D.Double();
 		nodePolarToLoc (width, angle[node] + Math.PI/2, ownerModule.nodeLocsTask.treeCenter, w);
@@ -179,7 +187,6 @@ class CircleTreeDrawing extends TreeDrawing  {
 		//	wx2p = 1;
 		nodePolarToLoc(polarlength[node], angle[node], ownerModule.nodeLocsTask.treeCenter, loc);
 		/**/
-		poly.reset();
 		poly.moveTo(loc.getX() + wx2p, loc.getY() + wy2p);
 		poly.lineTo(loc.getX() + wx2m, loc.getY() + wy2m);
 		nodePolarToLoc(polarlength[motherN], angle[node], ownerModule.nodeLocsTask.treeCenter, loc);
@@ -216,7 +223,6 @@ class CircleTreeDrawing extends TreeDrawing  {
 		double[] polarLength= ownerModule.nodeLocsTask.polarLength;
 		double[] angle= ownerModule.nodeLocsTask.angle;
 
-		//GraphicsUtil.drawCross(g, treeDisplay.getTreeDrawing().x[node],treeDisplay.getTreeDrawing().y[node], 2);
 		lineTipX[node]= treeDisplay.getTreeDrawing().x[node];
 		lineTipY[node]= treeDisplay.getTreeDrawing().y[node];
 
@@ -225,21 +231,16 @@ class CircleTreeDrawing extends TreeDrawing  {
 		lineBaseX[node]= loc.getX();
 		lineBaseY[node]= loc.getY();
 
-		//		private void makeSlantedRectangle(Polygon poly, double[] polarlength, double[] angle, int node, int motherN, int width){
 		makeBranchPoly(branchPoly[node],polarLength, angle, node, motherN, edgewidth);
 		makeBranchPoly(fillBranchPoly[node],polarLength, angle, node, motherN, edgewidth-2); //TODO: include arc into fillBranchPoly
 
-		//	makeSlantedRectangle(fillBranchPoly[node], loc, polarLength[node]-polarLength[motherN]+edgewidth-2, angle[node], edgewidth-2);
 		GraphicsUtil.fill(g,branchPoly[node]);
-
-
-
 
 		double L, R, T, B;
 		drawArc(g, polarLength, angle, node, motherN, 0);
 
 
-		if (tree.getAssociatedBit(triangleNameRef,node)) {
+		if (false && tree.isCollapsedClade(node)) {
 			double highestTerminal = findHighest(tree, node, polarLength);
 			R = ownerModule.nodeLocsTask.treeCenter.getX() + highestTerminal;
 			L = ownerModule.nodeLocsTask.treeCenter.getX() - highestTerminal;
@@ -274,24 +275,13 @@ class CircleTreeDrawing extends TreeDrawing  {
 
 				W = 2 * polarLength[motherN];
 
-
-				//TODO:  This is all in bad shape!!!
 				double edgeAngle = 0;
-				/*Math.atan(edgewidth/polarLength[motherN])/2;
-				if (edgeAngle <0)
-					edgeAngle = -edgeAngle;*/
 				Arc2D arc;
-				/*
-				 * 	if (angle[motherN]>angle[node])
-				arc = new Arc2D.Double(L, T, W, W, convertToDoubleDegrees(myAngleToTheirs(angle[motherN]+edgeAngle)), convertToDoubleDegrees(angle[motherN] -angle[node]), Arc2D.OPEN); 
-			else
-				arc = new Arc2D.Double(L, T, W, W, convertToDoubleDegrees(myAngleToTheirs(angle[node]+edgeAngle)), convertToDoubleDegrees(angle[node] -angle[motherN]), Arc2D.OPEN); 
-				 */
+
 				if (angle[motherN]<angle[node])
 					arc = new Arc2D.Double(L, T, W, W, convertToDoubleDegrees(myAngleToTheirs(angle[motherN]+edgeAngle)), convertToDoubleDegrees(angle[motherN] -angle[node]), Arc2D.OPEN); 
 				else
 					arc = new Arc2D.Double(L, T, W, W, convertToDoubleDegrees(myAngleToTheirs(angle[node]+edgeAngle)), convertToDoubleDegrees(angle[node] -angle[motherN]), Arc2D.OPEN); 
-				//arc = new Arc2D.Double(L, T, W, W, convertToDoubleDegrees(myAngleToTheirs(angle[motherN])), convertToDegrees(angle[motherN] -angle[node]), Arc2D.OPEN); 
 				if (arc!=null) {
 					BasicStroke wideStroke = new BasicStroke(edgewidth);
 					Graphics2D g2 = (Graphics2D)g;
@@ -300,29 +290,7 @@ class CircleTreeDrawing extends TreeDrawing  {
 					g2.draw(arc);
 					g2.setStroke(defaultStroke);
 				}
-				/*
-				 * Arc2D arcE;
-			if (angle[motherN]>angle[node])
-				g.setColor(Color.red);
-			else
-				g.setColor(Color.green);
-				arcE= new Arc2D.Double(L, T, W, W, convertToDoubleDegrees(myAngleToTheirs(angle[node])), 0.01, Arc2D.OPEN); 
 
-				if (angle[motherN]>angle[node])
-					arcE = new Arc2D.Double(L, T, W, W, convertToDoubleDegrees(myAngleToTheirs(angle[motherN]-edgeAngle)), 0.1, Arc2D.OPEN); 
-				else
-					arcE = new Arc2D.Double(L, T, W, W, convertToDoubleDegrees(myAngleToTheirs(angle[node]-edgeAngle)), 0.1, Arc2D.OPEN); 
-
-
-			if (arcE!=null) {
-				BasicStroke wideStroke = new BasicStroke(edgewidth);
-				Graphics2D g2 = (Graphics2D)g;
-
-				g2.setStroke(wideStroke);
-				g2.draw(arcE);
-				g2.setStroke(defaultStroke);
-			}
-				 */
 			}
 		catch (Throwable e){
 			int L, R, T, B;
@@ -356,12 +324,11 @@ class CircleTreeDrawing extends TreeDrawing  {
 	/*----------------------------------------------------------------------------*/
 	private   void drawClade(Tree tree, int node, Graphics g) {
 		if (tree.nodeExists(node)) {
-			long c = tree.getAssociatedLong(ColorDistribution.colorNameReference, node);
 			g.setColor(treeDisplay.getBranchColor(node));
-			if (tree.getRooted() || tree.getRoot()!=node)
+			if (tree.isVisibleEvenIfInCollapsed(node))
 				drawOneBranch(tree, node, g);
 
-			if (!tree.getAssociatedBit(triangleNameRef,node))
+			if (tree.nodeIsInternal(node))
 				for (int d = tree.firstDaughterOfNode(node); tree.nodeExists(d); d = tree.nextSisterOfNode(d))
 					drawClade( tree, d, g);
 		}
@@ -369,7 +336,7 @@ class CircleTreeDrawing extends TreeDrawing  {
 	/*----------------------------------------------------------------------------*/
 	public   void drawTree(Tree tree, int drawnRoot, Graphics g) {
 		if (MesquiteTree.OK(tree)) {
-			treeDisplay.setMinimumTaxonNameDistance(edgewidth, 6); //better if only did this if tracing on
+			treeDisplay.setMinimumTaxonNameDistanceFromTip(edgewidth, 6); //better if only did this if tracing on
 			if (tree.getNumNodeSpaces()!=numNodes)
 				resetNumNodes(tree.getNumNodeSpaces());
 			g.setColor(treeDisplay.branchColor);
@@ -386,7 +353,7 @@ class CircleTreeDrawing extends TreeDrawing  {
 				resetNumNodes(tree.getNumNodeSpaces());
 			if (!tree.nodeExists(getDrawnRoot()))
 				setDrawnRoot(tree.getRoot());
-			ownerModule.nodeLocsTask.calculateNodeLocs(treeDisplay,  tree, getDrawnRoot(),  treeDisplay.getField()); //Graphics g removed as parameter May 02
+			ownerModule.nodeLocsTask.calculateNodeLocs(treeDisplay,  tree, getDrawnRoot()); //Graphics g removed as parameter May 02
 		}
 	}
 	/*_________________________________________________*/
@@ -409,7 +376,7 @@ class CircleTreeDrawing extends TreeDrawing  {
 	/*_________________________________________________*/
 	double getYExtension (double radians, double separation) {
 		return (Math.sin(radians)*separation);
-		
+
 	}
 	/*_________________________________________________*/
 	private Shape getTerminalBox(Tree tree, int node, Graphics g, int numBoxes, int division) {
@@ -435,51 +402,44 @@ class CircleTreeDrawing extends TreeDrawing  {
 		double fourthY = 0.0;
 
 		Path2D.Double box = new Path2D.Double();
-//		Path2D.Double box = GraphicsUtil.createAngledSquare(lineTipX[node], lineTipX[node],radians, 4);
+		//		Path2D.Double box = GraphicsUtil.createAngledSquare(lineTipX[node], lineTipX[node],radians, 4);
 		if (right){
 			double firstTipX = lineTipX[node] - Math.sin(radians)*edgewidth/2;
 			double firstTipY = lineTipY[node] + Math.cos(radians)*edgewidth/2;
-			 startX = firstTipX+ getXExtension(radians, separation);
-			 startY = firstTipY+ getYExtension(radians, separation);
+			startX = firstTipX+ getXExtension(radians, separation);
+			startY = firstTipY+ getYExtension(radians, separation);
 			double otherTipX =firstTipX + Math.sin(radians)*edgewidth;
 			double otherTipY = firstTipY - Math.cos(radians)*edgewidth;
-			 secondX = otherTipX+getXExtension(radians, separation);
-			 secondY = otherTipY+ getYExtension(radians, separation);
-			 thirdX = otherTipX+getXExtension(radians, separation+individualBoxLength);
-			 thirdY = otherTipY+ getYExtension(radians, separation+individualBoxLength);
-			 fourthX = firstTipX+getXExtension(radians, separation+individualBoxLength);
-			 fourthY = firstTipY+ getYExtension(radians, separation+individualBoxLength);
+			secondX = otherTipX+getXExtension(radians, separation);
+			secondY = otherTipY+ getYExtension(radians, separation);
+			thirdX = otherTipX+getXExtension(radians, separation+individualBoxLength);
+			thirdY = otherTipY+ getYExtension(radians, separation+individualBoxLength);
+			fourthX = firstTipX+getXExtension(radians, separation+individualBoxLength);
+			fourthY = firstTipY+ getYExtension(radians, separation+individualBoxLength);
 		} else {
 			double firstTipX = lineTipX[node] - Math.sin(radians)*edgewidth/2;
 			double firstTipY = lineTipY[node] + Math.cos(radians)*edgewidth/2;
-			 startX = firstTipX- getXExtension(radians, separation);
-			 startY = firstTipY - getYExtension(radians, separation);
+			startX = firstTipX- getXExtension(radians, separation);
+			startY = firstTipY - getYExtension(radians, separation);
 			double otherTipX = firstTipX + Math.sin(radians)*edgewidth;
 			double otherTipY = firstTipY - Math.cos(radians)*edgewidth;
-			 secondX = otherTipX-getXExtension(radians, separation);
-			 secondY = otherTipY- getYExtension(radians, separation);
-			 thirdX = otherTipX-getXExtension(radians, separation+individualBoxLength);
-			 thirdY = otherTipY- getYExtension(radians, separation+individualBoxLength);
-			 fourthX = firstTipX-getXExtension(radians, separation+individualBoxLength);
-			 fourthY = firstTipY- getYExtension(radians, separation+individualBoxLength);
+			secondX = otherTipX-getXExtension(radians, separation);
+			secondY = otherTipY- getYExtension(radians, separation);
+			thirdX = otherTipX-getXExtension(radians, separation+individualBoxLength);
+			thirdY = otherTipY- getYExtension(radians, separation+individualBoxLength);
+			fourthX = firstTipX-getXExtension(radians, separation+individualBoxLength);
+			fourthY = firstTipY- getYExtension(radians, separation+individualBoxLength);
 		}
 		box.moveTo(startX, startY);
 		box.lineTo(secondX, secondY);
 		box.lineTo(thirdX, thirdY);
 		box.lineTo(fourthX, fourthY);
 		box.lineTo(startX, startY);
-		
+
 
 		return box;
 	}
-	/*_________________________________________________*/
-	public  void fillTerminalBox(Tree tree, int node, Graphics g) {
-		Shape box = getTerminalBox(tree,node,g,1,1);
-		GraphicsUtil.fill(g, box);
-		g.setColor(treeDisplay.getBranchColor(node));
-		GraphicsUtil.draw(g, box);
-	}
-
+	
 	/*_________________________________________________*/
 	public  void fillTerminalBoxWithColors(Tree tree, int node, ColorDistribution colors, Graphics g){
 		int numColors = colors.getNumColors();
@@ -497,27 +457,41 @@ class CircleTreeDrawing extends TreeDrawing  {
 		Shape box = getTerminalBox(tree,node,g,1,1);
 		GraphicsUtil.draw(g, box);
 	}
-	/*_________________________________________________*/
-	private boolean ancestorIsTriangled(Tree tree, int node) {
-		if (!tree.nodeExists(node))
-			return false;
-		if (tree.getAssociatedBit(triangleNameRef, tree.motherOfNode(node)))
-			return true;
-		if (tree.getRoot() == node || tree.getSubRoot() == node)
-			return false;
-		return ancestorIsTriangled(tree, tree.motherOfNode(node));
-	}
 	/*----------------------------------------------------------------------------*/
 	public void fillBranchWithColors(Tree tree, int node, ColorDistribution colors, Graphics g) {
-		if (node>0 && (tree.getRooted() || tree.getRoot()!=node) && !ancestorIsTriangled(tree, node)) {
+		if (node>0 && tree.isVisibleEvenIfInCollapsed(node)) {
 			Color c = g.getColor();
 			if (treeDisplay.getOrientation()==TreeDisplay.CIRCULAR) {
 				int numColors = colors.getNumColors();
-				for (int i=0; i<numColors; i++) {
+				if (numColors == 1){
 					Color color;
-					if ((color = colors.getColor(i, !tree.anySelected()|| tree.getSelected(node)))!=null)
+					if ((color = colors.getColor(0, !tree.anySelected()|| tree.getSelected(node)))!=null)
 						g.setColor(color);
 					GraphicsUtil.fill(g,fillBranchPoly[node]);
+					int motherN= tree.motherOfNode(node);
+					double[] polarLength= ownerModule.nodeLocsTask.polarLength;
+					double[] angle= ownerModule.nodeLocsTask.angle;
+					drawArc(g, polarLength, angle, node, motherN, 1);
+				}
+				else if (numColors>0) {
+					Color colorA = colors.getColor(0, !tree.anySelected()|| tree.getSelected(node));
+					Color colorB = colors.getColor(numColors-1, !tree.anySelected()|| tree.getSelected(node));
+					float x1 = (float)(treeDisplay.getTreeDrawing().x[node]);
+					float x2 = x1 + 5;
+					float y1 = (float)(treeDisplay.getTreeDrawing().y[node]); 
+					float y2 = y1+5;
+					GradientPaint grad = new GradientPaint(x1,y1, colorA, x2, y2, colorB, true);
+					Graphics2D g2 =null;
+					Paint oldPaint = null;
+					if (g instanceof Graphics2D){
+						g2 = (Graphics2D)g;
+						oldPaint = g2.getPaint();
+						g2.setPaint(grad);}
+
+					GraphicsUtil.fill(g,fillBranchPoly[node]);
+					if (g instanceof Graphics2D){
+						g2.setPaint(oldPaint);
+					}
 					int motherN= tree.motherOfNode(node);
 					double[] polarLength= ownerModule.nodeLocsTask.polarLength;
 					double[] angle= ownerModule.nodeLocsTask.angle;
@@ -539,7 +513,7 @@ class CircleTreeDrawing extends TreeDrawing  {
 	}
 	/*_________________________________________________*/
 	public   void fillBranch(Tree tree, int node, Graphics g) {
-		if (node>0 && (tree.getRooted() || tree.getRoot()!=node) && !ancestorIsTriangled(tree, node)) {
+		if (node>0 && tree.isVisibleEvenIfInCollapsed(node)) {
 			GraphicsUtil.fill(g,fillBranchPoly[node]);
 			int motherN= tree.motherOfNode(node);
 			double[] polarLength= ownerModule.nodeLocsTask.polarLength;
@@ -624,9 +598,8 @@ class CircleTreeDrawing extends TreeDrawing  {
 					}
 			}
 
-			if (!tree.getAssociatedBit(triangleNameRef,node))
-				for (int d = tree.firstDaughterOfNode(node); tree.nodeExists(d); d = tree.nextSisterOfNode(d))
-					ScanBranches(tree, d, x, y, fraction);
+			for (int d = tree.firstDaughterOfNode(node); tree.nodeExists(d); d = tree.nextSisterOfNode(d))
+				ScanBranches(tree, d, x, y, fraction);
 
 		}
 	}
@@ -635,10 +608,13 @@ class CircleTreeDrawing extends TreeDrawing  {
 		if (MesquiteTree.OK(tree) && ready) {
 			foundBranch=0;
 			ScanBranches(tree, drawnRoot, x, y, fraction);
-			if (foundBranch == tree.getRoot() && !tree.getRooted())
+			if (!tree.isVisibleEvenIfInCollapsed(foundBranch))
 				return 0;
-			else
+			else {
+				if (tree.withinCollapsedClade(foundBranch))
+					foundBranch = tree.deepestCollapsedAncestor(foundBranch);
 				return foundBranch;
+			}
 		}
 		return 0;
 	}
@@ -651,12 +627,10 @@ class CircleTreeDrawing extends TreeDrawing  {
 	public void setEdgeWidth(int edw) {
 		edgewidth = edw;
 	}
-	/*New code Feb.22.07 allows eavesdropping on edgewidth by the TreeDrawing oliver*/ //TODO: delete new code comments
 	/*_________________________________________________*/
 	public int getEdgeWidth() {
 		return edgewidth;
 	}
-	/*End new code Feb.22.07 oliver*/
 }
 class PolarCoord {
 	public double length, angle;
