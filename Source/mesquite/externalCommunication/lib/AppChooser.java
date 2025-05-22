@@ -161,13 +161,14 @@ public class AppChooser implements ActionListener {
 	}
 	/*.................................................................................................................*/
 	String getMainDialogUsingString() {
-		if (!useDefaultExecutablePath.getValue() && alternativeManualPath.isBlank())
+		if (!usingBuiltIn() && alternativeManualPath.isBlank())
 			return "Please select app using button:";
 		String usingString = "Using";
 		if (usingBuiltIn())
 			usingString += " built-in " + programName + " (version " + versionOfBuiltIn + ")";
-		else
+		else {
 			usingString += " " + programName + " at " + shortenPathIfNeeded(alternativeManualPath.getValue());
+		}
 		return usingString;
 	}
 	/*.................................................................................................................*/
