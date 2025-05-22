@@ -32,6 +32,7 @@ import mesquite.lib.ui.ColorTheme;
 import mesquite.lib.ui.ExtensibleDialog;
 import mesquite.lib.ui.ListDialog;
 import mesquite.lib.ui.MesquiteDialog;
+import mesquite.lib.ui.MesquiteFrame;
 import mesquite.lib.ui.MesquiteMenuItemSpec;
 import mesquite.lib.ui.MesquiteMenuSpec;
 import mesquite.lib.ui.MesquiteSubmenuSpec;

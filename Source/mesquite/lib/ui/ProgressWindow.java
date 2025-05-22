@@ -22,7 +22,7 @@ import mesquite.lib.MesquiteThread;
 import mesquite.lib.MesquiteTrunk;
 
 /** a thermometer window (see class ProgressIndicator)*/
-public class ProgressWindow extends Frame implements Listable, WindowListener, ComponentListener {
+public class ProgressWindow extends Frame implements Listable, WindowListener, ComponentListener, MQComponent {
 	public ProgressPanel progressPanel;
 	long textRefreshInterval = 500;
 	public static int visibleProgWindows=0;
@@ -296,6 +296,91 @@ public class ProgressWindow extends Frame implements Listable, WindowListener, C
 	public long getTotalValue () {
 		return progressPanel.getTotalValue();
 	}
+	
+	//###########################################################
+	/*################################################################
+	 *  The following overrides were built to avoid the frequent StackOverflowErrors on Linux Java post-1.8, 
+	 *  but were extended in part to other OSs. See also others satisfying MQComponent interface.
+	 */		
+	MQComponentHelper helper = new MQComponentHelper(this);
+	public MQComponentHelper getHelper(){
+		return helper;
+	}
+	public void superValidate(){
+		super.validate();
+	}
+	public void superSetBounds(int x, int y, int w, int h){
+		super.setBounds(x,y,w,h);
+	}
+	public void superSetFont (Font f){
+	super.setFont(f);
+	}
+	public void superSetSize (int w, int h){
+		super.setSize(w,h);
+	}
+	public void superSetLocation (int x, int y){
+		super.setLocation(x,y);
+	}
+	public Dimension superGetPreferredSize(){
+		return super.getPreferredSize();
+	}
+	public void superLayout(){
+		super.layout();
+	}
+	public void superInvalidate(){
+		super.invalidate();
+	}
+	/* - - - - - - */
+	public void invalidate (){
+		if (helper == null)
+			superInvalidate();
+		else
+			helper.invalidate();
+	}
+	public void setFont (Font f){
+		if (helper == null)
+			superSetFont(f);
+		else
+			helper.setFont(f);
+	}
+	public void setSize (int w, int h){
+		if (helper == null)
+			superSetSize(w,h);
+		else
+			helper.setSize(w, h);
+	}
+	public void setLocation (int x, int y){
+		if (helper == null)
+			superSetLocation(x, y);
+		else
+			helper.setLocation(x,y);
+	}
+	public Dimension getPreferredSize() {
+		if (helper == null)
+			return superGetPreferredSize();
+		else
+			return helper.getPreferredSize();
+	}
+	public void layout(){
+		if (helper == null)
+			superLayout();
+		else
+			helper.layout();
+	}
+	public void validate(){
+		if (helper == null)
+			superValidate();
+		else
+			helper.validate();
+	}
+	public void setBounds(int x, int y, int w, int h){
+		if (helper == null)
+			superSetBounds(x,y,w,h);
+		else
+			helper.setBounds(x,y,w,h);
+	}
+	/*###########################################################*/
+	//###########################################################
 }
 
 

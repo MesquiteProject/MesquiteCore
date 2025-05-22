@@ -656,13 +656,7 @@ public class Mesquite extends MesquiteTrunk
 	            taskbar.setIconImage(icon);
 	        }
 	    } catch (UnsupportedOperationException e) {
-	        // Handle cases where the operation is not supported (e.g., macOS)
-	        System.err.println("Taskbar API is not supported on this platform.");
-	        e.printStackTrace();
 	    } catch (SecurityException e) {
-	       // Handle security exceptions if necessary
-	        System.err.println("Security exception occurred while setting the taskbar icon.");
-	        e.printStackTrace();
 	    }
 
 
@@ -818,7 +812,8 @@ public class Mesquite extends MesquiteTrunk
 			logWindow.resetWindowSizeForce();
 
 		}
-
+		
+		
 		/* */
 		cwt = new ClockWatcherThread(this);
 		cwt.start();  

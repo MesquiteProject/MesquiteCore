@@ -1,4 +1,4 @@
-/* Mesquite source code.  Copyright 2001 and onward, D. Maddison and W. Maddison. 
+/* Mesquite source code.  Copyright 1997 and onward, W. Maddison and D. Maddison. 
 
 
 Disclaimer:  The Mesquite source code is lengthy and we are few.  There are no doubt inefficiencies and goofs in this code. 
@@ -13,40 +13,26 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
  */
 package mesquite.lib.ui;
 
-import javax.swing.JEditorPane;
-
-import mesquite.lib.Debugg;
-import mesquite.lib.MesquiteTrunk;
-
 import java.awt.*;
 
-//workaround for crashes on OS X && Linux  [Search for MQLINUX]
-public class MesqJEditorPane extends JEditorPane implements MQComponent{
-	public MesqJEditorPane(String a, String b){
-		super(a, b);
-	}
-	public boolean getScrollableTracksViewportWidth() {
-		try {
-			return super.getScrollableTracksViewportWidth();
-		}
-		catch(Exception e){
-			System.err.println("Throwable in " + getClass() + ": " + e);
-		}
-		return true;
-	}
-	public boolean getScrollableTracksViewportHeight() {
-		try {
-			return super.getScrollableTracksViewportHeight();
-		}
-		catch(Exception e){
-			System.err.println("Throwable in " + getClass() + ": " + e);
+import javax.swing.JList;
+import javax.swing.JScrollBar;
+import javax.swing.JScrollPane;
+import javax.swing.JViewport;
+
+import mesquite.lib.MesquiteTrunk;
+
+/* �������������������� */
+/*  [Search for MQLINUX] -- Intermediary class for workaround of StackOverflowError in Linux JDK 11 - 23 (at least!). 
+ * These classes intercept validate and resize components on another thread in hopes of avoiding stack overflow error */
+/* ======================================================================== */
+public class MQJScrollBar extends JScrollBar implements MQComponent {
+
+	public MQJScrollBar (int orientation) {
+		super(orientation);
 	}
 
-		return true;
-	}
-
-	
-	//###########################################################
+ 	//###########################################################
 	/*################################################################
 	 *  The following overrides were built to avoid the frequent StackOverflowErrors on Linux Java post-1.8, 
 	 *  but were extended in part to other OSs. See also others satisfying MQComponent interface.
@@ -133,6 +119,5 @@ public class MesqJEditorPane extends JEditorPane implements MQComponent{
 	//###########################################################
 
 
+
 }
-
-

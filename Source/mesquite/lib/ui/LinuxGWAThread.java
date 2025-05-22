@@ -39,21 +39,21 @@ public class LinuxGWAThread extends Thread {
 	boolean putValidatesOnThisThread = true;
 	boolean putSetBoundsOnThisThread = false;
 
-	public void validateRequested(Component component){
+	public void validateRequested(MQComponent component){
 		if (putValidatesOnThisThread)  //to short circuit or not?
 			addOrNotToValidate(validateGreenRoom, component, null);
 		else
-			((MQComponent)component).pleaseValidate();
+			((MQComponent)component).superValidate();
 	}
-	public void setBoundsRequested(Component component, int x, int y, int w, int h){
+	public void setBoundsRequested(MQComponent component, int x, int y, int w, int h){
 		if (putSetBoundsOnThisThread)  //to short circuit or not?
 			addOrUpdateToSetBounds(setBoundsGreenRoom, new SBRecord(component, x, y, w, h), null);
 		else
-			((MQComponent)component).pleaseSetBounds(x, y, w, h);
+			((MQComponent)component).superSetBounds(x, y, w, h);
 	}
 
 	/**------------------------------------------------------------------------*/
-	void addOrNotToValidate(Vector v, Component component, Vector toDeleteElement){
+	void addOrNotToValidate(Vector v, MQComponent component, Vector toDeleteElement){
 		if (v.indexOf(component)<0) {
 			v.addElement(component);
 		}
@@ -105,8 +105,7 @@ public class LinuxGWAThread extends Thread {
 		while (!MesquiteTrunk.mesquiteTrunk.mesquiteExiting) { 
 			count++;
 			try {
-				//	if (count % 200 == 0)
-				//		Debugg.println(MesquiteFrame.listComponentsAllWindows());
+
 				Thread.sleep(50);
 				//first transfer the green room things on my thread
 				if (validateQueue.size()== 0 && setBoundsQueue.size() == 0) { //swap only if was successful last time
@@ -117,23 +116,30 @@ public class LinuxGWAThread extends Thread {
 					setBoundsGreenRoom = setBoundsQueue;
 					setBoundsQueue = temp;
 				}
-				/*while (validateGreenRoom.size()>0)
-					addOrNotToValidate(validateQueue, (Component)validateGreenRoom.elementAt(0), validateGreenRoom);
 
-				while (setBoundsGreenRoom.size()>0)
-					addOrUpdateToSetBounds(setBoundsQueue, (SBRecord)setBoundsGreenRoom.elementAt(0), setBoundsGreenRoom);
-				 */
-				//	Debugg.println("$$$$$$$$$$$$$$$$$$validateQueue " +validateQueue.size());
+
 				for (int i = 0; i<validateQueue.size(); i++){
 					Component component = (Component)validateQueue.elementAt(i);
 					doingString = "SOE on validate " + getContainersList(component);
-					((MQComponent)component).pleaseValidate();
+					boolean doIt = true;
+					MQComponentHelper helper = ((MQComponent)component).getHelper();
+					if (helper != null){
+						if (helper.touchingValidate != null){
+							helper.touchingValidate = Thread.currentThread();
+							((MQComponent)component).superValidate();
+							helper.touchingValidate = null;
+						}
+					}
+					else
+						((MQComponent)component).superValidate();
+
 				}
 
 				for (int i = 0; i<setBoundsQueue.size(); i++){
 					SBRecord sbr = (SBRecord)setBoundsQueue.elementAt(i);
-					doingString = "SOE on setBounds " + getContainersList(sbr.component);
-					((MQComponent)sbr.component).pleaseSetBounds(sbr.x, sbr.y, sbr.w, sbr.h);
+					doingString = "SOE on setBounds " + getContainersList((Component)sbr.component);
+
+					((MQComponent)sbr.component).superSetBounds(sbr.x, sbr.y, sbr.w, sbr.h);  //THIS NEEDS TO BE PROTECTED as validate if it is to be used
 				}
 				validateQueue.removeAllElements();
 				setBoundsQueue.removeAllElements();
@@ -156,8 +162,8 @@ public class LinuxGWAThread extends Thread {
 
 class SBRecord {
 	int x, y, w, h;
-	Component component;
-	public SBRecord(Component component, int x, int y, int w, int h){
+	MQComponent component;
+	public SBRecord(MQComponent component, int x, int y, int w, int h){
 		this.component = component;
 		this.x = x;
 		this.y = y;

@@ -13,7 +13,10 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
  */
 package mesquite.lib.ui;
 
+import java.awt.Dimension;
+import java.awt.Font;
 
+import mesquite.lib.MesquiteTrunk;
 
 /* �������������������� */
 /*  [Search for MQLINUX] -- Intermediary class for workaround of StackOverflowError in Linux JDK 11 - 23 (at least!). 
@@ -21,8 +24,28 @@ package mesquite.lib.ui;
 /* ======================================================================== */
 public interface MQComponent {
 
-	
-	public void pleaseValidate();
-	public void pleaseSetBounds(int x, int y, int w, int h);
+	public static boolean verboseTW = false;
 
+	public void superValidate();
+	public void superInvalidate();
+	public void superSetBounds(int x, int y, int w, int h);
+	public void superSetFont (Font f);
+	public void superSetSize (int w, int h);
+	public void superSetLocation (int x, int y);
+	public Dimension superGetPreferredSize();
+	public void superLayout();
+	public MQComponentHelper getHelper();
+	
+	/*
+	Thread touchingFont = null;
+	Thread touchingSize = null;
+	Thread touchingLocation = null;
+	Thread touchingDimension = null;
+	Thread touchingLayout = null;
+	boolean validating = false;
+	Thread touchingValidate = null;
+	Thread touchingPValidate = null;
+	Thread touchingBounds = null;
+	Thread touchingPSBounds = null;
+	*/
 }
