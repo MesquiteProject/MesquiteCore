@@ -14,21 +14,21 @@
 			<noticeNumber>29</noticeNumber>
 			<messageType>alert</messageType>
 			<message><![CDATA[A beta-test (prerelease) version of Mesquite 4 is available, with many new features.  It also has bundled in the Zephyr, Chromaseq, and Cartographer packages.  
-			<a href = "https://www.mesquiteproject.org">Check out the details at here.</a>]]></message>
+			<a href = "https://www.mesquiteproject.org">Check out the details here.</a>]]></message>
 		</notice>
 		<notice>
 			<forVersion>380</forVersion>
 			<noticeNumber>29</noticeNumber>
 			<messageType>alert</messageType>
 			<message><![CDATA[A beta-test (prerelease) version of Mesquite 4 is available, with many new features.  It also has bundled in the Zephyr, Chromaseq, and Cartographer packages.  
-			<a href = "https://www.mesquiteproject.org">Check out the details at here.</a>]]></message>
+			<a href = "https://www.mesquiteproject.org">Check out the details here.</a>]]></message>
 		</notice>
 		<notice>
 			<forVersion>370</forVersion>
 			<noticeNumber>29</noticeNumber>
 			<messageType>alert</messageType>
 			<message><![CDATA[A beta-test (prerelease) version of Mesquite 4 is available, with many new features.  It also has bundled in the Zephyr, Chromaseq, and Cartographer packages.  
-			<a href = "https://www.mesquiteproject.org">Check out the details at here.</a>]]></message>
+			<a href = "https://www.mesquiteproject.org">Check out the details here.</a>]]></message>
 		</notice>
 		<notice>
 			<forVersion>380</forVersion>
