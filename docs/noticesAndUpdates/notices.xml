@@ -10,15 +10,28 @@
 			<downloadURL>http://www.mesquiteproject.org/Installation.html</downloadURL>
 		</currentReleaseVersion>
 		<notice>
-			<forVersion>380</forVersion>
-			<noticeNumber>28</noticeNumber>
+			<forVersion>381</forVersion>
+			<noticeNumber>29</noticeNumber>
 			<messageType>alert</messageType>
-			<message><![CDATA[A new version of Mesquite is available, version 3.81, with various new features and bug fixes.  It also has bundled in the Zephyr, Chromaseq, and Cartographer packages.  
-			We urge that you update to the new version by downloading it from 
-			<a href = "http://github.com/MesquiteProject/MesquiteCore/releases">here</a>]]></message>
+			<message><![CDATA[A beta-test (prerelease) version of Mesquite 4 is available, with many new features.  It also has bundled in the Zephyr, Chromaseq, and Cartographer packages.  
+			<a href = "https://www.mesquiteproject.org">Check out the details at here.</a>]]></message>
+		</notice>
+		<notice>
+			<forVersion>380</forVersion>
+			<noticeNumber>29</noticeNumber>
+			<messageType>alert</messageType>
+			<message><![CDATA[A beta-test (prerelease) version of Mesquite 4 is available, with many new features.  It also has bundled in the Zephyr, Chromaseq, and Cartographer packages.  
+			<a href = "https://www.mesquiteproject.org">Check out the details at here.</a>]]></message>
 		</notice>
 		<notice>
 			<forVersion>370</forVersion>
+			<noticeNumber>29</noticeNumber>
+			<messageType>alert</messageType>
+			<message><![CDATA[A beta-test (prerelease) version of Mesquite 4 is available, with many new features.  It also has bundled in the Zephyr, Chromaseq, and Cartographer packages.  
+			<a href = "https://www.mesquiteproject.org">Check out the details at here.</a>]]></message>
+		</notice>
+		<notice>
+			<forVersion>380</forVersion>
 			<noticeNumber>28</noticeNumber>
 			<messageType>alert</messageType>
 			<message><![CDATA[A new version of Mesquite is available, version 3.81, with various new features and bug fixes.  It also has bundled in the Zephyr, Chromaseq, and Cartographer packages.  
