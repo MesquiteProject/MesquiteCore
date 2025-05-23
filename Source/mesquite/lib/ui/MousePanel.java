@@ -48,6 +48,8 @@ import mesquite.lib.ObjectContainer;
 import mesquite.lib.ParseUtil;
 import mesquite.lib.duties.*;
 import mesquite.lib.table.AutoScrollThread;
+import mesquite.lib.table.MatrixPanel;
+import mesquite.lib.table.RowNamesPanel;
 
 
 /* ======================================================================== */
@@ -184,6 +186,9 @@ public class MousePanel extends MQPanel implements Commandable, FileDirtier, Mou
 		super.update(paramGraphics);
 	}
 	public Graphics getGraphics(){
+		if (GraphicsUtil.ignoreComponent(this, 0)) 
+				return null;
+			
 		Graphics gg = super.getGraphics();
 		if (gg instanceof Graphics2D){
 
@@ -297,7 +302,7 @@ public class MousePanel extends MQPanel implements Commandable, FileDirtier, Mou
 	}
 
 	public void setCursor(Cursor c){
-		super.setCursor(c);
+		super.setCursor(c); 
 	}
 	public int getMouseX(){
 		return currentX;
@@ -477,13 +482,16 @@ int modifiers = MesquiteInteger.fromString(ParseUtil.getFirstToken(arguments, po
 	}
 	public void mouseExited(int modifiers, int x, int y, MesquiteTool tool) {
 	}
-
+	
+	
 	/*...............................................................................................................*/
 	public void mouseClicked(MouseEvent e)   {
 		if (MesquiteDialog.currentWizard != null){
 			MesquiteDialog.currentWizard.toFront();
 			return;
 		}
+		if (GraphicsUtil.ignoreComponent(this, 0))
+			return;
 		if (suppressEvents || clickedCommand == null)
 			return;
 		currentX = e.getX();
@@ -499,8 +507,11 @@ int modifiers = MesquiteInteger.fromString(ParseUtil.getFirstToken(arguments, po
 			return;
 		}
 
+		if (GraphicsUtil.ignoreComponent(this, 0)) 
+			return;
 		if (suppressEvents || enteredCommand == null)
 			return;
+
 		currentX = e.getX();
 		currentY = e.getY();
 		MesquiteException.lastLocation = 109;
@@ -513,6 +524,8 @@ int modifiers = MesquiteInteger.fromString(ParseUtil.getFirstToken(arguments, po
 			return;
 		}
 		if (suppressEvents || exitedCommand == null)
+			return;
+		if (GraphicsUtil.ignoreComponent(this, 0)) 
 			return;
 		currentX = e.getX();
 		currentY = e.getY();
@@ -531,6 +544,8 @@ int modifiers = MesquiteInteger.fromString(ParseUtil.getFirstToken(arguments, po
 		}
 		if (suppressEvents || downCommand == null)
 			return;
+		if (GraphicsUtil.ignoreComponent(this, 0)) 
+			return;
 		currentX = e.getX();
 		currentY = e.getY();
 		MesquiteException.lastLocation = 111;
@@ -545,6 +560,8 @@ int modifiers = MesquiteInteger.fromString(ParseUtil.getFirstToken(arguments, po
 			MesquiteDialog.currentWizard.toFront();
 			return;
 		}
+		if (GraphicsUtil.ignoreComponent(this, 0)) 
+			return;
 		if (suppressEvents || upCommand == null)
 			return;
 		currentX = e.getX();
@@ -565,6 +582,8 @@ int modifiers = MesquiteInteger.fromString(ParseUtil.getFirstToken(arguments, po
 			MesquiteDialog.currentWizard.toFront();
 			return;
 		}
+		if (GraphicsUtil.ignoreComponent(this, 0)) 
+			return;
 		if (suppressEvents || dragCommand == null)
 			return;
 		currentX = e.getX();
@@ -581,6 +600,8 @@ int modifiers = MesquiteInteger.fromString(ParseUtil.getFirstToken(arguments, po
 			return;
 		}
 		if (suppressEvents || movedCommand == null)
+			return;
+		if (GraphicsUtil.ignoreComponent(this, 0)) 
 			return;
 		currentX = e.getX();
 		currentY = e.getY();

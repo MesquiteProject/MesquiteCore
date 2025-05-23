@@ -194,7 +194,7 @@ public class ExtensibleDialog extends MesquiteDialog implements ActionListener, 
 	}
 
 	/*.................................................................................................................*/
-	public void setAddPanel (Panel addPanel, LayoutManager layout) {
+	public void setAddPanel (MQPanel addPanel, LayoutManager layout) {
 		this.addPanel = addPanel;
 		//setContentPane(addPanel);
 		if (layout==null){   // in this case, inherit the basic layout structure from dialog
@@ -206,7 +206,7 @@ public class ExtensibleDialog extends MesquiteDialog implements ActionListener, 
 		}
 	}
 	/*.................................................................................................................*/
-	public void setAddJPanel (JPanel addPanel, LayoutManager layout) {
+	public void setAddJPanel (MQJPanel addPanel, LayoutManager layout) {
 		this.addJPanel = addPanel;
 		//setContentPane(addPanel);
 		if (layout==null){   // in this case, inherit the basic layout structure from dialog
@@ -218,11 +218,11 @@ public class ExtensibleDialog extends MesquiteDialog implements ActionListener, 
 		}
 	}
 	/*.................................................................................................................*/
-	public void setAddPanel (Panel addPanel) {
+	public void setAddPanel (MQPanel addPanel) {
 		setAddPanel(addPanel,null);
 	}
 	/*.................................................................................................................*/
-	public void setAddJPanel (JPanel addPanel) {
+	public void setAddJPanel (MQJPanel addPanel) {
 		setAddJPanel(addPanel,null);
 	}
 	/*.................................................................................................................*/
@@ -249,7 +249,7 @@ public class ExtensibleDialog extends MesquiteDialog implements ActionListener, 
 		samePanelAsLast = false;
 	}
 	/*.................................................................................................................*/
-	public Panel addNewDialogPanel (Panel panel,GridBagConstraints c) {
+	public Panel addNewDialogPanel (MQPanel panel,GridBagConstraints c) {
 		wasSamePanelAsLast = samePanelAsLast;
 		if (!samePanelAsLast) {
 			Panel newPanel;
@@ -295,7 +295,7 @@ public class ExtensibleDialog extends MesquiteDialog implements ActionListener, 
 		return addNewDialogPanel(null,null);
 	}
 	/*.................................................................................................................*/
-	public Panel addNewDialogPanel (Panel panel) {
+	public Panel addNewDialogPanel (MQPanel panel) {
 		return addNewDialogPanel(panel, null);
 	}
 	/*.................................................................................................................*/
@@ -592,7 +592,7 @@ public class ExtensibleDialog extends MesquiteDialog implements ActionListener, 
 				singleButton = null;
 		}
 		if (!MesquiteModule.textEdgeRemembered || checkTextEdge)
-			buttons.add("West", textEdgeCompensationDetector = new TextField(" "));
+			buttons.add("West", textEdgeCompensationDetector = new MQTextField(" "));
 		addToDialog(buttons);	
 		setPrimaryButtonConstraints(buttons);	
 		if (singleButton!=null)
@@ -623,7 +623,7 @@ public class ExtensibleDialog extends MesquiteDialog implements ActionListener, 
 			}
 		}
 		if (!MesquiteModule.textEdgeRemembered || checkTextEdge)
-			buttons.add("West", textEdgeCompensationDetector = new TextField(" "));
+			buttons.add("West", textEdgeCompensationDetector = new MQTextField(" "));
 		addToDialog(buttons);	
 		setPrimaryButtonConstraints(buttons);	
 		if (singleButton!=null)
@@ -1284,21 +1284,21 @@ public class ExtensibleDialog extends MesquiteDialog implements ActionListener, 
 		Label label;
 		if (!StringUtil.blank(s1)) {
 			gridConstraints.gridy++;
-			label = new Label(s1);
+			label = new MQLabel(s1);
 			if (boldString==1)
 				label.setFont(boldFont);
 			newPanel.add(label,gridConstraints);
 		}
 		if (!StringUtil.blank(s2)) {
 			gridConstraints.gridy++;
-			label = new Label(s2);
+			label = new MQLabel(s2);
 			if (boldString==2)
 				label.setFont(boldFont);
 			newPanel.add(label,gridConstraints);
 		}
 		if (!StringUtil.blank(s3)) {
 			gridConstraints.gridy++;
-			label = new Label(s3);
+			label = new MQLabel(s3);
 			if (boldString==3)
 				label.setFont(boldFont);
 			newPanel.add(label);
@@ -1330,12 +1330,12 @@ public class ExtensibleDialog extends MesquiteDialog implements ActionListener, 
 		Label label;
 		if (!StringUtil.blank(s1)) {
 			gridConstraints.gridy++;
-			label = new Label(s1);
+			label = new MQLabel(s1);
 			newPanel.add(label);
 		}
 		if (!StringUtil.blank(s2)) {
 			gridConstraints.gridy++;
-			label = new Label(s2);
+			label = new MQLabel(s2);
 			label.setFont(defaultSmallFont);
 			newPanel.add(label);
 		}
@@ -1615,7 +1615,7 @@ public class ExtensibleDialog extends MesquiteDialog implements ActionListener, 
 			constraints.fill=GridBagConstraints.NONE;
 		Panel newPanel = addNewDialogPanel();
 		if (message!=null) {
-			newPanel.add(new Label(message));
+			newPanel.add(new MQLabel(message));
 		}
 		List list = new List(numLines,false);
 
@@ -1662,7 +1662,7 @@ public class ExtensibleDialog extends MesquiteDialog implements ActionListener, 
 		Panel newPanel = addNewDialogPanel();
 		Label fieldLabel = null;
 		if (message!=null) {
-			newPanel.add(fieldLabel = new Label(message));
+			newPanel.add(fieldLabel = new MQLabel(message));
 		}
 		MesquitePasswordField textField;
 		if (initialString == null)
@@ -1698,7 +1698,7 @@ public class ExtensibleDialog extends MesquiteDialog implements ActionListener, 
 		Panel newPanel = addNewDialogPanel();
 		Label fieldLabel = null;
 		if (message!=null) {
-			newPanel.add(fieldLabel = new Label(message));
+			newPanel.add(fieldLabel = new MQLabel(message));
 		}
 		SingleLineTextField textField;
 		if (initialString == null)
@@ -1765,7 +1765,7 @@ public class ExtensibleDialog extends MesquiteDialog implements ActionListener, 
 		constraints.gridheight=1;
 		constraints.fill=GridBagConstraints.BOTH;
 
-		Panel newPanel = new MQPanel();
+		MQPanel newPanel = new MQPanel();
 		newPanel.setLayout(gridBag);
 		gridBag.setConstraints(newPanel,constraints);
 		constraints.gridy = 1;
@@ -1773,7 +1773,7 @@ public class ExtensibleDialog extends MesquiteDialog implements ActionListener, 
 		if (labels!=null){
 			for (int i = 0; i<numFields && i<labels.length; i++) {
 				constraints.gridx=i+1;
-				newPanel.add(new Label(labels[i]),constraints);
+				newPanel.add(new MQLabel(labels[i]),constraints);
 			}
 		}
 
@@ -1802,7 +1802,7 @@ public class ExtensibleDialog extends MesquiteDialog implements ActionListener, 
 		constraints.gridheight=1;
 		constraints.fill=GridBagConstraints.BOTH;
 
-		Panel newPanel = new MQPanel();
+		MQPanel newPanel = new MQPanel();
 		newPanel.setLayout(gridBag);
 		gridBag.setConstraints(newPanel,constraints);
 		constraints.gridy = 1;
@@ -1810,7 +1810,7 @@ public class ExtensibleDialog extends MesquiteDialog implements ActionListener, 
 		if (labels!=null){
 			for (int i = 0; i<numFields && i<labels.length; i++) {
 				constraints.gridx=i+1;
-				newPanel.add(new Label(labels[i]),constraints);
+				newPanel.add(new MQLabel(labels[i]),constraints);
 			}
 		}
 
@@ -1840,7 +1840,7 @@ public class ExtensibleDialog extends MesquiteDialog implements ActionListener, 
 		constraints.gridheight=1;
 		constraints.fill=GridBagConstraints.BOTH;
 
-		Panel newPanel = new MQPanel();
+		MQPanel newPanel = new MQPanel();
 		newPanel.setLayout(gridBag);
 		gridBag.setConstraints(newPanel,constraints);
 		constraints.gridy = 1;
@@ -1848,11 +1848,11 @@ public class ExtensibleDialog extends MesquiteDialog implements ActionListener, 
 		if (columnLabels!=null){
 			constraints.gridx=1;
 			if (rowLabels!=null)
-				newPanel.add(new Label(""),constraints);
+				newPanel.add(new MQLabel(""),constraints);
 
 			for (int i = 0; i<numFields && i<columnLabels.length; i++) {
 				constraints.gridx=i+2;
-				newPanel.add(new Label(columnLabels[i]),constraints);
+				newPanel.add(new MQLabel(columnLabels[i]),constraints);
 			}
 		}
 
@@ -1863,9 +1863,9 @@ public class ExtensibleDialog extends MesquiteDialog implements ActionListener, 
 			constraints.gridx=1;
 			if (rowLabels!=null)
 				if (j>=rowLabels.length || rowLabels[j]==null)
-					newPanel.add(new Label(""),constraints);
+					newPanel.add(new MQLabel(""),constraints);
 				else
-					newPanel.add(new Label(rowLabels[j]),constraints);
+					newPanel.add(new MQLabel(rowLabels[j]),constraints);
 
 			for (int i = 0; i<numFields && i<columnLabels.length; i++) {
 				constraints.gridx=i+2;
@@ -1896,7 +1896,7 @@ public class ExtensibleDialog extends MesquiteDialog implements ActionListener, 
 		constraints.gridheight=1;
 		constraints.fill=GridBagConstraints.BOTH;
 
-		Panel newPanel = new MQPanel();
+		MQPanel newPanel = new MQPanel();
 		newPanel.setLayout(gridBag);
 		gridBag.setConstraints(newPanel,constraints);
 		constraints.gridy = 1;
@@ -1921,7 +1921,7 @@ public class ExtensibleDialog extends MesquiteDialog implements ActionListener, 
 		constraints.gridheight=1;
 		constraints.fill=GridBagConstraints.BOTH;
 
-		Panel newPanel = new MQPanel();
+		MQPanel newPanel = new MQPanel();
 		newPanel.setLayout(gridBag);
 		gridBag.setConstraints(newPanel,constraints);
 		constraints.gridy = 1;
@@ -1929,7 +1929,7 @@ public class ExtensibleDialog extends MesquiteDialog implements ActionListener, 
 		if (columnLabels!=null){
 			for (int i = 0; i<numColumns && i<columnLabels.length; i++) {
 				constraints.gridx=i+2;
-				newPanel.add(new Label(columnLabels[i]),constraints);
+				newPanel.add(new MQLabel(columnLabels[i]),constraints);
 			}
 		}
 
@@ -1937,7 +1937,7 @@ public class ExtensibleDialog extends MesquiteDialog implements ActionListener, 
 			constraints.gridy=j+2;
 			constraints.gridx=1;
 
-			newPanel.add(new Label(rowLabels[j]),constraints);
+			newPanel.add(new MQLabel(rowLabels[j]),constraints);
 			for (int i = 0; i<numColumns; i++) {
 				constraints.gridx=i+2;
 				textFields[i][j] = new Checkbox("",null, true);
@@ -2066,7 +2066,7 @@ public class ExtensibleDialog extends MesquiteDialog implements ActionListener, 
 		return new DoubleField(this,message, fieldLength);
 	}
 	public JEditorPane addHTMLPanel(String message, int w, int h, MesquiteCommand linkTouchedCommand){
-		JEditorPane tA= new MesqJEditorPane("text/html","<html></html>");
+		JEditorPane tA= new MQJEditorPane("text/html","<html></html>");
 		tA.setBackground(Color.white);
 		tA.setForeground(Color.black);
 		if (message == null)

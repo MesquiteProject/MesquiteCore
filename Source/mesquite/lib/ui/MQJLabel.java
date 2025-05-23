@@ -28,22 +28,23 @@ public class MQJLabel extends JLabel implements MQComponent {
 
 	public MQJLabel () {
 		super();
+		helper = new MQComponentHelper(this);
 	}
 	public MQJLabel (String s) {
 		super(s);
+		helper = new MQComponentHelper(this);
 	}
 
-	public void setText(String s){
-		if (s == null)
-			s = "";
-		super.setText(s);
-	}
+
 
 	//###########################################################
 	/*################################################################
 	 *  The following overrides were built to avoid the frequent StackOverflowErrors on Linux Java post-1.8, 
 	 *  but were extended in part to other OSs. See also others satisfying MQComponent interface.
 	 */		
+	
+
+	
 	MQComponentHelper helper = new MQComponentHelper(this);
 	public MQComponentHelper getHelper(){
 		return helper;

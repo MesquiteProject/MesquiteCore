@@ -20,6 +20,7 @@ import java.io.*;
 import javax.swing.JWindow;
 
 import mesquite.lib.ui.ColorDistribution;
+import mesquite.lib.ui.MQLabel;
 import mesquite.lib.ui.MesquiteWindow;
 
 
@@ -43,7 +44,7 @@ public class MesquiteFileDialog extends FileDialog implements Commandable, Lista
 		if (!StringUtil.blank(message) && (type == FileDialog.LOAD || type == FileDialog.SAVE) &&  (MesquiteTrunk.isMacOS() || MesquiteTrunk.isMacOSX()) && MesquiteTrunk.isMacOSXYosemiteOrLater()){
 			titleWindow = new JWindow(); 
 			titleWindow.setSize(twWidth,twHeight);
-			titleWindowLabel = new Label();
+			titleWindowLabel = new MQLabel();
 			titleWindowLabel.setBackground(ColorDistribution.veryLightYellow); //ColorTheme.getExtInterfaceBackground()); //ColorDistribution.veryLightGray
 			titleWindow.add(titleWindowLabel);
 			Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();

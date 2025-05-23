@@ -29,6 +29,7 @@ public class MQJViewport extends JViewport implements MQComponent {
 
 	public MQJViewport () {
 		super();
+		helper = new MQComponentHelper(this);
 	}
 
  	//###########################################################

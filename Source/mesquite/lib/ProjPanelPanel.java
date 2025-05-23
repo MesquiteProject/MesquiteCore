@@ -69,6 +69,7 @@ public class ProjPanelPanel extends ClosablePanel implements MesquiteListener, C
 		commandBox =  new StringInABox(getNotes(), new Font("SansSerif", Font.PLAIN, MesquiteFrame.resourcesFontSize), commandBoxWidth);
 		dropTarget = new DropTarget(this, DnDConstants.ACTION_COPY_OR_MOVE, this);  
 
+		setBackground(Color.cyan);
 		refresh();
 	}
 	public void setOpen(boolean b){

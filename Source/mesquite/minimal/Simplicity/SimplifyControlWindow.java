@@ -10,7 +10,7 @@ import mesquite.lib.ui.MQJScrollPane;
 import mesquite.lib.ui.MQPanel;
 import mesquite.lib.ui.MQScrollPane;
 import mesquite.lib.ui.MQTextArea;
-import mesquite.lib.ui.MesqJEditorPane;
+import mesquite.lib.ui.MQJEditorPane;
 import mesquite.lib.ui.MesquiteImage;
 import mesquite.lib.ui.MesquiteMenuItem;
 import mesquite.lib.ui.MesquitePopup;
@@ -55,7 +55,7 @@ public class SimplifyControlWindow extends MesquiteWindow implements SystemWindo
 		modePanel = new ModePanel(this);
 		modePanel.setBounds(0, 0, getWidth(), modePanelHeight);
 		modePanel.setVisible(true);
-		instructionsPanel = new MesqJEditorPane("text/html","<html></html>");
+		instructionsPanel = new MQJEditorPane("text/html","<html></html>");
 		instructionsPanel.setEditable(false);
 		instructionsPanel.setBackground(Color.white);
 		instructionsPanel.setForeground(Color.black);

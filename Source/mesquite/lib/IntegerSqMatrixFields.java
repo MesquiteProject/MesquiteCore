@@ -18,6 +18,7 @@ import java.util.*;
 import mesquite.lib.*;
 import mesquite.lib.characters.*;
 import mesquite.lib.ui.ExtensibleDialog;
+import mesquite.lib.ui.MQLabel;
 import mesquite.lib.ui.MQPanel;
 import mesquite.lib.ui.SingleLineTextField;
 
@@ -68,29 +69,29 @@ public class IntegerSqMatrixFields  {
 		if (!onlyUpperRight)
 			adj = 1;
 		
-		Panel newPanel = new MQPanel();
+		MQPanel newPanel = new MQPanel();
 		newPanel.setLayout(gridBag);
 		gridBag.setConstraints(newPanel,constraints);
 		constraints.gridy = 1;
 		constraints.gridx=3;
-		newPanel.add(new Label("To:"),constraints);
+		newPanel.add(new MQLabel("To:"),constraints);
 		
 		constraints.gridy = 2;
 		if (!onlyUpperRight) {
 			constraints.gridx=3;
 			if (labels!=null)
-				newPanel.add(new Label("" +labels[0]+ "  "),constraints);
+				newPanel.add(new MQLabel("" +labels[0]+ "  "),constraints);
 		}
 			
 		for (int i = 1; i<matrix.length; i++) {
 			constraints.gridx=i+2+adj;
 			if (labels!=null)
-				newPanel.add(new Label("" +labels[i]+ "  "),constraints);
+				newPanel.add(new MQLabel("" +labels[i]+ "  "),constraints);
 		}
 		
 		constraints.gridx=1;
 		constraints.gridy = 3;
-		newPanel.add(new Label("From: "),constraints);
+		newPanel.add(new MQLabel("From: "),constraints);
 		
 		int numRows = matrix.length;
 		if (onlyUpperRight)
@@ -100,7 +101,7 @@ public class IntegerSqMatrixFields  {
 			constraints.gridy=i+3;
 			constraints.gridx=2;
 			if (labels!=null)
-				newPanel.add(new Label("  " + labels[i] + "  "),constraints);
+				newPanel.add(new MQLabel("  " + labels[i] + "  "),constraints);
 			for (int j = 0; j<matrix[0].length; j++) {
 				constraints.gridx=j+2+adj;
 				if (j>i || i==j && editDiagonal || i>j && !onlyUpperRight) {   

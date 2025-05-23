@@ -38,7 +38,7 @@ public class PopUpPanelOfCards extends PanelOfCards implements ItemListener, Com
 	//	choicePanel.add(popUpMenu);
 	}
 	/*.................................................................................................................*/
-	public void installChoicePanel (Panel choicePanel) {
+	public void installChoicePanel (MQPanel choicePanel) {
 		dialog.setAddPanel(choicePanel);
 		cardChoice = dialog.addPopUpMenu(name);
 		cardChoice.addItemListener(this);

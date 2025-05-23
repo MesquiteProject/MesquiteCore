@@ -21,6 +21,7 @@ import mesquite.lib.duties.*;
 import mesquite.lib.ui.ColorDistribution;
 import mesquite.lib.ui.MQPanel;
 import mesquite.lib.ui.MQTextArea;
+import mesquite.lib.ui.MQTextField;
 import mesquite.lib.ui.MesquiteTool;
 import mesquite.lib.ui.MesquiteWindow;
 import mesquite.lib.ui.MousePanel;
@@ -596,14 +597,14 @@ class FieldPanel extends MQPanel implements ActionListener {
 		setLayout(new BorderLayout());
 		this.linkPanel = linkPanel;
 		setBackground(Color.white);
-		label= new TextField(9);
+		label= new MQTextField(9);
 		label.setEditable(false);
 		if (!StringUtil.blank(initialLabel))
 			label.setText(initialLabel);
 		label.setEditable(labelEditable);
 		if (labelEditable && listener !=null)
 			label.addTextListener(listener);
-		text= new TextField(400);
+		text= new MQTextField(400);
 		if (!StringUtil.blank(initialText))
 			text.setText(initialText);
 		text.setEditable(true);

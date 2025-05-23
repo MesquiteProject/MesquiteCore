@@ -37,7 +37,7 @@ import java.util.*;
 /* ======================================================================== */
 /** A window that displays text.  Yet to do: make it editable or not, have getText, etc.. */
 public class MesquiteHTMLWindow extends MesquiteWindow implements HyperlinkListener, OutputTextListener {
-	MesqJEditorPane tA;
+	MQJEditorPane tA;
 	String assignedTitle;
 	MesquiteCommand linkTouchedCommand;
 	Vector pastTexts = new Vector();
@@ -67,9 +67,9 @@ public class MesquiteHTMLWindow extends MesquiteWindow implements HyperlinkListe
 		//setWindowSize(600, 400);
 		this.linkTouchedCommand = linkTouchedCommand;
 		if (StringUtil.notEmpty(assignedTitle))
-			tA= new MesqJEditorPane("text/html","<html><body>" + assignedTitle + "</body></html>");
+			tA= new MQJEditorPane("text/html","<html><body>" + assignedTitle + "</body></html>");
 		else
-			tA= new MesqJEditorPane("text/html","<html>" + assignedTitle + "</html>");
+			tA= new MQJEditorPane("text/html","<html>" + assignedTitle + "</html>");
 		tA.setEditable(false);
 		tA.setBackground(Color.white);
 		tA.setForeground(Color.black);
@@ -325,7 +325,7 @@ class MHTMLControl extends MesquitePanel {
 
 class ExtraPanelHTMLWindow extends MesquitePanel {
 	MesquiteHTMLWindow window;
-	MesqJEditorPane textPane;
+	MQJEditorPane textPane;
 	JScrollPane scrollPane;
 	String text;
 	int scrollWidth = 0;
@@ -333,7 +333,7 @@ class ExtraPanelHTMLWindow extends MesquitePanel {
 
 	public ExtraPanelHTMLWindow (MesquiteHTMLWindow window){
 		this.window = window;
-		textPane = new MesqJEditorPane("text/plain", "");
+		textPane = new MQJEditorPane("text/plain", "");
 		textPane.setEditable(false);
 		textPane.setBackground(ColorDistribution.veryLightGray);
 		textPane.setForeground(Color.black);

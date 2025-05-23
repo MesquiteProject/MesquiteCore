@@ -15,51 +15,41 @@ package mesquite.lib.ui;
 
 import java.awt.*;
 
-
-import javax.swing.JList;
-import javax.swing.JScrollBar;
-import javax.swing.JScrollPane;
-import javax.swing.JViewport;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
 
 import mesquite.lib.MesquiteTrunk;
-
 
 /* �������������������� */
 /*  [Search for MQLINUX] -- Intermediary class for workaround of StackOverflowError in Linux JDK 11 - 23 (at least!). 
  * These classes intercept validate and resize components on another thread in hopes of avoiding stack overflow error */
 /* ======================================================================== */
-public class MQJScrollPane extends JScrollPane implements MQComponent { 
+public class MQLabel extends Label implements MQComponent {
 
-	public MQJScrollPane () {
+	public MQLabel () {
 		super();
 		helper = new MQComponentHelper(this);
 	}
-	
-	public MQJScrollPane (JList list) {
-		super(list);
+	public MQLabel (String s) {
+		super(s);
 		helper = new MQComponentHelper(this);
 	}
-	
 
-	   /**
-    overriding to create a custom viewport differing in being thread protected
-    */
-   protected JViewport createViewport() {
-       return new MQJViewport();
-   }
-   /**overriding to create a protected scrollabr
-    */
-   public JScrollBar createHorizontalScrollBar() {
-       return new MQJScrollBar(JScrollBar.HORIZONTAL);
-   }
-   public JScrollBar createVerticalScrollBar() {
-       return new MQJScrollBar(JScrollBar.VERTICAL);
-   }
-    //###########################################################
+	
+	public MQLabel (String s, int place) {
+		super(s, place);
+		helper = new MQComponentHelper(this);
+	}
+
+
+	//###########################################################
 	/*################################################################
 	 *  The following overrides were built to avoid the frequent StackOverflowErrors on Linux Java post-1.8, 
 	 *  but were extended in part to other OSs. See also others satisfying MQComponent interface.
 	 */		
+	
+
+
 	MQComponentHelper helper = new MQComponentHelper(this);
 	public MQComponentHelper getHelper(){
 		return helper;
@@ -71,9 +61,7 @@ public class MQJScrollPane extends JScrollPane implements MQComponent {
 		super.setBounds(x,y,w,h);
 	}
 	public void superSetFont (Font f){
-	  if (MesquiteTrunk.isLinux())
-		  return;
-	  super.setFont(f);
+	super.setFont(f);
 	}
 	public void superSetSize (int w, int h){
 		super.setSize(w,h);
@@ -99,8 +87,6 @@ public class MQJScrollPane extends JScrollPane implements MQComponent {
 	}
 
 	public void setFont (Font f){
-		  if (MesquiteTrunk.isLinux())
-			  return;
 		if (helper == null)
 			superSetFont(f);
 		else
@@ -144,7 +130,6 @@ public class MQJScrollPane extends JScrollPane implements MQComponent {
 	}
 	/*###########################################################*/
 	//###########################################################
-
 
 
 }

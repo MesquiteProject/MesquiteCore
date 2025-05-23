@@ -22,6 +22,7 @@ import mesquite.lib.duties.*;
 import mesquite.lib.ui.ColorDistribution;
 import mesquite.lib.ui.MQPanel;
 import mesquite.lib.ui.MQTextArea;
+import mesquite.lib.ui.MQTextField;
 import mesquite.lib.ui.MesquiteSubmenuSpec;
 import mesquite.lib.ui.MesquiteWindow;
 import mesquite.lib.ui.WindowButton;
@@ -162,7 +163,7 @@ class GoToWebPageWindow extends MesquiteWindow {
 		contents.setBackground(Color.cyan);
 
 		explanation = new MQTextArea("", 8, 3, TextArea.SCROLLBARS_NONE);
-		tF = new TextField();
+		tF = new MQTextField();
 		if (!StringUtil.blank(module.targetName))
 			tF.setText(module.targetName);
 		tF.setEditable(true);

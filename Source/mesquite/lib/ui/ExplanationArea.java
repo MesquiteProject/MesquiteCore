@@ -18,6 +18,7 @@ import java.awt.event.*;
 
 import mesquite.lib.Annotatable;
 import mesquite.lib.Listened;
+import mesquite.lib.MesquiteBoolean;
 import mesquite.lib.MesquiteEvent;
 import mesquite.lib.MesquiteListener;
 import mesquite.lib.MesquiteTrunk;
@@ -28,7 +29,7 @@ import mesquite.trunk.StartupThread;
 /* ======================================================================== */
 /** A panel at the bottom of windows in which explanations and footnotes can be displayed and edited.*/
 public class ExplanationArea extends MousePanel implements TextListener, MesquiteListener, FocusListener {
-	private ExplTextArea explTextArea;
+	ExplTextArea explTextArea;
 	ExplanationControl control;
 	static final int grabberHeight = 0;
 	Annotatable annotatable = null;
@@ -55,7 +56,7 @@ public class ExplanationArea extends MousePanel implements TextListener, Mesquit
 		add(explTextArea);
 		explTextArea.setBounds(controlWidth, 0, getBounds().width-controlWidth, getBounds().height - grabberHeight);
 		explTextArea.setVisible(true);
-		explTextArea.addFocusListener(this);
+	//	explTextArea.addFocusListener(this);
 
 
 		control = new ExplanationControl(this);
@@ -68,6 +69,7 @@ public class ExplanationArea extends MousePanel implements TextListener, Mesquit
 		explTextArea.addTextListener(this);
 
 		control.setBackground(ColorTheme.getInterfaceBackground());
+		setExplanation("");
 		requestFocusInWindow();
 	}
 	public void dispose(){
@@ -76,8 +78,11 @@ public class ExplanationArea extends MousePanel implements TextListener, Mesquit
 		annotatable = null;
 		super.dispose();
 	}
-	public TextArea getTextArea(){
-		return explTextArea;
+	public String getSelectedText(){
+		return explTextArea.getSelectedText();
+	}
+	public ExplTextArea getTextArea(){
+		 return explTextArea;
 	}
 	String name;
 	public void setName(String name){  //for Debugging 
@@ -240,6 +245,8 @@ public class ExplanationArea extends MousePanel implements TextListener, Mesquit
 	}
 	public static int explanationCount=0;
 	public void setExplanation(String text){
+		if (GraphicsUtil.ignoreComponent(this, 231))
+			return;
 		if (text == null)  
 			text = "";
 		annotatable = null;  
@@ -251,6 +258,7 @@ public class ExplanationArea extends MousePanel implements TextListener, Mesquit
 		}
 		if (explTextArea.isEditable()){
 			explTextArea.setEditable(false);
+
 			control.setEditable(false);
 		}
 
@@ -397,6 +405,7 @@ class ExplanationControl extends MousePanel {
 					g.drawImage(ExplanationArea.minusOffImage,minusLeft(),minusTop(), this);
 			}
 		}
+		
 		MesquiteWindow.uncheckDoomed(this);
 	}
 	/*.................................................................................................................*/
@@ -481,28 +490,49 @@ class ExplanationControl extends MousePanel {
 	}
 }
 
-class ExplTextArea extends MQTextArea {
+class ExplTextArea extends MQPanel {
 	ExplanationArea explArea;
+	MQTextArea textArea;
+	String text = null;
 	public ExplTextArea(String text, int rows,  int columns, int scrollbars, ExplanationArea explArea){
-		super(text, rows, columns, scrollbars);
+		super();
+		this.text = text;
+		setBackground(Color.green);
+		setVisible(true);
+		if (!MesquiteTrunk.isLinux()){
+			textArea = new MQTextArea(text, rows, columns, scrollbars);
+			textArea.setSelectionStart(0);
+			textArea.setSelectionEnd(0);
+			add(textArea);
+			textArea.setBounds(getBounds());
+		}
 		
-		setSelectionStart(0);
-		setSelectionEnd(0);
 		this.explArea = explArea;
 	}
 	
 	/* [Search for MQLINUX] -- under Linux, setting bounds crashes Mesquite here with a StackOverflowError, despite protection of LinuxGWAThread!*/
 	public void setBounds(int a, int b, int c, int d){
-		if (!MesquiteTrunk.isLinux())
-			super.setBounds(a,b,c,d);
-	}
+		super.setBounds(a,b,c,d);
+		if (textArea!=null)
+			textArea.setBounds(a,b,c,d);;
 		
+	}
+	/* [Search for MQLINUX] -- under Linux, setting bounds crashes Mesquite here with a StackOverflowError, despite protection of LinuxGWAThread!*/
+	public void setSize(int a, int b){
+		super.setSize(a,b);
+		if (textArea!=null)
+			textArea.setSize(a,b);;
+		
+	}
+	public void paint(Graphics g){
+		FontMetrics fm = g.getFontMetrics();
+		if (text!= null)
+			g.drawString(text, 3, fm.getMaxAscent());
+	}
 	public void validate(){
 		if (!MesquiteTrunk.isLinux())
 			super.validate();
 	}
-
-
 
 	public void gotFocus(){
 		if (explArea.getFocusSuppression()){
@@ -512,31 +542,82 @@ class ExplTextArea extends MQTextArea {
 			explArea.hasFocus = true;
 	}
 	public void setEditable(boolean b){
-		super.setEditable(b);
-		try {
-			super.setEditable(b);
-		}
-		catch (Throwable e){
-			System.err.println("Throwable in ExplanationArea: " + e);
-
-		}
+		if (textArea != null)
+			textArea.setEditable(b);
+		
 	}
+
+	public boolean isEditable(){
+		if (textArea != null)
+			return textArea.isEditable();
+		return false;
+	}
+	public String getText(){
+		if (textArea == null)
+			return text;
+		else
+			return textArea.getText();
+	}
+
 	public void setText(String t){  // and possibly others
 		try {
 			if (MesquiteTrunk.isMacOSX()){  //this had been a workaround to bug in OS X Snow Leopard, but it slowed alignment too much
-				setSelectionStart(0);
-				setSelectionEnd(0);
+				textArea.setSelectionStart(0);
+				textArea.setSelectionEnd(0);
 			}
-			super.setText(t);
-			if (MesquiteTrunk.isMacOSX()){
-				setSelectionStart(0);
-				setSelectionEnd(0);
+			if ( textArea == null){
+				text = t;
+				repaint();
+				return; 
+			}
+			else 
+				textArea.setText(t);
+			if (MesquiteTrunk.isLinux() || MesquiteTrunk.isMacOSX()){
+				textArea.setSelectionStart(0);
+				textArea.setSelectionEnd(0);
 			}
 		}
 		catch (Throwable e){
-			System.err.println("Throwable in ExplanationArea: " + e);
+			System.err.println("Throwable in ExplanationArea (2): " + e);
 			//This is to catch ClassCastExceptions on Linux deep in java 1.8 code
 		}
+	}
+	
+	public void addTextListener(TextListener listener){
+		if (textArea != null)
+			textArea.addTextListener(listener);
+	}
+	public void selectAll(){
+		if (textArea != null)
+			textArea.selectAll();
+	}
+	public void setSelectionStart(int i){
+		if (textArea != null)
+			textArea.setSelectionStart(i);
+	}
+	public void setSelectionEnd(int i){
+		if (textArea != null)
+			textArea.setSelectionEnd(i);
+	}
+	public void replaceRange(String rep, int start, int end){
+		if (textArea != null)
+			textArea.replaceRange(rep, start, end);
+	}
+	public int getSelectionStart(){
+		if (textArea != null)
+			return textArea.getSelectionStart();
+		return 0;
+	}
+	public int getSelectionEnd(){
+		if (textArea != null)
+			return textArea.getSelectionEnd();
+		return 0;
+	}
+	
+	public String getSelectedText(){
+		if (textArea != null)
+			return textArea.getSelectedText();
+		return text;
 	}
 
 	public void processFocusEvent(FocusEvent e) {

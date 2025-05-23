@@ -21,6 +21,7 @@ import mesquite.lib.*;
 import mesquite.lib.ui.ColorTheme;
 import mesquite.lib.ui.MQPanel;
 import mesquite.lib.ui.MQTextArea;
+import mesquite.lib.ui.MQTextField;
 import mesquite.lib.ui.MesquiteDialog;
 import mesquite.lib.ui.MesquiteWindow;
 
@@ -43,7 +44,7 @@ public class WelcomeDialog extends MesquiteDialog {
 		Panel buttons = new MQPanel();
 		Button cancel;
 		Button ok;
-		buttons.add("West", t = new TextField(" "));
+		buttons.add("West", t = new MQTextField(" "));
 		buttons.add("East", ok = new Button("OK"));
 		setDefaultButton("OK");
 		

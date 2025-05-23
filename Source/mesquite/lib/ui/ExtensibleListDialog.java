@@ -113,7 +113,7 @@ public abstract class ExtensibleListDialog extends ExtensibleDialog implements I
 		addAdditionalButtonsBesideList();
 
 		gridConstraints.gridy ++;
-		mainPanel.add(new Label(" "), gridConstraints);  // just to fill up space
+		mainPanel.add(new MQLabel(" "), gridConstraints);  // just to fill up space
 
 		resetCurrent();
 

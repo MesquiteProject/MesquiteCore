@@ -25,6 +25,7 @@ import mesquite.lib.MesquiteMessage;
 import mesquite.lib.MesquiteThread;
 import mesquite.lib.MesquiteTimer;
 import mesquite.lib.MesquiteTrunk;
+import mesquite.minimal.BasicFileCoordinator.ProjectWindow;
 import mesquite.trees.SquareLineTree.SquareLineTree;
 
 
@@ -33,7 +34,20 @@ import mesquite.trees.SquareLineTree.SquareLineTree;
 /** This class provides general graphics utilities */
 public class GraphicsUtil {
 	public static TexturePaint missingDataTexture = null;
-	/*_________________________________________________*/
+
+	
+	public static boolean ignoreComponent(Component component, int code){  //Build in trying to solve Linux stack overflow May 2025
+		return false;
+		/*
+		if (!component.isVisible())
+			return true;
+		MesquiteWindow w = MesquiteWindow.windowOfItem(component);
+		if (w instanceof ProjectWindow)
+			return false;
+		if (w != null && (!w.isVisible() || !w.isFrontMostInLocation()))
+			return true;
+		return false; */
+	}/*_________________________________________________*/
 	public static void drawString(Graphics g, String s, double x, double y) {
 		if (!(g instanceof Graphics2D))
 			return;

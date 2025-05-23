@@ -101,7 +101,7 @@ public class MiniScroll extends MousePanel implements MiniControl, Explainable, 
 		tf.setSize(5, 5);
 		tf.setLocation(5,5);
 
-		add(dummy = new TextField(""));
+		add(dummy = new MQTextField(""));
 		dummy.setEditable(false);
 		dummy.setSize(0,0);
 		dummy.setBackground(bg);

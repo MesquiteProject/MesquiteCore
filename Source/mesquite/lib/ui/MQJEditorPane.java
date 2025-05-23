@@ -21,9 +21,10 @@ import mesquite.lib.MesquiteTrunk;
 import java.awt.*;
 
 //workaround for crashes on OS X && Linux  [Search for MQLINUX]
-public class MesqJEditorPane extends JEditorPane implements MQComponent{
-	public MesqJEditorPane(String a, String b){
+public class MQJEditorPane extends JEditorPane implements MQComponent{
+	public MQJEditorPane(String a, String b){
 		super(a, b);
+		helper = new MQComponentHelper(this);
 	}
 	public boolean getScrollableTracksViewportWidth() {
 		try {
@@ -51,6 +52,9 @@ public class MesqJEditorPane extends JEditorPane implements MQComponent{
 	 *  The following overrides were built to avoid the frequent StackOverflowErrors on Linux Java post-1.8, 
 	 *  but were extended in part to other OSs. See also others satisfying MQComponent interface.
 	 */		
+	
+
+	
 	MQComponentHelper helper = new MQComponentHelper(this);
 	public MQComponentHelper getHelper(){
 		return helper;

@@ -128,7 +128,7 @@ public class MesquiteChart extends MesquitePanel  implements OwnedByModule {
 		totalFieldHeight = MesquiteInteger.unassigned;
 		/*-----------
 
-		add(t = new TextField());
+		add(t = new MQTextField());
 		t.setBounds(0,0,64,64);
 		t.setVisible(true);
 		t.setBackground(Color.white);

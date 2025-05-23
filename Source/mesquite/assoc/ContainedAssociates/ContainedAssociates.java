@@ -1188,6 +1188,8 @@ class WideTreeDrawing extends TreeDrawing  {
 	}*/
 	/*draws small tree at each containing node, to show coalescences within that containing branch*/
 	private   void drawMiniTrees(Tree containedTree, Tree tree, int containingNode,  Graphics g, boolean atTip) {
+		if (history == null)
+			return;
 		int[] cNodes = history.getContainedNodes(containingNode);
 		if (cNodes == null || cNodes.length == 0)
 			return;
@@ -1249,6 +1251,8 @@ class WideTreeDrawing extends TreeDrawing  {
 	}
 	/*_________________________________________________*/
 	private   void drawContained(Tree tree, Graphics g, int node) {
+		if (history == null)
+			return;
 		if (tree.withinCollapsedClade(node))
 			return;
 		if (tree.nodeExists(node)) {

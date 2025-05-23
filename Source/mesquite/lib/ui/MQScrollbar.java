@@ -25,12 +25,15 @@ public class MQScrollbar extends Scrollbar implements MQComponent {
 
 	public MQScrollbar () {
 		super();
+		helper = new MQComponentHelper(this);
 	}
 	public MQScrollbar (int policy) {
 		super(policy);
+		helper = new MQComponentHelper(this);
 	}
 	public MQScrollbar ( int orientation, int value, int visible, int min, int max){
 		super(orientation, value, visible, min, max);
+		helper = new MQComponentHelper(this);
 	}
 
 	Thread touchingSVA = null;
