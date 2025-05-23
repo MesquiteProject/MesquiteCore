@@ -1255,7 +1255,7 @@ class ControlP extends MesquitePanel {
 		scroll.setVisible(true);
 		trash = MesquiteImage.getImage(MesquiteModule.getRootImageDirectoryPath() + "trashcan.gif");
 		addPic = MesquiteImage.getImage(MesquiteModule.getRootImageDirectoryPath() + "add.gif");
-		goaway = MesquiteImage.getImage(MesquiteModule.getRootImageDirectoryPath() + "goAway.gif");
+		goaway = MesquiteImage.getImage(MesquiteModule.getRootImageDirectoryPath() + "goaway.gif");
 		/*
 		newPic = MesquiteImage.getImage(MesquiteModule.getRootImageDirectoryPath() + "new.gif");
 		spotPic = MesquiteImage.getImage(MesquiteModule.getRootImageDirectoryPath() + "spot.gif");

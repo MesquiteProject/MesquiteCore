@@ -38,7 +38,7 @@ public class HTMLSidePanel extends MousePanel{
 		panel = new MQJEditorPane("text/html","<html></html>");
 		setLayout(null);
 		panel.setVisible(true);
-		goaway = MesquiteImage.getImage(MesquiteModule.getRootImageDirectoryPath() + "goAway.gif");
+		goaway = MesquiteImage.getImage(MesquiteModule.getRootImageDirectoryPath() + "goaway.gif");
         scrollPane = new  MQJScrollPane(); 
         scrollPane.getViewport().add( panel,  BorderLayout.CENTER ); 
 		add(scrollPane);

@@ -56,7 +56,7 @@ public class ExplanationArea extends MousePanel implements TextListener, Mesquit
 		add(explTextArea);
 		explTextArea.setBounds(controlWidth, 0, getBounds().width-controlWidth, getBounds().height - grabberHeight);
 		explTextArea.setVisible(true);
-	//	explTextArea.addFocusListener(this);
+		//	explTextArea.addFocusListener(this);
 
 
 		control = new ExplanationControl(this);
@@ -82,7 +82,7 @@ public class ExplanationArea extends MousePanel implements TextListener, Mesquit
 		return explTextArea.getSelectedText();
 	}
 	public ExplTextArea getTextArea(){
-		 return explTextArea;
+		return explTextArea;
 	}
 	String name;
 	public void setName(String name){  //for Debugging 
@@ -212,26 +212,26 @@ public class ExplanationArea extends MousePanel implements TextListener, Mesquit
 	public void textValueChanged(TextEvent e){
 		try {
 			if (explTextArea !=null && annotatable != null) {
-			if (suppressNotify>0){
-				suppressNotify--;
-			}
-			else {
+				if (suppressNotify>0){
+					suppressNotify--;
+				}
+				else {
 
-				String s = explTextArea.getText();
-				int start = explTextArea.getSelectionStart();
-				int end = explTextArea.getSelectionEnd();
-				if ("".equals(s))
-					s = null;
-				annotatable.setAnnotation(s, suppressNotify == 0);
-				explTextArea.setSelectionStart(start);
-				explTextArea.setSelectionEnd(end);
-			}
+					String s = explTextArea.getText();
+					int start = explTextArea.getSelectionStart();
+					int end = explTextArea.getSelectionEnd();
+					if ("".equals(s))
+						s = null;
+					annotatable.setAnnotation(s, suppressNotify == 0);
+					explTextArea.setSelectionStart(start);
+					explTextArea.setSelectionEnd(end);
+				}
 
-		}
+			}
 		}
 		catch (Exception q){
 			System.err.println("Exception in ExplanationArea: " + q);
-	}
+		}
 	}
 	public void setFocusSuppression(boolean suppress){
 		this.focusSuppressed = suppress;
@@ -405,7 +405,7 @@ class ExplanationControl extends MousePanel {
 					g.drawImage(ExplanationArea.minusOffImage,minusLeft(),minusTop(), this);
 			}
 		}
-		
+
 		MesquiteWindow.uncheckDoomed(this);
 	}
 	/*.................................................................................................................*/
@@ -496,9 +496,9 @@ class ExplTextArea extends MQPanel {
 	String text = null;
 	public ExplTextArea(String text, int rows,  int columns, int scrollbars, ExplanationArea explArea){
 		super();
+		this.explArea = explArea;
 		this.text = text;
-		setBackground(Color.green);
-		setVisible(true);
+		setLayout(null);
 		if (!MesquiteTrunk.isLinux()){
 			textArea = new MQTextArea(text, rows, columns, scrollbars);
 			textArea.setSelectionStart(0);
@@ -506,34 +506,34 @@ class ExplTextArea extends MQPanel {
 			add(textArea);
 			textArea.setBounds(getBounds());
 		}
-		
-		this.explArea = explArea;
+		setVisible(true);
+
 	}
-	
+	public void setBackground(Color bg){
+		super.setBackground(bg);
+		if (textArea != null)
+			textArea.setBackground(bg);
+	}
 	/* [Search for MQLINUX] -- under Linux, setting bounds crashes Mesquite here with a StackOverflowError, despite protection of LinuxGWAThread!*/
 	public void setBounds(int a, int b, int c, int d){
 		super.setBounds(a,b,c,d);
 		if (textArea!=null)
-			textArea.setBounds(a,b,c,d);;
-		
+			textArea.setBounds(a,b,c,d);
+
 	}
 	/* [Search for MQLINUX] -- under Linux, setting bounds crashes Mesquite here with a StackOverflowError, despite protection of LinuxGWAThread!*/
 	public void setSize(int a, int b){
 		super.setSize(a,b);
 		if (textArea!=null)
-			textArea.setSize(a,b);;
-		
+			textArea.setSize(a,b);
+
 	}
 	public void paint(Graphics g){
 		FontMetrics fm = g.getFontMetrics();
 		if (text!= null)
 			g.drawString(text, 3, fm.getMaxAscent());
 	}
-	public void validate(){
-		if (!MesquiteTrunk.isLinux())
-			super.validate();
-	}
-
+	
 	public void gotFocus(){
 		if (explArea.getFocusSuppression()){
 			explArea.window.requestFocus();
@@ -544,7 +544,7 @@ class ExplTextArea extends MQPanel {
 	public void setEditable(boolean b){
 		if (textArea != null)
 			textArea.setEditable(b);
-		
+
 	}
 
 	public boolean isEditable(){
@@ -582,7 +582,7 @@ class ExplTextArea extends MQPanel {
 			//This is to catch ClassCastExceptions on Linux deep in java 1.8 code
 		}
 	}
-	
+
 	public void addTextListener(TextListener listener){
 		if (textArea != null)
 			textArea.addTextListener(listener);
@@ -613,7 +613,7 @@ class ExplTextArea extends MQPanel {
 			return textArea.getSelectionEnd();
 		return 0;
 	}
-	
+
 	public String getSelectedText(){
 		if (textArea != null)
 			return textArea.getSelectedText();
