@@ -529,9 +529,12 @@ class ExplTextArea extends MQPanel {
 
 	}
 	public void paint(Graphics g){
-		FontMetrics fm = g.getFontMetrics();
-		if (text!= null)
-			g.drawString(text, 3, fm.getMaxAscent());
+		if (textArea != null)
+			return;
+		if (text!= null){
+			StringInABox textBox = new StringInABox(new StringBuffer(text), g.getFont(), getBounds().width-20);
+			textBox.draw(g, 0, -4);
+		}
 	}
 	
 	public void gotFocus(){
