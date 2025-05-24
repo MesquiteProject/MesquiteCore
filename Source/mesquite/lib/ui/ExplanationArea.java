@@ -67,7 +67,7 @@ public class ExplanationArea extends MousePanel implements TextListener, Mesquit
 		control.setVisible(true);
 		control.repaint(); //attempt to deal with bug in OS X 10.2
 		explTextArea.addTextListener(this);
-
+		setBackground(ColorTheme.getInterfaceBackground());
 		control.setBackground(ColorTheme.getInterfaceBackground());
 		setExplanation("");
 		requestFocusInWindow();
@@ -160,15 +160,15 @@ public class ExplanationArea extends MousePanel implements TextListener, Mesquit
 	}
 	public void setBackground(Color c){
 		explTextArea.setBackground(c);  
-		super.setBackground(c);
+	//	super.setBackground(c);
 	}
-	public void setBounds(int x, int y, int w, int h){
-		super.setBounds(x,y,w,h);
+	public void superSetBounds(int x, int y, int w, int h){
+		super.superSetBounds(x,y,w,h);
 		explTextArea.setBounds(controlWidth, 0, w-controlWidth, h - grabberHeight);
 		control.setBounds(0, 0, controlWidth, h);
 	}
-	public void setSize(int w, int h){
-		super.setSize(w,h);
+	public void superSetSize(int w, int h){
+		super.superSetSize(w,h);
 		explTextArea.setSize(w-controlWidth, h - grabberHeight);
 		control.setSize(controlWidth, h);
 	}
@@ -499,6 +499,7 @@ class ExplTextArea extends MQPanel {
 		this.explArea = explArea;
 		this.text = text;
 		setLayout(null);
+		super.setBackground(ColorTheme.getInterfaceBackground());
 		if (!MesquiteTrunk.isLinux()){
 			textArea = new MQTextArea(text, rows, columns, scrollbars);
 			textArea.setSelectionStart(0);
@@ -510,9 +511,10 @@ class ExplTextArea extends MQPanel {
 
 	}
 	public void setBackground(Color bg){
-		super.setBackground(bg);
 		if (textArea != null)
 			textArea.setBackground(bg);
+		else
+			super.setBackground(bg);
 	}
 	/* [Search for MQLINUX] -- under Linux, setting bounds crashes Mesquite here with a StackOverflowError, despite protection of LinuxGWAThread!*/
 	public void setBounds(int a, int b, int c, int d){
@@ -529,6 +531,7 @@ class ExplTextArea extends MQPanel {
 
 	}
 	public void paint(Graphics g){
+		g.drawLine(0, 0, getBounds().width, 0);
 		if (textArea != null)
 			return;
 		if (text!= null){
