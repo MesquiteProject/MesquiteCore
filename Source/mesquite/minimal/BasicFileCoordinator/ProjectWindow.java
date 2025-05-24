@@ -34,6 +34,8 @@ import mesquite.lib.ui.ClosablePanelContainer;
 import mesquite.lib.ui.ColorTheme;
 import mesquite.lib.ui.HelpSearchStrip;
 import mesquite.lib.ui.ListDialog;
+import mesquite.lib.ui.MQComponent;
+import mesquite.lib.ui.MQComponentHelper;
 import mesquite.lib.ui.MesquiteDialog;
 import mesquite.lib.ui.MesquiteFrame;
 import mesquite.lib.ui.MesquiteImage;
@@ -764,6 +766,7 @@ class ProjectPanel extends MousePanel implements ClosablePanelContainer{
 	void resetSizes(){
 		resetSizes(getBounds().width, getBounds().height);
 	}
+
 	void resetSizes(int w, int h){
 		if (bfc!=null && (bfc.isDoomed() ||  bfc.getProject().refreshSuppression>0))
 			return;
@@ -1986,6 +1989,7 @@ class ElementPanel extends ProjPanelPanel {
 		}*/
 		refreshIcon();
 		refresh();
+
 	}
 	public String getFootnoteHeading(){
 		if (element instanceof FileElement){

@@ -2151,6 +2151,12 @@ public abstract class MesquiteWindow implements Listable, Commandable, OwnedByMo
 	public boolean isVisible(){
 		return parentFrame != null && parentFrame.isVisible() && parentFrame.windowPresent(this);  
 	}
+	
+	public boolean isFrontWindow(){
+		if (parentFrame == null)
+			return false;
+		return parentFrame.getFrontWindow() == this;
+	}
 	/*.................................................................................................................*/
 	boolean doingShow = false;
 
@@ -2471,7 +2477,7 @@ public abstract class MesquiteWindow implements Listable, Commandable, OwnedByMo
 
 	public void copy(){
 		if (annotationHasFocus()){
-			String s = annotationArea.getTextArea().getSelectedText();
+			String s = annotationArea.getSelectedText();
 			Clipboard clip = Toolkit.getDefaultToolkit().getSystemClipboard();
 			StringSelection ss = new StringSelection(s);
 			clip.setContents(ss, ss);
@@ -2777,8 +2783,8 @@ public abstract class MesquiteWindow implements Listable, Commandable, OwnedByMo
 				}
 			}
 			else {
-				TextArea ta = annotationArea.getTextArea();
-				String s = ta.getSelectedText();
+				ExplTextArea ta = annotationArea.getTextArea();
+				String s = annotationArea.getSelectedText();
 				Clipboard clip = Toolkit.getDefaultToolkit().getSystemClipboard();
 				StringSelection ss = new StringSelection(s);
 				clip.setContents(ss, ss);
@@ -2793,7 +2799,7 @@ public abstract class MesquiteWindow implements Listable, Commandable, OwnedByMo
 					com.doItMainThread("", null, this);  // command invoked
 			}
 			else {
-				TextArea ta = annotationArea.getTextArea();
+				ExplTextArea ta = annotationArea.getTextArea();
 				ta.replaceRange("", ta.getSelectionStart(), ta.getSelectionEnd());
 				setAnnotation(ta.getText(), null);
 			}
@@ -2811,7 +2817,7 @@ public abstract class MesquiteWindow implements Listable, Commandable, OwnedByMo
 					Transferable t = clip.getContents(this);
 					String s = (String)t.getTransferData(DataFlavor.stringFlavor);
 					if (s!=null) {
-						TextArea ta = annotationArea.getTextArea();
+						ExplTextArea ta = annotationArea.getTextArea();
 						int st = ta.getSelectionStart();
 						ta.replaceRange(s, ta.getSelectionStart(), ta.getSelectionEnd());
 						Annotatable a = annotationArea.getAnnotatable();
@@ -3045,6 +3051,7 @@ public abstract class MesquiteWindow implements Listable, Commandable, OwnedByMo
 		}
 		else if (checker.compare(MesquiteWindow.class, "Sets the font size of the window", "[font size]", commandName, "setFontSize")) {
 			int fontSize = MesquiteInteger.fromString(arguments);
+			
 			if (!setWindowFontSize(fontSize))
 				return null;
 		}

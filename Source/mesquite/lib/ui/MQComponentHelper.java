@@ -17,6 +17,9 @@ import java.awt.Component;
 import java.awt.Container;
 import java.awt.Dimension;
 import java.awt.Font;
+import java.awt.TextComponent;
+
+import javax.swing.text.JTextComponent;
 
 import mesquite.lib.MesquiteTrunk;
 
@@ -28,160 +31,227 @@ public class MQComponentHelper {
 
 	MQComponent component;
 	static boolean verboseTW = false;
-	static boolean linuxSendToOtherThread = true;
+	static boolean linuxSendToOtherThread = false;
+	static boolean protectGraphics = true;
 
 	public MQComponentHelper(MQComponent component){
 		this.component = component;
 	}
 
-	void report(String s){
+	void report(String s) {
 		if (verboseTW && MesquiteTrunk.developmentMode)
 			System.err.println(s);
 	}
-	/*################################ This was built to avoid the frequent StackOverflowErrors on Linux Java post-1.8, 
-	 *  but were extended in part to other OSs
+	
+	public boolean touchingAnything(){
+		return (touchingFont != null || touchingSize != null|| touchingLocation != null || touchingDimension!= null || touchingLayout!= null ||touchingBounds!= null);
+	}
+
+	/*
+	 * ################################ This was built to avoid the frequent
+	 * StackOverflowErrors on Linux Java post-1.8, but were extended in part to
+	 * other OSs
 	 */
+	
 	Thread touchingFont = null;
-	public void setFont (Font f){
-		if (touchingFont != null && touchingFont != Thread.currentThread()){
-			report("Warning: thread clash in " + component.getClass() + "  avoided (setFont). This thread: " + Thread.currentThread() + "; also touching " + touchingFont);
+
+	public void setFont(Font f) {
+		if (!protectGraphics) {
+			((MQComponent) component).superSetFont(f);
+			return;
+		}
+			
+		if (touchingFont != null && touchingFont != Thread.currentThread()) {
+			report("Warning: thread clash in " + component.getClass() + "  avoided (setFont). This thread: "
+					+ Thread.currentThread() + "; also touching " + touchingFont);
 			return;
 		}
 		touchingFont = Thread.currentThread();
-		((MQComponent)component).superSetFont(f);
+		((MQComponent) component).superSetFont(f);
 		touchingFont = null;
 	}
+
 	Thread touchingSize = null;
-	public void setSize (int w, int h){
-		if (touchingSize != null && touchingSize != Thread.currentThread()){
-			report("Warning: thread clash in " + component.getClass() + " avoided (setSize). This thread: " + Thread.currentThread() + "; also touching " + touchingSize);
+
+	public void setSize(int w, int h) {
+		if (!protectGraphics) {
+			((MQComponent) component).superSetSize(w, h);
+			return;
+		}
+		if (touchingSize != null && touchingSize != Thread.currentThread()) {
+			report("Warning: thread clash in " + component.getClass() + " avoided (setSize). This thread: "
+					+ Thread.currentThread() + "; also touching " + touchingSize);
 			return;
 		}
 		touchingSize = Thread.currentThread();
-		((MQComponent)component).superSetSize(w, h);
+		((MQComponent) component).superSetSize(w, h);
 		touchingSize = null;
 	}
+
 	Thread touchingLocation = null;
-	public void setLocation (int x, int y){
-		if (touchingLocation != null && touchingLocation != Thread.currentThread()){
+
+	public void setLocation(int x, int y) {
+		if (!protectGraphics) {
+			((MQComponent) component).superSetLocation(x, y);
+			return;
+		}
+		if (touchingLocation != null && touchingLocation != Thread.currentThread()) {
 			report("Warning: thread clash in " + component.getClass() + "  avoided (setLocation). This thread: " + Thread.currentThread() + "; also touching " + touchingLocation);
 			return;
 		}
 		touchingLocation = Thread.currentThread();
-		((MQComponent)component).superSetLocation(x, y);
+		((MQComponent) component).superSetLocation(x, y);
 		touchingLocation = null;
 	}
 
-
-	/*getPreferredSize -------------------------*/
+	/* getPreferredSize ------------------------- */
 	Thread touchingDimension = null;
+
 	public Dimension getPreferredSize() {
-		if (touchingDimension != null && touchingDimension != Thread.currentThread()){
-			report("Warning: thread clash in " + component.getClass() + "  avoided (getPreferredSize). This thread: " + Thread.currentThread() + "; also touching " + touchingDimension);
-			return new Dimension (400, 400);
+		if (!protectGraphics) {
+			return ((MQComponent) component).superGetPreferredSize();
+
+		}
+		if (touchingDimension != null && touchingDimension != Thread.currentThread()) {
+			report("Warning: thread clash in " + component.getClass() + "  avoided (getPreferredSize). This thread: "
+					+ Thread.currentThread() + "; also touching " + touchingDimension);
+			return new Dimension(400, 400);
 		}
 		touchingDimension = Thread.currentThread();
-		Dimension d = ((MQComponent)component).superGetPreferredSize();
+		Dimension d = ((MQComponent) component).superGetPreferredSize();
 		touchingDimension = null;
 		return d;
 	}
-	/*layout -------------------------*/
+
+	/* layout ------------------------- */
 	Thread touchingLayout = null;
-	public void layout(){
-		if (touchingLayout != null && touchingLayout != Thread.currentThread()){
-			report("Warning: thread clash in " + component.getClass() + "  avoided (layout). This thread: " + Thread.currentThread() + "; also touching " + touchingLayout);
+
+	public void layout() {
+		if (!protectGraphics) {
+			((MQComponent) component).superLayout();
+			return;
+		}
+		if (touchingLayout != null && touchingLayout != Thread.currentThread()) {
+			report("Warning: thread clash in " + component.getClass() + "  avoided (layout). This thread: "
+					+ Thread.currentThread() + "; also touching " + touchingLayout);
 			return;
 		}
 		touchingLayout = Thread.currentThread();
-		((MQComponent)component).superLayout();
+		((MQComponent) component).superLayout();
 		touchingLayout = null;
 	}
-	
-	/*invalidate --------------------*/
-	public void invalidate(){
-			component.superInvalidate();
-		
+
+	/* invalidate -------------------- */
+	public void invalidate() {
+		component.superInvalidate();
+
 	}
-	/*validate -------------------------*/
+
+	
+	static boolean anyChildrenValidating(Component c){
+		if (c instanceof MQComponent){
+			MQComponentHelper helper = ((MQComponent)c).getHelper();
+			if (helper != null && helper.touchingValidate != null)
+				return true;
+		}
+		if (c instanceof Container){
+			Component[] cc = ((Container)c).getComponents();
+			for (int i=0; i<cc.length; i++) {
+				if (anyChildrenValidating(cc[i]))
+					return true;
+			}
+		}
+		return false;
+	}
+
+	/* validate ------------------------- */
 	boolean validating = false;
 	Thread touchingValidate = null;
-	public void validate(){
-		if (linuxSendToOtherThread && MesquiteTrunk.isLinux()) { //seems to help on linux to put on separate thread
-			if (MesquiteTrunk.linuxGWAThread!=null)
-				MesquiteTrunk.linuxGWAThread.validateRequested(component);
-		}
-		else {
 
-			if (touchingValidate != null){
+	public void validate() {
+		if (!protectGraphics) {
+			((MQComponent) component).superValidate();
+			return;
+		}
+		/*if (linuxSendToOtherThread && MesquiteTrunk.isLinux()) { // seems to help on linux to put on separate thread
+			if (MesquiteTrunk.linuxGWAThread != null)
+				MesquiteTrunk.linuxGWAThread.actionRequested(component, 0, null);
+		} else {
+		*/
+
+			if (touchingValidate != null) {
 				if (touchingValidate != Thread.currentThread())
-					report("Warning: thread clash in " + component.getClass() + "  avoided (validate). This thread: " + Thread.currentThread() + "; also touching " + touchingValidate);
+					report("Warning: thread clash in " + component.getClass() + "  avoided (validate). This thread: "
+							+ Thread.currentThread() + "; also touching " + touchingValidate);
 				else
-					report("Warning: self-call " + component.getClass() + "  avoided (validate). This thread: " + Thread.currentThread() + "; also touching " + touchingValidate);
+					report("Warning: self-call " + component.getClass() + "  avoided (validate). This thread: "
+							+ Thread.currentThread() + "; also touching " + touchingValidate);
 
 				return;
 			}
-			Container container = ((Component)component).getParent();
-			if (container != null){
+			Container container = ((Component) component).getParent();
+			if (container != null) {
 				if (!(container instanceof MQComponent))
-					report("Container not an MQComponent "  + component.getClass() + " container " + container.getClass());
+					report("Container not an MQComponent " + component.getClass() + " container "
+							+ container.getClass());
 				else {
-					MQComponentHelper containerHelper = ((MQComponent)container).getHelper();
-					if (containerHelper != null){
+					MQComponentHelper containerHelper = ((MQComponent) container).getHelper();
+					if (containerHelper != null) {
 						Thread containerTouchingValidate = containerHelper.touchingValidate;
-						if (containerTouchingValidate != null && containerTouchingValidate != Thread.currentThread()){
-							report("Warning: this and container have thread clash; in " + component.getClass() + "  avoided (validate). This thread: " + Thread.currentThread() + "; touching container " + containerTouchingValidate);
+						if (containerTouchingValidate != null && containerTouchingValidate != Thread.currentThread()) {
+							report("Warning: this and container have thread clash; in " + component.getClass()
+									+ "  avoided (validate). This thread: " + Thread.currentThread()
+									+ "; touching container " + containerTouchingValidate);
 							return;
 						}
 					}
 				}
 			}
-			if (validating){
-				report("Warning: double validation in " + component.getClass() + "  avoided (layout). This thread: " + Thread.currentThread());
+			if (validating) {
+				report("Warning: double validation in " + component.getClass() + "  avoided (layout). This thread: "
+						+ Thread.currentThread());
 				return;
 			}
 
 			try {
 				touchingValidate = Thread.currentThread();
 				validating = true;
-				((MQComponent)component).superValidate();
+				((MQComponent) component).superValidate();
 				validating = false;
 				touchingValidate = null;
 
+			} catch (Exception e) {
+				report("Exception in " + component.getClass() + " (" + e.getClass() + ") (validate)");
+			} catch (Error e) {
+				report("Error in " + component.getClass() + " (" + e.getClass() + ") (validate)");
 			}
-			catch (Exception e) {
-				report("Exception in " + component.getClass() + " (" + e.getClass() + ") (validate)"); 
-			}
-			catch (Error e) {
-				report("Error in " + component.getClass() + " (" + e.getClass() + ") (validate)"); 
-			}
-		}
+		
 	}
 
-
-	/*setBounds -------------------------*/
+	/* setBounds ------------------------- */
 	Thread touchingBounds = null;
-	public void setBounds(int x, int y, int w, int h){
-		//This is currently bypassed (see linxuGWAThread) and may not be needed; 
-		if (linuxSendToOtherThread && MesquiteTrunk.isLinux() && MesquiteTrunk.linuxGWAThread!=null)
-			MesquiteTrunk.linuxGWAThread.setBoundsRequested(component, x, y, w, h);
-		else {
+
+	public void setBounds(int x, int y, int w, int h) {
+		if (!protectGraphics) {
+			((MQComponent) component).superSetBounds(x, y, w, h);
+			return;
+		}
+		
 			try {
-				if (touchingBounds != null && touchingBounds != Thread.currentThread()){
-					report("Warning: thread clash in " + component.getClass() + "  avoided (validate). This thread: " + Thread.currentThread() + "; also touching " + touchingBounds);
+				if (touchingBounds != null && touchingBounds != Thread.currentThread()) {
+					report("Warning: thread clash in " + component.getClass() + "  avoided (validate). This thread: "
+							+ Thread.currentThread() + "; also touching " + touchingBounds);
 					return;
 				}
 				touchingBounds = Thread.currentThread();
-				((MQComponent)component).superSetBounds(x, y, w, h);
+				((MQComponent) component).superSetBounds(x, y, w, h);
 				touchingBounds = null;
+			} catch (Exception e) {
+				report("Exception in " + component.getClass() + " (" + e.getClass() + ") (setBounds)");
+			} catch (Error e) {
+				report("Error in " + component.getClass() + " (" + e.getClass() + ") (setBounds)");
 			}
-			catch (Exception e) {
-				report("Exception in " + component.getClass() + " (" + e.getClass() + ") (setBounds)"); 
-			}
-			catch (Error e) {
-				report("Error in " + component.getClass() + " (" + e.getClass() + ") (setBounds)"); 
-			}
-		}
+		
 	}
-
 
 }

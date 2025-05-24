@@ -123,7 +123,7 @@ public class MiniSliderWithText extends MQPanel implements MiniControl, Explaina
 		add(enterButton = new EnterButton(this, true));
 		enterButton.setEnabled(false);
 		currentText = MesquiteDouble.toString(currentValue);
-		add(tf = new TextField("888888", 2));
+		add(tf = new MQTextField("888888", 2));
 			tf.setText(currentText);
 		
 		tf.addActionListener(this);
@@ -132,7 +132,7 @@ public class MiniSliderWithText extends MQPanel implements MiniControl, Explaina
 		enterButton.setVisible(false);
 		tf.setSize(1, 1);
 		tf.setBackground(Color.white);
-	/*	add(dummy = new TextField(""));
+	/*	add(dummy = new MQTextField(""));
 		dummy.setEditable(false);
 		dummy.setSize(0,0);
 		dummy.setBackground(bg);

@@ -548,7 +548,7 @@ class WizardInfoPanel extends MesquitePanel {
 	public WizardInfoPanel (MesquiteDialogParent parent){
 		this.parent = parent;
 		setLayout(null);
-		text = new MesqJEditorPane("text/html","<html><body bgcolor=\"#DEB887\"></body></html>");
+		text = new MQJEditorPane("text/html","<html><body bgcolor=\"#DEB887\"></body></html>");
 		add(text);
 		text.setVisible(true);
 		setBackground(ColorDistribution.mesquiteBrown);

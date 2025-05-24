@@ -27,10 +27,12 @@ public class MQJPanel extends JPanel implements MQComponent {
 
 	public MQJPanel () {
 		super();
+		helper = new MQComponentHelper(this);
 	}
 
 		public MQJPanel (LayoutManager layout) {
 		super(layout);
+		helper = new MQComponentHelper(this);
 	}
 		
 		

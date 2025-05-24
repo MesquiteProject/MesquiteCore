@@ -23,6 +23,9 @@ import mesquite.lib.table.*;
 import mesquite.lib.taxa.Taxa;
 import mesquite.lib.taxa.Taxon;
 import mesquite.lib.ui.ColorDistribution;
+import mesquite.lib.ui.MQJLabel;
+import mesquite.lib.ui.MQLabel;
+import mesquite.lib.ui.MQTextField;
 import mesquite.lib.ui.MesquiteImage;
 import mesquite.lib.ui.MesquiteTool;
 import mesquite.lib.ui.MesquiteWindow;
@@ -334,7 +337,7 @@ class SeqCheckThread  extends Thread {
 }
 
 class Ledge extends MousePanel implements SeqLedge{
-	TextField text;
+	MQTextField text;
 	Label message;
 	int labelWidth = 200;
 	int messageLeng = 0;
@@ -344,18 +347,18 @@ class Ledge extends MousePanel implements SeqLedge{
 	public Ledge(MaintainSequenceMatch ownerModule){
 		setLayout(null);
 		this.ownerModule = ownerModule;
-		text = new TextField(500);
+		text = new MQTextField(500);
 		add(text);
 		text.setBounds(labelWidth+controlWidth,0, 10,10);
 		text.setVisible(true);
 		text.setEditable(true);
 		text.setBackground(Color.white);
-		message = new Label("", Label.RIGHT);
+		message = new MQLabel("", Label.RIGHT);
 		message.setVisible(true);
 		add(message);
 		message.setBounds(controlWidth,1,labelWidth, 10);
 		message.setBackground(ColorDistribution.paleGoldenRod);
-		goaway = MesquiteImage.getImage(MesquiteModule.getRootImageDirectoryPath() + "goAway.gif");
+		goaway = MesquiteImage.getImage(MesquiteModule.getRootImageDirectoryPath() + "goaway.gif");
 		play = MesquiteImage.getImage(MesquiteModule.getRootImageDirectoryPath() + "play.gif");
 		pause = MesquiteImage.getImage(MesquiteModule.getRootImageDirectoryPath() + "pause.gif");
 		taxonButton = MesquiteImage.getImage(MesquiteModule.getRootImageDirectoryPath() + "taxon.gif");

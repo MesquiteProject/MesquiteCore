@@ -631,6 +631,7 @@ timer6.end();
 		//((TableTool)tool).getWorksOnColumnNames();
 
 		if (column>-1 && row > -1 && column<table.numColumnsTotal && row<table.numRowsTotal) {
+
 			table.startAutoScrollThread(this);
 			if (((TableTool)tool).getIsBetweenRowColumnTool()) {
 				column = findColumnBeforeBetween(x, y);
@@ -662,6 +663,7 @@ timer6.end();
 		if (!mouseDownInPanel)
 			return;
 		try {
+			
 			int column = findColumn(x, y);
 			int row = findRow(x, y);
 
@@ -673,7 +675,8 @@ timer6.end();
 					previousRowDragged = row;
 				}
 
-			} else if (column>=table.numColumnsTotal || row>=table.numRowsTotal)
+			} 
+			else if (column>=table.numColumnsTotal || row>=table.numRowsTotal)
 				table.checkForAutoScroll(this,x,y);
 		}
 		catch (Exception e){
@@ -686,6 +689,7 @@ timer6.end();
 		if (!(tool instanceof TableTool))
 			return;
 		try {
+			
 			table.stopAutoScrollThread();
 			int column = findColumn(x, y);
 			int row = findRow(x, y);

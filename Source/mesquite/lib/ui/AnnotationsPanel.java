@@ -1255,7 +1255,7 @@ class ControlP extends MesquitePanel {
 		scroll.setVisible(true);
 		trash = MesquiteImage.getImage(MesquiteModule.getRootImageDirectoryPath() + "trashcan.gif");
 		addPic = MesquiteImage.getImage(MesquiteModule.getRootImageDirectoryPath() + "add.gif");
-		goaway = MesquiteImage.getImage(MesquiteModule.getRootImageDirectoryPath() + "goAway.gif");
+		goaway = MesquiteImage.getImage(MesquiteModule.getRootImageDirectoryPath() + "goaway.gif");
 		/*
 		newPic = MesquiteImage.getImage(MesquiteModule.getRootImageDirectoryPath() + "new.gif");
 		spotPic = MesquiteImage.getImage(MesquiteModule.getRootImageDirectoryPath() + "spot.gif");
@@ -1543,13 +1543,13 @@ class InfoPanel extends MesquitePanel implements TextListener {
 			aName = auth.getName();
 		if (aName == null)
 			aName = previousAuthor;
-		add(authorLabel = new TextField(aName));
+		add(authorLabel = new MQTextField(aName));
 
 		authorLabel.setEditable(true);
 		authorLabel.setBackground(Color.white);
 		authorLabel.addTextListener(this);
-		add(createdLabel = new Label());
-		add(modLabel =new Label());
+		add(createdLabel = new MQLabel());
+		add(modLabel =new MQLabel());
 		//	modLabel.setBackground(Color.pink);
 		//	setBackground(Color.yellow);
 		setNote(null);

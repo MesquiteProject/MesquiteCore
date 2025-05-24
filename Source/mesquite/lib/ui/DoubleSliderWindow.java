@@ -58,7 +58,7 @@ public class DoubleSliderWindow extends MesquiteWindow {
 	     	constraints.anchor=GridBagConstraints.CENTER;
 		sliderArea.setLayout(gridBag);
 		
-		label1 = new Label();
+		label1 = new MQLabel();
    	 	if (!StringUtil.blank(name1))
    	 		label1.setText(name1);
 		sliderArea.add(label1,constraints);
@@ -69,7 +69,7 @@ public class DoubleSliderWindow extends MesquiteWindow {
 		slider1.setWidth(getBounds().width-insetFromWindow);
 		slider1.setVisible(true);
 
-		label2 = new Label();
+		label2 = new MQLabel();
    	 	if (!StringUtil.blank(name2))
    	 		label2.setText(name2);
 		constraints.gridy ++;

@@ -34,7 +34,7 @@ public class MesquiteTabbedPanel extends MQJPanel  {
         tabbedPane.setTabLayoutPolicy(JTabbedPane.SCROLL_TAB_LAYOUT);
 	}
 	public JPanel addPanel(String title, boolean setAsAddPanel){
-		JPanel panel = new MQJPanel();
+		MQJPanel panel = new MQJPanel();
 		tabbedPane.addTab(title, panel);
 		//panel.add(new Checkbox("testing panel " + numPanels));
 		panel.setVisible(false);

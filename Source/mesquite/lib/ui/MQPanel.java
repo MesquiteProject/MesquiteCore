@@ -25,6 +25,7 @@ public class MQPanel extends Panel implements MQComponent {
 
 	public MQPanel () {
 		super();
+		helper = new MQComponentHelper(this);
 	}
 
 	//###########################################################

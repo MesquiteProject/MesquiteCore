@@ -25,9 +25,11 @@ public class MQScrollPane extends ScrollPane implements MQComponent {
 
 	public MQScrollPane () {
 		super();
+		helper = new MQComponentHelper(this);
 	}
 	public MQScrollPane (int policy) {
 		super(policy);
+		helper = new MQComponentHelper(this);
 	}
 
 	//###########################################################

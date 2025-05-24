@@ -751,7 +751,7 @@ class AssocEditor extends MousePanel implements TextListener, FocusListener {
 	public AssocEditor(TaxonListAssoc ownerModule){
 		super();
 		setLayout(null);
-		goaway = MesquiteImage.getImage(MesquiteModule.getRootImageDirectoryPath() + "goAway.gif");
+		goaway = MesquiteImage.getImage(MesquiteModule.getRootImageDirectoryPath() + "goaway.gif");
 		add = MesquiteImage.getImage(MesquiteModule.getRootImageDirectoryPath() + "add.gif");
 		replace = MesquiteImage.getImage(MesquiteModule.getRootImageDirectoryPath() + "replaceLeft.gif");
 		subtract = MesquiteImage.getImage(MesquiteModule.getRootImageDirectoryPath() + "subtract.gif"); 

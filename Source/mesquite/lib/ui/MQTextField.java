@@ -25,30 +25,36 @@ public class MQTextField extends TextField implements MQComponent {
 
 	public MQTextField () {
 		super();
+		helper = new MQComponentHelper(this);
 	}
 
 	public MQTextField (String initialString, int fieldLength) {
 		super(initialString, fieldLength);
+		helper = new MQComponentHelper(this);
 	}
 
 	public MQTextField (int fieldLength) {
 		super(fieldLength);
+		helper = new MQComponentHelper(this);
 	}
 	public MQTextField (String initialString) {
 		super(initialString);
+		helper = new MQComponentHelper(this);
 	}
-
+/*
 	public void setText(String s){
 		if (s == null)
 			s = "";
 		super.setText(s);
-	}
+	}*/
 
 	//###########################################################
 	/*################################################################
 	 *  The following overrides were built to avoid the frequent StackOverflowErrors on Linux Java post-1.8, 
 	 *  but were extended in part to other OSs. See also others satisfying MQComponent interface.
 	 */		
+	
+	
 	MQComponentHelper helper = new MQComponentHelper(this);
 	public MQComponentHelper getHelper(){
 		return helper;

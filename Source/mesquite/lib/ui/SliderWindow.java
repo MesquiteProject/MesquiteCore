@@ -63,7 +63,7 @@ public class SliderWindow extends MesquiteWindow {
 
 		contents.setLayout(gridBag);
 
-		label = new Label();
+		label = new MQLabel();
 		if (!StringUtil.blank(name))
 			label.setText(name);
 		//label.setBackground(Color.blue);

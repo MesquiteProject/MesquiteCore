@@ -36,7 +36,7 @@ public class MiniStringEditor extends MQPanel implements ActionListener, MiniCon
 		this.ownerModule=ownerModule;
 		this.command = command;
 		setSize(EnterButton.MIN_DIMENSION + 92,12 + MesquiteModule.textEdgeCompensationHeight);
-		text = new TextField("");
+		text = new MQTextField("");
 		text.addActionListener(this);
 		setLayout(null);
 		add(text);

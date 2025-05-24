@@ -66,8 +66,8 @@ public class ProcessUtil {
 			return p;
 		}
 		catch (IOException e) {
-			MesquiteMessage.printLogln("IOException in attempting to start external program. \n");
 			String message = e.getMessage();
+			MesquiteMessage.printLogln("IOException in attempting to start external program. \n" + message + "\n");
 			if (e.getMessage().indexOf("error=13")>0) {
 				message+= "\n\nCheck to see if the external program is executable.";
 				if (errorCode!=null)

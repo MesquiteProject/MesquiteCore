@@ -31,6 +31,7 @@ import mesquite.lib.ui.ColorDistribution;
 import mesquite.lib.ui.ExtensibleDialog;
 import mesquite.lib.ui.ExtensibleExplDialog;
 import mesquite.lib.ui.ExtensibleListDialog;
+import mesquite.lib.ui.MQPanel;
 import mesquite.lib.ui.MQTextArea;
 import mesquite.lib.ui.MesquiteSubmenuSpec;
 import mesquite.lib.ui.PopUpPanelOfCards;
@@ -865,7 +866,7 @@ class EditTemplatesDLOG extends ExtensibleDialog implements ItemListener {
 		addHorizontalLine(3,18);
 
 		PopUpPanelOfCards cardPanel = addPopUpPanelOfCards("");
-		Panel[] cardPanels = new Panel[numFiles];
+		MQPanel[] cardPanels = new MQPanel[numFiles];
 		for (int i=0; i<numFiles; i++) 
 			cardPanels[i] = cardPanel.addNewCard("Batch File #"+(i+1));
 		

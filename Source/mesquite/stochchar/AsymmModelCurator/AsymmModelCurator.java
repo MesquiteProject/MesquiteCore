@@ -22,6 +22,7 @@ import mesquite.lib.characters.*;
 import mesquite.lib.duties.*;
 import mesquite.lib.ui.DoubleSliderWindow;
 import mesquite.lib.ui.ExtensibleDialog;
+import mesquite.lib.ui.MQLabel;
 import mesquite.lib.ui.MesquiteWindow;
 import mesquite.lib.ui.RadioButtons;
 import mesquite.lib.ui.SliderWindow;
@@ -228,7 +229,7 @@ class AsymmModelEditor extends DoubleSliderWindow implements ItemListener {
 	public AsymmModelEditor(MesquiteModule module, String title, String name1, MesquiteCommand command1, double initialValue1, double min1, double max1,  double minSweet1, double maxSweet1, String name2, MesquiteCommand command2, double initialValue2, double min2, double max2, double minSweet2, double maxSweet2) {
 		super(module, title, name1, command1, initialValue1, min1, max1,   minSweet1,  maxSweet1,  name2,  command2,  initialValue2,  min2,  max2,  minSweet2,  maxSweet2);
 		cbg = new CheckboxGroup();
-		label = new Label("Calculate Likelihoods and Simulate assuming:");
+		label = new MQLabel("Calculate Likelihoods and Simulate assuming:");
 		addToWindow(label);
 		addToWindow(useEquilFreq = new Checkbox("Root State Frequencies same as Equilibrium", cbg, false));
 		addToWindow(useFlat = new Checkbox("Root State Frequencies Equal", cbg, true));

@@ -30,6 +30,7 @@ public class MQJScrollBar extends JScrollBar implements MQComponent {
 
 	public MQJScrollBar (int orientation) {
 		super(orientation);
+		helper = new MQComponentHelper(this);
 	}
 
  	//###########################################################

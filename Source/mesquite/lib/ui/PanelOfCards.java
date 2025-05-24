@@ -21,10 +21,10 @@ import java.awt.*;
 /** a field for longs */
 public abstract class PanelOfCards extends MQPanel  {
 	ExtensibleDialog dialog;
-	Panel addPanel = null;
-	Panel oldAddPanel = null;
-	Panel choicePanel;
-	Panel cardPanel = null;
+	MQPanel addPanel = null;
+	MQPanel oldAddPanel = null;
+	MQPanel choicePanel;
+	MQPanel cardPanel = null;
 	CardPanel card = null;
 	CardLayout cardLayout = new CardLayout();
 	int currentCard = 0;
@@ -92,7 +92,7 @@ public abstract class PanelOfCards extends MQPanel  {
 		cardLayout.invalidateLayout(cardPanel);
 	}
 	/*.................................................................................................................*/
-	public abstract void installChoicePanel (Panel choicePanel) ;
+	public abstract void installChoicePanel (MQPanel choicePanel) ;
 	/*.................................................................................................................*/
 	public abstract void addChoice (String s) ;
 	/*.................................................................................................................*
@@ -102,7 +102,7 @@ public abstract class PanelOfCards extends MQPanel  {
 	/*.................................................................................................................*
 	public abstract void createChoicePanel (Panel choicePanel) ;
 	/*.................................................................................................................*/
-	public Panel addNewCard (String title) {
+	public MQPanel addNewCard (String title) {
 		String cardTitle =Integer.toString(numCards);
 		PoCPanel newPanel = new PoCPanel();  //the new panel
 		cardPanel.add(newPanel, cardTitle);

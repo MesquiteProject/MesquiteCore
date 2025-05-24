@@ -3049,7 +3049,7 @@ class ColorLegend extends MousePanel {
 		setBackground(Color.white);
 		setFont(new Font("SansSerif", Font.PLAIN, 10));
 		box = new StringInABox("", null, width);
-		goaway = MesquiteImage.getImage(MesquiteModule.getRootImageDirectoryPath() + "goAway.gif");
+		goaway = MesquiteImage.getImage(MesquiteModule.getRootImageDirectoryPath() + "goaway.gif");
 	}
 
 	public void setLegendColors(ColorRecord[] colors, String title, String explanation) {
@@ -4764,8 +4764,9 @@ class MatrixTable extends mesquite.lib.table.CMTable implements MesquiteDroppedF
 		if (window.getCurrentTool() == window.arrowTool || window.getCurrentTool() == window.ibeamTool || window.getCurrentTool().getAllowAnnotate() || ((TableTool) window.getCurrentTool()).useTableTouchRules()) {
 			setFocusedCell(column, row);
 		}
-		else
+		else {
 			window.setAnnotation("", null);
+		}
 		if (window.matrixInfoPanel != null && window.infoPanelOn.getValue())
 			window.matrixInfoPanel.cellTouch(column, row);
 	}
@@ -4935,7 +4936,6 @@ class MatrixTable extends mesquite.lib.table.CMTable implements MesquiteDroppedF
 
 	/* ............................................................................................................... */
 	public void mouseInCell(int modifiers, int column, int subColumn, int row, int subRow, MesquiteTool tool) {
-
 		if (column >= 0 && column <= data.getNumChars(false)) {
 			if (subRow >= 0) {
 				DataColumnNamesAssistant assistant = window.getDataColumnNamesAssistant(subRow);
