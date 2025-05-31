@@ -96,6 +96,12 @@ public class CombineFlippedFastas extends GeneralFileMakerMultiple {
 				progIndicator.start();
 				int filesFound = 0;
 				DNAState state = new DNAState();
+				MesquiteTimer timerA = new MesquiteTimer();
+				MesquiteTimer timerB = new MesquiteTimer();
+				MesquiteTimer timerC = new MesquiteTimer();
+				MesquiteTimer timerD = new MesquiteTimer();
+				MesquiteTimer timerE = new MesquiteTimer();
+				logln("The first few files will be slow; they may take a few minutes to process.");
 				for (int i=0; i<files.length; i++) {
 					progIndicator.setCurrentValue(i);
 					if (progIndicator.isAborted()) {
@@ -115,12 +121,16 @@ public class CombineFlippedFastas extends GeneralFileMakerMultiple {
 								file.setPath(path);
 								project.addFile(file);
 								file.setProject(project);
+								logln("Reading file " + files[i]);
 								MesquiteThread.setHintToSuppressProgressIndicatorCurrentThread(true);
+								timerA.start();
 								importer.readFile(project, file, null);
-							MesquiteThread.setHintToSuppressProgressIndicatorCurrentThread(false);
+								timerA.end();
+								MesquiteThread.setHintToSuppressProgressIndicatorCurrentThread(false);
 
 								//The file is read. Get its one taxa block
 								String taxonName = StringUtil.getAllButLastItem(files[i], "."); //all but file extension
+								CommandRecord.tick("File read for taxon " + taxonName);
 
 								Taxa loci = project.getTaxa(file, 0);
 
@@ -128,7 +138,9 @@ public class CombineFlippedFastas extends GeneralFileMakerMultiple {
 									CharacterData incomingFlippedMatrix = project.getCharacterMatrix(file, loci, null, 0, false);
 									if (incomingFlippedMatrix != null){
 										progIndicator.setSecondaryMessage("Taxon: " + taxonName + " with " + loci.getNumTaxa() + " loci");
+										//logln(" (" + loci.getNumTaxa() + " loci)");
 
+										timerB.start();
 										//OK, ready to go. Have matrix. Will add new taxon based on the name of the file, and transfer over its sequences
 										boolean existingTaxon = true;
 										int receivingTaxonNumber = taxa.whichTaxonNumber(taxonName);
@@ -139,22 +151,34 @@ public class CombineFlippedFastas extends GeneralFileMakerMultiple {
 											newTaxon.setName(taxonName);
 											existingTaxon = false;
 										}
+										timerB.end();
+										int lociAdded = 0;
 										//For each "taxon", find corresponding matrix already in project
 										for (int iLocus = 0; iLocus < loci.getNumTaxa(); iLocus++){
+											CommandRecord.tick("For taxon " + taxonName + ", recovering sequence #" + (iLocus+1));
+											timerC.start();
 											String locusName = loci.getTaxonName(iLocus);
 											CharacterData locusMatrix = recProject.getCharacterMatrixByReference(null,  taxa, null, locusName);
 											if (!(locusMatrix instanceof DNAData))
 												locusMatrix = null;
 											if (locusMatrix == null) { //no matrix yet; establish
 												locusMatrix = charactersManager.newCharacterData(taxa, 0, DNAData.DATATYPENAME); //this is manager of receiving project
-												locusMatrix.setName(locusName);
+												locusMatrix.setName(locusName, false);
 												locusMatrix.addToFile(taxa.getFile(), recProject, null);
+												lociAdded++;
+												if (lociAdded == 1)
+													log("   New Loci...");
+													
+												else if (lociAdded%100 == 0)
+													log("" + lociAdded + "...");
 											}
-
+											timerC.end();
+											
 
 											/*Now time to pull sequence into locus matrix 
 											 * Sequence on row iLocus of incomingFlippedMatrix corresponds to sequence for newTaxon in locusMatrix
 											 */
+											timerD.start();
 											int incomingSeqLeng = incomingFlippedMatrix.lastApplicable(iLocus) + 1;
 											if (incomingSeqLeng>locusMatrix.getNumChars())
 												locusMatrix.addCharacters(locusMatrix.getNumChars(), incomingSeqLeng-locusMatrix.getNumChars(), false);
@@ -171,22 +195,35 @@ public class CombineFlippedFastas extends GeneralFileMakerMultiple {
 														logln("Data replaced for other matrices or taxa as well");
 												}
 											}
+											//log(".");
+											timerD.end();
 											for (int ic = 0; ic< locusMatrix.getNumChars() && ic< incomingFlippedMatrix.getNumChars(); ic++){
 												state = (DNAState)incomingFlippedMatrix.getCharacterState(state, ic, iLocus);
+												timerE.start();
 												locusMatrix.setState(ic, receivingTaxonNumber, state);
+												timerE.end();
+
 											}
 										}
+										logln("");
 									}
 								}
 
-
+//Debugg.println("@ A " + timerA.getAccumulatedTime()	+ " B " + timerB.getAccumulatedTime()	+ " C " + timerC.getAccumulatedTime()	+ " D " + timerD.getAccumulatedTime()	+ " E " + timerE.getAccumulatedTime());					
+timerA.reset();
+timerB.reset();
+timerC.reset();
+timerD.reset();
+timerE.reset();
 								project.getCoordinatorModule().closeFile(file, true);
 								filesFound++;
 
 							}
 
 						}
+					
 					}
+					
 				}
 				if (filesFound == 0){
 					if (okToInteractWithUser(CAN_PROCEED_ANYWAY, "No files found"))  
@@ -195,6 +232,7 @@ public class CombineFlippedFastas extends GeneralFileMakerMultiple {
 						discreetAlert("No appropriate files with extensions (.fas or .fasta) were found in folder.");
 
 				}
+				MesquiteMessage.beep();
 				progIndicator.goAway();
 				project.developing = false;  //so the coordinator knows it's OK to dispose
 				if (!taxaNew)

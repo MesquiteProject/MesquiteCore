@@ -34,6 +34,7 @@ import mesquite.lib.EmployeeVector;
 import mesquite.lib.MesquiteBoolean;
 import mesquite.lib.MesquiteFile;
 import mesquite.lib.MesquiteInteger;
+import mesquite.lib.MesquiteMessage;
 import mesquite.lib.MesquiteModule;
 import mesquite.lib.MesquiteProject;
 import mesquite.lib.MesquiteString;
@@ -610,6 +611,7 @@ public class ProcessDataFiles extends GeneralFileMakerMultiple implements Action
 
 				removeAllProcessors();
 				progIndicator.goAway();
+				MesquiteMessage.beep();
 			}
 
 
