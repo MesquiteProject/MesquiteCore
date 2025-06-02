@@ -96,12 +96,9 @@ public class CombineFlippedFastas extends GeneralFileMakerMultiple {
 				progIndicator.start();
 				int filesFound = 0;
 				DNAState state = new DNAState();
-				MesquiteTimer timerA = new MesquiteTimer();
-				MesquiteTimer timerB = new MesquiteTimer();
-				MesquiteTimer timerC = new MesquiteTimer();
-				MesquiteTimer timerD = new MesquiteTimer();
-				MesquiteTimer timerE = new MesquiteTimer();
+
 				logln("The first few files will be slow; they may take a few minutes to process.");
+				int lociAdded = 0;
 				for (int i=0; i<files.length; i++) {
 					progIndicator.setCurrentValue(i);
 					if (progIndicator.isAborted()) {
@@ -123,9 +120,7 @@ public class CombineFlippedFastas extends GeneralFileMakerMultiple {
 								file.setProject(project);
 								logln("Reading file " + files[i]);
 								MesquiteThread.setHintToSuppressProgressIndicatorCurrentThread(true);
-								timerA.start();
 								importer.readFile(project, file, null);
-								timerA.end();
 								MesquiteThread.setHintToSuppressProgressIndicatorCurrentThread(false);
 
 								//The file is read. Get its one taxa block
@@ -140,7 +135,6 @@ public class CombineFlippedFastas extends GeneralFileMakerMultiple {
 										progIndicator.setSecondaryMessage("Taxon: " + taxonName + " with " + loci.getNumTaxa() + " loci");
 										//logln(" (" + loci.getNumTaxa() + " loci)");
 
-										timerB.start();
 										//OK, ready to go. Have matrix. Will add new taxon based on the name of the file, and transfer over its sequences
 										boolean existingTaxon = true;
 										int receivingTaxonNumber = taxa.whichTaxonNumber(taxonName);
@@ -151,12 +145,9 @@ public class CombineFlippedFastas extends GeneralFileMakerMultiple {
 											newTaxon.setName(taxonName);
 											existingTaxon = false;
 										}
-										timerB.end();
-										int lociAdded = 0;
 										//For each "taxon", find corresponding matrix already in project
 										for (int iLocus = 0; iLocus < loci.getNumTaxa(); iLocus++){
 											CommandRecord.tick("For taxon " + taxonName + ", recovering sequence #" + (iLocus+1));
-											timerC.start();
 											String locusName = loci.getTaxonName(iLocus);
 											CharacterData locusMatrix = recProject.getCharacterMatrixByReference(null,  taxa, null, locusName);
 											if (!(locusMatrix instanceof DNAData))
@@ -167,18 +158,17 @@ public class CombineFlippedFastas extends GeneralFileMakerMultiple {
 												locusMatrix.addToFile(taxa.getFile(), recProject, null);
 												lociAdded++;
 												if (lociAdded == 1)
-													log("   New Loci...");
-													
+													log("   New Loci .");
 												else if (lociAdded%100 == 0)
-													log("" + lociAdded + "...");
+													log(" " + lociAdded);
+												else if (lociAdded%10 == 0)
+													log(".");
 											}
-											timerC.end();
 											
 
 											/*Now time to pull sequence into locus matrix 
 											 * Sequence on row iLocus of incomingFlippedMatrix corresponds to sequence for newTaxon in locusMatrix
 											 */
-											timerD.start();
 											int incomingSeqLeng = incomingFlippedMatrix.lastApplicable(iLocus) + 1;
 											if (incomingSeqLeng>locusMatrix.getNumChars())
 												locusMatrix.addCharacters(locusMatrix.getNumChars(), incomingSeqLeng-locusMatrix.getNumChars(), false);
@@ -195,13 +185,9 @@ public class CombineFlippedFastas extends GeneralFileMakerMultiple {
 														logln("Data replaced for other matrices or taxa as well");
 												}
 											}
-											//log(".");
-											timerD.end();
 											for (int ic = 0; ic< locusMatrix.getNumChars() && ic< incomingFlippedMatrix.getNumChars(); ic++){
 												state = (DNAState)incomingFlippedMatrix.getCharacterState(state, ic, iLocus);
-												timerE.start();
 												locusMatrix.setState(ic, receivingTaxonNumber, state);
-												timerE.end();
 
 											}
 										}
@@ -209,12 +195,7 @@ public class CombineFlippedFastas extends GeneralFileMakerMultiple {
 									}
 								}
 
-//Debugg.println("@ A " + timerA.getAccumulatedTime()	+ " B " + timerB.getAccumulatedTime()	+ " C " + timerC.getAccumulatedTime()	+ " D " + timerD.getAccumulatedTime()	+ " E " + timerE.getAccumulatedTime());					
-timerA.reset();
-timerB.reset();
-timerC.reset();
-timerD.reset();
-timerE.reset();
+
 								project.getCoordinatorModule().closeFile(file, true);
 								filesFound++;
 
