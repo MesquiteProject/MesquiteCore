@@ -199,7 +199,6 @@ public class BasicTreeWindowCoord extends FileInit {
 				treeWindowTask = (TreeWindowMaker)hireNamedEmployee(TreeWindowMaker.class, "$ #BasicTreeWindowMaker edit", taxa);
 			else
 				treeWindowTask= (TreeWindowMaker)hireCompatibleEmployee(TreeWindowMaker.class, taxa, "Tree window style");
-
 			if (treeWindowTask !=null){
 				treeWindowTask.doCommand("makeTreeWindow", getProject().getTaxaReferenceInternal(taxa), checker);
 				treeWindows.addElement(treeWindowTask.getModuleWindow(), false);

@@ -61,14 +61,16 @@ public class ReplaceInElementNames extends ListableNameAlterer {
    	public boolean alterName(ListableVector elements, int it){
    		boolean nameChanged = false;
    		Object obj = elements.elementAt(it);
-   		if (obj == null || !(obj instanceof NameableWithNotify))
+   		if (obj == null || !(obj instanceof Nameable))
    			return false;
-   		NameableWithNotify element = (NameableWithNotify)obj;
-   		String name = ((Listable)element).getName();
+   		String name = ((Listable)obj).getName();
 
 		if (name!=null){
 			String s=StringUtil.replace(name,searchText,replaceText);
-			element.setName( s, false);
+			if (obj instanceof NameableWithNotify)
+				((NameableWithNotify)obj).setName( s, false);
+			else
+				((Nameable)obj).setName( s);
 			nameChanged = !name.equals(s);
 		}
 		return nameChanged;

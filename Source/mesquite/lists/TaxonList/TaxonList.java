@@ -279,9 +279,9 @@ public class TaxonList extends ListModule {
 				TaxonNameAlterer tda= (TaxonNameAlterer)hireNamedEmployee(TaxonNameAlterer.class, arguments);
 				if (tda!=null) {
 					UndoReference undoReference = new UndoReference(new UndoInstructions(UndoInstructions.ALLTAXONNAMES,taxa, taxa), this);
-					boolean a = tda.alterTaxonNames(taxa, ((TableWindow)getModuleWindow()).getTable());
+					int a = tda.alterTaxonNames(taxa, ((TableWindow)getModuleWindow()).getTable());
 					fireEmployee(tda);
-					if (a)
+					if (a>=0)
 						taxa.notifyListeners(this, new Notification(NAMES_CHANGED, undoReference));
 				}
 			}

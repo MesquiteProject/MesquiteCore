@@ -17,6 +17,7 @@ import java.awt.*;
 import java.util.*;
 import mesquite.lib.*;
 import mesquite.lib.duties.*;
+import mesquite.lib.table.MesquiteTable;
 
 
 
@@ -35,6 +36,6 @@ public abstract class TaxaBlocksListUtility extends MesquiteModule  {
    		return false;
    	}
    	/** Called to operate on the taxa blocks.  Returns true if taxa altered*/
-   	public abstract boolean operateOnTaxas(ListableVector taxa);
+   	public abstract boolean operateOnTaxas(ListableVector taxa, MesquiteTable table);
 }
 

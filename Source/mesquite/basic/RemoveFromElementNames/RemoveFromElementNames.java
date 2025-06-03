@@ -58,17 +58,22 @@ public class RemoveFromElementNames extends ListableNameAlterer {
    	public boolean alterName(ListableVector elements, int it){
    		boolean nameChanged = false;
    		Object obj = elements.elementAt(it);
-   		if (obj == null || !(obj instanceof NameableWithNotify))
-   			return false;
-   		NameableWithNotify element = (NameableWithNotify)obj;
-   		String name = ((Listable)element).getName();
+		if (obj == null || !(obj instanceof Nameable))
+			return false;
+   		String name = ((Listable)obj).getName();
 
 		if (name!=null){
 			String s=StringUtil.replace(name,searchText,"");
-			element.setName( s, false);
+			if (obj instanceof NameableWithNotify)
+				((NameableWithNotify)obj).setName( s, false);
+			else
+				((Nameable)obj).setName( s);
+				
+			
 			nameChanged = !name.equals(s);
 		}
-		return nameChanged;
+		
+	return nameChanged;
    	}
 	
 	/*.................................................................................................................*/

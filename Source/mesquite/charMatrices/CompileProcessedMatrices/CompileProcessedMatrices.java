@@ -167,8 +167,9 @@ ListableVector taxonNames = new ListableVector();
 			String fileName=fdlg.getFile();
 			String directory=fdlg.getDirectory();
 			// fdlg.dispose();
-			if (StringUtil.blank(fileName) || StringUtil.blank(directory))
+			if (StringUtil.blank(fileName) || StringUtil.blank(directory)) {
 				return -1;
+			}
 			saveFile = MesquiteFile.composePath(directory, fileName);
 			tempFile = MesquiteFile.composePath(directory, MesquiteFile.massageStringToFilePathSafe(MesquiteTrunk.getUniqueIDBase() + fileName)) ;
 		 	if (!OACOptionAlreadySet)

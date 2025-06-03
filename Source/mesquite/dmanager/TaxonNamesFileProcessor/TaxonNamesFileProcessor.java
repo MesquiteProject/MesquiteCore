@@ -100,16 +100,15 @@ public class TaxonNamesFileProcessor extends FileProcessor {
    		MesquiteProject proj = file.getProject();
    		if (proj == null)
    			return -1;
-   		boolean success = false;
+   		boolean success = true;
    		CompatibilityTest test = utilityTask.getCompatibilityTest();
    		for (int im = 0; im < proj.getNumberTaxas(file); im++){
    			Taxa taxa = proj.getTaxa(file, im);
-   				success = true;
-   				utilityTask.alterTaxonNames(taxa, null);
-   			}
-  
+   			int result = utilityTask.alterTaxonNames(taxa, null);
+   			success = success && (result >= 0);
+  			}
    		if (!success)
-   		return 1;
+   		return -1;
    		return 0;
    	}
 	/*.................................................................................................................*/

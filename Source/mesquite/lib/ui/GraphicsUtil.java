@@ -14,19 +14,12 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
 package mesquite.lib.ui;
 
 import java.awt.*;
-import java.awt.event.*;
 import java.awt.geom.*;
-import java.awt.image.*;
 
-import mesquite.lib.Debugg;
 import mesquite.lib.MesquiteDouble;
-import mesquite.lib.MesquiteInteger;
 import mesquite.lib.MesquiteMessage;
 import mesquite.lib.MesquiteThread;
-import mesquite.lib.MesquiteTimer;
 import mesquite.lib.MesquiteTrunk;
-import mesquite.minimal.BasicFileCoordinator.ProjectWindow;
-import mesquite.trees.SquareLineTree.SquareLineTree;
 
 
 

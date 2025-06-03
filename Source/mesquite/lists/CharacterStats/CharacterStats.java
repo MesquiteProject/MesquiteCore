@@ -36,7 +36,7 @@ public class CharacterStats extends CharListAssistant implements MesquiteListene
 		return "States";
 	}
 	public String getExplanation() {
-		return "Supplies basic character state information for characters in character list window." ;
+		return "Supplies basic information about character states in the matrix, for characters in character list window." ;
 	}
 	/*.................................................................................................................*/
 	CharacterData data=null;

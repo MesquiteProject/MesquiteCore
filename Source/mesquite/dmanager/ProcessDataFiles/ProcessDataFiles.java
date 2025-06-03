@@ -102,11 +102,11 @@ public class ProcessDataFiles extends GeneralFileMakerMultiple implements Action
 	}
 	/*.................................................................................................................*/
 
-	
+
 	/*=============================================================================================================*/
 	/* Primarily user interface methods
 	 *    */
-/*.................................................................................................................*/
+	/*.................................................................................................................*/
 	//execute script to load previous processors and their parameters
 	void executeScript(String script) {
 		Puppeteer p = new Puppeteer(this);
@@ -122,12 +122,12 @@ public class ProcessDataFiles extends GeneralFileMakerMultiple implements Action
 			if (mb instanceof FileProcessor)
 				recordProcessor((FileProcessor)mb);
 		}
-	
+
 	}
 	/*.................................................................................................................*/
 	List processorList = null;
 	boolean fromSavedScript = false;
-	
+
 	void removeAllProcessors() {
 		if (processorList != null)
 			processorList.removeAll();
@@ -141,7 +141,7 @@ public class ProcessDataFiles extends GeneralFileMakerMultiple implements Action
 			fileProcessors.removeAllElements();
 
 	}
-	
+
 	void resetProcessorList() {
 		if (processorList != null)
 			processorList.removeAll();
@@ -149,9 +149,9 @@ public class ProcessDataFiles extends GeneralFileMakerMultiple implements Action
 			if (fileProcessors.elementAt(i)!=null)
 				processorList.add("(" + (i+1) + ") " + ((FileProcessor)fileProcessors.elementAt(i)).getNameAndParameters());
 		}
-			
+
 	}
-	
+
 	JLabel intro1, intro2;
 	void setIntro(boolean fromSavedScript) {
 		if (fileProcessors.size()==0) {
@@ -178,7 +178,7 @@ public class ProcessDataFiles extends GeneralFileMakerMultiple implements Action
 		intro1 = dialog.addLabel("xxxxxxxxxxxxxxxx  xxxxxxxxxxxxxxxx  xxxxxxxxxxxxxxx  xxxxxxxxx");
 		intro2 = dialog.addLabel("                  ");
 		setIntro(fromSavedScript);
-		
+
 		String[] steps = new String[fileProcessors.size()];
 		for (int i = 0; i<steps.length; i++){
 			if (fileProcessors.elementAt(i)!=null)
@@ -198,7 +198,7 @@ public class ProcessDataFiles extends GeneralFileMakerMultiple implements Action
 		addButton.setActionCommand("add");
 		dialog.addHorizontalLine(1);
 		dialog.addBlankLine();
-		
+
 		Button resetParamButton = null;
 		resetParamButton = dialog.addAListenedButton("Review Settings", null, this);
 		resetParamButton.setActionCommand("resetParams");
@@ -213,69 +213,69 @@ public class ProcessDataFiles extends GeneralFileMakerMultiple implements Action
 	/*.................................................................................................................*/
 	public void actionPerformed(ActionEvent e) {
 		pauseUntilThreadDone();
-		 thread = new PDFThread(this,  e.getActionCommand());
+		thread = new PDFThread(this,  e.getActionCommand());
 		thread.start();
 	}
 	void pauseUntilThreadDone() {
 		try {
-		while(thread != null) {
-			Thread.sleep(20);
-		}			
-	}
-	catch(Exception ex) {
-	}
+			while(thread != null) {
+				Thread.sleep(20);
+			}			
+		}
+		catch(Exception ex) {
+		}
 	}
 	void doActionButton(String command) {
 		if ("Add".equalsIgnoreCase(command)) { //You have hit ADD, so let's add to current script. 
-		//Look for and hire the next processor, and capture its script for later use
-		boolean wasUTIS = MesquiteThread.unknownThreadIsScripting;
-		MesquiteThread.unknownThreadIsScripting = false;
-		FileProcessor processor = (FileProcessor)processProject.getCoordinatorModule().hireEmployee(FileProcessor.class, "File processor (" + (fileProcessors.size() + 1)+ ")");
-		MesquiteThread.unknownThreadIsScripting = wasUTIS;
-		if (processor != null) {
-			processor.setBaseDirectory(directoryPath);
-			currentScript += "\naddProcessor " + " #" + processor.getClass().getName() + ";\n";
-			String sn =Snapshot.getSnapshotCommands(processor, getProject().getHomeFile(), "  ");
-			currentScript +="\ntell It;\n" + sn + "\nendTell;";
-			recordProcessor(processor);
-			setIntro(fromSavedScript);
-			resetProcessorList();
-			fromSavedScript = false;
-		}
-	}
-	else if ("Clear".equalsIgnoreCase(command)) { //You have hit Clear all, so remove all processors. 
-		removeAllProcessors();
-		fromSavedScript = false;
-		setIntro(fromSavedScript);
-		currentScript = "";
-		preferencesScript = "";
-	} 
-	else if ("Load".equalsIgnoreCase(command)) {  //You have hit Load, choose and execute stored script
-		MesquiteFile f = MesquiteFile.open(true, (FilenameFilter)null, "Open text file with processing script", null);
-		if (f!= null) {
-			String script = MesquiteFile.getFileContentsAsString(f.getPath());
-			if (!StringUtil.blank(script)) {
-				removeAllProcessors();
-				
-				executeScript(script);
-				currentScript = script;
-				preferencesScript = script;
-				resetProcessorList();
-				fromSavedScript = true;
+			//Look for and hire the next processor, and capture its script for later use
+			boolean wasUTIS = MesquiteThread.unknownThreadIsScripting;
+			MesquiteThread.unknownThreadIsScripting = false;
+			FileProcessor processor = (FileProcessor)processProject.getCoordinatorModule().hireEmployee(FileProcessor.class, "File processor (" + (fileProcessors.size() + 1)+ ")");
+			MesquiteThread.unknownThreadIsScripting = wasUTIS;
+			if (processor != null) {
+				processor.setBaseDirectory(directoryPath);
+				currentScript += "\naddProcessor " + " #" + processor.getClass().getName() + ";\n";
+				String sn =Snapshot.getSnapshotCommands(processor, getProject().getHomeFile(), "  ");
+				currentScript +="\ntell It;\n" + sn + "\nendTell;";
+				recordProcessor(processor);
 				setIntro(fromSavedScript);
+				resetProcessorList();
+				fromSavedScript = false;
 			}
 		}
-	} 
-	else if ("resetParams".equalsIgnoreCase(command)) {//Ask all processors to re-query regarding options
-		for (int i= 0; i< fileProcessors.size(); i++){
-			FileProcessor fProcessor = (FileProcessor)fileProcessors.elementAt(i);
-			fProcessor.employeesQueryLocalOptions();
-		}
-		currentScript = recaptureScript();
-		preferencesScript = currentScript;
-		resetProcessorList();
+		else if ("Clear".equalsIgnoreCase(command)) { //You have hit Clear all, so remove all processors. 
+			removeAllProcessors();
+			fromSavedScript = false;
+			setIntro(fromSavedScript);
+			currentScript = "";
+			preferencesScript = "";
+		} 
+		else if ("Load".equalsIgnoreCase(command)) {  //You have hit Load, choose and execute stored script
+			MesquiteFile f = MesquiteFile.open(true, (FilenameFilter)null, "Open text file with processing script", null);
+			if (f!= null) {
+				String script = MesquiteFile.getFileContentsAsString(f.getPath());
+				if (!StringUtil.blank(script)) {
+					removeAllProcessors();
 
-	}
+					executeScript(script);
+					currentScript = script;
+					preferencesScript = script;
+					resetProcessorList();
+					fromSavedScript = true;
+					setIntro(fromSavedScript);
+				}
+			}
+		} 
+		else if ("resetParams".equalsIgnoreCase(command)) {//Ask all processors to re-query regarding options
+			for (int i= 0; i< fileProcessors.size(); i++){
+				FileProcessor fProcessor = (FileProcessor)fileProcessors.elementAt(i);
+				fProcessor.employeesQueryLocalOptions();
+			}
+			currentScript = recaptureScript();
+			preferencesScript = currentScript;
+			resetProcessorList();
+
+		}
 	}
 	/*.................................................................................................................*/
 	// set up the processors.
@@ -345,9 +345,9 @@ public class ProcessDataFiles extends GeneralFileMakerMultiple implements Action
 
 
 	/*=============================================================================================================*/
-/* File processing methods   */
+	/* File processing methods   */
 	/*.................................................................................................................*/
-	
+
 	public void writeFile(MesquiteFile nMF){
 		NexusFileInterpreter nfi =(NexusFileInterpreter) fileCoord.findImmediateEmployeeWithDuty(NexusFileInterpreter.class);
 		if (nfi!=null) {
@@ -389,7 +389,7 @@ public class ProcessDataFiles extends GeneralFileMakerMultiple implements Action
 		}
 		return true;
 	}
-	
+
 	boolean duplicateTaxaWarned = false;
 	void scanForDuplicateTaxa(MesquiteProject proj, MesquiteFile file){
 		if (duplicateTaxaWarned)
@@ -451,7 +451,6 @@ public class ProcessDataFiles extends GeneralFileMakerMultiple implements Action
 					if (fProcessor!=null) {
 						result.setValue((String)null);
 						int returnCode = fProcessor.processFile(fileToRead, result);
-
 						if (returnCode!=0) { //Debugg.println this fails if doing gene trees and raxml fails to get tree because of 3 taxa. Should there be different levels of failure?
 							logln("Sorry,  " + fProcessor.getNameAndParameters() + " did not succeed in processing the file " + fileToRead.getFileName());
 							if (returnCode <0 && !warned[i]) { //Debugg.println this fails if doing gene trees and raxml fails to get tree because of 3 taxa. Should there be different levels of failure?
@@ -487,7 +486,10 @@ public class ProcessDataFiles extends GeneralFileMakerMultiple implements Action
 							}
 
 						}
-					} else
+						else
+							return false;
+					} 
+					else
 						logln("There was a problem processing files; one of the processors was null.");
 
 				}
@@ -693,7 +695,7 @@ public class ProcessDataFiles extends GeneralFileMakerMultiple implements Action
 		lastDirectoryUsed = directoryPath;
 		writingFile.setPath(directoryPath+MesquiteFile.fileSeparator+"temp.nex");
 		processDirectory(directoryPath);  //DLOG: here asks for file extension filter and whether to save as NEXUS
-	//and inside that, //DLOG asks abotu processors
+		//and inside that, //DLOG asks abotu processors
 		storePreferences(); //Do this regardless of success
 		if (success){
 			//project.autosave = true;

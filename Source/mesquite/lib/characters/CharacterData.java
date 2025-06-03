@@ -222,6 +222,11 @@ public abstract class CharacterData extends FileElement implements MesquiteListe
 		doubleCheckTaxaIDs = taxa.getTaxaIDs();
 		return true;
 	}
+	// Likewise, to be rarely used in special circumstances
+	public void resetTaxaIDs(boolean areYouReallySureYouWantToDoThis){
+		taxaIDs = taxa.getTaxaIDs();
+		doubleCheckTaxaIDs = taxa.getTaxaIDs();
+	}
 	/*.................................................................................................................*/
 	public boolean getCharNumChanging() {
 		return charNumChanging;
@@ -1955,16 +1960,16 @@ public abstract class CharacterData extends FileElement implements MesquiteListe
 		if (taxa == null)
 			return null;
 		if (numTaxa != taxa.getNumTaxa()) 
-			warning = "Error in CharacterData: numTaxa (" + numTaxa + ") != taxa.getNumTaxa() (" + taxa.getNumTaxa() + ") ";
+			warning = "Error in CharacterData (3): numTaxa (" + numTaxa + ") != taxa.getNumTaxa() (" + taxa.getNumTaxa() + ") ";
 		if (taxaIDs.length !=numTaxa) {
-			warning = "Error in CharacterData: numTaxa (" + numTaxa + ") != taxaIDs.length (" + taxaIDs.length + ") (taxa.getNumTaxa() " + taxa.getNumTaxa() + ")";
+			warning = "Error in CharacterData (4): numTaxa (" + numTaxa + ") != taxaIDs.length (" + taxaIDs.length + ") (taxa.getNumTaxa() " + taxa.getNumTaxa() + ")";
 		}
 		for (int i = 0; i<taxa.getNumTaxa() && warning == null; i++)
 			if (i>= taxaIDs.length || taxa.getTaxon(i).getID() != taxaIDs[i])
-				warning = "Error in CharacterData: id of taxon " + i +" in Taxa doesn't match id recorded in CharacterData";
+				warning = "Error in CharacterData (1): id of taxon " + i +" in Taxa " + taxa.getName() + " doesn't match id recorded in CharacterData";
 		for (int i = 0; i<taxa.getNumTaxa() && warning == null; i++)
 			if (i>= doubleCheckTaxaIDs.length || taxa.getTaxon(i).getID() != doubleCheckTaxaIDs[i])
-				warning = "Error in CharacterData: id of taxon " + i +" in Taxa doesn't match id* recorded in CharacterData";
+				warning = "Error in CharacterData (2): id of taxon " + i +" in Taxa " + taxa.getName() + " doesn't match id* recorded in CharacterData";
 		if (warning != null)
 			MesquiteMessage.printStackTrace();
 		return warning;

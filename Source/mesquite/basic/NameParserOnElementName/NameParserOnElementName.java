@@ -73,16 +73,19 @@ public class NameParserOnElementName extends ListableNameAlterer {
 	public boolean alterName(ListableVector elements, int it){
 		boolean nameChanged = false;
 		Object obj = elements.elementAt(it);
-		if (obj == null || !(obj instanceof NameableWithNotify))
+		if (obj == null || !(obj instanceof Nameable))
 			return false;
-		NameableWithNotify element = (NameableWithNotify)obj;
 		String name = ((Listable)obj).getName();
 
 		if (name!=null){
-			String newName = nameParser.extractPart(name);
-			element.setName( newName, false);
+			String s = nameParser.extractPart(name);
+			if (obj instanceof NameableWithNotify)
+				((NameableWithNotify)obj).setName( s, false);
+			else
+				((Nameable)obj).setName( s);
 			nameChanged = true;
 		}
+
 		return nameChanged;
 	}
 	/*.................................................................................................................*

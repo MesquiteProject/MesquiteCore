@@ -1676,7 +1676,7 @@ public abstract class MesquiteWindow implements Listable, Commandable, OwnedByMo
 				if (StringUtil.blank(annot.getName()))
 					setExplanation("");
 				else
-					setExplanation("Footnote above refers to " + annot.getName());
+					setExplanation("Footnote above refers to " + annot.getName() + ".  (To edit a footnote, you may be able to right-click on the item, though that will work in only some contexts.)");
 
 			}
 			else if (defaultAnnotatable !=null) {
@@ -1684,7 +1684,7 @@ public abstract class MesquiteWindow implements Listable, Commandable, OwnedByMo
 				if (StringUtil.blank(defaultAnnotatable.getName()))
 					setExplanation("");
 				else
-					setExplanation("Footnote above refers to " + defaultAnnotatable.getName());
+					setExplanation("Footnote above refers to " + defaultAnnotatable.getName() + ".  (To edit a footnote, you may be able to right-click on the item, though that will work in only some contexts.)");
 			}
 			else {
 				annotationArea.setExplanation("");

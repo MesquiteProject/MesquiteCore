@@ -505,7 +505,7 @@ class ExplTextArea extends MQPanel {
 			textArea.setSelectionStart(0);
 			textArea.setSelectionEnd(0);
 			add(textArea);
-			textArea.setBounds(getBounds());
+			textArea.setBounds(0, 0, getBounds().width, getBounds().height);
 		}
 		setVisible(true);
 
@@ -520,7 +520,7 @@ class ExplTextArea extends MQPanel {
 	public void setBounds(int a, int b, int c, int d){
 		super.setBounds(a,b,c,d);
 		if (textArea!=null)
-			textArea.setBounds(a,b,c,d);
+			textArea.setBounds(0,0,c,d);
 
 	}
 	/* [Search for MQLINUX] -- under Linux, setting bounds crashes Mesquite here with a StackOverflowError, despite protection of LinuxGWAThread!*/

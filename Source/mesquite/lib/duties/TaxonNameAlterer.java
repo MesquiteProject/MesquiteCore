@@ -56,9 +56,9 @@ public abstract class TaxonNameAlterer extends MesquiteModule  {
    	/** Called to alter taxon names in table. This is used if the altering procedure can be done on one name
    	at a time, independent of all other name.  If the altering procedure involves dependencies between names,
    	then alterTaxonNames should be overridden with a method that uses another procedure.  */
-   	public boolean alterIndividualTaxonNames(Taxa taxa, MesquiteTable table){
+   	public int alterIndividualTaxonNames(Taxa taxa, MesquiteTable table){
    		if (taxa==null)
-   			return false;
+   			return -1;
    		int first = 0;
    		if (table!=null) {
    			first = table.firstRowNameSelected();
@@ -71,8 +71,9 @@ public abstract class TaxonNameAlterer extends MesquiteModule  {
    		this.table = table;
    	
 		if (okToInteractWithUser(CAN_PROCEED_ANYWAY, "Asking to change taxon names"))
-			if (!getOptions(taxa, first))
-				return false;
+			if (!getOptions(taxa, first)) {
+				return ResultCodes.USERCANCELONINITIALIZE;
+			}
 			
 		boolean anyChanged = false;
 		
@@ -81,19 +82,23 @@ public abstract class TaxonNameAlterer extends MesquiteModule  {
 			okDoIt = okDoIt && !table.anythingSelected();
 		for (int it=0; it<taxa.getNumTaxa(); it++){
 			
-			if ((okDoIt || taxa.getSelected(it) || table.isRowSelected(it) || table.isRowNameSelected(it)) && alterName(taxa, it))	
-				anyChanged = true;
+			if ((okDoIt || taxa.getSelected(it) || table.isRowSelected(it) || table.isRowNameSelected(it)))
+				if (alterName(taxa, it))	
+					anyChanged = true;
 		}
-   		return anyChanged;
+   		if (! anyChanged)
+   			return ResultCodes.NO_CHANGE;
+   		return ResultCodes.SUCCEEDED;
    	}
 
 	/*.................................................................................................................*/
    	/** Called to alter taxon names in those cells selected in table.  Returns true if any taxon names are altered.
    	This should be overridden if the is doing something that involves dependencies between names.*/
-   	public boolean alterTaxonNames(Taxa taxa, MesquiteTable table){
-    	boolean altered = alterIndividualTaxonNames(taxa, table);
-   		if (altered)
+   	public int alterTaxonNames(Taxa taxa, MesquiteTable table){
+    	int altered = alterIndividualTaxonNames(taxa, table);
+   		if (altered>=0)
    			cleanupAfterAlterTaxonNames();
+  	
    		return altered;
    	}
 

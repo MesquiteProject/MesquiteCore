@@ -648,7 +648,7 @@ public class FileElement extends AssociableWithSpecs implements Identifiable, Li
 		popup.addItem(getTypeName() +" \"" + getName() + "\"", MesquiteTrunk.mesquiteTrunk, null);
 		popup.addItem("Show", MesquiteTrunk.mesquiteTrunk, MesquiteTrunk.mesquiteTrunk.makeCommand("showMe", this));
 		popup.addItem("Rename", MesquiteTrunk.mesquiteTrunk, MesquiteTrunk.mesquiteTrunk.makeCommand("renameMe", this));
-		popup.addItem("Edit Comment", MesquiteTrunk.mesquiteTrunk, MesquiteTrunk.mesquiteTrunk.makeCommand("editComment", this));
+		popup.addItem("Edit Comment (Footnote)", MesquiteTrunk.mesquiteTrunk, MesquiteTrunk.mesquiteTrunk.makeCommand("editComment", this));
 		popup.addItem("Delete", MesquiteTrunk.mesquiteTrunk, MesquiteTrunk.mesquiteTrunk.makeCommand("deleteMe", this));
 	}
 	/* ---------------- for HNode interface ----------------------*/

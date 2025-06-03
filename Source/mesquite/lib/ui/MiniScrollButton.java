@@ -39,6 +39,7 @@ public class MiniScrollButton extends MousePanel {
 	public static Image downArrow,downArrowPressed, downArrowDisabled;
 	private boolean firsttime=true;
 	String itemName="";
+	String explanationAddendum="";
 	
 	static {
 		leftArrow = MesquiteImage.getImage(MesquiteModule.getRootImageDirectoryPath() + "leftarrow.gif");
@@ -145,7 +146,9 @@ public class MiniScrollButton extends MousePanel {
 		setBackground(ColorTheme.getInterfaceBackground());
 		setBounds(0,0,16,16);
 	}
-	
+	public void setExplanationAddendum(String s){
+		explanationAddendum = s;
+	}
 	public void setEnabled(boolean b) {
 		disabled = !b;
 		repaint();
@@ -293,12 +296,12 @@ public class MiniScrollButton extends MousePanel {
 				name = itemName;
 			String s="";
 	 		if (orientation==LEFT || orientation == DOWN) {
-	 			s+="This button will take you to the previous "+name+". ";
+	 			s+="This button will take you to the previous "+name+". " + explanationAddendum;
 	 			if (miniScroll.currentValue <= miniScroll.minValue) 
 	 				s += "It is disabled as it is already at the first "+name+".";
 	 		}
 			else if (orientation==RIGHT || orientation == UP){
-	 			s+="This button will take you to the next "+name+". ";
+	 			s+="This button will take you to the next "+name+". " + explanationAddendum;
 	 			if (miniScroll.currentValue >= miniScroll.maxValue) 
 	 				s += "It is disabled as it is already at the last "+name+".";
 	 		}

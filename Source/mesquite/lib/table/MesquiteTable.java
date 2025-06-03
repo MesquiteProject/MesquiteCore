@@ -3604,6 +3604,14 @@ public class MesquiteTable extends MesquitePanel implements KeyListener, MouseWh
 			defocusCell();
 	}
 
+	/* ............................................................................................................... */
+	/**
+	 * Called if right clicked on cell. Can be overridden in subclasses to respond.
+	 */
+	public void cellRightClicked(int column, int row, EditorPanel editorPanel, int x, int y, int modifiers){
+	}
+	
+	
 	public boolean touchColumnNameEvenIfSelected(){
 		return false;
 	}
@@ -3636,6 +3644,9 @@ public class MesquiteTable extends MesquitePanel implements KeyListener, MouseWh
 				columnNames.repaint();
 			}
 		}
+		else if (MesquiteEvent.rightClick(modifiers)){
+			cellRightClicked(column, -1, editorPanel, x, y, modifiers); 
+		}
 		else {
 			boolean doRepaint = (anyRowColumnSelected());
 			offAllEdits();
@@ -3659,7 +3670,7 @@ public class MesquiteTable extends MesquitePanel implements KeyListener, MouseWh
 			return;
 		if (!rowLegal(row))
 			return;
-		if ((row == rowFirstTouched && !MesquiteEvent.commandOrControlKeyDown(modifiers)) && (anyRowNameSelected() || editingRowName())) {
+		if ((row == rowFirstTouched && !MesquiteEvent.commandOrControlKeyDown(modifiers)) && !MesquiteEvent.rightClick(modifiers) && (anyRowNameSelected() || editingRowName())) {
 			deselectAllNotify();
 			offAllEdits();
 			selectRowName(row);
@@ -3680,7 +3691,10 @@ public class MesquiteTable extends MesquitePanel implements KeyListener, MouseWh
 				rowNames.repaint();
 			}
 		}
-		else {
+		else if (MesquiteEvent.rightClick(modifiers)){
+			cellRightClicked(-1, row, editorPanel, x, y, modifiers);
+		}
+ 		else {
 			boolean doRepaint = (anyRowColumnSelected());
 			offAllEdits();
 			deselectAllNotify(true);

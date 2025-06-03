@@ -630,7 +630,10 @@ timer6.end();
 
 		//((TableTool)tool).getWorksOnColumnNames();
 
-		if (column>-1 && row > -1 && column<table.numColumnsTotal && row<table.numRowsTotal) {
+		if (MesquiteEvent.rightClick(modifiers)){
+			table.cellRightClicked(column, row, this, x, y, modifiers);
+		}
+		else 		if (column>-1 && row > -1 && column<table.numColumnsTotal && row<table.numRowsTotal) {
 
 			table.startAutoScrollThread(this);
 			if (((TableTool)tool).getIsBetweenRowColumnTool()) {
