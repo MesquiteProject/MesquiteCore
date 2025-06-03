@@ -48,6 +48,12 @@ public class NexusBlockList extends ListLVModule {
 		}
 		return false;
 	}
+ 	public String getElementNameSingular(){
+ 		return "NEXUS block";
+ 	}
+ 	public String getElementNamePlural(){
+ 		return "NEXUS blocks";
+ 	}
 
 	public void showListWindow(Object obj){
 		if (obj instanceof ListableVector)

@@ -2560,7 +2560,7 @@ public abstract class MesquiteWindow implements Listable, Commandable, OwnedByMo
 		temp.addLine("setAnnotationSize " + annotationHeight);
 		temp.addLine("setFontIncAnnot " + StringUtil.tokenize(Integer.toString(annotationArea.fontIncrement)));
 		temp.addLine("setFontIncExp " + StringUtil.tokenize(Integer.toString(explanationArea.fontIncrement)));
-		if (!(isPoppedOut() && popAsTile) && isVisible())  //size of poptile will be set in late snapshot of ProjectWindow
+		if (!(isPoppedOut() && popAsTile) && (isVisible() || getOwnerModule() instanceof FileCoordinator))  //size of poptile will be set in late snapshot of ProjectWindow
 			temp.addLine("setSize " + getContentsWidth() + " " + getContentsHeight());
 		temp.addLine("setLocation " + getLocation().x + " " + getLocation().y);
 		temp.addLine("setFont " + ParseUtil.tokenize(currentFont.getName())); //fixed to tokenize 12 Oct 01

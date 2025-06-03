@@ -51,10 +51,15 @@ public class TreeListAttachment extends TreeListAssistant {
 	public boolean startJob(String arguments, Object condition, boolean hiredByName) {
 		addMenuItem( "Attachment to Show...", makeCommand("setAttached",  this));
 		addMenuItem( "New Attachment...", makeCommand("newAttachment",  this));
-		addMenuItem( "Paste Values into Selected", makeCommand("paste",  this));
+		addMenuItem( "Paste Values from Clipboard", makeCommand("paste",  this));
 		return true;
 	}
 
+	/*...............................................................................................................*/
+	/** returns whether or not any cells can be pasted into.*/
+	public boolean allowPasting(){
+		return true;
+	}
 	/*.................................................................................................................*/
 	public Snapshot getSnapshot(MesquiteFile file) { 
 		if (nameOfAttached==null)
@@ -124,12 +129,12 @@ public class TreeListAttachment extends TreeListAssistant {
 			}
 
 		}
-		else if (checker.compare(this.getClass(), "Pastes", "", commandName, "paste")) {
+		/*else if (checker.compare(this.getClass(), "Pastes", "", commandName, "paste")) {
 			MesquiteBoolean success = pasteIntoRows(treeListTable);
 			if (StringUtil.notEmpty(success.getName()))
 				discreetAlert("Problem with pasting:" + success.getName());
 			if (!MesquiteThread.isScripting() && success.getValue()) parametersChanged();
-		}
+		}*/
 		else
 			return  super.doCommand(commandName, arguments, checker);
 		return null;

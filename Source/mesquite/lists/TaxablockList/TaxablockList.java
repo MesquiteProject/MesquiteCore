@@ -45,6 +45,12 @@ public class TaxablockList extends ListLVModule {
 	public boolean showing(Object obj){
 		return (getModuleWindow()!=null  && getProject().getTaxas()==obj);
 	}
+ 	public String getElementNameSingular(){
+ 		return "taxa block";
+ 	}
+ 	public String getElementNamePlural(){
+ 		return "taxa blocks";
+ 	}
 
 	public boolean resetMenusOnNameChange(){
 		return true;

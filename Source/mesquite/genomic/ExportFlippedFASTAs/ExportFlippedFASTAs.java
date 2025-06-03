@@ -87,11 +87,9 @@ public class ExportFlippedFASTAs extends FileInterpreterI {
 	public String getIdentifierString() {
 		return "";
 	}
-	boolean includeGaps = true;
 	/*.................................................................................................................*/
 	public String preparePreferencesForXML () {
 		StringBuffer buffer = new StringBuffer(200);
-		StringUtil.appendXMLTag(buffer, 2, "includeGaps", includeGaps);  
 		StringUtil.appendXMLTag(buffer, 2, "writeOnlySelectedTaxa", writeOnlySelectedTaxa);  
 		return buffer.toString();
 	}
@@ -101,8 +99,6 @@ public class ExportFlippedFASTAs extends FileInterpreterI {
 
 	/*.................................................................................................................*/
 	public void processSingleXMLPreference (String tag, String content) {
-		if ("includeGaps".equalsIgnoreCase(tag))
-			includeGaps = MesquiteBoolean.fromTrueFalseString(content);
 		if ("writeOnlySelectedTaxa".equalsIgnoreCase(tag))
 			writeOnlySelectedTaxa = MesquiteBoolean.fromTrueFalseString(content);
 
@@ -113,26 +109,24 @@ public class ExportFlippedFASTAs extends FileInterpreterI {
 		Arguments args = new Arguments(new Parser(arguments), true);
 		Taxa taxa = (Taxa)getProject().chooseTaxa(containerOfModule(),"For which block of taxa to export FASTA files?");
 		writeOnlySelectedTaxa = false;
-		includeGaps = true;
-		loadPreferences();
-		MesquiteInteger buttonPressed = new MesquiteInteger(1);
-		ExporterDialog dialog = new ExporterDialog(this,containerOfModule(), "Export Flipped FASTA Options", buttonPressed);
-		Checkbox includeGapsCheckBox = dialog.addCheckBox("Include gaps", includeGaps);  
-		Checkbox selectedOnly = null;
-		if (taxa.anySelected())
+		if (taxa.anySelected()) {
+			loadPreferences();
+			MesquiteInteger buttonPressed = new MesquiteInteger(1);
+			ExporterDialog dialog = new ExporterDialog(this,containerOfModule(), "Export Flipped FASTA Options", buttonPressed);
+			Checkbox selectedOnly = null;
 			selectedOnly = dialog.addCheckBox("Selected taxa only", writeOnlySelectedTaxa);  
-		dialog.completeAndShowDialog(true);
-		if (buttonPressed.getValue()==0)  {
-			if (selectedOnly != null)
-				writeOnlySelectedTaxa = selectedOnly.getState();
-			includeGaps = includeGapsCheckBox.getState();
-			storePreferences();
-		}
-		else {
+			dialog.completeAndShowDialog(true);
+			if (buttonPressed.getValue()==0)  {
+				if (selectedOnly != null)
+					writeOnlySelectedTaxa = selectedOnly.getState();
+				storePreferences();
+			}
+			else {
+				dialog.dispose();
+				return false;
+			}
 			dialog.dispose();
-			return false;
 		}
-		dialog.dispose();
 		String directory = MesquiteFile.chooseDirectory("Choose folder into which files will be saved:");
 		if (StringUtil.blank(directory))
 			return false;
@@ -140,8 +134,8 @@ public class ExportFlippedFASTAs extends FileInterpreterI {
 			directory+=MesquiteFile.fileSeparator;
 
 		StringBuffer buffer = new StringBuffer(500);
-
 		int numTaxa = taxa.getNumTaxa();
+		log("Exporting taxa ");
 		for (int it = 0; it<numTaxa; it++) {
 			if (!writeOnlySelectedTaxa || taxa.getSelected(it)){
 				buffer.setLength(0);
@@ -149,7 +143,7 @@ public class ExportFlippedFASTAs extends FileInterpreterI {
 				for (int iM = 0; iM < numMatrices; iM++){
 					CharacterData data = getProject().getCharacterMatrixVisible(taxa, iM, MolecularState.class);
 					if (data != null) {
-						MesquiteStringBuffer taxMatrixFastaBuffer = ((MolecularData)data).getSequenceAsFasta(includeGaps,false,it, data.getName());
+						MesquiteStringBuffer taxMatrixFastaBuffer = ((MolecularData)data).getSequenceAsFasta(false,false,it, data.getName());
 						String taxMatrixFasta = taxMatrixFastaBuffer.toString();
 						if (StringUtil.notEmpty(taxMatrixFasta)){
 							buffer.append(taxMatrixFasta);
@@ -160,8 +154,9 @@ public class ExportFlippedFASTAs extends FileInterpreterI {
 				filePath = directory+taxa.getTaxonName(it) + ".fas";
 				MesquiteFile.putFileContents(filePath, buffer.toString(), true);
 			}
+				log(".");
 		}
-
+		logln(" done");
 		return true;
 	}
 

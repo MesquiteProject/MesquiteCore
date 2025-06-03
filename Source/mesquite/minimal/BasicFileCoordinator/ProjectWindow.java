@@ -99,7 +99,6 @@ public class ProjectWindow extends MesquiteWindow implements MesquiteListener {
 		MesquiteWindow main = f.frontMostInLocation(MesquiteFrame.MAIN);
 		MesquiteWindow pop = f.frontMostInLocation(MesquiteFrame.POPTILE);
 		MesquiteWindow either = f.getFrontWindow();
-
 		temp.addLine("setResourcesState " + f.getResourcesFullWindow() + " " + f.getResourcesClosedWhenMinimized() + " "  + f.getResourcesWidth());
 		if (either != null){
 			if (pop == null) //no pop just bring first

@@ -797,6 +797,12 @@ public class MesquiteTable extends MesquitePanel implements KeyListener, MouseWh
 
 	/* ................................................................................................................. */
 	protected void pasteIt(String s) {
+		MesquiteWindow ww = MesquiteWindow.windowOfItem(this);
+		MesquiteModule mb = null;
+		if (ww != null)
+		mb = ww.getOwnerModule();
+		if (mb != null)
+			mb.getProject().incrementProjectWindowSuppression();  //this is done just in case names of project resources are being changed, e.g. in list of character matrices or list of tree blocks
 		int count = 0;
 		MesquiteInteger pos = new MesquiteInteger(0);
 		for (int i = 0; i < numColumnsTotal; i++) {
@@ -809,11 +815,14 @@ public class MesquiteTable extends MesquitePanel implements KeyListener, MouseWh
 		}
 
 		boolean rowNamesChanged = false;
+		
 		for (int j = 0; j < numRowsTotal; j++) {
 			if (isRowNameSelected(j) || isRowSelected(j)) {
 				String t = StringUtil.getNextTabbedToken(s, pos);
 				if (t != null && rowNamesEditable && rowNamesCopyPaste){
 					returnedRowNameText(j, t, false);
+					if ((count+1) % 10 == 0)
+						System.err.print(".");
 					rowNamesChanged = true;
 				}
 				count++;
@@ -829,6 +838,8 @@ public class MesquiteTable extends MesquitePanel implements KeyListener, MouseWh
 		}
 		if (rowNamesChanged)
 			rowNamesReturned();
+		if (mb != null)
+			mb.getProject().decrementProjectWindowSuppression();
 
 	}
 

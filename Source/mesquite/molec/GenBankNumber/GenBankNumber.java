@@ -53,11 +53,18 @@ public class GenBankNumber extends TaxonListAssistant {
 				data=null;
 		
 	}
+	
+	/*...............................................................................................................*/
+	/** returns whether or not any cells can be pasted into.*/
+	public boolean allowPasting(){
+		return true;
+	}
+
 	/*.................................................................................................................*/
 	public void setTableAndTaxa(MesquiteTable table, Taxa taxa){
 		deleteAllMenuItems();
 		addMenuItem("Move Numbers from GenBank/FASTA Taxon Name", makeCommand("moveNumbersFromName", this));
-		addMenuItem( "Paste Values into Selected", makeCommand("paste",  this));
+		addMenuItem( "Paste Values from Clipboard", makeCommand("paste",  this)); //need to put this in module, but ListAssistant class handles command
 		if (this.taxa != null)
 			this.taxa.removeListener(this);
 		this.taxa = taxa;
@@ -101,14 +108,14 @@ public class GenBankNumber extends TaxonListAssistant {
 			moveNumberFromGenBankTaxonName();
 			return null;
 		}
-		else if (checker.compare(this.getClass(), "Pastes", "", commandName, "paste")) {
+		/*else if (checker.compare(this.getClass(), "Pastes", "", commandName, "paste")) {
 			MesquiteBoolean success = pasteIntoRows(table);
 			if (StringUtil.notEmpty(success.getName()))
 				discreetAlert("Problem with pasting:" + success.getName());
 			if (!MesquiteThread.isScripting() && success.getValue()) parametersChanged();
-		}
+		}*/
 		else return  super.doCommand(commandName, arguments, checker);
-		return null;
+	//	return null;
 	}
 	/*.................................................................................................................*/
 	private void moveNumberFromGenBankTaxonName() {

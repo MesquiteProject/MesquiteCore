@@ -17,47 +17,56 @@ import java.awt.*;
 import mesquite.lib.*;
 import mesquite.lib.table.*;
 import mesquite.lib.taxa.Taxa;
+import mesquite.lists.lib.ListLVModule;
 
 
 /* ======================================================================== */
 /**This is superclass of modules to alter a data matrix.*/
 
-public abstract class TaxonNameAlterer extends MesquiteModule  {
+public abstract class ListableNameAlterer extends MesquiteModule  {
 	protected MesquiteTable table;
-	protected Taxa taxa;
+	protected ListableVector elements;
 	
    	public Class getDutyClass() {
-   	 	return TaxonNameAlterer.class;
+   	 	return ListableNameAlterer.class;
    	 }
  	public String getDutyName() {
- 		return "Taxon Name Alterer";
+ 		return "Listable Name Alterer";
    	}
    	
-   	
+   	//ADAPTED from taxon names alterer, and not all methods may yet be used.
 	/*.................................................................................................................*/
-   	/** Called to alter the taxon names in a single cell.  If you use the alterContentOfCells method of this class, 
+   	/** Called to alter the element names in a single cell.  If you use the alterContentOfCells method of this class, 
    	then you must supply a real method for this, not just this stub. */
-   	public boolean alterName(Taxa taxa, int it){
+   	public boolean alterName(ListableVector elements, int it){
    		return false;
    	}
    	
 	/*.................................................................................................................*/
-   	/** A stub method for querying the user about options. If alterIndividualTaxonNames is used to 
+   	/** A stub method for querying the user about options. If alterIndividualElementNames is used to 
    	alter the names, and options need to be specified for the operation, then optionsQuery should be overridden.*/
- 	public  boolean getOptions(Taxa taxa, int firstSelected){
+ 	public  boolean getOptions(ListableVector elements, int firstSelected){
    		return true;
    	}
-
+ 	
+ 	protected String getElementNameSingular(){
+   		ListLVModule lvModule = (ListLVModule)findEmployerWithDuty(ListLVModule.class);
+   		return lvModule.getElementNameSingular();
+	}
+ 	protected String getElementNamePlural(){
+   		ListLVModule lvModule = (ListLVModule)findEmployerWithDuty(ListLVModule.class);
+   		return lvModule.getElementNamePlural();
+	}
 	/*.................................................................................................................*/
-   	/** A stub method for doing any necessary cleanup after taxon names have been altered.*/
-   	public void cleanupAfterAlterTaxonNames(){
+   	/** A stub method for doing any necessary cleanup after element names have been altered.*/
+   	public void cleanupAfterAlterElementNames(){
    	}
 	/*.................................................................................................................*/
-   	/** Called to alter taxon names in table. This is used if the altering procedure can be done on one name
+   	/** Called to alter element names in table. This is used if the altering procedure can be done on one name
    	at a time, independent of all other name.  If the altering procedure involves dependencies between names,
-   	then alterTaxonNames should be overridden with a method that uses another procedure.  */
-   	public boolean alterIndividualTaxonNames(Taxa taxa, MesquiteTable table){
-   		if (taxa==null)
+   	then alterElementNames should be overridden with a method that uses another procedure.  */
+   	public boolean alterIndividualElementNames(ListableVector elements, MesquiteTable table){
+   		if (elements==null)
    			return false;
    		int first = 0;
    		if (table!=null) {
@@ -67,33 +76,33 @@ public abstract class TaxonNameAlterer extends MesquiteModule  {
    			if (first<0)
    				first = 0;
    		}
-   		this.taxa = taxa;
-   		this.table = table;
+   		this.elements = elements;
+ 		this.table = table;
    	
-		if (okToInteractWithUser(CAN_PROCEED_ANYWAY, "Asking to change taxon names"))
-			if (!getOptions(taxa, first))
+		if (okToInteractWithUser(CAN_PROCEED_ANYWAY, "Asking to change " + getElementNameSingular() + " names"))
+			if (!getOptions(elements, first))
 				return false;
 			
 		boolean anyChanged = false;
 		
-		boolean okDoIt = !taxa.anySelected();
+		boolean okDoIt = !elements.anySelected();
 		if (table != null)
 			okDoIt = okDoIt && !table.anythingSelected();
-		for (int it=0; it<taxa.getNumTaxa(); it++){
+		for (int it=0; it<elements.size(); it++){
 			
-			if ((okDoIt || taxa.getSelected(it) || table.isRowSelected(it) || table.isRowNameSelected(it)) && alterName(taxa, it))	
+			if ((okDoIt || elements.getSelected(it) || table.isRowSelected(it) || table.isRowNameSelected(it)) && alterName(elements, it))	
 				anyChanged = true;
 		}
    		return anyChanged;
    	}
 
 	/*.................................................................................................................*/
-   	/** Called to alter taxon names in those cells selected in table.  Returns true if any taxon names are altered.
+   	/** Called to alter element names in those cells selected in table.  Returns true if any element names are altered.
    	This should be overridden if the is doing something that involves dependencies between names.*/
-   	public boolean alterTaxonNames(Taxa taxa, MesquiteTable table){
-    	boolean altered = alterIndividualTaxonNames(taxa, table);
+   	public boolean alterElementNames(ListableVector elements, MesquiteTable table){
+    	boolean altered = alterIndividualElementNames(elements, table);
    		if (altered)
-   			cleanupAfterAlterTaxonNames();
+   			cleanupAfterAlterElementNames();
    		return altered;
    	}
 

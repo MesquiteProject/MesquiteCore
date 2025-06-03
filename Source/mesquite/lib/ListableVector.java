@@ -180,6 +180,9 @@ public class ListableVector extends FileElement implements StringLister, Command
 		else
 			return ((Listable)obj).getName();
 	}
+	public String getName(int i){
+		return nameOfElementAt(i);
+	}
 	public Listable[] getElementArray(){
 		Listable[] temp =  new Listable[size()];
 		for (int i=0; i<size(); i++)

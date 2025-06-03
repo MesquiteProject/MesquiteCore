@@ -2781,6 +2781,7 @@ public class Mesquite extends MesquiteTrunk
 			//EMBEDDED: include this  
 			((Mesquite)mesquiteTrunk).start(); 
 			MesquiteCommand.nullCommand = new MesquiteCommand("null", MesquiteTrunk.mesquiteTrunk);
+			MesquiteCommand.nullCommand.setSuppressLogging(true);
 			if (MesquiteTrunk.debugMode)
 				System.out.println("main constructor 7");
 			// open the files requested at startup

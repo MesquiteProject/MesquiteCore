@@ -50,6 +50,7 @@ import mesquite.lib.MesquiteTimer;
 import mesquite.lib.MesquiteTrunk;
 import mesquite.lib.NameReference;
 import mesquite.lib.Nameable;
+import mesquite.lib.NameableWithNotify;
 import mesquite.lib.Notification;
 import mesquite.lib.ObjectArray;
 import mesquite.lib.ObjectContainer;
@@ -114,7 +115,7 @@ should be built to include the mother node.)  Tree reading of reticulate nodes i
 <li>Truly unrooted trees, with node-rings storage and recursion used by PHYLIP:  not yet supported.  There are some special methods whose names end in
 UR that allow access to the tree as if unrooted.
 </ul>*/
-public class MesquiteTree extends Associable implements AdjustableTree, Listable, Nameable, Commandable, MesquiteListener, CompatibilityChecker, Identifiable {
+public class MesquiteTree extends Associable implements AdjustableTree, Listable, NameableWithNotify, Commandable, MesquiteListener, CompatibilityChecker, Identifiable {
 	/** The set of taxa to which terminal nodes refer. */
 	protected Taxa taxa;
 	/** The tree vector to which this Tree belongs.  The tree does not need to belong to a TreeVector, but if it is, then it is stored here
@@ -929,6 +930,11 @@ public class MesquiteTree extends Associable implements AdjustableTree, Listable
 		if (modifiedSinceNamed && !name.endsWith("+"))
 			return name + '+';
 		return name;
+	}
+	/*-----------------------------------------*/
+	/** Sets the name of the tree.*/
+	public void setName(String name, boolean notify) { //notification is ignored!
+		setName(name);
 	}
 	/*-----------------------------------------*/
 	/** Sets the name of the tree.*/

@@ -30,6 +30,7 @@ public class CompileProcessedMatrices extends FileProcessor {
 	String saveFile = null;
 	String tempFile = null;
 	boolean openAfterCompiled = true;
+	boolean OACOptionAlreadySet = false;
 	/*.................................................................................................................*/
 	public boolean startJob(String arguments, Object condition, boolean hiredByName) {
 		loadPreferences();
@@ -60,7 +61,6 @@ public class CompileProcessedMatrices extends FileProcessor {
 		return temp;
 	}
 	
-	boolean OACOptionAlreadySet = false;
 	/*.................................................................................................................*/
 	public Object doCommand(String commandName, String arguments, CommandChecker checker) {
 		if (checker.compare(this.getClass(), "Sets whether to open after compilation", "[path]", commandName, "setOpenAfterward")) {

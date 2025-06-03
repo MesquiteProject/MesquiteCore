@@ -29,7 +29,8 @@ public abstract class ListLVModule extends ListModule  {
  	public String getDutyName() {
  		return "List Module for Listable Vectors";
    	 }
-
+ 	public abstract String getElementNameSingular();
+ 	public abstract String getElementNamePlural();
 	/*.................................................................................................................*/
 	public boolean columnsMovable(){
 		return true;

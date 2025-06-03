@@ -158,7 +158,7 @@ public class CombineFlippedFastas extends GeneralFileMakerMultiple {
 												locusMatrix.addToFile(taxa.getFile(), recProject, null);
 												lociAdded++;
 												if (lociAdded == 1)
-													log("   New Loci .");
+													log("   Adding Loci .");
 												else if (lociAdded%100 == 0)
 													log(" " + lociAdded);
 												else if (lociAdded%10 == 0)
@@ -233,22 +233,25 @@ public class CombineFlippedFastas extends GeneralFileMakerMultiple {
 		FileCoordinator fileCoord = getFileCoordinator();
 		proj = fileCoord.initiateProject(directoryPath, new MesquiteFile()); //this is the reading project
 		
-		// if there is a project, and it has taxa, can ask whether to add to it
-		processDirectory(directoryPath, proj);
 		if (proj != null){
 			String fileSuggestion = StringUtil.getLastItem(directoryPath, MesquiteFile.fileSeparator);
 			if (StringUtil.blank(fileSuggestion))
 				fileSuggestion = directoryPath;
 			fileSuggestion += ".nex";
 			proj.getHomeFile().setFileName(fileSuggestion);
-			proj.developing = false;
 			if (proj.getHomeFile().changeLocation("Save imported file as NEXUS file")) {
+				processDirectory(directoryPath, proj);
+				MesquiteWindow w = fileCoord.getModuleWindow();
+				if (w != null) {
+					w.setWindowSize(300, 300);  //so it has a decent window size if the user doesn't save again
+				}
 				getFileCoordinator().writeFile(proj.getHomeFile()); 
 				if (proj.getTaxa(0) != null)
 					proj.getTaxa(0).setDirty(true); //just to force it to resave if quitting
 			}
 			else
 				proj = null;
+			proj.developing = false;
 		}
 		decrementMenuResetSuppression();
 		return proj;

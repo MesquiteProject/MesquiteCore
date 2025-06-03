@@ -53,6 +53,12 @@ public class TreeblockList extends ListLVModule {
 	public boolean showing(Object obj){
 		return (getModuleWindow()!=null && obj == treeBlocks);
 	}
+ 	public String getElementNameSingular(){
+ 		return "tree block";
+ 	}
+ 	public String getElementNamePlural(){
+ 		return "tree blocks";
+ 	}
 
 	public boolean rowsShowable(){
 		return true;

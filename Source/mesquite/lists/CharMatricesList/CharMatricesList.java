@@ -24,6 +24,7 @@ import mesquite.lib.characters.*;
 import mesquite.lib.duties.*;
 import mesquite.lib.table.*;
 import mesquite.lib.ui.MesquiteMenuSpec;
+import mesquite.lib.ui.MesquiteSubmenuSpec;
 import mesquite.lib.ui.MesquiteWindow;
 
 /* ======================================================================== */
@@ -48,6 +49,12 @@ public class CharMatricesList extends ListLVModule {
 	public boolean showing(Object obj){
 		return (getModuleWindow()!=null && obj == datas);
 	}
+ 	public String getElementNameSingular(){
+ 		return "matrix";
+ 	}
+ 	public String getElementNamePlural(){
+ 		return "matrices";
+ 	}
 
 	public boolean resetMenusOnNameChange(){
 		return true;
@@ -72,6 +79,8 @@ public class CharMatricesList extends ListLVModule {
 		addModuleMenuItems(mss2, makeCommand("doUtility", this), CharMatricesListUtility.class);
 		//MesquiteSubmenuSpec mss2 = addSubmenu(null, "Utilities", MesquiteModule.makeCommand("doUtility",  this));
 		//mss2.setList(DatasetsListUtility.class);
+		MesquiteSubmenuSpec mss3 = addSubmenu(null, "Matrix Names", MesquiteModule.makeCommand("doNames",  this));
+		mss3.setList(ListableNameAlterer.class);
 
 		if (!MesquiteThread.isScripting()){
 			CharMatricesListAssistant assistant = (CharMatricesListAssistant)hireNamedEmployee(CharMatricesListAssistant.class, StringUtil.tokenize("Taxa of data matrix"));
@@ -177,6 +186,24 @@ public class CharMatricesList extends ListLVModule {
 					boolean a = tda.operateOnDatas(datas, table);
 					if (!tda.pleaseLeaveMeOn())
 						fireEmployee(tda);
+				}
+			}
+		}
+		else if (checker.compare(this.getClass(), "Hires utility module to alter names of the matrices", "[name of module]", commandName, "doNames")) {
+			if (datas !=null && getModuleWindow() != null){
+				MesquiteTable table = ((ListWindow)getModuleWindow()).getTable();
+				if (table == null)
+					return null;
+				ListableNameAlterer tda= (ListableNameAlterer)hireNamedEmployee(ListableNameAlterer.class, arguments);
+				if (tda!=null) {
+					getProject().incrementProjectWindowSuppression(); 
+					boolean a = tda.alterElementNames(datas, table);
+					if (a) {
+						table.repaintAll();
+						table.rowNamesReturned();
+					}
+					getProject().decrementProjectWindowSuppression(); 
+					fireEmployee(tda);
 				}
 			}
 		}
