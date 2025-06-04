@@ -99,6 +99,8 @@ public class ProgressIndicator implements Abortable {
 		this(mp,title, 0, true);
 	}
 	public void toFront(){
+		if (MesquiteThread.pleaseSuppressProgressIndicatorsCurrentThread())
+			return;
 		if (t != null && t.dlog != null)
 			t.dlog.toFront();
 	}
@@ -152,8 +154,9 @@ public class ProgressIndicator implements Abortable {
 		try {
 			if (getOwnerThread() == null && Thread.currentThread() instanceof MesquiteThread)
 				setOwnerThread((MesquiteThread)Thread.currentThread()); //by default the owner thread is the one that requests the window to start
-			if (!MesquiteThread.pleaseSuppressProgressIndicatorsCurrentThread())
+			if (!MesquiteThread.pleaseSuppressProgressIndicatorsCurrentThread()){
 				t.start();
+			}
 		}
 		catch(IllegalThreadStateException e){
 		}
@@ -225,6 +228,12 @@ public class ProgressIndicator implements Abortable {
 			t.dlog.setText(s, bringToFront);
 		else
 			t.setText (s);
+	}
+	/*.................................................................................................................*/
+	public void setVisible (boolean v) {
+		if (MesquiteThread.pleaseSuppressProgressIndicatorsCurrentThread())
+			return;
+		t.dlog.setVisible(v);
 	}
 	/*.................................................................................................................*/
 	public void setText (String s) {
@@ -360,9 +369,14 @@ class ProgressWindowThread extends Thread {
 		if (dlog !=null)
 			dlog.setTertiaryMessage(message);
 	}
-	/** DOCUMENT */
+	public void start() {
+	if (MesquiteThread.pleaseSuppressProgressIndicatorsCurrentThread())
+		return;
+	super.start();
+	}
+	
 	public void run() {
-		if (!dontStart) {
+		if (!dontStart  && !MesquiteThread.pleaseSuppressProgressIndicatorsCurrentThread()){
 			dlog = new ProgressWindow(progressIndicator, title, initialMessage, total, buttonName);
 			if (!dontStart) {
 				dlog.setVisible(true); //TODO: if thread doesn't show until after file reading started, and alert appears, could be hidden under this, with STOP being only option

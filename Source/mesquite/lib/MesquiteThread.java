@@ -167,7 +167,7 @@ public class MesquiteThread extends Thread implements CommandRecordHolder {
 		}
 	}
 
-	boolean indicatorSuppressed = false;
+	public boolean indicatorSuppressed = false;
 	public static boolean pleaseSuppressProgressIndicatorsCurrentThread(){
 		Thread t = Thread.currentThread();
 		if (t instanceof MesquiteThread){

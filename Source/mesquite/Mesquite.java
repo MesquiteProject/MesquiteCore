@@ -1501,8 +1501,10 @@ public class Mesquite extends MesquiteTrunk
 		else {
 			ProjectRead pr = new ProjectRead(arguments,  code, mesquiteTrunk, null);
 			ProjectReadThread pt = new ProjectReadThread(pr);
+			pt.indicatorSuppressed = MesquiteThread.pleaseSuppressProgressIndicatorsCurrentThread();
 			if (originalArguments != null)
 				pr.setOriginalArguments(originalArguments);
+
 			pr.setImporterSubclass(importerSubclass);
 			pt.settempID(arguments);
 			pr.setThread(pt);
@@ -1510,33 +1512,7 @@ public class Mesquite extends MesquiteTrunk
 			return null;
 		}
 	}
-	/*.................................................................................................................*
-	// makes and returns a new project.///hackathon
-	public MesquiteProject newProject(InputStream stream, String arguments, boolean actAsScriptingRegardless, String originalArguments){
-		if (MesquiteThread.isScripting() || actAsScriptingRegardless) {
-			ObjectContainer projCont = new ObjectContainer();
-			ProjectRead pr = new ProjectRead(arguments,  4, mesquiteTrunk, projCont);
-			pr.stream = stream;
-			if (originalArguments != null)
-				pr.setOriginalArguments(originalArguments);
-			pr.run();
-			MesquiteProject p = (MesquiteProject)projCont.getObject();
-			projCont.setObject(null); //This is done because Threads not being finalized, and need to remove references to projects
-			return p;
-		}
-		else {
-			ProjectRead pr = new ProjectRead(arguments,  4, mesquiteTrunk, null);
-			pr.stream = stream;
-			ProjectReadThread pt = new ProjectReadThread(pr);
-			if (originalArguments != null)
-				pr.setOriginalArguments(originalArguments);
-			pt.settempID(arguments);
-			pr.setThread(pt);
-			pt.start();
-			return null;
-		}
-	}
-
+	
 	/*.................................................................................................................*/
 	/** Requests a window to close.  In the process, subclasses of MesquiteWindow might close down their owning MesquiteModules etc.*/
 	public void windowGoAway(MesquiteWindow whichWindow) {
