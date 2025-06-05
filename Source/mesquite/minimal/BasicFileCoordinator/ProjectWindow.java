@@ -1147,11 +1147,7 @@ class TaxaPanel extends ElementPanel {
 		addCommand(false, "list.gif", "List &\nManage\nTaxa", "List & Manage Taxa", new MesquiteCommand("showMe", element));
 		if (otherMatch()) {
 			addCommand(true, null, "-", "-", null);
-			//("@ move this stuff ot list of taxa blocks and just make reference here
 			addCommand(true, null, "(Taxa block duplicated? Select for details...)", "(Taxa block duplicated? Select for details...)", new MesquiteCommand("duplicatedInfo", this));  
-		//	addCommand(true, null, "Copy Matrices to other Taxa Block", "Copy Matrices to other Taxa Block", new MesquiteCommand("transferMatrices", this));  
-		//	addCommand(true, null, "Copy Trees to other Taxa Block", "Copy Trees to other Taxa Block", new MesquiteCommand("transferTrees", this)); 
-		//	addCommand(true, null, "Merge Matrices and Trees with other Taxa Block", "Merge Matrices and Trees with other Taxa Block", new MesquiteCommand("mergeBlock", this)); 
 			addCommand(true, null, "-", "-", null);
 		}
 		addCommand(false, "chart.gif", "Chart\nTaxa", "Chart Taxa", new MesquiteCommand("chart", this));

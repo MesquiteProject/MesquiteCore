@@ -416,7 +416,11 @@ public class ProcessDataFiles extends GeneralFileMakerMultiple implements Action
 		fileToRead.readMesquiteBlock = false;
 		if (fileToRead.openReading()) {
 			fileToRead.blockForRecentRereading = true;
+			MesquiteThread.setHintToSuppressProgressIndicatorCurrentThread(true);
+			if (progIndicator!= null)
+				progIndicator.setText(fileToRead.getFileName());
 			importer.readFile(getProject(), fileToRead, null);
+			MesquiteThread.setHintToSuppressProgressIndicatorCurrentThread(false);
 			scanForDuplicateTaxa(getProject(), fileToRead);
 			getProject().getCoordinatorModule().wrapUpAfterFileRead(fileToRead);
 			//fileToRead.changeLocation(getSavedFilesDirectoryPath(fileToRead), fileToRead.getName() + ".nex");
@@ -450,6 +454,8 @@ public class ProcessDataFiles extends GeneralFileMakerMultiple implements Action
 					FileProcessor fProcessor = (FileProcessor)fileProcessors.elementAt(i);
 					if (fProcessor!=null) {
 						result.setValue((String)null);
+						if (progIndicator!= null)
+							progIndicator.setSecondaryMessage("Processing by " + fProcessor.getNameAndParameters());
 						int returnCode = fProcessor.processFile(fileToRead, result);
 						if (returnCode!=0) { //Debugg.println this fails if doing gene trees and raxml fails to get tree because of 3 taxa. Should there be different levels of failure?
 							logln("Sorry,  " + fProcessor.getNameAndParameters() + " did not succeed in processing the file " + fileToRead.getFileName());
