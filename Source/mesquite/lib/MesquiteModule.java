@@ -2030,6 +2030,24 @@ public abstract class MesquiteModule extends EmployerEmployee implements Command
 			fi.addBlock(nb);
 		}
 	}
+	
+	/*............................................................................. */
+	/*............................................................................. */
+	static int NEXUSBlockSortSuppression = 0;
+	/** Increments  & decrements suppression of nexus block sorting (see addBlock of InterpretNEXUS). */
+	public static final void incrementNEXUSBlockSortSuppression() {
+		NEXUSBlockSortSuppression++;
+	}
+	public static final void decrementNEXUSBlockSortSuppression() {
+		NEXUSBlockSortSuppression--;
+	}
+	public static final void zeroNEXUSBlockSortSuppression() {
+		NEXUSBlockSortSuppression = 0;
+	}
+	public static final int getNEXUSBlockSortSuppression() {
+		return NEXUSBlockSortSuppression;
+	}
+
 	/*.................................................................................................................*/
 	/** Remove NEXUS block from the file. */
 	public void removeNEXUSBlock(NexusBlock nb){

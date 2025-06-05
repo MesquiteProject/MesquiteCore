@@ -25,6 +25,7 @@ import mesquite.lib.*;
 import mesquite.lib.duties.CharactersManager;
 import mesquite.lib.duties.FileCoordinator;
 import mesquite.lib.duties.GeneralFileMakerMultiple;
+import mesquite.lib.duties.NexusFileInterpreter;
 import mesquite.lib.duties.TaxaManager;
 import mesquite.lib.taxa.Taxa;
 import mesquite.lib.taxa.Taxon;
@@ -68,6 +69,8 @@ public class CombineFlippedFastas extends GeneralFileMakerMultiple {
 		String path = "";
 		StringBuffer results = new StringBuffer();
 		boolean taxaNew = false;
+		incrementMenuResetSuppression();
+		incrementNEXUSBlockSortSuppression();
 		if (directory!=null) {
 			if (directory.exists() && directory.isDirectory()) {
 				//FileCoordinator fileCoord = getFileCoordinator();  //this is the temporary one for this GeneralFileMaker
@@ -97,6 +100,14 @@ public class CombineFlippedFastas extends GeneralFileMakerMultiple {
 				int filesFound = 0;
 				DNAState state = new DNAState();
 
+				MesquiteTimer overallTime = new MesquiteTimer();
+				MesquiteTimer time1 = new MesquiteTimer();
+				MesquiteTimer time2 = new MesquiteTimer();
+				MesquiteTimer time3 = new MesquiteTimer();
+				MesquiteTimer time4 = new MesquiteTimer();
+				MesquiteTimer time5 = new MesquiteTimer();
+			
+				overallTime.start();
 				logln("The first few files will be slow; they may take a few minutes to process.");
 				int lociAdded = 0;
 				for (int i=0; i<files.length; i++) {
@@ -118,7 +129,10 @@ public class CombineFlippedFastas extends GeneralFileMakerMultiple {
 								file.setPath(path);
 								project.addFile(file);
 								file.setProject(project);
-								logln("Reading file " + files[i]);
+								if (files.length<20)
+									logln("Reading file " + files[i]);
+								else 
+									log(" [" + (i+1) + "]");
 								MesquiteThread.setHintToSuppressProgressIndicatorCurrentThread(true);
 								importer.readFile(project, file, null);
 								MesquiteThread.setHintToSuppressProgressIndicatorCurrentThread(false);
@@ -133,8 +147,7 @@ public class CombineFlippedFastas extends GeneralFileMakerMultiple {
 									CharacterData incomingFlippedMatrix = project.getCharacterMatrix(file, loci, null, 0, false);
 									if (incomingFlippedMatrix != null){
 										progIndicator.setSecondaryMessage("Taxon: " + taxonName + " with " + loci.getNumTaxa() + " loci");
-										//logln(" (" + loci.getNumTaxa() + " loci)");
-
+										time1.start();
 										//OK, ready to go. Have matrix. Will add new taxon based on the name of the file, and transfer over its sequences
 										boolean existingTaxon = true;
 										int receivingTaxonNumber = taxa.whichTaxonNumber(taxonName);
@@ -145,6 +158,7 @@ public class CombineFlippedFastas extends GeneralFileMakerMultiple {
 											newTaxon.setName(taxonName);
 											existingTaxon = false;
 										}
+										time1.end();
 										//For each "taxon", find corresponding matrix already in project
 										for (int iLocus = 0; iLocus < loci.getNumTaxa(); iLocus++){
 											CommandRecord.tick("For taxon " + taxonName + ", recovering sequence #" + (iLocus+1));
@@ -153,9 +167,13 @@ public class CombineFlippedFastas extends GeneralFileMakerMultiple {
 											if (!(locusMatrix instanceof DNAData))
 												locusMatrix = null;
 											if (locusMatrix == null) { //no matrix yet; establish
+												time2.start();
 												locusMatrix = charactersManager.newCharacterData(taxa, 0, DNAData.DATATYPENAME); //this is manager of receiving project
+												time2.end();
 												locusMatrix.setName(locusName, false);
+												time3.start();
 												locusMatrix.addToFile(taxa.getFile(), recProject, null);
+												time3.end();
 												lociAdded++;
 												if (lociAdded == 1)
 													log("   Adding Loci .");
@@ -165,7 +183,7 @@ public class CombineFlippedFastas extends GeneralFileMakerMultiple {
 													log(".");
 											}
 											
-
+											time4.start();
 											/*Now time to pull sequence into locus matrix 
 											 * Sequence on row iLocus of incomingFlippedMatrix corresponds to sequence for newTaxon in locusMatrix
 											 */
@@ -190,8 +208,15 @@ public class CombineFlippedFastas extends GeneralFileMakerMultiple {
 												locusMatrix.setState(ic, receivingTaxonNumber, state);
 
 											}
-										}
-										logln("");
+											time4.end();
+											if (lociAdded%100 == 0){
+												overallTime.end();
+												System.err.println("@\n  time1 " + time1.getAccumulatedTime() + "  time2 " + time2.getAccumulatedTime()  + "  time3 " + time3.getAccumulatedTime() + "  time4 " + time4.getAccumulatedTime()+  " total time " + overallTime.getAccumulatedTime());
+												overallTime.start();
+											}
+									}
+										if (files.length<20)
+											logln("");
 									}
 								}
 
@@ -206,6 +231,9 @@ public class CombineFlippedFastas extends GeneralFileMakerMultiple {
 					}
 					
 				}
+				if (files.length>=20)
+					logln("");
+				overallTime.end();
 				if (filesFound == 0){
 					if (okToInteractWithUser(CAN_PROCEED_ANYWAY, "No files found"))  
 						alert("No appropriate files with extensions (.fas or .fasta) were found in folder.");
@@ -213,6 +241,9 @@ public class CombineFlippedFastas extends GeneralFileMakerMultiple {
 						discreetAlert("No appropriate files with extensions (.fas or .fasta) were found in folder.");
 
 				}
+				else
+					logln("Flipped Fastas read for " + files.length + " taxa; " + lociAdded + " different loci found. [" + overallTime.timeSinceLastInSeconds() + "]" );
+
 				MesquiteMessage.beep();
 				progIndicator.goAway();
 				project.developing = false;  //so the coordinator knows it's OK to dispose
@@ -222,6 +253,14 @@ public class CombineFlippedFastas extends GeneralFileMakerMultiple {
 
 
 		}
+		decrementNEXUSBlockSortSuppression();
+		FileCoordinator fCoord =project.getCoordinatorModule();
+		if (fCoord!= null){
+			NexusFileInterpreter fi = (NexusFileInterpreter)fCoord.findEmployeeWithDuty(NexusFileInterpreter.class);
+		if (fi != null)
+			fi.sortAllBlocks();
+		}
+		decrementMenuResetSuppression();
 	}
 	/*.................................................................................................................*/
 	public MesquiteProject establishProject(String arguments) {

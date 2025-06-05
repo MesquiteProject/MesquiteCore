@@ -43,6 +43,7 @@ public abstract class NexusFileInterpreter extends FileInterpreterI  {
 	public abstract void writeFile(MesquiteProject mf, MesquiteFile mNF);
 	/** adds nexus block to project (block contains reference to the file it belongs to)*/
 	public abstract void addBlock(NexusBlock nb);
+	public abstract void sortAllBlocks();
 	public abstract void removeBlock(NexusBlock nb);
 	public abstract NexusBlock findBlock(FileElement e);
 	/** finds the ith block of a given type and returns it raw.*/

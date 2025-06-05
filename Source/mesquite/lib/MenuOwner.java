@@ -150,17 +150,6 @@ public abstract class MenuOwner implements Doomable { // EMBEDDED: extends Apple
 		clearShortcut = new MenuShortcut(KeyEvent.VK_CLEAR);
 		selectAllShortcut = new MenuShortcut(KeyEvent.VK_A);
 		pasteShortcut = new MenuShortcut(KeyEvent.VK_V);
-		/*
-		 * if (MesquiteTrunk.isMacOSX()){ leftBracket = "◀";//byte[] b = {(byte) 226,
-		 * (byte)150, (byte)160}; new String(b, "UTF-8"); rightBracket = "▶"; //byte[]
-		 * bb = {(byte) 226, (byte)150, (byte)161}; new String(bb, "UTF-8"); } else if
-		 * (MesquiteTrunk.isMacOSX()) { leftBracket = "«";//byte[] b = {(byte) 226,
-		 * (byte)150, (byte)160}; new String(b, "UTF-8"); rightBracket = "»"; //byte[]
-		 * bb = {(byte) 226, (byte)150, (byte)161}; new String(bb, "UTF-8"); } else {
-		 * leftBracket = "�";//byte[] b = {(byte) 226, (byte)150, (byte)160}; new
-		 * String(b, "UTF-8"); rightBracket = "�"; //byte[] bb = {(byte) 226, (byte)150,
-		 * (byte)161}; new String(bb, "UTF-8"); }
-		 */
 		leftBracket = "\u00AB";// byte[] b = {(byte) 226, (byte)150, (byte)160}; new String(b, "UTF-8");
 		rightBracket = "\u00BB"; // byte[] bb = {(byte) 226, (byte)150, (byte)161}; new String(bb, "UTF-8");
 		// }

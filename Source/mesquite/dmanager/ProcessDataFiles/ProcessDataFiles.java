@@ -529,6 +529,7 @@ public class ProcessDataFiles extends GeneralFileMakerMultiple implements Action
 		boolean abort = false;
 		String path = "";
 		StringBuffer results = new StringBuffer();
+		incrementNEXUSBlockSortSuppression();
 		if (directory!=null) {
 			if (directory.exists() && directory.isDirectory()) {
 
@@ -617,6 +618,13 @@ public class ProcessDataFiles extends GeneralFileMakerMultiple implements Action
 			}
 
 
+		}
+		decrementNEXUSBlockSortSuppression();
+		FileCoordinator fCoord =getProject().getCoordinatorModule();
+		if (fCoord!= null){
+			NexusFileInterpreter fi = (NexusFileInterpreter)fCoord.findEmployeeWithDuty(NexusFileInterpreter.class);
+		if (fi != null)
+			fi.sortAllBlocks();
 		}
 		//Debugg.println see if any other suppressions are on! pauseables?
 		zeroMenuResetSuppression();

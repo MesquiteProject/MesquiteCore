@@ -163,6 +163,9 @@ public class InterpretNEXUS extends NexusFileInterpreter implements NEXUSInterpr
 		return false;
 
 	}
+	public void sortAllBlocks(){
+		sortBlocks(getProject().getNexusBlocks());
+	}
 	/** Sort blocks.*/
 	private  void sortBlocks(ListableVector blocks){
 		if (blocks==null)
@@ -242,7 +245,8 @@ public class InterpretNEXUS extends NexusFileInterpreter implements NEXUSInterpr
 		if (nb==null)
 			return;
 		getProject().addNexusBlock(nb);
-		sortBlocks(getProject().getNexusBlocks());
+		if (getNEXUSBlockSortSuppression()<=0)
+			sortBlocks(getProject().getNexusBlocks()); 
 	}
 	/** adds nexus block to given file.*/
 	public  void removeBlock(NexusBlock nb){

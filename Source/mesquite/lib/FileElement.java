@@ -322,6 +322,12 @@ public class FileElement extends AssociableWithSpecs implements Identifiable, Li
 		if (tempProjRef != null)
 			tempProjRef.decrementProjectWindowSuppression();
 	}
+	
+	static MesquiteTimer time1= new MesquiteTimer();
+	static MesquiteTimer time2= new MesquiteTimer();
+	static MesquiteTimer time3= new MesquiteTimer();
+	static MesquiteTimer time4= new MesquiteTimer();
+	static int totalTimed = 0;
 	/*.................................................................................................................*/
 	/** Adds the element to the given file and project, and assigns it the given manager.  Also takes care of 
  	notifying the manager that it has been added using elementAdded(). */
@@ -354,15 +360,26 @@ public class FileElement extends AssociableWithSpecs implements Identifiable, Li
 				MesquiteMessage.warnProgrammer("Element manager not found for " + this.getName() + " of class " + getClass());
 			 */
 		}
+		
 		project.incrementProjectWindowSuppression();
+		time1.start();
 		project.addFileElement(this);
+		time1.end();
+		time2.start();
 		file.addFileElement(this);
+		time2.end();
+		time3.start();
 		if (elementManager!=null) // && !(f!=null && f.temporaryUseOnly)) ////not currently used. For reentrancy issues, but may have other means to bypass.
 			nexusBlock = elementManager.elementAdded(this);
+		time3.end();
+		time4.start();
 		broadCastElementAdded(project.getCoordinatorModule(), elementManager);
+		time4.end();
 		project.refreshProjectWindow();
 		project.decrementProjectWindowSuppression();
-
+		if ((++totalTimed % 100)==0)
+			System.err.println("@FE~~~  time1 " + time1.getAccumulatedTime() + "  time2 " + time2.getAccumulatedTime()  + "  time3 " + time3.getAccumulatedTime() + "  time4 " + time4.getAccumulatedTime());
+	
 		return nexusBlock;
 	}
 
