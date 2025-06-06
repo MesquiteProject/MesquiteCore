@@ -369,7 +369,7 @@ public abstract class MenuOwner implements Doomable { // EMBEDDED: extends Apple
 	public static final void decrementMenuResetSuppression(int amount) {
 		if (menuSuppression == 0) {
 			if (warnAlreadyZero)
-				MesquiteMessage.warnProgrammer("decrementMenuResetSuppression when already zero");
+				MesquiteMessage.println("decrementMenuResetSuppression when already zero");
 			return;
 		}
 		menuSuppression -= amount;
