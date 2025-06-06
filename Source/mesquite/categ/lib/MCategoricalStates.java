@@ -19,6 +19,8 @@ import mesquite.lib.*;
 import mesquite.lib.characters.*;
 import mesquite.lib.duties.*;
 import mesquite.lib.taxa.Taxa;
+import mesquite.lib.ui.ColorDistribution;
+import mesquite.lib.ui.MesquiteColorTable;
 
 /* ======================================================================== */
 /**A class for an array of  categorical character states for many characters, at each of the taxa  or nodes.*/
@@ -212,7 +214,34 @@ public abstract class MCategoricalStates extends MCharactersStates {
 	public void disposeExtraFrequencies() {
 		extraFrequencies = null;
 	}
+
+	/*..........................................  CategoricalData  ..................................................*/
+	/** returns the maximum state in character ic*/
+	public int getMaxState(int ic){
+
+		long allstates = 0;
+		for (int it=0; it<getNumTaxa(); it++)
+			allstates |= getState(ic, it);
+		return CategoricalState.maximum(allstates);
+	}
+
+	
 /*..........................................  MCategoricalStates  ..................................................*/
+	/** Gets the color representing state(s) of character ic in taxon it */ 
+	public Color getColorOfStates(int ic, int it){
+		long s = getState(ic, it);
+		if (CategoricalState.isCombinable(s)) {
+			int colorCount = CategoricalState.cardinality(s);
+			if (colorCount>1){
+				return Color.lightGray;
+			}
+			else {
+				return MesquiteColorTable.getDefaultColor(getMaxState(ic),CategoricalState.maximum(s), MesquiteColorTable.COLORS);
+			}
+		}
+		else 
+			return ColorDistribution.unassigned;
+	}/*..........................................  MCategoricalStates  ..................................................*/
 	/** returns the name of the type of data stored */
 	public String getDataTypeName(){
 		return CategoricalData.DATATYPENAME;

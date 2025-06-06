@@ -1309,12 +1309,13 @@ class TaxaPanel extends ElementPanel {
 	}
 	public void chart(){
 		String mID = Long.toString(((FileElement)element).getID());
-		MesquiteThread.addHint(new MesquiteString("TaxonValuesChart", mID));
+		MesquiteThread.addHint(new MesquiteString("TaxonValuesChart", mID), this);
 		if (MesquiteDialog.useWizards)
 			MesquiteThread.triggerWizard();
 		((BasicFileCoordinator)bfc).showChartWizard("Taxa");
 		if (MesquiteDialog.useWizards)
 			MesquiteThread.detriggerWizard();
+		MesquiteThread.removeMyHint(null, this);
 	}
 	public String getNotes(){
 		if(element == null)
@@ -1429,15 +1430,16 @@ class MElementPanel extends ElementPanel {
 	public void chart(){
 		String mID = Long.toString(((FileElement)element).getID());
 		String tID = Long.toString(((CharacterData)element).getTaxa().getID());
-		MesquiteThread.addHint(new MesquiteString("CharacterValuesChart", tID));
-		MesquiteThread.addHint(new MesquiteString("CharSrcCoordObed", "#StoredCharacters"));
-		MesquiteThread.addHint(new MesquiteString("StoredCharacters", mID));
+		MesquiteThread.addHint(new MesquiteString("CharacterValuesChart", tID), this);
+		MesquiteThread.addHint(new MesquiteString("CharSrcCoordObed", "#StoredCharacters"), this);
+		MesquiteThread.addHint(new MesquiteString("StoredCharacters", mID), this);
 		if (MesquiteDialog.useWizards)
 			MesquiteThread.triggerWizard();
 
 		((BasicFileCoordinator)bfc).showChartWizard("Characters");
 		if (MesquiteDialog.useWizards)
 			MesquiteThread.detriggerWizard();
+		MesquiteThread.removeMyHint(null, this);
 	}
 
 }
@@ -1594,14 +1596,15 @@ class TreesRPanel extends ElementPanel {
 	public void chart(){
 		String mID = Long.toString(((TreeVector)element).getID());
 		String tID = Long.toString(((TreeVector)element).getTaxa().getID());
-		MesquiteThread.addHint(new MesquiteString("TreeValuesChart", tID));
-		MesquiteThread.addHint(new MesquiteString("TreeValuesChart", "#StoredTrees"));
-		MesquiteThread.addHint(new MesquiteString("StoredTrees", mID));
+		MesquiteThread.addHint(new MesquiteString("TreeValuesChart", tID), this);
+		MesquiteThread.addHint(new MesquiteString("TreeValuesChart", "#StoredTrees"), this);
+		MesquiteThread.addHint(new MesquiteString("StoredTrees", mID), this);
 		if (MesquiteDialog.useWizards)
 			MesquiteThread.triggerWizard();
 		((BasicFileCoordinator)bfc).showChartWizard("Trees");
 		if (MesquiteDialog.useWizards)
 			MesquiteThread.detriggerWizard();
+		MesquiteThread.removeMyHint(null, this);
 	}
 	public String getTitleAddition(){
 		int numTrees = ((TreeVector)element).size();

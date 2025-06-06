@@ -406,34 +406,16 @@ public class ManageCharacters extends CharactersManager {
 		if (nb!=null)
 			removeNEXUSBlock(nb);
 	}
-	static MesquiteTimer time1= new MesquiteTimer();
-	static MesquiteTimer time2= new MesquiteTimer();
-	static MesquiteTimer time3= new MesquiteTimer();
-	static MesquiteTimer time4= new MesquiteTimer();
-	static MesquiteTimer time5= new MesquiteTimer();
-	static int totalTimed = 0;
 	/*.................................................................................................................*/
 	public NexusBlock elementAdded(FileElement data){
 		if (data == null || !(data instanceof CharacterData))
 			return null;
-		time1.start();
 		resetAllMenuBars();
-		time1.end();
-		time2.start();
 		NexusBlock nb = findNEXUSBlock(data);
-		time2.end();
 	if (nb==null) {
-			time3.start();
 			CharactersBlock cb = new CharactersBlock(data.getFile(), this);
-			time3.end();
-			time4.start();
 			cb.setData((CharacterData)data);
-			time4.end();
-			time5.start();
 			addNEXUSBlock(cb);
-			time5.end();
-			if ((++totalTimed % 100)==0)
-				System.err.println("@MC~~~  time1 " + time1.getAccumulatedTime() + "  time2 " + time2.getAccumulatedTime()  + "  time3 " + time3.getAccumulatedTime() + "  time4 " + time4.getAccumulatedTime() + "  time5 " + time5.getAccumulatedTime());
 			return cb;
 		}
 		else return nb;

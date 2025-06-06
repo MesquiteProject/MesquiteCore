@@ -404,15 +404,21 @@ public class ProcessDataFiles extends GeneralFileMakerMultiple implements Action
 			}
 		}
 	}
+	
+	boolean verbose = false;
 	/*.................................................................................................................*/
 	protected boolean processFile(MesquiteFile fileToRead, StringBuffer results, MesquiteBoolean requestToSequester) {
-		logln("Processing file " + fileToRead.getName() + " in " + fileToRead.getDirectoryName() + "...");
+		if (verbose)
+			logln("Processing file " + fileToRead.getName() + " in " + fileToRead.getDirectoryName() + "...");
+		else
+				log(".");
+
 		if (fileProcessors == null)
 			fileProcessors = new Vector();
 		incrementMenuResetSuppression();
-		ProgressIndicator progIndicator2 = new ProgressIndicator(null,"Importing File "+ fileToRead.getName(), fileToRead.existingLength());
-		progIndicator2.start();
-		fileToRead.linkProgressIndicator(progIndicator2);
+		//ProgressIndicator progIndicator2 = new ProgressIndicator(null,"Importing File "+ fileToRead.getName(), fileToRead.existingLength());
+		//progIndicator2.start();
+		//fileToRead.linkProgressIndicator(progIndicator2);
 		fileToRead.readMesquiteBlock = false;
 		if (fileToRead.openReading()) {
 			fileToRead.blockForRecentRereading = true;
@@ -465,7 +471,8 @@ public class ProcessDataFiles extends GeneralFileMakerMultiple implements Action
 							}
 						}
 						else if (firstFile) {
-							logln("First file processed using " + fProcessor.getNameAndParameters());
+							if (verbose)
+								logln("First file processed using " + fProcessor.getNameAndParameters());
 						}
 						if (continuePlease) {
 							if (fProcessor.pleaseSequester()) {
@@ -473,8 +480,12 @@ public class ProcessDataFiles extends GeneralFileMakerMultiple implements Action
 									requestToSequester.setValue(true);
 								fProcessor.setPleaseSequester(false);
 							}
-							if (returnCode == 0)
-								logln("" + fProcessor.getNameAndParameters() + " successfully processed the file " + fileToRead.getFileName());
+							if (returnCode == 0){
+								if (verbose)
+									logln("" + fProcessor.getNameAndParameters() + " successfully processed the file " + fileToRead.getFileName());
+							}
+							else logln("");
+
 							if (result.getValue() != null) {
 								firstResultsOverallFound = true;
 								results.append("\t");
@@ -576,6 +587,7 @@ public class ProcessDataFiles extends GeneralFileMakerMultiple implements Action
 							if (cFile.exists() && !cFile.isDirectory() && (!files[i].startsWith("."))) {
 								results.setLength(0);
 								filesFound++;
+								progIndicator.setText("Processing file: " + files[i]);
 								boolean processFileRequestCancelled = !processFile( file, results, requestToSequester);  
 								if (processFileRequestCancelled) {
 									processProject.getCoordinatorModule().closeFile(file, true);
@@ -591,7 +603,7 @@ public class ProcessDataFiles extends GeneralFileMakerMultiple implements Action
 									MesquiteFile.appendFileContents(writingFile.getDirectoryName() + "ProcessingResults", results.toString(), true);
 									MesquiteFile.appendFileContents(writingFile.getDirectoryName() + "ProcessingResults", StringUtil.lineEnding(), true);
 								}
-								logln(" ");
+								if (verbose) logln(" ");
 								if (requestToSequester.getValue()) {
 									String sequesteredFileDirectoryPath = directoryPath + MesquiteFile.fileSeparator + "sequesteredFiles";
 									if (!sFDMade)
@@ -605,6 +617,7 @@ public class ProcessDataFiles extends GeneralFileMakerMultiple implements Action
 						}
 					}
 				}
+				logln("");
 				if (filesFound == 0){
 					if (okToInteractWithUser(CAN_PROCEED_ANYWAY, "No files found"))  
 						alert("No appropriate files with extension " + fileExtension + " were found in folder.");

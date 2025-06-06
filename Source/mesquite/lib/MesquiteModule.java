@@ -2033,19 +2033,27 @@ public abstract class MesquiteModule extends EmployerEmployee implements Command
 	
 	/*............................................................................. */
 	/*............................................................................. */
-	static int NEXUSBlockSortSuppression = 0;
 	/** Increments  & decrements suppression of nexus block sorting (see addBlock of InterpretNEXUS). */
-	public static final void incrementNEXUSBlockSortSuppression() {
-		NEXUSBlockSortSuppression++;
+	public final void incrementNEXUSBlockSortSuppression() {
+		MesquiteProject project = getProject();
+		if (project != null)
+			project.NEXUSBlockSortSuppression++;
 	}
-	public static final void decrementNEXUSBlockSortSuppression() {
-		NEXUSBlockSortSuppression--;
+	public final void decrementNEXUSBlockSortSuppression() {
+		MesquiteProject project = getProject();
+		if (project != null)
+			project.NEXUSBlockSortSuppression--;
 	}
-	public static final void zeroNEXUSBlockSortSuppression() {
-		NEXUSBlockSortSuppression = 0;
+	public final void zeroNEXUSBlockSortSuppression() {
+		MesquiteProject project = getProject();
+		if (project != null)
+			project.NEXUSBlockSortSuppression = 0;
 	}
-	public static final int getNEXUSBlockSortSuppression() {
-		return NEXUSBlockSortSuppression;
+	public final int getNEXUSBlockSortSuppression() {
+		MesquiteProject project = getProject();
+		if (project != null)
+			return project.NEXUSBlockSortSuppression;
+		return 0;
 	}
 
 	/*.................................................................................................................*/

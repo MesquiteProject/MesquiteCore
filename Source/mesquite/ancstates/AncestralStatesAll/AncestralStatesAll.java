@@ -31,7 +31,15 @@ public class AncestralStatesAll extends CharsStatesForNodes {
 	MesquiteCommand atC;
 	/*.................................................................................................................*/
 	public boolean startJob(String arguments, Object condition, boolean hiredByName) {
- 		assignTask = (CharStatesForNodes)hireEmployee(CharStatesForNodes.class, "Reconstruction method");
+		boolean methodRequested = false;
+		if (arguments == null)
+			arguments = MesquiteThread.retrieveAndDeleteHint(this);
+		if (arguments != null) 
+			assignTask = (CharStatesForNodes)hireNamedEmployee(CharStatesForNodes.class, arguments, condition);
+ 		if (assignTask == null)
+ 			assignTask = (CharStatesForNodes)hireEmployee(CharStatesForNodes.class, "Reconstruction method");
+ 		else
+ 			methodRequested = true;
 		if (assignTask == null){
  			return sorry(getName() + " couldn't start because no reconstruction module was obtained");
  		}
@@ -39,7 +47,7 @@ public class AncestralStatesAll extends CharsStatesForNodes {
 		assignTask.setHiringCommand(atC);
 
 		assignTaskName = new MesquiteString(assignTask.getName());
-		if (numModulesAvailable(CharStatesForNodes.class)>1){
+		if (!methodRequested && numModulesAvailable(CharStatesForNodes.class)>1){
 			MesquiteSubmenuSpec mss = addSubmenu(null, "Reconstruction Method", atC, CharStatesForNodes.class);
 			mss.setSelected(assignTaskName);
 		}

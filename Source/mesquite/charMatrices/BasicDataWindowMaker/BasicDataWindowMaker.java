@@ -4755,6 +4755,9 @@ class MatrixTable extends mesquite.lib.table.CMTable implements MesquiteDroppedF
 			window.getPalette().setCurrentTool(window.ibeamTool);
 			((TableTool) window.getCurrentTool()).cellTouched(column, row, editorPanel, x, y, modifiers);
 		}
+		else if (window.getCurrentTool() == window.arrowTool && MesquiteEvent.rightClick(modifiers)){
+			cellRightClicked(column, row, editorPanel, x, y, modifiers);
+		}
 		else if (((TableTool) window.getCurrentTool()).useTableTouchRules()) {
 			super.cellTouched(column, row, editorPanel, x, y, modifiers, clickCount);
 		}

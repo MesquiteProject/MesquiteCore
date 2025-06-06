@@ -236,15 +236,29 @@ public class MesquiteThread extends Thread implements CommandRecordHolder {
 		}
 
 	}
-	public static void addHint(MesquiteString hint){ //the name of the string is the module class name to which it applies; the value is the hint
+	public static void addHint(MesquiteString hint, Object hinter){ //the name of the string is the module class name to which it applies; the value is the hint
 		Thread t = Thread.currentThread();
 		if (t instanceof MesquiteThread){
 			MesquiteThread mt = (MesquiteThread)t;
 			if (mt.hints == null)
 				mt.hints = new Vector();
-			mt.hints.addElement(hint);
+			mt.hints.addElement(new Hint(hint, hinter));
 		}
-
+	}
+	public static void removeMyHint(MesquiteString hint, Object hinter){ //the name of the string is the module class name to which it applies; the value is the hint
+		Thread t = Thread.currentThread();
+		if (t instanceof MesquiteThread){
+			MesquiteThread mt = (MesquiteThread)t;
+			if (mt.hints == null)
+				return;
+			for (int i=mt.hints.size()-1; i>=0; i--){
+				Hint h = (Hint)mt.hints.elementAt(i);
+				if (h.hinter == hinter){
+					if (hint == null || hint == h.ms)
+						mt.hints.removeElement(h);
+				}
+			}
+		}
 	}
 	public static String retrieveAndDeleteHint(MesquiteModule mb){
 		Thread t = Thread.currentThread();
@@ -252,11 +266,13 @@ public class MesquiteThread extends Thread implements CommandRecordHolder {
 			MesquiteThread mt = (MesquiteThread)t;
 			if (mt.hints == null)
 				return null;
+			String mbClassName = StringUtil.getLastItem(mb.getClass().getName(), ".");
 			for (int i=0; i<mt.hints.size(); i++){
-				MesquiteString s = (MesquiteString)mt.hints.elementAt(i);
-				if (mb.nameMatches(s.getName())) {
+				Hint h = (Hint)mt.hints.elementAt(i);
+				MesquiteString s = h.ms;
+				if (mb.nameMatches(s.getName()) || mbClassName.equalsIgnoreCase(s.getName()) || ("#"+mbClassName).equalsIgnoreCase(s.getName())) {
 					String q =  s.getValue();
-					mt.hints.removeElement(s);
+					mt.hints.removeElement(h);
 					return q;
 				}
 			}
@@ -715,5 +731,13 @@ public class MesquiteThread extends Thread implements CommandRecordHolder {
 	}
 
 
+}
+
+class Hint {
+	MesquiteString ms; Object hinter;
+	public Hint (MesquiteString ms, Object hinter){
+		this.ms = ms;
+		this.hinter = hinter;
+	}
 }
 

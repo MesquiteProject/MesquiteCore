@@ -121,7 +121,7 @@ ListableVector taxonNames = new ListableVector();
 			}
 		}
 		if (added) {
-			String matrices = 	 MesquiteFile.getFileContentsAsString(tempFile);
+			String matrices = 	 MesquiteFile.getFileContentsAsString(tempFile, -1,100, false);
 			if (matrices == null)
 				matrices = "";
 			String block = "#NEXUS" + StringUtil.lineEnding() + "BEGIN TAXA;" + StringUtil.lineEnding() + " DIMENSIONS NTAX=" + taxonNames.size() + ";" + StringUtil.lineEnding() + " TAXLABELS" + StringUtil.lineEnding() + "   ";

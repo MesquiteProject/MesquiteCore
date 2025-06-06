@@ -15,6 +15,7 @@ package mesquite.molec.TaxaListHasData;
 /*~~  */
 
 
+import mesquite.categ.lib.DNAState;
 import mesquite.categ.lib.MolecularData;
 import mesquite.categ.lib.MolecularState;
 import mesquite.lists.lib.*;
@@ -47,7 +48,7 @@ public class TaxaListHasData extends TaxonListAssistant  {
 
 	Taxa taxa=null;
 	MesquiteTable table = null;
-	MatrixSourceCoord matrixSourceTask;
+	CharMatrixSource matrixSourceTask;
 	//Taxa currentTaxa = null;
 	MCharactersDistribution observedStates =null;
 	CharacterData data = null;
@@ -55,7 +56,7 @@ public class TaxaListHasData extends TaxonListAssistant  {
 	static String localCopyDataClipboard = "";
 	static String localCopyDataTaxon = "";
 	static CharacterData localCopyData = null;
-
+	ListableVector datas = null;
 	/*.................................................................................................................*/
 	public String getName() {
 		return "Has Data in Matrix";
@@ -70,7 +71,7 @@ public class TaxaListHasData extends TaxonListAssistant  {
 	/*.................................................................................................................*/
 	public boolean startJob(String arguments, Object condition, boolean hiredByName) {
 		setSuppressEmployeeAutoRehiring(true);
-		matrixSourceTask = (MatrixSourceCoord)hireEmployee(MatrixSourceCoord.class, "Source of character matrix (for " + getName() + ")"); 
+		matrixSourceTask = (CharMatrixSource)hireNamedEmployee(CharMatrixSource.class, "#StoredMatrices", DNAState.class); 
 		if (matrixSourceTask==null)
 			return sorry(getName() + " couldn't start because no source of character matrices was obtained.");
 		//	addMenuItem("Delete Prepended Length", makeCommand("deletePrepended", this));  // for Wayne!!!!!!
@@ -84,6 +85,9 @@ public class TaxaListHasData extends TaxonListAssistant  {
 		addMenuItem("Delete Stored Annotation", makeCommand("deleteAnnotation", this));
 		addMenuItem("Delete Stored Genbank Reference", makeCommand("deleteGenbankAnnotation", this));
 		addMenuItem("Delete Stored Publication Reference", makeCommand("deletePublicationAnnotation", this));
+		datas = getProject().getCharacterMatrices();
+		if (datas != null)
+			datas.addListener(this);
 		return true;
 	}
 
@@ -107,11 +111,13 @@ public class TaxaListHasData extends TaxonListAssistant  {
 	public void endJob() {
 		if (data != null)
 			data.removeListener(this);
+		if (datas != null)
+			datas.removeListener(this);
 	}
 	/*.................................................................................................................*/
 	public Snapshot getSnapshot(MesquiteFile file) { 
 		Snapshot temp = new Snapshot();
-		temp.addLine("getMatrixSource", matrixSourceTask);
+		temp.addLine("getCharMatrixSource", matrixSourceTask);
 		return temp;
 	}
 
@@ -211,7 +217,13 @@ public class TaxaListHasData extends TaxonListAssistant  {
 
 	/*.................................................................................................................*/
 	public Object doCommand(String commandName, String arguments, CommandChecker checker) {
-		if (checker.compare(this.getClass(), "Returns the matrix source", null, commandName, "getMatrixSource")) {
+		if (checker.compare(this.getClass(), "Returns the matrix source (old style, so has to be subverted)", null, commandName, "getMatrixSource")) {
+			return this;
+		}
+		else if (checker.compare(this.getClass(), "Returns the matrix source (to subvert old scripts)", null, commandName, "setCharacterSource")) { //this is actually  supposed to have gone to the matrix source coord, but now this is its own coord
+			return matrixSourceTask;
+		}
+		else if (checker.compare(this.getClass(), "Returns the matrix source", null, commandName, "getCharMatrixSource")) {
 			return matrixSourceTask;
 		}
 		else if (checker.compare(this.getClass(), "Copies the data for selected taxon", null, commandName, "copyData")) {
@@ -717,6 +729,15 @@ public class TaxaListHasData extends TaxonListAssistant  {
 			iQuit();
 	}
 	/*.................................................................................................................*/
+	public void changed(Object caller, Object obj, Notification notification){
+		int code = Notification.getCode(notification);
+		if (obj==datas){
+			parametersChanged(notification);
+		}
+	}
+	/*.................................................................................................................*/
+
+	//NameReference genBankColor = NameReference.getNameReference("genbankcolor");
 
 	/** Gets background color for cell for row ic.  Override it if you want to change the color from the default. */
 	public Color getBackgroundColorOfCell(int it, boolean selected){
@@ -727,12 +748,11 @@ public class TaxaListHasData extends TaxonListAssistant  {
 		}
 		if (observedStates.getParentData() != null){
 			captureCharacterDataFromObservedStates();
-
+/*
 			Associable tInfo = data.getTaxaInfo(false);
-			NameReference genBankColor = NameReference.getNameReference("genbankcolor");
 			Object obj = tInfo.getAssociatedObject(genBankColor,  it);  //not saved to file
 			if (obj instanceof Color)
-				return (Color)obj;
+				return (Color)obj;*/
 		}
 		if (bits ==null || it <0 || it > bits.getSize())
 			return null;

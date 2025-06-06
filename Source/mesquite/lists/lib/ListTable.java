@@ -331,13 +331,13 @@ public class ListTable extends MesquiteTable {
 			if (window.getCurrentTool()== window.arrowTool)  {
 				ListAssistant assistant = window.findAssistant(column);
 				if (assistant!=null) {
-					Graphics g = getGraphics();
+				Graphics g = getGraphics();
 					if (clickCount>1 && assistant.isCellEditable(row)){   //added Aug 2O17 to allow doubleclicking in tables and then editing
 						window.setCurrentTool(window.ibeamTool);
 						window.getPalette().setCurrentTool(window.ibeamTool); 
 						editMatrixCell(column,row);
-					} else 
-					if (!assistant.arrowTouchInRow(g, row, getLeftOfColumn(column), getTopOfRow(row), clickCount>1, modifiers)){
+					} 
+					else if (!assistant.arrowTouchInRow(g, row, getLeftOfColumn(column), getTopOfRow(row), clickCount>1, modifiers)){
 						if (assistant.isCellEditable(row)) {
 							super.cellTouched(column, row, editorPanel, x, y,  modifiers,  clickCount);
 						}

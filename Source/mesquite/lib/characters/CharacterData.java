@@ -2995,7 +2995,7 @@ public boolean removeCharactersThatAreEntirelyGaps(boolean notify){
 	/** returns the name of character ic*/
 	public String getCharacterName(int ic) {
 		if (ic<0 || ic>=numChars) {
-			MesquiteMessage.warnProgrammer("Error: character number out of bounds (getCharacterName) " + ic);
+			MesquiteMessage.warnProgrammer("Error: character number out of bounds (getCharacterName) " + ic + " in " + getName());
 			return ""; 
 		}
 		else if (characterNames == null ||  characterNames[ic]==null)
@@ -3007,7 +3007,7 @@ public boolean removeCharactersThatAreEntirelyGaps(boolean notify){
 	/** sets the name of character ic*/
 	public void setCharacterName(int ic, String name) {
 		if (ic<0 || ic>=numChars) {
-			MesquiteMessage.warnProgrammer("Error: character number out of bounds (setCharacterName) " + ic);
+			MesquiteMessage.warnProgrammer("Error: character number out of bounds (setCharacterName) " + ic + " of " + numChars + " in " + getName());
 		}
 		else if (characterNames == null)
 			;

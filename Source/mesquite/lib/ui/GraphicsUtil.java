@@ -42,8 +42,10 @@ public class GraphicsUtil {
 		return false; */
 	}/*_________________________________________________*/
 	public static void drawString(Graphics g, String s, double x, double y) {
-		if (!(g instanceof Graphics2D))
+		if (!(g instanceof Graphics2D)){
+			g.drawString(s, (int)x, (int)y);
 			return;
+		}
 		Graphics2D g2 = (Graphics2D)g;
 		g2.drawString(s, (float)x, (float)y);
 	}
@@ -67,15 +69,19 @@ public class GraphicsUtil {
 	}
 	/*_________________________________________________*/
 	public static void drawLine(Graphics g, double fromX, double fromY, double toX, double toY) {
-		if (!(g instanceof Graphics2D))
+		if (!(g instanceof Graphics2D)) {
+			g.drawLine((int)fromX, (int)fromY, (int)toX, (int)toY);
 			return;
+		}
 		Graphics2D g2 = (Graphics2D)g;
 		drawLine(g2,fromX, fromY, toX, toY);
 	}
 	/*_________________________________________________*/
 	public static void drawLine(Graphics g, double fromX, double fromY, double toX, double toY, double thickness) {
-		if (!(g instanceof Graphics2D))
+		if (!(g instanceof Graphics2D)) {
+			g.drawLine((int)fromX, (int)fromY, (int)toX, (int)toY);
 			return;
+		}
 		Graphics2D g2 = (Graphics2D)g;
 		g2.setStroke(new RoundCapStroke((float)thickness));
 		drawLine(g2,fromX, fromY, toX, toY);
@@ -100,8 +106,10 @@ public class GraphicsUtil {
 	}
 	/*_________________________________________________*/
 	public static void drawRoundRect(Graphics g, double x, double y, double width, double height,double arcWidth,double arcHeight) {
-		if (!(g instanceof Graphics2D))
+		if (!(g instanceof Graphics2D)){
+			g.drawRoundRect((int)x, (int)y, (int)width, (int)height,  (int)arcWidth,  (int)arcHeight);
 			return;
+		}
 		Graphics2D g2 = (Graphics2D)g;
 		drawRect(g2,x,y,width,height);
 	}
@@ -113,8 +121,10 @@ public class GraphicsUtil {
 	}
 	/*_________________________________________________*/
 	public static void fillRect(Graphics g, double x, double y, double width, double height) {
-		if (!(g instanceof Graphics2D))
+		if (!(g instanceof Graphics2D)){
+			g.fillRect( (int)x, (int)y, (int)width, (int)height);
 			return;
+		}
 		Graphics2D g2 = (Graphics2D)g;
 		fillRect(g2,x,y,width,height);
 	}
@@ -125,8 +135,10 @@ public class GraphicsUtil {
 	}
 	/*_________________________________________________*/
 	public static void drawRect(Graphics g, double x, double y, double width, double height) {
-		if (!(g instanceof Graphics2D))
+		if (!(g instanceof Graphics2D)){
+			g.drawRect( (int)x, (int)y, (int)width, (int)height);
 			return;
+		}
 		Graphics2D g2 = (Graphics2D)g;
 		drawRect(g2,x,y,width,height);
 	}
@@ -138,8 +150,10 @@ public class GraphicsUtil {
 	}
 	/*_________________________________________________*/
 	public static void fillOval(Graphics g, double x, double y, double width, double height) {
-		if (!(g instanceof Graphics2D))
+		if (!(g instanceof Graphics2D)){
+			g.fillOval( (int)x, (int)y, (int)width, (int)height);
 			return;
+		}
 		Graphics2D g2 = (Graphics2D)g;
 		fillOval(g2,x,y,width,height);
 	}
