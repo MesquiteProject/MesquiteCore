@@ -79,6 +79,17 @@ public class CategoricalHistory extends CategoricalAdjustable implements Charact
 			return CategoricalState.unassigned;
 		return conditionalStateSets[node][stateAtAncestor];
 	}
+	public long[] getConditionalStateSets(int node){
+		if (conditionalStateSets == null)
+			return null;
+		return conditionalStateSets[node];
+	}
+	public void setConditionalStateSets(int node, long[] conditionals){
+		if (conditionalStateSets == null){
+			conditionalStateSets = new long[numNodes][];
+		}
+		conditionalStateSets[node] = conditionals;
+	}
 	/*..........................................  CategoricalHistory  ..................................................*/
 	public void prepareInternodeHistories(){ //for stochastic character mapping
 		internodeHistories = new Vector[numNodes];

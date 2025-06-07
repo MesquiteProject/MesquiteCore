@@ -783,6 +783,14 @@ public class CategoricalState extends CharacterState{
 				return set;
 			}
 			/*..........................................CategoricalState.....................................*/
+			/**adds the state set to the current*/
+			public void addToSet(long value) {
+				if (isUnassigned())
+					set = value;
+				else
+					set = value | set;
+			}
+			/*..........................................CategoricalState.....................................*/
 			/**sets the value of the state set to the long variable passed*/
 			public void setValue(long value) {
 				set = value;

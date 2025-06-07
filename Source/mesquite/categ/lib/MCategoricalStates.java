@@ -96,6 +96,7 @@ public abstract class MCategoricalStates extends MCharactersStates {
 			}
 		}
 	}
+
 	/*..........................................  MCategoricalStates  ...................................................*/
 	/** set freqency information*/
 	public void setFrequencies(int ic, int node, double[] freqs) {
@@ -214,7 +215,35 @@ public abstract class MCategoricalStates extends MCharactersStates {
 	public void disposeExtraFrequencies() {
 		extraFrequencies = null;
 	}
-
+	/*..........................................  MCategoricalStates  ...................................................*/
+	long[][][] conditionalStateSets = null;
+	private void prepareConditionalStateSetStorage(){
+		if (conditionalStateSets == null || conditionalStateSets.length != getNumNodes() || (conditionalStateSets.length == 0 || conditionalStateSets[0].length != getNumChars())) {
+			conditionalStateSets = new long[getNumNodes()][getNumChars()][];
+		}
+	}
+	/*..........................................  MCategoricalStates  ...................................................*/
+	/** set conditionalStateSet information*/
+	public void setConditionalStateSets(int ic, int node, long[] conditionalStateSet) {
+		if (checkIllegalNode(node, 0))
+			return;
+		if (conditionalStateSet!=null) {
+			prepareConditionalStateSetStorage();
+				conditionalStateSets[node][ic] = conditionalStateSet;
+		}
+	}
+	/*..........................................  MCategoricalStates  ...................................................*/
+	/** set conditionalStateSet information*/
+	public long[] getConditionalStateSet(int ic, int node) {
+		if (checkIllegalNode(node, 0))
+			return null;
+		if (conditionalStateSets!=null && node<conditionalStateSets.length && ic < conditionalStateSets[node].length) 
+			return conditionalStateSets[node][ic] ;
+		return null;
+	}
+	public boolean hasConditionalStateSets(){
+		return conditionalStateSets != null;
+	}
 	/*..........................................  CategoricalData  ..................................................*/
 	/** returns the maximum state in character ic*/
 	public int getMaxState(int ic){
