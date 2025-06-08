@@ -38,12 +38,9 @@ public class CharListCodonPos extends CharListAssistant {
 	CharacterData data=null;
 	MesquiteTable table=null;
 	MesquiteSubmenuSpec mPos;
-	MesquiteMenuItemSpec mScs, mStc, mRssc, mLine;
 	static final int numMMIS = 8;
-	MesquiteMenuItemSpec[] setCodMMIS;
 	/*.................................................................................................................*/
 	public boolean startJob(String arguments, Object condition, boolean hiredByName) {
-		setCodMMIS = new MesquiteMenuItemSpec[numMMIS];
 		return true;
 	}
 	/*.................................................................................................................*/
@@ -200,26 +197,20 @@ public class CharListCodonPos extends CharListAssistant {
 	/*.................................................................................................................*/
 	public void setTableAndData(MesquiteTable table, CharacterData data){
 		//deleteMenuItem(mss);
-		deleteMenuItem(mScs);
-		deleteMenuItem(mRssc);
-		deleteMenuItem(mLine);
-		deleteMenuItem(mStc);
-		deleteMenuItem(mPos);
-		for (int i=0; i<numMMIS && i<setCodMMIS.length; i++)
-			deleteMenuItem(setCodMMIS[i]);
+		deleteAllMenuItems();
 		mPos = addSubmenu(null, "Set Codon Position");
-		setCodMMIS[0] = addItemToSubmenu(null, mPos, "N", makeCommand("setPositionN", this));
-		setCodMMIS[1] = addItemToSubmenu(null, mPos, "1", makeCommand("setPosition1", this));
-		setCodMMIS[2] = addItemToSubmenu(null, mPos, "2", makeCommand("setPosition2", this));
-		setCodMMIS[3] = addItemToSubmenu(null, mPos, "3", makeCommand("setPosition3", this));
-		setCodMMIS[4] = addItemToSubmenu(null, mPos, "123123...", makeCommand("setPositionCalc123", this));
-		setCodMMIS[5] = addItemToSubmenu(null, mPos, "231231...", makeCommand("setPositionCalc231", this));
-		setCodMMIS[6] = addItemToSubmenu(null, mPos, "312312...", makeCommand("setPositionCalc312", this));
-		setCodMMIS[7] = addItemToSubmenu(null, mPos, "Minimize Stop Codons", makeCommand("setPositionCalcMinStops", this));
-		mScs = addMenuItem("Store current set", makeCommand("storeCurrent",  this));
-		mRssc = addMenuItem("Replace stored set by current", makeCommand("replaceWithCurrent",  this));
+		addItemToSubmenu(null, mPos, "N", makeCommand("setPositionN", this));
+		addItemToSubmenu(null, mPos, "1", makeCommand("setPosition1", this));
+		addItemToSubmenu(null, mPos, "2", makeCommand("setPosition2", this));
+		addItemToSubmenu(null, mPos, "3", makeCommand("setPosition3", this));
+		addItemToSubmenu(null, mPos, "123123...", makeCommand("setPositionCalc123", this));
+		addItemToSubmenu(null, mPos, "231231...", makeCommand("setPositionCalc231", this));
+		addItemToSubmenu(null, mPos, "312312...", makeCommand("setPositionCalc312", this));
+		addItemToSubmenu(null, mPos, "Minimize Stop Codons", makeCommand("setPositionCalcMinStops", this));
+		addMenuItem("Store current set", makeCommand("storeCurrent",  this));
+		addMenuItem("Replace stored set by current", makeCommand("replaceWithCurrent",  this));
 		if (data !=null)
-			mStc = addSubmenu(null, "Load codon position set", makeCommand("loadToCurrent",  this), data.getSpecSetsVector(CodonPositionsSet.class));
+			addSubmenu(null, "Load codon position set", makeCommand("loadToCurrent",  this), data.getSpecSetsVector(CodonPositionsSet.class));
 		this.data = data;
 		this.table = table;
 	}

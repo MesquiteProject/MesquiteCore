@@ -356,7 +356,7 @@ class BallsNSticksDrawing extends TreeDrawing  {
 			calculateLines( tree, d);
 		lineTipY[node]=y[node];
 		lineTipX[node]=x[node];
-		if (ownerModule.style == BallsNSticks.SQUARE) {
+		if (ownerModule.style == BallsNSticks.SQUARE ) {
 			if (treeDisplay.getOrientation()==TreeDisplay.UP || treeDisplay.getOrientation()==TreeDisplay.DOWN){
 				lineBaseY[node]=y[tree.motherOfNode(node)];
 				lineBaseX[node]=x[node];
@@ -364,7 +364,17 @@ class BallsNSticksDrawing extends TreeDrawing  {
 				lineBaseY[node]=y[node];
 				lineBaseX[node]=x[tree.motherOfNode(node)];
 			}
-		} else {
+		}
+		else if (ownerModule.style == BallsNSticks.CURVED) {
+			if (treeDisplay.getOrientation()==TreeDisplay.UP || treeDisplay.getOrientation()==TreeDisplay.DOWN){
+				lineBaseY[node]=y[tree.motherOfNode(node)];
+				lineBaseX[node]=(x[node] + x[tree.motherOfNode(node)])/2;
+			} else {
+				lineBaseY[node]=(y[node] + y[tree.motherOfNode(node)])/2;
+				lineBaseX[node]=x[tree.motherOfNode(node)];
+			}
+		}
+		else {
 			lineBaseY[node]=y[tree.motherOfNode(node)];
 			lineBaseX[node]=x[tree.motherOfNode(node)];
 		}

@@ -83,7 +83,7 @@ public class TaxaListHasData extends TaxonListAssistant  {
 		addMenuItem("Prepend Sequence Length", makeCommand("prependLength", this));
 		addMenuItem("Prepend Number of Non-missing Sites", makeCommand("prependNumSites", this));
 		addMenuItem("Delete Stored Annotation", makeCommand("deleteAnnotation", this));
-		addMenuItem("Delete Stored Genbank Reference", makeCommand("deleteGenbankAnnotation", this));
+		addMenuItem("Delete Stored GenBank Reference", makeCommand("deleteGenBankAnnotation", this));
 		addMenuItem("Delete Stored Publication Reference", makeCommand("deletePublicationAnnotation", this));
 		datas = getProject().getCharacterMatrices();
 		if (datas != null)
@@ -434,7 +434,7 @@ public class TaxaListHasData extends TaxonListAssistant  {
 			
 			dialog.addLabel("Note: ", Label.LEFT);
 			SingleLineTextField noteTMField = dialog.addTextField(noteTM);
-			dialog.addLabel("Genbank: ", Label.LEFT);
+			dialog.addLabel("GenBank: ", Label.LEFT);
 			SingleLineTextField noteGBField = dialog.addTextField(noteGB);
 			dialog.addLabel("Publication Code: ", Label.LEFT);
 			SingleLineTextField notePCField = dialog.addTextField(notePC);
@@ -473,7 +473,7 @@ public class TaxaListHasData extends TaxonListAssistant  {
 			parametersChanged();
 			return null;
 		}
-		else if (checker.compare(this.getClass(), "Deletes the genbank notes for the selected taxa", null, commandName, "deleteGenbankAnnotation")) {
+		else if (checker.compare(this.getClass(), "Deletes the genbank notes for the selected taxa", null, commandName, "deleteGenBankAnnotation")) {
 			if (observedStates == null || taxa == null)
 				return null;
 			boolean anySelected = taxa.anySelected();
