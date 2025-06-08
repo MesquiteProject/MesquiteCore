@@ -54,6 +54,11 @@ public abstract class ListAssistant extends MesquiteModule  {
 		return null;
 	}
 	/*...............................................................................................................*/
+	/** returns whether or not any cells can be pasted into.*/
+	public boolean allowPasting(){
+		return false;
+	}
+	/*...............................................................................................................*/
 	/** returns whether or not a cell of table is editable.*/
 	public boolean isCellEditable(int row){
 		return false;
@@ -62,6 +67,22 @@ public abstract class ListAssistant extends MesquiteModule  {
 	/** for those permitting editing, indicates user has edited to incoming string.*/
 	public void setString(int row, String s){
 		
+	}
+	/*.................................................................................................................*/
+	public Object doCommand(String commandName, String arguments, CommandChecker checker) {
+		if (checker.compare(this.getClass(), "Pastes", "", commandName, "paste")) {
+			if (!allowPasting())
+				return null;
+			MesquiteTable table = findTable();
+			if (table == null)
+				return null;
+			MesquiteBoolean success = pasteIntoRows(table);
+			if (StringUtil.notEmpty(success.getName()))
+				discreetAlert("Problem with pasting:" + success.getName());
+			if (!MesquiteThread.isScripting() && success.getValue()) parametersChanged();
+		}
+		else return  super.doCommand(commandName, arguments, checker);
+		return null;
 	}
 	
 	//See TreeListAttachment for an example use of this. Table is passed because it's the responsibility of the ListAssistant to remember it.
@@ -156,7 +177,9 @@ public abstract class ListAssistant extends MesquiteModule  {
 	public ListModule getListModule(){
 		return (ListModule)findEmployerWithDuty(ListModule.class);
 	}
-	
+	protected MesquiteTable findTable(){
+		return ((TableWindow)findEmployerWithDuty(ListModule.class).getModuleWindow()).getTable();
+	}
 	/** Draw cell for row ic */
 	public void drawInCell(int ic, Graphics g, int x, int y,  int w, int h, boolean selected){
 	}

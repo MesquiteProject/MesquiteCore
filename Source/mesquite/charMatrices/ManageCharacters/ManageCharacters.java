@@ -412,7 +412,7 @@ public class ManageCharacters extends CharactersManager {
 			return null;
 		resetAllMenuBars();
 		NexusBlock nb = findNEXUSBlock(data);
-		if (nb==null) {
+	if (nb==null) {
 			CharactersBlock cb = new CharactersBlock(data.getFile(), this);
 			cb.setData((CharacterData)data);
 			addNEXUSBlock(cb);

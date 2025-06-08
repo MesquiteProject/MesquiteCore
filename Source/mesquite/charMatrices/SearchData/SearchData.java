@@ -27,7 +27,7 @@ import mesquite.lib.ui.MesquiteSubmenuSpec;
 /* ======================================================================== */
 public class SearchData extends DataWindowAssistantI {
 	public void getEmployeeNeeds(){  //This gets called on startup to harvest information; override this and inside, call registerEmployeeNeed
-		EmployeeNeed e = registerEmployeeNeed(DataSearcher.class, getName() + " needs a method to search, for instance to find best matches in Genbank to a selected sequence.",
+		EmployeeNeed e = registerEmployeeNeed(DataSearcher.class, getName() + " needs a method to search, for instance to find best matches in GenBank to a selected sequence.",
 				"You can request a search using the Search submenu of the Matrix menu of the Character Matrix Editor.  This menu may not be available for some data types.");
 	}
 	MesquiteTable table;

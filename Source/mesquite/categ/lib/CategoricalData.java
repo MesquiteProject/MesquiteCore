@@ -377,7 +377,7 @@ public class CategoricalData extends CharacterData {
 			}
 		for (int ic=icStart; ic<=icEnd; ic++){
 			if (characterHasName(ic))
-			data.setCharacterName(ic, getCharacterName(ic));
+			data.setCharacterName(ic-icStart, getCharacterName(ic));
 			if (hasStateNames())
 				for (int i = 0; i <= CategoricalState.maxCategoricalState; i++)
 					data.setStateName(ic-icStart,i,getStateName(ic,i));

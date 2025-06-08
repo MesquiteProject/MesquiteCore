@@ -29,7 +29,6 @@ public class CharListGenCodeModels extends CharListAssistant {
 	CharacterData data=null;
 	MesquiteTable table=null;
 	MesquiteSubmenuSpec mss;
-	MesquiteMenuItemSpec mScs, mStc, mRssc, mLine, mLine2;
 	MesquiteSubmenuSpec webPageSubmenu, toStringSubmenu;
 	/*.................................................................................................................*/
 	public boolean startJob(String arguments, Object condition, boolean hiredByName) {
@@ -182,22 +181,15 @@ public class CharListGenCodeModels extends CharListAssistant {
 	/*.................................................................................................................*/
 	public void setTableAndData(MesquiteTable table, CharacterData data){
 		/* hire employees here */
-		deleteMenuItem(mss);
-		deleteMenuItem(mScs);
-		deleteMenuItem(mRssc);
-		deleteMenuItem(mLine);
-		deleteMenuItem(mLine2);
-		deleteMenuItem(mStc);
-		deleteMenuItem(webPageSubmenu);
-		deleteMenuItem(toStringSubmenu);
+		deleteAllMenuItems();
 		mss = addSubmenu(null, "Genetic Code", makeCommand("setModel", this), getProject().getCharacterModels());
-		mLine = addMenuSeparator();
-		mScs = addMenuItem("Store current set...", makeCommand("storeCurrent",  this));
-		mRssc = addMenuItem("Replace stored set by current...", makeCommand("replaceWithCurrent",  this));
 		mss.setCompatibilityCheck(new ModelCompatibilityInfo(GenCodeModel.class, data.getStateClass()));
+		addMenuSeparator();
+		addMenuItem("Store current set...", makeCommand("storeCurrent",  this));
+		addMenuItem("Replace stored set by current...", makeCommand("replaceWithCurrent",  this));
 		if (data !=null)
-			mStc = addSubmenu(null, "Load genetic code set", makeCommand("loadToCurrent",  this), data.getSpecSetsVector(GenCodeModelSet.class));
-		mLine2 = addMenuSeparator();
+			addSubmenu(null, "Load genetic code set", makeCommand("loadToCurrent",  this), data.getSpecSetsVector(GenCodeModelSet.class));
+		addMenuSeparator();
 		webPageSubmenu = addSubmenu(null, "Show NCBI Web Page", makeCommand("showNCBIPage", this), getProject().getCharacterModels());
 		webPageSubmenu.setCompatibilityCheck(new ModelCompatibilityInfo(GenCodeModel.class, data.getStateClass()));
 		toStringSubmenu = addSubmenu(null, "List Code in Log Window", makeCommand("showCodeInLog", this), getProject().getCharacterModels());

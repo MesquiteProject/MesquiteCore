@@ -38,7 +38,6 @@ public class CharListParsModels extends CharListAssistant {
 	CharacterData data=null;
 	MesquiteTable table=null;
 	MesquiteSubmenuSpec mss;
-	MesquiteMenuItemSpec mScs, mStc, mRssc, mLine;
 	/*.................................................................................................................*/
 	public boolean startJob(String arguments, Object condition, boolean hiredByName) {
 		getProject().getCentralModelListener().addListener(this);
@@ -155,18 +154,14 @@ public class CharListParsModels extends CharListAssistant {
 	/*.................................................................................................................*/
 	public void setTableAndData(MesquiteTable table, CharacterData data){
 		/* hire employees here */
-		deleteMenuItem(mss);
-		deleteMenuItem(mScs);
-		deleteMenuItem(mRssc);
-		deleteMenuItem(mLine);
-		deleteMenuItem(mStc);
+		deleteAllMenuItems();
 		mss = addSubmenu(null, "Parsimony model", makeCommand("setModel", this), getProject().getCharacterModels());
-		mLine = addMenuSeparator();
-		mScs = addMenuItem("Store current set...", makeCommand("storeCurrent",  this));
-		mRssc = addMenuItem("Replace stored set by current...", makeCommand("replaceWithCurrent",  this));
+		addMenuSeparator();
+		addMenuItem("Store current set...", makeCommand("storeCurrent",  this));
+		addMenuItem("Replace stored set by current...", makeCommand("replaceWithCurrent",  this));
 		mss.setCompatibilityCheck(new ModelCompatibilityInfo(ParsimonyModel.class, data.getStateClass()));
 		if (data !=null)
-			mStc = addSubmenu(null, "Load parsimony model set", makeCommand("loadToCurrent",  this), data.getSpecSetsVector(ParsimonyModelSet.class));
+			addSubmenu(null, "Load parsimony model set", makeCommand("loadToCurrent",  this), data.getSpecSetsVector(ParsimonyModelSet.class));
 		this.data = data;
 		this.table = table;
 	}

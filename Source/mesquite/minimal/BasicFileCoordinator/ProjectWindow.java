@@ -99,7 +99,6 @@ public class ProjectWindow extends MesquiteWindow implements MesquiteListener {
 		MesquiteWindow main = f.frontMostInLocation(MesquiteFrame.MAIN);
 		MesquiteWindow pop = f.frontMostInLocation(MesquiteFrame.POPTILE);
 		MesquiteWindow either = f.getFrontWindow();
-
 		temp.addLine("setResourcesState " + f.getResourcesFullWindow() + " " + f.getResourcesClosedWhenMinimized() + " "  + f.getResourcesWidth());
 		if (either != null){
 			if (pop == null) //no pop just bring first
@@ -740,11 +739,12 @@ class ProjectPanel extends MousePanel implements ClosablePanelContainer{
 			panel.setLocation(0,0);
 		}
 		 */
-		ListableVector others = bfc.getProject().getOtherElements();
-		if (others.size()>0){
-			for (int i=0; i<others.size(); i++){
-				FileElement f = (FileElement)others.elementAt(i);
-				/*if (f instanceof TaxaGroupVector || f instanceof CharactersGroupVector){
+		if (bfc != null){
+			ListableVector others = bfc.getProject().getOtherElements();
+			if (others.size()>0){
+				for (int i=0; i<others.size(); i++){
+					FileElement f = (FileElement)others.elementAt(i);
+					/*if (f instanceof TaxaGroupVector || f instanceof CharactersGroupVector){
 					if (((ListableVector)f).size()>0){
 						addExtraPanel(panel = new GroupsPanel(bfc, this, w, (ListableVector)f));
 						panel.setLocation(0,0);
@@ -754,8 +754,9 @@ class ProjectPanel extends MousePanel implements ClosablePanelContainer{
 					addExtraPanel(panel = new AssocPanel(bfc, this, w, f));
 					panel.setLocation(0,0);
 				}
-			}
+				}
 
+			}
 		}
 		addExtraPanel(notesPanel = new NotesPanel(bfc, this, w));
 		resetSizes();
@@ -1148,10 +1149,7 @@ class TaxaPanel extends ElementPanel {
 		addCommand(false, "list.gif", "List &\nManage\nTaxa", "List & Manage Taxa", new MesquiteCommand("showMe", element));
 		if (otherMatch()) {
 			addCommand(true, null, "-", "-", null);
-			addCommand(true, null, "(NOTE: Taxa block duplicated? Select for details...)", "(NOTE: Taxa block duplicated? Select for details...)", new MesquiteCommand("duplicatedInfo", this));  
-			addCommand(true, null, "Copy Matrices to other Taxa Block", "Copy Matrices to other Taxa Block", new MesquiteCommand("transferMatrices", this));  
-			addCommand(true, null, "Copy Trees to other Taxa Block", "Copy Trees to other Taxa Block", new MesquiteCommand("transferTrees", this)); 
-			addCommand(true, null, "Merge Matrices and Trees with other Taxa Block", "Merge Matrices and Trees with other Taxa Block", new MesquiteCommand("mergeBlock", this)); 
+			addCommand(true, null, "(Taxa block duplicated? Select for details...)", "(Taxa block duplicated? Select for details...)", new MesquiteCommand("duplicatedInfo", this));  
 			addCommand(true, null, "-", "-", null);
 		}
 		addCommand(false, "chart.gif", "Chart\nTaxa", "Chart Taxa", new MesquiteCommand("chart", this));
@@ -1185,12 +1183,14 @@ class TaxaPanel extends ElementPanel {
 			//MesquiteThread.setCurrentCommandRecord(oldCommandRec);
 		}
 		else if (checker.compare(this.getClass(), "Shows an initial tree window", null, commandName, "duplicatedInfo")) {
-			((BasicFileCoordinator)bfc).alert("This taxa block appears to be a duplicate of at least one other, because it has the same number of taxa and with the same names. " +
-					"Calculations with this taxa block will not have access to matrices and trees of the other block, and vice versa. " + 
-					"\n\nIf this was unintentional, you could choose the following menu items to transfer character matrices and trees to the other block. "+
-					"\n\nTo avoid this problem in the future, when combining separate files, try using options other than Include or Link under Include & Merge.");
+			((BasicFileCoordinator)bfc).alert("This taxa block has matching taxon names with another block of taxa. If you had intended these to be the same block of taxa, "
+					+"you can merge them in the List of Taxa Blocks window (available in the Taxa&Trees menu) via List>Utilities>Merge Selected Taxa Blocks Into Other."
+					+ " Merging is necessary for matrices and trees to be interpreted as belonging to the same taxa. "
+					+"However, merging may not retain some information like metadata, footnotes, etc.\n\nIf the duplication of the taxa block had been unintentional, " 
+					+ "you might be able to avoid this problem in the future, when combining separate files, by using options under File>Include & Merge other than Include or Link.");
 		}
-		else if (checker.compare(this.getClass(), "Transfers matrices to other taxa block", null, commandName, "transferMatrices")) {
+		/* transfered to a module in List of Taxa Blocks 
+		 * else if (checker.compare(this.getClass(), "Transfers matrices to other taxa block", null, commandName, "transferMatrices")) {
 			Taxa taxa = (Taxa)element;
 			Taxa other = chooseOther(taxa, "Choose taxa block to which to copy the matrices");
 			if (other == null)
@@ -1215,12 +1215,12 @@ class TaxaPanel extends ElementPanel {
 			transferTrees(taxa, other);
 			taxa.deleteMe(false);
 			projectWindow.projPanel.refresh();
-		}
+		}*/
 		else
 			return  super.doCommand(commandName, arguments, checker);
 		return null;
 	}
-	
+
 	/* - - - - - - - - - - - - - - - - - - - - */
 	void transferMatrices(Taxa taxa, Taxa other){
 		MesquiteProject project = taxa.getProject();
@@ -1295,11 +1295,11 @@ class TaxaPanel extends ElementPanel {
 		}
 		return false;
 	}
-	
+
 	/* - - - - - - - - - - - - - - - - - - - - */
 	public String getIconFileName(){
 		if (otherMatch())
-			return "warning.gif";
+			return "mildWarning.gif";
 		return null;
 	}
 	/*.................................................................................................................*/
@@ -1311,12 +1311,13 @@ class TaxaPanel extends ElementPanel {
 	}
 	public void chart(){
 		String mID = Long.toString(((FileElement)element).getID());
-		MesquiteThread.addHint(new MesquiteString("TaxonValuesChart", mID));
+		MesquiteThread.addHint(new MesquiteString("TaxonValuesChart", mID), this);
 		if (MesquiteDialog.useWizards)
 			MesquiteThread.triggerWizard();
 		((BasicFileCoordinator)bfc).showChartWizard("Taxa");
 		if (MesquiteDialog.useWizards)
 			MesquiteThread.detriggerWizard();
+		MesquiteThread.removeMyHint(null, this);
 	}
 	public String getNotes(){
 		if(element == null)
@@ -1431,15 +1432,16 @@ class MElementPanel extends ElementPanel {
 	public void chart(){
 		String mID = Long.toString(((FileElement)element).getID());
 		String tID = Long.toString(((CharacterData)element).getTaxa().getID());
-		MesquiteThread.addHint(new MesquiteString("CharacterValuesChart", tID));
-		MesquiteThread.addHint(new MesquiteString("CharSrcCoordObed", "#StoredCharacters"));
-		MesquiteThread.addHint(new MesquiteString("StoredCharacters", mID));
+		MesquiteThread.addHint(new MesquiteString("CharacterValuesChart", tID), this);
+		MesquiteThread.addHint(new MesquiteString("CharSrcCoordObed", "#StoredCharacters"), this);
+		MesquiteThread.addHint(new MesquiteString("StoredCharacters", mID), this);
 		if (MesquiteDialog.useWizards)
 			MesquiteThread.triggerWizard();
 
 		((BasicFileCoordinator)bfc).showChartWizard("Characters");
 		if (MesquiteDialog.useWizards)
 			MesquiteThread.detriggerWizard();
+		MesquiteThread.removeMyHint(null, this);
 	}
 
 }
@@ -1596,14 +1598,15 @@ class TreesRPanel extends ElementPanel {
 	public void chart(){
 		String mID = Long.toString(((TreeVector)element).getID());
 		String tID = Long.toString(((TreeVector)element).getTaxa().getID());
-		MesquiteThread.addHint(new MesquiteString("TreeValuesChart", tID));
-		MesquiteThread.addHint(new MesquiteString("TreeValuesChart", "#StoredTrees"));
-		MesquiteThread.addHint(new MesquiteString("StoredTrees", mID));
+		MesquiteThread.addHint(new MesquiteString("TreeValuesChart", tID), this);
+		MesquiteThread.addHint(new MesquiteString("TreeValuesChart", "#StoredTrees"), this);
+		MesquiteThread.addHint(new MesquiteString("StoredTrees", mID), this);
 		if (MesquiteDialog.useWizards)
 			MesquiteThread.triggerWizard();
 		((BasicFileCoordinator)bfc).showChartWizard("Trees");
 		if (MesquiteDialog.useWizards)
 			MesquiteThread.detriggerWizard();
+		MesquiteThread.removeMyHint(null, this);
 	}
 	public String getTitleAddition(){
 		int numTrees = ((TreeVector)element).size();

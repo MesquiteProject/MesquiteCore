@@ -129,46 +129,12 @@ public class BranchPropertiesAManager extends TreeDisplayAssistantI {
 		}
 		return propertyList.indexOf(property);  //just in case?
 	}
-	/*...............................................................................*
-	boolean inList(PropertyDisplayRecord property){
-		return indexInList(property)>=0;
-	}
+
 	/*...............................................................................*/
 	public boolean isBuiltIn(DisplayableBranchProperty mi){
 		return mi.kind== Associable.BUILTIN;
 	}
-	/*...............................................................................*
-	public void pleaseShowHide(PropertyDisplayRecord[] list, boolean show){
-		if (list == null)
-			return;
 
-		for (int i = 0; i<list.length; i++){
-			if (list[i]!= null){
-				list[i].showing = show;
-			}
-		}
-		for (int i =0; i<extras.size(); i++){
-			NodeAssocDisplayExtra e = (NodeAssocDisplayExtra)extras.elementAt(i);
-			e.changeInShowing();
-		}
-		parametersChanged();
-	}
-	/*...............................................................................*
-	public boolean isShowing(PropertyDisplayRecord mi){
-		if (mi == null)
-			return false;
-		return mi.showing;
-	}
-	/*...............................................................................*
-	boolean anyShowing(){
-
-		for (int i=0; i<propertyList.size(); i++){
-			PropertyDisplayRecord mi = (PropertyDisplayRecord)propertyList.elementAt(i);
-			if (mi.showing)
-				return true;
-		}
-		return false;
-	}
 	/*.................................................................................................................*/
 	public void addPropertyFromScript(String name, int kind, boolean show){
 		if (StringUtil.blank(name) || !MesquiteInteger.isCombinable(kind))

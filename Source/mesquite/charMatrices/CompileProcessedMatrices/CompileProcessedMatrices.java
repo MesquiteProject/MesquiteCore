@@ -30,6 +30,7 @@ public class CompileProcessedMatrices extends FileProcessor {
 	String saveFile = null;
 	String tempFile = null;
 	boolean openAfterCompiled = true;
+	boolean OACOptionAlreadySet = false;
 	/*.................................................................................................................*/
 	public boolean startJob(String arguments, Object condition, boolean hiredByName) {
 		loadPreferences();
@@ -60,7 +61,6 @@ public class CompileProcessedMatrices extends FileProcessor {
 		return temp;
 	}
 	
-	boolean OACOptionAlreadySet = false;
 	/*.................................................................................................................*/
 	public Object doCommand(String commandName, String arguments, CommandChecker checker) {
 		if (checker.compare(this.getClass(), "Sets whether to open after compilation", "[path]", commandName, "setOpenAfterward")) {
@@ -121,7 +121,7 @@ ListableVector taxonNames = new ListableVector();
 			}
 		}
 		if (added) {
-			String matrices = 	 MesquiteFile.getFileContentsAsString(tempFile);
+			String matrices = 	 MesquiteFile.getFileContentsAsString(tempFile, -1,100, false);
 			if (matrices == null)
 				matrices = "";
 			String block = "#NEXUS" + StringUtil.lineEnding() + "BEGIN TAXA;" + StringUtil.lineEnding() + " DIMENSIONS NTAX=" + taxonNames.size() + ";" + StringUtil.lineEnding() + " TAXLABELS" + StringUtil.lineEnding() + "   ";
@@ -167,8 +167,9 @@ ListableVector taxonNames = new ListableVector();
 			String fileName=fdlg.getFile();
 			String directory=fdlg.getDirectory();
 			// fdlg.dispose();
-			if (StringUtil.blank(fileName) || StringUtil.blank(directory))
+			if (StringUtil.blank(fileName) || StringUtil.blank(directory)) {
 				return -1;
+			}
 			saveFile = MesquiteFile.composePath(directory, fileName);
 			tempFile = MesquiteFile.composePath(directory, MesquiteFile.massageStringToFilePathSafe(MesquiteTrunk.getUniqueIDBase() + fileName)) ;
 		 	if (!OACOptionAlreadySet)

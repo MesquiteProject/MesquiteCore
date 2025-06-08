@@ -42,7 +42,7 @@ public class InterpretGenBankProt extends InterpretGenBank {
    			data.badImport = true;
 			MesquiteTrunk.errorReportedDuringRun = true;
   			if (!badImportWarningGiven)
-   				discreetAlert("THE DATA WILL BE INCORRECTLY IMPORTED.  The imported sequence includes symbols not interpretable as Protein sequence data.  If this is a DNA data file, please use the Genbank DNA interpreter. " + 
+   				discreetAlert("THE DATA WILL BE INCORRECTLY IMPORTED.  The imported sequence includes symbols not interpretable as Protein sequence data.  If this is a DNA data file, please use the GenBank DNA interpreter. " + 
 					"Also, please ensure this is not an rtf or zip file or other format that is not simple text.  This warning may not be given again, but you may see subsequent warnings about impossible states.");
    			badImportWarningGiven = true;
    		}

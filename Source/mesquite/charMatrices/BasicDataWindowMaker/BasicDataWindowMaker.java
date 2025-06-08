@@ -2048,9 +2048,9 @@ class BasicDataWindow extends TableWindow implements MesquiteListener {
 				TaxonNameAlterer tda = (TaxonNameAlterer) ownerModule.hireNamedEmployee(TaxonNameAlterer.class, arguments);
 				if (tda != null) {
 					UndoReference undoReference = new UndoReference(new UndoInstructions(UndoInstructions.ALLTAXONNAMES, taxa, taxa), ownerModule);
-					boolean a = tda.alterTaxonNames(taxa, getTable());
+					int a = tda.alterTaxonNames(taxa, getTable());
 					ownerModule.fireEmployee(tda);
-					if (a) {
+					if (a >= 0) {
 						table.redrawRowNames();
 						taxa.notifyListeners(this, new Notification(NAMES_CHANGED, undoReference));
 
@@ -4755,6 +4755,9 @@ class MatrixTable extends mesquite.lib.table.CMTable implements MesquiteDroppedF
 			window.getPalette().setCurrentTool(window.ibeamTool);
 			((TableTool) window.getCurrentTool()).cellTouched(column, row, editorPanel, x, y, modifiers);
 		}
+		else if (window.getCurrentTool() == window.arrowTool && MesquiteEvent.rightClick(modifiers)){
+			cellRightClicked(column, row, editorPanel, x, y, modifiers);
+		}
 		else if (((TableTool) window.getCurrentTool()).useTableTouchRules()) {
 			super.cellTouched(column, row, editorPanel, x, y, modifiers, clickCount);
 		}
@@ -4786,6 +4789,49 @@ class MatrixTable extends mesquite.lib.table.CMTable implements MesquiteDroppedF
 		else
 			((TableTool) window.getCurrentTool()).cellDropped(column, row, editorPanel, x, y, modifiers);
 
+	}
+	/* ............................................................................................................... */
+	public void cellRightClicked(int column, int row, EditorPanel editorPanel, int x, int y, int modifiers){
+
+		//deal with annotations of taxa and characters and cells
+		if (column == -1 && row >= 0 && row<taxa.getNumTaxa()){
+			String current = taxa.getAnnotation(row);
+			if (current == null) current = "";
+			MesquiteString value = new MesquiteString(current);
+			String message = "Set footnote for taxon " +(row+1) + " (" + taxa.getTaxonName(row) + ")";
+			boolean result = QueryDialogs.queryString(window, "Set Footnote", message,  value, 4, false, false);
+			if (result) {
+				taxa.setAnnotation(row, value.getValue());
+				taxa.notifyListeners(this, new Notification(MesquiteListener.ANNOTATION_CHANGED));
+			}
+		}
+		else if (row == -1 && column >= 0 && column<data.getNumChars()){
+			String current = data.getAnnotation(column);
+			if (current == null) current = "";
+			MesquiteString value = new MesquiteString(current);
+			String message = "Set footnote for character " +(column+1);
+			if (data.characterHasName(column))
+				message += " (" + data.getCharacterName(column) + ")";
+			boolean result = QueryDialogs.queryString(window, "Set Footnote", message,  value, 4, false, false);
+			if (result){
+				data.setAnnotation(column, value.getValue());
+				data.notifyListeners(this, new Notification(MesquiteListener.ANNOTATION_CHANGED));
+			}
+		}
+		else if (row >= 0 && row<taxa.getNumTaxa() && column >= 0 && column<data.getNumChars()){
+			String current = data.getAnnotation(column, row);
+			if (current == null) current = "";
+			MesquiteString value = new MesquiteString(current);
+			String message = "Set footnote for cell (character " +(column+1);
+			if (data.characterHasName(column))
+				message += " [" + data.getCharacterName(column) + "]";
+			message += " in taxon " +(row+1) + " [" + taxa.getTaxonName(row) + "])";
+			boolean result = QueryDialogs.queryString(window, "Set Footnote", message,  value, 4, false, false);
+			if (result){
+				data.setAnnotation(column, row, value.getValue());
+				data.notifyListeners(this, new Notification(MesquiteListener.ANNOTATION_CHANGED));
+			}
+		}
 	}
 
 	/* ............................................................................................................... */

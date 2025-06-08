@@ -468,6 +468,7 @@ public class ExtensibleDialog extends MesquiteDialog implements ActionListener, 
 			g.drawLine(x1,y1,x2, y2);
 		}
 	}
+	
 	/*.................................................................................................................*/
 	public int getButtonNumber (String buttonLabel) {
 		if (buttonLabel == null)
@@ -549,6 +550,47 @@ public class ExtensibleDialog extends MesquiteDialog implements ActionListener, 
 	boolean checkTextEdge = false;
 	public void setCheckTextEdge(boolean cte){
 		checkTextEdge = cte;
+	}
+	
+	public void resetPrimaryButtonLabel(int buttonNumber, String label){
+		if (label == null)
+			return;
+		if (buttonNumber == 0){
+			if (button0 != null){
+				button0.setLabel(label);
+				buttonLabel0 = label;
+			}
+		}
+		else if (buttonNumber == 1){
+			if (button1 != null){
+				button1.setLabel(label);
+				buttonLabel1 = label;
+			}
+		}
+		else if (buttonNumber == 2){
+			if (button2 != null){
+				button2.setLabel(label);
+				buttonLabel2 = label;
+		}
+		}
+	}
+	public String getPrimaryButtonLabel(int buttonNumber){
+		if (buttonNumber == 0){
+			if (button0 != null){
+				return buttonLabel0;
+			}
+		}
+		else if (buttonNumber == 1){
+			if (button1 != null){
+				return buttonLabel1;
+			}
+		}
+		else if (buttonNumber == 2){
+			if (button2 != null){
+				return buttonLabel2;
+		}
+		}
+		return null;
 	}
 	/*.................................................................................................................*/
 	public void addPrimaryButtonRow (String buttonLabel0, String buttonLabel1, String buttonLabel2) {

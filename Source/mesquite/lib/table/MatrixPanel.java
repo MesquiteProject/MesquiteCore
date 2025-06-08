@@ -628,7 +628,6 @@ timer6.end();
 		mouseDownInField = false;
 		mouseDownInPanel = true;
 
-		//((TableTool)tool).getWorksOnColumnNames();
 
 		if (column>-1 && row > -1 && column<table.numColumnsTotal && row<table.numRowsTotal) {
 

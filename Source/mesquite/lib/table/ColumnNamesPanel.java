@@ -908,7 +908,7 @@ public class ColumnNamesPanel extends EditorPanel implements FocusListener {
 					setCursor(table.getHandCursor());
 					if (!(table.editingAnything() || table.singleTableCellSelected())) {
 						String s = table.getColumnComment(column);
-						if (s!=null)   
+						if (StringUtil.notEmpty(s))   
 							setWindowAnnotation(s, "Footnote above refers to " + table.getColumnNameText(column));
 						else
 							setWindowAnnotation("", null);

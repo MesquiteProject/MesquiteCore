@@ -28,6 +28,7 @@ public class ShowMatrixWithTreeController extends TreeWindowAssistantN  {
 		if (!MesquiteThread.isScripting()){
 			MesquiteModule sotitw = findNearestColleagueWithDuty(ShowMatrixInTreeWindow.class);
 			sotitw.doCommand("queryOptions", null, CommandChecker.defaultChecker);
+			iQuitMainThread();
 		}
 		return true;
 	}

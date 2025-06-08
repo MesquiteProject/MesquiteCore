@@ -353,8 +353,9 @@ public abstract class InterpretPhylip extends FileInterpreterITree {
 			return null;
 		if (treeVectors.length==1)
 			treeVector = (TreeVector)treeVectors[0];
-		else
+		else {
 			treeVector = (TreeVector)ListDialog.queryList(containerOfModule(), "Include trees in file?", "Include trees in file?", MesquiteString.helpString, "Include", "No trees", treeVectors, 0);
+		}
 		//treeVector = (TreeVector)ListDialog.queryList(containerOfModule(), "Include trees in file?", "Include trees in file?", MesquiteString.helpString, treeVectors, 0);
 		previousVector = treeVector;
 		return treeVector;
@@ -596,6 +597,8 @@ public abstract class InterpretPhylip extends FileInterpreterITree {
 		// NEW STYLE ====
 		String fileName = suggestedFileName(null, preferredDataFileExtension());
 		String filePath = getPathForExport(arguments, fileName, null, null);
+		if (StringUtil.blank(filePath))
+			return false;
 		MesquiteFile.putFileContents(filePath, "", true); //starting the file
 		// ========
 		

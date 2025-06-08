@@ -459,7 +459,6 @@ public class ManageTrees extends TreesManager implements ItemListener {
 					Taxa taxa = trees.getTaxa();
 					//send script to tree window coord to makeTreeWindow with set of taxa and then set to stored trees and this tree vector
 					int whichTreeBlock = getTreeBlockNumber(taxa, trees);
-
 					//first, find if there is a tree window showing these trees
 					MesquiteModule twm = null;
 					ListableVector v = treeWindowCoord.getEmployeeVector();

@@ -51,6 +51,11 @@ public class TaxonListArchivedName extends TaxonListAssistant {
 	public int getVersionOfFirstRelease(){
 		return 200;  
 	}
+	/*...............................................................................................................*/
+	/** returns whether or not any cells can be pasted into.*/
+	public boolean allowPasting(){
+		return true;
+	}
 	/*.................................................................................................................*/
 	public void setTableAndTaxa(MesquiteTable table, Taxa taxa){
 		if (this.taxa != null)
@@ -73,6 +78,7 @@ public class TaxonListArchivedName extends TaxonListAssistant {
 			addSubmenu(null, "Load Alternatives", makeCommand("loadToCurrent",  this), taxa.getSpecSetsVector(TaxaStringsSet.class));
 		}
 		
+		addMenuItem( "Paste Values from Clipboard", makeCommand("paste",  this)); //need to put this in module, but ListAssistant class handles command
 	}
 	
 	/*.................................................................................................................*/

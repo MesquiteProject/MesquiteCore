@@ -184,6 +184,7 @@ public class MesquiteProject extends Attachable implements Listable, MesquiteLis
 		if (ownerModule != null)
 			ownerModule.showProjectWindow();
 	}
+	public int NEXUSBlockSortSuppression = 0;
 
 	public int refreshSuppression = 0;
 	public boolean refreshPending = false;

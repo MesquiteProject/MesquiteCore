@@ -19,6 +19,8 @@ import mesquite.lib.*;
 import mesquite.lib.characters.*;
 import mesquite.lib.duties.*;
 import mesquite.lib.taxa.Taxa;
+import mesquite.lib.ui.ColorDistribution;
+import mesquite.lib.ui.MesquiteColorTable;
 
 /* ======================================================================== */
 /**A class for an array of  categorical character states for many characters, at each of the taxa  or nodes.*/
@@ -94,6 +96,7 @@ public abstract class MCategoricalStates extends MCharactersStates {
 			}
 		}
 	}
+
 	/*..........................................  MCategoricalStates  ...................................................*/
 	/** set freqency information*/
 	public void setFrequencies(int ic, int node, double[] freqs) {
@@ -212,7 +215,62 @@ public abstract class MCategoricalStates extends MCharactersStates {
 	public void disposeExtraFrequencies() {
 		extraFrequencies = null;
 	}
+	/*..........................................  MCategoricalStates  ...................................................*/
+	long[][][] conditionalStateSets = null;
+	private void prepareConditionalStateSetStorage(){
+		if (conditionalStateSets == null || conditionalStateSets.length != getNumNodes() || (conditionalStateSets.length == 0 || conditionalStateSets[0].length != getNumChars())) {
+			conditionalStateSets = new long[getNumNodes()][getNumChars()][];
+		}
+	}
+	/*..........................................  MCategoricalStates  ...................................................*/
+	/** set conditionalStateSet information*/
+	public void setConditionalStateSets(int ic, int node, long[] conditionalStateSet) {
+		if (checkIllegalNode(node, 0))
+			return;
+		if (conditionalStateSet!=null) {
+			prepareConditionalStateSetStorage();
+				conditionalStateSets[node][ic] = conditionalStateSet;
+		}
+	}
+	/*..........................................  MCategoricalStates  ...................................................*/
+	/** set conditionalStateSet information*/
+	public long[] getConditionalStateSet(int ic, int node) {
+		if (checkIllegalNode(node, 0))
+			return null;
+		if (conditionalStateSets!=null && node<conditionalStateSets.length && ic < conditionalStateSets[node].length) 
+			return conditionalStateSets[node][ic] ;
+		return null;
+	}
+	public boolean hasConditionalStateSets(){
+		return conditionalStateSets != null;
+	}
+	/*..........................................  CategoricalData  ..................................................*/
+	/** returns the maximum state in character ic*/
+	public int getMaxState(int ic){
+
+		long allstates = 0;
+		for (int it=0; it<getNumTaxa(); it++)
+			allstates |= getState(ic, it);
+		return CategoricalState.maximum(allstates);
+	}
+
+	
 /*..........................................  MCategoricalStates  ..................................................*/
+	/** Gets the color representing state(s) of character ic in taxon it */ 
+	public Color getColorOfStates(int ic, int it){
+		long s = getState(ic, it);
+		if (CategoricalState.isCombinable(s)) {
+			int colorCount = CategoricalState.cardinality(s);
+			if (colorCount>1){
+				return Color.lightGray;
+			}
+			else {
+				return MesquiteColorTable.getDefaultColor(getMaxState(ic),CategoricalState.maximum(s), MesquiteColorTable.COLORS);
+			}
+		}
+		else 
+			return ColorDistribution.unassigned;
+	}/*..........................................  MCategoricalStates  ..................................................*/
 	/** returns the name of the type of data stored */
 	public String getDataTypeName(){
 		return CategoricalData.DATATYPENAME;

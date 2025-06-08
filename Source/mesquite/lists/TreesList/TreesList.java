@@ -75,6 +75,14 @@ public class TreesList extends ListLVModule {
 			iQuit();
 		}
 	}
+	
+ 	public String getElementNameSingular(){
+ 		return "tree";
+ 	}
+ 	public String getElementNamePlural(){
+ 		return "trees";
+ 	}
+
 	/*.................................................................................................................*/
 
 	/** returns an explanation of the row.*/
@@ -120,7 +128,9 @@ public class TreesList extends ListLVModule {
 
 		MesquiteSubmenuSpec mss2 = addSubmenu(null, "Utilities", MesquiteModule.makeCommand("doUtility",  this));
 		mss2.setList(TreeListUtility.class);
-		//addMenuItem( "Save selected set...", makeCommand("saveSelectedRows", this));
+		MesquiteSubmenuSpec mss3 = addSubmenu(null, "Tree Names", MesquiteModule.makeCommand("doNames",  this));
+		mss3.setList(ListableNameAlterer.class);
+	//addMenuItem( "Save selected set...", makeCommand("saveSelectedRows", this));
 		addMenuSeparator();
 		if (!MesquiteThread.isScripting()){
 			TreeListAssistant assistant;
@@ -284,6 +294,23 @@ public class TreesList extends ListLVModule {
 					boolean a = tda.operateOnTrees(currentTreeBlock);
 					if (!tda.pleaseLeaveMeOn())
 						fireEmployee(tda);
+				}
+			}
+		}
+		else if (checker.compare(this.getClass(), "Hires utility module to alter names of the trees", "[name of module]", commandName, "doNames")) {
+			if (currentTreeBlock !=null && getModuleWindow() != null){
+				MesquiteTable table = ((ListWindow)getModuleWindow()).getTable();
+				if (table == null)
+					return null;
+				ListableNameAlterer tda= (ListableNameAlterer)hireNamedEmployee(ListableNameAlterer.class, arguments);
+				if (tda!=null) {
+					boolean a = tda.alterElementNames(currentTreeBlock, table);
+					if (a) {
+						table.repaintAll();
+						table.rowNamesReturned();
+						currentTreeBlock.notifyListeners(this, new Notification(NAMES_CHANGED));
+					}
+					fireEmployee(tda);
 				}
 			}
 		}

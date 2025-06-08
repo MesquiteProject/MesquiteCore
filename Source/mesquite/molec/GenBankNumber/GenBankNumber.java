@@ -13,16 +13,19 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
 */
 package mesquite.molec.GenBankNumber;
 
+import java.awt.Color;
+
 import mesquite.categ.lib.*;
 import mesquite.lists.lib.*;
 
 import mesquite.lib.*;
 import mesquite.lib.characters.CharacterData;
 import mesquite.lib.characters.MCharactersDistribution;
-import mesquite.lib.duties.MatrixSourceCoord;
+import mesquite.lib.duties.CharMatrixSource;
 import mesquite.lib.table.*;
 import mesquite.lib.taxa.Taxa;
 import mesquite.lib.taxa.Taxon;
+import mesquite.lib.ui.ColorDistribution;
 import mesquite.lib.ui.MesquiteMenuItemSpec;
 
 
@@ -32,13 +35,18 @@ public class GenBankNumber extends TaxonListAssistant {
 	MesquiteTable table=null;
 	Taxa currentTaxa = null;
 	MolecularData data = null;
-	MatrixSourceCoord matrixSourceTask;
+	CharMatrixSource matrixSourceTask;
+	//MatrixSourceCoord matrixSourceTask;
 	MesquiteMenuItemSpec mss2;
+	ListableVector datas;
 	/*.................................................................................................................*/
 	public boolean startJob(String arguments, Object condition, boolean hiredByName) {
-		matrixSourceTask = (MatrixSourceCoord)hireCompatibleEmployee(MatrixSourceCoord.class, DNAState.class, "Source of DNA matrix (for " + getName() + ")"); 
+		matrixSourceTask = (CharMatrixSource)hireNamedEmployee(CharMatrixSource.class, "#StoredMatrices", DNAState.class); 
 		if (matrixSourceTask==null)
 			return sorry(getName() + " couldn't start because no source of character matrices was obtained.");
+		datas = getProject().getCharacterMatrices();
+		if (datas != null)
+			datas.addListener(this);
 		return true;
 	}
 
@@ -53,11 +61,28 @@ public class GenBankNumber extends TaxonListAssistant {
 				data=null;
 		
 	}
+	
+	/*...............................................................................................................*/
+	/** returns whether or not any cells can be pasted into.*/
+	public boolean allowPasting(){
+		return true;
+	}
+	/*.................................................................................................................*/
+	/** endJob is called as a module is quitting; modules should put their clean up code here.*/
+	public void endJob() {
+		if (data != null)
+			data.removeListener(this);
+		if (taxa != null)
+			taxa.removeListener(this);
+		if (datas != null)
+			datas.removeListener(this);
+	}
+
 	/*.................................................................................................................*/
 	public void setTableAndTaxa(MesquiteTable table, Taxa taxa){
 		deleteAllMenuItems();
 		addMenuItem("Move Numbers from GenBank/FASTA Taxon Name", makeCommand("moveNumbersFromName", this));
-		addMenuItem( "Paste Values into Selected", makeCommand("paste",  this));
+		addMenuItem( "Paste Values from Clipboard", makeCommand("paste",  this)); //need to put this in module, but ListAssistant class handles command
 		if (this.taxa != null)
 			this.taxa.removeListener(this);
 		this.taxa = taxa;
@@ -86,29 +111,42 @@ public class GenBankNumber extends TaxonListAssistant {
 		super.employeeParametersChanged(employee, source, notification);
 	}
 	/*.................................................................................................................*/
+	public void changed(Object caller, Object obj, Notification notification){
+		int code = Notification.getCode(notification);
+		if (obj==datas){
+			parametersChanged(notification);
+		}
+	}
+	/*.................................................................................................................*/
 	public Snapshot getSnapshot(MesquiteFile file) { 
 		Snapshot temp = new Snapshot();
-		temp.addLine("getMatrixSource", matrixSourceTask);
+		temp.addLine("getCharMatrixSource", matrixSourceTask);
 		return temp;
 	}
 	MesquiteInteger pos = new MesquiteInteger();
 	/*.................................................................................................................*/
 	public Object doCommand(String commandName, String arguments, CommandChecker checker) {
-		if (checker.compare(this.getClass(), "Returns the matrix source", null, commandName, "getMatrixSource")) {
+		if (checker.compare(this.getClass(), "Returns the matrix source (old style, so has to be subverted)", null, commandName, "getMatrixSource")) {
+			return this;
+		}
+		else if (checker.compare(this.getClass(), "Returns the matrix source (to subvert old scripts)", null, commandName, "setCharacterSource")) { //this is actually  supposed to have gone to the matrix source coord, but now this is its own coord
+			return matrixSourceTask;
+		}
+		else if (checker.compare(this.getClass(), "Returns the matrix source", null, commandName, "getCharMatrixSource")) {
 			return matrixSourceTask;
 		}
 		else if (checker.compare(this.getClass(), "Acquires GenBank numbers from imported GenBank taxon names", null, commandName, "moveNumbersFromName")) {
 			moveNumberFromGenBankTaxonName();
 			return null;
 		}
-		else if (checker.compare(this.getClass(), "Pastes", "", commandName, "paste")) {
+		/*else if (checker.compare(this.getClass(), "Pastes", "", commandName, "paste")) {
 			MesquiteBoolean success = pasteIntoRows(table);
 			if (StringUtil.notEmpty(success.getName()))
 				discreetAlert("Problem with pasting:" + success.getName());
 			if (!MesquiteThread.isScripting() && success.getValue()) parametersChanged();
-		}
+		}*/
 		else return  super.doCommand(commandName, arguments, checker);
-		return null;
+	//	return null;
 	}
 	/*.................................................................................................................*/
 	private void moveNumberFromGenBankTaxonName() {
@@ -153,6 +191,9 @@ public class GenBankNumber extends TaxonListAssistant {
 	}
 	/*.................................................................................................................*/
 	public String getTitle() {
+		if (data != null)
+			return "GenBank # (" + data.getName() + ")";
+			
 		return "GenBank Number";
 	}
 	public String getStringForTaxon(int it){
@@ -164,6 +205,40 @@ public class GenBankNumber extends TaxonListAssistant {
 			return (String)tInfo.getAssociatedString(MolecularData.genBankNumberRef, it);
 		}
 		return "-";
+	}
+	NameReference genBankColor = NameReference.getNameReference("genbankcolor");
+	public Color getBackgroundColorOfCell(int it, boolean selected){
+		if (data != null){
+			Associable tInfo = data.getTaxaInfo(false);
+			Object obj = tInfo.getAssociatedObject(genBankColor,  it);  //not saved to file
+			if (obj instanceof Color)
+				return (Color)obj;
+		}
+		if (getStringForTaxon(it) == null)
+			return ColorDistribution.veryVeryLightGray;
+		return null;
+	}
+	public String getExplanationForRow(int ic){
+		if (data != null){
+			Associable tInfo = data.getTaxaInfo(false);
+			Object obj = tInfo.getAssociatedObject(genBankColor,  ic); 
+			if (obj != null && obj instanceof Color){
+				Color current = (Color)obj;
+				if (current.equals(Color.yellow)){
+					return "A GenBank number is available in the simple table file.  (This color is temporary, and will not be saved with the file.)"; 
+				}
+				else if (current.equals(Color.magenta)){
+					return "A GenBank number is available in the simple table file, but there is also one in this data file. The incoming information can replace or be added to the existing.  (This color is temporary, and will not be saved with the file.)"; 
+				}
+				else if (current.equals(ColorDistribution.veryLightGreen)){
+					return "A GenBank number is available in the simple table file, but it was already recorded in this file.  (This color is temporary, and will not be saved with the file.)";
+			}
+				else if (current.equals(ColorDistribution.veryLightYellow)){
+					return "The GenBank number was modified by the information in the simple table file.  (This color is temporary, and will not be saved with the file.)"; 
+			}
+			}
+		}
+		return "";
 	}
 	/*...............................................................................................................*/
 	/** returns whether or not a cell of table is editable.*/

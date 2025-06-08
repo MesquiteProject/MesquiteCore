@@ -7007,10 +7007,12 @@ public void resetTaxaInfo(){
 
 //THIS SHOULD BE USED with great caution. Designed only for transferring a matrix to another block of taxa in special circumstances.
 public boolean setTaxa(Taxa otherTaxa, boolean areYouReallySureYouWantToDoThis){
-	if (otherTaxa == taxa)
+	if (otherTaxa == taxa){
 		return false;
-	if (otherTaxa.getNumTaxa() != taxa.getNumTaxa())
+	}
+	if (otherTaxa.getNumTaxa() != taxa.getNumTaxa()){
 		return false;
+	}
 	
 	this.taxa = otherTaxa;
 	resetTaxaInfo();

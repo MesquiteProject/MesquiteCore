@@ -322,6 +322,8 @@ public class FileElement extends AssociableWithSpecs implements Identifiable, Li
 		if (tempProjRef != null)
 			tempProjRef.decrementProjectWindowSuppression();
 	}
+	
+
 	/*.................................................................................................................*/
 	/** Adds the element to the given file and project, and assigns it the given manager.  Also takes care of 
  	notifying the manager that it has been added using elementAdded(). */
@@ -354,6 +356,7 @@ public class FileElement extends AssociableWithSpecs implements Identifiable, Li
 				MesquiteMessage.warnProgrammer("Element manager not found for " + this.getName() + " of class " + getClass());
 			 */
 		}
+		
 		project.incrementProjectWindowSuppression();
 		project.addFileElement(this);
 		file.addFileElement(this);
@@ -362,7 +365,6 @@ public class FileElement extends AssociableWithSpecs implements Identifiable, Li
 		broadCastElementAdded(project.getCoordinatorModule(), elementManager);
 		project.refreshProjectWindow();
 		project.decrementProjectWindowSuppression();
-
 		return nexusBlock;
 	}
 
@@ -648,7 +650,7 @@ public class FileElement extends AssociableWithSpecs implements Identifiable, Li
 		popup.addItem(getTypeName() +" \"" + getName() + "\"", MesquiteTrunk.mesquiteTrunk, null);
 		popup.addItem("Show", MesquiteTrunk.mesquiteTrunk, MesquiteTrunk.mesquiteTrunk.makeCommand("showMe", this));
 		popup.addItem("Rename", MesquiteTrunk.mesquiteTrunk, MesquiteTrunk.mesquiteTrunk.makeCommand("renameMe", this));
-		popup.addItem("Edit Comment", MesquiteTrunk.mesquiteTrunk, MesquiteTrunk.mesquiteTrunk.makeCommand("editComment", this));
+		popup.addItem("Edit Comment (Footnote)", MesquiteTrunk.mesquiteTrunk, MesquiteTrunk.mesquiteTrunk.makeCommand("editComment", this));
 		popup.addItem("Delete", MesquiteTrunk.mesquiteTrunk, MesquiteTrunk.mesquiteTrunk.makeCommand("deleteMe", this));
 	}
 	/* ---------------- for HNode interface ----------------------*/

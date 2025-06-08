@@ -56,7 +56,7 @@ public class AlterData extends DataWindowAssistantI  {
 //	MesquiteCMenuItemSpec bySMmi; 
 
 	//Specify various interfaces here
-	String[] labels = new String[]{ "Whole Character Add/Remove", "Align/Shift/Reverse Data", "Transformations", "Metadata", "Basic Data Cell Manipulation", "DNA/RNA Data Cell Manipulation", "Convert Gap/Missing/Polymorph/Uncertain", "Randomizations"};
+	String[] labels = new String[]{ "Character Add/Remove", "Align/Shift/Reverse Data", "Transformations", "Metadata", "Basic Data Cell Manipulation", "DNA/RNA Data Cell Manipulation", "Convert Gap/Missing/Polymorph/Uncertain", "Randomizations"};
 	Class[] interfaces = new Class[]{AltererWholeCharacterAddRemove.class, AltererAlignShift.class, AltererContinuousTransformations.class, AltererMetadata.class, AltererSimpleCell.class, AltererDNACell.class, AltererConvertGapMissPolyUncert.class,  AltererRandomizations.class};
 	boolean[] asSubmenu = new boolean[]{false,false,false, true, true, true, true, true};
 

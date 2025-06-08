@@ -45,10 +45,17 @@ public class TaxablockList extends ListLVModule {
 	public boolean showing(Object obj){
 		return (getModuleWindow()!=null  && getProject().getTaxas()==obj);
 	}
+ 	public String getElementNameSingular(){
+ 		return "taxa block";
+ 	}
+ 	public String getElementNamePlural(){
+ 		return "taxa blocks";
+ 	}
 
 	public boolean resetMenusOnNameChange(){
 		return true;
 	}
+	
 	public void showListWindow(Object obj){
 		setModuleWindow(new ListableVectorWindow(this));
 		((ListableVectorWindow)getModuleWindow()).setObject(getProject().getTaxas());
@@ -102,7 +109,7 @@ public class TaxablockList extends ListLVModule {
 			if (getProject().getTaxas() !=null){
 				TaxaBlocksListUtility tda= (TaxaBlocksListUtility)hireNamedEmployee(TaxaBlocksListUtility.class, arguments);
 				if (tda!=null) {
-					boolean a = tda.operateOnTaxas(getProject().getTaxas());
+					boolean a = tda.operateOnTaxas(getProject().getTaxas(), ((TableWindow)getModuleWindow()).getTable());
 					if (!tda.pleaseLeaveMeOn())
 						fireEmployee(tda);
 				}

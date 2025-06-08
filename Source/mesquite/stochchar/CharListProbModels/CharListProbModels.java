@@ -32,7 +32,6 @@ public class CharListProbModels extends CharListAssistant implements MesquiteLis
 	CharacterData data=null;
 	MesquiteTable table=null;
 	MesquiteSubmenuSpec mss;
-	MesquiteMenuItemSpec mScs, mStc, mRssc, mLine;
 	/*.................................................................................................................*/
 	public boolean startJob(String arguments, Object condition, boolean hiredByName) {
 		getProject().getCentralModelListener().addListener(this);
@@ -152,18 +151,14 @@ public class CharListProbModels extends CharListAssistant implements MesquiteLis
 	public void setTableAndData(MesquiteTable table, CharacterData data){
 		this.data = data;
 		this.table = table;
-		deleteMenuItem(mss);
-		deleteMenuItem(mScs);
-		deleteMenuItem(mRssc);
-		deleteMenuItem(mLine);
-		deleteMenuItem(mStc);
+		deleteAllMenuItems();
 		mss = addSubmenu(null, "Probability model", makeCommand("setModel", this), getProject().getCharacterModels());
-		mLine = addMenuSeparator();
-		mScs = addMenuItem("Store current set...", makeCommand("storeCurrent",  this));
-		mRssc = addMenuItem("Replace stored set by current...", makeCommand("replaceWithCurrent",  this));
-		if (data !=null)
-			mStc = addSubmenu(null, "Load set", makeCommand("loadToCurrent",  this), data.getSpecSetsVector(ProbabilityModelSet.class));
 		mss.setCompatibilityCheck(new ModelCompatibilityInfo(ProbabilityModel.class, data.getStateClass()));
+		addMenuSeparator();
+		addMenuItem("Store current set...", makeCommand("storeCurrent",  this));
+		addMenuItem("Replace stored set by current...", makeCommand("replaceWithCurrent",  this));
+		if (data !=null)
+			addSubmenu(null, "Load set", makeCommand("loadToCurrent",  this), data.getSpecSetsVector(ProbabilityModelSet.class));
 	}
 	/*.................................................................................................................*/
 	/** passes which object is being disposed (from MesquiteListener interface)*/

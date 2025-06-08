@@ -28,6 +28,7 @@ import mesquite.lib.ui.AlertDialog;
 import mesquite.lib.ui.ColorDistribution;
 import mesquite.lib.ui.MesquitePopup;
 import mesquite.lib.ui.MesquiteTool;
+import mesquite.lib.ui.QueryDialogs;
 
 
 /* ======================================================================== */
@@ -330,13 +331,13 @@ public class ListTable extends MesquiteTable {
 			if (window.getCurrentTool()== window.arrowTool)  {
 				ListAssistant assistant = window.findAssistant(column);
 				if (assistant!=null) {
-					Graphics g = getGraphics();
+				Graphics g = getGraphics();
 					if (clickCount>1 && assistant.isCellEditable(row)){   //added Aug 2O17 to allow doubleclicking in tables and then editing
 						window.setCurrentTool(window.ibeamTool);
 						window.getPalette().setCurrentTool(window.ibeamTool); 
 						editMatrixCell(column,row);
-					} else 
-					if (!assistant.arrowTouchInRow(g, row, getLeftOfColumn(column), getTopOfRow(row), clickCount>1, modifiers)){
+					} 
+					else if (!assistant.arrowTouchInRow(g, row, getLeftOfColumn(column), getTopOfRow(row), clickCount>1, modifiers)){
 						if (assistant.isCellEditable(row)) {
 							super.cellTouched(column, row, editorPanel, x, y,  modifiers,  clickCount);
 						}
@@ -388,6 +389,80 @@ public class ListTable extends MesquiteTable {
 		showAnnotationAndExplanation(row);
 		super.setFocusedCell(column, row);
 	}
+	
+	/* ............................................................................................................... */
+	/**
+	 * Called if right clicked on cell. Can be overridden in subclasses to respond.
+	 */
+	public void cellRightClicked(int column, int row, EditorPanel editorPanel, int x, int y, int modifiers){
+		if (column != -1 || row <0)
+			return;
+		Object a = ownerModule.getMainObject();
+		if (a instanceof ListableVector){
+			ListableVector v = (ListableVector)a;
+			if (row>=v.size())
+				return;
+			Listable obj = v.elementAt(row);
+			if (!(obj instanceof Annotatable))
+				return;
+			Annotatable anot = (Annotatable)obj;
+			String current = anot.getAnnotation();
+			if (current == null) current = "";
+			MesquiteString value = new MesquiteString(current);
+			String message = "Set footnote for " + obj.getName();
+			boolean result = QueryDialogs.queryString(window, "Set Footnote", message,  value, 4, false, false);
+			if (result)
+				anot.setAnnotation(value.getValue(), true);
+		
+		}
+		else if (a instanceof Vector){
+			Vector v = (Vector)a;
+			if (row>=v.size())
+				return;
+			Object obj = v.elementAt(row);
+			if (!(obj instanceof Annotatable))
+				return;
+			Annotatable anot = (Annotatable)obj;
+			String current = anot.getAnnotation();
+			if (current == null) current = "";
+			MesquiteString value = new MesquiteString(current);
+			String message = "Set footnote";
+			boolean result = QueryDialogs.queryString(window, "Set Footnote", message,  value, 4, false, false);
+			if (result)
+				anot.setAnnotation(value.getValue(), true);
+		}
+		else if (a instanceof Taxa){
+			Taxa taxa = (Taxa)a;
+			if (row>=taxa.getNumTaxa())
+				return;
+			String current = taxa.getAnnotation(row);
+			if (current == null) current = "";
+			MesquiteString value = new MesquiteString(current);
+			String message = "Set footnote for taxon " +(row+1) + " (" + taxa.getTaxonName(row) + ")";
+			boolean result = QueryDialogs.queryString(window, "Set Footnote", message,  value, 4, false, false);
+			if (result) {
+				taxa.setAnnotation(row, value.getValue());
+				taxa.notifyListeners(this, new Notification(MesquiteListener.ANNOTATION_CHANGED));
+			}
+		}
+		else if (a instanceof CharacterData){
+			CharacterData data = (CharacterData)a;
+			if (row>=data.getNumChars())
+				return;
+			String current = data.getAnnotation(row);
+			if (current == null) current = "";
+			MesquiteString value = new MesquiteString(current);
+			String message = "Set footnote for character " +(row+1);
+			if (data.characterHasName(row))
+				message += " (" + data.getCharacterName(row) + ")";
+			boolean result = QueryDialogs.queryString(window, "Set Footnote", message,  value, 4, false, false);
+			if (result) {
+				data.setAnnotation(row, value.getValue());
+				data.notifyListeners(this, new Notification(MesquiteListener.ANNOTATION_CHANGED));
+			}
+		}
+	}
+
 	/*...............................................................................................................*/
 	public void rowNameTouched(int row, EditorPanel editorPanel, int x, int y, int modifiers, int clickCount) {
 		showAnnotationAndExplanation(row);
@@ -415,6 +490,9 @@ public class ListTable extends MesquiteTable {
 					}
 					else if (a instanceof CharacterData){
 					}
+					//if not returned by now, then use default broadcast
+					cellRightClicked(row, -1, editorPanel, x, y, modifiers); 
+					
 				}
 				if (clickCount>1 && isRowNameEditable(row)){
 					window.setCurrentTool(window.ibeamTool);

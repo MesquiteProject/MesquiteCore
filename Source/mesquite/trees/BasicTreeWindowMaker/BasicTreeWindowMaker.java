@@ -5600,6 +5600,7 @@ class TreeWindowPalette extends ToolPalette {
 		paletteScroll.setBackground(Color.green);
 		paletteScroll.setLocation((getWidth() - paletteScroll.totalWidth + RecentButton.width) / 2, scrollHeight);
 		paletteScroll.setVisible(true);
+		paletteScroll.setExplanationAddendum("If you hold down the Option/Alt key while touching it, it will take you to the next selected tree, if any are selected. ");
 		add(recentButton = new RecentButton(containingWindow));
 		recentButton.setLocation(paletteScroll.getBounds().x - 12, paletteScroll.getBounds().y);
 

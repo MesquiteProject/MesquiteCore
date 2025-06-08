@@ -51,8 +51,15 @@ public class PublicationCode extends TaxonListAssistant {
 				data=null;
 		
 	}
+	/*...............................................................................................................*/
+	/** returns whether or not any cells can be pasted into.*/
+	public boolean allowPasting(){
+		return true;
+	}
 	/*.................................................................................................................*/
 	public void setTableAndTaxa(MesquiteTable table, Taxa taxa){
+		deleteAllMenuItems();
+	addMenuItem( "Paste Values from Clipboard", makeCommand("paste",  this)); //need to put this in module, but ListAssistant class handles command
 		if (this.taxa != null)
 			this.taxa.removeListener(this);
 		this.taxa = taxa;

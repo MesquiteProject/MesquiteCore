@@ -39,7 +39,6 @@ public class CharListInclusion extends CharListAssistant {
 	CharacterData data=null;
 	MesquiteTable table=null;
 	Image included, excluded;
-	MesquiteMenuItemSpec mss, mScs, mStc, mRssc, mLine;
 	/*.................................................................................................................*/
 	public boolean startJob(String arguments, Object condition, boolean hiredByName) {
 		addMenuItem("Include", makeCommand("include", this));
@@ -153,15 +152,11 @@ public class CharListInclusion extends CharListAssistant {
 
 	/*.................................................................................................................*/
 	public void setTableAndData(MesquiteTable table, CharacterData data){
-		deleteMenuItem(mss);
-		deleteMenuItem(mScs);
-		deleteMenuItem(mRssc);
-		deleteMenuItem(mLine);
-		deleteMenuItem(mStc);
-		mScs = addMenuItem("Store current set", makeCommand("storeCurrent",  this));
-		mRssc = addMenuItem("Replace stored set by current", makeCommand("replaceWithCurrent",  this));
+		deleteAllMenuItems();
+		addMenuItem("Store current set", makeCommand("storeCurrent",  this));
+		addMenuItem("Replace stored set by current", makeCommand("replaceWithCurrent",  this));
 		if (data !=null)
-			mStc = addSubmenu(null, "Load set", makeCommand("loadToCurrent",  this), data.getSpecSetsVector(CharInclusionSet.class));
+			addSubmenu(null, "Load set", makeCommand("loadToCurrent",  this), data.getSpecSetsVector(CharInclusionSet.class));
 		this.data = data;
 		this.table = table;
 	}

@@ -143,6 +143,13 @@ public class MiniScroll extends MousePanel implements MiniControl, Explainable, 
 		decrementButton.setEnabled(currentValue>minValue);
 		incrementButton.setEnabled(currentValue<maxValue);
 	}
+	public void setExplanationAddendum(String s){
+		if (incrementButton != null)
+			incrementButton.setExplanationAddendum(s);
+		if (decrementButton != null)
+			decrementButton.setExplanationAddendum(s);
+	}
+
 	public int getTotalHeight(){
 		return totalHeight;
 	}

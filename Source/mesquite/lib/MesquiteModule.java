@@ -74,12 +74,12 @@ public abstract class MesquiteModule extends EmployerEmployee implements Command
 	/*.................................................................................................................*/
 	/** returns build date of the Mesquite system (e.g., "22 September 2003") */
 	public final static String getBuildDate() {
-		return "23 May 2025";
+		return "8 June 2025";
 	}
 	/*.................................................................................................................*/
 	/** returns version of the Mesquite system */
 	public final static String getMesquiteVersion() {
-		return "4.beta";
+		return "4.beta2";
 	}
 	/*.................................................................................................................*/
 	/** returns letter in the build number of the Mesquite system (e.g., "e" of "e58") */
@@ -92,7 +92,7 @@ public abstract class MesquiteModule extends EmployerEmployee implements Command
 	public final static int getBuildNumber() {
 		//as of 26 Dec 08, build naming changed from letter + number to just number.  Accordingly j105 became 473, based on
 		// highest build numbers of d51+e81+g97+h66+i69+j105 + 3 for a, b, c
-		return 1073;  
+		return 1076;  
 	}
 	//0.95.80    14 Mar 01 - first beta release 
 	//0.96  2 April 01 beta  - second beta release
@@ -412,9 +412,12 @@ public abstract class MesquiteModule extends EmployerEmployee implements Command
 	from a file, and so StoredMatrices can no longer supply matrices). A module could
 	also call its own endJob() method, but iQuit is to be preferred because it evokes the automatic replacement
 	hiring system if available.  (See setHiringCommand of EmployerEmployee) */
+
 	public final void iQuit(){
 		iQuit(true);
 	}
+	
+	
 	public final void iQuit(boolean giveMessage){
 		incrementMenuResetSuppression();
 		MesquiteCommand command = getHiringCommand();
@@ -538,6 +541,13 @@ public abstract class MesquiteModule extends EmployerEmployee implements Command
 		if (!employerDoomed) localRefEmployer.decrementEmployeeBrowserRefreshSuppression(MesquiteModule.class);
 
 	}
+	
+	/*.................................................................................................................*/
+	MesquiteCommand iQuitCommand = new MesquiteCommand("resign", this);
+	public final void iQuitMainThread(){
+		iQuitCommand.doItMainThread("", null, this);
+	}
+
 	/*.................................................................................................................*/
 	/** Query module as to whether conditions are such that it will have to quit soon -- e.g. if its taxa block has been doomed.  The tree window, data window, 
 	etc. override this to return true if their object is doomed. This is useful in case MesquiteListener disposing method is not called for an employer before one of its
@@ -1232,7 +1242,7 @@ public abstract class MesquiteModule extends EmployerEmployee implements Command
 		MesquiteTrunk.errorReportedToHome++;
 	}
 	boolean okToReportErrors(){
-		return PhoneHomeUtil.phoneHomeSuccessful  && !MesquiteTrunk.suppressErrorReporting;
+		return PhoneHomeUtil.phoneHomeSuccessful  && !MesquiteTrunk.suppressErrorReporting && !MesquiteTrunk.developmentMode;
 	}
 	boolean reportErrorsAutomatically(){
 		return MesquiteException.reportErrorsAutomatically.getValue() || mesquiteTrunk.isPrerelease();
@@ -2020,6 +2030,32 @@ public abstract class MesquiteModule extends EmployerEmployee implements Command
 			fi.addBlock(nb);
 		}
 	}
+	
+	/*............................................................................. */
+	/*............................................................................. */
+	/** Increments  & decrements suppression of nexus block sorting (see addBlock of InterpretNEXUS). */
+	public final void incrementNEXUSBlockSortSuppression() {
+		MesquiteProject project = getProject();
+		if (project != null)
+			project.NEXUSBlockSortSuppression++;
+	}
+	public final void decrementNEXUSBlockSortSuppression() {
+		MesquiteProject project = getProject();
+		if (project != null)
+			project.NEXUSBlockSortSuppression--;
+	}
+	public final void zeroNEXUSBlockSortSuppression() {
+		MesquiteProject project = getProject();
+		if (project != null)
+			project.NEXUSBlockSortSuppression = 0;
+	}
+	public final int getNEXUSBlockSortSuppression() {
+		MesquiteProject project = getProject();
+		if (project != null)
+			return project.NEXUSBlockSortSuppression;
+		return 0;
+	}
+
 	/*.................................................................................................................*/
 	/** Remove NEXUS block from the file. */
 	public void removeNEXUSBlock(NexusBlock nb){

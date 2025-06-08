@@ -44,6 +44,9 @@ public class MCategoricalHistory extends MCategoricalAdjustable implements MChar
 		}
 		for (int j=0; j<getNumNodes(); j++){
 			cH.setState(j, getState(ic, j)); 
+			if (hasConditionalStateSets()){
+				cH.setConditionalStateSets(j, getConditionalStateSet(ic, j));
+			}
 			if (frequenciesExist()){
 				for (int categ = 0; categ< getNumFreqCateg(); categ++)
 					cH.setFrequency(j, categ, getFrequency(ic, j, categ));
@@ -65,6 +68,9 @@ public class MCategoricalHistory extends MCategoricalAdjustable implements MChar
 				setState(ic, j, cat.getState(j));
 				if (cat.frequenciesExist()) {
 					setFrequencies(ic, j, cat.getFrequencies(j));
+				}
+				if (cat.hasConditionalStateSets()){
+					setConditionalStateSets(ic, j, cat.getConditionalStateSets(j));
 				}
 				if (cat.extraFrequenciesExist()) {
 					setExtraFrequencies(ic, j, cat.getExtraFrequencies(j));

@@ -112,14 +112,12 @@ public class SmallStateNamesEditor extends MatrixInfoPanelAssistantI  {
 class SStateNamesPanel extends MatrixInfoExtraPanel  {
 	String message = null;
 	SmallStateNamesEditor ownerModule;
-	StringInABox statesBox;
 	NameField charName;
 	StatesField statesNames;
 	CategoricalData cData;
 	ScrollPane pane;
 	public SStateNamesPanel(ClosablePanelContainer container, SmallStateNamesEditor ownerModule){
 		super(container, "State Names");
-		statesBox =  new StringInABox("", null, 50);
 		charName = new NameField(this, -1);
 		pane = new MQScrollPane(ScrollPane.SCROLLBARS_AS_NEEDED);
 		statesNames = new StatesField(this);

@@ -143,18 +143,13 @@ public class CharListWeights extends CharListAssistant {
 
 	/*.................................................................................................................*/
 	public void setTableAndData(MesquiteTable table, CharacterData data){
-		deleteMenuItem(mss);
-		deleteMenuItem(mScs);
-		deleteMenuItem(mRssc);
-		deleteMenuItem(mLine);
-		deleteMenuItem(mStc);
-		deleteMenuItem(mwt);
-		mwt = addMenuItem("Set Weight...", makeCommand("setWeight", this));
-		mLine = addMenuSeparator();
-		mScs = addMenuItem("Store current set", makeCommand("storeCurrent",  this));
-		mRssc = addMenuItem("Replace stored set by current", makeCommand("replaceWithCurrent",  this));
+		deleteAllMenuItems();
+		addMenuItem("Set Weight...", makeCommand("setWeight", this));
+		addMenuSeparator();
+		addMenuItem("Store current set", makeCommand("storeCurrent",  this));
+		addMenuItem("Replace stored set by current", makeCommand("replaceWithCurrent",  this));
 		if (data !=null)
-			mStc = addSubmenu(null, "Load weight set", makeCommand("loadToCurrent",  this), data.getSpecSetsVector(CharWeightSet.class));
+			addSubmenu(null, "Load weight set", makeCommand("loadToCurrent",  this), data.getSpecSetsVector(CharWeightSet.class));
 		this.data = data;
 		this.table = table;
 	}

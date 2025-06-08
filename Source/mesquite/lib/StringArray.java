@@ -388,7 +388,7 @@ public class StringArray implements StringLister, Listable, Nameable {
 		int newNumColumns = highestFilled+1;
 		String[][] newMatrix=new String[newNumColumns][numRows];
 		for (int ic=0; ic<newNumColumns; ic++) 
-			for (int it=0; it<numRows && it< d[ic].length; it++) 
+			for (int it=0; it<numRows && d[ic] != null && it< d[ic].length; it++) 
 				newMatrix[ic][it] = d[ic][it];
 		return newMatrix;
 	}

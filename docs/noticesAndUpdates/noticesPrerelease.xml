@@ -1,14 +1,21 @@
 <?xml version="1.0"?>
 <mesquite>
-	<lastnoticeNumber>23</lastnoticeNumber>
+	<lastnoticeNumber>25</lastnoticeNumber>
 	<MessagesFromHome>
 		<version>1</version>
 		<currentReleaseVersion>
-			<versionString>3.60</versionString>
-			<build>917</build>
-			<version>360</version>
+			<versionString>3.81</versionString>
+			<build>955</build>
+			<version>381</version>
 			<downloadURL>http://www.mesquiteproject.org/Installation.html</downloadURL>
 		</currentReleaseVersion>
+		<notice>
+			<forVersion>399</forVersion>
+			<noticeNumber>25</noticeNumber>
+			<messageType>alert</messageType>
+			<message><![CDATA[A second beta-test (prerelease) version of Mesquite 4 is available, with some new features and bug fixes.  It also has bundled in the Zephyr, Chromaseq, and Cartographer packages.  
+			<a href = "https://www.mesquiteproject.org">Check out the details at here.</a>]]></message>
+		</notice>
 		<notice>
 			<forMesquiteVersionLessOrEqual>351</forMesquiteVersionLessOrEqual>
 			<noticeNumber>24</noticeNumber>

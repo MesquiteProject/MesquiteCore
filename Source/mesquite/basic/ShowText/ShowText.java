@@ -65,12 +65,12 @@ public class ShowText extends TextDisplayer {
 		if (getModuleWindow()==null) {
 			setModuleWindow( new MesquiteTextWindow(this, title, true, wrap, allowPaste)); 
 			((MesquiteTextWindow)getModuleWindow()).setText(s);
+			getModuleWindow().setWindowSize(500, 500);
 			if (poppedOut > 0){
 				if (poppedOut==1)
 					getModuleWindow().setPopAsTile(true);
 				getModuleWindow().popOut(false);
 			}
-			getModuleWindow().setWindowSize(500, 500);
 			if (fontSize>0)
 				getModuleWindow().setWindowFontSize(fontSize);
 			if (monospaced) {

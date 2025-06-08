@@ -29,7 +29,6 @@ public abstract class CharListModel extends CharListAssistant {
 	CharacterData data=null;
 	MesquiteTable table=null;
 	MesquiteSubmenuSpec mss;
-	MesquiteMenuItemSpec mScs, mStc, mRssc, mLine;
 	/*.................................................................................................................*/
 	public boolean startJob(String arguments, Object condition, boolean hiredByName) {
 		/* hire employees here */
@@ -138,22 +137,13 @@ public abstract class CharListModel extends CharListAssistant {
 	public void setTableAndData(MesquiteTable table, CharacterData data){
 		this.data = data;
 		this.table = table;
-		if(mss !=null)
-			deleteMenuItem(mss);
-		if(mScs !=null)
-			deleteMenuItem(mScs);
-		if(mRssc !=null)
-			deleteMenuItem(mRssc);
-		if(mLine !=null)
-			deleteMenuItem(mLine);
-		if(mStc !=null)
-			deleteMenuItem(mStc);
+		deleteAllMenuItems();
 		mss = addSubmenu(null, getTitle(), makeCommand("setModel", this), getProject().getCharacterModels());
-		mLine = addMenuSeparator();
-		mScs = addMenuItem("Store current set", makeCommand("storeCurrent",  this));
-		mRssc = addMenuItem("Replace stored set by current", makeCommand("replaceWithCurrent",  this));
+		addMenuSeparator();
+		addMenuItem("Store current set", makeCommand("storeCurrent",  this));
+		addMenuItem("Replace stored set by current", makeCommand("replaceWithCurrent",  this));
 		if (data !=null)
-			mStc = addSubmenu(null, "Load model set", makeCommand("loadToCurrent",  this), data.getSpecSetsVector(getModelSetClass()));
+			addSubmenu(null, "Load model set", makeCommand("loadToCurrent",  this), data.getSpecSetsVector(getModelSetClass()));
 		mss.setCompatibilityCheck(new ModelCompatibilityInfo(getModelClass(), data.getStateClass()));
 	}
 	/*.................................................................................................................*/

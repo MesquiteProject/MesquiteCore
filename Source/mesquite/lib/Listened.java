@@ -217,7 +217,7 @@ public class Listened implements Listenable {
 				/*Listeners notified by first building array, so as to avoid notifying 
 				listeners newly added to this list during this notification process */
 				MesquiteListener[] ls = new MesquiteListener[listeners.size()];
-				for (int m=0; m<ls.length; m++)
+				for (int m=0; m<listeners.size(); m++)
 					ls[m]= (MesquiteListener)listeners.elementAt(m);
 				for (int m=0; m<ls.length; m++) {
 					if (clss == null || (classOnly && clss.isAssignableFrom(ls[m].getClass())) || (!classOnly && !clss.isAssignableFrom(ls[m].getClass())))

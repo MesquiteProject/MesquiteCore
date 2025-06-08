@@ -91,7 +91,6 @@ public class LinuxGWAThread extends Thread {
 
 				for (int i = 0; i<queue.size(); i++){
 					ARecord aRec = (ARecord)queue.elementAt(i);
-System.err.println("@~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~>>>>> " + aRec.component.getClass() + " " +  aRec.action + " = " + aRec.text);
 					doAction(aRec.component, aRec.action, aRec.text);
 
 				}

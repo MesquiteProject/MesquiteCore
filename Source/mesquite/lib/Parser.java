@@ -1035,6 +1035,17 @@ public class Parser extends StringUtil {
 		return buffer.toString();
 	}
 	/*............................................  ....................................................*/
+	public boolean hasAnyFileReadingArgumentsOtherThan(String arguments, String otherThan){
+		String fRA = getFirstToken(arguments);
+		String aM = "" + StringUtil.argumentMarker ;
+		while (!StringUtil.blank(fRA)) {
+			if (fRA.startsWith(aM ) && !fRA.equalsIgnoreCase(aM + otherThan))
+				return true;
+			fRA = getNextToken();
+		}
+		return false;
+	}
+	/*............................................  ....................................................*/
 	public boolean hasAnyFileReadingArguments(String arguments){
 		String fRA = getFirstToken(arguments);
 		while (!StringUtil.blank(fRA)) {

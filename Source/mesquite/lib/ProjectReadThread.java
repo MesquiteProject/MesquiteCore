@@ -38,8 +38,9 @@ public class ProjectReadThread extends MesquiteThread {
 		if (subsequent != null){
 			subsequent.addSubsequentThread(thread);
 		}
-		else
+		else {
 			subsequent = thread;
+		}
 	}
 	public void start(){
 		try {

@@ -29,6 +29,10 @@ public class TreeNameDeleteSuffix extends TreeListUtility {
 	public boolean startJob(String arguments, Object condition, boolean hiredByName){
 		return true;
 	}
+	
+	public boolean loadModule(){  //DELETE MODULE
+		return false;
+	}
    	/** if returns true, then requests to remain on even after operateData is called.  Default is false*/
    	public boolean pleaseLeaveMeOn(){
    		return false;

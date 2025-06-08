@@ -25,6 +25,7 @@ import mesquite.lib.*;
 import mesquite.lib.duties.CharactersManager;
 import mesquite.lib.duties.FileCoordinator;
 import mesquite.lib.duties.GeneralFileMakerMultiple;
+import mesquite.lib.duties.NexusFileInterpreter;
 import mesquite.lib.duties.TaxaManager;
 import mesquite.lib.taxa.Taxa;
 import mesquite.lib.taxa.Taxon;
@@ -68,6 +69,10 @@ public class CombineFlippedFastas extends GeneralFileMakerMultiple {
 		String path = "";
 		StringBuffer results = new StringBuffer();
 		boolean taxaNew = false;
+		incrementMenuResetSuppression();
+		incrementNEXUSBlockSortSuppression();
+		MesquiteTimer overallTime = new MesquiteTimer();
+		overallTime.start();
 		if (directory!=null) {
 			if (directory.exists() && directory.isDirectory()) {
 				//FileCoordinator fileCoord = getFileCoordinator();  //this is the temporary one for this GeneralFileMaker
@@ -96,6 +101,9 @@ public class CombineFlippedFastas extends GeneralFileMakerMultiple {
 				progIndicator.start();
 				int filesFound = 0;
 				DNAState state = new DNAState();
+
+			
+				int lociAdded = 0;
 				for (int i=0; i<files.length; i++) {
 					progIndicator.setCurrentValue(i);
 					if (progIndicator.isAborted()) {
@@ -111,16 +119,24 @@ public class CombineFlippedFastas extends GeneralFileMakerMultiple {
 							File cFile = new File(path);
 
 							if (cFile.exists() && !cFile.isDirectory() && (!files[i].startsWith("."))) {
+								progIndicator.setText("Reading file: " + files[i]);
 								MesquiteFile file = new MesquiteFile();
 								file.setPath(path);
 								project.addFile(file);
 								file.setProject(project);
+								if (files.length<20)
+									logln("Reading file " + files[i]);
+								else if (i == 0)
+									log(" [File " + (i+1) + "]");
+							else
+									log(" [" + (i+1) + "]");
 								MesquiteThread.setHintToSuppressProgressIndicatorCurrentThread(true);
 								importer.readFile(project, file, null);
-							MesquiteThread.setHintToSuppressProgressIndicatorCurrentThread(false);
+								MesquiteThread.setHintToSuppressProgressIndicatorCurrentThread(false);
 
 								//The file is read. Get its one taxa block
 								String taxonName = StringUtil.getAllButLastItem(files[i], "."); //all but file extension
+								CommandRecord.tick("File read for taxon " + taxonName);
 
 								Taxa loci = project.getTaxa(file, 0);
 
@@ -128,7 +144,6 @@ public class CombineFlippedFastas extends GeneralFileMakerMultiple {
 									CharacterData incomingFlippedMatrix = project.getCharacterMatrix(file, loci, null, 0, false);
 									if (incomingFlippedMatrix != null){
 										progIndicator.setSecondaryMessage("Taxon: " + taxonName + " with " + loci.getNumTaxa() + " loci");
-
 										//OK, ready to go. Have matrix. Will add new taxon based on the name of the file, and transfer over its sequences
 										boolean existingTaxon = true;
 										int receivingTaxonNumber = taxa.whichTaxonNumber(taxonName);
@@ -141,17 +156,24 @@ public class CombineFlippedFastas extends GeneralFileMakerMultiple {
 										}
 										//For each "taxon", find corresponding matrix already in project
 										for (int iLocus = 0; iLocus < loci.getNumTaxa(); iLocus++){
+											CommandRecord.tick("For taxon " + taxonName + ", recovering sequence #" + (iLocus+1));
 											String locusName = loci.getTaxonName(iLocus);
 											CharacterData locusMatrix = recProject.getCharacterMatrixByReference(null,  taxa, null, locusName);
 											if (!(locusMatrix instanceof DNAData))
 												locusMatrix = null;
 											if (locusMatrix == null) { //no matrix yet; establish
 												locusMatrix = charactersManager.newCharacterData(taxa, 0, DNAData.DATATYPENAME); //this is manager of receiving project
-												locusMatrix.setName(locusName);
+												locusMatrix.setName(locusName, false);
 												locusMatrix.addToFile(taxa.getFile(), recProject, null);
+												lociAdded++;
+												if (lociAdded == 1)
+													log("   Adding Loci .");
+												else if (lociAdded%100 == 0)
+													log(" " + lociAdded);
+												else if (lociAdded%10 == 0)
+													log(".");
 											}
-
-
+											
 											/*Now time to pull sequence into locus matrix 
 											 * Sequence on row iLocus of incomingFlippedMatrix corresponds to sequence for newTaxon in locusMatrix
 											 */
@@ -174,8 +196,11 @@ public class CombineFlippedFastas extends GeneralFileMakerMultiple {
 											for (int ic = 0; ic< locusMatrix.getNumChars() && ic< incomingFlippedMatrix.getNumChars(); ic++){
 												state = (DNAState)incomingFlippedMatrix.getCharacterState(state, ic, iLocus);
 												locusMatrix.setState(ic, receivingTaxonNumber, state);
+
 											}
-										}
+									}
+										if (files.length<20)
+											logln("");
 									}
 								}
 
@@ -186,8 +211,13 @@ public class CombineFlippedFastas extends GeneralFileMakerMultiple {
 							}
 
 						}
+					
 					}
+					
 				}
+				if (files.length>=20)
+					logln("");
+				overallTime.end();
 				if (filesFound == 0){
 					if (okToInteractWithUser(CAN_PROCEED_ANYWAY, "No files found"))  
 						alert("No appropriate files with extensions (.fas or .fasta) were found in folder.");
@@ -195,6 +225,10 @@ public class CombineFlippedFastas extends GeneralFileMakerMultiple {
 						discreetAlert("No appropriate files with extensions (.fas or .fasta) were found in folder.");
 
 				}
+				else
+					logln("Flipped Fastas read for " + files.length + " taxa; " + lociAdded + " different loci found. [" + overallTime.timeSinceLastInSeconds() + " sec.]" );
+
+				MesquiteMessage.beep();
 				progIndicator.goAway();
 				project.developing = false;  //so the coordinator knows it's OK to dispose
 				if (!taxaNew)
@@ -203,6 +237,14 @@ public class CombineFlippedFastas extends GeneralFileMakerMultiple {
 
 
 		}
+		decrementNEXUSBlockSortSuppression();
+		FileCoordinator fCoord =project.getCoordinatorModule();
+		if (fCoord!= null){
+			NexusFileInterpreter fi = (NexusFileInterpreter)fCoord.findEmployeeWithDuty(NexusFileInterpreter.class);
+		if (fi != null)
+			fi.sortAllBlocks();
+		}
+		decrementMenuResetSuppression();
 	}
 	/*.................................................................................................................*/
 	public MesquiteProject establishProject(String arguments) {
@@ -214,22 +256,25 @@ public class CombineFlippedFastas extends GeneralFileMakerMultiple {
 		FileCoordinator fileCoord = getFileCoordinator();
 		proj = fileCoord.initiateProject(directoryPath, new MesquiteFile()); //this is the reading project
 		
-		// if there is a project, and it has taxa, can ask whether to add to it
-		processDirectory(directoryPath, proj);
 		if (proj != null){
 			String fileSuggestion = StringUtil.getLastItem(directoryPath, MesquiteFile.fileSeparator);
 			if (StringUtil.blank(fileSuggestion))
 				fileSuggestion = directoryPath;
 			fileSuggestion += ".nex";
 			proj.getHomeFile().setFileName(fileSuggestion);
-			proj.developing = false;
 			if (proj.getHomeFile().changeLocation("Save imported file as NEXUS file")) {
+				processDirectory(directoryPath, proj);
+				MesquiteWindow w = fileCoord.getModuleWindow();
+				if (w != null) {
+					w.setWindowSize(300, 300);  //so it has a decent window size if the user doesn't save again
+				}
 				getFileCoordinator().writeFile(proj.getHomeFile()); 
 				if (proj.getTaxa(0) != null)
 					proj.getTaxa(0).setDirty(true); //just to force it to resave if quitting
 			}
 			else
 				proj = null;
+			proj.developing = false;
 		}
 		decrementMenuResetSuppression();
 		return proj;
