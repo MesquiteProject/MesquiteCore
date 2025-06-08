@@ -43,7 +43,8 @@ public class TaxonListCurrPartition extends TaxonListAssistant implements Select
 	/*.................................................................................................................*/
 	public boolean startJob(String arguments, Object condition, boolean hiredByName) {
 		groups = (TaxaGroupVector)getProject().getFileElement(TaxaGroupVector.class, 0);
-		groups.addListener(this);
+		if (groups != null)
+			groups.addListener(this);
 		helperTask = (TaxaSelectedUtility)hireNamedEmployee(TaxaSelectedUtility.class, "#TaxonPartitionHelper");
 		return true;
 	}

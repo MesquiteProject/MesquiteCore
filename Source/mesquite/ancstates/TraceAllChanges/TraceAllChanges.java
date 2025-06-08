@@ -11,7 +11,7 @@ Mesquite's web site is http://mesquiteproject.org
 This source code and its compiled class files are free and modifiable under the terms of 
 GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
  */
-package mesquite.ancstates.TraceAllCharacters;
+package mesquite.ancstates.TraceAllChanges;
 /*~~  */
 
 import java.applet.*;
@@ -42,7 +42,7 @@ import mesquite.lib.ui.StringInABox;
 import mesquite.lib.ui.TextRotator;
 
 /*======================================================================== */
-public class TraceAllCharacters extends TreeDisplayAssistantA {
+public class TraceAllChanges extends TreeDisplayAssistantA {
 	public void getEmployeeNeeds() { // This gets called on startup to harvest information; override this and inside, call registerEmployeeNeed
 		EmployeeNeed e = registerEmployeeNeed(CharStatesForNodes.class, getName() + " needs a source of reconstructed ancestral states.", "The reconstruction method is chosen initially or using the Reconstruction Method submenu");
 		EmployeeNeed e2 = registerEmployeeNeed(MatrixSourceCoord.class, getName() + " needs a source of matrices whose ancestral states will be reconstructed", "The source of characters is chosen initially or in the Source of Character Matrices submenu");
@@ -90,7 +90,7 @@ public class TraceAllCharacters extends TreeDisplayAssistantA {
 			return sorry(getName() + " couldn't start because no character reconstructor was obtained.");
 		}
 
-		shadeTask = (DisplayStatesAtNodes)hireEmployee(DisplayStatesAtNodes.class, "#ShadeStatesOnTree");
+		shadeTask = (DisplayStatesAtNodes)hireNamedEmployee(DisplayStatesAtNodes.class, "#ShadeStatesOnTree");
 
 
 		addCheckMenuItem(null, "Selected Characters Only", makeCommand("toggleSelectedCharsOnly", this), selectedCharactersOnly);
@@ -372,7 +372,7 @@ public class TraceAllCharacters extends TreeDisplayAssistantA {
 
 	/* ................................................................................................................. */
 	public String getName() {
-		return "Trace All Characters by Parsimony";
+		return "Trace All Changes (by Parsimony)";
 	}
 
 	/* ................................................................................................................. */
@@ -395,7 +395,7 @@ public class TraceAllCharacters extends TreeDisplayAssistantA {
 
 	/* ................................................................................................................. */
 	public String getExplanation() {
-		return "Summarizes for each node the reconstructions of the states at all characters of the tree.";
+		return "Summarizes for each node the reconstructed changes of states of all characters of the tree.";
 	}
 }
 
@@ -403,7 +403,7 @@ public class TraceAllCharacters extends TreeDisplayAssistantA {
 class TraceAllOperator extends TreeDisplayDrawnExtra implements MesquiteListener, Commandable {
 	Tree myTree;
 
-	TraceAllCharacters traceAllModule;
+	TraceAllChanges traceAllModule;
 
 	MCharactersHistory charsStates;
 
@@ -416,7 +416,7 @@ class TraceAllOperator extends TreeDisplayDrawnExtra implements MesquiteListener
 	boolean turnedOff = false;
 	TACLegend legend;
 
-	public TraceAllOperator(TraceAllCharacters ownerModule, TreeDisplay treeDisplay) {
+	public TraceAllOperator(TraceAllChanges ownerModule, TreeDisplay treeDisplay) {
 		super(ownerModule, treeDisplay);
 		traceAllModule = ownerModule;
 		legend = new TACLegend(traceAllModule, this);
@@ -643,6 +643,8 @@ class TraceAllOperator extends TreeDisplayDrawnExtra implements MesquiteListener
 		}
 		return v;
 	}
+	
+	Font unambiguousFont, ambiguousFont;
 	/* ................................................................................................................. */
 	private void drawChanges(Tree tree, Graphics g, int node, MCategoricalStates charsStates) {
 		if (tree.withinCollapsedClade(node))
@@ -651,16 +653,17 @@ class TraceAllOperator extends TreeDisplayDrawnExtra implements MesquiteListener
 			CharacterState csNode = null;
 			CharacterState csAnc = null;
 			CategoricalState csSynaps = null;
-			double nodeX = treeDisplay.getTreeDrawing().x[node];
-			double nodeY =  treeDisplay.getTreeDrawing().y[node];
 			int anc = tree.motherOfNode(node);
-			double ancX =  treeDisplay.getTreeDrawing().x[anc];
-			double ancY =  treeDisplay.getTreeDrawing().y[anc];
-			Vector vBarDecorations = new Vector();
+			double nodeX = treeDisplay.getTreeDrawing().lineTipX[node];
+			double nodeY =  treeDisplay.getTreeDrawing().lineTipY[node];
+			double ancX =  treeDisplay.getTreeDrawing().lineBaseX[node];
+			double ancY =  treeDisplay.getTreeDrawing().lineBaseY[node];
 
+			//First, survey the reconstructions to find and record the list of changes
+			Vector vBarDecorations = new Vector();
 			for (int ic = 0; ic < charsStates.getNumChars(); ic++) {
 				if (showCharacter(ic)){
-					boolean recordableChange = false;
+					int recordableChange = 0;
 					csNode = charsStates.getCharacterState(csNode, ic, node);
 					csAnc = charsStates.getCharacterState(csAnc, ic, tree.motherOfNode(node));
 					long stateset = 0L;
@@ -683,20 +686,24 @@ class TraceAllOperator extends TreeDisplayDrawnExtra implements MesquiteListener
 							}
 						}
 						if (!csSynaps.isUnassigned()){
-							recordableChange = true;
+							if ( !csNode.couldBeEqual(csAnc))
+								recordableChange = 2;
+							else
+								recordableChange = 1;
 							fillColor = MesquiteColorTable.getDefaultColor(charsStates.getMaxState(ic),CategoricalState.maximum(csSynaps.getValue()), MesquiteColorTable.COLORS);
 							statesString = csSynaps.toDisplayString();
 							stateset = ((CategoricalState)csSynaps).getValue();
 						}
 					}
 					else {  // ========== UNAMBIGUOUS ================
-						recordableChange = !csNode.couldBeEqual(csAnc);
+						if ( !csNode.couldBeEqual(csAnc))
+							recordableChange = 2;
 						fillColor = charsStates.getColorOfStates(ic, node);
 						statesString = csNode.toDisplayString();
 						stateset = ((CategoricalState)csNode).getValue();
 					}
 
-					if (recordableChange) {
+					if (recordableChange>0) {
 						String s = "";
 						if (traceAllModule.showCharNames.getValue()){
 							s += (ic+1);
@@ -706,23 +713,42 @@ class TraceAllOperator extends TreeDisplayDrawnExtra implements MesquiteListener
 						else if (traceAllModule.showStateNames.getValue())
 							s += statesString;
 
-						vBarDecorations.addElement(new BarDecorationRecord(fillColor, ic, s, stateset));
+						vBarDecorations.addElement(new BarDecorationRecord(fillColor, ic, s, stateset, recordableChange == 2));
 					}
 				}
 			}
+			
+			//Next, now that we know how many there are to draw, we can draw them
 			double barWidth = 8;
 			double barSpacing = 8;
 			int numBars = vBarDecorations.size();
 			double offset = barWidth + barSpacing;
+			double offsetRatio = 1;
+			offsetRatio = 0;
 			int extraGrabber = 32;
 			double barLength = traceAllModule.barLength;
 			boolean useColors = true;
+			double leftTopBase = 0;
 			if (numBars > 0) {
 				double available = 0;
-				if (treeDisplay.isUp() || treeDisplay.isDown())
+				if (treeDisplay.isUp() || treeDisplay.isDown()) {
 					available = Math.abs(nodeY - ancY);
-				else if (treeDisplay.isRight() || treeDisplay.isLeft())
+					if (available != 0)
+						offsetRatio = (nodeX-ancX)/(nodeY-ancY);
+					if (treeDisplay.isUp())
+						leftTopBase = nodeX;
+					else
+						leftTopBase = ancX;
+				}
+				else if (treeDisplay.isRight() || treeDisplay.isLeft()) {
 					available = Math.abs(nodeX - ancX);
+					if (available != 0)
+						offsetRatio = (nodeY-ancY)/(nodeX-ancX);
+					if (treeDisplay.isLeft())
+						leftTopBase = nodeY;
+					else
+						leftTopBase = ancY;
+				}
 				double perBarAvailable = (available) / (numBars + 2);
 				if (perBarAvailable>=10){
 					barWidth = 8;
@@ -746,7 +772,8 @@ class TraceAllOperator extends TreeDisplayDrawnExtra implements MesquiteListener
 					if (treeDisplay.isUp() || treeDisplay.isDown()) {  //======== UP/DOWN ======
 						double topY = nodeY;
 						double bottomY = ancY;
-						double left = nodeX - (barLength-edgeWidth) / 2;
+						
+						double left = leftTopBase - (barLength-edgeWidth) / 2 + offsetRatio*offset;
 						if (treeDisplay.isDown()){
 							topY = ancY;
 							bottomY = nodeY;
@@ -757,8 +784,17 @@ class TraceAllOperator extends TreeDisplayDrawnExtra implements MesquiteListener
 								GraphicsUtil.fillRect(g, left, topY + offset, barLength, barWidth);
 								g.setColor(Color.black);
 								GraphicsUtil.drawRect(g, left, topY + offset, barLength, barWidth);
-								bars.addElement(new BarRecord(new Rectangle((int)left, (int)(topY + offset), (int)barLength + extraGrabber, (int)barWidth), bdr.ic, bdr.stateset, node));
+								bars.addElement(new BarRecord(new Rectangle((int)left, (int)(topY + offset), (int)barLength + extraGrabber, (int)barWidth), bdr.ic, bdr.stateset, node, bdr.unambiguous));
+								if (bdr.unambiguous) {
+									g.setFont(unambiguousFont);
+								}
+								else {
+									g.setColor(Color.gray);
+									g.setFont(ambiguousFont);
+								}
+
 								GraphicsUtil.drawString(g, bdr.text, left + barLength + 4, topY + offset + barWidth);
+								g.setColor(Color.black);
 								offset += barWidth + barSpacing;
 							}
 							else {
@@ -772,7 +808,7 @@ class TraceAllOperator extends TreeDisplayDrawnExtra implements MesquiteListener
 					else if (treeDisplay.isRight() || treeDisplay.isLeft()) {  //======== RIGHT/LEFT ======
 						double leftX = ancX;
 						double rightX = nodeX;
-						double top = nodeY -(barLength-edgeWidth)/2;
+						double top = leftTopBase -(barLength-edgeWidth)/2 + offsetRatio*offset;
 						if (treeDisplay.isLeft()){
 							leftX = nodeX;
 							rightX = ancX;
@@ -783,15 +819,23 @@ class TraceAllOperator extends TreeDisplayDrawnExtra implements MesquiteListener
 								GraphicsUtil.fillRect(g, leftX + offset, top, barWidth, barLength);
 								g.setColor(Color.black);
 								GraphicsUtil.drawRect(g, leftX + offset, top, barWidth, barLength);
+								if (bdr.unambiguous) {
+									g.setFont(unambiguousFont);
+								}
+								else {
+									g.setColor(Color.gray);
+									g.setFont(ambiguousFont);
+								}
 								if (treeDisplay.isRight()) {
 									textRotator.drawFreeRotatedText(bdr.text,  g, (int)(leftX + offset-barWidth - (8-barWidth)),(int)(top + barLength + 4), Math.PI/2, null, true, null); // the 8-barWidth is a mystery correction
-									bars.addElement(new BarRecord(new Rectangle((int)(leftX + offset), (int)(top), (int)barWidth, (int)barLength+extraGrabber), bdr.ic, bdr.stateset, node));
+									bars.addElement(new BarRecord(new Rectangle((int)(leftX + offset), (int)(top), (int)barWidth, (int)barLength+extraGrabber), bdr.ic, bdr.stateset, node, bdr.unambiguous));
 								}
 								else {
 									textRotator.drawFreeRotatedText(bdr.text,  g, (int)(leftX + offset),(int)(top  - 4), -Math.PI/2, null, true, null);
-									bars.addElement(new BarRecord(new Rectangle((int)(leftX + offset), (int)(top)-extraGrabber, (int)barWidth, (int)barLength + extraGrabber+extraGrabber), bdr.ic, bdr.stateset, node));
+									bars.addElement(new BarRecord(new Rectangle((int)(leftX + offset), (int)(top)-extraGrabber, (int)barWidth, (int)barLength + extraGrabber+extraGrabber), bdr.ic, bdr.stateset, node, bdr.unambiguous));
 								}
-								offset += barWidth + barSpacing;
+								g.setColor(Color.black);
+							offset += barWidth + barSpacing;
 							}
 							else {
 								GraphicsUtil.drawLine(g, leftX + offset, top, leftX + offset,top+barLength);
@@ -883,7 +927,15 @@ class TraceAllOperator extends TreeDisplayDrawnExtra implements MesquiteListener
 			drawNumber(tree, g, drawnRoot);
 		if (!treeDisplay.isUpDownRightLeft() || !(charsStates instanceof MCategoricalStates))
 			return;
-
+		Font font = g.getFont();
+		if (traceAllModule.ambiguousChangesAlso.getValue()){
+			unambiguousFont = new Font(font.getName(), Font.BOLD, font.getSize());
+		ambiguousFont = new Font(font.getName(), Font.ITALIC, font.getSize());
+		}
+		else {
+			unambiguousFont = font;
+		ambiguousFont =font;
+		}
 		//resetting barRecords
 		barRecords.resetSize(tree.getNumNodeSpaces());
 		for (int i = 0; i<tree.getNumNodeSpaces(); i++){
@@ -894,6 +946,7 @@ class TraceAllOperator extends TreeDisplayDrawnExtra implements MesquiteListener
 				v.removeAllElements();
 		}
 		drawChanges(tree, g, drawnRoot, (MCategoricalStates) charsStates);
+		g.setFont(font);
 	}
 	/* ................................................................................................................. */
 	private BarRecord cursorCheck(Tree tree, Graphics g, int N, int x, int y) {
@@ -939,20 +992,34 @@ class TraceAllOperator extends TreeDisplayDrawnExtra implements MesquiteListener
 		if (barFound != null){
 			explain(barFound);
 			MesquitePopup popup = new MesquitePopup(treeDisplay);
-			popup.addItem("Trace Character on Tree",  new MesquiteCommand("traceCharacter", Integer.toString(barFound.ic), this), null);
 			if(traceAllModule.ambiguousChangesAlso.getValue()){
-				popup.addItem("-",  (MesquiteCommand)null, null);
 				Vector v = possibleChanges(tree, barFound.node, (MCategoricalStates)charsStates, barFound.ic);
 				if (v != null) {
-					popup.addItem("Permitted changes:",  MesquiteCommand.nullCommand, null);
-					for (int i = 0; i<v.size(); i++){
+					if (barFound.unambiguous) {
+						if (v.size()<=1)
+							popup.addItem("Unambiguous change:",  MesquiteCommand.nullCommand, null);
+						else
+							popup.addItem("Unambiguous change; possibilities:",  MesquiteCommand.nullCommand, null);
+
+					}
+					else
+						popup.addItem("Permitted changes:",  MesquiteCommand.nullCommand, null);
+						for (int i = 0; i<v.size(); i++){
 						Point p = (Point)v.elementAt(i);
-						String s = "" + p.x + " to " + p.y;
+						String s = "  " + p.x + " to " + p.y;
 					popup.addItem(s,  MesquiteCommand.nullCommand, null);
 				}
-				}
-					
+					popup.addItem("-",  (MesquiteCommand)null, null);
+				}	
 			}
+			else {
+				CharacterState csNode = charsStates.getCharacterState(null, barFound.ic, barFound.node);
+				CharacterState csAnc = charsStates.getCharacterState(null, barFound.ic, tree.motherOfNode(barFound.node));
+				popup.addItem("Unambiguous change:",  MesquiteCommand.nullCommand, null);
+				popup.addItem("  " + csAnc.toDisplayString() + " to " + csNode.toDisplayString(),  MesquiteCommand.nullCommand, null);
+				popup.addItem("-",  (MesquiteCommand)null, null);
+			}
+			popup.addItem("Trace Character on Tree",  new MesquiteCommand("traceCharacter", Integer.toString(barFound.ic), this), null);
 			popup.showPopup(x, y);
 			return true;
 
@@ -1021,21 +1088,23 @@ class TraceAllOperator extends TreeDisplayDrawnExtra implements MesquiteListener
 	}
 }
 class BarDecorationRecord {
-	Color color; int ic;  String text; long stateset;
-	public BarDecorationRecord(Color c, int ic, String text, long stateset){
+	Color color; int ic;  String text; long stateset; boolean unambiguous;
+	public BarDecorationRecord(Color c, int ic, String text, long stateset, boolean unambiguous){
 		this.color = c;
 		this.ic = ic;
 		this.text=text;
 		this.stateset = stateset;
+		this.unambiguous = unambiguous;
 	}
 }
 class BarRecord {
-	Rectangle r; int ic;  long stateset; int node;
-	public BarRecord(Rectangle r, int ic, long stateset, int node){
+	Rectangle r; int ic;  long stateset; int node;boolean unambiguous;
+	public BarRecord(Rectangle r, int ic, long stateset, int node, boolean unambiguous){
 		this.r = r;
 		this.ic = ic;
 		this.stateset=stateset;
 		this.node = node;
+		this.unambiguous = unambiguous;
 	}
 	public boolean contains(int x, int y){
 		return r.contains(x, y);
@@ -1043,10 +1112,10 @@ class BarRecord {
 }
 /* ======================================================================== */
 class TACLegend extends TreeDisplayLegend {
-	private TraceAllCharacters ownerModule;
+	private TraceAllChanges ownerModule;
 	private TraceAllOperator tcOp;
 	StringInABox text;
-	public TACLegend(TraceAllCharacters ownerModule, TraceAllOperator extra) {
+	public TACLegend(TraceAllChanges ownerModule, TraceAllOperator extra) {
 		super(extra.getTreeDisplay(),254, 64);
 		setVisible(false);
 		this.tcOp = extra;

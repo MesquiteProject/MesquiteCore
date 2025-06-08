@@ -17,8 +17,6 @@ package mesquite.molec.NumMissingData;
 import java.util.*;
 import java.awt.*;
 
-import mesquite.categ.lib.CategoricalDistribution;
-import mesquite.categ.lib.CategoricalState;
 import mesquite.lib.*;
 import mesquite.lib.characters.*;
 import mesquite.lib.duties.*;
@@ -69,8 +67,7 @@ public class NumMissingData extends NumberForTaxonAndMatrix {
 			for (int ic=0; ic<numChars; ic++) {
 				if (incl == null || incl.isBitOn(ic)){
 					cs = observedStates.getCharacterState(cs, ic, it);
-					long s = ((CategoricalState)cs).getValue();
-					if (CategoricalState.isUnassigned(s)) 
+					if (cs.isUnassigned()) 
 						tot++;
 				}
 				else

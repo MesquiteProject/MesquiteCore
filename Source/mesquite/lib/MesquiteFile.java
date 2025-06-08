@@ -3349,7 +3349,8 @@ public class MesquiteFile extends Listened implements HNode, Commandable, Listab
 	public synchronized static void appendFileContents(String relativePath, String contents, boolean ascii) {
 		if (w)
 			MesquiteMessage.warnProgrammer("writing simultaneously ");
-
+		if (StringUtil.blank(contents))
+			return;
 		w = true;
 		if (fileExists(relativePath) && !canWrite(relativePath)) {
 			MesquiteModule.mesquiteTrunk.discreetAlert( MesquiteThread.isScripting(),"File cannot be written.  It may be locked or open in another application. (5; Path: " + relativePath + ")"); 

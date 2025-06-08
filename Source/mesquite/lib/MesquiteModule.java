@@ -1242,7 +1242,7 @@ public abstract class MesquiteModule extends EmployerEmployee implements Command
 		MesquiteTrunk.errorReportedToHome++;
 	}
 	boolean okToReportErrors(){
-		return PhoneHomeUtil.phoneHomeSuccessful  && !MesquiteTrunk.suppressErrorReporting;
+		return PhoneHomeUtil.phoneHomeSuccessful  && !MesquiteTrunk.suppressErrorReporting && !MesquiteTrunk.developmentMode;
 	}
 	boolean reportErrorsAutomatically(){
 		return MesquiteException.reportErrorsAutomatically.getValue() || mesquiteTrunk.isPrerelease();

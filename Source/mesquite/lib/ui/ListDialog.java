@@ -52,6 +52,7 @@ public class ListDialog extends ExtensibleDialog implements ItemListener{
 	//Button ok;
 	String thirdButton = null;
 	String okButton = null;
+	String cancelButton = null;
 	Checkbox hideSecondaryCheckbox;
 	
 	boolean hideSecondary;
@@ -148,6 +149,7 @@ public class ListDialog extends ExtensibleDialog implements ItemListener{
 			showExplanation(list.getSelectedIndex());
 
 		this.okButton = okButton;
+		this.cancelButton = cancelButton;
 		if (autoComplete){
 			String OK = defaultOKLabel;
 			if (!StringUtil.blank(okButton))
@@ -880,7 +882,7 @@ public class ListDialog extends ExtensibleDialog implements ItemListener{
 				if (indicesSelected != null)
 				indicesSelected.setValues(translateIndicesUsedToOriginal(list.getSelectedIndexes()));
 			}
-			else if (buttonLabel.equalsIgnoreCase("Cancel") || buttonLabel.equalsIgnoreCase("Done")){
+			else if (buttonLabel.equalsIgnoreCase("Cancel") || buttonLabel.equalsIgnoreCase("Done") || buttonLabel.equalsIgnoreCase(cancelButton)){
 				if (selected!=null)
 					selected.setToUnassigned();
 				indicesSelected.setValues(null);

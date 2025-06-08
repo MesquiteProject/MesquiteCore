@@ -739,11 +739,12 @@ class ProjectPanel extends MousePanel implements ClosablePanelContainer{
 			panel.setLocation(0,0);
 		}
 		 */
-		ListableVector others = bfc.getProject().getOtherElements();
-		if (others.size()>0){
-			for (int i=0; i<others.size(); i++){
-				FileElement f = (FileElement)others.elementAt(i);
-				/*if (f instanceof TaxaGroupVector || f instanceof CharactersGroupVector){
+		if (bfc != null){
+			ListableVector others = bfc.getProject().getOtherElements();
+			if (others.size()>0){
+				for (int i=0; i<others.size(); i++){
+					FileElement f = (FileElement)others.elementAt(i);
+					/*if (f instanceof TaxaGroupVector || f instanceof CharactersGroupVector){
 					if (((ListableVector)f).size()>0){
 						addExtraPanel(panel = new GroupsPanel(bfc, this, w, (ListableVector)f));
 						panel.setLocation(0,0);
@@ -753,8 +754,9 @@ class ProjectPanel extends MousePanel implements ClosablePanelContainer{
 					addExtraPanel(panel = new AssocPanel(bfc, this, w, f));
 					panel.setLocation(0,0);
 				}
-			}
+				}
 
+			}
 		}
 		addExtraPanel(notesPanel = new NotesPanel(bfc, this, w));
 		resetSizes();
@@ -1218,7 +1220,7 @@ class TaxaPanel extends ElementPanel {
 			return  super.doCommand(commandName, arguments, checker);
 		return null;
 	}
-	
+
 	/* - - - - - - - - - - - - - - - - - - - - */
 	void transferMatrices(Taxa taxa, Taxa other){
 		MesquiteProject project = taxa.getProject();
@@ -1293,7 +1295,7 @@ class TaxaPanel extends ElementPanel {
 		}
 		return false;
 	}
-	
+
 	/* - - - - - - - - - - - - - - - - - - - - */
 	public String getIconFileName(){
 		if (otherMatch())
