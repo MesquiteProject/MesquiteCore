@@ -10,6 +10,13 @@
 			<downloadURL>http://www.mesquiteproject.org/Installation.html</downloadURL>
 		</currentReleaseVersion>
 		<notice>
+			<forVersion>399</forVersion>
+			<noticeNumber>30</noticeNumber>
+			<messageType>alert</messageType>
+			<message><![CDATA[A second beta-test (prerelease) version of Mesquite 4 is available, with some new features and bug fixes.  It also has bundled in the Zephyr, Chromaseq, and Cartographer packages.  
+			<a href = "https://www.mesquiteproject.org">Check out the details at here.</a>]]></message>
+		</notice>
+		<notice>
 			<forVersion>381</forVersion>
 			<noticeNumber>29</noticeNumber>
 			<messageType>alert</messageType>
