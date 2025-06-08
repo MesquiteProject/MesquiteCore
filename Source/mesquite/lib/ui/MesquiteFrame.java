@@ -1543,7 +1543,7 @@ class FrameTabsPanel extends MousePanel {
 	static Image goaway, popToTile, popOut, popIn, minimize, mediumize, show, goawayMouseOver;
 	static {
 		goaway = MesquiteImage.getImage(MesquiteModule.getRootImageDirectoryPath() + "goawayTransparent.gif");
-		goawayMouseOver = MesquiteImage.getImage(MesquiteModule.getRootImageDirectoryPath() + "windowIcons" + MesquiteFile.fileSeparator + "goaway.gif");
+		goawayMouseOver = MesquiteImage.getImage(MesquiteModule.getRootImageDirectoryPath() + "windowIcons" + MesquiteFile.fileSeparator + "goAway.gif");
 		minimize = MesquiteImage.getImage(MesquiteModule.getRootImageDirectoryPath() + "minimizeTransparent.gif");
 		mediumize = MesquiteImage.getImage(MesquiteModule.getRootImageDirectoryPath() + "mediumizeTransparent.gif");
 		popToTile = MesquiteImage.getImage(MesquiteModule.getRootImageDirectoryPath() + "windowPopToTile.gif");
@@ -1565,7 +1565,7 @@ class FrameTabsPanel extends MousePanel {
 		//	f.diagnose();
 		if (goaway == null){
 			goaway = MesquiteImage.getImage(MesquiteModule.getRootImageDirectoryPath() + "goawayTransparent.gif");
-			goawayMouseOver = MesquiteImage.getImage(MesquiteModule.getRootImageDirectoryPath() + "windowIcons" + MesquiteFile.fileSeparator + "goaway.gif");
+			goawayMouseOver = MesquiteImage.getImage(MesquiteModule.getRootImageDirectoryPath() + "windowIcons" + MesquiteFile.fileSeparator + "goAway.gif");
 			minimize = MesquiteImage.getImage(MesquiteModule.getRootImageDirectoryPath() + "minimizeTransparent.gif");
 			mediumize = MesquiteImage.getImage(MesquiteModule.getRootImageDirectoryPath() + "mediumizeTransparent.gif");
 			popToTile = MesquiteImage.getImage(MesquiteModule.getRootImageDirectoryPath() + "windowPopToTile.gif");
