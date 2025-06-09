@@ -53,7 +53,7 @@ public class ZeroSequencesTooShort extends MolecularDataAlterer  implements Alte
 		return buffer.toString();
 	}
 
-	boolean enoughLength(MolecularData data, int it, int enough, CharacterState cs){
+	boolean lengthButNotEnough(MolecularData data, int it, int enough, CharacterState cs){
 		int seqLen = 0;
 		for (int ic=0; ic<data.getNumChars(); ic++) {
 			cs = data.getCharacterState(cs, ic, it);
@@ -62,7 +62,7 @@ public class ZeroSequencesTooShort extends MolecularDataAlterer  implements Alte
 			if (seqLen>=enough)
 				return true;
 		}
-		return false;
+		return seqLen == 0;  // if all inapplicable, treat it as enough!
 	}  	
 	
 	int longEnough = 100;
@@ -95,8 +95,9 @@ public class ZeroSequencesTooShort extends MolecularDataAlterer  implements Alte
 		CharacterState cs = null;
 		boolean changed = false;
 		for (int it = 0; it<data.getNumTaxa(); it++) {
-			if (!enoughLength(data, it, 100, cs)){
+			if (!lengthButNotEnough(data, it, 100, cs)){
 				data.setToInapplicable(it);
+				logln("Sequence too short in " + data.getTaxa().getTaxonName(it) + " for matrix " + data.getName());
 				changed = true;
 			}
 		}
