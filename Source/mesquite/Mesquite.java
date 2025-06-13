@@ -1501,7 +1501,7 @@ public class Mesquite extends MesquiteTrunk
 		else {
 			ProjectRead pr = new ProjectRead(arguments,  code, mesquiteTrunk, null);
 			ProjectReadThread pt = new ProjectReadThread(pr);
-			pt.indicatorSuppressed = MesquiteThread.pleaseSuppressProgressIndicatorsCurrentThread();
+			pt.indicatorSuppressed = MesquiteThread.getHintToSuppressProgressIndicatorsCurrentThread();
 			if (originalArguments != null)
 				pr.setOriginalArguments(originalArguments);
 

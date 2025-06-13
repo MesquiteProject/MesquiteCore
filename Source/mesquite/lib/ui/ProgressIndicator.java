@@ -99,7 +99,7 @@ public class ProgressIndicator implements Abortable {
 		this(mp,title, 0, true);
 	}
 	public void toFront(){
-		if (MesquiteThread.pleaseSuppressProgressIndicatorsCurrentThread())
+		if (MesquiteThread.getHintToSuppressProgressIndicatorsCurrentThread())
 			return;
 		if (t != null && t.dlog != null)
 			t.dlog.toFront();
@@ -154,7 +154,7 @@ public class ProgressIndicator implements Abortable {
 		try {
 			if (getOwnerThread() == null && Thread.currentThread() instanceof MesquiteThread)
 				setOwnerThread((MesquiteThread)Thread.currentThread()); //by default the owner thread is the one that requests the window to start
-			if (!MesquiteThread.pleaseSuppressProgressIndicatorsCurrentThread()){
+			if (!MesquiteThread.getHintToSuppressProgressIndicatorsCurrentThread()){
 				t.start();
 			}
 		}
@@ -231,7 +231,7 @@ public class ProgressIndicator implements Abortable {
 	}
 	/*.................................................................................................................*/
 	public void setVisible (boolean v) {
-		if (MesquiteThread.pleaseSuppressProgressIndicatorsCurrentThread())
+		if (MesquiteThread.getHintToSuppressProgressIndicatorsCurrentThread())
 			return;
 		t.dlog.setVisible(v);
 	}
@@ -370,13 +370,13 @@ class ProgressWindowThread extends Thread {
 			dlog.setTertiaryMessage(message);
 	}
 	public void start() {
-	if (MesquiteThread.pleaseSuppressProgressIndicatorsCurrentThread())
+	if (MesquiteThread.getHintToSuppressProgressIndicatorsCurrentThread())
 		return;
 	super.start();
 	}
 	
 	public void run() {
-		if (!dontStart  && !MesquiteThread.pleaseSuppressProgressIndicatorsCurrentThread()){
+		if (!dontStart  && !MesquiteThread.getHintToSuppressProgressIndicatorsCurrentThread()){
 			dlog = new ProgressWindow(progressIndicator, title, initialMessage, total, buttonName);
 			if (!dontStart) {
 				dlog.setVisible(true); //TODO: if thread doesn't show until after file reading started, and alert appears, could be hidden under this, with STOP being only option

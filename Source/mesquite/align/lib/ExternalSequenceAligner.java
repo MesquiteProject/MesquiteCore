@@ -550,7 +550,7 @@ public abstract class ExternalSequenceAligner extends MultipleSequenceAligner im
 		MesquiteTimer timer = new MesquiteTimer();
 		timer.start();
 		ProgressIndicator progressIndicator = null;
-		if (!MesquiteThread.pleaseSuppressProgressIndicatorsCurrentThread())
+		if (!MesquiteThread.getHintToSuppressProgressIndicatorsCurrentThread())
 			progressIndicator = new ProgressIndicator(getProject(), getProgramName()+" alignment in progress");
 		if (progressIndicator != null)
 			progressIndicator.start();

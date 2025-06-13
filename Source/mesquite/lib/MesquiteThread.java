@@ -166,9 +166,14 @@ public class MesquiteThread extends Thread implements CommandRecordHolder {
 			mt.loggingSuspended = false;
 		}
 	}
+	
+	public void start(){ //a thread inherits its parent threads indicator conditions
+		indicatorSuppressed = MesquiteThread.getHintToSuppressProgressIndicatorsCurrentThread();
+		super.start();
+	}
 
 	public boolean indicatorSuppressed = false;
-	public static boolean pleaseSuppressProgressIndicatorsCurrentThread(){
+	public static boolean getHintToSuppressProgressIndicatorsCurrentThread(){
 		Thread t = Thread.currentThread();
 		if (t instanceof MesquiteThread){
 			MesquiteThread mt = ((MesquiteThread)t);
