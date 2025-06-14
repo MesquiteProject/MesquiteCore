@@ -437,6 +437,19 @@ public class MiniScroll extends MousePanel implements MiniControl, Explainable, 
 			incrementButton.setEnabled(i<maxValue);
 		}
 	}
+	public void ultcrement () {  
+		if (MesquiteWindow.getQueryMode(this)) {
+			MesquiteWindow.respondToQueryMode("Mini scroll", command, this);
+			return;
+		}
+		if (command!=null) {
+			currentValue=maxValue;
+			command.doItMainThread(Long.toString(currentValue), CommandChecker.getQueryModeString("Mini scroll", command, this), this);
+			tf.setText(Long.toString(currentValue));
+			decrementButton.setEnabled(currentValue>minValue);
+			incrementButton.setEnabled(currentValue<maxValue);
+		}
+	}
 	public void increment (int modifiers) {  // have interface incrementable and pass object to this miniscroll so it can notify object
  		if (MesquiteWindow.getQueryMode(this)) {
 			MesquiteWindow.respondToQueryMode("Mini scroll", command, this);

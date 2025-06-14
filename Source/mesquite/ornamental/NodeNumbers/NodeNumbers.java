@@ -28,7 +28,7 @@ import mesquite.lib.ui.GraphicsUtil;
 /* ======================================================================== */
 public class NodeNumbers extends TreeDisplayAssistantD {
 	public MesquiteBoolean terminalShow;
-	SpotsDrawing spots;
+	NodeNumbersExtra spots;
 	public boolean startJob(String arguments, Object condition, boolean hiredByName){
 		addMenuItem("Remove Node Numbers", makeCommand("offNumbers", this));
 		terminalShow = new MesquiteBoolean(true);
@@ -45,7 +45,7 @@ public class NodeNumbers extends TreeDisplayAssistantD {
 	}
 	/*.................................................................................................................*/
 	public   TreeDisplayExtra createTreeDisplayExtra(TreeDisplay treeDisplay) {
-		spots = new SpotsDrawing(this, treeDisplay, 0); //TODO: should remember all of these
+		spots = new NodeNumbersExtra(this, treeDisplay, 0); //TODO: should remember all of these
 		return spots;
 	}
   	 
@@ -88,11 +88,11 @@ public class NodeNumbers extends TreeDisplayAssistantD {
 }
 
 /* ======================================================================== */
-class SpotsDrawing extends TreeDisplayDrawnExtra {
+class NodeNumbersExtra extends TreeDisplayDrawnExtra {
 	public int oldNumTaxa;
 	public int spotsize = 18;
 	public NodeNumbers nnModule;
-	public SpotsDrawing (NodeNumbers ownerModule, TreeDisplay treeDisplay, int numTaxa) {
+	public NodeNumbersExtra (NodeNumbers ownerModule, TreeDisplay treeDisplay, int numTaxa) {
 		super(ownerModule, treeDisplay);
 		nnModule = ownerModule;
 		oldNumTaxa = numTaxa;

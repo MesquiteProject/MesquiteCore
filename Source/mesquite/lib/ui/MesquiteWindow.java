@@ -106,6 +106,7 @@ public abstract class MesquiteWindow implements Listable, Commandable, OwnedByMo
 	boolean suppressExplanationAreaUpdates=false;
 
 	private MesquiteTool currentTool;
+	private MesquiteTool firstTool;
 	private MesquiteTool previousTool = null;
 	private ToolPalette palette;
 	private ExplanationArea explanationArea, annotationArea;
@@ -1474,17 +1475,21 @@ public abstract class MesquiteWindow implements Listable, Commandable, OwnedByMo
 	public void setCurrentTool(MesquiteTool tool){
 		if (tool!=null && !tool.getEnabled())
 			return;
-		MesquiteTool prevTool = null;
+		
 		if (currentTool !=null) {
 			currentTool.setInUse(false);
 			previousTool = currentTool;
 			removeKeyListener(graphics[0], currentTool); 
 		}
+		else
+			firstTool = tool;
 		currentTool = tool;
 		addKeyListenerToAll(graphics[0], currentTool, true); 
 		setExplanation("");
 		if (currentTool !=null) {
 			currentTool.setInUse(true);
+			if (palette!=null)
+				palette.resetOffOnToolButtons(); 
 			if (currentTool.getDescription()!= null){
 				if (currentTool.getExplanation()==null || currentTool.getDescription().equals(currentTool.getExplanation()))
 					setExplanation("Tool: " + currentTool.getDescription());
@@ -1516,6 +1521,12 @@ public abstract class MesquiteWindow implements Listable, Commandable, OwnedByMo
 	public void removeTool(MesquiteTool tool){
 		if (palette !=null)
 			palette.removeTool(tool);
+		if (tool == currentTool){
+			if (firstTool != null)
+				setCurrentTool(firstTool);
+			else
+			setToPreviousTool();
+		}
 	}
 	/*.................................................................................................................*/
 	public void toolTextChanged(){

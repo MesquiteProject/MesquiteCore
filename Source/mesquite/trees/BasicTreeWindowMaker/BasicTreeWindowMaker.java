@@ -102,6 +102,7 @@ public class BasicTreeWindowMaker extends TreeWindowMaker implements Commandable
 	static boolean warnUnsaved;
 	boolean editMode = false;
 	MesquiteBoolean printNameOnTree;
+	MesquiteBoolean pinToLastTree = new MesquiteBoolean(false);
 	BasicTreeWindow basicTreeWindow;
 	MesquiteString treeSourceName;
 	MagnifyExtra magnifyExtra;
@@ -666,6 +667,7 @@ public class BasicTreeWindowMaker extends TreeWindowMaker implements Commandable
 		else if (employee instanceof TreeSource) {
 			if (suppressEPCResponse)
 				return;
+			
 			int code = Notification.getCode(notification);
 			if (code == MesquiteListener.BLOCK_DELETED && (employee.nameMatches("StoredTrees") || (employee.nameMatches("ConsensusTree")))) {
 				disconnectFromTreeBlock(true);
@@ -1089,6 +1091,9 @@ class BasicTreeWindow extends MesquiteWindow implements Fittable, MesquiteListen
 		mm.setShortcut(KeyEvent.VK_UP); // right
 		mm = ownerModule.addMenuItem("Previous Tree", ownerModule.makeCommand("previousTree", this));
 		mm.setShortcut(KeyEvent.VK_DOWN); // right
+		mm = ownerModule.addMenuItem("Last Tree", ownerModule.makeCommand("lastTree", this)); 
+		mm.setShortcut(KeyEvent.VK_PERIOD); // right
+		ownerModule.addCheckMenuItem( null, "Pin to Last Tree", ownerModule.makeCommand("pinToLastTree",  this), ownerModule.pinToLastTree);
 		ownerModule.addMenuItem("Step Through Trees...", ownerModule.makeCommand("stepThroughTrees", this));
 		ownerModule.addMenuSeparator();
 
@@ -2260,13 +2265,17 @@ class BasicTreeWindow extends MesquiteWindow implements Fittable, MesquiteListen
 			palette.paletteScroll.setEnableEnter(true);
 			palette.paletteScroll.setMinimumValue(MesquiteTree.toExternal(0));
 			palette.paletteScroll.setMaximumValue(MesquiteTree.toExternal(numTrees - 1));
-			if (setToZero || currentTreeNumber >= numTrees)
+			if (windowModule.pinToLastTree.getValue()){
+				currentTreeNumber = numTrees-1;
+				goToTreeNumber(currentTreeNumber, false);
+			}
+			else if (setToZero || currentTreeNumber >= numTrees)
 				goToTreeNumber(0, false);
 			else
 				goToTreeNumber(currentTreeNumber, false);
 		}
 
-		if (editedTree != null) {
+		if (editedTree != null && !windowModule.pinToLastTree.getValue()) {  //if pinned to last tree, you lose edit
 			// originalTree = null;
 			setTree(editedTree);
 			setTreeName(editedTree);
@@ -2293,7 +2302,8 @@ class BasicTreeWindow extends MesquiteWindow implements Fittable, MesquiteListen
 		palette.paletteScroll.setMinimumValue(MesquiteTree.toExternal(0));
 		int numTrees = treeSourceTask.getNumberOfTrees(taxa);
 		palette.paletteScroll.setMaximumValue(MesquiteTree.toExternal(numTrees - 1));
-		if (currentTreeNumber >= numTrees && MesquiteInteger.isCombinable(numTrees)) {
+		
+		if (windowModule.pinToLastTree.getValue() || (currentTreeNumber >= numTrees && MesquiteInteger.isCombinable(numTrees))) {
 			currentTreeNumber = numTrees - 1;
 			goToTreeNumber(currentTreeNumber, true);
 		}
@@ -2837,8 +2847,20 @@ class BasicTreeWindow extends MesquiteWindow implements Fittable, MesquiteListen
 		else if (checker.compare(this.getClass(), "Goes to the previous tree in the tree source.  THIS RUNS ON GUI THREAD.", null, commandName, "previousTree")) {
 			palette.paletteScroll.decrement(0);
 		}
+		else if (checker.compare(this.getClass(), "Goes to the last tree in the tree source.  THIS RUNS ON GUI THREAD.", null, commandName, "lastTree")) {
+			palette.paletteScroll.ultcrement();   
+		}
 		else if (checker.compare(this.getClass(), "Steps through the trees.", null, commandName, "stepThroughTrees")) {
 			stepThroughTrees();
+		}
+		else if (checker.compare(this.getClass(), "Pins the tree window to the last tree.", null, commandName, "pinToLastTree")) {
+			
+			boolean current = windowModule.pinToLastTree.getValue();
+			windowModule.pinToLastTree.toggleValue(new Parser().getFirstToken(arguments));
+			if (current!=windowModule.pinToLastTree.getValue() && windowModule.pinToLastTree.getValue()){
+				int numTrees = treeSourceTask.getNumberOfTrees(taxa);
+				goToTreeNumber(numTrees-1, true);
+			}
 		}
 		else if (checker.compare(this.getClass(), "Goes to the next tree in the tree source.", null, commandName, "goToNextTree")) {
 			incrementTreeNumber();

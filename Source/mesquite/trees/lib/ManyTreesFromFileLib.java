@@ -44,6 +44,7 @@ public abstract class ManyTreesFromFileLib extends TreeSource implements Mesquit
 	int highestSuccessfulTree = -1;
 	FIleCheckThread fileCheckingThread = null;
 	protected MesquiteBoolean rereadWholeFileIfGrows = new MesquiteBoolean(true);
+	//protected MesquiteBoolean lastTreeOnly = new MesquiteBoolean(false);
 	protected MesquiteBoolean live;
 	MesquiteCommand fileGrewCommand, fileChangedCommand;
 	boolean fileWasModified = false;
@@ -303,8 +304,9 @@ public abstract class ManyTreesFromFileLib extends TreeSource implements Mesquit
 			arguments += " useStandardizedTaxonNames";
 		temp.addLine("setFilePath " + arguments);  //quote //todo: should parse name relative to path to home file!!!!!
 		temp.addLine("toggleReread " + rereadWholeFileIfGrows.toOffOnString());
-		if (canDoLiveUpdate())
+		if (canDoLiveUpdate()) {
 			temp.addLine("toggleLive " + live.toOffOnString());
+		}
 		additionalSnapshot(temp);
 		return temp;
 	}
@@ -943,6 +945,7 @@ public abstract class ManyTreesFromFileLib extends TreeSource implements Mesquit
 		setPreferredTaxa(taxa);
 		if (getSampleTrees() && MesquiteInteger.isCombinable(numTreesToSample))
 			return numTreesToSample;
+
 		return numTrees; 
 	}
 	/*.................................................................................................................*/
@@ -950,6 +953,7 @@ public abstract class ManyTreesFromFileLib extends TreeSource implements Mesquit
 		if (!determineNumberIfFinite)
 			return getNumberOfTrees(taxa);
 		setPreferredTaxa(taxa);
+
 		if (!MesquiteInteger.isCombinable(numTrees)) { // fix oliver.Feb.12.'10.
 			if(getSampleTrees() && MesquiteInteger.isCombinable(numTreesToSample)){
 				return numTreesToSample;

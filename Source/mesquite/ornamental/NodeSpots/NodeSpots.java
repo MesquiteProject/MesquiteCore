@@ -30,8 +30,8 @@ import mesquite.lib.ui.MesquiteSubmenuSpec;
 import mesquite.lib.ui.MesquiteWindow;
 
 /* ======================================================================== */
-public class NodeSpots extends TreeDisplayAssistantDI {
-	SpotsDrawing spots;
+public class NodeSpots extends TreeDisplayAssistantI {
+	NodeSpotsDrawing spots;
 	MesquiteBoolean showSpots = new MesquiteBoolean(true); 
 
 	public boolean startJob(String arguments, Object condition, boolean hiredByName){
@@ -49,7 +49,7 @@ public class NodeSpots extends TreeDisplayAssistantDI {
 	}
 	/*.................................................................................................................*/
 	public   TreeDisplayExtra createTreeDisplayExtra(TreeDisplay treeDisplay) {
-		spots = new SpotsDrawing(this, treeDisplay, 0); //TODO: should remember all of these
+		spots = new NodeSpotsDrawing(this, treeDisplay, 0); //TODO: should remember all of these
 		return spots;
 	}
 
@@ -114,10 +114,10 @@ public class NodeSpots extends TreeDisplayAssistantDI {
 }
 
 /* ======================================================================== */
-class SpotsDrawing extends TreeDisplayDrawnExtra implements Commandable {
-	public TreeTool spotTool;
+class NodeSpotsDrawing extends TreeDisplayDrawnExtra implements Commandable {
+	TreeTool spotTool;
 	NodeSpots nsModule;
-	public SpotsDrawing (NodeSpots ownerModule, TreeDisplay treeDisplay, int numTaxa) {
+	public NodeSpotsDrawing (NodeSpots ownerModule, TreeDisplay treeDisplay, int numTaxa) {
 		super(ownerModule, treeDisplay);
 		nsModule = ownerModule;
 		spotTool = new TreeTool(this, "AddSpots", ownerModule.getPath(), "pointer.gif", 1,1,"Add/Delete Spot at Node", "This tool adds a spot at a node of a tree.  This has cosmetic effect only. It can be used for emphasis. ");

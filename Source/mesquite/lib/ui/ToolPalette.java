@@ -390,6 +390,16 @@ public class ToolPalette extends MesquitePanel implements Commandable, KeyListen
 		MesquiteTool tool =  toolButtons[button].getTool();
 		setCurrentTool(tool);
 	}
+	public void resetOffOnToolButtons() {
+		Parser parser = new Parser();
+		for (int i=0; i<numTools ; i++) {
+			if (toolButtons[i].getTool().getInUse()) { 
+				toolButtons[i].setOn();
+			}
+			else
+				toolButtons[i].setOff();
+		}
+	}
 	public void setCurrentTool(MesquiteTool tool) {
 		if (tool==null || !tool.getEnabled())
 			return;

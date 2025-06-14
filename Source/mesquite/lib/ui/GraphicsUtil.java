@@ -682,6 +682,15 @@ public class GraphicsUtil {
 		g.fillRect(x,y,w, h);
 		ColorDistribution.setComposite(g, composite);		
 	}
+	public static void fillTransparentOval5 (Graphics g, double x, double y, double w, double h, Color color) {
+		Composite composite = ColorDistribution.getComposite(g);
+		ColorDistribution.setTransparentGraphics5(g);		
+		Color oldColor = g.getColor();
+		g.setColor(color);
+		fillOval(g, x, y, w, h);
+		g.setColor(oldColor);
+		ColorDistribution.setComposite(g, composite);		
+	}
 	public static void fillTransparentSelectionRectangle (Graphics g, int x, int y, int w, int h) {
 		Composite composite = ColorDistribution.getComposite(g);
 		ColorDistribution.setTransparentGraphics3(g);		
