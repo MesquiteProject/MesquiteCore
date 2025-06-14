@@ -727,7 +727,7 @@ public abstract class ManyTreesFromFileLib extends TreeSource implements Mesquit
 			}
 		}
 		else if (currentTree==0){  //first tree
-			CommandRecord.tick("\"Trees from Separate File\": Going to tree " + (currentTree+1));
+			CommandRecord.tick("\"Trees from Separate File\": Going to tree " + (currentTree+1) + " [c]");
 			file.goToFilePosition(getFilePos(0));
 			while (!isTreeCommand && !fileDone){
 				command = file.getNextCommand(status, comment); 
@@ -743,7 +743,7 @@ public abstract class ManyTreesFromFileLib extends TreeSource implements Mesquit
 			recordFilePos(1, file.getFilePosition()-1); 
 		}
 		else if (currentTree == lastTreeRead+1){ //last tree read was one less than requested; just continue to next without resetting file position
-			CommandRecord.tick("Going to tree " + (currentTree+1));
+			CommandRecord.tick("Going to tree " + (currentTree+1) + " [a]");
 			while (!isTreeCommand && !fileDone){
 				command = file.getNextCommand( status, comment); //this is highest tree read
 				if (StringUtil.blank(command))
@@ -764,8 +764,8 @@ public abstract class ManyTreesFromFileLib extends TreeSource implements Mesquit
 			if (highestTreeMarked>=0)
 				file.goToFilePosition(getFilePos(highestTreeMarked));
 			int timeout = 0;
-			for (int i = highestTreeMarked; i<=currentTree && !fileDone; i++) {
-				CommandRecord.tick("Going to tree " + (i+1));
+			for (int i = highestTreeMarked; i<=currentTree && !fileDone && !file.atEOF(); i++) {
+				CommandRecord.tick("Going to tree " + (i+1) + " [d]");
 				isTreeCommand = false;
 				timeout = 0;
 				while (!isTreeCommand && !fileDone && !file.atEOF() && timeout < 10000){
@@ -791,7 +791,7 @@ public abstract class ManyTreesFromFileLib extends TreeSource implements Mesquit
 			}
 		}
 		else { //a tree that is at or before the lastTreeRead, thus position should be known
-			CommandRecord.tick("Going to tree " + (currentTree+1));
+			CommandRecord.tick("Going to tree " + (currentTree+1) + " [b]");
 
 			file.goToFilePosition(getFilePos(currentTree));
 			while (!isTreeCommand && !fileDone){

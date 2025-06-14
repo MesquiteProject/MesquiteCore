@@ -74,6 +74,21 @@ public class MesquiteInteger implements Listable, Nameable{
 		if (b != null)
 			b.setValue(value);
 	}
+	public static long toLong(int value) { //so that setting can be done in line whether or not null
+		if (value == unassigned)
+		return MesquiteLong.unassigned;
+		else if (value == impossible)
+		return MesquiteLong.impossible;
+		else if (value == finite)
+		return MesquiteLong.unassigned;
+		else if (value == infinite)
+		return MesquiteLong.infinite;
+		else if (value == negInfinite)
+		return MesquiteLong.negInfinite;
+		else if (value == inapplicable)
+		return MesquiteLong.inapplicable;
+		return value;
+	}
 	/** Adds one to value */
 	public void increment() {
 		value++;
@@ -164,11 +179,11 @@ public class MesquiteInteger implements Listable, Nameable{
 	}
 	/** Returns whether value is a regular number (NOT unassigned, infinite, inapplicable, impossible) */
 	public boolean isCombinable() {
-		return (value!=unassigned && value!=infinite && value!=impossible&& value!=inapplicable && value != finite);
+		return (value!=unassigned && value!=infinite && value!=impossible&& value!=inapplicable && value != finite && value != negInfinite);
 	}
 	/** Returns whether value is a regular number (NOT unassigned, infinite, inapplicable, impossible) */
 	public static boolean isCombinable(int i) {
-		return (i!=unassigned && i!=infinite && i!=impossible&& i!=inapplicable && i != finite);
+		return (i!=unassigned && i!=infinite && i!=impossible&& i!=inapplicable && i != finite && i != negInfinite);
 	}
 	/** Returns whether value is a regular number (NOT unassigned, infinite, inapplicable, impossible) and greater than zero */
 	public static boolean isPositive(int i) {

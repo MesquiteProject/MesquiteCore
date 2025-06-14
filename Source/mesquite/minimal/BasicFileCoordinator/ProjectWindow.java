@@ -226,8 +226,8 @@ public class ProjectWindow extends MesquiteWindow implements MesquiteListener {
 		html += "<ol>";
 		html += "<li>Do you want to incorporate the trees only temporarily in a calculation, and so as to save memory?";
 		html += " If so then you can request one of the following two options as your Tree Source in the tree window or in various calculations:<ol>";
-		html += "<li><b>Use Trees from Separate File</b>: this reads in the trees from the file one at a time, as needed, and therefore saves memory with large tree files.</li>";
-		html += "<li><b>MrBayes Trees</b>: this is a special version of Use Trees from Separate File that can also read the associated .p file to recover tree scores.</li>";
+		html += "<li><b>Trees from Separate File</b>: this reads in the trees from the file one at a time, as needed, and therefore saves memory with large tree files.</li>";
+		html += "<li><b>MrBayes Trees</b>: this is a special version of Trees from Separate File that can also read the associated .p file to recover tree scores.</li>";
 		html += "</ol>To use either of these, choose it as your <b>Tree Source</b> whenever you are using a Tree Window, Chart or other calculation that uses trees.  These do not bring the trees into the project, and therefore the trees are available only for the tree window or calculation requested.";
 		html +="</li><br>";
 		html += "<li><img src=\"" + MesquiteFile.massageFilePathToURL(bfc.getPath()+"projectHTML" + MesquiteFile.fileSeparator + "fileLinkTrees.gif") + "\">&nbsp;&nbsp;Do you want the trees incorporated to remain in the other file?";

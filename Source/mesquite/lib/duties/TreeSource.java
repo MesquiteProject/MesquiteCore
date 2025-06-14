@@ -35,7 +35,7 @@ public abstract class TreeSource extends TreeBlockFiller implements ItemsSource 
    	 }
    	 
    	 public String[] getDefaultModule() {
-   	 	return new String[] {"#StoredTrees", "#DefaultTrees", "#SimulateTree"};
+   	 	return new String[] {"#StoredTrees", "#DefaultTrees", "#ManyTreesFromFile", "#SampleManyTreesFromFile", "#ConsensusTree", "#SimulateTree"};
    	 }
    	/** Called to provoke any necessary initialization.  This helps prevent the module's intialization queries to the user from
    	happening at inopportune times (e.g., while a long chart calculation is in mid-progress)*/

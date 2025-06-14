@@ -2364,6 +2364,7 @@ class BasicTreeWindow extends MesquiteWindow implements Fittable, MesquiteListen
 		if (MesquiteTrunk.snapshotMode != Snapshot.SNAPDISPLAYONLY) {
 			temp.addLine("getTreeDrawCoordinator", treeDrawCoordTask);
 			temp.addLine("setTreeNumber " + (MesquiteTree.toExternal(currentTreeNumber)));
+			temp.addLine("pinToLastTree " + windowModule.pinToLastTree.toOffOnString());
 			if ((treeEdited || windowModule.editMode) && tree != null) {
 				if (!StringUtil.blank(tree.getAnnotation()))
 					temp.addLine("setTreeAnnotation " + StringUtil.tokenize(tree.getAnnotation()));
@@ -2839,15 +2840,21 @@ class BasicTreeWindow extends MesquiteWindow implements Fittable, MesquiteListen
 
 		}
 		else if (checker.compare(this.getClass(), "Goes to the next tree in the tree source.  THIS RUNS ON GUI THREAD.", null, commandName, "nextTree")) {
+			if (windowModule.pinToLastTree.getValue())
+				windowModule.logln("Tree window is pinned to the last tree. Unpin via the menu item Tree>Pin to Last Tree");
 			palette.paletteScroll.increment(0);
 		}
 		else if (checker.compare(this.getClass(), "Resets the title (needed for Zephyr).", null, commandName, "resetTitle")) {
 			resetTitle();
 		}
 		else if (checker.compare(this.getClass(), "Goes to the previous tree in the tree source.  THIS RUNS ON GUI THREAD.", null, commandName, "previousTree")) {
+		if (windowModule.pinToLastTree.getValue())
+			windowModule.logln("Tree window is pinned to the last tree. Unpin via the menu item Tree>Pin to Last Tree");
 			palette.paletteScroll.decrement(0);
 		}
 		else if (checker.compare(this.getClass(), "Goes to the last tree in the tree source.  THIS RUNS ON GUI THREAD.", null, commandName, "lastTree")) {
+			if (windowModule.pinToLastTree.getValue())
+				windowModule.logln("Tree window is pinned to the last tree. Unpin via the menu item Tree>Pin to Last Tree");
 			palette.paletteScroll.ultcrement();   
 		}
 		else if (checker.compare(this.getClass(), "Steps through the trees.", null, commandName, "stepThroughTrees")) {
@@ -2861,6 +2868,7 @@ class BasicTreeWindow extends MesquiteWindow implements Fittable, MesquiteListen
 				int numTrees = treeSourceTask.getNumberOfTrees(taxa);
 				goToTreeNumber(numTrees-1, true);
 			}
+			setScrollEnabled(!windowModule.pinToLastTree.getValue());
 		}
 		else if (checker.compare(this.getClass(), "Goes to the next tree in the tree source.", null, commandName, "goToNextTree")) {
 			incrementTreeNumber();
@@ -3550,6 +3558,9 @@ class BasicTreeWindow extends MesquiteWindow implements Fittable, MesquiteListen
 		if (currentTreeNumber + 1 >= numTrees)
 			return null;
 		return goToTreeNumber(currentTreeNumber + 1, true);
+	}
+	void setScrollEnabled(boolean enable){
+		palette.paletteScroll.setEnabled(enable);
 	}
 
 	/* ................................................................................................................. */
