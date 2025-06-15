@@ -62,12 +62,14 @@ public class ProjectWindow extends MesquiteWindow implements MesquiteListener {
 		super(ownerModule, false);
 		bfc = (BasicFileCoordinator)ownerModule;
 		proj = ownerModule.getProject();
-		projPanel = new ProjectPanel(this, proj, bfc);
+		if (proj != null){
+			projPanel = new ProjectPanel(this, proj, bfc);
 		scrollPanel = new ScrollPanel(projPanel);
 		addToWindow(scrollPanel);
 		addToWindow(projPanel);
 		setBackground(ColorTheme.getExtInterfaceBackground());
 		proj.addListener(this);
+		}
 
 	}
 	public int getDefaultTileLocation(){
@@ -302,19 +304,19 @@ public class ProjectWindow extends MesquiteWindow implements MesquiteListener {
 		projPanel.setFootnote(heading, text);
 	}
 	public void refresh(FileElement element){
-		if (bfc.isDoomed() || bfc.getProject().refreshSuppression>0)
+		if (bfc.isDoomed() || bfc.getProject().refreshSuppression>0 || projPanel == null)
 			return;
 		BasicFileCoordinator.totalProjectPanelRefreshes++;
 		projPanel.refresh(element);
 	}
 	public void refresh(){
-		if (bfc.isDoomed() || bfc.getProject().refreshSuppression>0)
+		if (bfc.isDoomed() || bfc.getProject().refreshSuppression>0 || projPanel == null)
 			return;
 		BasicFileCoordinator.totalProjectPanelRefreshes++;
 		projPanel.refresh();
 	}
 	public void refreshGraphics(){
-		if (bfc.isDoomed())
+		if (bfc.isDoomed() || projPanel == null)
 			return;
 		BasicFileCoordinator.totalProjectPanelRefreshes++;
 		projPanel.refreshGraphics();
@@ -769,7 +771,7 @@ class ProjectPanel extends MousePanel implements ClosablePanelContainer{
 	}
 
 	void resetSizes(int w, int h){
-		if (bfc!=null && (bfc.isDoomed() ||  bfc.getProject().refreshSuppression>0))
+		if (bfc!=null && (bfc.isDoomed() ||  bfc.getProject() == null || bfc.getProject().refreshSuppression>0))
 			return;
 		int max = getHeight();
 		int vertical = 2;

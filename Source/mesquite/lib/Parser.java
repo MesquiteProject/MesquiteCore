@@ -1073,6 +1073,8 @@ public class Parser extends StringUtil {
 		while (!StringUtil.blank(fRA)) {
 			if (fRA.startsWith(StringUtil.argumentMarker + target + ".")){
 				String subS = fRA.substring(fRA.indexOf(".")+1, fRA.length());
+				if (StringUtil.blank(subS)) //what is after the "." is treated as a separate token so need to get it separately
+					subS = getNextToken();
 				return subS;
 			}
 			fRA = getNextToken();

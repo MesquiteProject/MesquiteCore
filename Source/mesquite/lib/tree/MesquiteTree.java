@@ -4083,6 +4083,13 @@ and the tree has been rerooted. Properties that belong to nodes implicitly have 
 
 	}
 	/*-----------------------------------------*/
+	/** Writes a tree description into the StringBuffer using taxon names without associated but with branch lengths*/
+	public String writeTreeSimpleNewick() {
+		StringBuffer treeDescription = new StringBuffer(100);
+		writeTreeByNames( getRoot(),  treeDescription, true, false, true);
+		return treeDescription.toString();
+	}
+	/*-----------------------------------------*/
 	/** Writes a tree description into the StringBuffer using taxon names */
 	private void writeTreeByNames(int node, StringBuffer treeDescription, boolean includeBranchLengths, boolean includeAssociated, boolean associatedUseComments) {
 		if (nodeIsInternal(node)) {

@@ -31,7 +31,7 @@ public class ManyTreesFromFile extends ManyTreesFromFileLib {
 	 }
 /*.................................................................................................................*/
 	 public String getNameForMenuItem() {
-	return "Trees from Separate NEXUS File...";
+	return "Trees from Separate Live NEXUS File...";
 	 }
 	 
 		/*.................................................................................................................*/

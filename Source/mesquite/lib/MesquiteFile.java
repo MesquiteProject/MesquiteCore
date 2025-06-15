@@ -3503,6 +3503,14 @@ public class MesquiteFile extends Listened implements HNode, Commandable, Listab
 		}
 	}
 	/*.................................................................................................................*/
+	boolean requiresSaveAs = false;
+	public boolean getRequiresSaveAs(){
+		return requiresSaveAs;
+	}
+	public void setRequiresSaveAs(boolean req){
+		requiresSaveAs = req;
+	}
+	/*.................................................................................................................*/
 	public boolean getWriteProtected(){
 		return writeProtected;
 	}

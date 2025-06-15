@@ -59,7 +59,13 @@ public class DefaultTrees extends TreeSource {
    	 public boolean isPrerelease(){
    	 	return false;
    	 }
-   	 
+     /**Returns whether or not the source can handle asking for the last tree, i.e. for what the source says is maxTrees - 1, even if that is unassigned or infinite, i.e., is not a combinable number. 
+      * If asked, and the source has an indefinite number, it will supply a tree (e.g. from a live file) rather than just trying forever. 
+      * Used for Pin to Last Tree in BasicTreeWindow.*/
+    	public boolean permitsRequestForLastTree(Taxa taxa){
+    		return true;
+    	}
+
  	/* ................................................................................................................. */
  	public Object doCommand(String commandName, String arguments, CommandChecker checker) {
  		if (checker.compare(this.getClass(), "Hires a tree display assistant module", "[name of assistant module]", commandName, "laxOff")) {

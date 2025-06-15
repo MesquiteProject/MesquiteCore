@@ -77,7 +77,8 @@ public class MiniScroll extends MousePanel implements MiniControl, Explainable, 
 			totalHeight = textBoxHeight + 40 + EnterButton.MIN_DIMENSION+2;
 		}
 		else if (stacked) {
-			totalWidth = textBoxWidth  + EnterButton.MIN_DIMENSION+2;
+			textBoxWidth +=  EnterButton.MIN_DIMENSION+2;  //strange convention because adapting from previous in which enter button was to right of text box instead of underneath
+			totalWidth = textBoxWidth; //  + EnterButton.MIN_DIMENSION+2;
 			totalHeight = textBoxHeight + 28;
 		}
 		else  {
@@ -180,13 +181,15 @@ public class MiniScroll extends MousePanel implements MiniControl, Explainable, 
 			oldTextBoxHeight = textBoxHeight;
 			if (horizontal){
 				if (stacked) {
-					totalWidth = textBoxWidth +  EnterButton.MIN_DIMENSION+2;
+					textBoxWidth += EnterButton.MIN_DIMENSION+2; 
+					totalWidth = textBoxWidth;
 					totalHeight = textBoxHeight + 20;
 					setSize(totalWidth, totalHeight);
 					tf.setSize(textBoxWidth, textBoxHeight);
 					tf.setLocation(0, 0);
-					decrementButton.setLocation(2,textBoxHeight+4);
-					incrementButton.setLocation(totalWidth-20,textBoxHeight+4);
+					enterButton.setLocation(0, textBoxHeight+4);
+					decrementButton.setLocation(EnterButton.MIN_DIMENSION+2,textBoxHeight+4);
+					incrementButton.setLocation(totalWidth-18,textBoxHeight+4);
 				}
 				else  {
 					totalWidth = textBoxWidth +36  +  EnterButton.MIN_DIMENSION+2;
@@ -196,8 +199,8 @@ public class MiniScroll extends MousePanel implements MiniControl, Explainable, 
 					decrementButton.setLocation(0,2);
 					tf.setLocation(decrementButton.getBounds().x + decrementButton.getBounds().width + 1, 1);  // 1 added to x
 					incrementButton.setLocation(tf.getBounds().x + tf.getBounds().width + EnterButton.MIN_DIMENSION+2,2);  //1 added to x
+					enterButton.setLocation(tf.getBounds().x + tf.getBounds().width+1, 2);
 				}
-				enterButton.setLocation(tf.getBounds().x + tf.getBounds().width+1, 2);
 			}
 			else {
 				if (stacked) {
@@ -517,7 +520,6 @@ public class MiniScroll extends MousePanel implements MiniControl, Explainable, 
 			MesquiteWindow.respondToQueryMode("Mini scroll", command, this);
 			return;
 		}
-		System.err.println("@ " + MesquiteLong.toString(currentValue) + " " + MesquiteLong.toString(minValue));
 		if (!MesquiteLong.isCombinable(currentValue))
 			return;
 		if (currentValue>minValue && command!=null) {

@@ -423,6 +423,8 @@ public class BasicFileCoordinator extends FileCoordinator implements PackageIntr
 	}
 
 	public void refreshProjectWindow(){
+		if (getProject() == null)
+			return;
 		if (getProject().refreshSuppression == 0){
 			getProject().refreshPending = false;
 			MesquiteWindow w = getModuleWindow();
@@ -699,7 +701,7 @@ public class BasicFileCoordinator extends FileCoordinator implements PackageIntr
 					if (obj != null && obj instanceof MesquiteModule){
 						TreeVector trees = getProject().getTreesByNumber(0);
 						if (trees.size()>0){
-						Tree t = trees.getTree(0);
+							Tree t = trees.getTree(0);
 							if (t instanceof MesquiteTree){
 								MesquiteTree tree = (MesquiteTree)t;
 								if (tree.getAssociatedObjects(ChronogramDisplay.errorBarNameRef)!= null){
@@ -840,7 +842,7 @@ public class BasicFileCoordinator extends FileCoordinator implements PackageIntr
 		cleanFusedReadingSuppressions();
 		getProject().decrementProjectWindowSuppression();
 	}
-	
+
 	void cleanFusedReadingSuppressions(){
 		int num = getProject().getNumberCharMatrices();
 		for (int im = 0; im< num; im++){
@@ -848,8 +850,9 @@ public class BasicFileCoordinator extends FileCoordinator implements PackageIntr
 			data.setSuppressSpecssetReading(false);
 		}
 	}
+	
 	/*.................................................................................................................*/
-	public MesquiteFile getNEXUSFileForReading(String arguments, String message){ 
+	public MesquiteFile getFileForReading(String arguments, String message, MesquiteBoolean fileChosenIsNexus){ 
 		String path = parser.getFirstToken(arguments); //optional argument
 
 
@@ -867,10 +870,10 @@ public class BasicFileCoordinator extends FileCoordinator implements PackageIntr
 		}
 		if (file == null)
 			return null;
-		NexusFileInterpreter nfi = (NexusFileInterpreter)findImmediateEmployeeWithDuty(NexusFileInterpreter.class);
-		if (nfi==null || !nfi.canReadFile(file)) {
-			return null; //not a nexus file
-		}
+			NexusFileInterpreter nfi = (NexusFileInterpreter)findImmediateEmployeeWithDuty(NexusFileInterpreter.class);
+			if (fileChosenIsNexus!=null) 
+				fileChosenIsNexus.setValue(!(nfi==null || !nfi.canReadFile(file))); //is it a nexus file
+
 		return file;
 	}
 	/*.................................................................................................................*/
@@ -924,6 +927,8 @@ public class BasicFileCoordinator extends FileCoordinator implements PackageIntr
 	}
 	/*.................................................................................................................*/
 	void afterProjectRead() {
+		if (getProject() == null)
+			return;
 		if (getModuleWindow()!=null) {
 			getModuleWindow().resetTitle(); //WHAT IF MULTIPLE LINKED FILES??
 		}
@@ -1236,7 +1241,7 @@ public class BasicFileCoordinator extends FileCoordinator implements PackageIntr
 		else
 			fi = getProject().getFileByID(id);
 		if (fi != null) { 
-			if (!getProject().getHomeFile().fileExists()){ //no longer exists! user must have changed directories
+			if (fi.getRequiresSaveAs() || !getProject().getHomeFile().fileExists()){ //no longer exists! user must have changed directories
 				saveFileAs(id);
 			}
 			else 
@@ -1589,6 +1594,11 @@ public class BasicFileCoordinator extends FileCoordinator implements PackageIntr
 		else if (checker.compare(this.getClass(), "Sets the home file of the project so it is write protected", null, commandName, "writeProtect")) { //TODO: should use arguments to toggle
 			getProject().getHomeFile().setWriteProtected(true);
 		}
+		else if (checker.compare(this.getClass(), "Sets whether or not to require a save as for the home file.", "[on or off]", commandName, "requireSaveAs")) {
+			MesquiteBoolean rsa = new MesquiteBoolean();
+			rsa.toggleValue(parser.getFirstToken(arguments));
+			getProject().getHomeFile().setRequiresSaveAs(rsa.getValue());
+		}
 		else if (checker.compare(this.getClass(), "Returns the number of sets of taxa stored in the project", null, commandName, "getNumberOfTaxas")) {
 			MesquiteInteger mi = new MesquiteInteger(getProject().getNumberTaxas());
 			return (mi);
@@ -1635,7 +1645,12 @@ public class BasicFileCoordinator extends FileCoordinator implements PackageIntr
 			revertToSaved(true);
 		}
 		else if (checker.compare(this.getClass(), "Opens a NEXUS file and returns it for reading", "[path to file]", commandName, "getNEXUSFileForReading")) {
-			return getNEXUSFileForReading(arguments, "Choose file to open");
+			MesquiteBoolean fileChosenIsNexus = new MesquiteBoolean(false);
+			MesquiteFile file = getFileForReading(arguments, "Choose file to open", fileChosenIsNexus);
+			if (fileChosenIsNexus.getValue())
+			return file;
+			else
+				return null;
 		}
 		else if (checker.compare(this.getClass(), "Opens a NEXUS file and returns the first block of a given type", "[block type][path to file]", commandName, "getNEXUSFileBlock")) {
 			String blockType = parser.getFirstToken(arguments); //required argument
@@ -1721,7 +1736,7 @@ public class BasicFileCoordinator extends FileCoordinator implements PackageIntr
 			while ((mbi = getNextCompatibleModuleOfDuty(mbi, mmis)) != null) 
 				explanation += "<li><b>" + StringUtil.protectForXML(mbi.getNameForMenuItem()) + "</b>— " + StringUtil.protectForXML(mbi.getExplanation()) + "</li><br>";
 			explanation += "</ul></body></html>";
-		//AlertDialog.noticeHTML(containerOfModule(), "Including & Merging Other Files", explanation, 500, 500, null);
+			//AlertDialog.noticeHTML(containerOfModule(), "Including & Merging Other Files", explanation, 500, 500, null);
 			alertHTML(containerOfModule().getParentFrame(), explanation,"Including & Merging Other Files", null, 600, 500);
 		}
 		else if (checker.compare(this.getClass(), "Save all files in project", null, commandName, "saveFiles")) {  //all files in project
