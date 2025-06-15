@@ -61,6 +61,8 @@ public class MesquiteEvent {  //DRM
 				s+= " option";
 			if (commandKeyDown(modifiers))
 				s+= " command";
+			if (rightClick(modifiers))
+				s+= " rightClick";
 			 return s;
 	}
 }
