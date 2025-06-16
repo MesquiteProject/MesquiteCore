@@ -84,7 +84,7 @@ public class ProgressIndicator implements Abortable {
 		t = new ProgressWindowThread(this,title, initialMessage, total, buttonName);
 	}
 
-	public ProgressIndicator (MesquiteProject mp, String title, String initialMessage, long total, boolean showStop) {
+	public ProgressIndicator (MesquiteProject mp, String title, String initialMessage, long total, boolean showStop) {  //0, true
 		this(mp, title, initialMessage, total, showStop ? "Stop" : null);
 		setButtonMode(FLAG_AND_HIDE);
 	}

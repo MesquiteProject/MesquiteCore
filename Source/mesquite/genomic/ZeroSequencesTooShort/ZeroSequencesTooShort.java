@@ -44,11 +44,14 @@ public class ZeroSequencesTooShort extends MolecularDataAlterer  implements Alte
 	public void processSingleXMLPreference (String tag, String content) {
 		if ("longEnough".equalsIgnoreCase(tag))
 			longEnough= MesquiteInteger.fromString(content);
+		else if ("removeGapsOnly".equalsIgnoreCase(tag))
+			removeGapsOnly= MesquiteBoolean.fromOffOnString(content);
 	}
 	/*.................................................................................................................*/
 	public String preparePreferencesForXML () {
 		StringBuffer buffer = new StringBuffer(60);	
 		StringUtil.appendXMLTag(buffer, 2, "longEnough",longEnough);
+		StringUtil.appendXMLTag(buffer, 2, "removeGapsOnly",MesquiteBoolean.toOffOnString(removeGapsOnly));
 
 		return buffer.toString();
 	}
@@ -66,16 +69,19 @@ public class ZeroSequencesTooShort extends MolecularDataAlterer  implements Alte
 	}  	
 	
 	int longEnough = 100;
+	boolean removeGapsOnly = true;
 	/*.................................................................................................................*/
 	public boolean queryOptions() {
 		MesquiteInteger buttonPressed = new MesquiteInteger(1);
 		ExtensibleDialog dialog = new ExtensibleDialog(containerOfModule(), "Remove Very Short Sequences",buttonPressed);  //MesquiteTrunk.mesquiteTrunk.containerOfModule()
 		dialog.addLabel("Delete data for taxon from matrix if its sequence length is less than the threshold");
 		IntegerField numField = dialog.addIntegerField("Threshold", longEnough, 8, 0, MesquiteInteger.unassigned);
-
+		Checkbox cb = dialog.addCheckBox("Remove gaps-only characters also", removeGapsOnly);
+		
 		dialog.completeAndShowDialog(true);
 		if (buttonPressed.getValue()==0)  {
 			longEnough = numField.getValue();
+			removeGapsOnly = cb.getState();
 			storePreferences();
 		}
 		dialog.dispose();
@@ -100,6 +106,11 @@ public class ZeroSequencesTooShort extends MolecularDataAlterer  implements Alte
 				logln("Sequence too short in " + data.getTaxa().getTaxonName(it) + " for matrix " + data.getName());
 				changed = true;
 			}
+		}
+		if (removeGapsOnly) {
+			int oldNum = data.getNumChars();
+			data.removeCharactersThatAreEntirelyGaps(false);
+			changed = changed || oldNum!=data.getNumChars();
 		}
 
 		if (changed){

@@ -30,8 +30,23 @@ public class RemoveFromElementNames extends ListableNameAlterer {
 	
 	/*.................................................................................................................*/
 	public boolean startJob(String arguments, Object condition, boolean hiredByName){
+		loadPreferences();
 		return true;
 	}
+	
+	/*.................................................................................................................*/
+	public void processSingleXMLPreference (String tag, String content) {
+		if ("searchText".equalsIgnoreCase(tag))
+			searchText= content;
+	}
+	/*.................................................................................................................*/
+	public String preparePreferencesForXML () {
+		StringBuffer buffer = new StringBuffer(60);	
+		StringUtil.appendXMLTag(buffer, 2, "searchText",searchText);
+
+		return buffer.toString();
+	}
+
 	/*.................................................................................................................*/
    	public boolean getOptions(ListableVector datas, int firstSelected){
    		if (MesquiteThread.isScripting())
@@ -46,6 +61,7 @@ public class RemoveFromElementNames extends ListableNameAlterer {
 		
 		if (ok) {
 			searchText = searchField.getText();
+			storePreferences();
 		}
 		
 		queryDialog.dispose();

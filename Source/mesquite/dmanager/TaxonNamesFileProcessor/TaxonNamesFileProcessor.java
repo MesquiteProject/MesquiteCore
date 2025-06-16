@@ -73,6 +73,7 @@ public class TaxonNamesFileProcessor extends FileProcessor {
  	public Snapshot getSnapshot(MesquiteFile file) { 
  		Snapshot temp = new Snapshot();
  		temp.addLine("setNameAlterer ", utilityTask);  
+ 		Debugg.printStackTrace();
  		return temp;
  	}
  	/*.................................................................................................................*/

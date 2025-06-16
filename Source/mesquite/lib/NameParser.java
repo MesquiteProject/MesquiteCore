@@ -16,7 +16,7 @@ import mesquite.lib.ui.RadioButtons;
 import mesquite.lib.ui.SingleLineTextField;
 
 
-public class NameParser implements XMLPreferencesProcessor, ItemListener, TextListener{
+public class NameParser implements XMLPreferencesProcessor, ItemListener, TextListener, Commandable{
 
 	String objectName;
 	MesquiteModule ownerModule;
@@ -86,7 +86,7 @@ public class NameParser implements XMLPreferencesProcessor, ItemListener, TextLi
 		}
 		resetExamplesLabels();
 	}
-	
+
 	void resetExamplesLabels(){
 		numStartField.setEnabled(considerStartField.getState());
 		startBoundaryField.setEnabled(considerStartField.getState());
@@ -96,10 +96,10 @@ public class NameParser implements XMLPreferencesProcessor, ItemListener, TextLi
 		includeEndBoundaryInNameField.setEnabled(considerEndField.getState());
 		if (exampleLabels != null)
 			for (int i = 0; i<exampleLabels.length; i++){
-			
-			exampleLabels[i].before.setText(examples[i]);
-			exampleLabels[i].after.setText(exampleExtraction(examples[i]));
-		}
+
+				exampleLabels[i].before.setText(examples[i]);
+				exampleLabels[i].after.setText(exampleExtraction(examples[i]));
+			}
 	}
 	public boolean queryOptions(String title, String label, String constructingIntro, String helpString){
 		MesquiteInteger buttonPressed = new MesquiteInteger(1);
@@ -187,36 +187,80 @@ public class NameParser implements XMLPreferencesProcessor, ItemListener, TextLi
 			considerEnd = MesquiteBoolean.fromTrueFalseString(content);
 		else if ("includeEndBoundaryInName".equalsIgnoreCase(tag))
 			includeEndBoundaryInName = MesquiteBoolean.fromTrueFalseString(content);
-
 		else if ("startBoundary".equalsIgnoreCase(tag))
 			startBoundary = StringUtil.cleanXMLEscapeCharacters(content);
 		else if ("endBoundary".equalsIgnoreCase(tag))
 			endBoundary = StringUtil.cleanXMLEscapeCharacters(content);
-
 		else if ("numFromStart".equalsIgnoreCase(tag))
 			numFromStart = MesquiteInteger.fromString(content);
 		else if ("numFromEnd".equalsIgnoreCase(tag))
 			numFromEnd = MesquiteInteger.fromString(content);
 		else if ("keepPieces".equalsIgnoreCase(tag))
 			keepPieces = MesquiteBoolean.fromTrueFalseString(content);
-
 	}
 	/*.................................................................................................................*/
 	public String preparePreferencesForXML () {
 		StringBuffer buffer = new StringBuffer(60);	
-		StringUtil.appendXMLTag(buffer, 2, "keepPieces", keepPieces);  
-		StringUtil.appendXMLTag(buffer, 2, "considerStart", considerStart);  
-		StringUtil.appendXMLTag(buffer, 2, "startBoundary", startBoundary);  
-		StringUtil.appendXMLTag(buffer, 2, "numFromStart", numFromStart);  
-		StringUtil.appendXMLTag(buffer, 2, "includeStartBoundaryInName", includeStartBoundaryInName);  
-		StringUtil.appendXMLTag(buffer, 2, "considerEnd", considerEnd);  
-		StringUtil.appendXMLTag(buffer, 2, "endBoundary", endBoundary);  
-		StringUtil.appendXMLTag(buffer, 2, "numFromEnd", numFromEnd);  
-		StringUtil.appendXMLTag(buffer, 2, "includeEndBoundaryInName", includeEndBoundaryInName);  
+		StringUtil.appendXMLTag(buffer, 2, "keepPieces", keepPieces);  //boolean
+		StringUtil.appendXMLTag(buffer, 2, "considerStart", considerStart);  //boolean
+		StringUtil.appendXMLTag(buffer, 2, "considerEnd", considerEnd);   //boolean
+		StringUtil.appendXMLTag(buffer, 2, "includeStartBoundaryInName", includeStartBoundaryInName);  //boolean
+		StringUtil.appendXMLTag(buffer, 2, "includeEndBoundaryInName", includeEndBoundaryInName);  //boolean
+		StringUtil.appendXMLTag(buffer, 2, "startBoundary", startBoundary); // string
+		StringUtil.appendXMLTag(buffer, 2, "endBoundary", endBoundary);  // string
+		StringUtil.appendXMLTag(buffer, 2, "numFromStart", numFromStart);  //int
+		StringUtil.appendXMLTag(buffer, 2, "numFromEnd", numFromEnd);  // int
 		return buffer.toString();
 	}
 	/*.................................................................................................................*/
-
+	public Snapshot getSnapshot(MesquiteFile file) {
+		Snapshot temp = new Snapshot();
+		temp.addLine( "keepPieces "+ keepPieces);  //boolean
+		temp.addLine( "considerStart "+ considerStart);  //boolean
+		temp.addLine( "considerEnd "+ considerEnd);   //boolean
+		temp.addLine( "includeStartBoundaryInName "+ includeStartBoundaryInName);  //boolean
+		temp.addLine( "includeEndBoundaryInName "+ includeEndBoundaryInName);  //boolean
+		temp.addLine( "startBoundary " + StringUtil.tokenize(startBoundary)); // string
+		temp.addLine( "endBoundary "+ StringUtil.tokenize(endBoundary));  // string
+		temp.addLine( "numFromStart " + numFromStart);  //int
+		temp.addLine( "numFromEnd " + numFromEnd);  // int
+		return temp;
+	}
+	/*.................................................................................................................*/
+	public Object doCommand(String commandName, String arguments, CommandChecker checker) {
+		if (checker.compare(this.getClass(), "Whether to keep pieces", "[true or false]", commandName, "keepPieces")) {
+			keepPieces = MesquiteBoolean.fromTrueFalseString(arguments);
+		}
+		else if (checker.compare(this.getClass(), "Whether to consider the start", "[true or false]", commandName, "considerStart")) {
+			considerStart = MesquiteBoolean.fromTrueFalseString(arguments);
+		}
+		else if (checker.compare(this.getClass(), "Whether to consider the end", "[true or false]", commandName, "considerEnd")) {
+			considerEnd = MesquiteBoolean.fromTrueFalseString(arguments);
+		}
+		else if (checker.compare(this.getClass(), "Whether to include the start boundary in name", "[true or false]", commandName, "includeStartBoundaryInName")) {
+			includeStartBoundaryInName = MesquiteBoolean.fromTrueFalseString(arguments);
+		}
+		else if (checker.compare(this.getClass(), "Whether to include the end boundary in name", "[true or false]", commandName, "includeEndBoundaryInName")) {
+			includeEndBoundaryInName = MesquiteBoolean.fromTrueFalseString(arguments);
+		}
+		else if (checker.compare(this.getClass(), "Sets how many from start are considered.", "[integer]", commandName, "numFromStart")) {
+			int s = MesquiteInteger.fromString(arguments);
+			if (MesquiteInteger.isCombinable(s))
+				numFromStart = s;
+		}
+		else if (checker.compare(this.getClass(), "Sets how many from end are considered.", "[integer]", commandName, "numFromEnd")) {
+			int s = MesquiteInteger.fromString(arguments);
+			if (MesquiteInteger.isCombinable(s))
+				numFromEnd = s;
+		}
+		else if (checker.compare(this.getClass(), "Sets the start boundary.", "[string]", commandName, "startBoundary")) {
+			startBoundary = new Parser().getFirstToken(arguments);
+		}
+		else if (checker.compare(this.getClass(), "Sets the end boundary.", "[string]", commandName, "endBoundary")) {
+			endBoundary = new Parser().getFirstToken(arguments);
+		}
+		return null;
+	}
 	/*.................................................................................................................*/
 	public String exampleExtraction(String name){
 		if (StringUtil.blank(name))

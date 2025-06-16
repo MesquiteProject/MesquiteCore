@@ -88,24 +88,23 @@ public class NameParserOnTaxonName extends TaxonNameAlterer {
 		}
 		return nameChanged;
 	}
-	/*.................................................................................................................*
+	/*.................................................................................................................*/
+	public Snapshot getSnapshot(MesquiteFile file) {
+		Snapshot temp = new Snapshot();
+		Debugg.println("@@@@@@@ " + nameParser);
+		temp.addLine("getNameParser");
+		temp.addLine("tell It");
+		temp.incorporate(nameParser.getSnapshot(file), true);
+		temp.addLine("endTell");
+		return temp;
+	}
+	/*.................................................................................................................*/
     	 public Object doCommand(String commandName, String arguments, CommandChecker checker) {
-     	 	if (checker.compare(this.getClass(), "Adds prefix/suffix to taxon names", "[text]", commandName, "addText")) {
-	   	 		if (taxa !=null){
-	   	 			String textToAdd = parser.getFirstToken(arguments);
-    	 			boolean toEnd = MesquiteBoolean.fromOffOnString(parser.getNextToken());
-    	 			prefixToAdd="";
-    	 			suffixToAdd="";
-	   	 			if (toEnd)
-	   	 				suffixToAdd=textToAdd;
-	   	 			else
-	   	 				prefixToAdd = textToAdd;
-	   	 			alterTaxonNames(taxa,table);
-	   	 		}
+     	 	if (checker.compare(this.getClass(), "Returns the name parser object", "[]", commandName, "getNameParser")) {
+	   	 		return nameParser;
      	 	}
     	 	else
     	 		return  super.doCommand(commandName, arguments, checker);
-		return null;
    	 }
 	/*.................................................................................................................*/
 	public boolean requestPrimaryChoice(){

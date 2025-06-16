@@ -100,7 +100,7 @@ public class AlterMatrixAsUtility extends CharMatricesListProcessorUtility {
 			getProject().incrementProjectWindowSuppression();
 		Vector v = pauseAllPausables();
 		int count = 0;
-		
+		long startTime = System.currentTimeMillis();
 		ProgressIndicator progIndicator = new ProgressIndicator(getProject(),"Altering matrices", "", datas.size(), true);
 		progIndicator.start();
 		boolean abort = false;
@@ -140,6 +140,8 @@ public class AlterMatrixAsUtility extends CharMatricesListProcessorUtility {
 			getProject().decrementProjectWindowSuppression();
 		getProject().getCoordinatorModule().setWhomToAskIfOKToInteractWithUser(null);
 		resetAllMenuBars();
+		if (System.currentTimeMillis()- startTime>100000)
+			MesquiteMessage.beep();
 		return true;
 	}
 	public boolean okToInteractWithUser(int howImportant, String messageToUser){

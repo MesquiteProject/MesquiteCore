@@ -630,6 +630,8 @@ public class ProcessDataFiles extends GeneralFileMakerMultiple implements Action
 
 				String finalScript = recaptureScript();
 				MesquiteFile.putFileContents(writingFile.getDirectoryName() + "ProcessingScript", finalScript, true);
+				preferencesScript = finalScript;
+				storePreferences();
 
 				removeAllProcessors();
 				progIndicator.goAway();

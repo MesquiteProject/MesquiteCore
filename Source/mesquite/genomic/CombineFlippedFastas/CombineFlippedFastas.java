@@ -75,13 +75,6 @@ public class CombineFlippedFastas extends GeneralFileMakerMultiple {
 		overallTime.start();
 		if (directory!=null) {
 			if (directory.exists() && directory.isDirectory()) {
-				//FileCoordinator fileCoord = getFileCoordinator();  //this is the temporary one for this GeneralFileMaker
-				//if (fileCoord == null){
-				//	alert("oops, no file coordinator");
-				//}
-			//	if (project == null)
-			//		project = fileCoord.initiateProject(directoryPath, new MesquiteFile()); //this is the reading project
-
 				int countWarnings = 0;
 				//If taxa is not passed, need to establish new project
 				if (taxa == null){
@@ -97,7 +90,10 @@ public class CombineFlippedFastas extends GeneralFileMakerMultiple {
 					logln("Adding taxa to block " + taxa.getName() + " in file " + taxa.getFile().getFileName());
 				InterpretFastaDNA importer = (InterpretFastaDNA)findNearestColleagueWithDuty(InterpretFastaDNA.class);
 				String[] files = directory.list();
-				ProgressIndicator progIndicator = new ProgressIndicator(null,"Processing Folder of Data Files", files.length);
+				if (files == null || files.length ==0)
+					return;
+				
+				ProgressIndicator progIndicator = new ProgressIndicator(null,"Processing Folder of Data Files", "Reading file: " + files[0], files.length, true);//MesquiteProject mp, String title, String initialMessage, long total, boolean showStop
 				progIndicator.start();
 				int filesFound = 0;
 				DNAState state = new DNAState();

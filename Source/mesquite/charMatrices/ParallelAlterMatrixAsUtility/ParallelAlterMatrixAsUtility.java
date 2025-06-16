@@ -318,7 +318,8 @@ public class ParallelAlterMatrixAsUtility extends CharMatricesListProcessorUtili
 		zeroMenuResetSuppression(); // set menu and project suppression to zero, just in case of threading issues?
 		// MainThread.zeroSuppressWaitWindow();
 		resetAllMenuBars();
-
+		if (System.currentTimeMillis()- startTime>100000)
+			MesquiteMessage.beep();
 		return true;
 	}
 	/* ................................................................................................................. */
