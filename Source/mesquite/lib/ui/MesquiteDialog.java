@@ -38,24 +38,15 @@ import mesquite.lib.StringUtil;
 public abstract class MesquiteDialog implements Commandable, Listable, ComponentListener, KeyListener, MouseListener {
 	static Vector dialogListeners = new Vector();
 	static int numCreated = 0;
-
 	int id = 0;
-
 	boolean alreadyDisposed = false;
-
 	protected String defaultButtonString = null;
-
 	int savedX = 0;
-
 	int savedY = 0;
-
 	public int tickled = 0;
-
 	boolean autoDispose = true;
 	String title;
-
 	Thread thread;
-
 	boolean holdsConsoleFocus = false;
 	protected MesquiteDialogParent parentDialog;
 	MDPanel outerContents;

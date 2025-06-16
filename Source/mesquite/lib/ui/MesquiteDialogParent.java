@@ -47,7 +47,6 @@ public class MesquiteDialogParent extends JDialog implements Identifiable, MQCom
 		super(f, title, b);
 		//setLocation(0, 0);
 		id = totalCreated++;
-		
 		getContentPane().setLayout(layout = new CardLayout());
 		setResizable(false);
 		setDefaultCloseOperation(JDialog.DO_NOTHING_ON_CLOSE);

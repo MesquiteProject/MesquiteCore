@@ -183,9 +183,10 @@ public class ParallelAlterMatrixAsUtility extends CharMatricesListProcessorUtili
 		
 		incrementMenuResetSuppression(numThreads + 1);
 		CompatibilityTest test = firstAlterTask.getCompatibilityTest();
-		if (getProject() != null) {
-			getProject().getCoordinatorModule().setWhomToAskIfOKToInteractWithUser(this);
-			getProject().incrementProjectWindowSuppression();
+		MesquiteProject project = getProject();
+		if (project != null) {
+			project.getCoordinatorModule().setWhomToAskIfOKToInteractWithUser(this);
+			project.incrementProjectWindowSuppression();
 		}
 		Vector v = pauseAllPausables();
 		matricesDone = new Bits(datas.size());
@@ -196,7 +197,7 @@ public class ParallelAlterMatrixAsUtility extends CharMatricesListProcessorUtili
 		logln("Parallel Alter Matrices started at " + StringUtil.getDateTime(new Date(startTime)));
 		for (int im = 0; im < datas.size() && !doneFirstMatrix; im++) {
 			CharacterData data = (CharacterData) datas.elementAt(im);
-			if (test.isCompatible(data, getProject(), this)) {
+			if (test.isCompatible(data, project, this)) {
 				if (datas.size() > 1)
 					logln("Altering first matrix \"" + data.getName() + "\"");
 				AlteredDataParameters alteredDataParameters = new AlteredDataParameters();
@@ -216,8 +217,8 @@ public class ParallelAlterMatrixAsUtility extends CharMatricesListProcessorUtili
 
 		if (successFirstMatrix < 0) {
 			unpauseAllPausables(v);
-			if (getProject() != null)
-				getProject().decrementProjectWindowSuppression();
+			if (project != null)
+				project.decrementProjectWindowSuppression();
 			decrementMenuResetSuppression(numThreads + 1);
 			return false;
 		}
@@ -226,7 +227,7 @@ public class ParallelAlterMatrixAsUtility extends CharMatricesListProcessorUtili
 
 		long startParallel = System.currentTimeMillis();
 		long longWait = (startParallel - startTime) * PATIENCE;
-		ProgressIndicator progIndicator = new ProgressIndicator(getProject(), "Altering matrices", "", datas.size(), true);
+		ProgressIndicator progIndicator = new ProgressIndicator(project, "Altering matrices", "", datas.size(), true);
 		progIndicator.start();
 		progIndicator.setText("Setting up " + numThreads + " threads");
 		// making threads and getting them started
@@ -309,9 +310,9 @@ public class ParallelAlterMatrixAsUtility extends CharMatricesListProcessorUtili
 		progIndicator.goAway();
 		logln("Altered: " + (matricesDone.numBitsOn()) + " matrices. (Finished " + StringUtil.getDateTime(new Date(System.currentTimeMillis())) + ")");
 		unpauseAllPausables(v);
-		if (getProject() != null) {
-			getProject().zeroProjectWindowSuppression();
-			getProject().getCoordinatorModule().setWhomToAskIfOKToInteractWithUser(null);
+		if (project != null) {
+			project.zeroProjectWindowSuppression();
+			project.getCoordinatorModule().setWhomToAskIfOKToInteractWithUser(null);
 		}
 		zeroMenuResetSuppression(); // set menu and project suppression to zero, just in case of threading issues?
 		// MainThread.zeroSuppressWaitWindow();
