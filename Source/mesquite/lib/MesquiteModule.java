@@ -168,7 +168,7 @@ public abstract class MesquiteModule extends EmployerEmployee implements Command
 	public static String errorReportURL =  "http://error.mesquiteproject.org/mesquite/mesquiteError.php"; //see exceptionAlert in MesquiteModule
 	public static String prereleaseErrorReportURL =  "http://error.mesquiteproject.org/mesquite/mesquitePrereleaseError.php"; //see exceptionAlert in MesquiteModule
 	public static String beansReportURL = "http://beans.mesquiteproject.org/mesquite/mesquiteBeans.php";
-	
+
 	/* 3.x URLs
 	public static String errorReportURL =  "http://mesquiteproject.org/pyMesquiteFeedback";
 	public static String versionReportURL =  "http://mesquiteproject.org/pyMesquiteStartup";
@@ -416,8 +416,8 @@ public abstract class MesquiteModule extends EmployerEmployee implements Command
 	public final void iQuit(){
 		iQuit(true);
 	}
-	
-	
+
+
 	public final void iQuit(boolean giveMessage){
 		incrementMenuResetSuppression();
 		MesquiteCommand command = getHiringCommand();
@@ -430,6 +430,19 @@ public abstract class MesquiteModule extends EmployerEmployee implements Command
 			localRefEmployer.refreshBrowser(MesquiteModule.class);
 		}
 		endJob();
+
+		/* In 4.beta quit would hang after a big ParallelAlterMatrixAsUtility run becuase of a thread lock on the AWT thread. 
+		 * For users, this is bad, so we just bail here --  no point in waiting around! However, for developers we stick with it in hopes of finding what went wrong.
+		 */
+		if (this == MesquiteTrunk.mesquiteTrunk && !MesquiteTrunk.mesquiteTrunk.startedAsLibrary) {
+			if (!MesquiteTrunk.developmentMode){
+				System.out.println("Stopping Java");
+				System.exit(0);
+			}
+			System.out.println("Development mode; attempting formal exit as a stress test.");
+		}
+
+
 		dispose();
 		resetAllWindowsMenus();
 		/* if hiringCommand isn't null, then look among the module info's for possible replacements
@@ -541,7 +554,7 @@ public abstract class MesquiteModule extends EmployerEmployee implements Command
 		if (!employerDoomed) localRefEmployer.decrementEmployeeBrowserRefreshSuppression(MesquiteModule.class);
 
 	}
-	
+
 	/*.................................................................................................................*/
 	MesquiteCommand iQuitCommand = new MesquiteCommand("resign", this);
 	public final void iQuitMainThread(){
@@ -657,8 +670,8 @@ public abstract class MesquiteModule extends EmployerEmployee implements Command
 	}
 	/*.................................................................................................................*/
 	/* This is the system to pause and restart calculations to avoid too many calculations with repeated notifications, e.g. in list windows */
-	
-	
+
+
 	public Vector pauseAllPausables() {
 		mesquiteTrunk.pausableLevel++;	 //  if already paused, then don't pause or unpause again, so have increment
 		if (mesquiteTrunk.pausableLevel>1)
@@ -1167,9 +1180,9 @@ public abstract class MesquiteModule extends EmployerEmployee implements Command
 			return;
 		if (logTitle != null){
 			if (showModuleInAlert)
-			logln(logTitle+": (" + getName() + "): " + s);
-		else
-			logln(logTitle+": " + s);
+				logln(logTitle+": (" + getName() + "): " + s);
+			else
+				logln(logTitle+": " + s);
 		}
 		if (alertUseDialog) {
 			AlertDialog.notice(containerOfModule(),windowTitle, s);
@@ -1190,9 +1203,9 @@ public abstract class MesquiteModule extends EmployerEmployee implements Command
 			return;
 		if (logTitle != null){
 			if (showModuleInAlert)
-			logln(logTitle+": (" + getName() + "): " + s);
-		else
-			logln(logTitle+": " + s);
+				logln(logTitle+": (" + getName() + "): " + s);
+			else
+				logln(logTitle+": " + s);
 		}
 		if (alertUseDialog) { //NOTE: This seems to work much better if on AWTEvent thread, so perhaps do these by bypassing PendingCommand queue?
 			AlertDialog.noticeHTML(parent,windowTitle, s, width, height, null);
@@ -1232,10 +1245,10 @@ public abstract class MesquiteModule extends EmployerEmployee implements Command
 		String addendum = "";
 
 		if (MainThread.emergencyCancelled || MesquiteTrunk.errorReportedToHome>0){// if emergency cancelled, reporting suppressed because silly user didn't restart!  Also, only one report per run.
-		if (MesquiteTrunk.errorReportedToHome==1)
-			discreetAlert(s);
-		else
-			logln(s);
+			if (MesquiteTrunk.errorReportedToHome==1)
+				discreetAlert(s);
+			else
+				logln(s);
 		}
 		else if (AlertDialog.query(containerOfModule(), "Problem", s + "\n\nPlease send a report of this problem to the Mesquite server, to help us debug it and improve Mesquite.  None of your data will be sent, but your log file up to this point will be sent." + addendum, "OK, Send Report and Continue", "Close without sending"))
 			reportCrashToHome(e, s);
@@ -1308,7 +1321,7 @@ public abstract class MesquiteModule extends EmployerEmployee implements Command
 		else {
 			if (incompatibilityMessage != null)
 				discreetAlert(incompatibilityMessage);
-			
+
 			int resp = crashQuery(s + "\n\nPlease send a report of this crash to the Mesquite server, to help us debug it and improve Mesquite.  None of your data will be sent, but your log file up to this point will be sent." + addendum);
 			if (resp < 2)
 				reportCrashToHome(e, s);
@@ -1317,7 +1330,7 @@ public abstract class MesquiteModule extends EmployerEmployee implements Command
 		}
 		MesquiteTrunk.errorReportedToHome++;
 	}
-//	(s + "\n\nPlease send a report of this crash to the Mesquite server, to help us debug it and improve Mesquite.  None of your data will be sent, but your log file up to this point will be sent." + addendum, "OK, Send Report and Continue", "OK, Send and Force Quit", "Close without sending");
+	//	(s + "\n\nPlease send a report of this crash to the Mesquite server, to help us debug it and improve Mesquite.  None of your data will be sent, but your log file up to this point will be sent." + addendum, "OK, Send Report and Continue", "OK, Send and Force Quit", "Close without sending");
 	public int crashQuery(String message) {
 		MesquiteInteger buttonPressed = new MesquiteInteger(1);
 		ExtensibleDialog id = new ExtensibleDialog(containerOfModule(), "Crash",buttonPressed);
@@ -1425,12 +1438,12 @@ public abstract class MesquiteModule extends EmployerEmployee implements Command
 	/*.................................................................................................................*/
 	/** Displays an alert in connection to an exception*/
 	void reportProblemToHome(String s) {
-/*		String email = MesquiteString.queryString(containerOfModule(), "E-mail for follow up?", "[Optional] Thank you for reporting this problem.  " + 
+		/*		String email = MesquiteString.queryString(containerOfModule(), "E-mail for follow up?", "[Optional] Thank you for reporting this problem.  " + 
 				"In order to fix this bug, we may need to contact you for more details.  " + 
 				"If you don't mind our contacting you, please indicate your email address here.  Thanks. " + 
 				"(If you want a response urgently, please send an email directly to info@mesquiteproject.org.)", "");
-*/
-	/*	s = StringUtil.replace(s,  "\r\n", "mqnl");
+		 */
+		/*	s = StringUtil.replace(s,  "\r\n", "mqnl");
 		s = StringUtil.replace(s,  "\n", "mqnl");
 		s = StringUtil.replace(s,  "\r", "mqnl");*/
 		MesquiteTrunk.phoneHomeThread.recordError(s);
@@ -1469,10 +1482,10 @@ public abstract class MesquiteModule extends EmployerEmployee implements Command
 	public boolean sorry(String s) {
 		CommandRecord.tick("Sorry, module couldn't be started");
 		if (!startupBailOut){
-		//	if (!MesquiteThread.isScripting()) //as of v.4, made silent only
-				//alert(s);  //
-		//	else
-				logln("Message from " + getNameForMenuItem() + ": " + s);
+			//	if (!MesquiteThread.isScripting()) //as of v.4, made silent only
+			//alert(s);  //
+			//	else
+			logln("Message from " + getNameForMenuItem() + ": " + s);
 		}
 		return false;
 	}
@@ -2030,7 +2043,7 @@ public abstract class MesquiteModule extends EmployerEmployee implements Command
 			fi.addBlock(nb);
 		}
 	}
-	
+
 	/*............................................................................. */
 	/*............................................................................. */
 	/** Increments  & decrements suppression of nexus block sorting (see addBlock of InterpretNEXUS). */
