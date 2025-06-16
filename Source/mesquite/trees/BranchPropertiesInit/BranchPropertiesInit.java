@@ -185,8 +185,8 @@ public class BranchPropertiesInit extends MesquiteInit implements MesquiteListen
 	public void changed(Object caller, Object obj, Notification notification){
 		int code = Notification.getCode(notification); 
 		if (obj == DisplayableBranchProperty.branchPropertyDisplayPreferences){
-			if (MesquiteTrunk.developmentMode)
-				System.out.println("Branch/node property display preferences saved.");
+			//if (MesquiteTrunk.developmentMode)
+			//	System.out.println("Branch/node property display preferences saved.");
 			storePreferences();
 		}
 				

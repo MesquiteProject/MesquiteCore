@@ -180,8 +180,7 @@ public class ParallelAlterMatrixAsUtility extends CharMatricesListProcessorUtili
 	/* ................................................................................................................. */
 	/** Called to operate on the CharacterData blocks. Returns true if taxa altered */
 	public boolean operateOnDatas(ListableVector datas, MesquiteTable table) {
-		System.err.println("@ total employee tree BEFORE " + MesquiteTrunk.mesquiteTrunk.getTotalNumEmployed());
-
+		
 		incrementMenuResetSuppression(numThreads + 1);
 		CompatibilityTest test = firstAlterTask.getCompatibilityTest();
 		if (getProject() != null) {
@@ -307,7 +306,6 @@ public class ParallelAlterMatrixAsUtility extends CharMatricesListProcessorUtili
 			threads[i].fileCoordinator.fireEmployee(threads[i].alterTask);
 			fireEmployee(threads[i].fileCoordinator);
 		}
-		System.err.println("@ total employee tree AFTER " + MesquiteTrunk.mesquiteTrunk.getTotalNumEmployed());
 		progIndicator.goAway();
 		logln("Altered: " + (matricesDone.numBitsOn()) + " matrices. (Finished " + StringUtil.getDateTime(new Date(System.currentTimeMillis())) + ")");
 		unpauseAllPausables(v);

@@ -188,6 +188,7 @@ public class MesquiteCommand  implements Listable, MesquiteListener {
 	/** Do the command, passing the given arguments.  This will call the commanded object's doCommand method.  */
 	public void doItNewThread(String arguments, String uiCallInformation, boolean showWaitCursors, boolean logCommand) {
 		if (bypassQueue) {
+			System.out.println("Bypassing queue for " + commandName);
 			doIt(arguments);
 			return;
 		}
@@ -224,6 +225,7 @@ public class MesquiteCommand  implements Listable, MesquiteListener {
 			return;
 		}
 		if (bypassQueue) {
+			System.out.println("Bypassing queue for " + commandName);
 			doIt(arguments);
 			return;
 		}
