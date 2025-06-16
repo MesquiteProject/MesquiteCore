@@ -98,8 +98,10 @@ public class TaxonListAssoc extends TaxonListAssistant {
 		addMenuItem(null, "Duplicate Association", makeCommand("duplicateAssociation", this));
 		addMenuItem(null, "-", null);
 		addMenuItem(null, "Create New Associated Taxon...", makeCommand("createAssociate", this));
-	//	addMenuItem(null, "?Create New Taxa in Containing Block from Selected", makeCommand("createNewTaxaFromSelected", this)); 
+		//	addMenuItem(null, "?Create New Taxa in Containing Block from Selected", makeCommand("createNewTaxaFromSelected", this)); 
 		addMenuItem(null, "Delete Associated Taxa...", makeCommand("deleteAssociateTaxa", this));
+		addMenuItem(null, "-", null);
+		addMenuItem(null, "Help with Taxa Associations...", makeCommand("help", this));
 		addMenuItem(null, "-", null);
 		if (this.taxa != null)
 			taxa.removeListener(this);
@@ -277,6 +279,10 @@ public class TaxonListAssoc extends TaxonListAssistant {
 	}
 	/*.................................................................................................................*/
 	private void deleteAssociatedTaxa(){
+		if (association == null){
+			discreetAlert("To manage associated taxa, you must first create an association using New Association here, or the Association items in the Taxa&Trees menu.");
+			return;
+		}
 		boolean askedOK = false;
 		if (table !=null && taxa!=null && association != null) {
 			boolean changed=false;
@@ -328,6 +334,10 @@ public class TaxonListAssoc extends TaxonListAssistant {
 	}*/
 
 	private void chooseAndSetAssociates(boolean append){
+		if (association == null){
+			discreetAlert("To assign or add an associate, you must first create an association using New Association here, or the Association items in the Taxa&Trees menu.");
+			return;
+		}
 		if (numberSelected() ==0){
 			discreetAlert("To assign or add an associate, rows (taxa) in this table need to be selected.");
 			return;
@@ -378,6 +388,10 @@ public class TaxonListAssoc extends TaxonListAssistant {
 	}
 	//if associate passed is null, interprets as signal to remove all associates from selected
 	private void setAssociatesOfSelected(Taxon[] associates, boolean append){
+		if (association == null){
+			discreetAlert("To manage associated taxa, you must first create an association using New Association here, or the Association items in the Taxa&Trees menu.");
+			return;
+		}
 		if (table !=null && taxa!=null && association != null) {
 			boolean changed=false;
 			boolean modifyRegardless = (numberSelected()==0 && associates == null); //if the associate is null and none are selected, then remove all
@@ -451,6 +465,10 @@ public class TaxonListAssoc extends TaxonListAssistant {
 			resetAssociation(false);
 		}
 		else  if (checker.compare(this.getClass(), "Resets the association", null, commandName, "renameAssociation")) {
+			if (association == null){
+				discreetAlert("There is no association to rename. To create an association, use New Association here, or the Association items in the Taxa&Trees menu.");
+				return null;
+			}
 			String name = parser.getFirstToken(arguments);
 			if(name == null)
 				return null;
@@ -467,8 +485,16 @@ public class TaxonListAssoc extends TaxonListAssistant {
 				association.notifyListeners(this, new Notification(MesquiteListener.VALUE_CHANGED));
 				resetAssociation(true);
 			}
+			else {
+				discreetAlert("There is no association. To create an association, use New Association here, or the Association items in the Taxa&Trees menu.");
+				return null;
+			}
 		}
 		else  if (checker.compare(this.getClass(), "Open from perspective of other taxa", null, commandName, "otherPerspective")) {
+			if (association == null){
+				discreetAlert("There is no association, and thus no other associated taxa block whose perspective can be shown. To create an association, use New Association here, or the Association items in the Taxa&Trees menu.");
+				return null;
+			}
 			AssociationsManager manager = (AssociationsManager)findElementManager(TaxaAssociation.class);
 			if (association !=null && taxa != null){
 				Taxa otherTaxa = association.getOtherTaxa(taxa);
@@ -477,9 +503,11 @@ public class TaxonListAssoc extends TaxonListAssistant {
 
 		}
 		else  if (checker.compare(this.getClass(), "Duplicate the current association", null, commandName, "duplicateAssociation")) {
-			if (association == null)
-				return null;
+			if (association == null){
+				discreetAlert("There is no association to duplicate. To create an association, use New Association here, or the Association items in the Taxa&Trees menu.");
 
+				return null;
+			}
 			AssociationsManager manager = (AssociationsManager)findElementManager(TaxaAssociation.class);
 			if (manager != null)
 				return manager.duplicateAssociation(association);
@@ -487,11 +515,11 @@ public class TaxonListAssoc extends TaxonListAssistant {
 		else  if (checker.compare(this.getClass(), "Asks the association manager to make a new association", null, commandName, "newAssociation")) {
 			return newAssociation();
 		}
-	/*	else  if (checker.compare(this.getClass(), "Automatically sets associates if there is an exact match of names", null, commandName, "autoAssignExact")) {
+		/*	else  if (checker.compare(this.getClass(), "Automatically sets associates if there is an exact match of names", null, commandName, "autoAssignExact")) {
 			if (queryOptions())
 				autoAssign(ignoreWhitespace, ignoreCase);
 		}
-		*/
+		 */
 		/*else  if (checker.compare(this.getClass(), "Sets which other taxon is associated with these; replaces existing", null, commandName, "setAssociate")) {
 			chooseAndSetAssociate(false);
 		}
@@ -530,10 +558,12 @@ public class TaxonListAssoc extends TaxonListAssistant {
 				parametersChanged();
 			}
 		}
-		*/
+		 */
 		else if (checker.compare(this.getClass(), "Creates a new taxon and adds to existing", null, commandName, "createAssociate")) {
-			if (association == null)
+			if (association == null){
+				discreetAlert("To create a new associate, you must first create an association using New Association here, or the Association items in the Taxa&Trees menu.");
 				return null;
+			}
 			if (numberSelected() ==0){
 				discreetAlert("To create a new associate, rows (taxa) in this table need to be selected to which to assign the new associate.");
 				return null;
@@ -557,6 +587,25 @@ public class TaxonListAssoc extends TaxonListAssistant {
 		}
 		else if (checker.compare(this.getClass(), "Removes associates from association", null, commandName, "removeAssociates")) {
 			setAssociatesOfSelected(null, false);
+		}
+		else if (checker.compare(this.getClass(), "Presents an explanation", null, commandName, "help")) {
+			String help = "<h2>Taxa Associations</h2>Taxa Associations describe links between two blocks of taxa. "
+					+ "Some examples are:<ul><li>For coalescence or species delimitation studies, one block of taxa would represent the <strong>specimens or gene copies</strong>; "
+					+"the other block would represent the <strong>species or populations</strong> to which the specimens or genes belong.</li>"
+					+ "<li>For evolutionary ecology, the two taxa blocks could represent different groups interacting, e.g. <strong>parasites versus hosts</strong>.</li></ul>"
+					+"Often, the taxa in one block <strong>contain</strong> the taxa of the other block — populations or species (in one block) contain genes or specimens (in the other block). "
+					+ "In this case, the Taxa Association describes which genes are contained within which species. Mesquite usually assumes that there is this polarization (contained in containing), "
+					+ "but the two taxa blocks might not exist in a contained/containing relationship. "
+					+ "<h3>Editing Taxa Associations</h3>After you have a taxa association created, you can use the features here to assign the links between taxa in the different blocks. "
+					+"The Show Editor menu item gives you a graphical editor in which you can move the other taxa in and out of associations."
+					+ "<h3>Creating Taxa Associations</h3>If you already have two taxa blocks, you can create an association using the New Association... menu item here or in the Taxa&Trees menu. "
+					+"If you don't yet have a second taxa block, you can create one using Taxa&Trees>New Block of Taxa, or you can read in a file with the other block using the items in File>Include & Merge. "
+					+"You can then assign associates in this Associates column. "
+					+ "<p>Alternatively, you can create a second taxa block automatically related to this one using:<ul>"
+					+"<li>In this List of Taxa window, if you have a taxa partition (groups), you can use \"Create and associate new taxa block based on current groups\".</li>"
+					+"<li>In the Taxa&Trees menu, choose Make Containing Taxa & Assocation From>Specimen Name Components. This will allow you to use rules to extract the containing taxa names (e.g. the species names) "
+					+"from the names of the contained taxa (e.g. the specimen names).</li>";
+			alertHTML(containerOfModule().getParentFrame(), help,"Taxa Associations", null, 700, 500);
 		}
 		else
 			return  super.doCommand(commandName, arguments, checker);
@@ -888,7 +937,7 @@ class AssocEditor extends MousePanel implements TextListener, FocusListener {
 		taxonList.setSize(getWidth(), getHeight()-titleH -  nameH - buttonH-headerH);
 		taxonList.setLocation(0,titleH + nameH + buttonH+headerH);
 		repaint();
-	/*	int rowHeight = taxonList.getRowHeight();
+		/*	int rowHeight = taxonList.getRowHeight();
 		if (rowHeight>10){
 			headerList.setSize(a,b);
 		}*/

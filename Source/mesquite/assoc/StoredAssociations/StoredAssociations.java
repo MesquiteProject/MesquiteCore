@@ -37,9 +37,7 @@ public class StoredAssociations extends AssociationSource implements MesquiteLis
 		if (manager==null) {
 			return sorry(getName() + " couldn't start because no associations manager was found.");
 		}
-		if (manager.getNumberOfAssociations()==0) {
-			return sorry("No stored associations between taxa are available. If you want to use this, please first establish an association, e.g. by the menu item Taxa&Trees > New Association...");
-		} 
+
 		addMenuItem("Choose Taxa Association...", makeCommand("chooseAssociation", this));
 		associationsVector = manager.getAssociationsVector();
 		associationsVector.addListener(this);

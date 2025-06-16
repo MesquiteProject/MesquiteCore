@@ -71,6 +71,12 @@ public class StoredMatrices extends CharMatrixSource implements MesquiteListener
 		}
 		return true;
 	}
+	
+   	public Selectionable getSelectionable(){
+   		//Note: if there are multiple taxa blocks, then a taxa block -filtered view of the matrices will have a different numbering system than the overall list of matrices
+   		return getProject().getCharacterMatrices();
+   	}
+
 	/*.................................................................................................................*/
 	private void setDataClass(Class dataClass){
 		boolean filter = false;

@@ -372,7 +372,7 @@ public abstract class ManyTreesFromFileLib extends TreeSource implements Mesquit
 		highestTreeMarked = -1;
 			lastTreeRead = -1;
 			highestSuccessfulTree = -1;
-			filePosVector.removeAllElements(); //("@This sets currentTree back to 1, as if numtrees is stuck to 1
+			filePosVector.removeAllElements(); 
 			boolean wasQuiet = quietOperation;
 			quietOperation = true;
 			boolean success = processFile();

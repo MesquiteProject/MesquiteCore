@@ -171,13 +171,16 @@ public class ParallelAlterMatrixAsUtility extends CharMatricesListProcessorUtili
 		return false;
 	}
 
+	/* ................................................................................................................. */
 	static int PATIENCE = 3; // How much longer than first matrix is subsequent matrix considered stalled
 	static int SLEEPTIME = 50; // How much sleep between each check of threads
 	static long REPORTDELAY = 10000; // If there is a stalled calculation (determined by PATIENCE), how often to report (in milliseconds)
 	Bits matricesDone;
 
+	/* ................................................................................................................. */
 	/** Called to operate on the CharacterData blocks. Returns true if taxa altered */
 	public boolean operateOnDatas(ListableVector datas, MesquiteTable table) {
+		System.err.println("@ total employee tree BEFORE " + MesquiteTrunk.mesquiteTrunk.getTotalNumEmployed());
 
 		incrementMenuResetSuppression(numThreads + 1);
 		CompatibilityTest test = firstAlterTask.getCompatibilityTest();
@@ -304,6 +307,7 @@ public class ParallelAlterMatrixAsUtility extends CharMatricesListProcessorUtili
 			threads[i].fileCoordinator.fireEmployee(threads[i].alterTask);
 			fireEmployee(threads[i].fileCoordinator);
 		}
+		System.err.println("@ total employee tree AFTER " + MesquiteTrunk.mesquiteTrunk.getTotalNumEmployed());
 		progIndicator.goAway();
 		logln("Altered: " + (matricesDone.numBitsOn()) + " matrices. (Finished " + StringUtil.getDateTime(new Date(System.currentTimeMillis())) + ")");
 		unpauseAllPausables(v);
@@ -317,6 +321,7 @@ public class ParallelAlterMatrixAsUtility extends CharMatricesListProcessorUtili
 
 		return true;
 	}
+	/* ................................................................................................................. */
 
 	boolean aborted;
 
@@ -324,6 +329,7 @@ public class ParallelAlterMatrixAsUtility extends CharMatricesListProcessorUtili
 		return firstTime;
 	}
 
+	/* ................................................................................................................. */
 	DataAlterer cloneFirstAlterTask(AlterThread thread) {
 		String snapshot = Snapshot.getSnapshotCommands(firstAlterTask, null, "");
 		MesquiteInteger pos = new MesquiteInteger(0);
@@ -368,25 +374,15 @@ public class ParallelAlterMatrixAsUtility extends CharMatricesListProcessorUtili
 
 class AlterThread extends MesquiteThread {
 	ParallelAlterMatrixAsUtility ownerModule;
-
 	ListableVector datas;
-
 	int firstMatrix;
-
 	int lastMatrix;
-
 	boolean done = false;
-
 	CompatibilityTest test;
-
 	DataAlterer alterTask;
-
 	FileCoordinator fileCoordinator;
-
 	int imPreviousReportedAsSlow = 0;
-
 	long lastTimeChanged = -1;
-
 	long longWait = 10000;
 
 	public AlterThread(ParallelAlterMatrixAsUtility ownerModule, ListableVector datas, int startWindow, int endWindow, CompatibilityTest test, long longWait) {

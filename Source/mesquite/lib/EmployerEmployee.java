@@ -350,6 +350,17 @@ public abstract class EmployerEmployee extends MenuOwner implements HNode, Lista
 		else
 			return employees.size();
 	}
+	/* ................................................................................................................. */
+	/** Returns number of employees in the clade of the employee tree, including this one. */
+	public int getTotalNumEmployed() {
+		int total = 1; 
+		if (employees != null && employees.size()>0){
+			for (int i=0; i< employees.size(); i++){
+				total += ((EmployerEmployee)employees.elementAt(i)).getTotalNumEmployed();
+			}
+		}
+		return total;
+	}
 
 	/* ................................................................................................................. */
 	/** returns true if this an employer of the passed MesquiteModule. */

@@ -3617,7 +3617,7 @@ class BasicTreeWindow extends MesquiteWindow implements Fittable, MesquiteListen
 		if (treeT == null) { // source may have not known how many trees; ask if it would revise its current number of trees
 			int numTrees = treeSourceTask.getNumberOfTrees(taxa);
 			if (currentTreeNumber >= numTrees && MesquiteInteger.isCombinable(numTrees)) {
-				currentTreeNumber = numTrees - 1;  //("@ unless 0
+				currentTreeNumber = numTrees - 1;  // note, if numTrees is 0, this will be -1, but maybe OK as it will provoke errors. It should have already caught there were no trees available.
 				treeT = treeSourceTask.getTree(taxa, currentTreeNumber);
 				palette.paletteScroll.setMaximumValue(MesquiteTree.toExternal(numTrees - 1));
 

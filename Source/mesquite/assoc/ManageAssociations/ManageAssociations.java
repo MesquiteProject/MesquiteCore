@@ -64,7 +64,7 @@ public class ManageAssociations extends AssociationsManager {
 	public void projectEstablished() {
 		getFileCoordinator().addMenuItem(MesquiteTrunk.treesMenu, "New Association...", makeCommand("newAssociation",  this));
 		MesquiteSubmenuSpec mss = getFileCoordinator().addSubmenu(MesquiteTrunk.treesMenu, "Edit Association", makeCommand("editAssociation",  this), associationsVector);
-		getFileCoordinator().addSubmenu(MesquiteTrunk.treesMenu, "Make Populations (Containing Taxa) From", makeCommand("createTaxaAndAssociation",  this), PopulationsAndAssociationMaker.class);
+		getFileCoordinator().addSubmenu(MesquiteTrunk.treesMenu, "Make Containing Taxa & Association From", makeCommand("createTaxaAndAssociation",  this), PopulationsAndAssociationMaker.class);
 		getFileCoordinator().addMenuItem(MesquiteTrunk.treesMenu, "-", null);
 		super.projectEstablished();
 	}
