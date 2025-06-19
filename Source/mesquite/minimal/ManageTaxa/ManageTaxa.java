@@ -1349,7 +1349,7 @@ public class ManageTaxa extends TaxaManager {
 		if (hasBlankNames(taxa)){
 			discreetAlert("The block of taxa being saved (" + taxa.getName() + ") has blank taxon names.  This will cause problems in saving and reading trees and other functions, and will be fixed (Summary: " +fixBlankNames(taxa) + ")");
 		}
-		CommandRecord.tick("Checking for duplicate taxon names");
+		CommandRecord.tick("About to compose taxa block");
 		String d = taxa.hasDuplicateNames(true);
 		if (d !=null){
 			if (MesquiteThread.isScripting())
@@ -1360,8 +1360,9 @@ public class ManageTaxa extends TaxaManager {
 
 		if (file == null)
 			file = taxa.getFile();
-		if (file!=null && file.useDataBlocks) //removed 19Jan02 so as not to make minimal dependent on categorical: &&  file.getFileElements().size(mesquite.categ.lib.CategoricalData.class)>0
+		if (file!=null && file.useDataBlocks){ //removed 19Jan02 so as not to make minimal dependent on categorical: &&  file.getFileElements().size(mesquite.categ.lib.CategoricalData.class)>0
 			return null;
+		}
 		StringBuffer block = new StringBuffer();
 		String end = StringUtil.lineEnding();
 		block.append(end);

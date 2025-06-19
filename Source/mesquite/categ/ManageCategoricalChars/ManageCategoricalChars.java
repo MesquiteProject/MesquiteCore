@@ -386,10 +386,14 @@ public class ManageCategoricalChars extends CharMatrixManager {
 			file = data.getFile();
 		if (file == null)
 			return;
-		if (file.useDataBlocks)
+		if (file.useDataBlocks){
 			file.write("BEGIN DATA");
-		else
+			CommandRecord.tick("Composing Characters block");
+		}
+		else {
 			file.write("BEGIN CHARACTERS");
+			CommandRecord.tick("Composing Data block");
+		}
 		if (data.getAnnotation()!=null && !file.useSimplifiedNexus) {
 			file.write("[!" + StringUtil.tokenize(data.getAnnotation()) + "]");
 		}

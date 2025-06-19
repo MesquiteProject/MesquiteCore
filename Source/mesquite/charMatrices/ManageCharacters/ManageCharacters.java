@@ -544,6 +544,7 @@ public class ManageCharacters extends CharactersManager {
 		s += " NumMatrices " + getProject().getNumberCharMatrices();
 		return s;
 	}
+	boolean matrixChecksumWarned = false;
 	/*.................................................................................................................*/
 	public Object doCommand(String commandName, String arguments, CommandChecker checker) {
 		if (checker.compare(this.getClass(), "Creates a new empty character data matrix", "[number of characters] [title] [data type name]", commandName, "newMatrix")) {
@@ -686,6 +687,8 @@ public class ManageCharacters extends CharactersManager {
 
 		}
 		else if (checker.compare(this.getClass(), "Indicates the checksum of a matrix; new version", "[number of matrix][id number of data matrix]", commandName, "checksumv")) {
+			if (matrixChecksumWarned)
+			return null;
 			int t = MesquiteInteger.fromString(parser.getFirstToken(arguments));
 			int version  = MesquiteInteger.fromString(parser.getNextToken());
 			long checksumRecorded  = MesquiteLong.fromString(parser.getNextToken());
@@ -716,7 +719,11 @@ public class ManageCharacters extends CharactersManager {
 							}
 						}
 					}
-					String warning = "Error: checksum on data matrix \"" + d.getName() + "\" (" + d.getDataTypeName() + ") does not match that expected and stored in file.  Either the matrix has been modified with a program other than Mesquite, or the file had another issue already reported to you, or there is a bug in Mesquite.  If you are unaware of an intentional change, it is recommended that you use Save As to leave the previous copy of the file intact.";
+					matrixChecksumWarned = true;
+					String warning = "Error: checksum on data matrix \"" + d.getName() + "\" (" + d.getDataTypeName() + ") does not match that expected and stored in file.  "
+					+"Either the matrix has been modified with a program other than Mesquite, or the file had another issue already reported to you, or there is a bug in Mesquite. "
+					+" If you are unaware of an intentional change, it is recommended that you use Save As to leave the previous copy of the file intact."
+					+ " This warning will not be repeated for this file.";
 
 
 					String diffFileSave = "";
@@ -745,11 +752,15 @@ public class ManageCharacters extends CharactersManager {
 						details += "\n[NOTE: the data matrix appears corrupt; it is possible that it had been saved incorrectly in the file [" + integrity + "]]";
 					ListableVector datas = getProject().getCharacterMatrices();
 					if (datas != null && datas.size() > 1){
+						if (datas.size()<10){
 						details += "\nSummary of matrices in file:";
 						for (int i=0; i<datas.size(); i++){
 							CharacterData dd = (CharacterData)datas.elementAt(i);
 							details += "\n    matrix " + dd.getName() + "  ID  " + dd.getUniqueID() + "  for taxa " + dd.getTaxa().getName();
 						}
+						}
+						else
+						details +="\nThe file has " + datas.size() + " matrix(ces)";
 					}
 					if (diff>20){//assume file writing is at most 20 seconds off; anything more assumes user fiddling so don't report!!!!
 						logln("Note: checksum on data matrix \"" + d.getName() + "\" (" + d.getDataTypeName() + ") does not match that expected and stored in file.  This appears to be caused by the file having been modified by a program other than Mesquite.");
@@ -1246,6 +1257,7 @@ public class ManageCharacters extends CharactersManager {
 	public boolean writeNexusCommands(MesquiteFile file, String blockName, MesquiteString pending){ 
 		boolean found = false;
 		if (blockName.equalsIgnoreCase("NOTES")) {
+			CommandRecord.tick("Composing Notes block");
 			StringBuffer s = new StringBuffer(100);
 			StringBuffer tokSB = new StringBuffer(100);
 			MesquiteProject project = file.getProject();

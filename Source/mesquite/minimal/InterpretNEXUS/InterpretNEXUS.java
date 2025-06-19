@@ -422,7 +422,13 @@ public class InterpretNEXUS extends NexusFileInterpreter implements NEXUSInterpr
 				logln("");
 				logln("This file contained one or more blocks or commands not recognized; a list is written below.  It is possible that some packages of Mesquite that are not currently loaded might be able to recognize the commands; try rereading after choosing \"Use All Installed Modules\" under \"Activate/Deactivate Packages\".\n");
 				for (int i=0; i<mNF.foreignElements.size(); i++) {
-					logln("Unrecognized " + mNF.foreignElements.elementAt(i));
+					if (i<20)
+						logln("Unrecognized " + mNF.foreignElements.elementAt(i));
+					else {
+						if (i==20)
+						logln("There were unrecognized commands or blocks, " + mNF.foreignElements.size() + " in total.");
+					}
+						
 				}
 				logln("");
 			}
