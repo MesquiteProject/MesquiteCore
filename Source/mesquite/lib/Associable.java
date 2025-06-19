@@ -296,6 +296,8 @@ public ListableVector getAssociatesOfKind(int kind){
 		}
 		return s;
 	}
+	
+	//makes the associated info of a part of this equal to that of otherPart of other associable
 	public void equalizeParts(Associable other, int otherPart, int part){
 		if (other==null || part >= getNumberOfParts() || otherPart >= other.getNumberOfParts())
 			return;

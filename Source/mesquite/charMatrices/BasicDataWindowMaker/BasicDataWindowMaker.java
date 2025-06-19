@@ -3153,79 +3153,45 @@ class ColorLegend extends MousePanel {
 /* ======================================================================== */
 class MatrixTable extends mesquite.lib.table.CMTable implements MesquiteDroppedFileHandler {
 	BasicDataWindowMaker editorModule;
-
 	Taxa taxa;
-
 	MesquiteBoolean showStates;
-
 	MesquiteBoolean reduceCellBorders;
-
 	MesquiteBoolean showDefaultCharNames;
 	MesquiteBoolean colorOnlyTaxonNames;
-
 	MesquiteBoolean autoWithCharNames;
-
 	MesquiteBoolean showNames;
-
 	MesquiteBoolean showBirdsEyeView;
-
 	MesquiteBoolean showChanges;
-
 	MesquiteBoolean statesSeparateLines;
-
 	MesquiteBoolean allowAutosize;
-
 	MesquiteBoolean showPaleGrid;
-
 	MesquiteBoolean showBoldCellText;
 	MesquiteBoolean showPaleCellColors;
 	MesquiteBoolean showPaleExcluded;
 	MesquiteBoolean showEmptyDataAsClear;
 	MesquiteBoolean paleInapplicable;
 	MesquiteBoolean paleMissing;
-
 	int birdsEyeWidth = 2;
-
 	static double showPaleExcludedValueText = 0.40;
-
 	static double showPaleExcludedValueBackground = 0.40;
-
 	boolean notifySuppressed = false;
-
 	CellAnnotation cellAnnotated;
-
 	CharacterData data;
-
 	Font oldFont = null;
-
 	Font boldFont;
-
 	Parser parser = new Parser();
-
 	BasicDataWindow window;
-
 	CellColorer rowNamesColorer = null;
-
 	CellColorer columnNamesColorer = null;
-
 	CellColorer cellColorer = null;
-
 	CellColorer textColorer = null;
-
 	Color bgColor = Color.white;
-
 	Vector linkedTables;
-
 	static int totTables = 0;
-
 	int oldFirstColumn = 0;
-
 	int oldFirstRow = 0;
-
 	int oldLastColumn = 0;
-
 	int oldLastRow = 0;
-
 	int id = 0;
 
 	// DataColumnNamesAssistant assistant1;
@@ -3238,6 +3204,7 @@ class MatrixTable extends mesquite.lib.table.CMTable implements MesquiteDroppedF
 		setUserMove(true, true);
 		linkedTables = new Vector();
 		this.data = data;
+		 setRowNamesCopyPasteWithRowSelection(false);//("@
 		cellAnnotated = new CellAnnotation(data);
 		showStates = new MesquiteBoolean(true);
 		reduceCellBorders = new MesquiteBoolean(false);
@@ -3608,7 +3575,7 @@ class MatrixTable extends mesquite.lib.table.CMTable implements MesquiteDroppedF
 			sbUsed = false;
 			if (atLeastOneFullRowSelected) {  // need to remove part before tab if a tab is there
 				removeTaxonNameIfPresent(sb);
-			} else if (rowNamesCopyPaste && (isRowNameSelected(j))) { // for name of taxon
+			} else if (rowNamesCopyPaste && (isRowNameSelected(j))) { // for name of taxon, only if the row name is directly selected
 				returnedRowNameText(j, molecToken(sb, true), true);
 				taxNamesChanged = true;
 				sbUsed = true;

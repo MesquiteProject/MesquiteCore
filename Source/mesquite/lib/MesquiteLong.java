@@ -53,6 +53,7 @@ public class MesquiteLong implements Listable, Nameable {
 	public String getName(){
 		return name;
 	}
+	
 	/*--------------------------------GET/SET--------------------------*/
 	/** Returns value as a long */
 	public long getValue() {
@@ -79,6 +80,17 @@ public class MesquiteLong implements Listable, Nameable {
 	public void setToUnassigned() {
 		value=unassigned;
 	}
+	
+	public static void listConstants() { //so that setting can be done in line whether or not null
+		System.err.println("MesquiteLong constants:");
+		System.err.println("  unassigned " + unassigned);
+		System.err.println("  impossible " + impossible);
+		System.err.println("  infinite " + infinite);
+		System.err.println("  negInfinite " + negInfinite);
+		System.err.println("  inapplicable " + inapplicable);
+		
+	}
+
 	/*--------------------------------CONVERSION--------------------------*/
 	public static long toLong(int v) {
 		if (v==MesquiteInteger.unassigned)

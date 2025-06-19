@@ -60,7 +60,7 @@ public class TraceAllChanges extends TreeDisplayAssistantA {
 	// MesquiteString displayTaskName;
 	MesquiteCommand dtC;
 
-	MesquiteBoolean byCharacters, selectedOnly, selectedCharactersOnly, showTerminals, showTable, showStateNames, showCharNames, ambiguousChangesAlso, traceSingleCharacter;
+	MesquiteBoolean byCharacters, selectedOnly, selectedCharactersOnly, showTerminals, showTable, showStateNames, showCharNames, ambiguousChangesAlso, traceSingleCharacter, tickOnly;
 	int shadedCharacter = -1;
 	double barLength = 16;
 	MesquiteMenuItemSpec chooseCharToTraceMenuItem;
@@ -78,6 +78,7 @@ public class TraceAllChanges extends TreeDisplayAssistantA {
 		showCharNames = new MesquiteBoolean(true);
 		ambiguousChangesAlso = new MesquiteBoolean(false); 
 		traceSingleCharacter = new MesquiteBoolean(false); 
+		tickOnly = new MesquiteBoolean(false); 
 		makeMenu("Trace_All");
 		characterSourceTask = (MatrixSourceCoord) hireCompatibleEmployee(MatrixSourceCoord.class, CategoricalState.class, "Source of characters (for Trace All Characters)");
 		suppressed = MesquiteThread.isScripting();
@@ -100,6 +101,7 @@ public class TraceAllChanges extends TreeDisplayAssistantA {
 		addCheckMenuItem(null, "Show All Permissable Changes (including Ambiguous)", makeCommand("ambiguousChangesAlso", this), ambiguousChangesAlso);
 		addCheckMenuItem(null, "Write Character Numbers", makeCommand("toggleShowCharNames", this), showCharNames);
 		addCheckMenuItem(null, "Write State Numbers", makeCommand("toggleShowStateNames", this), showStateNames);
+		addCheckMenuItem(null, "Narrow Lines", makeCommand("tickOnly", this), tickOnly);
 		addMenuItem("Bar Length...", makeCommand("setBarLength", this));
 		addCheckMenuItem(null, "Trace Single Character", makeCommand("traceSingleCharacter", this), traceSingleCharacter);
 		chooseCharToTraceMenuItem = addMenuItem("Choose Single Character to Trace...", makeCommand("setSingleCharacter", this));
@@ -142,6 +144,7 @@ public class TraceAllChanges extends TreeDisplayAssistantA {
 		temp.addLine("toggleByCharacters " + byCharacters.toOffOnString());
 		temp.addLine("ambiguousChangesAlso " + ambiguousChangesAlso.toOffOnString());
 		temp.addLine("traceSingleCharacter " + traceSingleCharacter.toOffOnString());
+		temp.addLine("tickOnly " + tickOnly.toOffOnString());
 		temp.addLine("setSingleCharacter " + shadedCharacter);
 		temp.addLine("setBarLength " + (int)barLength);
 		temp.addLine("toggleSelectedOnly " + selectedOnly.toOffOnString());
@@ -176,6 +179,10 @@ public class TraceAllChanges extends TreeDisplayAssistantA {
 			traceSingleCharacter.toggleValue(parser.getFirstToken(arguments));
 			toggleSingleTrace(traceSingleCharacter.getValue());
 		}
+		else if (checker.compare(this.getClass(), "Sets whether to show reconstructed ancestral states of a single character", "[on or off]", commandName, "tickOnly")) {
+			tickOnly.toggleValue(parser.getFirstToken(arguments));
+			repaintAllTraceOperators();
+		}
 		else if (checker.compare(this.getClass(), "Chooses what character to shade on tree", null, commandName, "setSingleCharacter")) {
 			int ic = MesquiteInteger.fromString(arguments);
 			if (MesquiteInteger.isCombinable(ic)){
@@ -199,10 +206,10 @@ public class TraceAllChanges extends TreeDisplayAssistantA {
 				barLength = ic;
 			}
 			else if (!MesquiteThread.isScripting()){
-					ic = MesquiteInteger.queryInteger(containerOfModule(), "Length of bars", "Length of bars on tree (default 16)", (int)barLength, 2, 40);
-					if (MesquiteInteger.isCombinable(ic)){
-						barLength = ic;
-					}
+				ic = MesquiteInteger.queryInteger(containerOfModule(), "Length of bars", "Length of bars on tree (default 16)", (int)barLength, 2, 40);
+				if (MesquiteInteger.isCombinable(ic)){
+					barLength = ic;
+				}
 			}
 			repaintAllTraceOperators();
 		}
@@ -263,7 +270,7 @@ public class TraceAllChanges extends TreeDisplayAssistantA {
 			return super.doCommand(commandName, arguments, checker);
 		return null;
 	}
-	
+
 	void toggleSingleTrace(boolean on){
 		traceSingleCharacter.setValue(on);
 		chooseCharToTraceMenuItem.setEnabled(on);
@@ -644,7 +651,7 @@ class TraceAllOperator extends TreeDisplayDrawnExtra implements MesquiteListener
 		}
 		return v;
 	}
-	
+
 	Font unambiguousFont, ambiguousFont;
 	/* ................................................................................................................. */
 	private void drawChanges(Tree tree, Graphics g, int node, MCategoricalStates charsStates) {
@@ -670,7 +677,7 @@ class TraceAllOperator extends TreeDisplayDrawnExtra implements MesquiteListener
 					long stateset = 0L;
 					Color fillColor = null;
 					String statesString = null;
-					
+
 					if (traceAllModule.ambiguousChangesAlso.getValue()){  // ========== ALL PERMITTED ================
 						CategoricalHistory ch = (CategoricalHistory)((MCharactersHistory)charsStates).getCharacterHistory(ic);
 						CategoricalState ancStt = (CategoricalState)csAnc;
@@ -718,7 +725,7 @@ class TraceAllOperator extends TreeDisplayDrawnExtra implements MesquiteListener
 					}
 				}
 			}
-			
+
 			//Next, now that we know how many there are to draw, we can draw them
 			double barWidth = 8;
 			double barSpacing = 8;
@@ -773,19 +780,29 @@ class TraceAllOperator extends TreeDisplayDrawnExtra implements MesquiteListener
 					if (treeDisplay.isUp() || treeDisplay.isDown()) {  //======== UP/DOWN ======
 						double topY = nodeY;
 						double bottomY = ancY;
-						
+
 						double left = leftTopBase - (barLength-edgeWidth) / 2 + offsetRatio*offset;
 						if (treeDisplay.isDown()){
 							topY = ancY;
 							bottomY = nodeY;
 						}
 						if (offset + topY + barWidth + barSpacing < bottomY) {
+						/*	g.setColor(Color.gray);
+							g.fillRect((int)left, (int)(topY + offset-4), (int)barLength + extraGrabber, (int)barWidth +8);
+							*/
 							if (useColors) {
-								g.setColor(bdr.color);
-								GraphicsUtil.fillRect(g, left, topY + offset, barLength, barWidth);
-								g.setColor(Color.black);
-								GraphicsUtil.drawRect(g, left, topY + offset, barLength, barWidth);
-								bars.addElement(new BarRecord(new Rectangle((int)left, (int)(topY + offset), (int)barLength + extraGrabber, (int)barWidth), bdr.ic, bdr.stateset, node, bdr.unambiguous));
+								if (traceAllModule.tickOnly.getValue()){
+									g.setColor(Color.black);
+									GraphicsUtil.drawLine(g, left, topY + offset + barWidth/2, left+ barLength, topY + offset + barWidth/2, 2);
+								}
+								else {
+									g.setColor(bdr.color);
+									GraphicsUtil.fillRect(g, left, topY + offset, barLength, barWidth);
+									g.setColor(Color.black);
+									GraphicsUtil.drawRect(g, left, topY + offset, barLength, barWidth);
+								}
+								bars.addElement(new BarRecord(new Rectangle((int)left, (int)(topY + offset-4), (int)barLength + extraGrabber, (int)barWidth +8), bdr.ic, bdr.stateset, node, bdr.unambiguous));
+								
 								if (bdr.unambiguous) {
 									g.setFont(unambiguousFont);
 								}
@@ -815,11 +832,23 @@ class TraceAllOperator extends TreeDisplayDrawnExtra implements MesquiteListener
 							rightX = ancX;
 						}
 						if (offset + leftX + barWidth + barSpacing < rightX) {
+							/*g.setColor(Color.gray);
+							if (treeDisplay.isRight()) 
+							g.fillRect((int)(leftX + offset-4), (int)(top), (int)barWidth+8, (int)barLength+extraGrabber);
+							else 
+								g.fillRect((int)(leftX + offset-4), (int)(top)-extraGrabber, (int)barWidth+8, (int)barLength + extraGrabber+8);
+	*/
 							if (useColors) {
+								if (traceAllModule.tickOnly.getValue()){
+									g.setColor(Color.black);
+									GraphicsUtil.drawLine(g, leftX + offset + barWidth/2, top, leftX + offset + barWidth/2, top + barLength, 2);
+								}
+								else {
 								g.setColor(bdr.color);
 								GraphicsUtil.fillRect(g, leftX + offset, top, barWidth, barLength);
 								g.setColor(Color.black);
 								GraphicsUtil.drawRect(g, leftX + offset, top, barWidth, barLength);
+								}
 								if (bdr.unambiguous) {
 									g.setFont(unambiguousFont);
 								}
@@ -829,14 +858,14 @@ class TraceAllOperator extends TreeDisplayDrawnExtra implements MesquiteListener
 								}
 								if (treeDisplay.isRight()) {
 									textRotator.drawFreeRotatedText(bdr.text,  g, (int)(leftX + offset-barWidth - (8-barWidth)),(int)(top + barLength + 4), Math.PI/2, null, true, null); // the 8-barWidth is a mystery correction
-									bars.addElement(new BarRecord(new Rectangle((int)(leftX + offset), (int)(top), (int)barWidth, (int)barLength+extraGrabber), bdr.ic, bdr.stateset, node, bdr.unambiguous));
+									bars.addElement(new BarRecord(new Rectangle((int)(leftX + offset-4), (int)(top), (int)barWidth+8, (int)barLength+extraGrabber), bdr.ic, bdr.stateset, node, bdr.unambiguous));
 								}
 								else {
 									textRotator.drawFreeRotatedText(bdr.text,  g, (int)(leftX + offset),(int)(top  - 4), -Math.PI/2, null, true, null);
-									bars.addElement(new BarRecord(new Rectangle((int)(leftX + offset), (int)(top)-extraGrabber, (int)barWidth, (int)barLength + extraGrabber+extraGrabber), bdr.ic, bdr.stateset, node, bdr.unambiguous));
+									bars.addElement(new BarRecord(new Rectangle((int)(leftX + offset-4), (int)(top)-extraGrabber, (int)barWidth+8, (int)barLength + extraGrabber+8), bdr.ic, bdr.stateset, node, bdr.unambiguous));
 								}
 								g.setColor(Color.black);
-							offset += barWidth + barSpacing;
+								offset += barWidth + barSpacing;
 							}
 							else {
 								GraphicsUtil.drawLine(g, leftX + offset, top, leftX + offset,top+barLength);
@@ -931,11 +960,11 @@ class TraceAllOperator extends TreeDisplayDrawnExtra implements MesquiteListener
 		Font font = g.getFont();
 		if (traceAllModule.ambiguousChangesAlso.getValue()){
 			unambiguousFont = new Font(font.getName(), Font.BOLD, font.getSize());
-		ambiguousFont = new Font(font.getName(), Font.ITALIC, font.getSize());
+			ambiguousFont = new Font(font.getName(), Font.ITALIC, font.getSize());
 		}
 		else {
 			unambiguousFont = font;
-		ambiguousFont =font;
+			ambiguousFont =font;
 		}
 		//resetting barRecords
 		barRecords.resetSize(tree.getNumNodeSpaces());
@@ -1005,11 +1034,11 @@ class TraceAllOperator extends TreeDisplayDrawnExtra implements MesquiteListener
 					}
 					else
 						popup.addItem("Permitted changes:",  MesquiteCommand.nullCommand, null);
-						for (int i = 0; i<v.size(); i++){
+					for (int i = 0; i<v.size(); i++){
 						Point p = (Point)v.elementAt(i);
 						String s = "  " + p.x + " to " + p.y;
-					popup.addItem(s,  MesquiteCommand.nullCommand, null);
-				}
+						popup.addItem(s,  MesquiteCommand.nullCommand, null);
+					}
 					popup.addItem("-",  (MesquiteCommand)null, null);
 				}	
 			}

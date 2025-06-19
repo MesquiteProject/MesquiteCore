@@ -1321,6 +1321,23 @@ public class BasicFileCoordinator extends FileCoordinator implements PackageIntr
 		MainThread.decrementSuppressWaitWindow();
 		getProject().decrementProjectWindowSuppression();
 	}
+	public void renameFile(int id, String name){
+		if (StringUtil.blank(name))
+			return;
+		getProject().incrementProjectWindowSuppression();
+		MainThread.incrementSuppressWaitWindow();
+		MesquiteFile fi;
+		if (!MesquiteInteger.isCombinable(id) && getProject().getNumberLinkedFiles()==1)
+			fi = getProject().getHomeFile();
+		else
+			fi = getProject().getFileByID(id);
+		if (fi !=null){
+			fi.changeLocation(fi.getDirectoryName(), name);
+			fi.setWriteProtected(false);
+		}
+		MainThread.decrementSuppressWaitWindow();
+		getProject().decrementProjectWindowSuppression();
+	}
 	/*.................................................................................................................*/
 	/*  */
 	public void writeFile(MesquiteFile nMF){
@@ -1761,6 +1778,12 @@ public class BasicFileCoordinator extends FileCoordinator implements PackageIntr
 			int i = MesquiteInteger.fromString(arguments, pos);
 			String name = ParseUtil.getToken(arguments, pos);
 			renameAndSaveFile(i, name);
+		}
+		else if (checker.compare(this.getClass(), "Renames file", "[number of file]", commandName, "renameFile")) {
+			MesquiteInteger pos = new MesquiteInteger(0);
+			int i = MesquiteInteger.fromString(arguments, pos);
+			String name = ParseUtil.getToken(arguments, pos);
+			renameFile(i, name);
 		}
 		else if (checker.compare(this.getClass(), "Saves file as... to create a separate copy", "[number of file]", commandName, "saveFileAs")) {
 			saveFileAs(MesquiteInteger.fromString(arguments, new MesquiteInteger(0)));

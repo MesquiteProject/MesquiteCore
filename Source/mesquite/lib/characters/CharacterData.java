@@ -696,6 +696,9 @@ public abstract class CharacterData extends FileElement implements MesquiteListe
 	public abstract CharacterData cloneData(); //SHOULD HERE PASS boolean to say whether to DEAL WITH CHARACTER SPEC SETS, character names, etc.
 
 	public void copyMetadataTo(CharacterData targetData){
+		if (targetData.getNumChars()!= numChars)
+			return;
+		
 		for (int ic=0; ic<numChars; ic++){
 			if (characterHasName(ic))
 				targetData.setCharacterName(ic, getCharacterName(ic));
@@ -727,6 +730,32 @@ public abstract class CharacterData extends FileElement implements MesquiteListe
 
 			}
 		}
+		if (cellObjects.size()>0){
+			for (int k =0; k<cellObjects.size(); k++){
+				Object2DArray objArray = (Object2DArray)cellObjects.elementAt(k);
+				NameReference nr = objArray.getNameReference();
+				Object2DArray targetArray = targetData.getOrMakeCellObjects(nr);	
+				Object[][] myObjects = objArray.getMatrix();
+				Object[][] targetObjects = targetArray.getMatrix();
+				for (int j = 0; j<numTaxa; j++){
+					for (int i=0; i<numChars; i++)
+						targetObjects[i][j] = myObjects[i][j];
+				}
+				targetArray.setMatrix(targetObjects);
+			}
+		}
+		if (footnotes!=null){
+			String[][] targetFootnotes = new String[numChars][numTaxa];
+			for (int j = 0; j<numTaxa; j++){
+				for (int i=0; i<numChars; i++) {
+					targetFootnotes[i][j] = footnotes[i][j];
+				}
+			}
+			targetData.footnotes = targetFootnotes;
+		}
+		for (int j = 0; j<numChars; j++)
+				targetData.setAnnotation(j, getAnnotation(j));
+
 	}
 	//TODO: also need setToClone(data) method to set specsets and names etc. including super.setToClone()
 

@@ -230,11 +230,13 @@ public abstract class InterpretPhylip extends FileInterpreterITree {
 			taxa.addTaxa(-1, numTaxa, true);
 			data.addCharacters(-1, numChars, false);
 			line = file.readNextDarkLine();   // reads first data line
-
 			boolean abort = false;
 			int block = 1;
 			int it=0;
 			int nextCharToRead = 0;
+			MesquiteTimer timer = new MesquiteTimer();
+			timer.start();
+			boolean first = true;
 			// first block
 			while (!StringUtil.blank(line) && !abort && (it<numTaxa)) {
 				parser.setString(line); //sets the string to be used by the parser to "line" and sets the pos to 0
@@ -265,6 +267,15 @@ public abstract class InterpretPhylip extends FileInterpreterITree {
 						setPhylipState(data, ic, it, c);
 						if (it==0)
 							nextCharToRead++;
+						timer.end();
+						if (timer.getAccumulatedTime()>1000) {
+							if (first)
+								log("Importing ");
+							first = false;
+							log(".");
+							timer.reset();
+						}
+						timer.start();
 					}
 				}
 				it++;
@@ -292,6 +303,15 @@ public abstract class InterpretPhylip extends FileInterpreterITree {
 								setPhylipState(data,ic, it, c);
 								if (it==0)
 									nextCharToRead++;
+								timer.end();
+								if (timer.getAccumulatedTime()>1000) {
+									if (first)
+										log("Importing ");
+									first = false;
+									log(".");
+									timer.reset();
+								}
+								timer.start();
 							}
 						}
 						it++;
@@ -301,13 +321,15 @@ public abstract class InterpretPhylip extends FileInterpreterITree {
 					}
 				}
 			}
-
+			if (!first)
+				logln("");
 			if (!StringUtil.blank(line)) // then we have trees
 				readPhylipTrees(mf, file, line, progIndicator, taxa, arguments);
 			data.saveChangeHistory = wassave;
 			data.resetCellMetadata();
 			finishImport(progIndicator, file, abort);
 		}
+		
 		decrementMenuResetSuppression();
 	}
 
@@ -434,6 +456,9 @@ public abstract class InterpretPhylip extends FileInterpreterITree {
 		while (pad.length() < taxonNameLength)
 			pad += "  ";
 		MesquiteStringBuffer outputBuffer = new MesquiteStringBuffer(1000);
+		MesquiteTimer timer = new MesquiteTimer();
+		timer.start();
+		boolean first = true;
 		for (int it = 0; it<numTaxa; it++){
 			if ((!writeOnlySelectedTaxa || taxa.getSelected(it)) && (writeTaxaWithAllMissing || data.hasDataForTaxon(it, writeExcludedCharacters))){
 					if (writeTaxonNames) {   // first block
@@ -466,6 +491,15 @@ public abstract class InterpretPhylip extends FileInterpreterITree {
 								break;
 							counter++;
 						}
+						timer.end();
+						if (timer.getAccumulatedTime()>1000) {
+							if (first)
+								log("Exporting ");
+							first = false;
+							log(".");
+							timer.reset();
+						}
+						timer.start();
 					}
 					outputBuffer.append(getLineEnding());
 					MesquiteFile.appendFileContents(filePath, outputBuffer.toString(), true); //continuing with the file
@@ -473,6 +507,8 @@ public abstract class InterpretPhylip extends FileInterpreterITree {
 			}
 					
 		}
+		if (!first)
+			logln(" ... Export complete");
 		
 	}
 	/*.................................................................................................................*/

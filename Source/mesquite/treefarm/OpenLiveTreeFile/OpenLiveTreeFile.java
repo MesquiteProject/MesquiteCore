@@ -33,21 +33,28 @@ import mesquite.trees.ChronogramDisplay.ChronogramDisplay;
 
 /* ======================================================================== */
 public class OpenLiveTreeFile extends GeneralFileMakerSingle {
-
+	String path;
 	/*.................................................................................................................*/
 	public boolean startJob(String arguments, Object condition, boolean hiredByName){
 		return true;
 	}
 
 	/*.................................................................................................................*/
-	public MesquiteProject readFile(MesquiteProject project, boolean NEXUSOnly){
+	public MesquiteProject readFile(MesquiteProject project, String path, boolean NEXUSOnly){
 		ExtensibleDialog dialog = null; //to be formed later
 		// === the file chosen
+		boolean newFile = false;
 		MesquiteString fileName = new MesquiteString();
-		String choice = "Choose NEXUS file with trees";
-		if (!NEXUSOnly)
-			choice += " or Phylip/Newick tree file";
-		String path = MesquiteFile.openFileDialog( choice,  null, fileName);
+		if (path == null) {
+			String choice = "Choose NEXUS file with trees";
+			if (!NEXUSOnly)
+				choice = "Choose NEXUS or Newick/Phylip tree file";
+			path = MesquiteFile.openFileDialog( choice,  null, fileName);
+			newFile = true;
+		}
+		else
+			fileName.setValue(StringUtil.getLastItem(path, MesquiteFile.fileSeparator));
+		this.path = path;
 		if (path == null)
 			return null;
 		String startOfFile = MesquiteFile.getFileContentsAsString(path, 200); 
@@ -58,9 +65,7 @@ public class OpenLiveTreeFile extends GeneralFileMakerSingle {
 			return null;
 		}
 
-		boolean includingInExistingProject = project != null;
 
-	
 		if (project != null){  //set to false when allow non-NEXUS
 			//figure out taxa block if needed
 			Taxa taxa = project.chooseTaxa(containerOfModule(), "For which block of taxa does the incoming tree file pertain?");
@@ -71,33 +76,44 @@ public class OpenLiveTreeFile extends GeneralFileMakerSingle {
 			}
 			else
 				bfc.includeFile(path, InterpretPhylipTreesBasic.class, " @autodeleteDuplicateOrSubsetTaxa", 0, null);
-			String commands = "requireSaveAs true; getEmployee #BasicTreeWindowCoord; tell it; makeTreeWindow " + getProject().getTaxaReferenceInternal(taxa) + "  #BasicTreeWindowMaker; tell It;";  
-			commands += "  setTreeSource  #ManyTreesFromFile; tell It;  setFilePath " + StringUtil.tokenize(path) + "; toggleLive on;   endTell;  " + 
-			"getWindow; tell It; setTreeNumber 1; pinToLastTree true;   endTell; showWindowForce; endTell; endTell;";
-			MesquiteInteger pos = new MesquiteInteger(0);
-			Puppeteer p = new Puppeteer(this);
-			CommandRecord prev = MesquiteThread.getCurrentCommandRecord();
-			CommandRecord cRec = new CommandRecord(true);
-			MesquiteThread.setCurrentCommandRecord(cRec);
-			p.execute(bfc, commands, pos, null, false, null, null);
-			MesquiteThread.setCurrentCommandRecord(prev);
-		
+			if (!MesquiteThread.isScripting()){
+				String commands = "getEmployee #BasicTreeWindowCoord; tell it; makeTreeWindow " + getProject().getTaxaReferenceInternal(taxa) + "  #BasicTreeWindowMaker; tell It;";  
+				commands += "  setTreeSource  #ManyTreesFromFile; tell It;  setFilePath " + StringUtil.tokenize(path) + "; toggleLive on;   endTell;  " + 
+						"getWindow; tell It; setTreeNumber 1; pinToLastTree true;   endTell; showWindowForce; endTell; endTell;";
+				MesquiteInteger pos = new MesquiteInteger(0);
+				Puppeteer p = new Puppeteer(this);
+				CommandRecord prev = MesquiteThread.getCurrentCommandRecord();
+				CommandRecord cRec = new CommandRecord(true);
+				MesquiteThread.setCurrentCommandRecord(cRec);
+				p.execute(bfc, commands, pos, null, false, null, null);
+				MesquiteThread.setCurrentCommandRecord(prev);
+			}
 			return null;
 		}
 
-		String commands = "requireSaveAs true; getEmployee #BasicTreeWindowCoord; tell it; makeTreeWindow 0  #BasicTreeWindowMaker; tell It;";  
+		String commands = "getEmployee #BasicTreeWindowCoord; tell it; makeTreeWindow 0  #BasicTreeWindowMaker; tell It;";  
 		commands += "  setTreeSource  #ManyTreesFromFile; tell It;  setFilePath " + StringUtil.tokenize(path) + "; toggleLive on;   endTell;  " + 
-		"getWindow; tell It; setTreeNumber 1; pinToLastTree true;   endTell; showWindowForce; endTell; endTell;";
-		MesquiteProject pr = MesquiteTrunk.mesquiteTrunk.openOrImportFileHandler(path, " @justTheseBlocks.TAXA.DATA @scriptToFileCoordinator." + StringUtil.tokenize(commands), TryNexusFirstTreeFileInterpreter.class);
-	
+				"getWindow; tell It; setTreeNumber 1; pinToLastTree true;   endTell; showWindowForce; endTell; endTell;";
+
+		if (newFile) {
+			String extension = "";
+			if (!isNexus)
+				extension = ".nex";
+			commands = "requireSaveAs true; renameFile ? " + StringUtil.tokenize("(Monitoring) " + fileName + extension) + "; getEmployee #ManageTrees; tell It; getTreeBlock 0; tell It; deleteMe; endTell; endTell;" + commands;
+		}
+		MesquiteProject pr = MesquiteTrunk.mesquiteTrunk.openOrImportFileHandler(path, " @justTheseBlocks.TAXA.DATA @autosaveImported @scriptToFileCoordinator." + StringUtil.tokenize(commands), TryNexusFirstTreeFileInterpreter.class);
+
 		return pr;
 	}
-	
+
+	public String getPath(){
+		return path;
+	}
 	/*.................................................................................................................*/
 	public MesquiteProject establishProject(String arguments) {
 		incrementMenuResetSuppression();
 
-		MesquiteProject proj = readFile(null, true);  //set to false when allow non-NEXUS
+		MesquiteProject proj = readFile(null, null, false);  //set to false when allow non-NEXUS
 		decrementMenuResetSuppression();
 		return proj;
 	}
@@ -128,16 +144,16 @@ public class OpenLiveTreeFile extends GeneralFileMakerSingle {
 
 	/*.................................................................................................................*/
 	public String getName() {
-		return "Open Live NEXUS Tree File";
+		return "Monitor Live Tree File";
 	}
 	/*.................................................................................................................*/
 	public String getNameForMenuItem() {
-		return "Open Live NEXUS Tree File...";
+		return "Monitor Live Tree File...";
 	}
 	/*.................................................................................................................*/
 	public String getExplanation() {
-		return "Opens a NEXUS file with trees and shows the trees in a tree window. You can use this to monitor an ongoing tree inference analysis, because if the file changes, new trees are automatically read. By default, the tree window shows the last tree in the file.\n"
-				+" This is designed to work with a file that includes only one taxa block." ;
+		return "Opens a NEXUS or simple Newick/Phylip tree file with trees and shows the trees in a tree window. You can use this to monitor an ongoing tree inference analysis, because if the file changes, new trees are automatically read. By default, the tree window shows the LAST tree in the file.\n"
+				+" This is designed to work with a file that includes only one block of taxa." ;
 	}
 
 

@@ -282,7 +282,7 @@ public abstract class ExportForBEASTLib extends FileInterpreterI  {
 			logln("WARNING: No suitable data available for export to a file of format \"" + getName() + "\".  The file will not be written.\n");
 			return false;
 		}
-
+		
 		StringBuffer conflictingTaxSets = conflictingTaxsets(file);
 		if (conflictingTaxSets!=null) {
 			logln("\nConflicting taxon sets:");

@@ -26,6 +26,16 @@ public class MQJEditorPane extends JEditorPane implements MQComponent{
 		super(a, b);
 		helper = new MQComponentHelper(this);
 	}
+	
+	Dimension minSize = null;
+	public void setMinSize(int w, int h){
+		minSize = new Dimension(w, h);
+	}
+	public Dimension getMinimumSize(){
+		if (minSize!= null)
+			return minSize;
+		return super.getMinimumSize();
+	}
 	public boolean getScrollableTracksViewportWidth() {
 		try {
 			return super.getScrollableTracksViewportWidth();
@@ -75,7 +85,15 @@ public class MQJEditorPane extends JEditorPane implements MQComponent{
 		super.setLocation(x,y);
 	}
 	public Dimension superGetPreferredSize(){
-		return super.getPreferredSize();
+		Dimension sD = super.getPreferredSize();
+		if (minSize!= null){
+			if (sD.width<minSize.width)
+				sD.width = minSize.width;
+			if (sD.height<minSize.height)
+				sD.height = minSize.height;
+			
+		}
+		return sD;
 	}
 	public void superLayout(){
 		super.layout();

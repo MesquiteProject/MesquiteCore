@@ -256,8 +256,6 @@ public class Snapshot {
 		if (snapshot != null) {
 			for (int i = 0; i<snapshot.getNumLines(); i++) {
 				//if conditional then wait to se if anything added
-				if (snapshot.getModule(i) != null)
-					System.err.println("@ module " + snapshot.getModule(i));
 				if (snapshot.getLine(i)==null)
 					;
 				else if (snapshot.getConditional(i) && snapshot.getModule(i)!=null) {

@@ -14,23 +14,51 @@
 package mesquite.treefarm.ShowTreesFromLiveFile;
 /*~~  */
 
+import mesquite.lib.CommandChecker;
+import mesquite.lib.MesquiteFile;
+import mesquite.lib.MesquiteThread;
+import mesquite.lib.Snapshot;
+import mesquite.lib.StringUtil;
 import mesquite.lib.duties.*;
 import mesquite.treefarm.OpenLiveTreeFile.OpenLiveTreeFile;
 
 /* ======================================================================== */
 public class ShowTreesFromLiveFile extends FileAssistantFM {
-	
+	OpenLiveTreeFile importerTask;
 	/*.................................................................................................................*/
 	public boolean startJob(String arguments, Object condition, boolean hiredByName) {
 		/*String directoryPath = MesquiteFile.chooseDirectory("Choose folder containing FASTA files, one per taxon:", null); 
 		if (StringUtil.blank(directoryPath))
 			return false;*/
-		OpenLiveTreeFile importerTask = (OpenLiveTreeFile)hireNamedEmployee(OpenLiveTreeFile.class, "#OpenLiveTreeFile");
+		importerTask = (OpenLiveTreeFile)hireNamedEmployee(OpenLiveTreeFile.class, "#OpenLiveTreeFile");
 		if (importerTask == null)
 			return false;
-		importerTask.readFile(getProject(), true);
+		if (!MesquiteThread.isScripting())
+ 			importerTask.readFile(getProject(), null, false);
+
 		return true;
 	}
+	/*.................................................................................................................*/
+	public Snapshot getSnapshot(MesquiteFile file) {
+		Snapshot temp = new Snapshot();
+		temp.addLine("setImporterTask", importerTask);
+		temp.addLine("setPath " + StringUtil.tokenize(importerTask.getPath()));
+		return temp;
+	}
+	/*.................................................................................................................*/
+    	 public Object doCommand(String commandName, String arguments, CommandChecker checker) {
+     	 	if (checker.compare(this.getClass(), "Returns the importer", "[]", commandName, "setImporterTask")) {
+	   	 		return importerTask;
+     	 	}
+     	 	else if (checker.compare(this.getClass(), "Set path", "[path]", commandName, "setPath")) {
+     	 		String path = parser.getFirstToken(arguments);
+     	 		
+     			importerTask.readFile(getProject(), path, false);
+     	 	}
+   	 	else
+    	 		return  super.doCommand(commandName, arguments, checker);
+     	 	return null;
+   	 }
 
 	/*.................................................................................................................*/
 	public boolean isPrerelease() { 
@@ -43,11 +71,11 @@ public class ShowTreesFromLiveFile extends FileAssistantFM {
 
 	/*.................................................................................................................*/
 	public String getNameForMenuItem() {
-		return "Show Trees from Live NEXUS file...";
+		return "Show Trees from Live Tree File...";
 	}
 	/*.................................................................................................................*/
 	public String getName() {
-		return "Show Trees from Live NEXUS file";
+		return "Show Trees from Live Tree File";
 	}
 	/*.................................................................................................................*/
 	/** returns the version number at which this module was first released.  If 0, then no version number is claimed.  If a POSITIVE integer
@@ -59,7 +87,7 @@ public class ShowTreesFromLiveFile extends FileAssistantFM {
 	/*.................................................................................................................*/
 	/** returns an explanation of what the module does.*/
 	public String getExplanation() {
-		return "Opens a tree window showing trees from a separate NEXUS file. You can use this to monitor an ongoing tree inference analysis, because if the file changes, new trees are automatically read. By default, the tree window shows the last tree in the file.\n"
+		return "Opens a tree window showing trees from a separate NEXUS or simple Newick/Phylip tree file. You can use this to monitor an ongoing tree inference analysis, because if the file changes, new trees are automatically read. By default, the tree window shows the last tree in the file.\n"
 				+" This is designed to work with a tree file that includes only one taxa block." ;
 	}
 

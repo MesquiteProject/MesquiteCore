@@ -65,6 +65,7 @@ public class MesquiteTable extends MesquitePanel implements KeyListener, MouseWh
 
 	protected boolean columnNamesCopyPaste = true;
 	protected boolean rowNamesCopyPaste = true;
+	protected boolean rowNamesCopyPasteWithRowSelection = true;
 	int baseRowHeight = 16;
 	//	int thinRowHeight=22;
 	int baseColumnWidth = 16;
@@ -708,6 +709,10 @@ public class MesquiteTable extends MesquitePanel implements KeyListener, MouseWh
 	public void setRowNamesCopyPaste(boolean copyPastable) {
 		this.rowNamesCopyPaste = copyPastable;
 	}
+	/* ................................................................................................................. */
+	public void setRowNamesCopyPasteWithRowSelection(boolean copyPastable) {
+		this.rowNamesCopyPasteWithRowSelection = copyPastable;
+	}
 
 	/* ................................................................................................................. */
 	public int getColumnGrabberWidth() {
@@ -819,7 +824,7 @@ public class MesquiteTable extends MesquitePanel implements KeyListener, MouseWh
 		for (int j = 0; j < numRowsTotal; j++) {
 			if (isRowNameSelected(j) || isRowSelected(j)) {
 				String t = StringUtil.getNextTabbedToken(s, pos);
-				if (t != null && rowNamesEditable && rowNamesCopyPaste){
+				if (t != null && rowNamesEditable && rowNamesCopyPaste && (rowNamesCopyPasteWithRowSelection || isRowNameSelected(j))){
 					returnedRowNameText(j, t, false);
 					if ((count+1) % 10 == 0)
 						System.err.print(".");

@@ -91,7 +91,6 @@ public class NameParserOnTaxonName extends TaxonNameAlterer {
 	/*.................................................................................................................*/
 	public Snapshot getSnapshot(MesquiteFile file) {
 		Snapshot temp = new Snapshot();
-		Debugg.println("@@@@@@@ " + nameParser);
 		temp.addLine("getNameParser");
 		temp.addLine("tell It");
 		temp.incorporate(nameParser.getSnapshot(file), true);

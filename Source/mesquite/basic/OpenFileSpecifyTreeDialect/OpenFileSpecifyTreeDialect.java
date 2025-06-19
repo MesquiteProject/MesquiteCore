@@ -40,7 +40,7 @@ public class OpenFileSpecifyTreeDialect extends GeneralFileMakerSingle {
 		MesquiteString fileName = new MesquiteString();
 		String choice = "Choose NEXUS file with trees";
 		if (!NEXUSOnly)
-			choice += " or Phylip/Newick tree file";
+			choice = "Choose NEXUS or Phylip/Newick tree file";
 		String path = MesquiteFile.openFileDialog( choice,  null, fileName);
 		if (path == null)
 			return null;

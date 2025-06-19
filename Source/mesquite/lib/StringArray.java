@@ -374,6 +374,8 @@ public class StringArray implements StringLister, Listable, Nameable {
 		if (toFill <0)
 			return d;
 		Bits flags = toDelete.cloneBits(); 
+		if (flags == null)
+			return d;
 		int source = flags.nextBit(toFill, false); //find source to move into it
 		int highestFilled = toFill-1; //
 		while (source >=0 && source < d.length && toFill >=0) { //First, compact storage toward the start of the array.

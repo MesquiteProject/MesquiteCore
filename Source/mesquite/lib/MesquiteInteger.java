@@ -27,11 +27,13 @@ import mesquite.lib.ui.TwoIntegersDialog;
 	original change as needed*/
 public class MesquiteInteger implements Listable, Nameable{
 	public static final int unassigned = Integer.MIN_VALUE+1;
-	public static final int impossible = Integer.MAX_VALUE - 1;
-	public static final int finite = Integer.MAX_VALUE-3;
-	public static final int infinite = Integer.MAX_VALUE;
 	public static final int negInfinite = Integer.MIN_VALUE;
+	public static final int infinite = Integer.MAX_VALUE;
+	public static final int impossible = Integer.MAX_VALUE - 1;
 	public static final int inapplicable = Integer.MAX_VALUE -2;
+	public static final int finite = Integer.MAX_VALUE-3;
+	public static final int disallowed1 = Integer.MAX_VALUE-4;  //in case calculation took an uncombinable and subtracted 1 or 2, still uncombinable
+	public static final int disallowed2 = Integer.MAX_VALUE-5;  //in case calculation took an uncombinable and subtracted 1 or 2, still uncombinable
 	private int value;
 	public static long totalCreated = 0;
 	private boolean unanimous = true;
@@ -73,6 +75,16 @@ public class MesquiteInteger implements Listable, Nameable{
 	public static void setValue(MesquiteInteger b, int value) { //so that setting can be done in line whether or not null
 		if (b != null)
 			b.setValue(value);
+	}
+	public static void listConstants() { //so that setting can be done in line whether or not null
+		System.err.println("MesquiteInteger constants:");
+		System.err.println("  unassigned " + unassigned);
+		System.err.println("  impossible " + impossible);
+		System.err.println("  finite " + finite);
+		System.err.println("  infinite " + infinite);
+		System.err.println("  negInfinite " + negInfinite);
+		System.err.println("  inapplicable " + inapplicable);
+		
 	}
 	public static long toLong(int value) { //so that setting can be done in line whether or not null
 		if (value == unassigned)
@@ -179,11 +191,11 @@ public class MesquiteInteger implements Listable, Nameable{
 	}
 	/** Returns whether value is a regular number (NOT unassigned, infinite, inapplicable, impossible) */
 	public boolean isCombinable() {
-		return (value!=unassigned && value!=infinite && value!=impossible&& value!=inapplicable && value != finite && value != negInfinite);
+		return (value!=unassigned && value!=infinite && value!=impossible&& value!=inapplicable && value != finite && value != negInfinite && value != disallowed1 && value != disallowed2);
 	}
 	/** Returns whether value is a regular number (NOT unassigned, infinite, inapplicable, impossible) */
 	public static boolean isCombinable(int i) {
-		return (i!=unassigned && i!=infinite && i!=impossible&& i!=inapplicable && i != finite && i != negInfinite);
+		return (i!=unassigned && i!=infinite && i!=impossible&& i!=inapplicable && i != finite && i != negInfinite && i != disallowed1 && i != disallowed2);
 	}
 	/** Returns whether value is a regular number (NOT unassigned, infinite, inapplicable, impossible) and greater than zero */
 	public static boolean isPositive(int i) {

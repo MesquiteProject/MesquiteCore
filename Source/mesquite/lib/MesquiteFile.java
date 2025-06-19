@@ -1940,6 +1940,7 @@ public class MesquiteFile extends Listened implements HNode, Commandable, Listab
 
 
 		if (StringUtil.blank(token)) {
+			status.setValue(-1);
 			return token;
 		}
 		if (ParseUtil.darkBeginsWithIgnoreCase(token, "Begin"))

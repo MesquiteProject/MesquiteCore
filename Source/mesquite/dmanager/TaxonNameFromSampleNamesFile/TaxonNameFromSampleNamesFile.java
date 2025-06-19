@@ -212,6 +212,12 @@ public class TaxonNameFromSampleNamesFile extends TaxonNameAlterer  {
 		String s = "This file must contain in its first line the titles of each of the columns, delimited by tabs.  The first column must be the target to match (current taxon name or Taxon ID code), ";
 		s+= "and the second and later columns should contain naming schemes for the sequences. Each of the following lines must contain the entry for one sample.\n\n";
 		s+= "<BR><BR>For example, the file might look like this:<br><br>\n";
+		s+= "<tt>code&nbsp;&nbsp;&nbsp;&nbsp;Short name&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Simple name&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Name with numbers&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Name with localities <br>\n";
+		s+= "001&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Bemb_quadrimaculatum_001&nbsp;&nbsp;&nbsp;Bembidion quadrimaculatum&nbsp;&nbsp;&nbsp;Bembidion quadrimaculatum 001&nbsp;&nbsp;&nbsp;Bembidion quadrimaculatum ONT <br>\n";
+		s+= "002&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Bemb_festivum_002&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Bembidion festivum&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Bembidion festivum 002&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Bembidion festivum CA:Fresno <br>\n";
+		s+= "003&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Bemb_occultator_003&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Bembidion occultator&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Bembidion occultator 003&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Bembidion occultator ON:Dwight <br>\n";
+		s+= "004&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Lion_chintimini_004&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Lionepha chintimini&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Lionepha chintimini 004&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Lionepha chintimini OR:Marys Peak <br><br>\n";
+		s += "</tt><p>The columns are separated by tabs, as shown here:<p>";
 		s+= "code  &lt;tab&gt;  Short name &lt;tab&gt;  Simple name  &lt;tab&gt;  Name with numbers  &lt;tab&gt;  Name with localities <br>\n";
 		s+= "001  &lt;tab&gt;  Bemb_quadrimaculatum_001 &lt;tab&gt;  Bembidion quadrimaculatum  &lt;tab&gt;  Bembidion quadrimaculatum 001  &lt;tab&gt;  Bembidion quadrimaculatum ONT <br>\n";
 		s+= "002  &lt;tab&gt;  Bemb_festivum_002 &lt;tab&gt;  Bembidion festivum  &lt;tab&gt;  Bembidion festivum 002  &lt;tab&gt;  Bembidion festivum CA:Fresno <br>\n";
@@ -222,7 +228,7 @@ public class TaxonNameFromSampleNamesFile extends TaxonNameAlterer  {
 		
 
 		dialog.appendToHelpString(s);
-
+		dialog.setHelpSize(1100, 400);
 		dialog.completeAndShowDialog(true);
 		boolean success=(buttonPressed.getValue()== dialog.defaultOK);
 		if (success)  {

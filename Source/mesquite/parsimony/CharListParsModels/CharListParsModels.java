@@ -183,8 +183,9 @@ public class CharListParsModels extends CharListAssistant {
 					return model.getName();
 				}
 			}
-			else
-				MesquiteMessage.warnProgrammer("model set null in gsfc");
+			else {
+				MesquiteMessage.warnProgrammer("model set null in gsfc for data " + data.getName());
+			}
 		}
 		return "?";
 	}

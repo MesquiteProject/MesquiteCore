@@ -27,11 +27,11 @@ public class ManyTreesFromFile extends ManyTreesFromFileLib {
 	
 	/*.................................................................................................................*/
 	 public String getName() {
-	return "Trees from Separate NEXUS File";
+	return "Trees from Separate File";
 	 }
 /*.................................................................................................................*/
 	 public String getNameForMenuItem() {
-	return "Trees from Separate Live NEXUS File...";
+	return "Trees from Separate Live File...";
 	 }
 	 
 		/*.................................................................................................................*/
