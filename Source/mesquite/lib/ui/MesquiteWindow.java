@@ -688,6 +688,20 @@ public abstract class MesquiteWindow implements Listable, Commandable, OwnedByMo
 
 	}
 	/*.................................................................................................................*/
+	/** Returns whether the item is being shown*/
+	public static boolean itemIsShown(Component c){
+		if (c==null)
+			return true;
+		if (!c.isVisible())
+			return false;
+		
+		Container cont = c.getParent();
+		if (cont!= null)
+			return itemIsShown(cont);
+		return true;
+		
+	}
+	/*.................................................................................................................*/
 	/** Returns the MesquiteWindow containing the component.  Returns null if not contained in a MesquiteWindow*/
 	public static MesquiteWindow windowOfItem(Component c){
 		if (c==null)

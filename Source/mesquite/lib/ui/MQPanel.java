@@ -37,7 +37,18 @@ public class MQPanel extends Panel implements MQComponent {
 	public MQComponentHelper getHelper(){
 		return helper;
 	}
+	public void validateTree(){
+		//if (!MesquiteWindow.itemIsShown(this))
+		//	return;
+		if (MesquiteTrunk.quitting)
+			return;
+		super.validateTree();
+	}
 	public void superValidate(){
+		//if (!MesquiteWindow.itemIsShown(this))
+		//	return;
+		if (MesquiteTrunk.quitting)
+			return;
 		super.validate();
 	}
 	public void superSetBounds(int x, int y, int w, int h){

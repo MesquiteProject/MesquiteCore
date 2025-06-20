@@ -538,6 +538,7 @@ class NodeLabel extends MesquiteLabel implements HNode {
 		daughterVector = null;
 		super.dispose();
 	}
+	
 	/*.................................................................................................................*/
 	public HNode getHNode(){
 		return node;

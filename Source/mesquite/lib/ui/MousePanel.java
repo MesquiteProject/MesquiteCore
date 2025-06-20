@@ -77,7 +77,7 @@ public class MousePanel extends MQPanel implements Commandable, FileDirtier, Mou
 	private DragSource dragSource;
 	private DragGestureListener dgListener; 
 	private DragSourceListener dsListener;
-	
+
 	int autoscrollDirection = AUTOSCROLLBOTH;
 
 	static long exited, clicked, entered,pressed, released, dragged, moved;
@@ -127,10 +127,10 @@ public class MousePanel extends MQPanel implements Commandable, FileDirtier, Mou
 		disabledCursor = setupDisabledCursor("disabled.gif", "disabled", 4,2);
 		if (disabledCursor ==null)
 			disabledCursor = Cursor.getDefaultCursor();
-		
+
 		this.dragSource = DragSource.getDefaultDragSource();
-//		this.dgListener = new DragGestureListener();
-//		this.dsListener = new DragSourceAdapter();
+		//		this.dgListener = new DragGestureListener();
+		//		this.dsListener = new DragSourceAdapter();
 	}
 	public void dispose(){
 		if (downCommand!=null)
@@ -187,8 +187,11 @@ public class MousePanel extends MQPanel implements Commandable, FileDirtier, Mou
 	}
 	public Graphics getGraphics(){
 		if (GraphicsUtil.ignoreComponent(this, 0)) 
-				return null;
-			
+			return null;
+		if (!MesquiteWindow.itemIsShown(this))  //for some reason there are requests to get graphics to not shown components, and it is causing crashes after ParallelAlterMatrixAsUtility --???
+			return null;
+
+
 		Graphics gg = super.getGraphics();
 		if (gg instanceof Graphics2D){
 
@@ -384,7 +387,7 @@ public class MousePanel extends MQPanel implements Commandable, FileDirtier, Mou
 			MesquiteException.lastLocation = 0;
 		}
 		else if (checker.compare(this.getClass(), "Mouse moved", "[modifiers as integer][x][y]", commandName, "mouseMoved")) {
-int modifiers = MesquiteInteger.fromString(ParseUtil.getFirstToken(arguments, pos));
+			int modifiers = MesquiteInteger.fromString(ParseUtil.getFirstToken(arguments, pos));
 			int x = MesquiteInteger.fromString(arguments, pos);
 			int y = MesquiteInteger.fromString(arguments, pos);
 			MesquiteTool t = getT();
@@ -482,8 +485,8 @@ int modifiers = MesquiteInteger.fromString(ParseUtil.getFirstToken(arguments, po
 	}
 	public void mouseExited(int modifiers, int x, int y, MesquiteTool tool) {
 	}
-	
-	
+
+
 	/*...............................................................................................................*/
 	public void mouseClicked(MouseEvent e)   {
 		if (MesquiteDialog.currentWizard != null){
@@ -497,7 +500,7 @@ int modifiers = MesquiteInteger.fromString(ParseUtil.getFirstToken(arguments, po
 		currentX = e.getX();
 		currentY = e.getY();
 		MesquiteException.lastLocation = 108;
-		
+
 		clickedCommand.doItMainThread(Integer.toString(MesquiteEvent.getModifiers(e)) + " " +  e.getX() + " " + e.getY(), null, false, false);
 		MesquiteException.lastLocation = 0;
 	}

@@ -3204,7 +3204,7 @@ class MatrixTable extends mesquite.lib.table.CMTable implements MesquiteDroppedF
 		setUserMove(true, true);
 		linkedTables = new Vector();
 		this.data = data;
-		 setRowNamesCopyPasteWithRowSelection(false);//("@
+		 setRowNamesCopyPasteWithRowSelection(false);
 		cellAnnotated = new CellAnnotation(data);
 		showStates = new MesquiteBoolean(true);
 		reduceCellBorders = new MesquiteBoolean(false);

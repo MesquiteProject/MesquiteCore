@@ -74,7 +74,7 @@ public abstract class MesquiteModule extends EmployerEmployee implements Command
 	/*.................................................................................................................*/
 	/** returns build date of the Mesquite system (e.g., "22 September 2003") */
 	public final static String getBuildDate() {
-		return "16 June 2025";
+		return "20 June 2025";
 	}
 	/*.................................................................................................................*/
 	/** returns version of the Mesquite system */
@@ -92,7 +92,7 @@ public abstract class MesquiteModule extends EmployerEmployee implements Command
 	public final static int getBuildNumber() {
 		//as of 26 Dec 08, build naming changed from letter + number to just number.  Accordingly j105 became 473, based on
 		// highest build numbers of d51+e81+g97+h66+i69+j105 + 3 for a, b, c
-		return 1078;  
+		return 1079;  
 	}
 	//0.95.80    14 Mar 01 - first beta release 
 	//0.96  2 April 01 beta  - second beta release
@@ -434,7 +434,8 @@ public abstract class MesquiteModule extends EmployerEmployee implements Command
 		/* In 4.beta quit would hang after a big ParallelAlterMatrixAsUtility run becuase of a thread lock on the AWT thread. 
 		 * For users, this is bad, so we just bail here --  no point in waiting around! However, for developers we stick with it in hopes of finding what went wrong.
 		 */
-		if (this == MesquiteTrunk.mesquiteTrunk && !MesquiteTrunk.mesquiteTrunk.startedAsLibrary) {
+		if (this == MesquiteTrunk.mesquiteTrunk && !MesquiteTrunk.startedAsLibrary) {
+			MesquiteTrunk.quitting = true;
 			if (!MesquiteTrunk.developmentMode){
 				System.out.println("Stopping Java");
 				System.exit(0);
