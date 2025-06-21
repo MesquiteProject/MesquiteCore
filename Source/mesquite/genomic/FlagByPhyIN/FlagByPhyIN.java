@@ -142,7 +142,7 @@ public class FlagByPhyIN extends MatrixFlaggerForTrimmingSites implements Action
 				parametersChanged();
 
 		}
-		else if (checker.compare(this.getClass(), "Sets proportion of sites in span incompatible to trigger selection.", "[on or off]", commandName, "setProportionIncompat")) {
+		else if (checker.compare(this.getClass(), "Sets proportion of sites in span incompatible to trigger selection.", "[number between 0 and 1 inclusive]", commandName, "setProportionIncompat")) {
 			double s = MesquiteDouble.fromString(parser.getFirstToken(arguments));
 			if (MesquiteDouble.isCombinable(s)){
 				proportionIncompat = s;
@@ -151,7 +151,7 @@ public class FlagByPhyIN extends MatrixFlaggerForTrimmingSites implements Action
 
 			}
 		}
-		else if (checker.compare(this.getClass(), "Sets block size of PhyIN selection.", "[on or off]", commandName, "setSpanSize")) {
+		else if (checker.compare(this.getClass(), "Sets block size of PhyIN selection.", "[integer]", commandName, "setSpanSize")) {
 			int s = MesquiteInteger.fromString(parser.getFirstToken(arguments));
 			if (MesquiteInteger.isCombinable(s)){
 				blockSize = s;
@@ -160,7 +160,7 @@ public class FlagByPhyIN extends MatrixFlaggerForTrimmingSites implements Action
 			}
 
 		}
-		else if (checker.compare(this.getClass(), "Sets neighbour distance of PhyIN selection.", "[on or off]", commandName, "setNeighbourDistance")) {
+		else if (checker.compare(this.getClass(), "Sets neighbour distance of PhyIN selection.", "[integer]", commandName, "setNeighbourDistance")) {
 			int s = MesquiteInteger.fromString(parser.getFirstToken(arguments));
 			if (MesquiteInteger.isCombinable(s)){
 				neighbourDistance = s;

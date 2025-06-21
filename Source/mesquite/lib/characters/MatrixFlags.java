@@ -134,6 +134,8 @@ public class MatrixFlags {
 	}
 
 	public void copyFlags(MatrixFlags flags) {
+		if (flags == null)
+			return;
 		characterFlags.setBits(flags.getCharacterFlags());
 		taxonFlags.setBits(flags.getTaxonFlags());
 		boolean[][] other = flags.getCellFlags();
@@ -143,6 +145,8 @@ public class MatrixFlags {
 
 	}
 	public void orFlags(MatrixFlags flags) {
+		if (flags == null)
+			return;
 		characterFlags.orBits(flags.getCharacterFlags());
 		taxonFlags.orBits(flags.getTaxonFlags());
 		boolean[][] other = flags.getCellFlags();
