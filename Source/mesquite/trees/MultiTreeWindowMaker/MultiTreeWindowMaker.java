@@ -368,7 +368,7 @@ class MultiTreeWindow extends MesquiteWindow implements Commandable  {
 					treeDisplays[itree].print(g);
 					g.translate(-xLoc,-yLoc);
 				}
-				pdfFile.end();
+				pdfFile.endDocument();
 			}			
 			else 
 				super.windowToPDF(pdfFile, fitToPage);

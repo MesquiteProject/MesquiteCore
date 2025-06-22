@@ -1992,7 +1992,7 @@ public class MesquiteTable extends MesquitePanel implements KeyListener, MouseWh
 	public synchronized void tableToPDF(MesquitePDFFile pdfFile, MesquiteWindow window, int fitToPage) {
 		if (pdfFile != null) {
 			printAll(pdfFile.getPDFGraphicsForComponent(this, totalDimension()));
-			pdfFile.end();
+			pdfFile.endDocument();
 		}
 	}
 

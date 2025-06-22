@@ -2459,7 +2459,7 @@ class BasicTreeWindow extends MesquiteWindow implements Fittable, MesquiteListen
 				treeDisplay.setVisRect(r);
 				treeDisplay.setPrintingInProcess(false);
 				treeDisplay.repaintAll();
-				pdfFile.end();
+				pdfFile.endDocument();
 			}
 		}
 	}

@@ -1214,7 +1214,7 @@ public class MesquiteChart extends MesquitePanel  implements OwnedByModule {
 			g2.translate(getXAxisEdge(),0);
 			field.print(g2);
 			this.printAllExtras(g2);
-			pdff.end();
+			pdff.endDocument();
 		}
 	}
 	/*.................................................................................................................*/

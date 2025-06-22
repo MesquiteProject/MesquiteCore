@@ -539,7 +539,7 @@ class MirrorTreeWindow extends MesquiteWindow implements Commandable  {
 				treeDisplays[0].print(g);
 				g.translate((int)treeDisplays[1].getLocation().getX(),(int)treeDisplays[1].getLocation().getY());
 				treeDisplays[1].print(g);
-				pdfFile.end();
+				pdfFile.endDocument();
 			}
 			}
 			catch (NullPointerException e){  //seems to be an issue...
