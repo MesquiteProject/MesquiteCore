@@ -70,6 +70,9 @@ public class MesquitePDFFile {
 	@param fitToPage integer controlling whether the image is fit to the page
 	 */
 	public static MesquitePDFFile getPDFFile(MesquiteWindow w, String name) {
+		if (MesquiteTrunk.isJavaVersionLessThan(17)) {
+			AlertDialog.notice(w, "Requires Java 17 or above", "Saving PDF files requires Java version 17 or above.  Please install the latest version of Java.");
+		}
 		MesquitePDFFile f = new MesquitePDFFile(w,name);
 		if (f.prepareDocument())
 			return f;
