@@ -250,10 +250,10 @@ public class CharNumForList extends CharListAssistant implements MesquiteListene
 		if (numberTask==null || data == null || suppressed)
 			return;
 		int numChars = data.getNumChars();
+		na.deassignArrayToInteger();
 		na.resetSize(numChars);
 		explArray.resetSize(numChars);
 		MesquiteString expl = new MesquiteString();
-		na.deassignArrayToInteger();
 		MesquiteNumber mn = new MesquiteNumber();
 		for (int ic=0; ic<numChars; ic++) {
 

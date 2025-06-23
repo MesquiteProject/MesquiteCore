@@ -29,6 +29,7 @@ import mesquite.lib.ui.AlertDialog;
 import mesquite.lib.ui.ColorTheme;
 import mesquite.lib.ui.FontUtil;
 import mesquite.lib.ui.GraphicsUtil;
+import mesquite.lib.ui.MQComponentHelper;
 import mesquite.lib.ui.MesquiteDialog;
 import mesquite.lib.ui.MesquiteFrame;
 import mesquite.lib.ui.MesquiteSubmenu;
@@ -53,7 +54,7 @@ public class Defaults extends MesquiteInit  {
 	}
 	/*.................................................................................................................*/
 	MesquiteBoolean respectFileSpecificResourceWidth, useOtherChoices, console, askSeed, useReports, permitXOR;
-	MesquiteBoolean taxonTruncTrees, permitSpaceUnderscoreEquivalentTrees, printTreeNameByDefault;
+	MesquiteBoolean taxonTruncTrees, permitSpaceUnderscoreEquivalentTrees, printTreeNameByDefault, protectGraphics;
 	MesquiteBoolean tabbedWindows, debugMode, wizards, logAll, phoneHome, secondaryChoicesOnInDialogs, subChoicesOnInDialogs, tilePopouts; 
 	MesquiteString themeName;
 	StringArray themes;
@@ -64,6 +65,7 @@ public class Defaults extends MesquiteInit  {
 		console = new MesquiteBoolean(MesquiteTrunk.mesquiteTrunk.logWindow.isConsoleMode());
 		logAll = new MesquiteBoolean(MesquiteCommand.logEverything);
 		permitXOR = new MesquiteBoolean(GraphicsUtil.permitXOR);
+		protectGraphics = new MesquiteBoolean(MQComponentHelper.protectGraphics);
 		wizards = new MesquiteBoolean(MesquiteDialog.useWizards);
 		tabbedWindows = new MesquiteBoolean(MesquiteWindow.compactWindows);
 		//tilePopouts = new MesquiteBoolean(MesquiteFrame.popIsTile);
@@ -128,6 +130,7 @@ public class Defaults extends MesquiteInit  {
 		sm.setFilterable(false);
 		MesquiteTrunk.mesquiteTrunk.addCheckMenuItemToSubmenu(MesquiteTrunk.fileMenu, MesquiteTrunk.defaultsSubmenu,"Use File-Specific Project Panel Width", makeCommand("respectFileSpecificResourceWidth",  this), respectFileSpecificResourceWidth);
 		MesquiteTrunk.mesquiteTrunk.addCheckMenuItemToSubmenu(MesquiteTrunk.fileMenu, MesquiteTrunk.defaultsSubmenu,"Permit Inverted Highlights (XORMode)", makeCommand("toggleXORMode",  this), permitXOR);
+		MesquiteTrunk.mesquiteTrunk.addCheckMenuItemToSubmenu(MesquiteTrunk.fileMenu, MesquiteTrunk.defaultsSubmenu,"Thread-protect Graphics", makeCommand("protectGraphics",  this), protectGraphics);
 		MesquiteTrunk.mesquiteTrunk.addCheckMenuItemToSubmenu(MesquiteTrunk.fileMenu, MesquiteTrunk.defaultsSubmenu, "Ask for Random Number Seeds", makeCommand("toggleAskSeed",  this), askSeed);
 		MesquiteTrunk.mesquiteTrunk.addCheckMenuItemToSubmenu(MesquiteTrunk.fileMenu, MesquiteTrunk.defaultsSubmenu, "Count Steps in Polymorphisms with Unord/Ord Parsimony", makeCommand("toggleCountStepsInTermPolymorphisms",  this), ParsAncStatesForModel.countStepsInTermPolymorphisms);
 		MesquiteTrunk.mesquiteTrunk.addCheckMenuItemToSubmenu(MesquiteTrunk.fileMenu, MesquiteTrunk.defaultsSubmenu, "Permit Partial Names in Tree Reading", makeCommand("togglePartNamesTrees",  this), taxonTruncTrees);
@@ -211,6 +214,10 @@ public class Defaults extends MesquiteInit  {
 		else if ("permitXOR".equalsIgnoreCase(tag)){
 				permitXOR.setValue(content);
 				GraphicsUtil.permitXOR = permitXOR.getValue();
+		}
+		else if ("protectGraphics".equalsIgnoreCase(tag)){
+			protectGraphics.setValue(content);
+				MQComponentHelper.protectGraphics = protectGraphics.getValue();
 		}
 		else if ("taxonTruncTrees".equalsIgnoreCase(tag)){
 			taxonTruncTrees.setValue(content);
@@ -331,6 +338,7 @@ public class Defaults extends MesquiteInit  {
 		StringUtil.appendXMLTag(buffer, 2, "python3Path", PythonUtil.python3Path);
 		StringUtil.appendXMLTag(buffer, 2, "askSeed", askSeed);   
 		StringUtil.appendXMLTag(buffer, 2, "permitXOR", permitXOR);   
+		StringUtil.appendXMLTag(buffer, 2, "protectGraphics", protectGraphics);   
 		StringUtil.appendXMLTag(buffer, 2, "countStepsInTermPolymorphisms", ParsAncStatesForModel.countStepsInTermPolymorphisms);  
 		StringUtil.appendXMLTag(buffer, 2, "taxonTruncTrees", taxonTruncTrees);   
 		StringUtil.appendXMLTag(buffer, 2, "permitSpaceUnderscoreEquivalentTrees", permitSpaceUnderscoreEquivalentTrees);   
@@ -604,6 +612,12 @@ public class Defaults extends MesquiteInit  {
 			GraphicsUtil.permitXOR = permitXOR.getValue();
 			resetAllMenuBars();
 			return permitXOR;
+		}
+		else if (checker.compare(getClass(), "Sets whether to protect graphics for thread-safety", null, commandName, "protectGraphics")) {
+			protectGraphics.toggleValue(null);
+			MQComponentHelper.protectGraphics = protectGraphics.getValue();
+			resetAllMenuBars();
+			return protectGraphics;
 		}
 		else if (checker.compare(getClass(), "Sets whether to permit taxon name truncation in trees", null, commandName, "togglePartNamesTrees")) {
 			taxonTruncTrees.toggleValue(null);

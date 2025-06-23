@@ -115,7 +115,11 @@ public class TreeDisplay extends TaxaTreeDisplay  {
 
 	protected boolean showBranchColors = true;
 	public static boolean printTreeNameByDefault = false;
-
+	
+	/** If in tracemode, the tree drawing should have a good visible place to fill the branch with colours.
+	 * An integer because it gets incremented and decremented by different requesters. Introduced late (4.0), so not widely used. See SquareLineTree*/
+	private int traceMode = 0;
+	
 	/**  The color of the branches*/
 	public Color branchColor;
 	/**  The color of a dimmed branch*/
@@ -484,6 +488,22 @@ public class TreeDisplay extends TaxaTreeDisplay  {
 		return fixedTaxonSpacing;
 	}
 	
+	public boolean getTraceMode() {
+		if (extras != null) {
+			Enumeration e = extras.elements();
+			while (e.hasMoreElements()) {
+				Object obj = e.nextElement();
+				TreeDisplayExtra ex = (TreeDisplayExtra)obj;
+				if (ex.requestTraceMode())
+					return true;
+
+			}
+		}
+		return false;
+	}	/*^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^*/
+
+	
+
 	boolean rectsEqual(int[] r1, int[] r2){
 		if (r1 == null){
 			if (r2 != null)

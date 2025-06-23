@@ -174,6 +174,9 @@ class ShadeNumbersDecorator extends TreeDecorator {
 		this.ownerModule=ownerModule;
  		colors = new ColorDistribution();
 	}
+	public boolean requestTraceMode(){
+		return true;
+	}
 	/*.................................................................................................................*/
 	private void writeAtNode(NumberArray numbers,Graphics g, FontMetrics fm, int N,  Tree tree) {
 		for (int d = tree.firstDaughterOfNode(N); tree.nodeExists(d); d = tree.nextSisterOfNode(d))

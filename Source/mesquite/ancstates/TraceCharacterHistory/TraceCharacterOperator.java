@@ -64,6 +64,11 @@ public class TraceCharacterOperator extends TreeDisplayDrawnExtra implements Cha
 			doCalculations(true);
 		}
 	}
+	public boolean requestTraceMode(){
+		if (decorator != null)
+			return decorator.requestTraceMode();
+		return false;
+	}
 	/*.................................................................................................................*/
 	public void toggleReconstruct(){
 		if (traceLegend!=null)

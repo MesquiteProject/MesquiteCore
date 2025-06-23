@@ -57,6 +57,10 @@ public abstract class TreeDecorator {
 	public ColorRecord[] getLegendColorRecords(){
 		return null;
 	}
+	
+	public boolean requestTraceMode(){
+		return false;
+	}
 }
 
 

@@ -129,6 +129,9 @@ class ShadeStatesDecorator extends TreeDecorator {
 			oldDrawing = treeDisplay.getTreeDrawing();
 		}
 	}
+	public boolean requestTraceMode(){
+		return true;
+	}
 	/*.................................................................................................................*/
 	private   void writeStateAtNode(CharacterHistory statesAtNodes,CharacterDistribution observedStates, Graphics g, int N,  Tree tree) {
 		if (tree.withinCollapsedClade(N))

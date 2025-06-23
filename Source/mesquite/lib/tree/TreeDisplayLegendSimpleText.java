@@ -46,7 +46,7 @@ public class TreeDisplayLegendSimpleText extends TreeDisplayLegend {
 	public void paint(Graphics g){
 		if (text != null){
 			//g.setColor(Color.gray);
-			g.drawRect(0, 0, legendWidth, legendHeight);
+			g.drawRect(0, 0, legendWidth-1, legendHeight-1);
 			text.setWidth(legendWidth-12);
 			text.draw(g, 6,0);
 		}

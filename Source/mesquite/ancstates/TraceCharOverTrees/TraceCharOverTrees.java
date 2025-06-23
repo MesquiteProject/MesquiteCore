@@ -663,6 +663,11 @@ class TraceCOTOperator extends TreeDisplayDrawnExtra {
 		this.mode = mode;
 	}
 
+	public boolean requestTraceMode(){
+		if (decorator != null)
+			return decorator.requestTraceMode();
+		return false;
+	}
 	boolean firstTreeHasAllTaxa = true;
 	/*.................................................................................................................*/
 	public void resetTreeDecorator(int drawnRoot) {

@@ -5242,7 +5242,7 @@ class TreeScrollPane extends MQPanel implements MouseWheelListener, KeyListener 
 		touch = hScroll.setMaximumWithResetWarning(max) || touch;
 		if (touch)
 			scrollTouched(null, 0);
-		hScroll.setVisible(min != max);
+		hScroll.setVisible(min != max || MesquiteTrunk.isLinux()); //Linux was leaving the scroll visible in a bad place when setVisible(false)!
 
 		if (min == max)
 			treeDisplay.setLocation(0, treeDisplay.getLocation().y);

@@ -376,6 +376,11 @@ class ValuesAtNodesOperator extends TreeDisplayDrawnExtra {
 		else 
 			tree.setAssociatedLong(nr, node, numArray.getLong(node));
 	}		
+	public boolean requestTraceMode(){
+		if (decorator != null)
+			return decorator.requestTraceMode();
+		return false;
+	}
 	/*.................................................................................................................*/
 	public void doCalculations() {
 		holding = true;

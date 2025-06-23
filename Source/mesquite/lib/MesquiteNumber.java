@@ -76,6 +76,7 @@ public class MesquiteNumber implements Listable, Nameable, WithStringDetails{
 		copyAuxiliaries(toCopy.getAuxiliaries());
 		totalCreated++;
 	}
+	
 	public void setWatchpoint(boolean w){
 		watchpoint = w;
 	}

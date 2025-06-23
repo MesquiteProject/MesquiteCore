@@ -31,6 +31,7 @@ import mesquite.lib.tree.TreeDecorator;
 import mesquite.lib.tree.TreeDisplay;
 import mesquite.lib.tree.TreeDisplayDrawnExtra;
 import mesquite.lib.tree.TreeDisplayExtra;
+import mesquite.lib.tree.TreeDisplayLateExtra;
 import mesquite.lib.tree.TreeDisplayLegend;
 import mesquite.lib.tree.TreeDisplayLegendSimpleText;
 import mesquite.lib.ui.GraphicsUtil;
@@ -60,7 +61,7 @@ public class TraceAllChanges extends TreeDisplayAssistantA {
 	// MesquiteString displayTaskName;
 	MesquiteCommand dtC;
 
-	MesquiteBoolean byCharacters, selectedOnly, selectedCharactersOnly, showTerminals, showTable, showStateNames, showCharNames, ambiguousChangesAlso, traceSingleCharacter, tickOnly;
+	MesquiteBoolean byCharacters, selectedOnly, selectedCharactersOnly, constantDistance, showTerminals, showTable, showStateNames, showCharNames, ambiguousChangesAlso, traceSingleCharacter, tickOnly;
 	int shadedCharacter = -1;
 	double barLength = 16;
 	MesquiteMenuItemSpec chooseCharToTraceMenuItem;
@@ -77,6 +78,7 @@ public class TraceAllChanges extends TreeDisplayAssistantA {
 		showStateNames = new MesquiteBoolean(true);
 		showCharNames = new MesquiteBoolean(true);
 		ambiguousChangesAlso = new MesquiteBoolean(false); 
+		constantDistance = new MesquiteBoolean(false); 
 		traceSingleCharacter = new MesquiteBoolean(false); 
 		tickOnly = new MesquiteBoolean(false); 
 		makeMenu("Trace_All");
@@ -98,10 +100,11 @@ public class TraceAllChanges extends TreeDisplayAssistantA {
 		addCheckMenuItem(null, "Selected Characters Only", makeCommand("toggleSelectedCharsOnly", this), selectedCharactersOnly);
 		addMenuSeparator();
 		addMenuItem("Display on Tree", null);
-		addCheckMenuItem(null, "Show All Permissable Changes (including Ambiguous)", makeCommand("ambiguousChangesAlso", this), ambiguousChangesAlso);
+		addCheckMenuItem(null, "Show All Permissible Changes (including Ambiguous)", makeCommand("ambiguousChangesAlso", this), ambiguousChangesAlso);
 		addCheckMenuItem(null, "Write Character Numbers", makeCommand("toggleShowCharNames", this), showCharNames);
 		addCheckMenuItem(null, "Write State Numbers", makeCommand("toggleShowStateNames", this), showStateNames);
 		addCheckMenuItem(null, "Narrow Lines", makeCommand("tickOnly", this), tickOnly);
+		addCheckMenuItem(null, "Constant Distance Between Bars", makeCommand("constantDistance", this), constantDistance);
 		addMenuItem("Bar Length...", makeCommand("setBarLength", this));
 		addCheckMenuItem(null, "Trace Single Character", makeCommand("traceSingleCharacter", this), traceSingleCharacter);
 		chooseCharToTraceMenuItem = addMenuItem("Choose Single Character to Trace...", makeCommand("setSingleCharacter", this));
@@ -145,6 +148,7 @@ public class TraceAllChanges extends TreeDisplayAssistantA {
 		temp.addLine("ambiguousChangesAlso " + ambiguousChangesAlso.toOffOnString());
 		temp.addLine("traceSingleCharacter " + traceSingleCharacter.toOffOnString());
 		temp.addLine("tickOnly " + tickOnly.toOffOnString());
+		temp.addLine("constantDistance " + constantDistance.toOffOnString());
 		temp.addLine("setSingleCharacter " + shadedCharacter);
 		temp.addLine("setBarLength " + (int)barLength);
 		temp.addLine("toggleSelectedOnly " + selectedOnly.toOffOnString());
@@ -181,6 +185,10 @@ public class TraceAllChanges extends TreeDisplayAssistantA {
 		}
 		else if (checker.compare(this.getClass(), "Sets whether to show reconstructed ancestral states of a single character", "[on or off]", commandName, "tickOnly")) {
 			tickOnly.toggleValue(parser.getFirstToken(arguments));
+			repaintAllTraceOperators();
+		}
+		else if (checker.compare(this.getClass(), "Sets whether to draw bars a constant width apart", "[on or off]", commandName, "constantDistance")) {
+			constantDistance.toggleValue(parser.getFirstToken(arguments));
 			repaintAllTraceOperators();
 		}
 		else if (checker.compare(this.getClass(), "Chooses what character to shade on tree", null, commandName, "setSingleCharacter")) {
@@ -408,7 +416,7 @@ public class TraceAllChanges extends TreeDisplayAssistantA {
 }
 
 /* ======================================================================== */
-class TraceAllOperator extends TreeDisplayDrawnExtra implements MesquiteListener, Commandable {
+class TraceAllOperator extends TreeDisplayDrawnExtra implements TreeDisplayLateExtra, MesquiteListener, Commandable {
 	Tree myTree;
 
 	TraceAllChanges traceAllModule;
@@ -466,7 +474,7 @@ class TraceAllOperator extends TreeDisplayDrawnExtra implements MesquiteListener
 	void resetLegend(){
 		String s = null;
 		if (traceAllModule.ambiguousChangesAlso.getValue()){
-			s = "Trace All Characters:\nAll permissable changes, as reconstructed by parsimony (i.e., including ambiguous). Some shown may be mutually exclusive.";
+			s = "Trace All Characters:\nAll permissible changes, as reconstructed by parsimony (i.e., including ambiguous). Some shown may be mutually exclusive.";
 		}
 		else {
 			s= "Trace All Characters:\nUnambiguous changes, as reconstructed by parsimony.";
@@ -729,6 +737,8 @@ class TraceAllOperator extends TreeDisplayDrawnExtra implements MesquiteListener
 			//Next, now that we know how many there are to draw, we can draw them
 			double barWidth = 8;
 			double barSpacing = 8;
+			if (traceAllModule.constantDistance.getValue())
+				barSpacing = barWidth /2;
 			int numBars = vBarDecorations.size();
 			double offset = barWidth + barSpacing;
 			double offsetRatio = 1;
@@ -767,29 +777,31 @@ class TraceAllOperator extends TreeDisplayDrawnExtra implements MesquiteListener
 					barWidth = 4;
 				else
 					barWidth = 0;
-
-				barSpacing = perBarAvailable - barWidth;
+				if (traceAllModule.constantDistance.getValue()) {
+					barSpacing = barWidth /2;
+					if (barSpacing < 0.00001)
+						barSpacing = perBarAvailable;
+				}
+				else
+					barSpacing = perBarAvailable - barWidth;
 
 				if (barWidth < 4) {
 					useColors = false;
 				}
-				offset = barWidth + barSpacing;
+				offset = barWidth + barSpacing - 0.001;
+				double total = barWidth*(numBars+1) + barSpacing*(numBars+2);
 				Vector bars = getBarRecordsVectorAtNode(node);
 				for (int ic = 0; ic < vBarDecorations.size(); ic++) {
 					BarDecorationRecord bdr = (BarDecorationRecord) vBarDecorations.elementAt(ic);
 					if (treeDisplay.isUp() || treeDisplay.isDown()) {  //======== UP/DOWN ======
 						double topY = nodeY;
-						double bottomY = ancY;
 
 						double left = leftTopBase - (barLength-edgeWidth) / 2 + offsetRatio*offset;
 						if (treeDisplay.isDown()){
-							topY = ancY;
-							bottomY = nodeY;
+							topY = nodeY-total; //ancY;
 						}
-						if (offset + topY + barWidth + barSpacing < bottomY) {
-						/*	g.setColor(Color.gray);
-							g.fillRect((int)left, (int)(topY + offset-4), (int)barLength + extraGrabber, (int)barWidth +8);
-							*/
+						//if (true || offset + topY + barWidth + barSpacing < bottomY) {
+						
 							if (useColors) {
 								if (traceAllModule.tickOnly.getValue()){
 									g.setColor(Color.black);
@@ -819,19 +831,17 @@ class TraceAllOperator extends TreeDisplayDrawnExtra implements MesquiteListener
 								GraphicsUtil.drawLine(g, left, topY + offset, left+barLength, topY + offset);
 								offset += barSpacing;
 							}
-						}
-						else
-							Debugg.println("Not enough room! " + node + " text " + bdr.text);
+					//	}
+					//	else if (MesquiteTrunk.developmentMode)
+					//		System.err.println("Not enough room! " + node + " text " + bdr.text);
 					}
 					else if (treeDisplay.isRight() || treeDisplay.isLeft()) {  //======== RIGHT/LEFT ======
-						double leftX = ancX;
-						double rightX = nodeX;
+						double leftX = nodeX;
 						double top = leftTopBase -(barLength-edgeWidth)/2 + offsetRatio*offset;
-						if (treeDisplay.isLeft()){
-							leftX = nodeX;
-							rightX = ancX;
+						if (treeDisplay.isRight()){
+							leftX = nodeX-total;
 						}
-						if (offset + leftX + barWidth + barSpacing < rightX) {
+					//	if (offset + leftX + barWidth + barSpacing < rightX) {
 							/*g.setColor(Color.gray);
 							if (treeDisplay.isRight()) 
 							g.fillRect((int)(leftX + offset-4), (int)(top), (int)barWidth+8, (int)barLength+extraGrabber);
@@ -871,9 +881,9 @@ class TraceAllOperator extends TreeDisplayDrawnExtra implements MesquiteListener
 								GraphicsUtil.drawLine(g, leftX + offset, top, leftX + offset,top+barLength);
 								offset += barSpacing;
 							}
-						}
-						else
-							Debugg.println("Not enough room! " + node + " text " + bdr.text);
+					//	}
+					//	else
+					//		System.err.println("Not enough room! " + node + " text " + bdr.text);
 					}
 				}
 			}
@@ -936,6 +946,10 @@ class TraceAllOperator extends TreeDisplayDrawnExtra implements MesquiteListener
 		if (node < barRecords.getSize())
 			return (Vector)barRecords.getValue(node);
 		return null;
+	}
+	
+	public boolean requestTraceMode(){
+		return traceAllModule.traceSingleCharacter.getValue() && traceAllModule.shadedCharacter>=0;
 	}
 	ObjectArray barRecords = new ObjectArray(10);
 	int edgeWidth = 0;
@@ -1004,7 +1018,7 @@ class TraceAllOperator extends TreeDisplayDrawnExtra implements MesquiteListener
 		MesquiteWindow w = traceAllModule.containerOfModule();
 		String amb = "n unambiguous";
 		if (traceAllModule.ambiguousChangesAlso.getValue())
-			amb = " permissable";
+			amb = " permissible";
 		w.setExplanation("This bar shows that there is a" + amb + " change (according to parsimony) in character " + (barFound.ic+1));
 	}
 	/* ................................................................................................................. */
@@ -1033,7 +1047,7 @@ class TraceAllOperator extends TreeDisplayDrawnExtra implements MesquiteListener
 
 					}
 					else
-						popup.addItem("Permitted changes:",  MesquiteCommand.nullCommand, null);
+						popup.addItem("Parsimony-permissible changes:",  MesquiteCommand.nullCommand, null);
 					for (int i = 0; i<v.size(); i++){
 						Point p = (Point)v.elementAt(i);
 						String s = "  " + p.x + " to " + p.y;
@@ -1090,6 +1104,9 @@ class TraceAllOperator extends TreeDisplayDrawnExtra implements MesquiteListener
 	}
 
 	public void printOnTree(Tree tree, int drawnRoot, Graphics g) {
+		System.err.println("@pOT ");
+		drawOnTree(tree, drawnRoot, g);
+		System.err.println(" ~~~pOT ");
 	}
 
 	/** passes which object changed, along with optional code number (type of change) and integers (e.g. which character) */

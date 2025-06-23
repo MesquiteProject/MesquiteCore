@@ -518,6 +518,7 @@ public class NumberArray {
 	elements 0 through numToCheck-1, and places the minimum in the MesquiteNumber r */
 	public void placeMinimumValue(MesquiteNumber r, int numToCheck) {
 		if (r!=null) {
+			r.setToUnassigned();
 			if (valueClass==INT) {
 				if (intValues.length==0)
 					return;
@@ -554,6 +555,7 @@ public class NumberArray {
 	elements 0 through numToCheck-1, and places the maximum in the MesquiteNumber r */
 	public void placeMaximumValue(MesquiteNumber r, int numToCheck) {
 		if (r!=null) {
+			r.setToUnassigned();
 			if (valueClass==INT) {
 				if (intValues.length==0)
 					return;

@@ -1231,7 +1231,7 @@ public class BasicFileCoordinator extends FileCoordinator implements PackageIntr
 	}
 	/*.................................................................................................................*/
 	/*  */
-	public void saveFile(int id){
+	void saveFile(int id, boolean newFile){
 		if (getProject() ==null)
 			return;
 		MainThread.incrementSuppressWaitWindow();
@@ -1241,7 +1241,7 @@ public class BasicFileCoordinator extends FileCoordinator implements PackageIntr
 		else
 			fi = getProject().getFileByID(id);
 		if (fi != null) { 
-			if (fi.getRequiresSaveAs() || !getProject().getHomeFile().fileExists()){ //no longer exists! user must have changed directories
+			if (!newFile && (fi.getRequiresSaveAs() || !getProject().getHomeFile().fileExists())){ //no longer exists! user must have changed directories
 				saveFileAs(id);
 			}
 			else 
@@ -1767,11 +1767,14 @@ public class BasicFileCoordinator extends FileCoordinator implements PackageIntr
 			if (MesquiteThread.isScripting() || AlertDialog.query(containerOfModule(), "Save All Files?", "Do you want to save all of the following files?" + fileNames + "\n\n(If you want to save only one, go to the submenu of the File menu.)"))
 				saveAllFiles();
 		}
+		else if (checker.compare(this.getClass(), "Saves file", "[number of file]", commandName, "saveNewFile")) {  //Single file only
+			saveFile(MesquiteInteger.fromString(arguments, new MesquiteInteger(0)), true);
+		}
 		else if (checker.compare(this.getClass(), "Saves file", "[number of file]", commandName, "saveFile")) {  //Single file only
-			saveFile(MesquiteInteger.fromString(arguments, new MesquiteInteger(0)));
+			saveFile(MesquiteInteger.fromString(arguments, new MesquiteInteger(0)), false);
 		}
 		else if (checker.compare(this.getClass(), "Saves home file", "[number of file]", commandName, "saveHomeFile")) {  //Single file only
-			saveFile((int)getProject().getHomeFile().getID());
+			saveFile((int)getProject().getHomeFile().getID(), false);
 		}
 		else if (checker.compare(this.getClass(), "Renames file", "[number of file]", commandName, "renameAndSaveFile")) {
 			MesquiteInteger pos = new MesquiteInteger(0);

@@ -259,8 +259,8 @@ public class NumForCharMatrixList extends CharMatricesListAssistant implements M
 		int numBlocks = datas.size();
 		explArray.resetSize(numBlocks);
 		MesquiteString expl = new MesquiteString();
-		na.resetSize(numBlocks);
 		na.deassignArrayToInteger();
+		na.resetSize(numBlocks);
 		MesquiteNumber mn = new MesquiteNumber();
 		for (int ic=0; ic<numBlocks; ic++) {
 			CharacterData data = (CharacterData)datas.elementAt(ic);

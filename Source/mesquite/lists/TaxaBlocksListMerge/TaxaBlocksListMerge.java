@@ -252,7 +252,7 @@ public class TaxaBlocksListMerge extends TaxaBlocksListUtility {
 			recipient = (Taxa)result;
 		}
 		String message = "The selected taxa blocks will be deleted after their taxa, matrices, and trees have been merged into the taxa block \"" + recipient.getName() + "\"."
-				+ " This cannot be undone.\n\nYou are strongly advised to save a copy of the file before doing this, because some information such as important metadata, footnotes or colors might be lost. Also, some ongoing analyses might be disrupted. "
+				+ " This CANNOT BE UNDONE.\n\nYou are strongly advised to save a copy of the file before doing this, because some information such as important metadata, footnotes or colors might be lost. Also, some ongoing analyses might be disrupted. "
 				+ " Would you like to continue with the merger?";
 		boolean contn = AlertDialog.query(containerOfModule(), "Merge and delete taxa blocks?", message, "Merge", "Cancel", 1);
 		if (!contn)

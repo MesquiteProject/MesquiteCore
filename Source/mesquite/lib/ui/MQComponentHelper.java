@@ -32,7 +32,7 @@ public class MQComponentHelper {
 	MQComponent component;
 	static boolean verboseTW = false;
 	static boolean linuxSendToOtherThread = false;
-	static boolean protectGraphics = false;
+	public static boolean protectGraphics = true;
 
 	public MQComponentHelper(MQComponent component){
 		this.component = component;

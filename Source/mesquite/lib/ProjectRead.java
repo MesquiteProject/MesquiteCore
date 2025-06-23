@@ -210,7 +210,7 @@ public class ProjectRead implements Runnable {
 			if (mf != null)
 				mf.okForRecentRereading = true;
 			if (!MesquiteThread.isScripting())
-				mb.doCommand("saveFile", null, CommandChecker.defaultChecker);
+				mb.doCommand("saveNewFile", null, CommandChecker.defaultChecker);
 			return mb.getProject();
 		}
 	}

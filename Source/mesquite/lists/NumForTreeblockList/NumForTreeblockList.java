@@ -160,6 +160,7 @@ public class NumForTreeblockList extends TreeblocksListAssistant implements Mesq
 		int numBlocks = treeBlocks.size();
 		explArray.resetSize(numBlocks);
 		MesquiteString expl = new MesquiteString();
+		na.deassignArrayToInteger();
 		na.resetSize(numBlocks);
 		MesquiteNumber mn = new MesquiteNumber();
 		for (int ic=0; ic<numBlocks; ic++) {

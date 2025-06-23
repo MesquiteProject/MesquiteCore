@@ -201,6 +201,7 @@ public class NumForTreeList extends TreeListAssistant implements MesquiteListene
 			return;
 
 		int numTrees = treesBlock.size();
+		na.deassignArrayToInteger();
 		na.resetSize(numTrees);
 		explArray.resetSize(numTrees);
 		MesquiteNumber mn = new MesquiteNumber();
