@@ -188,26 +188,7 @@ public class TaxonNameFromSampleNamesFile extends TaxonNameAlterer  {
 		dialog.addHorizontalLine(1);
 		Checkbox matchTaxonName = dialog.addCheckBox("Match Current Taxon Name (otherwise Taxon ID code)", matchCurrentTaxonName.getValue());
 		Checkbox colorChanged = dialog.addCheckBox("Color changed taxa", changeColor.getValue());
-		
-		//sampleCodeFilePathField = dialog.addTextField("File with Replacement Names:", sampleCodeListPath,26);
-		//sampleCodeFilePathField.addTextListener(this);
-		//final Button dnaCodesBrowseButton = dialog.addAListenedButton("Browse...",null, this);
-		//dnaCodesBrowseButton.setActionCommand("TaxonNameFileBrowse");
-		/*
-		String[] categories=null;
-
-		if (nameCategories==null) {
-			categories = new String[1];
-			categories[0]="Sample Code                  ";
-		} else
-			categories = nameCategories;
-
-		int currentCategory = chosenNameCategory;
-		if (currentCategory<0)
-			currentCategory=0;
-		categoryChoice = dialog.addPopUpMenu("Column for Replacement Names:", categories, currentCategory);
-*/
-		
+				
 		
 		String s = "This file must contain in its first line the titles of each of the columns, delimited by tabs.  The first column must be the target to match (current taxon name or Taxon ID code), ";
 		s+= "and the second and later columns should contain naming schemes for the sequences. Each of the following lines must contain the entry for one sample.\n\n";
