@@ -133,10 +133,10 @@ public class TreeDisplay extends TaxaTreeDisplay  {
 	public boolean collapsedCladeNameAtLeftmostAncestor = false;
 
 	/**  Spacing in pixels between taxa*/
-	private int taxonSpacing;
+	private double taxonSpacing;
 
 	/**  Spacing in pixels between taxa as set by user*/
-	private int fixedTaxonSpacing = 0;
+	private double fixedTaxonSpacing = 0;
 	/**  Orientaton of the tree*/
 	private int treeOrientation = NOTYETSET;
 	/**  For vert/horizontal trees, is default to permit stretching by default of the tree.  Set by tree drawer*/
@@ -475,16 +475,16 @@ public class TreeDisplay extends TaxaTreeDisplay  {
 	public int getEdgeWidth() {
 		return edgewidth;
 	}
-	public void setTaxonSpacing(int sp) {
+	public void setTaxonSpacing(double sp) {
 		this.taxonSpacing = sp;
 	}
-	public int getTaxonSpacing() {
+	public double getTaxonSpacing() {
 		return taxonSpacing;
 	}
-	public void setFixedTaxonSpacing(int sp) {
+	public void setFixedTaxonSpacing(double sp) {
 		this.fixedTaxonSpacing = sp;
 	}
-	public int getFixedTaxonSpacing() {
+	public double getFixedTaxonSpacing() {
 		return fixedTaxonSpacing;
 	}
 	

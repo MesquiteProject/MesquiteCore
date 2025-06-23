@@ -380,13 +380,11 @@ class SquareLineTreeDrawing extends TreeDrawing  {
 		if (treeDisplay==null) {ownerModule.logln("treeDisplay null"); return;}
 		if (tree==null) { ownerModule.logln("tree null"); return;}
 
-		//		treeDisplay.setTaxonSpacing(16);
-
 		ownerModule.nodeLocsTask.calculateNodeLocs(treeDisplay,  tree, drawnRoot); //Graphics g removed as parameter May 02
 		calculateLines(tree, drawnRoot);
 		edgewidth = preferredEdgeWidth;
 		if (treeDisplay.getTaxonSpacing()<edgewidth+2) {
-			edgewidth= treeDisplay.getTaxonSpacing()-2;
+			edgewidth= (int)treeDisplay.getTaxonSpacing()-2;
 			if (edgewidth<2)
 				edgewidth=2;
 		}
@@ -625,7 +623,7 @@ class SquareLineTreeDrawing extends TreeDrawing  {
 	private void ScanBranches(Tree tree, int node, int x, int y, MesquiteDouble fraction)
 	{
 		if (foundBranch==0) {
-			if (DrawTreeUtil.inSquareLineBranch(treeDisplay, this.x, this.y, useEdgeWidth(), treeDisplay.getTaxonSpacing(), tree, node, x,y) || inNode(node,x,y)){
+			if (DrawTreeUtil.inSquareLineBranch(treeDisplay, this.x, this.y, useEdgeWidth(), (int)treeDisplay.getTaxonSpacing(), tree, node, x,y) || inNode(node,x,y)){
 				foundBranch = node;
 				if (fraction!=null)
 					if (inNode(node,x,y))

@@ -390,13 +390,13 @@ class BallsNSticksDrawing extends TreeDrawing  {
 		calculateLines(tree, drawnRoot);
 		spotSize = preferredSpotSize;
 		if (treeDisplay.getTaxonSpacing()<spotSize+2) {
-			spotSize= treeDisplay.getTaxonSpacing()-2;
+			spotSize= (int)treeDisplay.getTaxonSpacing()-2;
 			if (spotSize<2)
 				spotSize=2;
 		}
 		treeDisplay.setMinimumTaxonNameDistanceFromTip(0, spotSize/2+ 4);
 		if (treeDisplay.getTaxonSpacing()<edgeWidth+2) {
-			edgeWidth = treeDisplay.getTaxonSpacing()-2;
+			edgeWidth = (int)treeDisplay.getTaxonSpacing()-2;
 			if (edgeWidth<2)
 				edgeWidth =2;
 		}

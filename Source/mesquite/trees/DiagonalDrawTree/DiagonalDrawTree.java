@@ -692,7 +692,7 @@ class DiagonalTreeDrawing extends TreeDrawing  {
 		calculateLines(tree, drawnRoot);
 		edgeWidth = preferredEdgeWidth;
 		if (treeDisplay.getTaxonSpacing()<edgeWidth+2) {
-			edgeWidth= treeDisplay.getTaxonSpacing()-2;
+			edgeWidth= (int)treeDisplay.getTaxonSpacing()-2;
 			if (edgeWidth<2)
 				edgeWidth=2;
 		}

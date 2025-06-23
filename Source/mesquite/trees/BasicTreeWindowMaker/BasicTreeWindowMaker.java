@@ -1957,7 +1957,7 @@ class BasicTreeWindow extends MesquiteWindow implements Fittable, MesquiteListen
 						borderWidth = wUsed;
 						borderHeight =  hUsed;
 					}
-					int basicMinSpacing = 12;
+					double basicMinSpacing = 12;
 					if (treeDisplay.getFixedTaxonSpacing() >0){
 						basicMinSpacing = treeDisplay.getFixedTaxonSpacing();
 					}
@@ -1998,12 +1998,12 @@ class BasicTreeWindow extends MesquiteWindow implements Fittable, MesquiteListen
 					else { //CAN'T FIT there will have to say how much is needed, and turn on the scroll pane
 						treeDisplay.autoStretchIfNeeded = true;
 						if (treeDisplay.getOrientation() == TreeDisplay.UP || treeDisplay.getOrientation() == TreeDisplay.DOWN) {
-							totalTreeFieldWidth = numTaxa * basicMinSpacing + borderWidth+treeDisplay.bufferForScaleEtc + scrollWidth + 4;
+							totalTreeFieldWidth = (int)(numTaxa * basicMinSpacing + borderWidth+treeDisplay.bufferForScaleEtc + scrollWidth + 4);
 							totalTreeFieldHeight = height - scrollWidth - 4;
 						}
 						else if (treeDisplay.getOrientation() == TreeDisplay.RIGHT || treeDisplay.getOrientation() == TreeDisplay.LEFT) {
 							totalTreeFieldWidth = width - scrollWidth - 4;
-							totalTreeFieldHeight = numTaxa * basicMinSpacing + borderHeight+treeDisplay.bufferForScaleEtc + scrollWidth + 4;
+							totalTreeFieldHeight = (int)( numTaxa * basicMinSpacing + borderHeight+treeDisplay.bufferForScaleEtc + scrollWidth + 4);
 						}
 						else {
 							totalTreeFieldWidth = numTaxa * 8;

@@ -226,7 +226,7 @@ class ArcTreeDrawing extends TreeDrawing  {
 		calculateLines(tree, drawnRoot);
 		edgewidth = preferredEdgeWidth;
 		if (treeDisplay.getTaxonSpacing()<edgewidth+2) {
-			edgewidth= treeDisplay.getTaxonSpacing()-2;
+			edgewidth= (int)treeDisplay.getTaxonSpacing()-2;
 			if (edgewidth<2)
 				edgewidth=2;
 		}

@@ -673,7 +673,7 @@ if (tree.isVisibleEvenIfInCollapsed(node))
 		ownerModule.nodeLocsTask.calculateNodeLocs(treeDisplay,  tree, drawnRoot); //Graphics g removed as parameter May 02
 		edgewidth = preferredEdgeWidth;
 		if (treeDisplay.getTaxonSpacing()<edgewidth+2) {
-			edgewidth= treeDisplay.getTaxonSpacing()-2;
+			edgewidth= (int)treeDisplay.getTaxonSpacing()-2;
 			if (edgewidth<2)
 				edgewidth=2;
 		}

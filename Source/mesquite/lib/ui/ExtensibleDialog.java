@@ -1710,7 +1710,15 @@ public class ExtensibleDialog extends MesquiteDialog implements ActionListener, 
 		if (initialString == null)
 			initialString = "";
 		if (fieldLength>=1) {
+			if (MesquiteTrunk.isLinux())
+				newPanel.setLayout(new GridLayout(1,1));
+				
 			textField =new MesquitePasswordField(initialString,fieldLength);
+			if (MesquiteTrunk.isLinux()) {
+				textField.setSize(new Dimension(dialogWidth-sideBuffer*2, textField.getSize().height));
+				newPanel.setSize(textField.getSize());
+			}
+			
 		}
 		else {
 			newPanel.setLayout(new GridLayout(1,1));

@@ -138,7 +138,7 @@ class ProjectorToolExtra extends TreeDisplayDrawnExtra implements Commandable  {
 			if (im!=null) {
 				int imWidth = im.getWidth((ImageObserver)treeDisplay);
 				int imHeight = im.getHeight((ImageObserver)treeDisplay);
-				int taxonSpacing = treeDisplay.getTaxonSpacing();
+				int taxonSpacing = (int)treeDisplay.getTaxonSpacing();
 				if (taxonSpacing <80)
 					taxonSpacing = 80;
 				double scale = MesquiteImage.getScaleToReduce(imWidth, imHeight, taxonSpacing, taxonSpacing);

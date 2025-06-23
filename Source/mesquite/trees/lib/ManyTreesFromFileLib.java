@@ -240,7 +240,7 @@ public abstract class ManyTreesFromFileLib extends TreeSource implements Mesquit
 	protected boolean fileReady = false;
 	/*.................................................................................................................*/
 	private boolean obtainFile(String arguments){
-		if (verbose) System.err.println("@OBTAIN FILE");
+		if (verbose) System.err.println("OBTAIN FILE");
 		fileReady = false;
 		if (ended){
 			discreetAlert("WARNING:  Attempt to use module that has ended (ManyTreesFromFileLib)" + getEmployerPath());
@@ -292,7 +292,7 @@ public abstract class ManyTreesFromFileLib extends TreeSource implements Mesquit
 	}
 
 	protected boolean processFile(){
-		if (verbose) System.err.println("@PROCESS FILE");
+		if (verbose) System.err.println("PROCESS FILE");
 		if (!goToTreeBlock(file))  	 		
 			return false;
 		if (!processTreeBlock())
@@ -343,7 +343,7 @@ public abstract class ManyTreesFromFileLib extends TreeSource implements Mesquit
 			String path = parser.getFirstToken(arguments);
 			filePosVector.removeAllElements();
 			String secondToken =parser.getNextToken() ;  // have to store this as obtainFile uses the parser
-			if (verbose) System.err.println("@DOCOMMAND setFilePath");
+			if (verbose) System.err.println("DOCOMMAND setFilePath");
 			if (obtainFile(arguments)){
 				if (processFile()){
 					if (!MesquiteThread.isScripting())
@@ -365,7 +365,7 @@ public abstract class ManyTreesFromFileLib extends TreeSource implements Mesquit
 				parametersChanged();
 		}
 		else if (checker.compare(this.getClass(), "Sets whether or not to listen to changes in the file", "[on or off]", commandName, "toggleLive")) {
-			if (verbose) System.err.println("@DOCOMMAND toggleLive");
+			if (verbose) System.err.println("DOCOMMAND toggleLive");
 			if (canDoLiveUpdate()) {
 				boolean current = live.getValue();
 				live.toggleValue(parser.getFirstToken(arguments));
@@ -390,7 +390,7 @@ public abstract class ManyTreesFromFileLib extends TreeSource implements Mesquit
 			quietOperation = true;
 			boolean success = processFile();
 			quietOperation = wasQuiet;
-			if (verbose) System.err.println("@DOCOMMAND fileCHANGED success: " + success);
+			if (verbose) System.err.println("DOCOMMAND fileCHANGED success: " + success);
 			parametersChanged();
 
 		}
@@ -418,7 +418,7 @@ public abstract class ManyTreesFromFileLib extends TreeSource implements Mesquit
 
 	/** finds the tree block .*/
 	private boolean goToTreeBlock(MesquiteFile mNF){
-		if (verbose) System.err.println("@goToTreeblock " + mNF.getFilePosition());
+		if (verbose) System.err.println("goToTreeblock " + mNF.getFilePosition());
 		ProgressIndicator progIndicator = null;
 		if (!quietOperation){
 			progIndicator =  new ProgressIndicator(getProject(),"Processing File "+ mNF.getName() + " to find trees", mNF.existingLength());
@@ -431,14 +431,14 @@ public abstract class ManyTreesFromFileLib extends TreeSource implements Mesquit
 				//	long blockStart = 0;
 				if (!quietOperation)
 					logln("Processing File "+ mNF.getName() + " to find tree block");
-				if (verbose) System.err.println("@openREading " + mNF.getFilePosition());
+				if (verbose) System.err.println("openREading " + mNF.getFilePosition());
 				String token= mNF.firstToken(null);
-				if (verbose) System.err.println("@token " + token);
+				if (verbose) System.err.println("token " + token);
 				MesquiteLong startPos = new MesquiteLong();
 				if (token!=null) {
 					//================================ NEXUS ============================
 					if (isNEXUS){
-						if (verbose) System.err.println("@NEXUS ");
+						if (verbose) System.err.println("NEXUS ");
 					if (!token.equalsIgnoreCase("#NEXUS")) {  //This shouldn't happen, because we've already checked
 							String mes = "Not a valid NEXUS file (first token is \"" + token + "\")";
 							if (!quietOperation)
@@ -494,7 +494,7 @@ public abstract class ManyTreesFromFileLib extends TreeSource implements Mesquit
 				//============================================================
 			}
 			catch (MesquiteException e){
-				if (verbose) System.err.println("@ERROR " + mNF.getFilePosition());
+				if (verbose) System.err.println("ERROR " + mNF.getFilePosition());
 				if (progIndicator!=null)
 					progIndicator.goAway();
 				return false;
@@ -513,7 +513,7 @@ public abstract class ManyTreesFromFileLib extends TreeSource implements Mesquit
 	/*=============================================================================*/
 	private boolean processTreeBlock(){
 
-		if (verbose) System.err.println("@PROCESS TREE BLOCK");
+		if (verbose) System.err.println("PROCESS TREE BLOCK");
 		String s;
 		int treeNum=0;
 		if (getProject().getNumberTaxas()==1)
@@ -793,11 +793,11 @@ public abstract class ManyTreesFromFileLib extends TreeSource implements Mesquit
 		if (pos<0 || pos > 100000000000L) {
 			if (!quietOperation)
 				MesquiteMessage.warnProgrammer("illegal file pos in " + getName());
-			if (verbose) System.err.println("@RECORDING bad file pos " + MesquiteLong.toString(pos));
+			if (verbose) System.err.println("RECORDING bad file pos " + MesquiteLong.toString(pos));
 			return;
 		}
 		long[] filePosTrees;
-		if (verbose) System.err.println("@$$$$ file pos tree " + iTree + " pos " + pos);
+		if (verbose) System.err.println("$$$$ file pos tree " + iTree + " pos " + pos);
 		while (!posExists(iTree)) {
 			filePosTrees = new long[arraySize];
 			for (int i=0; i<arraySize; i++)
@@ -842,7 +842,7 @@ public abstract class ManyTreesFromFileLib extends TreeSource implements Mesquit
 	/*=============================================================================*/
 	/*.................................................................................................................*/
 	String getTreeDescription(int currentTree, StringBuffer comment){
-		if (verbose) System.err.println("@getTreeDescription " + currentTree);
+		if (verbose) System.err.println("getTreeDescription " + currentTree);
 		if (!fileCheckingThread.going())
 			fileCheckingThread.start();
 		MesquiteInteger status = new MesquiteInteger(0);
@@ -858,7 +858,7 @@ public abstract class ManyTreesFromFileLib extends TreeSource implements Mesquit
 			long fPos = getFilePos(treeNum);
 			if (verbose) System.err.println(" >> " + treeNum + " fPos " + MesquiteLong.toString(fPos));
 			if (!MesquiteLong.isCombinable(fPos) || fPos<0) {
-				if (verbose) System.err.println("@bad file pos1 " + MesquiteLong.toString(fPos));
+				if (verbose) System.err.println("bad file pos1 " + MesquiteLong.toString(fPos));
 				return null;
 			}
 			file.goToFilePosition(fPos);
@@ -872,7 +872,7 @@ public abstract class ManyTreesFromFileLib extends TreeSource implements Mesquit
 			CommandRecord.tick("\"Trees from Separate File\": Going to tree " + (currentTree+1) + " [c]");
 			long fPos = getFilePos(0);
 			if (!MesquiteLong.isCombinable(fPos) || fPos<0) {
-				if (verbose) System.err.println("@bad file pos2 for 0 " + MesquiteLong.toString(fPos));
+				if (verbose) System.err.println("bad file pos2 for 0 " + MesquiteLong.toString(fPos));
 				return null;
 			}
 			file.goToFilePosition(fPos);
@@ -895,7 +895,7 @@ public abstract class ManyTreesFromFileLib extends TreeSource implements Mesquit
 			if (highestTreeMarked>=0) {
 				long fPos = getFilePos(highestTreeMarked);
 				if (!MesquiteLong.isCombinable(fPos) || fPos<0) {
-					if (verbose) System.err.println("@bad file pos3 " + MesquiteLong.toString(fPos));
+					if (verbose) System.err.println("bad file pos3 " + MesquiteLong.toString(fPos));
 					return null;
 				}
 			file.goToFilePosition(fPos);
@@ -946,7 +946,7 @@ public abstract class ManyTreesFromFileLib extends TreeSource implements Mesquit
 
 			long fPos = getFilePos(currentTree);
 			if (!MesquiteLong.isCombinable(fPos) || fPos<0) {
-				if (verbose) 	System.err.println("@bad file pos4 " + MesquiteLong.toString(fPos));
+				if (verbose) 	System.err.println("bad file pos4 " + MesquiteLong.toString(fPos));
 				return null;
 			}
 			file.goToFilePosition(fPos);
@@ -1108,9 +1108,9 @@ public abstract class ManyTreesFromFileLib extends TreeSource implements Mesquit
 		return getCurrentTree(taxa, true, null);
 	}
 	public void findNumTrees(Taxa taxa){
-		if (verbose) System.err.println("@ findNumTrees ################"); 
+		if (verbose) System.err.println(" findNumTrees ################"); 
 		if (taxa == null){
-			if (verbose) System.err.println("@ findNumTrees TAXA NULL "); 
+			if (verbose) System.err.println(" findNumTrees TAXA NULL "); 
 			currentTree = 0;
 			numTrees = 0;
 			return;
@@ -1122,14 +1122,14 @@ public abstract class ManyTreesFromFileLib extends TreeSource implements Mesquit
 		MesquiteTree dummyTree = new MesquiteTree(taxa);
 		int oldCurrent = currentTree;
 		currentTree = i;
-		if (verbose) System.err.println("@ findNumTrees before " + MesquiteInteger.toString(numTrees)); 
+		if (verbose) System.err.println(" findNumTrees before " + MesquiteInteger.toString(numTrees)); 
 		while((dummyTree = (MesquiteTree)getCurrentTree(taxa, false, dummyTree))!=null){
 			lastFound = i;
 			i++;
 			currentTree = i;
-			if (verbose) System.err.println("@ dummy " + i + " " + dummyTree); 
+			if (verbose) System.err.println(" dummy " + i + " " + dummyTree); 
 		}
-		if (verbose) System.err.println("@ findNumTrees after " + MesquiteInteger.toString(numTrees)); 
+		if (verbose) System.err.println(" findNumTrees after " + MesquiteInteger.toString(numTrees)); 
 		currentTree = oldCurrent;
 		if (lastFound >=0)
 			numTrees = lastFound;
@@ -1181,7 +1181,7 @@ public abstract class ManyTreesFromFileLib extends TreeSource implements Mesquit
 		int s = numTrees;
 		numTrees = MesquiteInteger.finite;
 		highestSuccessfulTree = -1;
-		if (verbose) System.err.println("@fileModified " + longer);
+		if (verbose) System.err.println("fileModified " + longer);
 		if (longer>0 && !rereadWholeFileIfGrows.getValue())
 			fileGrewCommand.doItMainThread(Integer.toString(s), null, false, false);  
 		else

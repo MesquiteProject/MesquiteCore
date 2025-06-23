@@ -1104,9 +1104,7 @@ class TraceAllOperator extends TreeDisplayDrawnExtra implements TreeDisplayLateE
 	}
 
 	public void printOnTree(Tree tree, int drawnRoot, Graphics g) {
-		System.err.println("@pOT ");
 		drawOnTree(tree, drawnRoot, g);
-		System.err.println(" ~~~pOT ");
 	}
 
 	/** passes which object changed, along with optional code number (type of change) and integers (e.g. which character) */
