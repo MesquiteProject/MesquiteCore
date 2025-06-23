@@ -1363,6 +1363,8 @@ public abstract class MenuOwner implements Doomable { // EMBEDDED: extends Apple
 			scriptingSubmenu.add(whichWindow.sendScriptMenuItem); // ��� scripting
 			wMenu.add(scriptingSubmenu);
 			wMenu.add("-");
+			wMenu.add(whichWindow.fitWindowMenuItem);
+
 			whichWindow.setPopTileMenuItemNames();
 			if (!whichWindow.isPoppedOut()) {
 				wMenu.add(whichWindow.popOutWindowMenuItem);
@@ -1413,7 +1415,9 @@ public abstract class MenuOwner implements Doomable { // EMBEDDED: extends Apple
 			scriptingSubmenu.add(whichWindow.sendScriptMenuItem); // ��� scripting
 			wMenu.add(scriptingSubmenu);
 			wMenu.add("-");
+			wMenu.add(whichWindow.fitWindowMenuItem);
 			whichWindow.setPopTileMenuItemNames();
+			
 			if (!whichWindow.isPoppedOut()) {
 				wMenu.add(whichWindow.popOutWindowMenuItem);
 				wMenu.add(whichWindow.tileOutWindowMenuItem);

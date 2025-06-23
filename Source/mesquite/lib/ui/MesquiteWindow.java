@@ -95,7 +95,7 @@ public abstract class MesquiteWindow implements Listable, Commandable, OwnedByMo
 	//The following are public for MenuOwner, but they shouldn't be changed otherwise!
 	public MesquiteCommand showCommand, showInfoBarCommand, saveAsTextCommand, printCommand, printToFitCommand;
 	public MesquiteCommand setFontCommand, setFontSizeCommand, listEmployeesCommand, doMacroCommand, showExplanationsCommand;
-	public MesquiteCommand showSnapshotCommand, sendScriptCommand, showFileCommand, closeWindowCommand, tileOutWindowCommand, popOutWindowCommand;
+	public MesquiteCommand showSnapshotCommand, sendScriptCommand, fitWindowCommand, showFileCommand, closeWindowCommand, tileOutWindowCommand, popOutWindowCommand;
 	public MesquiteCommand printToPDFCommand;
 	public static boolean pdfOutputAvailable = true; 
 	boolean readyToPaint = true;
@@ -135,7 +135,7 @@ public abstract class MesquiteWindow implements Listable, Commandable, OwnedByMo
 	boolean queryMode = false;
 
 	//The following are public for MenuOwner, but they shouldn't be changed otherwise!
-	public MesquiteMenuItem cloneWindowMenuItem, saveRecipeMenuItem, snapshotMenuItem, sendScriptMenuItem, popOutWindowMenuItem, tileOutWindowMenuItem;
+	public MesquiteMenuItem cloneWindowMenuItem, saveRecipeMenuItem, fitWindowMenuItem, snapshotMenuItem, sendScriptMenuItem, popOutWindowMenuItem, tileOutWindowMenuItem;
 	public MesquiteMenuItem closeWindowMenuItem, closeAllMenuItem;
 	public MesquiteMenuItemSpec closeWindowMenuItemSpec, closeAllMenuItemSpec,explanationsMenuItemSpec;
 	public MesquiteSubmenu fontSubmenu, fontSizeSubmenu;
@@ -311,6 +311,7 @@ public abstract class MesquiteWindow implements Listable, Commandable, OwnedByMo
 		showExplanationsCommand =MesquiteModule.makeCommand("showExplanations", this);
 		showSnapshotCommand = MesquiteModule.makeCommand("showSnapshot", this);
 		sendScriptCommand = MesquiteModule.makeCommand("sendScript", this);
+		fitWindowCommand = MesquiteModule.makeCommand("fitWindow", this);
 		/*	infoBarMenuItem = new MesquiteCheckMenuItem(new MesquiteCMenuItemSpec(null,"Show Information Bar", getOwnerModule(), showInfoBarCommand, null));
 		infoBarMenuItem.set(showInfoBar);
 		infoBarMenuItem.disconnectable = false;*/
@@ -322,6 +323,8 @@ public abstract class MesquiteWindow implements Listable, Commandable, OwnedByMo
 		popOutWindowMenuItem.disconnectable = false;
 		tileOutWindowMenuItem = new MesquiteMenuItem(new MesquiteMenuItemSpec(null, "Put in Separate Tile", getOwnerModule(), tileOutWindowCommand));
 		tileOutWindowMenuItem.disconnectable = false;
+		fitWindowMenuItem = new MesquiteMenuItem(new MesquiteMenuItemSpec(null,"Fit Window to Screen", getOwnerModule(), fitWindowCommand));
+		fitWindowMenuItem.disconnectable = false;
 		saveRecipeMenuItem = new MesquiteMenuItem(new MesquiteMenuItemSpec(null, "Save Window as Macro...", getOwnerModule(), MesquiteModule.makeCommand("saveMacroForWindow", this)));
 		saveRecipeMenuItem.disconnectable = false;
 		snapshotMenuItem = new MesquiteMenuItem(new MesquiteMenuItemSpec(null,"Show Snapshot", getOwnerModule(), showSnapshotCommand));
@@ -3064,6 +3067,15 @@ public abstract class MesquiteWindow implements Listable, Commandable, OwnedByMo
 				setWindowLocation(x, y, false, true);
 			}
 		}
+		else if (checker.compare(MesquiteWindow.class, "Fits the window", "[]", commandName, "fitWindow")) {
+				Rectangle effectiveScreenSize = getEffectiveScreenSize();
+				int top = (int)effectiveScreenSize.getY();
+				int height = (int)effectiveScreenSize.getHeight();
+				int left = (int)effectiveScreenSize.getX();
+				int width = (int)effectiveScreenSize.getWidth();
+				parentFrame.setBounds(left+8, top+8, width-16, height-16);
+
+		}
 		else if (checker.compare(MesquiteWindow.class, "Sets the font of the window", "[name of font]", commandName, "setFont")) {
 			String fontName = ParseUtil.getFirstToken(arguments, pos);
 			if (fontName.equalsIgnoreCase(FontUtil.otherFontArgument)) {
@@ -3384,6 +3396,7 @@ public abstract class MesquiteWindow implements Listable, Commandable, OwnedByMo
 				doMacroCommand.dispose();
 				showExplanationsCommand.dispose();
 				showSnapshotCommand.dispose();
+				fitWindowCommand.dispose();
 				sendScriptCommand.dispose();
 				showFileCommand.dispose();
 				closeWindowCommand.dispose();
@@ -3400,6 +3413,7 @@ public abstract class MesquiteWindow implements Listable, Commandable, OwnedByMo
 			doMacroCommand = null;
 			showExplanationsCommand = null;
 			showSnapshotCommand = null;
+			fitWindowCommand = null;
 			sendScriptCommand = null;
 			showFileCommand = null;
 			closeWindowCommand = null;
