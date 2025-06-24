@@ -299,11 +299,17 @@ public abstract class ExtensibleListDialog extends ExtensibleDialog implements I
 /*.................................................................................................................*/
 /**  This method should return an object that is a duplicate of currentElement  */
 	public abstract Listable duplicateElement(String name);
+	protected boolean okToDuplicateElement(Listable element){
+		return true;
+	}
 /*.................................................................................................................*/
 	public abstract void renameElement(int item, Listable element, String newName);
+	protected boolean okToRenameElement(Listable element){
+		return true;
+	}
 /*.................................................................................................................*/
 	protected void renameCurrentElement(boolean forceRenameIfNotUnique){
-		if (currentElement==null)
+		if (currentElement==null || !okToRenameElement(currentElement))
 			return;
 
 		MesquiteString io = new MesquiteString(((Listable)currentElement).getName());
@@ -329,9 +335,12 @@ public abstract class ExtensibleListDialog extends ExtensibleDialog implements I
 	}
 /*.................................................................................................................*/
 	public abstract void deleteElement(int item, int newSelectedItem);
+	protected boolean okToDeleteElement(Listable element){
+		return true;
+	}
 /*.................................................................................................................*/
 	private void deleteCurrentElement(){
-		if (currentElement==null)
+		if (currentElement==null ||!okToDeleteElement(currentElement))
 			return;
 		if (AlertDialog.query(MesquiteTrunk.mesquiteTrunk.containerOfModule(), "Delete", "Are you sure you want to delete the "+objectName()+"?", "Delete", "Cancel", 2)){
 			int item= list.getSelectedIndex();
@@ -373,9 +382,12 @@ public abstract class ExtensibleListDialog extends ExtensibleDialog implements I
 		else if ("Delete...".equals(e.getActionCommand()))
 			deleteCurrentElement();
 		else if ("Duplicate".equals(e.getActionCommand())) {
+			if (!okToDuplicateElement(currentElement))
+				return;
 			String name = listableVector.getUniqueName(((Listable)currentElement).getName());
 			Listable obj = duplicateElement(name);
-			addNewElement(obj,name);
+			if (obj != null)
+				addNewElement(obj,name);
 		}
 		else
 			super.actionPerformed(e);

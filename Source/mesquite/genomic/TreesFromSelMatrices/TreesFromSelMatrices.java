@@ -49,6 +49,7 @@ public class TreesFromSelMatrices extends CharMatricesListUtility {
 	MatrixSourceCoord matrixSourceTask;
 	/*.................................................................................................................*/
 	public boolean startJob(String arguments, Object condition, boolean hiredByName) {
+		loadPreferences();
 		inferenceTask = (TreeSearcherFromMatrix)hireCompatibleEmployee(TreeSearcherFromMatrix.class, "acceptImposedMatrixSource", "Tree inference method");
 		matrixSourceTask = new MyListOfMatrices(this);
 		if (inferenceTask == null || matrixSourceTask == null)
@@ -61,6 +62,20 @@ public class TreesFromSelMatrices extends CharMatricesListUtility {
 	public boolean pleaseLeaveMeOn(){
 		return false;
 	}
+	
+	boolean warnedAboutDeleting = false;
+	/*.................................................................................................................*/
+	public String preparePreferencesForXML () {
+		StringBuffer buffer = new StringBuffer();
+		StringUtil.appendXMLTag(buffer, 2, "warnedAboutDeleting", warnedAboutDeleting);  
+		return buffer.toString();
+	}
+	/*.................................................................................................................*/
+	public void processSingleXMLPreference (String tag, String content) {
+		if ("warnedAboutDeleting".equalsIgnoreCase(tag)) {
+			warnedAboutDeleting = MesquiteBoolean.fromTrueFalseString(content);
+		}
+	}
 
 	MCharactersDistribution currentMatrix = null;
 	public MCharactersDistribution getCurrentMatrix(Taxa taxa) {
@@ -70,6 +85,8 @@ public class TreesFromSelMatrices extends CharMatricesListUtility {
 	boolean compatibleMatrix(CharacterData data) {
 		return data.isCompatible(inferenceTask.getCharacterClass(), getProject(), null, null);
 	}
+	
+	
 	/** Called to operate on the CharacterData blocks.  Returns true if taxa altered*/
 	public boolean operateOnDatas(ListableVector datas, MesquiteTable table){
 		if (datas.size() == 0)
@@ -87,6 +104,11 @@ public class TreesFromSelMatrices extends CharMatricesListUtility {
 					return false;
 				}
 			}
+		}
+		if (!warnedAboutDeleting && datas.size()>=10 && !MesquiteThread.isScripting()){
+			alert("If the tree inferences will be done locally and analysis folders will be created, you may want to check the \"Delete analysis folder after completion\" check box so as not to generate many new folders.\n\nThis suggestion won't be repeated.");
+			warnedAboutDeleting = true;
+			storePreferences();
 		}
 		inferenceTask.initialize(taxa);
 		TreeVector trees = new TreeVector(((CharacterData)datas.elementAt(0)).getTaxa());
