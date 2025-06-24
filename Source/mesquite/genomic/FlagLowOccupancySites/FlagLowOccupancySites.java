@@ -318,7 +318,7 @@ public class FlagLowOccupancySites extends MatrixFlaggerForTrimmingSites impleme
 	}
 	/*.................................................................................................................*/
 	public boolean isPrerelease() {
-		return true;
+		return false;
 	}
 
 	/*.................................................................................................................*/

@@ -106,7 +106,7 @@ public class TrimTerminalByLength extends DataAlterer implements AltererSimpleCe
 		return ResultCodes.MEH;
 	}	/*.................................................................................................................*/
 	public boolean isPrerelease() {
-		return true;
+		return false;
 	}
 	/*.................................................................................................................*/
 	public boolean isSubstantive() {

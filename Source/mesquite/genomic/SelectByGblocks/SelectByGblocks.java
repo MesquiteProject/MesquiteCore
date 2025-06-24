@@ -29,7 +29,7 @@ public class SelectByGblocks extends SelectSitesByFlagger {
 
 	/*.................................................................................................................*/
 	public boolean isPrerelease() {
-		return true;
+		return false;
 	}
 	/*.................................................................................................................*/
 	public boolean requestPrimaryChoice() {

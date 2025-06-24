@@ -43,6 +43,7 @@ public class StateNamesStrip extends CategDataEditorInitD {
 	public boolean startJob(String arguments, Object condition, boolean hiredByName) {
 		showStrip = new MesquiteBoolean(false);
 		shown = false;
+		addMenuSeparator();
 		addCheckMenuItem(null, "Show State Names Strip", makeCommand("showStrip", this), showStrip);
 		return true;
 	}

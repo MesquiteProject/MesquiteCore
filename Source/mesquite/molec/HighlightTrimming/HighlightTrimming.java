@@ -170,6 +170,8 @@ public class HighlightTrimming extends DataWindowAssistantID implements CellColo
 				MatrixFlagger flaggerTask = (MatrixFlagger)hireEmployee(MatrixFlagger.class, "Trimming or flagging method to highlight");
 				if (flaggerTask == null){
 					discreetAlert("No method chosen to highlight");
+					setActive(false);
+					return false;
 				}
 				else {
 					flaggerInitialized = true;

@@ -2527,6 +2527,7 @@ class BasicDataWindow extends TableWindow implements MesquiteListener {
 	}
 
 	private void setCellColorer(MesquiteModule mb) {
+		CellColorer oldColorer =  table.cellColorer;
 		if (table.cellColorer != null) {
 			table.cellColorer.setActiveColors(false);
 			if (table.cellColorer instanceof DataWindowAssistant)
@@ -2541,6 +2542,10 @@ class BasicDataWindow extends TableWindow implements MesquiteListener {
 					((DataWindowAssistant) mb).setActive(true);
 				table.addControlButton(colorLegendButton);
 				setColorLegend(((CellColorer) mb).getLegendColors(), ((CellColorer) mb).getColorsExplanation(), showColorLegend.getValue());
+			}
+			else if (oldColorer != null) {
+				table.cellColorer = oldColorer;
+				oldColorer.setActiveColors(true);
 			}
 		}
 		else {

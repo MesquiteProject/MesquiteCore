@@ -36,7 +36,7 @@ public class IncludeFlippedFastaFiles extends FileAssistantFM {
 
 	/*.................................................................................................................*/
 	public boolean isPrerelease() { 
-		return true;
+		return false;
 	}
 	/*.................................................................................................................*/
 	public String getNameForMenuItem() {

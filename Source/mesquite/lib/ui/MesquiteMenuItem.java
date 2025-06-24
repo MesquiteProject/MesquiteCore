@@ -20,6 +20,10 @@ import java.awt.MenuItem;
 import java.awt.MenuShortcut;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
+
+import javax.accessibility.AccessibleContext;
 
 import mesquite.lib.CommandChecker;
 import mesquite.lib.Journal;
@@ -95,7 +99,7 @@ public class MesquiteMenuItem extends MenuItem implements ActionListener {
 	//This is constructor used to make menu from specs
 	public MesquiteMenuItem(MesquiteMenuItemSpec specification) {
 		super();
-		constructorUsed = 2;
+	constructorUsed = 2;
 		if (specification==null)
 			return;
 		addActionListener(this);
@@ -126,6 +130,7 @@ public class MesquiteMenuItem extends MenuItem implements ActionListener {
 		//	addActionListener(this);
 		totalCreated++;
 	}
+	
 	public MesquiteMenuItemSpec getSpecification(){
 		return specification;
 	}
@@ -218,7 +223,7 @@ public class MesquiteMenuItem extends MenuItem implements ActionListener {
 	}
 	Journal j =null;
 	public void actionPerformed(ActionEvent e) {
-		//Event queue
+	//Event queue
 		if (command==null || !command.isExecutable())
 			return ;//true;
 		if (hideable && hiddenStatusSet && InterfaceManager.isEditingMode()){
@@ -239,7 +244,6 @@ public class MesquiteMenuItem extends MenuItem implements ActionListener {
 				s += " (duty class: " + ((MesquiteSubmenu)getParent()).getDutyClass().getName() + ")";
 			if (getParent() instanceof MesquiteSubmenu && ((MesquiteSubmenu)getParent()).getFilter() != null)
 				s += " (filter: " + ((MesquiteSubmenu)getParent()).getFilter().getName() + ")";
-
 			MesquiteWindow.respondToQueryMode(s, command, this);
 		}
 		else {

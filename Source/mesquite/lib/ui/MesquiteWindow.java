@@ -648,6 +648,7 @@ public abstract class MesquiteWindow implements Listable, Commandable, OwnedByMo
 			MesquiteTrunk.mesquiteTrunk.showLogWindow(false);
 			String s = CommandChecker.getQueryModeString(item, command, widget);
 			w.setExplanation(s);
+			MesquiteMessage.println(s);
 		}
 	}
 	/*.................................................................................................................*/

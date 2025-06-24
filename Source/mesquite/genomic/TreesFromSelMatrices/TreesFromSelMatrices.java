@@ -91,7 +91,6 @@ public class TreesFromSelMatrices extends CharMatricesListUtility {
 		return data.isCompatible(inferenceTask.getCharacterClass(), getProject(), null, null);
 	}
 	
-	
 	/** Called to operate on the CharacterData blocks.  Returns true if taxa altered*/
 	public boolean operateOnDatas(ListableVector datas, MesquiteTable table){
 		if (datas.size() == 0)

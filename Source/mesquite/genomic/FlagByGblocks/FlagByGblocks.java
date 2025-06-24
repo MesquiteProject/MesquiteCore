@@ -287,14 +287,7 @@ public class FlagByGblocks extends MatrixFlaggerForTrimming implements ActionLis
 
 	/*.................................................................................................................*/
 	public  void actionPerformed(ActionEvent e) {
-		/*if (e.getActionCommand().equalsIgnoreCase("programBrowse")) {
-			gblocksPath = MesquiteFile.openFileDialog("Choose Gblocks: ", null, null);
-			if (!StringUtil.blank(gblocksPath)) {
-				programPathField.setText(gblocksPath);
-			}
-		}
-		else */
-		if (e.getActionCommand().equalsIgnoreCase("setToDefaults")) {
+			if (e.getActionCommand().equalsIgnoreCase("setToDefaults")) {
 			b1F.setValue(b1DEFAULT);
 			b2F.setValue(b2DEFAULT);
 			b3F.setValue(b3DEFAULT);
@@ -405,30 +398,7 @@ public class FlagByGblocks extends MatrixFlaggerForTrimming implements ActionLis
 										count++;
 								}
 								done = true;
-								/*					columns = resultText.split(", ");
-							columns[0] = columns[0].substring(12, columns[0].length());
-							Bits charFlags = flags.getCharacterFlags();
-							int lastKeep = -1;
-							int count = 0;
-							for (int k = 0; k<columns.length; k++) {
-								int keep = MesquiteInteger.fromString(StringUtil.stripWhitespace(columns[k]));
-								if (keep < data.getNumChars())
-									for (int d = lastKeep+1; d<keep; d++) {
-										boolean wasSet = charFlags.isBitOn(d);
-										charFlags.setBit(d);
-										if (!wasSet)
-											count++;
-									}
-								lastKeep = keep;
-							}
-							for (int d = lastKeep+1; d<data.getNumChars(); d++) {
-								boolean wasSet = charFlags.isBitOn(d);
-								charFlags.setBit(d);
-								if (!wasSet)
-									count++;
-							}
-							}
-								 */
+								
 							}
 						}
 					}
@@ -436,7 +406,6 @@ public class FlagByGblocks extends MatrixFlaggerForTrimming implements ActionLis
 				else
 					MesquiteMessage.warnProgrammer("No results from Gblocks found!");
 
-				//logln("" + count + " character(s) flagged in " + data.getName());
 			}
 			else MesquiteMessage.warnUser(" Error status returned from attempt to run Gblocs: " + resultStatus);
 		deleteSupportDirectory();
@@ -454,7 +423,7 @@ public class FlagByGblocks extends MatrixFlaggerForTrimming implements ActionLis
 	}
 	/*.................................................................................................................*/
 	public boolean isPrerelease() {
-		return true;
+		return false;
 	}
 
 	/*.................................................................................................................*/

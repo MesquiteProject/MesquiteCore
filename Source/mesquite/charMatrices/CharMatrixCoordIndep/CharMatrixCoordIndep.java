@@ -103,6 +103,7 @@ public class CharMatrixCoordIndep extends MatrixSourceCoord  implements NameHold
 		}
 		return true;
 	}
+
 	public String getMyName(Object obj){
 		if (obj == mss)
 			return "Source of Matrices (" + whatIsMyPurpose() + ")";

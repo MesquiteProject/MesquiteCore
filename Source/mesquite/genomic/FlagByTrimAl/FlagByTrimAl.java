@@ -158,10 +158,7 @@ public class FlagByTrimAl extends MatrixFlaggerForTrimming {
 		appChooser.addToDialog(dialog);
 		dialog.addHorizontalLine(1);
 
-		/*programPathField = dialog.addTextField("Path to trimAl:", trimAlPath, 40);
-		Button programBrowseButton = dialog.addAListenedButton("Browse...",null, this);
-		programBrowseButton.setActionCommand("programBrowse");
-		*/
+		
 		dialog.addBlankLine();
 		Choice alignmentMethodChoice = dialog.addPopUpMenu("Automated option", autoOptionNames, autoOption);
 		manualOptionsField = dialog.addTextField("Additional options (do NOT set -in or -out):", manualOptions, 40);
@@ -187,16 +184,7 @@ public class FlagByTrimAl extends MatrixFlaggerForTrimming {
 		return (buttonPressed.getValue()==0);
 	}
 
-	/*.................................................................................................................*
-	public  void actionPerformed(ActionEvent e) {
-		if (e.getActionCommand().equalsIgnoreCase("programBrowse")) {
-			trimAlPath = MesquiteFile.openFileDialog("Choose trimAl: ", null, null);
-			if (!StringUtil.blank(alternativeManualPath)) {
-				programPathField.setText(alternativeManualPath);
-			}
-		}
-	}
-*/
+	/*.................................................................................................................*/
 	String[] columns;
 
 	/*.................................................................................................................*/
@@ -281,8 +269,6 @@ public class FlagByTrimAl extends MatrixFlaggerForTrimming {
 				}
 				else
 					MesquiteMessage.warnUser(" No trimming results file for matrix " + data.getName());
-
-				//logln("" + count + " character(s) flagged in " + data.getName());
 			}
 			else {
 				MesquiteMessage.warnUser(" Error status returned from attempt to run trimAl: " + resultStatus);
@@ -305,7 +291,7 @@ public class FlagByTrimAl extends MatrixFlaggerForTrimming {
 	}
 	/*.................................................................................................................*/
 	public boolean isPrerelease() {
-		return true;
+		return false;
 	}
 
 	/*.................................................................................................................*/

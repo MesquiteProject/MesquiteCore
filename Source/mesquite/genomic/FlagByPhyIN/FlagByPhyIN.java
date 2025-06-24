@@ -292,7 +292,7 @@ public class FlagByPhyIN extends MatrixFlaggerForTrimmingSites implements Action
 		if (!getProject().isProcessDataFilesProject){
 			dialog.addLabel("Additional filter for low occupancy (gappy) sites");
 			fSO = dialog.addCheckBox("Filter gappy sites (i.e. keep only those with high enough occupancy).", filterSiteOccupancy);
-			pgSField = dialog.addDoubleField("Minimum occupancy (proportion of non-gaps, i.e. observed states) (-sot):", siteOccupancyThreshold, 4);
+			pgSField = dialog.addDoubleField("Minimum occupancy (proportion of non-gaps, i.e. observed states) (-occ):", siteOccupancyThreshold, 4);
 			fSO.addItemListener(this);
 			pgSField.getTextField().addTextListener(this);
 			dialog.addLabelSmallText("Sites with fewer observed states than this are considered too gappy.");
@@ -360,12 +360,12 @@ public class FlagByPhyIN extends MatrixFlaggerForTrimmingSites implements Action
 	void resetParamsInfo(){
 		String info = "b=" + SSField.getValueAsString() + " d=" + NDField.getValueAsString() + " p=" + PIField.getValueAsString() + " e=" + tGAS.getState();
 		if (!getProject().isProcessDataFilesProject && fSO.getState())
-			info += " sot=" + pgSField.getValue();
+			info += " occ=" + pgSField.getValue();
 		paramsInfo.setText(info);
 	}
 	/*.................................................................................................................*/
 	public boolean isPrerelease(){
-		return true;
+		return false;
 	}
 	/*.................................................................................................................*/
 	/** returns whether this module is requesting to appear as a primary choice */

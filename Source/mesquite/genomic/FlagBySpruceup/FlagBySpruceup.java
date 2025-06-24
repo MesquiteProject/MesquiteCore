@@ -47,10 +47,7 @@ public class FlagBySpruceup extends MatrixFlaggerForTrimming implements ActionLi
 
 	/* This replicates the calculations of Spruceup v. 2024.07.22 */
 
-	/* suggestions:
-	 * -- Option to remove gaps only characters (default yet)
-	 * -- Option to do it iteratively until nothing left
-	 * */
+	
 	/* parameters =================================*/
 	static double cutoffDEFAULT = 5.0; 
 	static int windowSizeDEFAULT = 50;
@@ -421,7 +418,7 @@ public class FlagBySpruceup extends MatrixFlaggerForTrimming implements ActionLi
 	}
 	/*.................................................................................................................*/
 	public boolean isPrerelease() {
-		return true;
+		return false;
 	}
 
 	/*.................................................................................................................*/

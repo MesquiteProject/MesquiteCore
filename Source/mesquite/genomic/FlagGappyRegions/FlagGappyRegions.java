@@ -548,7 +548,7 @@ public class FlagGappyRegions extends MatrixFlaggerForTrimmingSites implements A
 	}
 	/*.................................................................................................................*/
 	public boolean isPrerelease() {
-		return true;
+		return false;
 	}
 
 	/*.................................................................................................................*/

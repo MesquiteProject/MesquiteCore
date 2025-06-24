@@ -201,6 +201,7 @@ public class TreezBlocksFromMatrices extends CharMatricesListUtility {
 class MyListOfMatrices extends MatrixSourceCoord  {
 	TreezBlocksFromMatrices owner;
 	Taxa taxa = null;
+	
 	public MyListOfMatrices(TreezBlocksFromMatrices owner) {
 		this.owner = owner;
 	}
