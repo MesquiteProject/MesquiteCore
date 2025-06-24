@@ -244,8 +244,8 @@ public void processUserClickingOnTextCommandLink(String command) {
 	/** Called to provoke any necessary initialization.  This helps prevent the module's intialization queries to the user from
    	happening at inopportune times (e.g., while a long chart calculation is in mid-progress)*/
 	public void initialize(Taxa taxa){
-		searchTask.initialize(taxa);
 		searchTask.setTreeInferer(this);
+		searchTask.initialize(taxa);
 	}
 	/*.................................................................................................................*/
 	public int fillTreeBlock(TreeVector treeList, int numberIfUnlimited){
