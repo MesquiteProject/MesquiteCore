@@ -17,9 +17,8 @@ import mesquite.distance.lib.TaxaDistance;
 import mesquite.distance.lib.TaxaDistanceSource;
 import mesquite.lib.EmployeeNeed;
 import mesquite.lib.MesquiteModule;
-import mesquite.lib.MesquiteTrunk;
 import mesquite.lib.characters.CharacterData;
-import mesquite.lib.duties.*;
+import mesquite.lib.duties.DataWindowAssistantA;
 import mesquite.lib.table.MesquiteTable;
 
 public class ShowDistance extends DataWindowAssistantA {

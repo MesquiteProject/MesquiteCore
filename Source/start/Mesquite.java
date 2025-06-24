@@ -16,14 +16,11 @@ package start;
 
 import java.io.File;
 import java.io.UnsupportedEncodingException;
-import java.lang.reflect.*;
-import java.lang.Class;
+import java.lang.reflect.Method;
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.net.URLDecoder;
-import java.net.URLEncoder;
 import java.util.Vector;
-import java.lang.ClassLoader;
 
 /*This class is used to start Mesquite.  It is now the expected way to start Mesquite, whether in executables or not,
  * because (as of Java 9) Mesquite needs to use a custom classloader for its modules.

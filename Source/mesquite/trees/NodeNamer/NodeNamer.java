@@ -13,11 +13,18 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
  */
 package mesquite.trees.NodeNamer;
 
-import java.util.*;
-import java.awt.*;
-import java.awt.image.*;
-import mesquite.lib.*;
-import mesquite.lib.duties.*;
+import java.awt.Graphics;
+import java.util.Enumeration;
+import java.util.Vector;
+
+import mesquite.lib.CommandChecker;
+import mesquite.lib.Commandable;
+import mesquite.lib.MesquiteInteger;
+import mesquite.lib.MesquiteListener;
+import mesquite.lib.MesquiteModule;
+import mesquite.lib.Notification;
+import mesquite.lib.ParseUtil;
+import mesquite.lib.duties.TreeDisplayAssistantI;
 import mesquite.lib.taxa.Taxa;
 import mesquite.lib.tree.Clade;
 import mesquite.lib.tree.MesquiteTree;

@@ -13,20 +13,33 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
  */
 package mesquite.molec.HighlightTrimming; 
 
-import java.util.*;
-
-import java.awt.*;
+import java.awt.Color;
 import java.awt.event.KeyEvent;
+import java.util.Vector;
 
-import mesquite.lib.*;
-import mesquite.lib.characters.*;
-import mesquite.lib.duties.*;
-import mesquite.lib.table.*;
+import mesquite.categ.lib.CategoricalState;
+import mesquite.categ.lib.DNAData;
+import mesquite.categ.lib.RequiresAnyDNAData;
+import mesquite.lib.CommandChecker;
+import mesquite.lib.CompatibilityTest;
+import mesquite.lib.MesquiteBoolean;
+import mesquite.lib.MesquiteFile;
+import mesquite.lib.MesquiteListener;
+import mesquite.lib.MesquiteModule;
+import mesquite.lib.MesquiteThread;
+import mesquite.lib.Notification;
+import mesquite.lib.Snapshot;
+import mesquite.lib.characters.CharacterData;
+import mesquite.lib.characters.MatrixFlags;
+import mesquite.lib.duties.CellColorer;
+import mesquite.lib.duties.CellColorerMatrixHighPriority;
+import mesquite.lib.duties.DataWindowAssistantID;
+import mesquite.lib.duties.MatrixFlagger;
+import mesquite.lib.table.MesquiteTable;
 import mesquite.lib.ui.AlertDialog;
 import mesquite.lib.ui.ColorDistribution;
 import mesquite.lib.ui.ColorRecord;
 import mesquite.lib.ui.MesquiteMenuItemSpec;
-import mesquite.categ.lib.*;
 
 /* ======================================================================== */
 public class HighlightTrimming extends DataWindowAssistantID implements CellColorer, CellColorerMatrixHighPriority {

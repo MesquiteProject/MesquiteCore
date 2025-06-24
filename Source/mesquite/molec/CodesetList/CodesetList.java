@@ -14,11 +14,13 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
 package mesquite.molec.CodesetList;
 /*~~  */
 
-import mesquite.lists.lib.*;
-import mesquite.lib.*;
-import mesquite.lib.characters.*;
+import mesquite.lib.CommandChecker;
+import mesquite.lib.Commandable;
+import mesquite.lib.SpecsSet;
+import mesquite.lib.characters.CharacterData;
 import mesquite.lib.ui.AlertDialog;
-import mesquite.molec.lib.*;
+import mesquite.lists.lib.DataSpecssetList;
+import mesquite.molec.lib.GenCodeModelSet;
 
 /* ======================================================================== */
 public class CodesetList extends DataSpecssetList {

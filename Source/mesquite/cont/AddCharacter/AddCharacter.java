@@ -14,15 +14,17 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
 package mesquite.cont.AddCharacter;
 /*~~  */
 
-import java.util.*;
-import java.awt.*;
-
-import mesquite.lib.table.*;
+import mesquite.cont.lib.ContDataAlterer;
+import mesquite.cont.lib.ContinuousData;
+import mesquite.cont.lib.ContinuousDistribution;
+import mesquite.cont.lib.ContinuousState;
+import mesquite.lib.MesquiteDouble;
+import mesquite.lib.ResultCodes;
+import mesquite.lib.UndoReference;
+import mesquite.lib.characters.CharacterData;
+import mesquite.lib.duties.CharSourceCoordObed;
+import mesquite.lib.table.MesquiteTable;
 import mesquite.lib.taxa.Taxa;
-import mesquite.lib.*;
-import mesquite.lib.characters.*;
-import mesquite.lib.duties.*;
-import mesquite.cont.lib.*;
 
 /* ======================================================================== */
 public class AddCharacter extends ContDataAlterer {

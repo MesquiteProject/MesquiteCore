@@ -13,13 +13,24 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
 package mesquite.io.ExportCharStateInfo;
 /*~~  */
 
-import java.util.*;
-import java.awt.*;
-import mesquite.lib.*;
-import mesquite.lib.characters.*;
-import mesquite.lib.duties.*;
+import java.awt.Choice;
+
+import mesquite.categ.lib.CategoricalData;
+import mesquite.categ.lib.CategoricalState;
+import mesquite.categ.lib.MolecularState;
+import mesquite.lib.Arguments;
+import mesquite.lib.AttachedNote;
+import mesquite.lib.ExporterDialog;
+import mesquite.lib.MesquiteFile;
+import mesquite.lib.MesquiteInteger;
+import mesquite.lib.MesquiteProject;
+import mesquite.lib.MesquiteStringBuffer;
+import mesquite.lib.MesquiteThread;
+import mesquite.lib.NameReference;
+import mesquite.lib.Parser;
+import mesquite.lib.StringUtil;
+import mesquite.lib.duties.FileInterpreterI;
 import mesquite.lib.misc.AttachedNotesVector;
-import mesquite.categ.lib.*;
 
 
 /* ============  an exporter for POY files ============*/

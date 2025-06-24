@@ -13,16 +13,27 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
  */
 package mesquite.categ.ManageDNARNAChars;
 
-import java.util.*;
-import java.awt.*;
-import java.io.*;
+import java.util.Vector;
 
-import mesquite.lib.*;
-import mesquite.lib.characters.*;
-import mesquite.lib.duties.*;
+import mesquite.categ.lib.CategMatrixManager;
+import mesquite.categ.lib.CategoricalData;
+import mesquite.categ.lib.CategoricalState;
+import mesquite.categ.lib.DNAData;
+import mesquite.categ.lib.DNAState;
+import mesquite.categ.lib.RNAData;
+import mesquite.categ.lib.RNAState;
+import mesquite.lib.MesquiteFile;
+import mesquite.lib.MesquiteInteger;
+import mesquite.lib.MesquiteMessage;
+import mesquite.lib.MesquiteProject;
+import mesquite.lib.MesquiteString;
+import mesquite.lib.NexusBlock;
+import mesquite.lib.ParseUtil;
+import mesquite.lib.StringUtil;
+import mesquite.lib.characters.CharacterData;
+import mesquite.lib.characters.CharactersBlock;
 import mesquite.lib.taxa.Taxa;
 import mesquite.lib.ui.ProgressIndicator;
-import mesquite.categ.lib.*;
 
 /* ======================================================================== 
 Manages DNA and RNA data matrices */

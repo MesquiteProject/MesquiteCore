@@ -14,12 +14,10 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
 package mesquite.charMatrices.ReshuffleMatrix;
 /*~~  */
 
-import java.util.*;
-import java.awt.*;
-import mesquite.lib.*;
-import mesquite.lib.characters.*;
-import mesquite.lib.duties.*;
-import mesquite.charMatrices.lib.*;
+import mesquite.charMatrices.lib.RandomMatrixModifier;
+import mesquite.lib.RandomBetween;
+import mesquite.lib.characters.MAdjustableDistribution;
+import mesquite.lib.characters.MCharactersDistribution;
 
 /* ======================================================================== */
 public class ReshuffleMatrix extends RandomMatrixModifier {

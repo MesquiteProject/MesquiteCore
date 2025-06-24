@@ -14,15 +14,24 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
  */
 package mesquite.lib.ui;
 
-import java.awt.*;
-import java.awt.datatransfer.*;
-import java.awt.event.ComponentListener;
+import java.awt.BorderLayout;
+import java.awt.Color;
+import java.awt.Font;
+import java.awt.Graphics;
+import java.awt.Image;
+import java.awt.Toolkit;
+import java.awt.datatransfer.Clipboard;
+import java.awt.datatransfer.StringSelection;
 import java.awt.event.MouseListener;
+import java.util.Vector;
 
-import javax.swing.*;
-import javax.swing.event.*;
-import javax.swing.text.*;
-import javax.swing.text.html.*;
+import javax.swing.JEditorPane;
+import javax.swing.JScrollPane;
+import javax.swing.event.HyperlinkEvent;
+import javax.swing.event.HyperlinkListener;
+import javax.swing.text.DefaultCaret;
+import javax.swing.text.html.HTMLDocument;
+import javax.swing.text.html.HTMLFrameHyperlinkEvent;
 
 import mesquite.lib.CommandChecker;
 import mesquite.lib.MesquiteCommand;
@@ -32,8 +41,6 @@ import mesquite.lib.MesquiteTrunk;
 import mesquite.lib.OutputTextListener;
 import mesquite.lib.ParseUtil;
 import mesquite.lib.StringUtil;
-
-import java.util.*;
 /* ======================================================================== */
 /** A window that displays text.  Yet to do: make it editable or not, have getText, etc.. */
 public class MesquiteHTMLWindow extends MesquiteWindow implements HyperlinkListener, OutputTextListener {

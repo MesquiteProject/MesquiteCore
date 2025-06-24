@@ -14,18 +14,23 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
 Modified May 02 especially for annotations*/
 package mesquite.lib.ui;
 
-import java.awt.*;
-import java.util.*;
+import java.awt.Component;
+import java.awt.Dimension;
+import java.awt.Font;
+import java.awt.Graphics;
+import java.awt.Graphics2D;
+import java.awt.PrintJob;
+import java.awt.Rectangle;
+import java.awt.geom.AffineTransform;
+import java.awt.print.PageFormat;
+import java.awt.print.Printable;
+import java.awt.print.PrinterException;
+import java.awt.print.PrinterJob;
 
 import mesquite.lib.MesquiteFile;
 import mesquite.lib.MesquiteThread;
 import mesquite.lib.MesquiteTrunk;
 import mesquite.lib.tree.TreeDisplay;
-
-import java.awt.print.*;
-import java.awt.geom.*;
-import java.io.*;
-/* ======================================================================== */
 
 
 public class MesquitePrintJob {

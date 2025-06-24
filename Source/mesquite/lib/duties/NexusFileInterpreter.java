@@ -13,10 +13,11 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
 */
 package mesquite.lib.duties;
 
-import java.awt.*;
-
-import mesquite.io.lib.TryNexusFirstTreeFileInterpreter;
-import mesquite.lib.*;
+import mesquite.lib.FileBlock;
+import mesquite.lib.FileElement;
+import mesquite.lib.MesquiteFile;
+import mesquite.lib.MesquiteProject;
+import mesquite.lib.NexusBlock;
 
 
 /* ======================================================================== */

@@ -13,10 +13,7 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
 */
 package mesquite.lib.tree;
 
-import java.awt.*;
-
-import mesquite.lib.MesquiteModule;
-import mesquite.lib.duties.*;
+import java.awt.Graphics;
 
 /* ======================================================================== */
 /** An interface for TreeDisplayExtra to know they also have a drawUnderTree and printUnderTree method.  Used only so that tree drawing knows to call these before the tree

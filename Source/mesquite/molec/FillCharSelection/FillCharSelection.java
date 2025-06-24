@@ -14,14 +14,12 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
 package mesquite.molec.FillCharSelection;
 /*~~  */
 
-import java.util.*;
-import java.awt.*;
-import java.awt.image.*;
-import mesquite.lib.*;
-import mesquite.lib.characters.*;
-import mesquite.lib.duties.*;
+import mesquite.lib.MesquiteListener;
+import mesquite.lib.Notification;
+import mesquite.lib.characters.CharacterData;
 //new in 1. 06
 //need to have UI to specify tolerance
+import mesquite.lib.duties.CharacterSelector;
 
 /* ======================================================================== */
 public class FillCharSelection extends CharacterSelector {

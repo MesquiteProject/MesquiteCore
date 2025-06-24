@@ -15,10 +15,9 @@ package mesquite.lib;
 
 import java.util.Map;
 
+import org.dom4j.Document;
 
-import org.dom4j.*;
-import mesquite.tol.lib.*;
-
+import mesquite.tol.lib.BaseHttpRequestMaker;
 import mesquite.tol.lib.XMLConstants;
 
 /**

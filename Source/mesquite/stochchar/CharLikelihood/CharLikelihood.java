@@ -14,18 +14,29 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
 package mesquite.stochchar.CharLikelihood;
 /*~~  */
 
-import java.util.*;
-import java.awt.*;
-import mesquite.lib.*;
-import mesquite.lib.characters.*;
-import mesquite.lib.duties.*;
+import mesquite.categ.lib.DNAState;
+import mesquite.categ.lib.ProteinState;
+import mesquite.cont.lib.ContinuousState;
+import mesquite.lib.CommandChecker;
+import mesquite.lib.EmployeeNeed;
+import mesquite.lib.MesquiteFile;
+import mesquite.lib.MesquiteInteger;
+import mesquite.lib.MesquiteModule;
+import mesquite.lib.MesquiteNumber;
+import mesquite.lib.MesquiteString;
+import mesquite.lib.MesquiteThread;
+import mesquite.lib.Notification;
+import mesquite.lib.Snapshot;
+import mesquite.lib.characters.CharacterData;
+import mesquite.lib.characters.CharacterDistribution;
+import mesquite.lib.characters.CharacterModel;
+import mesquite.lib.characters.ProbabilityModel;
 import mesquite.lib.tree.Tree;
 import mesquite.lib.ui.AlertDialog;
-import mesquite.categ.lib.*;
-import mesquite.cont.lib.*;
 import mesquite.stochchar.CurrentProbModels.CurrentProbModels;
-import mesquite.stochchar.CurrentProbModelsSim.*;
-import mesquite.stochchar.lib.*;
+import mesquite.stochchar.lib.CharacterLikelihood;
+import mesquite.stochchar.lib.MargLikelihoodForModel;
+import mesquite.stochchar.lib.ProbModelSourceLike;
 
 /* ======================================================================== */
 public class CharLikelihood extends CharacterLikelihood {

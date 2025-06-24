@@ -15,37 +15,19 @@ package mesquite.trees.BranchPropertiesAManager;
 /*~~  */
 
 
-import java.awt.Button;
-import java.awt.Checkbox;
-import java.awt.Choice;
-import java.awt.Color;
-import java.awt.Container;
-import java.awt.Font;
-import java.awt.FontMetrics;
 import java.awt.Graphics;
-import java.awt.Shape;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.event.InputEvent;
-import java.awt.event.ItemEvent;
-import java.awt.event.ItemListener;
-import java.awt.event.TextEvent;
-import java.awt.event.TextListener;
-import java.lang.reflect.Method;
-import java.util.Enumeration;
-import java.util.List;
-import java.util.Vector;
 
-import javax.accessibility.AccessibleContext;
-import javax.swing.JLabel;
-
-import mesquite.lib.*;
-import mesquite.lib.duties.DrawNamesTreeDisplay;
-import mesquite.lib.duties.TreeDisplayAssistantDI;
+import mesquite.lib.Associable;
+import mesquite.lib.ListableVector;
+import mesquite.lib.MesquiteInteger;
+import mesquite.lib.MesquiteModule;
+import mesquite.lib.NameReference;
+import mesquite.lib.Notification;
+import mesquite.lib.StringUtil;
 import mesquite.lib.duties.TreeDisplayAssistantI;
 import mesquite.lib.duties.TreeWindowMaker;
-import mesquite.lib.tree.MesquiteTree;
 import mesquite.lib.tree.DisplayableBranchProperty;
+import mesquite.lib.tree.MesquiteTree;
 import mesquite.lib.tree.Tree;
 import mesquite.lib.tree.TreeDisplay;
 import mesquite.lib.tree.TreeDisplayExtra;

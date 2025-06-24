@@ -13,15 +13,22 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
 */
 package mesquite.genesis.lib;
 
-import java.util.*;
-import mesquite.lib.*;
-import mesquite.lib.characters.*;
-import mesquite.lib.duties.*;
+import java.awt.Checkbox;
+import java.util.Random;
+
+import mesquite.categ.lib.DNAData;
+import mesquite.categ.lib.MCategoricalStates;
+import mesquite.lib.MesquiteDouble;
+import mesquite.lib.MesquiteInteger;
+import mesquite.lib.MesquiteListener;
+import mesquite.lib.MesquiteMessage;
+import mesquite.lib.Notification;
+import mesquite.lib.ParseUtil;
+import mesquite.lib.characters.CharacterModel;
+import mesquite.lib.characters.CodonPositionsSet;
+import mesquite.lib.characters.MCharactersStatesHolder;
 import mesquite.lib.ui.DoubleField;
 import mesquite.lib.ui.ExtensibleDialog;
-import mesquite.categ.lib.*;
-import java.lang.Math.*;
-import java.awt.*;
 
 /** A class that provides for a site-to-site rate variation model. */
 /* ======================================================================== */

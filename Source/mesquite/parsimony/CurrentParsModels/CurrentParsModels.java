@@ -14,14 +14,27 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
 package mesquite.parsimony.CurrentParsModels;
 /*~~  */
 
-import java.util.*;
-import java.awt.*;
-import mesquite.lib.*;
-import mesquite.lib.characters.*;
-import mesquite.lib.duties.*;
+import mesquite.lib.AssociableWithSpecs;
+import mesquite.lib.CommandChecker;
+import mesquite.lib.LongArray;
+import mesquite.lib.MesquiteFile;
+import mesquite.lib.MesquiteInteger;
+import mesquite.lib.MesquiteListener;
+import mesquite.lib.MesquiteMessage;
+import mesquite.lib.MesquiteString;
+import mesquite.lib.MesquiteTrunk;
+import mesquite.lib.Notification;
+import mesquite.lib.Snapshot;
+import mesquite.lib.characters.CharacterData;
+import mesquite.lib.characters.CharacterModel;
+import mesquite.lib.characters.CharacterStatesHolder;
+import mesquite.lib.characters.ModelCompatibilityInfo;
+import mesquite.lib.characters.ModelSet;
 import mesquite.lib.ui.MesquiteMenuItemSpec;
 import mesquite.lib.ui.MesquiteSubmenuSpec;
-import mesquite.parsimony.lib.*;
+import mesquite.parsimony.lib.ParsModelSource;
+import mesquite.parsimony.lib.ParsimonyModel;
+import mesquite.parsimony.lib.ParsimonyModelSet;
 
 /* ======================================================================== */
 /* Returns parsimony model currently assigned to a character. If none assigned, returns the default model. */

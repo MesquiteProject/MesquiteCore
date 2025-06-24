@@ -15,16 +15,43 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
 package mesquite.minimal.Installer;
 /*~~  */
 
-import mesquite.lib.*;
-import mesquite.lib.duties.*;
-import mesquite.lib.ui.AlertDialog;
-import mesquite.lib.ui.MesquiteWindow;
-
-import java.util.zip.*;
-import java.util.*;
-import java.io.*;
+import java.io.BufferedOutputStream;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.util.Enumeration;
+import java.util.Iterator;
+import java.util.List;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipFile;
+import java.util.zip.ZipOutputStream;
 
 import org.dom4j.Element;
+
+import mesquite.lib.CommandChecker;
+import mesquite.lib.CommandRecord;
+import mesquite.lib.ListableVector;
+import mesquite.lib.MesquiteBoolean;
+import mesquite.lib.MesquiteFile;
+import mesquite.lib.MesquiteInteger;
+import mesquite.lib.MesquiteMessage;
+import mesquite.lib.MesquiteProject;
+import mesquite.lib.MesquiteString;
+import mesquite.lib.MesquiteThread;
+import mesquite.lib.MesquiteTrunk;
+import mesquite.lib.ObjectContainer;
+import mesquite.lib.PhoneHomeUtil;
+import mesquite.lib.Projects;
+import mesquite.lib.ShellScriptUtil;
+import mesquite.lib.StringUtil;
+import mesquite.lib.SystemWindow;
+import mesquite.lib.XMLUtil;
+import mesquite.lib.duties.MesquiteInit;
+import mesquite.lib.ui.AlertDialog;
+import mesquite.lib.ui.MesquiteWindow;
 
 /*....+++++++++++++++Installer.  See also PhoneHomeUtil and NoticesAndInstallationExplanation.xml  ++++++++++++++++++++++++++..........*/
 /*

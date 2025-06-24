@@ -14,12 +14,11 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
 package mesquite.cont.AddItem;
 /*~~  */
 
-import java.util.*;
-import java.awt.*;
-import mesquite.lib.*;
-import mesquite.lib.characters.*;
-import mesquite.lib.duties.*;
-import mesquite.cont.lib.*;
+import mesquite.cont.lib.ContDataUtility;
+import mesquite.cont.lib.ContinuousData;
+import mesquite.lib.MesquiteString;
+import mesquite.lib.StringUtil;
+import mesquite.lib.characters.CharacterData;
 
 /* ======================================================================== */
 public class AddItem extends ContDataUtility {

@@ -13,12 +13,8 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
 */
 package mesquite.stochchar.lib;
 
-import java.awt.*;
-import java.util.*;
-import mesquite.lib.*;
-import mesquite.lib.characters.*;
-import mesquite.lib.duties.*;
-import mesquite.categ.lib.*;
+import mesquite.categ.lib.CategoricalData;
+import mesquite.lib.duties.WholeCharModelCurator;
 
 
 /* ======================================================================== */

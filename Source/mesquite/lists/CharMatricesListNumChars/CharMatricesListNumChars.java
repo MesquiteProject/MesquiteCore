@@ -14,13 +14,12 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
 package mesquite.lists.CharMatricesListNumChars;
 /*~~  */
 
-import mesquite.lists.lib.*;
-import java.util.*;
-import java.awt.*;
-import mesquite.lib.*;
-import mesquite.lib.characters.*;
-import mesquite.lib.duties.*;
-import mesquite.lib.table.*;
+import mesquite.lib.ListableVector;
+import mesquite.lib.MesquiteListener;
+import mesquite.lib.Notification;
+import mesquite.lib.characters.CharacterData;
+import mesquite.lib.table.MesquiteTable;
+import mesquite.lists.lib.CharMatricesListAssistant;
 
 /* ======================================================================== */
 public class CharMatricesListNumChars extends CharMatricesListAssistant implements MesquiteListener {

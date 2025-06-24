@@ -13,13 +13,13 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
 */
 package mesquite.lib.ui;
 
-import java.awt.*;
+import java.awt.Graphics;
+import java.awt.Panel;
+import java.util.Vector;
 
 import mesquite.lib.Listable;
 import mesquite.lib.MesquiteModule;
 import mesquite.lib.OwnedByModule;
-import mesquite.lib.duties.*;
-import java.util.*;
 
 
 /* ======================================================================== */

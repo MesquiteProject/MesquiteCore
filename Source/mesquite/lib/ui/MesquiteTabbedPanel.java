@@ -13,13 +13,11 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
 */
 package mesquite.lib.ui;
 
-import java.awt.*;
+import java.awt.Component;
+import java.awt.GridLayout;
 
 import javax.swing.JPanel;
 import javax.swing.JTabbedPane;
-
-import mesquite.lib.Debugg;
-import mesquite.lib.MesquiteTrunk;
 
 public class MesquiteTabbedPanel extends MQJPanel  {
 	MesquiteTabbedPane tabbedPane;

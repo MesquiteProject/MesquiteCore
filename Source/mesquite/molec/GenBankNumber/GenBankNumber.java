@@ -15,18 +15,29 @@ package mesquite.molec.GenBankNumber;
 
 import java.awt.Color;
 
-import mesquite.categ.lib.*;
-import mesquite.lists.lib.*;
-
-import mesquite.lib.*;
+import mesquite.categ.lib.DNAState;
+import mesquite.categ.lib.MolecularData;
+import mesquite.lib.Associable;
+import mesquite.lib.CommandChecker;
+import mesquite.lib.ListableVector;
+import mesquite.lib.MesquiteFile;
+import mesquite.lib.MesquiteInteger;
+import mesquite.lib.MesquiteModule;
+import mesquite.lib.NameReference;
+import mesquite.lib.Notification;
+import mesquite.lib.Parser;
+import mesquite.lib.Snapshot;
+import mesquite.lib.StringUtil;
 import mesquite.lib.characters.CharacterData;
 import mesquite.lib.characters.MCharactersDistribution;
 import mesquite.lib.duties.CharMatrixSource;
-import mesquite.lib.table.*;
+import mesquite.lib.table.MesquiteTable;
 import mesquite.lib.taxa.Taxa;
 import mesquite.lib.taxa.Taxon;
 import mesquite.lib.ui.ColorDistribution;
 import mesquite.lib.ui.MesquiteMenuItemSpec;
+import mesquite.lists.lib.ListModule;
+import mesquite.lists.lib.TaxonListAssistant;
 
 
 /* ======================================================================== */

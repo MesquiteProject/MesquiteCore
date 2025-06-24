@@ -13,9 +13,6 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
  */
 package mesquite.lib.tree;
 
-import java.awt.*;
-
-import java.math.*;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Vector;
@@ -23,7 +20,12 @@ import java.util.Vector;
 import org.dom4j.Document;
 import org.dom4j.Element;
 
-import mesquite.lib.*;
+import mesquite.lib.Listable;
+import mesquite.lib.MesquiteFile;
+import mesquite.lib.MesquiteMessage;
+import mesquite.lib.ObjectContainer;
+import mesquite.lib.StringUtil;
+import mesquite.lib.XMLUtil;
 
 /* ��������������������������� tree stuff ������������������������������� */
 /* ======================================================================== */

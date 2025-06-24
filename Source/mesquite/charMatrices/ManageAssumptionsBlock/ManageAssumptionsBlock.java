@@ -14,11 +14,18 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
 package mesquite.charMatrices.ManageAssumptionsBlock;
 /*~~  */
 
-import java.util.*;
-import java.awt.*;
-import java.io.*;
-import mesquite.lib.*;
-import mesquite.lib.duties.*;
+import java.util.Enumeration;
+
+import mesquite.lib.FileBlock;
+import mesquite.lib.FileElement;
+import mesquite.lib.MesquiteFile;
+import mesquite.lib.MesquiteMessage;
+import mesquite.lib.MesquiteModule;
+import mesquite.lib.MesquiteString;
+import mesquite.lib.NexusBlock;
+import mesquite.lib.NexusBlockTest;
+import mesquite.lib.StringUtil;
+import mesquite.lib.duties.FileInit;
 
 /** Manages the ASSUMPTIONS block of a NEXUS file.*/
 public class ManageAssumptionsBlock extends FileInit {

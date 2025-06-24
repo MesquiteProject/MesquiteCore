@@ -13,10 +13,7 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
 */
 package mesquite.batchArch.aBatchArchIntro;
 
-import java.util.*;
-import java.awt.*;
-import mesquite.lib.*;
-import mesquite.lib.duties.*;
+import mesquite.lib.duties.PackageIntro;
 
 /* ======================================================================== */
 public class aBatchArchIntro extends PackageIntro {

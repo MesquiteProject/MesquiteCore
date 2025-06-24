@@ -14,19 +14,10 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
 package mesquite.align.SimpleBlockMover; 
 
 
-import java.awt.*;
-import mesquite.align.lib.*;
-import mesquite.categ.lib.CategoricalData;
-import mesquite.lib.CommandChecker;
-import mesquite.lib.CommandRecord;
+import java.awt.Point;
+
+import mesquite.align.lib.BlockMover;
 import mesquite.lib.MesquiteBoolean;
-import mesquite.lib.MesquiteFile;
-import mesquite.lib.MesquiteInteger;
-import mesquite.lib.MesquiteListener;
-import mesquite.lib.MesquiteModule;
-import mesquite.lib.Notification;
-import mesquite.lib.Snapshot;
-import mesquite.lib.ui.MesquiteWindow;
 
 
 /* ======================================================================== */

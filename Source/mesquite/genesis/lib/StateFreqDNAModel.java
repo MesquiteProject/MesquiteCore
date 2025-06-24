@@ -13,11 +13,6 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
 */
 package mesquite.genesis.lib;
 
-import mesquite.lib.*;
-import mesquite.lib.characters.*;
-import mesquite.lib.duties.*;
-import mesquite.categ.lib.*;
-
 /** A class that provides root states for probabilistic models, using frequencies for the root states. 
 This class must be subclassed, with the method setStateFrequencies specified. */
 /* ======================================================================== */

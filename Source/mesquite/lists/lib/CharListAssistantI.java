@@ -13,10 +13,11 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
 */
 package mesquite.lists.lib;
 
-import java.awt.*;
-import mesquite.lib.*;
-import mesquite.lib.table.*;
-import mesquite.lib.characters.*;
+import mesquite.lib.CompatibilityTest;
+import mesquite.lib.MesquiteModule;
+import mesquite.lib.characters.CharacterData;
+import mesquite.lib.characters.CharacterStateTest;
+import mesquite.lib.table.MesquiteTable;
 
 /* ======================================================================== */
 /**This is superclass of modules to assist tables with characters (e.g., character List, data matrix editor).  

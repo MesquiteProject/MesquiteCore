@@ -14,12 +14,20 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
 package mesquite.distance.AverageOfDistances;
 /*~~  */
 
-import java.util.*;
-import java.awt.*;
-import mesquite.lib.*;
-import mesquite.lib.duties.*;
+import mesquite.distance.lib.IncTaxaDistanceSource;
+import mesquite.distance.lib.TaxaDistance;
+import mesquite.distance.lib.TaxaDistanceSource;
+import mesquite.lib.CommandChecker;
+import mesquite.lib.Double2DArray;
+import mesquite.lib.EmployeeNeed;
+import mesquite.lib.Incrementable;
+import mesquite.lib.MesquiteDouble;
+import mesquite.lib.MesquiteFile;
+import mesquite.lib.MesquiteLong;
+import mesquite.lib.MesquiteModule;
+import mesquite.lib.MesquiteThread;
+import mesquite.lib.Snapshot;
 import mesquite.lib.taxa.Taxa;
-import mesquite.distance.lib.*;
 
 /* ======================================================================== */
 public class AverageOfDistances extends TaxaDistanceSource {

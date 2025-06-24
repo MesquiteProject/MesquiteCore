@@ -13,11 +13,7 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
 */
 package mesquite.categ.lib;
 
-import java.awt.*;
-import java.util.*;
-import mesquite.lib.*;
-import mesquite.lib.characters.*;
-import mesquite.lib.duties.*;
+import mesquite.lib.characters.CharacterData;
 
 /* ======================================================================== */
 /** A class for an array of  categorical character states for one character, at each of the taxa  or nodes*/

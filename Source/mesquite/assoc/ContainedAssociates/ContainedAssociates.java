@@ -14,14 +14,47 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
 package mesquite.assoc.ContainedAssociates;
 /*~~  */
 
-import java.util.*;
-import java.awt.*;
+import java.awt.Color;
+import java.awt.Graphics;
+import java.awt.TextArea;
 import java.awt.geom.Path2D;
 import java.awt.geom.Rectangle2D;
+import java.util.Enumeration;
+import java.util.Vector;
 
-import mesquite.lib.*;
-import mesquite.lib.characters.CharacterData;
-import mesquite.lib.duties.*;
+import mesquite.assoc.lib.AssociationHistory;
+import mesquite.assoc.lib.AssociationSource;
+import mesquite.assoc.lib.ReconstructAssociation;
+import mesquite.assoc.lib.TaxaAssociation;
+import mesquite.lib.CommandChecker;
+import mesquite.lib.CommandRecord;
+import mesquite.lib.DoubleArray;
+import mesquite.lib.EmployeeNeed;
+import mesquite.lib.EmployerEmployee;
+import mesquite.lib.IntegerArray;
+import mesquite.lib.MesquiteBoolean;
+import mesquite.lib.MesquiteCommand;
+import mesquite.lib.MesquiteDouble;
+import mesquite.lib.MesquiteFile;
+import mesquite.lib.MesquiteInteger;
+import mesquite.lib.MesquiteListener;
+import mesquite.lib.MesquiteMessage;
+import mesquite.lib.MesquiteModule;
+import mesquite.lib.MesquiteNumber;
+import mesquite.lib.MesquiteString;
+import mesquite.lib.MesquiteThread;
+import mesquite.lib.MesquiteTrunk;
+import mesquite.lib.NameReference;
+import mesquite.lib.Notification;
+import mesquite.lib.ParseUtil;
+import mesquite.lib.Snapshot;
+import mesquite.lib.StringUtil;
+import mesquite.lib.duties.AnalyticalDrawTree;
+import mesquite.lib.duties.DrawTreeCoordinator;
+import mesquite.lib.duties.NodeLocsVH;
+import mesquite.lib.duties.OneTreeSource;
+import mesquite.lib.duties.TWindowMaker;
+import mesquite.lib.duties.TreeSource;
 import mesquite.lib.taxa.Taxa;
 import mesquite.lib.taxa.TaxaPartition;
 import mesquite.lib.taxa.Taxon;
@@ -40,7 +73,6 @@ import mesquite.lib.ui.MesquiteSubmenuSpec;
 import mesquite.lib.ui.MesquiteWindow;
 import mesquite.lib.ui.MiniScroll;
 import mesquite.lib.ui.TextRotator;
-import mesquite.assoc.lib.*;
 
 /* ======================================================================== */
 public class ContainedAssociates extends AnalyticalDrawTree {

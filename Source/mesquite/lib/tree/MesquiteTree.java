@@ -16,18 +16,15 @@ Modified:
  */
 package mesquite.lib.tree;
 
-import java.awt.*;
-
-import java.math.*;
-import java.util.*;
+import java.math.BigInteger;
+import java.util.Random;
+import java.util.Vector;
 
 import mesquite.lib.Associable;
-import mesquite.lib.Attachable;
 import mesquite.lib.Bits;
 import mesquite.lib.CommandChecker;
 import mesquite.lib.Commandable;
 import mesquite.lib.CompatibilityChecker;
-import mesquite.lib.Debugg;
 import mesquite.lib.DoubleArray;
 import mesquite.lib.EmployerEmployee;
 import mesquite.lib.Identifiable;
@@ -55,21 +52,17 @@ import mesquite.lib.ObjectArray;
 import mesquite.lib.ObjectContainer;
 import mesquite.lib.ParseUtil;
 import mesquite.lib.Parser;
-import mesquite.lib.PropertyRecord;
 import mesquite.lib.RandomBetween;
 import mesquite.lib.StringArray;
 import mesquite.lib.StringUtil;
 import mesquite.lib.characters.CharacterData;
-import mesquite.lib.duties.ElementManager;
 import mesquite.lib.duties.FileCoordinator;
-import mesquite.lib.duties.NumberForTree;
 import mesquite.lib.duties.TreesManager;
 import mesquite.lib.taxa.Taxa;
 import mesquite.lib.taxa.TaxaSelectionSet;
 import mesquite.lib.taxa.Taxon;
 import mesquite.lib.taxa.TaxonNamer;
 import mesquite.lib.ui.AlertDialog;
-import mesquite.lib.ui.ColorDistribution;
 
 /* ======================================================================== */
 /** The basic Tree class of Mesquite.  Nodes are represented by integers (Object representation of nodes is too

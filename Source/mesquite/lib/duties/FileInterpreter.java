@@ -13,11 +13,18 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
  */
 package mesquite.lib.duties;
 
-import java.awt.*;
-import java.util.*;
-import java.io.*;
+import java.awt.FileDialog;
 
-import mesquite.lib.*;
+import mesquite.lib.Bits;
+import mesquite.lib.MainThread;
+import mesquite.lib.MesquiteFile;
+import mesquite.lib.MesquiteFileDialog;
+import mesquite.lib.MesquiteModule;
+import mesquite.lib.MesquiteProject;
+import mesquite.lib.MesquiteString;
+import mesquite.lib.MesquiteStringBuffer;
+import mesquite.lib.NameReference;
+import mesquite.lib.StringUtil;
 import mesquite.lib.characters.CharacterData;
 import mesquite.lib.taxa.Taxa;
 import mesquite.lib.ui.ColorTheme;

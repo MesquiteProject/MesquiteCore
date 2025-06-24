@@ -13,11 +13,17 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
 */
 package mesquite.trunk;
 
-import java.awt.*;
-import java.util.*;
-import java.io.*;
-import java.awt.event.*;
-import mesquite.lib.*;
+import java.awt.BorderLayout;
+import java.awt.Button;
+import java.awt.Dimension;
+import java.awt.Font;
+import java.awt.FontMetrics;
+import java.awt.Graphics;
+import java.awt.Panel;
+import java.awt.TextArea;
+import java.awt.TextField;
+
+import mesquite.lib.MesquiteModule;
 import mesquite.lib.ui.ColorTheme;
 import mesquite.lib.ui.MQPanel;
 import mesquite.lib.ui.MQTextArea;

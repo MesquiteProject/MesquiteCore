@@ -13,11 +13,6 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
 */
 package mesquite.lib;
 
-import java.awt.*;
-import mesquite.lib.duties.*;
-
-
-
 /* ======================================================================== */
 /** An interface for objects who, if commanded, "dirty" a file in that the file is considered possibly altered,
 and thus the user should be queried before it is closed.*/

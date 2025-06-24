@@ -14,18 +14,12 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
 package mesquite.charMatrices.lib; 
 /*~~  */
 
-import java.util.*;
-import java.awt.*;
-import java.io.*;
-import java.awt.event.*;
-import mesquite.lib.*;
-import mesquite.lib.characters.*;
-import mesquite.lib.duties.*;
-import java.awt.datatransfer.*;
-import mesquite.lib.table.*;
-import mesquite.categ.lib.*;
-import mesquite.charMatrices.lib.*;
-import mesquite.charMatrices.BasicDataWindowMaker.*;
+import mesquite.charMatrices.BasicDataWindowMaker.BasicDataWindowMaker;
+import mesquite.lib.MesquiteModule;
+import mesquite.lib.characters.CharacterData;
+import mesquite.lib.duties.DataColumnNamesAssistant;
+import mesquite.lib.table.MesquiteTable;
+import mesquite.lib.table.TableWindow;
 
 	
 /* ======================================================================== */

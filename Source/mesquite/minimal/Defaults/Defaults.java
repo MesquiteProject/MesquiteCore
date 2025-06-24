@@ -14,18 +14,30 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
 package mesquite.minimal.Defaults;
 /*~~  */
 
-import java.awt.*;
-import java.net.*;
-import java.util.*;
-import java.io.*;
+import java.awt.Font;
 
 import mesquite.externalCommunication.lib.PythonUtil;
-import mesquite.lib.*;
-import mesquite.lib.duties.*;
-import mesquite.lib.simplicity.InterfaceManager;
+import mesquite.lib.CommandChecker;
+import mesquite.lib.EmployeeNeed;
+import mesquite.lib.EmployerEmployee;
+import mesquite.lib.MesquiteBoolean;
+import mesquite.lib.MesquiteCommand;
+import mesquite.lib.MesquiteException;
+import mesquite.lib.MesquiteInteger;
+import mesquite.lib.MesquiteProject;
+import mesquite.lib.MesquiteString;
+import mesquite.lib.MesquiteThread;
+import mesquite.lib.MesquiteTrunk;
+import mesquite.lib.RandomBetween;
+import mesquite.lib.ShellScriptUtil;
+import mesquite.lib.StringArray;
+import mesquite.lib.StringUtil;
+import mesquite.lib.duties.CharacterSource;
+import mesquite.lib.duties.DefaultsAssistant;
+import mesquite.lib.duties.FileCoordinator;
+import mesquite.lib.duties.MesquiteInit;
 import mesquite.lib.tree.MesquiteTree;
 import mesquite.lib.tree.TreeDisplay;
-import mesquite.lib.ui.AlertDialog;
 import mesquite.lib.ui.ColorTheme;
 import mesquite.lib.ui.FontUtil;
 import mesquite.lib.ui.GraphicsUtil;
@@ -36,7 +48,6 @@ import mesquite.lib.ui.MesquiteSubmenu;
 import mesquite.lib.ui.MesquiteSubmenuSpec;
 import mesquite.lib.ui.MesquiteWindow;
 import mesquite.parsimony.lib.ParsAncStatesForModel;
-import mesquite.stochchar.lib.MargLikelihoodForModel;
 
 /** Controls some of Mesquite's default settings (like fonts in windows). */
 

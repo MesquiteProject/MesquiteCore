@@ -13,9 +13,15 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
  */
 package mesquite.assoc.lib;
 
-import java.awt.*;
-import java.awt.event.*;
-import mesquite.lib.*;
+import java.awt.Color;
+import java.awt.FontMetrics;
+import java.awt.Graphics;
+import java.awt.Scrollbar;
+import java.awt.event.AdjustmentEvent;
+import java.awt.event.AdjustmentListener;
+
+import mesquite.lib.MesquiteEvent;
+import mesquite.lib.MesquiteInteger;
 import mesquite.lib.taxa.Taxa;
 import mesquite.lib.ui.MQScrollbar;
 import mesquite.lib.ui.MesquitePanel;

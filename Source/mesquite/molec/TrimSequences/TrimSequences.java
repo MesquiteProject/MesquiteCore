@@ -14,16 +14,23 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
 package mesquite.molec.TrimSequences;
 /*~~  */
 
-import java.util.*;
+import java.util.Vector;
 
-
-import mesquite.lib.*;
+import mesquite.categ.lib.MolecularData;
+import mesquite.categ.lib.MolecularDataAlterer;
+import mesquite.lib.CommandChecker;
+import mesquite.lib.EmployeeNeed;
+import mesquite.lib.MesquiteFile;
+import mesquite.lib.MesquiteListener;
+import mesquite.lib.Notification;
+import mesquite.lib.ResultCodes;
+import mesquite.lib.Snapshot;
+import mesquite.lib.UndoInstructions;
+import mesquite.lib.UndoReference;
 import mesquite.lib.characters.AltererWholeCharacterAddRemove;
 import mesquite.lib.characters.CharacterData;
-import mesquite.lib.duties.*;
-import mesquite.categ.lib.*;
-import mesquite.molec.lib.*;
-import mesquite.lib.table.*;
+import mesquite.lib.table.MesquiteTable;
+import mesquite.molec.lib.SequenceTrimmer;
 
 /* ======================================================================== */
 public class TrimSequences extends MolecularDataAlterer implements AltererWholeCharacterAddRemove {

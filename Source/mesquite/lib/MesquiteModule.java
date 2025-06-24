@@ -14,16 +14,29 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
 
 package mesquite.lib;
 
-import java.awt.*;
-import java.awt.event.KeyEvent;
-import java.util.*;
-import java.util.List;
-import java.io.*;
+import java.awt.Checkbox;
+import java.awt.Desktop;
+import java.awt.Panel;
+import java.awt.Window;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.Date;
+import java.util.Enumeration;
+import java.util.Random;
+import java.util.Vector;
 
 import org.apache.commons.httpclient.NameValuePair;
-import mesquite.lib.duties.*;
+
+//for Browserlauncher
+import edu.stanford.ejalbert.BrowserLauncher;
+import mesquite.lib.duties.EmployeeTree;
+import mesquite.lib.duties.FileCoordinator;
+import mesquite.lib.duties.NexusFileInterpreter;
+import mesquite.lib.duties.PackageIntro;
+import mesquite.lib.duties.PackageIntroInterface;
 import mesquite.lib.misc.HPanel;
 import mesquite.lib.ui.AlertDialog;
 import mesquite.lib.ui.ExtensibleDialog;
@@ -32,7 +45,6 @@ import mesquite.lib.ui.MesquiteDialog;
 import mesquite.lib.ui.MesquiteWindow;
 import mesquite.lib.ui.ToolPalette;
 import mesquite.tol.lib.BaseHttpRequestMaker;
-import edu.stanford.ejalbert.*;  //for Browserlauncher
 
 
 

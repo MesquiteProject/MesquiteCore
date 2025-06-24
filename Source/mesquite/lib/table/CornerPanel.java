@@ -13,10 +13,13 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
 */
 package mesquite.lib.table;
 
-import java.awt.*;
-import java.awt.event.*;
+import java.awt.Color;
+import java.awt.Cursor;
+import java.awt.FontMetrics;
+import java.awt.Graphics;
+import java.awt.Polygon;
 
-import mesquite.lib.*;
+import mesquite.lib.MesquiteString;
 import mesquite.lib.ui.ColorTheme;
 import mesquite.lib.ui.MesquitePanel;
 import mesquite.lib.ui.MesquitePopup;

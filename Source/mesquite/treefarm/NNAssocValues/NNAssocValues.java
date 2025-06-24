@@ -14,8 +14,16 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
 package mesquite.treefarm.NNAssocValues;
 /*~~  */
 
-import mesquite.lib.*;
-import mesquite.lib.duties.*;
+import mesquite.lib.DoubleArray;
+import mesquite.lib.Listable;
+import mesquite.lib.ListableVector;
+import mesquite.lib.Listened;
+import mesquite.lib.MesquiteDouble;
+import mesquite.lib.MesquiteListener;
+import mesquite.lib.MesquiteString;
+import mesquite.lib.NameReference;
+import mesquite.lib.Notification;
+import mesquite.lib.duties.BranchLengthsAlterer;
 import mesquite.lib.tree.AdjustableTree;
 import mesquite.lib.tree.Tree;
 import mesquite.lib.ui.ListDialog;

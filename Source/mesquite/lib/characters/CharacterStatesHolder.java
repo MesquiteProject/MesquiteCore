@@ -13,10 +13,11 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
 */
 package mesquite.lib.characters; 
 
-import java.awt.*;
-import mesquite.lib.duties.*;
+import mesquite.lib.Listable;
+import mesquite.lib.MesquiteProject;
+import mesquite.lib.Nameable;
+import mesquite.lib.WithStringDetails;
 import mesquite.lib.taxa.Taxa;
-import mesquite.lib.*;
 
 /*Last documented:  April 2003 */
 /* ======================================================================== */

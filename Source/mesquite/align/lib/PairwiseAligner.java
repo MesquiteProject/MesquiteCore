@@ -12,8 +12,14 @@ This source code and its compiled class files are free and modifiable under the 
 GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
  */package mesquite.align.lib;
 
-import mesquite.categ.lib.*;
-import mesquite.lib.*;
+import mesquite.categ.lib.CategoricalState;
+import mesquite.categ.lib.MCategoricalDistribution;
+import mesquite.categ.lib.MolecularData;
+import mesquite.categ.lib.MolecularState;
+import mesquite.lib.MesquiteInteger;
+import mesquite.lib.MesquiteMessage;
+import mesquite.lib.MesquiteNumber;
+import mesquite.lib.MesquiteTrunk;
 
 
 /*TODO:

@@ -13,8 +13,7 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
  */
 package mesquite.lib.taxa;
 
-import java.awt.*;
-import java.math.*;
+import java.awt.Image;
 
 import mesquite.lib.Identifiable;
 import mesquite.lib.Listable;

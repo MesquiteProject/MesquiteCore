@@ -13,11 +13,6 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
  */
 package mesquite.lib;
 
-import java.awt.*;
-import java.util.*;
-import mesquite.lib.duties.*;
-import java.io.*;
-
 /** A thread for executing commands */
 public class ProjectReadThread extends MesquiteThread {
 	public static ProjectReadThread ongoingThread = null;

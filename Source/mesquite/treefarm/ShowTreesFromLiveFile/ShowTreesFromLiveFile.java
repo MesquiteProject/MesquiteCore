@@ -19,7 +19,7 @@ import mesquite.lib.MesquiteFile;
 import mesquite.lib.MesquiteThread;
 import mesquite.lib.Snapshot;
 import mesquite.lib.StringUtil;
-import mesquite.lib.duties.*;
+import mesquite.lib.duties.FileAssistantFM;
 import mesquite.treefarm.OpenLiveTreeFile.OpenLiveTreeFile;
 
 /* ======================================================================== */

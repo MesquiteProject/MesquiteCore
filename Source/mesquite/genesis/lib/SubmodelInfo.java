@@ -13,10 +13,8 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
 */
 package mesquite.genesis.lib;
 
-import mesquite.lib.*;
-import mesquite.lib.characters.*;
-import mesquite.lib.duties.*;
-import mesquite.categ.lib.*;
+import mesquite.lib.FileElement;
+import mesquite.lib.MesquiteTrunk;
 
 /** A class that contains information regarding submodels of stochastic models of character evolution . */
 /* ======================================================================== */

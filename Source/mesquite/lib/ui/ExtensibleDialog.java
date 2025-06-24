@@ -13,12 +13,47 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
  */
 package mesquite.lib.ui;
 
-import java.awt.*;
+import java.awt.BorderLayout;
+import java.awt.Button;
+import java.awt.Checkbox;
+import java.awt.Choice;
+import java.awt.Color;
+import java.awt.Component;
+import java.awt.Container;
+import java.awt.Dimension;
+import java.awt.Font;
+import java.awt.FontMetrics;
+import java.awt.Graphics;
+import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
+import java.awt.GridLayout;
+import java.awt.Image;
+import java.awt.Label;
+import java.awt.LayoutManager;
+import java.awt.List;
+import java.awt.Panel;
+import java.awt.TextArea;
+import java.awt.TextComponent;
+import java.awt.TextField;
+import java.awt.Toolkit;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.ComponentEvent;
+import java.awt.event.ComponentListener;
+import java.awt.event.ItemListener;
+import java.awt.event.MouseEvent;
+import java.awt.event.WindowEvent;
+import java.awt.event.WindowListener;
+import java.lang.reflect.InvocationTargetException;
+import java.util.Vector;
 
-import javax.swing.*;
-import javax.swing.text.*;
+import javax.swing.JEditorPane;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.JTabbedPane;
+import javax.swing.SwingUtilities;
+import javax.swing.text.JTextComponent;
 
-import mesquite.lib.Debugg;
 import mesquite.lib.IntegerField;
 import mesquite.lib.Listable;
 import mesquite.lib.ListableVector;
@@ -37,12 +72,6 @@ import mesquite.lib.Priority;
 import mesquite.lib.SpecialListName;
 import mesquite.lib.StringArray;
 import mesquite.lib.StringUtil;
-import mesquite.lib.simplicity.InterfaceManager;
-import mesquite.lib.table.EditorTextField;
-
-import java.awt.event.*;
-import java.lang.reflect.InvocationTargetException;
-import java.util.Vector;
 
 /*
 	To do:

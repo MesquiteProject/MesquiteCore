@@ -13,11 +13,6 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
 */
 package mesquite.stochchar.lib;
 
-import java.awt.*;
-import mesquite.lib.*;
-import mesquite.lib.characters.*;
-
-
 /* ======================================================================== */
 /**Reconstructs the ancestral states for a character using likelihood, for a specific character model.
 Also calculates likelihood by virtue of extending MargLikelihoodForModel.  Can be set to report only clade local values*/

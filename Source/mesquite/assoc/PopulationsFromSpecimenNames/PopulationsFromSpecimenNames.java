@@ -14,12 +14,19 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
 package mesquite.assoc.PopulationsFromSpecimenNames;
 /*~~  */
 
-import java.util.*;
-import java.awt.*;
-import mesquite.lib.*;
-import mesquite.lib.duties.*;
+import mesquite.assoc.lib.AssociationsManager;
+import mesquite.assoc.lib.PopulationsAndAssociationMaker;
+import mesquite.assoc.lib.TaxaAssociation;
+import mesquite.lib.Bits;
+import mesquite.lib.MesquiteListener;
+import mesquite.lib.MesquiteThread;
+import mesquite.lib.NameParser;
+import mesquite.lib.Notification;
+import mesquite.lib.ObjectContainer;
+import mesquite.lib.StringArray;
+import mesquite.lib.StringUtil;
+import mesquite.lib.duties.TaxaManager;
 import mesquite.lib.taxa.Taxa;
-import mesquite.assoc.lib.*;
 
 /* ======================================================================== */
 public class PopulationsFromSpecimenNames extends PopulationsAndAssociationMaker {

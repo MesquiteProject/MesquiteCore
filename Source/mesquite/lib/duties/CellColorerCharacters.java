@@ -13,10 +13,6 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
 */
 package mesquite.lib.duties;
 
-import java.awt.*;
-import mesquite.lib.*;
-
-
 /* ======================================================================== */
 /**This interface says that a module will color the cells of a character matrix.*/
 public interface CellColorerCharacters  {

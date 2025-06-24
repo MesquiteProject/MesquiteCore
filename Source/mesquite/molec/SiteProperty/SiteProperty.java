@@ -12,16 +12,24 @@ This source code and its compiled class files are free and modifiable under the 
 GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
 */
 package mesquite.molec.SiteProperty; 
-/*~~  */
-import java.util.*;
-import java.awt.*;
-import mesquite.lib.*;
-import mesquite.lib.characters.*;
-import mesquite.lib.duties.*;
+import mesquite.categ.lib.CategoricalDistribution;
+import mesquite.categ.lib.CategoricalState;
+import mesquite.categ.lib.ProteinData;
+import mesquite.categ.lib.ProteinState;
+import mesquite.categ.lib.RequiresProteinData;
+import mesquite.lib.CommandChecker;
+import mesquite.lib.CompatibilityTest;
+import mesquite.lib.MesquiteDouble;
+import mesquite.lib.MesquiteFile;
+import mesquite.lib.MesquiteInteger;
+import mesquite.lib.MesquiteNumber;
+import mesquite.lib.MesquiteString;
+import mesquite.lib.Snapshot;
+import mesquite.lib.characters.CharacterDistribution;
+import mesquite.lib.duties.NumForCharTreeIndep;
+import mesquite.lib.duties.NumberForCharacter;
 import mesquite.lib.ui.MesquiteSubmenuSpec;
-import mesquite.categ.lib.*;
-import mesquite.cont.lib.ContinuousStateTest;
-import mesquite.molec.lib.*;
+import mesquite.molec.lib.AAProperty;
 
 
 public class SiteProperty extends NumberForCharacter implements NumForCharTreeIndep {   

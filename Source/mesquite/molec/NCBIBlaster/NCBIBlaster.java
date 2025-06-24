@@ -13,8 +13,7 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
  */
 package mesquite.molec.NCBIBlaster;
 
-import mesquite.categ.lib.DNAData;
-import mesquite.lib.*;
+import mesquite.lib.MesquiteTimer;
 import mesquite.molec.lib.BLASTResults;
 import mesquite.molec.lib.Blaster;
 import mesquite.molec.lib.NCBIUtil;

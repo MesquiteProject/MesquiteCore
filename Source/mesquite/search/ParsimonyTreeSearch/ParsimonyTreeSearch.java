@@ -14,9 +14,8 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
 package mesquite.search.ParsimonyTreeSearch;
 /*~~  */
 
-import mesquite.lib.*;
 import mesquite.lib.analysis.ParsimonyAnalysis;
-import mesquite.search.lib.*;
+import mesquite.search.lib.TreeSearch;
 
 /* ======================================================================== */
 public class ParsimonyTreeSearch extends TreeSearch  {

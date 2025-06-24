@@ -13,10 +13,6 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
 */
 package mesquite.lib.duties;
 
-import java.awt.*;
-import mesquite.lib.*;
-
-
 /* ======================================================================== */
 /** This abstract class is for modules that are TreeDisplayAssistants for analysis; these are allowed for use by windows with multiple tree displays*/
 public abstract class TreeDisplayAssistantMA extends TreeDisplayAssistantA  {

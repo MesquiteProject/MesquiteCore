@@ -13,18 +13,33 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
 package mesquite.io.ExportFusedMatrixNEXUS;
 /*~~  */
 
-import java.util.*;
-import java.awt.*;
+import java.awt.Checkbox;
+import java.util.Vector;
 
-import mesquite.lib.*;
-import mesquite.lib.characters.*;
-import mesquite.lib.duties.*;
+import mesquite.assoc.lib.AssociationSource;
+import mesquite.assoc.lib.TaxaAssociation;
+import mesquite.basic.ManageTaxaPartitions.ManageTaxaPartitions;
+import mesquite.categ.lib.CategoricalData;
+import mesquite.categ.lib.CategoricalState;
+import mesquite.categ.lib.DNAData;
+import mesquite.categ.lib.ProteinData;
+import mesquite.categ.lib.RNAData;
+import mesquite.cont.lib.ContinuousData;
+import mesquite.lib.Arguments;
+import mesquite.lib.EmployeeNeed;
+import mesquite.lib.ExporterDialog;
+import mesquite.lib.MesquiteFile;
+import mesquite.lib.MesquiteInteger;
+import mesquite.lib.MesquiteProject;
+import mesquite.lib.MesquiteStringBuffer;
+import mesquite.lib.MesquiteThread;
+import mesquite.lib.Parser;
+import mesquite.lib.StringUtil;
+import mesquite.lib.characters.CharacterData;
+import mesquite.lib.characters.CodonPositionsSet;
+import mesquite.lib.duties.FileInterpreterI;
 import mesquite.lib.taxa.Taxa;
 import mesquite.lib.taxa.Taxon;
-import mesquite.assoc.lib.*;
-import mesquite.basic.ManageTaxaPartitions.*;
-import mesquite.categ.lib.*;
-import mesquite.cont.lib.*;
 
 
 

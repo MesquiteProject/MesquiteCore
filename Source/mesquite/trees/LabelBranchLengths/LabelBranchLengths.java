@@ -12,10 +12,20 @@ This source code and its compiled class files are free and modifiable under the 
 GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
 */
 package mesquite.trees.LabelBranchLengths;
-import java.util.*;
-import java.awt.*;
-import mesquite.lib.*;
-import mesquite.lib.duties.*;
+import java.awt.Color;
+import java.awt.Font;
+import java.awt.FontMetrics;
+import java.awt.Graphics;
+import java.awt.Panel;
+import java.util.Enumeration;
+import java.util.Vector;
+
+import mesquite.lib.CommandChecker;
+import mesquite.lib.MesquiteDouble;
+import mesquite.lib.MesquiteEvent;
+import mesquite.lib.MesquiteModule;
+import mesquite.lib.StringUtil;
+import mesquite.lib.duties.TreeDisplayAssistantD;
 import mesquite.lib.tree.AdjustableTree;
 import mesquite.lib.tree.Tree;
 import mesquite.lib.tree.TreeDisplay;

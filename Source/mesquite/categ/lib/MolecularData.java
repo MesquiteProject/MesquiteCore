@@ -14,20 +14,26 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
 package mesquite.categ.lib;
 
 
-import mesquite.lib.*;
+import java.util.Vector;
+
+import mesquite.lib.Associable;
+import mesquite.lib.Bits;
+import mesquite.lib.MesquiteBoolean;
+import mesquite.lib.MesquiteMessage;
+import mesquite.lib.MesquiteString;
+import mesquite.lib.MesquiteStringBuffer;
+import mesquite.lib.NameReference;
+import mesquite.lib.StringUtil;
 import mesquite.lib.characters.CharacterData;
-import mesquite.lib.characters.CharacterModel;
 import mesquite.lib.characters.CharacterState;
 import mesquite.lib.characters.CharacterStates;
-import mesquite.lib.characters.DefaultReference;
-import mesquite.lib.characters.ModelSet;
-import mesquite.lib.duties.*;
+import mesquite.lib.duties.CharMatrixManager;
 import mesquite.lib.taxa.Taxa;
 import mesquite.lib.taxa.Taxon;
 import mesquite.lib.ui.Mesquite3DIntPoint;
-import mesquite.molec.lib.*;
-
-import java.util.*;
+import mesquite.molec.lib.GenCodeModel;
+import mesquite.molec.lib.GenCodeModelSet;
+import mesquite.molec.lib.GeneticCode;
 
 /* ======================================================================== */
 /** A subclass of CharacterData for molecular data */

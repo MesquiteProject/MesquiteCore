@@ -13,22 +13,32 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
  */
 package mesquite.lists.CharMatricesListProcess;
 
-import mesquite.lists.lib.*;
-
-import java.util.*;
-
-import javax.swing.JLabel;
-
-import java.awt.*;
+import java.awt.Button;
 import java.awt.List;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.FilenameFilter;
+import java.util.Vector;
 
-import mesquite.lib.*;
-import mesquite.lib.table.*;
+import javax.swing.JLabel;
+
+import mesquite.lib.CommandChecker;
+import mesquite.lib.CommandRecord;
+import mesquite.lib.EmployeeVector;
+import mesquite.lib.ListableVector;
+import mesquite.lib.MesquiteFile;
+import mesquite.lib.MesquiteInteger;
+import mesquite.lib.MesquiteModule;
+import mesquite.lib.MesquiteThread;
+import mesquite.lib.MesquiteTimer;
+import mesquite.lib.Puppeteer;
+import mesquite.lib.Snapshot;
+import mesquite.lib.StringUtil;
+import mesquite.lib.table.MesquiteTable;
 import mesquite.lib.ui.AlertDialog;
 import mesquite.lib.ui.ExtensibleDialog;
+import mesquite.lists.lib.CharMatricesListProcessorUtility;
+import mesquite.lists.lib.CharMatricesListUtility;
 
 /* ======================================================================== */
 public class CharMatricesListProcess extends CharMatricesListUtility implements ActionListener {

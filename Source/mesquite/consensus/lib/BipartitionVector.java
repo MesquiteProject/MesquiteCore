@@ -16,8 +16,12 @@ package mesquite.consensus.lib;
 
 import java.util.Vector;
 
-import mesquite.consensus.lib.Bipartition;
-import mesquite.lib.*;
+import mesquite.lib.Bits;
+import mesquite.lib.MesquiteDouble;
+import mesquite.lib.MesquiteInteger;
+import mesquite.lib.MesquiteMessage;
+import mesquite.lib.MesquiteTrunk;
+import mesquite.lib.NameReference;
 import mesquite.lib.taxa.Taxa;
 import mesquite.lib.tree.MesquiteTree;
 import mesquite.lib.tree.Tree;

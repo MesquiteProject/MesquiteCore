@@ -14,14 +14,18 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
 package mesquite.parsimony.ParsimonyOrdered;
 /*~~  */
 
-import java.util.*;
-import java.awt.*;
-import mesquite.lib.*;
-import mesquite.lib.characters.*;
-import mesquite.lib.duties.*;
+import mesquite.categ.lib.CategoricalDistribution;
+import mesquite.categ.lib.CategoricalHistory;
+import mesquite.categ.lib.CategoricalState;
+import mesquite.lib.CommandChecker;
+import mesquite.lib.MesquiteInteger;
+import mesquite.lib.MesquiteNumber;
+import mesquite.lib.MesquiteString;
+import mesquite.lib.characters.CharacterDistribution;
+import mesquite.lib.characters.CharacterHistory;
+import mesquite.lib.characters.CharacterModel;
 import mesquite.lib.tree.Tree;
-import mesquite.categ.lib.*;
-import mesquite.parsimony.lib.*;
+import mesquite.parsimony.lib.ParsAncStatesForModel;
 
 /* ======================================================================== */
 /** Based largely on, and tested against, MacClade's code for ordered categorical characters*/

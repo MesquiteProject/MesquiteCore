@@ -14,9 +14,7 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
 package mesquite.treefarm.lib;
 /*~~  */
 
-import java.util.*;
-import java.awt.*;
-import mesquite.lib.*;
+import mesquite.lib.Double2DArray;
 import mesquite.lib.tree.Tree;
 
 

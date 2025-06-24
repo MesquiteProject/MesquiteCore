@@ -13,20 +13,41 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
 package mesquite.molec.TopBlastMatches; 
 
 
-import java.awt.*;
-import java.awt.event.*;
-import java.net.*;
-import java.io.*;
+import java.awt.Checkbox;
+import java.awt.Choice;
+import java.awt.event.ActionEvent;
+import java.awt.event.ItemEvent;
+import java.awt.event.ItemListener;
+import java.net.MalformedURLException;
+import java.net.URL;
 
-import mesquite.lib.*;
-import mesquite.lib.characters.*;
-import mesquite.lib.duties.MatrixSourceCoord;
-import mesquite.lib.table.*;
+import mesquite.categ.lib.CategDataSearcher;
+import mesquite.categ.lib.DNAData;
+import mesquite.categ.lib.ProteinData;
+import mesquite.categ.lib.RequiresAnyMolecularData;
+import mesquite.lib.CompatibilityTest;
+import mesquite.lib.EmployeeNeed;
+import mesquite.lib.IntegerArray;
+import mesquite.lib.IntegerField;
+import mesquite.lib.MesquiteBoolean;
+import mesquite.lib.MesquiteDouble;
+import mesquite.lib.MesquiteFile;
+import mesquite.lib.MesquiteFileUtil;
+import mesquite.lib.MesquiteInteger;
+import mesquite.lib.MesquiteListener;
+import mesquite.lib.MesquiteMessage;
+import mesquite.lib.MesquiteStringBuffer;
+import mesquite.lib.Notification;
+import mesquite.lib.Parser;
+import mesquite.lib.StringArray;
+import mesquite.lib.StringUtil;
+import mesquite.lib.characters.CharacterData;
+import mesquite.lib.table.MesquiteTable;
 import mesquite.lib.ui.DoubleField;
 import mesquite.lib.ui.ExtensibleDialog;
-import mesquite.categ.lib.*;
-import mesquite.cont.lib.ContinuousState;
-import mesquite.molec.lib.*;
+import mesquite.molec.lib.BLASTResults;
+import mesquite.molec.lib.Blaster;
+import mesquite.molec.lib.NCBIUtil;
 
 
 /* ======================================================================== */

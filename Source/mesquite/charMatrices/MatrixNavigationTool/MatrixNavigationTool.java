@@ -13,17 +13,20 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
  */
 package mesquite.charMatrices.MatrixNavigationTool; 
 
-import java.util.*;
-import java.awt.*;
-import java.awt.image.*;
-import mesquite.lib.*;
-import mesquite.lib.characters.*;
-import mesquite.lib.duties.*;
-import mesquite.lib.table.*;
+import mesquite.categ.lib.MolecularData;
+import mesquite.lib.CommandChecker;
+import mesquite.lib.Debugg;
+import mesquite.lib.MesquiteCommand;
+import mesquite.lib.MesquiteInteger;
+import mesquite.lib.MesquiteModule;
+import mesquite.lib.characters.CharacterData;
+import mesquite.lib.duties.DataWindowAssistantI;
+import mesquite.lib.table.CMTable;
+import mesquite.lib.table.MesquiteTable;
+import mesquite.lib.table.TableTool;
 import mesquite.lib.taxa.Taxa;
 import mesquite.lib.ui.MesquitePopup;
 import mesquite.lib.ui.MesquiteWindow;
-import mesquite.categ.lib.*;
 
 /* TODO: 
  * 	- emphasize rows and columns on mousedowns

@@ -13,12 +13,15 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
 */
 package mesquite.cont.lib;
 
-import java.awt.*;
-import java.util.*;
-import mesquite.lib.duties.*;
+import mesquite.lib.MesquiteDouble;
+import mesquite.lib.MesquiteInteger;
+import mesquite.lib.NameReference;
+import mesquite.lib.StringUtil;
+import mesquite.lib.characters.AdjustableDistribution;
+import mesquite.lib.characters.CharacterData;
+import mesquite.lib.characters.CharacterHistory;
+import mesquite.lib.characters.CharacterState;
 import mesquite.lib.taxa.Taxa;
-import mesquite.lib.*;
-import mesquite.lib.characters.*;
 /* ======================================================================== */
 /**This class provides some basic utilities for Continuous characters.  It represents the entry for one character
 and one taxon.  Thus, it can contain more than one item (min, max, mean, variance, etc.).*/

@@ -13,16 +13,17 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
 */
 package mesquite.lib.taxa;
 
-import java.awt.*;
-import java.util.*;
+import java.awt.Component;
+import java.awt.Container;
+import java.awt.Graphics;
+import java.awt.Panel;
+import java.awt.Rectangle;
 
-import mesquite.lib.Debugg;
 import mesquite.lib.ListableVector;
 import mesquite.lib.MesquiteMessage;
 import mesquite.lib.MesquiteModule;
 import mesquite.lib.MesquiteTrunk;
 import mesquite.lib.StringUtil;
-import mesquite.lib.duties.*;
 import mesquite.lib.ui.MesquitePanel;
 import mesquite.lib.ui.MesquiteWindow;
 

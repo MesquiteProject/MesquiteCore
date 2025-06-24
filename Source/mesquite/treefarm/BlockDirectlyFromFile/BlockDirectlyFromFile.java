@@ -14,12 +14,8 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
 package mesquite.treefarm.BlockDirectlyFromFile;
 /*~~  */
 
-import java.util.*;
-import java.awt.*;
-
-import mesquite.treefarm.lib.*;
-import mesquite.lib.*;
-import mesquite.lib.duties.*;
+import mesquite.lib.EmployeeNeed;
+import mesquite.treefarm.lib.BlockFromTreeSource;
 
 /** Supplies tree blocks from other sources.*/
 public class BlockDirectlyFromFile extends BlockFromTreeSource { //BlockFromTreeSource

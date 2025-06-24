@@ -14,15 +14,37 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
 package mesquite.stochchar.zMargLikeCateg;
 /*~~  */
 
-import java.util.*;
-import java.awt.*;
-import mesquite.lib.*;
-import mesquite.lib.characters.*;
-import mesquite.lib.duties.*;
+import mesquite.categ.lib.CategoricalDistribution;
+import mesquite.categ.lib.CategoricalHistory;
+import mesquite.categ.lib.CategoricalState;
+import mesquite.categ.lib.DNAState;
+import mesquite.categ.lib.ProteinState;
+import mesquite.lib.CommandChecker;
+import mesquite.lib.Double2DArray;
+import mesquite.lib.DoubleArray;
+import mesquite.lib.MesquiteDouble;
+import mesquite.lib.MesquiteFile;
+import mesquite.lib.MesquiteInteger;
+import mesquite.lib.MesquiteListener;
+import mesquite.lib.MesquiteNumber;
+import mesquite.lib.MesquiteString;
+import mesquite.lib.MesquiteThread;
+import mesquite.lib.ParseUtil;
+import mesquite.lib.Snapshot;
+import mesquite.lib.StringArray;
+import mesquite.lib.characters.CLikelihoodCalculator;
+import mesquite.lib.characters.CModelEstimator;
+import mesquite.lib.characters.CharacterDistribution;
+import mesquite.lib.characters.CharacterHistory;
+import mesquite.lib.characters.CharacterModel;
+import mesquite.lib.characters.CharacterStates;
+import mesquite.lib.characters.ProbabilityModel;
 import mesquite.lib.tree.Tree;
 import mesquite.lib.ui.MesquiteSubmenuSpec;
-import mesquite.categ.lib.*;
-import mesquite.stochchar.lib.*;
+import mesquite.stochchar.lib.MargLikeAncStCLForModel;
+import mesquite.stochchar.lib.MargLikeAncStForModel;
+import mesquite.stochchar.lib.MargLikelihoodForModel;
+import mesquite.stochchar.lib.ProbabilityCategCharModel;
 
 /* ======================================================================== */
 public class zMargLikeCateg extends MargLikeAncStCLForModel implements MesquiteListener, CLikelihoodCalculator {

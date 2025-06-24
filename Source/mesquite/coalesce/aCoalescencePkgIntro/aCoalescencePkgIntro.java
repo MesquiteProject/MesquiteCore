@@ -13,11 +13,7 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
 package mesquite.coalesce.aCoalescencePkgIntro;
 /*~~  */
 
-import java.util.*;
-import java.awt.*;
-import mesquite.lib.*;
-import mesquite.lib.duties.*;
-import mesquite.coalesce.lib.*;
+import mesquite.lib.duties.PackageIntro;
 
 
 /* ======================================================================== */

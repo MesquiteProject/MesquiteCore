@@ -3,9 +3,15 @@ package mesquite.align.lib;
 
 import mesquite.categ.lib.MCategoricalDistribution;
 import mesquite.categ.lib.MolecularData;
-import mesquite.lib.*;
+import mesquite.lib.CalculationMonitor;
+import mesquite.lib.MesquiteInteger;
+import mesquite.lib.MesquiteListener;
+import mesquite.lib.MesquiteModule;
+import mesquite.lib.MesquiteThread;
+import mesquite.lib.Notification;
+import mesquite.lib.ResultCodes;
+import mesquite.lib.SeparateThreadStorage;
 import mesquite.lib.characters.CharacterData;
-import mesquite.lib.duties.DataAlterer;
 import mesquite.lib.table.MesquiteTable;
 import mesquite.lib.ui.AlertDialog;
 

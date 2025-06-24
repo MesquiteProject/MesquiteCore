@@ -14,10 +14,6 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
 
 package mesquite.lib;
 
-import java.awt.*;
-import java.awt.image.*;
-import mesquite.lib.duties.*;
-
 /* ======================================================================== */
 /** An object a module can create and pass back to store in module info.  This test is done by the prospective
  *  employee module.  It tests whether module will be compatible with

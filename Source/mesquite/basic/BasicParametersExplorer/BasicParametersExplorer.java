@@ -13,14 +13,21 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
  */
 package mesquite.basic.BasicParametersExplorer;
 
-import java.awt.*;
-import java.awt.event.*;
-import java.util.*;
-import mesquite.lib.*;
-import mesquite.lib.duties.*;
+import java.awt.Color;
+import java.awt.Graphics;
 
-/* ======================================================================== */
-import mesquite.lib.table.TableTool;
+import mesquite.lib.CommandChecker;
+import mesquite.lib.CommandRecord;
+import mesquite.lib.Double2DArray;
+import mesquite.lib.IntegerField;
+import mesquite.lib.MesquiteDouble;
+import mesquite.lib.MesquiteFile;
+import mesquite.lib.MesquiteInteger;
+import mesquite.lib.MesquiteModule;
+import mesquite.lib.MesquiteParameter;
+import mesquite.lib.MesquiteThread;
+import mesquite.lib.Snapshot;
+import mesquite.lib.duties.ParametersExplorer;
 import mesquite.lib.ui.ChartTool;
 import mesquite.lib.ui.ColorDistribution;
 import mesquite.lib.ui.MesquiteColorTable;

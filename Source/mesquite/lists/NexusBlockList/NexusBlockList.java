@@ -14,13 +14,11 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
 package mesquite.lists.NexusBlockList;
 /*~~  */
 
-import java.util.*;
-import java.awt.*;
-import mesquite.lib.*;
-import mesquite.lib.duties.*;
-import mesquite.lists.lib.*;
-import mesquite.lib.table.*;
+import mesquite.lib.ListableVector;
+import mesquite.lib.NexusBlock;
 import mesquite.lib.ui.MesquiteWindow;
+import mesquite.lists.lib.ListLVModule;
+import mesquite.lists.lib.ListableVectorWindow;
 
 /* ======================================================================== */
 public class NexusBlockList extends ListLVModule {

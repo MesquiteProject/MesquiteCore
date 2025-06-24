@@ -12,10 +12,15 @@ This source code and its compiled class files are free and modifiable under the 
 GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
  */package mesquite.distance.lib;
 
-import mesquite.distance.lib.*;
-import mesquite.lib.*;
-import mesquite.lib.characters.*;
-import mesquite.categ.lib.*;
+import mesquite.categ.lib.DNAData;
+import mesquite.lib.CommandChecker;
+import mesquite.lib.MesquiteBoolean;
+import mesquite.lib.MesquiteFile;
+import mesquite.lib.MesquiteModule;
+import mesquite.lib.Parser;
+import mesquite.lib.Snapshot;
+import mesquite.lib.characters.CharacterData;
+import mesquite.lib.characters.MCharactersDistribution;
 
 public abstract class DNATaxaDistFromMatrixFreq extends DNATaxaDistFromMatrix {
 	MesquiteBoolean baseFreqEntireMatrix = new MesquiteBoolean(true);  //note:  Swofford uses this as true in PAUP*4.0b10

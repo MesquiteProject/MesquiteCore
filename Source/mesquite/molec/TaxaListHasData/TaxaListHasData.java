@@ -15,26 +15,40 @@ package mesquite.molec.TaxaListHasData;
 /*~~  */
 
 
-import mesquite.categ.lib.DNAState;
-import mesquite.categ.lib.MolecularData;
-import mesquite.categ.lib.MolecularState;
-import mesquite.lists.lib.*;
-
 import java.awt.Color;
-import java.awt.Container;
 import java.awt.Graphics;
 import java.awt.Label;
 import java.awt.Toolkit;
 import java.awt.datatransfer.Clipboard;
 import java.awt.datatransfer.DataFlavor;
-import java.awt.datatransfer.StringSelection;
 import java.awt.datatransfer.Transferable;
-import java.util.*;
 
-import mesquite.lib.*;
-import mesquite.lib.characters.*;
-import mesquite.lib.duties.*;
-import mesquite.lib.table.*;
+import mesquite.categ.lib.DNAState;
+import mesquite.categ.lib.MolecularData;
+import mesquite.categ.lib.MolecularState;
+import mesquite.lib.Associable;
+import mesquite.lib.Bits;
+import mesquite.lib.CommandChecker;
+import mesquite.lib.EmployeeNeed;
+import mesquite.lib.ListableVector;
+import mesquite.lib.MesquiteCommand;
+import mesquite.lib.MesquiteEvent;
+import mesquite.lib.MesquiteFile;
+import mesquite.lib.MesquiteInteger;
+import mesquite.lib.MesquiteListener;
+import mesquite.lib.MesquiteMessage;
+import mesquite.lib.MesquiteModule;
+import mesquite.lib.MesquiteStringBuffer;
+import mesquite.lib.NameReference;
+import mesquite.lib.Notification;
+import mesquite.lib.Snapshot;
+import mesquite.lib.StringUtil;
+import mesquite.lib.characters.CharacterData;
+import mesquite.lib.characters.CharacterState;
+import mesquite.lib.characters.MCharactersDistribution;
+import mesquite.lib.duties.CharMatrixSource;
+import mesquite.lib.duties.MatrixSourceCoord;
+import mesquite.lib.table.MesquiteTable;
 import mesquite.lib.taxa.Taxa;
 import mesquite.lib.ui.AlertDialog;
 import mesquite.lib.ui.ColorDistribution;
@@ -42,6 +56,8 @@ import mesquite.lib.ui.ExtensibleDialog;
 import mesquite.lib.ui.MesquiteMenuItem;
 import mesquite.lib.ui.MesquitePopup;
 import mesquite.lib.ui.SingleLineTextField;
+import mesquite.lists.lib.ListModule;
+import mesquite.lists.lib.TaxonListAssistant;
 
 /* ======================================================================== */
 public class TaxaListHasData extends TaxonListAssistant  {

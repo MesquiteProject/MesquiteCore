@@ -13,19 +13,17 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
 */
 package mesquite.lists.TaxonGroupListSymbolSize;
 
-import java.awt.Color;
-import java.awt.FontMetrics;
 import java.awt.Graphics;
-import java.awt.Shape;
 
-import mesquite.lib.*;
-import mesquite.lib.characters.CharInclusionSet;
+import mesquite.lib.CommandChecker;
+import mesquite.lib.MesquiteInteger;
+import mesquite.lib.StringUtil;
 import mesquite.lib.characters.CharacterData;
 import mesquite.lib.table.MesquiteTable;
 import mesquite.lib.taxa.TaxaGroup;
 import mesquite.lib.taxa.TaxaGroupVector;
 import mesquite.lib.ui.MesquiteSymbol;
-import mesquite.lists.lib.*;
+import mesquite.lists.lib.TaxonGroupListAssistant;
 
 /* ======================================================================== */
 public class TaxonGroupListSymbolSize extends TaxonGroupListAssistant  {

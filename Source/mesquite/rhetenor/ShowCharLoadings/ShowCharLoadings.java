@@ -14,17 +14,24 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
 package mesquite.rhetenor.ShowCharLoadings;
 /*~~  */
 
-import java.util.*;
-import java.awt.*;
-
-import mesquite.lib.*;
-import mesquite.lib.characters.*;
-import mesquite.lib.duties.*;
+import mesquite.lib.CommandChecker;
+import mesquite.lib.EmployeeNeed;
+import mesquite.lib.MesquiteFile;
+import mesquite.lib.MesquiteInteger;
+import mesquite.lib.MesquiteModule;
+import mesquite.lib.MesquiteThread;
+import mesquite.lib.Snapshot;
+import mesquite.lib.StringUtil;
+import mesquite.lib.duties.ItemsCharter;
+import mesquite.lib.duties.MatrixSourceCoord;
 import mesquite.lib.taxa.Taxa;
 import mesquite.lib.ui.ChartWindow;
 import mesquite.lib.ui.MesquiteWindow;
 import mesquite.lib.ui.MiniScroll;
-import mesquite.rhetenor.lib.*;
+import mesquite.rhetenor.lib.CharacterLoadings;
+import mesquite.rhetenor.lib.CharsFromMatrixSource;
+import mesquite.rhetenor.lib.Ordination;
+import mesquite.rhetenor.lib.OrdinationAssistant;
 
 /* ======================================================================== */
 public class ShowCharLoadings extends OrdinationAssistant {

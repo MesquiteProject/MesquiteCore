@@ -13,9 +13,6 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
 */
 package mesquite.lib;
 
-import java.awt.*;
-
-import mesquite.consensus.lib.Bipartition;
 import mesquite.lib.ui.MesquiteWindow;
 import mesquite.lib.ui.QueryDialogs;
 import mesquite.lib.ui.TwoIntegersDialog;

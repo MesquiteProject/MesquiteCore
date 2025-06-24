@@ -15,16 +15,30 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
 package mesquite.tol.lib;
 
 /*~~  */
+import java.net.MalformedURLException;
+import java.net.URL;
 
-import java.net.*;
-import mesquite.lib.*;
-import mesquite.lib.duties.*;
+import org.dom4j.Element;
+
+import mesquite.lib.CommandRecord;
+import mesquite.lib.MesquiteBoolean;
+import mesquite.lib.MesquiteFile;
+import mesquite.lib.MesquiteInteger;
+import mesquite.lib.MesquiteMessage;
+import mesquite.lib.MesquiteModule;
+import mesquite.lib.MesquiteProject;
+import mesquite.lib.MesquiteString;
+import mesquite.lib.MesquiteThread;
+import mesquite.lib.NameReference;
+import mesquite.lib.Puppeteer;
+import mesquite.lib.StringUtil;
+import mesquite.lib.XMLUtil;
+import mesquite.lib.duties.FileCoordinator;
+import mesquite.lib.duties.TaxaManager;
 import mesquite.lib.taxa.Taxa;
 import mesquite.lib.taxa.Taxon;
 import mesquite.lib.tree.MesquiteTree;
 import mesquite.lib.tree.TreeVector;
-
-import org.dom4j.*;
 
 public class ToLProjectOpener  {
 

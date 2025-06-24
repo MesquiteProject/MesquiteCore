@@ -15,10 +15,17 @@ package mesquite.diverse.SpecExtincLikelihood;
 
 
 import mesquite.diverse.SpecExtincMLCalculator.SpecExtincMLCalculator;
-import mesquite.lib.*;
+import mesquite.diverse.lib.NumberForTreeDivers;
+import mesquite.lib.CommandChecker;
+import mesquite.lib.EmployeeNeed;
+import mesquite.lib.MesquiteDouble;
+import mesquite.lib.MesquiteFile;
+import mesquite.lib.MesquiteNumber;
+import mesquite.lib.MesquiteString;
+import mesquite.lib.MesquiteThread;
+import mesquite.lib.Snapshot;
 import mesquite.lib.characters.CharacterDistribution;
 import mesquite.lib.tree.Tree;
-import mesquite.diverse.lib.*;
 
 public class SpecExtincLikelihood extends NumberForTreeDivers  {
 	public void getEmployeeNeeds(){  //This gets called on startup to harvest information; override this and inside, call registerEmployeeNeed

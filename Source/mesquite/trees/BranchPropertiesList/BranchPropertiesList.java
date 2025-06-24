@@ -14,25 +14,48 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
 package mesquite.trees.BranchPropertiesList;
 /*~~  */
 
-import mesquite.lists.lib.*;
-import mesquite.trees.BranchPropertyDisplayControl.BranchPropertyDisplayControl;
-import mesquite.trees.lib.BranchPropertiesListAssistant;
-
 import java.awt.Checkbox;
-import java.awt.Graphics;
 
-import mesquite.lib.*;
+import mesquite.lib.Annotatable;
+import mesquite.lib.Associable;
+import mesquite.lib.Bits;
+import mesquite.lib.CommandChecker;
+import mesquite.lib.Debugg;
+import mesquite.lib.DoubleArray;
+import mesquite.lib.EmployeeNeed;
+import mesquite.lib.Listable;
+import mesquite.lib.ListableVector;
+import mesquite.lib.LongArray;
+import mesquite.lib.MesquiteCommand;
+import mesquite.lib.MesquiteDouble;
+import mesquite.lib.MesquiteFile;
+import mesquite.lib.MesquiteInteger;
+import mesquite.lib.MesquiteListener;
+import mesquite.lib.MesquiteModule;
+import mesquite.lib.MesquiteString;
+import mesquite.lib.MesquiteThread;
+import mesquite.lib.MesquiteTrunk;
+import mesquite.lib.NameReference;
+import mesquite.lib.Notification;
+import mesquite.lib.PropertyRecord;
+import mesquite.lib.Snapshot;
+import mesquite.lib.StringArray;
+import mesquite.lib.StringUtil;
 import mesquite.lib.duties.TreeWindowMaker;
-import mesquite.lib.table.*;
-import mesquite.lib.tree.MesquiteTree;
-import mesquite.lib.tree.DisplayableBranchProperty;
-import mesquite.lib.tree.Tree;
+import mesquite.lib.table.EditorPanel;
+import mesquite.lib.table.MesquiteTable;
 import mesquite.lib.tree.BranchProperty;
+import mesquite.lib.tree.DisplayableBranchProperty;
+import mesquite.lib.tree.MesquiteTree;
 import mesquite.lib.ui.ListDialog;
 import mesquite.lib.ui.MesquiteMenuItemSpec;
 import mesquite.lib.ui.MesquiteSubmenuSpec;
 import mesquite.lib.ui.MesquiteWindow;
 import mesquite.lib.ui.SingleLineTextField;
+import mesquite.lists.lib.ListModule;
+import mesquite.lists.lib.ListWindow;
+import mesquite.trees.BranchPropertyDisplayControl.BranchPropertyDisplayControl;
+import mesquite.trees.lib.BranchPropertiesListAssistant;
 
 /* ======================================================================== */
 public class BranchPropertiesList extends ListModule implements Annotatable {

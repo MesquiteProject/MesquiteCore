@@ -15,12 +15,17 @@ modified 26 July 01: protected against NullPointerException if null images in pa
  */
 package mesquite.lib.simplicity;
 
-import java.awt.*;
-import java.awt.event.*;
-import java.util.*;
-/* ======================================================================== */
+import java.awt.Color;
+import java.awt.Cursor;
+import java.awt.Font;
+import java.awt.Graphics;
+import java.awt.Image;
+import java.awt.Menu;
+import java.awt.MenuItem;
 
-import mesquite.lib.*;
+import mesquite.lib.Commandable;
+import mesquite.lib.MesquiteCommand;
+import mesquite.lib.MesquiteModule;
 import mesquite.lib.ui.ColorTheme;
 import mesquite.lib.ui.MesquiteCheckMenuItem;
 import mesquite.lib.ui.MesquiteImage;

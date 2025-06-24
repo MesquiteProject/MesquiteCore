@@ -13,14 +13,14 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
 package mesquite.io.InterpretSimpleCont;
 /*~~  */
 
-import java.util.*;
-import java.awt.*;
-import mesquite.lib.*;
-import mesquite.lib.characters.*;
-import mesquite.lib.duties.*;
+import mesquite.cont.lib.ContinuousData;
+import mesquite.cont.lib.ContinuousState;
+import mesquite.io.lib.InterpretSimple;
+import mesquite.lib.MesquiteFile;
+import mesquite.lib.MesquiteProject;
+import mesquite.lib.characters.CharacterData;
+import mesquite.lib.duties.CharactersManager;
 import mesquite.lib.taxa.Taxa;
-import mesquite.cont.lib.*;
-import mesquite.io.lib.*;
 
 
 /* ============  a file interpreter for Categorical Simple files ============*/

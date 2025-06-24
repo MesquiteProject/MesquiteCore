@@ -14,13 +14,14 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
 package mesquite.lists.ModelsListWhole;
 /*~~  */
 
-import mesquite.lists.lib.*;
-import java.util.*;
-import java.awt.*;
-import mesquite.lib.*;
-import mesquite.lib.characters.*;
-import mesquite.lib.duties.*;
-import mesquite.lib.table.*;
+import mesquite.lib.ListableVector;
+import mesquite.lib.MesquiteListener;
+import mesquite.lib.Notification;
+import mesquite.lib.characters.CharacterModel;
+import mesquite.lib.characters.CharacterSubmodel;
+import mesquite.lib.characters.WholeCharacterModel;
+import mesquite.lib.table.MesquiteTable;
+import mesquite.lists.lib.ModelsListAssistant;
 
 /* ======================================================================== */
 public class ModelsListWhole extends ModelsListAssistant implements MesquiteListener {

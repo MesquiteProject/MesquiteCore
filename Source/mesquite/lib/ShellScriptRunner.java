@@ -13,11 +13,9 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
  */
 package mesquite.lib;
 
-import java.awt.*;
-import java.util.*;
-import java.io.*;
+import java.io.File;
+import java.io.IOException;
 
-import mesquite.lib.duties.*;
 import mesquite.lib.ui.ProgressIndicator;
 
 /* TODO: 

@@ -12,11 +12,19 @@ This source code and its compiled class files are free and modifiable under the 
 GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
  */package mesquite.distance.lib;
 
-import java.awt.Checkbox;
-
-import mesquite.categ.lib.*;
-import mesquite.lib.*;
-import mesquite.lib.characters.*;
+import mesquite.categ.lib.CategoricalData;
+import mesquite.categ.lib.CategoricalState;
+import mesquite.categ.lib.DNAData;
+import mesquite.categ.lib.DNAState;
+import mesquite.categ.lib.MCategoricalDistribution;
+import mesquite.categ.lib.ProteinState;
+import mesquite.categ.lib.RequiresAnyMolecularData;
+import mesquite.lib.CompatibilityTest;
+import mesquite.lib.MesquiteDouble;
+import mesquite.lib.MesquiteModule;
+import mesquite.lib.MesquiteTrunk;
+import mesquite.lib.characters.CharInclusionSet;
+import mesquite.lib.characters.MCharactersDistribution;
 import mesquite.lib.taxa.Taxa;
 
 public abstract class MolecularTaxaDistance extends TaxaDistance {

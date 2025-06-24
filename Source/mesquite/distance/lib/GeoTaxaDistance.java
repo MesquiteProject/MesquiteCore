@@ -13,10 +13,12 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
  */
 package mesquite.distance.lib;
 
-import mesquite.categ.lib.*;
-import mesquite.cont.lib.*;
-import mesquite.lib.*;
-import mesquite.lib.characters.*;
+import mesquite.cont.lib.GeographicData;
+import mesquite.cont.lib.GeographicStateTest;
+import mesquite.cont.lib.MContinuousDistribution;
+import mesquite.lib.CompatibilityTest;
+import mesquite.lib.MesquiteModule;
+import mesquite.lib.characters.MCharactersDistribution;
 import mesquite.lib.taxa.Taxa;
 
 public abstract class GeoTaxaDistance extends TaxaDistance {

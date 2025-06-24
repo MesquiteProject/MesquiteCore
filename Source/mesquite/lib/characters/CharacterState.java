@@ -13,10 +13,9 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
 */
 package mesquite.lib.characters; 
 
-import java.awt.*;
-import mesquite.lib.duties.*;
+import mesquite.lib.MesquiteMessage;
+import mesquite.lib.MesquiteTrunk;
 import mesquite.lib.taxa.Taxa;
-import mesquite.lib.*;
 
 /*Last documented:  April 2003 */
 /*==========================  Mesquite Basic Class Library    ==========================*/

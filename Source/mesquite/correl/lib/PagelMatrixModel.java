@@ -14,23 +14,30 @@ package mesquite.correl.lib;
 
 import java.util.Random;
 
+import Jama.Matrix;
+
 //import org.jacorb.ir.gui.typesystem.remote.IRAlias;
 
 import mesquite.categ.lib.CategoricalDistribution;
 import mesquite.categ.lib.CategoricalState;
 import mesquite.cont.lib.EigenAnalysis;
-import mesquite.correl.Pagel94.Pagel94;
-import mesquite.lib.*;
-import mesquite.lib.characters.CLikelihoodCalculator;
-import mesquite.lib.characters.CharacterDistribution;
+import mesquite.lib.CommandRecord;
+import mesquite.lib.Double2DArray;
+import mesquite.lib.DoubleArray;
+import mesquite.lib.Evaluator;
+import mesquite.lib.MesquiteDouble;
+import mesquite.lib.MesquiteInteger;
+import mesquite.lib.MesquiteListener;
+import mesquite.lib.MesquiteMessage;
+import mesquite.lib.MesquiteNumber;
+import mesquite.lib.Notification;
+import mesquite.lib.Optimizer;
 import mesquite.lib.characters.CharacterModel;
 import mesquite.lib.characters.CharacterState;
-import mesquite.lib.characters.ProbabilityModel;
 import mesquite.lib.tree.MesquiteTree;
 import mesquite.lib.tree.Tree;
 import mesquite.lib.ui.ProgressIndicator;
 import mesquite.stochchar.lib.MkModel;
-import Jama.Matrix;
 
 public class PagelMatrixModel extends MultipleProbCategCharModel implements Evaluator {
 

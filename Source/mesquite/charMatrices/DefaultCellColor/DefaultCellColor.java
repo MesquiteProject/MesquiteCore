@@ -13,14 +13,16 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
 */
 package mesquite.charMatrices.DefaultCellColor; 
 
-import java.util.*;
-import java.awt.*;
+import java.awt.Color;
 
 import mesquite.categ.lib.MolecularData;
-import mesquite.lib.*;
-import mesquite.lib.characters.*;
-import mesquite.lib.duties.*;
-import mesquite.lib.table.*;
+import mesquite.lib.CompatibilityTest;
+import mesquite.lib.characters.CharacterData;
+import mesquite.lib.characters.CharacterStateTest;
+import mesquite.lib.duties.CellColorer;
+import mesquite.lib.duties.CellColorerMatrixHighPriority;
+import mesquite.lib.duties.DataWindowAssistantID;
+import mesquite.lib.table.MesquiteTable;
 import mesquite.lib.taxa.Taxa;
 import mesquite.lib.ui.ColorRecord;
 

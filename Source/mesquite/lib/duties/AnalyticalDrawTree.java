@@ -13,10 +13,6 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
 */
 package mesquite.lib.duties;
 
-import java.awt.*;
-import mesquite.lib.*;
-
-
 /* ======================================================================== */
 /** This is superclass of all Mesquite tree drawing modules.  Creates a TreeDrawing, which does
 the drawing of the tree.  Example modules: ArcTree, BallsNSticks, CircularTree, Constellation, DiagonalDrawTree,

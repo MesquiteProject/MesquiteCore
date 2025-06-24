@@ -13,13 +13,9 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
  */
 package mesquite.lib.tree;
 
-import java.awt.Font;
-
 import mesquite.lib.Associable;
-import mesquite.lib.Listable;
 import mesquite.lib.ListableVector;
 import mesquite.lib.NameReference;
-import mesquite.lib.Nameable;
 import mesquite.lib.PropertyRecord;
 
 /* ======================================================================== */

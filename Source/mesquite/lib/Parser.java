@@ -13,9 +13,6 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
  */
 package mesquite.lib;
 
-import java.awt.*;
-
-
 /* ======================================================================== */
 /** A class for parsing strings for NEXUS files and commands.*/
 public class Parser extends StringUtil {

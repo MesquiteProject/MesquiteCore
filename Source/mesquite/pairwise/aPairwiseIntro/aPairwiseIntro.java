@@ -14,11 +14,8 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
 package mesquite.pairwise.aPairwiseIntro;
 /*~~  */
 
-import java.util.*;
-import java.awt.*;
-import mesquite.lib.*;
-import mesquite.lib.characters.*;
-import mesquite.lib.duties.*;
+import mesquite.lib.MesquiteFile;
+import mesquite.lib.duties.PackageIntro;
 
 
 /* ======================================================================== */

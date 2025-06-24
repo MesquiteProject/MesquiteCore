@@ -13,10 +13,6 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
 */
 package mesquite.lib;
 
-import java.awt.*;
-import java.text.*;
-
-
 /* ======================================================================== */
 /**Interface for object to claim it can be shown, i.e. when "showMe" is called, the object in some way will present itself
 to the user*/

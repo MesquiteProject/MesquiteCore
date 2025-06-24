@@ -14,25 +14,30 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
 package mesquite.lists.TreeListAttachment;
 /*~~  */
 
-import mesquite.lists.lib.*;
-import java.util.*;
-import java.awt.*;
-import java.awt.datatransfer.Clipboard;
-import java.awt.datatransfer.DataFlavor;
-import java.awt.datatransfer.Transferable;
+import java.util.Vector;
 
-import mesquite.categ.lib.MolecularData;
-import mesquite.lib.*;
-import mesquite.lib.duties.*;
-import mesquite.lib.table.*;
-import mesquite.lib.taxa.Taxon;
-import mesquite.lib.tree.DisplayableBranchProperty;
+import mesquite.lib.Attachable;
+import mesquite.lib.CommandChecker;
+import mesquite.lib.Listable;
+import mesquite.lib.ListableVector;
+import mesquite.lib.MesquiteBoolean;
+import mesquite.lib.MesquiteDouble;
+import mesquite.lib.MesquiteFile;
+import mesquite.lib.MesquiteInteger;
+import mesquite.lib.MesquiteLong;
+import mesquite.lib.MesquiteString;
+import mesquite.lib.MesquiteThread;
+import mesquite.lib.Notification;
+import mesquite.lib.ParseUtil;
+import mesquite.lib.Snapshot;
+import mesquite.lib.StringUtil;
+import mesquite.lib.table.MesquiteTable;
 import mesquite.lib.tree.MesquiteTree;
 import mesquite.lib.tree.Tree;
-import mesquite.lib.tree.BranchProperty;
 import mesquite.lib.tree.TreeVector;
 import mesquite.lib.ui.ListDialog;
 import mesquite.lib.ui.SingleLineTextField;
+import mesquite.lists.lib.TreeListAssistant;
 
 /* ======================================================================== */
 public class TreeListAttachment extends TreeListAssistant {

@@ -13,10 +13,10 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
 */
 package mesquite.lib.tree;
 
-import java.awt.*;
+import java.awt.Color;
+import java.awt.Panel;
 
 import mesquite.lib.MesquiteModule;
-import mesquite.lib.duties.*;
 import mesquite.lib.ui.MesquiteLabel;
 import mesquite.lib.ui.PanelsAtNodes;
 

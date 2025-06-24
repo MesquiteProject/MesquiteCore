@@ -14,16 +14,31 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
 package mesquite.basic.TaxonPartitionHelper;
 /*~~  */
 
-import mesquite.lists.lib.*;
-
-
-import java.awt.*;
+import java.awt.Color;
 
 import mesquite.assoc.lib.AssociationsManager;
 import mesquite.assoc.lib.TaxaAssociation;
 import mesquite.basic.ManageTaxaPartitions.ManageTaxaPartitions;
-import mesquite.lib.*;
-import mesquite.lib.duties.*;
+import mesquite.lib.AssociableWithSpecs;
+import mesquite.lib.Bits;
+import mesquite.lib.CommandChecker;
+import mesquite.lib.MesquiteCommand;
+import mesquite.lib.MesquiteFile;
+import mesquite.lib.MesquiteInteger;
+import mesquite.lib.MesquiteListener;
+import mesquite.lib.MesquiteMessage;
+import mesquite.lib.MesquiteModule;
+import mesquite.lib.MesquiteString;
+import mesquite.lib.MesquiteThread;
+import mesquite.lib.NameParser;
+import mesquite.lib.Notification;
+import mesquite.lib.SelectionInformer;
+import mesquite.lib.SpecsSet;
+import mesquite.lib.SpecsSetVector;
+import mesquite.lib.StringLister;
+import mesquite.lib.StringUtil;
+import mesquite.lib.duties.TaxaManager;
+import mesquite.lib.duties.TaxaSelectedUtility;
 import mesquite.lib.taxa.Taxa;
 import mesquite.lib.taxa.TaxaGroup;
 import mesquite.lib.taxa.TaxaGroupVector;
@@ -32,6 +47,7 @@ import mesquite.lib.ui.ColorDistribution;
 import mesquite.lib.ui.ListDialog;
 import mesquite.lib.ui.MesquiteSubmenuSpec;
 import mesquite.lib.ui.MesquiteSymbol;
+import mesquite.lists.lib.GroupDialog;
 
 /* ======================================================================== */
 public class TaxonPartitionHelper  extends TaxaSelectedUtility{

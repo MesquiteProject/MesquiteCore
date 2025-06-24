@@ -13,9 +13,8 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
 */
 package mesquite.lib.ui;
 
-import java.awt.*;
-import java.awt.event.*;
-import mesquite.lib.*;
+import java.awt.Color;
+import java.awt.Graphics;
 
 /* ======================================================================== */
 /** A panel at the bottom of a table or window that can be used for temporary messages.*/

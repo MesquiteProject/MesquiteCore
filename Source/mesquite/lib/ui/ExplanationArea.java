@@ -13,19 +13,22 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
  */
 package mesquite.lib.ui;
 
-import java.awt.*;
-import java.awt.event.*;
+import java.awt.Color;
+import java.awt.Font;
+import java.awt.Graphics;
+import java.awt.Image;
+import java.awt.TextArea;
+import java.awt.event.FocusEvent;
+import java.awt.event.FocusListener;
+import java.awt.event.TextEvent;
+import java.awt.event.TextListener;
 
 import mesquite.lib.Annotatable;
 import mesquite.lib.Listened;
-import mesquite.lib.MesquiteBoolean;
 import mesquite.lib.MesquiteEvent;
 import mesquite.lib.MesquiteListener;
 import mesquite.lib.MesquiteTrunk;
 import mesquite.lib.Notification;
-import mesquite.lib.duties.*;
-import mesquite.lib.simplicity.InterfaceManager;
-import mesquite.trunk.StartupThread;
 /* ======================================================================== */
 /** A panel at the bottom of windows in which explanations and footnotes can be displayed and edited.*/
 public class ExplanationArea extends MousePanel implements TextListener, MesquiteListener, FocusListener {

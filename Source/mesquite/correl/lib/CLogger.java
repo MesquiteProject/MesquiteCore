@@ -12,8 +12,6 @@ This source code and its compiled class files are free and modifiable under the 
 GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
  */package mesquite.correl.lib;
 
-import mesquite.lib.*;
-
 public interface CLogger {
  	public void cwriteln(String s);
  	public void cwrite(String s);

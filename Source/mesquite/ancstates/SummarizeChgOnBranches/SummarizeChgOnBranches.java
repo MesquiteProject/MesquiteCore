@@ -1,5 +1,7 @@
 package mesquite.ancstates.SummarizeChgOnBranches;
 
+import mesquite.ancstates.lib.ChgSummarizerMultTrees;
+
 /* Mesquite source code.  Copyright 1997 and onward, W. Maddison and D. Maddison. 
 
 
@@ -13,11 +15,13 @@ Mesquite's web site is http://mesquiteproject.org
 This source code and its compiled class files are free and modifiable under the terms of 
 GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
  */
-
-import mesquite.lib.*;
-import mesquite.lib.duties.*;
+import mesquite.lib.CommandChecker;
+import mesquite.lib.EmployeeNeed;
+import mesquite.lib.MesquiteFile;
+import mesquite.lib.MesquiteModule;
+import mesquite.lib.Snapshot;
+import mesquite.lib.duties.TreeWindowAssistantOA;
 import mesquite.lib.tree.Tree;
-import mesquite.ancstates.lib.*;
 
 
 /* 

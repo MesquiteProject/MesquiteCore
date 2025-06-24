@@ -14,13 +14,22 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
 package mesquite.genesis.SimDNAModelCurator;
 /*~~  */
 
-import mesquite.lib.*;
-import mesquite.lib.characters.*;
-import mesquite.lib.duties.*;
+import mesquite.categ.lib.DNAData;
+import mesquite.categ.lib.DNAState;
+import mesquite.genesis.lib.CharRatesEqual;
+import mesquite.genesis.lib.RateMatrixEqualDNAModel;
+import mesquite.genesis.lib.SimulationDNAModel;
+import mesquite.genesis.lib.StateFreqDNAEqual;
+import mesquite.lib.CommandChecker;
+import mesquite.lib.MesquiteFile;
+import mesquite.lib.MesquiteInteger;
+import mesquite.lib.MesquiteModule;
+import mesquite.lib.ParseUtil;
+import mesquite.lib.Snapshot;
+import mesquite.lib.characters.CharacterModel;
+import mesquite.lib.duties.EditingCurator;
 import mesquite.lib.ui.MesquiteWindow;
-import mesquite.categ.lib.*;
-import mesquite.genesis.lib.*;
-import mesquite.stochchar.lib.*;
+import mesquite.stochchar.lib.CategProbModelCurator;
 /* ======================================================================== */
 public class SimDNAModelCurator extends CategProbModelCurator implements EditingCurator {
 	SimulationDNAModel modelToEdit;

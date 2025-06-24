@@ -1,11 +1,22 @@
 package mesquite.align.AMultipleAlignService;
 
 
-import mesquite.lib.*;
-import mesquite.lib.characters.*;
-import mesquite.categ.lib.*;
-import mesquite.lib.table.*;
-import mesquite.align.lib.*;
+import mesquite.align.lib.AlignMultipleSequencesMachine;
+import mesquite.align.lib.MultipleSequenceAligner;
+import mesquite.categ.lib.MolecularData;
+import mesquite.categ.lib.MolecularDataAlterer;
+import mesquite.lib.CommandChecker;
+import mesquite.lib.EmployeeNeed;
+import mesquite.lib.MesquiteFile;
+import mesquite.lib.MesquiteInteger;
+import mesquite.lib.MesquiteListener;
+import mesquite.lib.Notification;
+import mesquite.lib.ResultCodes;
+import mesquite.lib.Snapshot;
+import mesquite.lib.UndoReference;
+import mesquite.lib.characters.AltererAlignShift;
+import mesquite.lib.characters.CharacterData;
+import mesquite.lib.table.MesquiteTable;
 
 /* ======================================================================== */
 public class AMultipleAlignService extends MolecularDataAlterer  implements AltererAlignShift{

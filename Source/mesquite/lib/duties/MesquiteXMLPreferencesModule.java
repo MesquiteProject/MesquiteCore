@@ -17,7 +17,9 @@ import java.util.Iterator;
 import java.util.List;
 
 import org.apache.hivemind.util.PropertyUtils;
-import org.dom4j.*;
+import org.dom4j.Document;
+import org.dom4j.DocumentHelper;
+import org.dom4j.Element;
 
 import mesquite.lib.MesquiteInteger;
 import mesquite.lib.MesquiteMessage;

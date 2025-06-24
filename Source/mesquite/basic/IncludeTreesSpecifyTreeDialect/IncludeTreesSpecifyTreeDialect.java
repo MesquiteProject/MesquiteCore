@@ -15,7 +15,7 @@ package mesquite.basic.IncludeTreesSpecifyTreeDialect;
 /*~~  */
 
 import mesquite.basic.OpenFileSpecifyTreeDialect.OpenFileSpecifyTreeDialect;
-import mesquite.lib.duties.*;
+import mesquite.lib.duties.FileAssistantTM;
 
 /* ======================================================================== */
 public class IncludeTreesSpecifyTreeDialect extends FileAssistantTM {

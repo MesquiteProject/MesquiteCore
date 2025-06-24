@@ -14,20 +14,35 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
  */
 package mesquite.charMatrices.ParallelAlterMatrixAsUtility;
 
-import mesquite.lists.lib.*;
-
 import java.util.Date;
 import java.util.Vector;
 
-import mesquite.categ.lib.CategoricalState;
-import mesquite.genomic.FlagBySpruceup.FlagBySpruceup;
-import mesquite.lib.*;
-import mesquite.lib.characters.*;
+import mesquite.lib.Bits;
+import mesquite.lib.CommandChecker;
+import mesquite.lib.CommandRecord;
+import mesquite.lib.CompatibilityTest;
+import mesquite.lib.IntegerField;
+import mesquite.lib.ListableVector;
+import mesquite.lib.MesquiteFile;
+import mesquite.lib.MesquiteInteger;
+import mesquite.lib.MesquiteListener;
+import mesquite.lib.MesquiteMessage;
+import mesquite.lib.MesquiteModule;
+import mesquite.lib.MesquiteProject;
+import mesquite.lib.MesquiteThread;
+import mesquite.lib.Notification;
+import mesquite.lib.Puppeteer;
+import mesquite.lib.ResultCodes;
+import mesquite.lib.Snapshot;
+import mesquite.lib.StringUtil;
+import mesquite.lib.characters.AlteredDataParameters;
 import mesquite.lib.characters.CharacterData;
-import mesquite.lib.duties.*;
-import mesquite.lib.table.*;
+import mesquite.lib.duties.DataAlterer;
+import mesquite.lib.duties.FileCoordinator;
+import mesquite.lib.table.MesquiteTable;
 import mesquite.lib.ui.ExtensibleDialog;
 import mesquite.lib.ui.ProgressIndicator;
+import mesquite.lists.lib.CharMatricesListProcessorUtility;
 
 /* ======================================================================== */
 public class ParallelAlterMatrixAsUtility extends CharMatricesListProcessorUtility {

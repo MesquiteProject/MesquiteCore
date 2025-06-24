@@ -13,10 +13,7 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
 */
 package mesquite.lib.ui;
 
-import java.awt.*;
-
 import mesquite.lib.MesquiteModule;
-import mesquite.lib.duties.*;
 
 /* ======================================================================== */
 /** A subclass of ChartExtra.  Used only so that chart drawing knows to call these before the chart

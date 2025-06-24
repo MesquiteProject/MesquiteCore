@@ -13,10 +13,9 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
 */
 package mesquite.lib.ui;
 
-import java.awt.*;
+import java.awt.Panel;
 
 import mesquite.lib.MesquiteModule;
-import mesquite.lib.duties.*;
 import mesquite.lib.tree.Tree;
 import mesquite.lib.tree.TreeDisplay;
 

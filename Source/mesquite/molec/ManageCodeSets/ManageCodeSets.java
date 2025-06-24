@@ -15,12 +15,22 @@ package mesquite.molec.ManageCodeSets;
 /*~~  */
 
 
-import java.util.*;
+import java.util.Enumeration;
 
-import mesquite.lib.*;
-import mesquite.lib.characters.*;
-import mesquite.lib.duties.*;
-import mesquite.molec.lib.*;
+import mesquite.lib.EmployeeNeed;
+import mesquite.lib.ListableVector;
+import mesquite.lib.MesquiteFile;
+import mesquite.lib.NexusCommandTest;
+import mesquite.lib.ObjectSpecsSet;
+import mesquite.lib.SpecsSet;
+import mesquite.lib.StringUtil;
+import mesquite.lib.characters.CharSpecsSet;
+import mesquite.lib.characters.CharacterData;
+import mesquite.lib.characters.CharacterModel;
+import mesquite.lib.characters.CharacterStates;
+import mesquite.lib.characters.ModelSet;
+import mesquite.lib.duties.CharSpecsSetManager;
+import mesquite.molec.lib.GenCodeModelSet;
 
 /* ======================================================================== */
 public class ManageCodeSets extends CharSpecsSetManager {

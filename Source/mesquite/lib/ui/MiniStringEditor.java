@@ -13,13 +13,14 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
 */
 package mesquite.lib.ui;
 
-import java.awt.event.*;
-import java.awt.*;
+import java.awt.Cursor;
+import java.awt.TextField;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 
 import mesquite.lib.CommandChecker;
 import mesquite.lib.MesquiteCommand;
 import mesquite.lib.MesquiteModule;
-import mesquite.lib.duties.*;
 
 /* ��������������������������� commands ������������������������������� */
 /* includes commands,  buttons, miniscrolls

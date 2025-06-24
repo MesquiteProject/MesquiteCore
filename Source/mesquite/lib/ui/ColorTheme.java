@@ -16,7 +16,6 @@ package mesquite.lib.ui;
 import java.awt.Color;
 
 import mesquite.lib.StringArray;
-import mesquite.lib.simplicity.*;
 
 /* ======================================================================== */
 /**A class to deal with color themes of windows.*/

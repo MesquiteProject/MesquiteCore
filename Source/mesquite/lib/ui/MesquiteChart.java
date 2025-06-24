@@ -13,8 +13,17 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
  */
 package mesquite.lib.ui;
 
-import java.awt.*;
-import java.util.*;
+import java.awt.Adjustable;
+import java.awt.Color;
+import java.awt.Component;
+import java.awt.Dimension;
+import java.awt.Graphics;
+import java.awt.Panel;
+import java.awt.ScrollPane;
+import java.awt.Toolkit;
+import java.awt.datatransfer.Clipboard;
+import java.awt.datatransfer.StringSelection;
+import java.util.Enumeration;
 
 import mesquite.lib.Bits;
 import mesquite.lib.CommandChecker;
@@ -30,8 +39,6 @@ import mesquite.lib.NumberArray;
 import mesquite.lib.OwnedByModule;
 import mesquite.lib.Selectionable;
 import mesquite.lib.StringUtil;
-
-import java.awt.datatransfer.*;
 
 
 /* ======================================================================== */

@@ -13,9 +13,6 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
 */
 package mesquite.lib;
 
-import java.awt.*;
-import mesquite.lib.duties.*;
-
 /** Objects of the NexusBlockTest class can be returned by modules on Mesquite's startup.  They are stored in modulesinfo and used to test, 
 without having to employ the module, whether the module would be able to read a nexus block.  Thus, if a module
 wants to read a particular sort of block, it overrides that MesquiteModule method getNexusBlockTest() so as to instantiate and return

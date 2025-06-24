@@ -13,9 +13,15 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
 */
 package mesquite.lib.duties;
 
-import java.awt.*;
-import mesquite.lib.*;
-import mesquite.lib.characters.*;
+import mesquite.lib.FileElement;
+import mesquite.lib.MesquiteFile;
+import mesquite.lib.MesquiteMessage;
+import mesquite.lib.NexusCommandTest;
+import mesquite.lib.ObjectSpecsSet;
+import mesquite.lib.SpecsSet;
+import mesquite.lib.characters.CharSpecsSet;
+import mesquite.lib.characters.CharacterModel;
+import mesquite.lib.characters.ModelSet;
 
 /* ======================================================================== */
 public abstract class ManageModelSet extends CharSpecsSetManager {

@@ -16,10 +16,9 @@ package mesquite.lib.tree;
 import java.awt.Checkbox;
 import java.awt.Label;
 
-import mesquite.assoc.lib.*;
+import mesquite.assoc.lib.TaxaAssociation;
 import mesquite.lib.Associable;
 import mesquite.lib.Bits;
-import mesquite.lib.Debugg;
 import mesquite.lib.DoubleArray;
 import mesquite.lib.IntegerArray;
 import mesquite.lib.ListableVector;
@@ -28,16 +27,13 @@ import mesquite.lib.MesquiteFile;
 import mesquite.lib.MesquiteInteger;
 import mesquite.lib.MesquiteMessage;
 import mesquite.lib.MesquiteModule;
-import mesquite.lib.MesquiteProject;
 import mesquite.lib.MesquiteString;
 import mesquite.lib.NameReference;
 import mesquite.lib.Parser;
 import mesquite.lib.StringUtil;
-import mesquite.lib.duties.TreesManager;
 import mesquite.lib.taxa.Taxa;
 import mesquite.lib.taxa.TaxonNamer;
 import mesquite.lib.ui.ExtensibleDialog;
-import mesquite.lib.ui.ProgressIndicator;
 
 public class TreeUtil {
 

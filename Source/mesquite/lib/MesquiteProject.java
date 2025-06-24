@@ -16,10 +16,22 @@ Modifications:
  */
 package mesquite.lib;
 
-import java.awt.*;
-import java.util.*;
-import java.net.*;
-import mesquite.lib.duties.*;
+import java.awt.Color;
+import java.awt.Container;
+import java.awt.Image;
+import java.net.URL;
+import java.util.Enumeration;
+
+import mesquite.lib.characters.CentralModelListener;
+import mesquite.lib.characters.CharacterData;
+import mesquite.lib.characters.CharacterModel;
+import mesquite.lib.characters.ModelCompatibilityInfo;
+import mesquite.lib.characters.ModelVector;
+import mesquite.lib.duties.FileAssistantFM;
+import mesquite.lib.duties.FileAssistantTM;
+import mesquite.lib.duties.FileCoordinator;
+import mesquite.lib.duties.TaxaManager;
+import mesquite.lib.duties.TreesManager;
 import mesquite.lib.misc.HNode;
 import mesquite.lib.taxa.Taxa;
 import mesquite.lib.tree.Tree;
@@ -28,13 +40,10 @@ import mesquite.lib.ui.ColorTheme;
 import mesquite.lib.ui.HTMLDescribable;
 import mesquite.lib.ui.ListDialog;
 import mesquite.lib.ui.MesquiteFrame;
-import mesquite.lib.ui.MesquiteMenuItem;
 import mesquite.lib.ui.MesquiteMenuItemSpec;
-import mesquite.lib.ui.MesquiteMenuSpec;
 import mesquite.lib.ui.MesquitePopup;
 import mesquite.lib.ui.MesquiteSubmenuSpec;
 import mesquite.lib.ui.MesquiteWindow;
-import mesquite.lib.characters.*;
 
 /* ======================================================================== */
 /** An object of this class represents a collection of information (data matrices, tree blocks, etc.) that may reside in more than one

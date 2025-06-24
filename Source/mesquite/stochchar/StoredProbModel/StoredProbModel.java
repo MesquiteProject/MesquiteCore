@@ -14,12 +14,25 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
 package mesquite.stochchar.StoredProbModel;
 /*~~  */
 
-import mesquite.lib.*;
-import mesquite.lib.characters.*;
-import mesquite.lib.duties.*;
+import mesquite.lib.CommandChecker;
+import mesquite.lib.EmployerEmployee;
+import mesquite.lib.MesquiteFile;
+import mesquite.lib.MesquiteInteger;
+import mesquite.lib.MesquiteProject;
+import mesquite.lib.MesquiteString;
+import mesquite.lib.MesquiteThread;
+import mesquite.lib.Notification;
+import mesquite.lib.ParseUtil;
+import mesquite.lib.Snapshot;
+import mesquite.lib.characters.CModelEstimator;
+import mesquite.lib.characters.CharacterData;
+import mesquite.lib.characters.CharacterModel;
+import mesquite.lib.characters.CharacterStatesHolder;
+import mesquite.lib.characters.ModelCompatibilityInfo;
+import mesquite.lib.characters.ProbabilityModel;
+import mesquite.lib.characters.WholeCharacterModel;
 import mesquite.lib.ui.MesquiteSubmenuSpec;
-import mesquite.categ.lib.*;
-import mesquite.stochchar.lib.*;
+import mesquite.stochchar.lib.ProbModelSourceLike;
 
 /* ======================================================================== */
 public class StoredProbModel extends ProbModelSourceLike {

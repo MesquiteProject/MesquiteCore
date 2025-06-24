@@ -13,9 +13,6 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
 */
 package mesquite.lib.ui;
 
-import java.awt.*;
-import java.text.*;
-
 /* ======================================================================== */
 /**Interface for object to claim it can give an html description*/
 public interface HTMLDescribable  {

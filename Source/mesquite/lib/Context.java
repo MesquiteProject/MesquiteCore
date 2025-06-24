@@ -13,9 +13,6 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
 */
 package mesquite.lib;
 
-import java.awt.*;
-import java.text.*;
-
 /* ======================================================================== */
 /**Interface for object to claim it is a context, e.g. for Tree Context*/
 public interface Context {

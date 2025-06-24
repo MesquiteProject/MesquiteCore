@@ -13,13 +13,9 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
 */
 package mesquite.rhetenor.lib; 
 
-import java.awt.*;
-import java.util.*;
-import mesquite.lib.*;
-import mesquite.lib.characters.*;
-import mesquite.lib.duties.*;
+import mesquite.lib.MesquiteModule;
+import mesquite.lib.duties.MatrixSourceCoord;
 import mesquite.lib.taxa.Taxa;
-import mesquite.cont.lib.*;
 
 
 /* ======================================================================== */

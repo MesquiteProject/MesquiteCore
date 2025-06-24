@@ -14,14 +14,13 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
 package mesquite.stochchar.ProbModelSetList;
 /*~~  */
 
-import mesquite.lists.lib.*;
-import java.util.*;
-import java.awt.*;
-import mesquite.lib.*;
-import mesquite.lib.characters.*;
-import mesquite.lib.duties.*;
+import mesquite.lib.CommandChecker;
+import mesquite.lib.Commandable;
+import mesquite.lib.SpecsSet;
+import mesquite.lib.characters.CharacterData;
+import mesquite.lib.characters.ProbabilityModelSet;
 import mesquite.lib.ui.AlertDialog;
-import mesquite.stochchar.lib.*;
+import mesquite.lists.lib.DataSpecssetList;
 
 
 

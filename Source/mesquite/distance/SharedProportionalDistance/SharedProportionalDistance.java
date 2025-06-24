@@ -13,11 +13,19 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
  */
 package mesquite.distance.SharedProportionalDistance;
 
-import mesquite.lib.*;
-import mesquite.lib.duties.*;
+import mesquite.distance.lib.IncTaxaDistanceSource;
+import mesquite.distance.lib.TaxaDistance;
+import mesquite.lib.Double2DArray;
+import mesquite.lib.EmployeeNeed;
+import mesquite.lib.Incrementable;
+import mesquite.lib.MesquiteDouble;
+import mesquite.lib.MesquiteListener;
+import mesquite.lib.MesquiteMessage;
+import mesquite.lib.MesquiteModule;
+import mesquite.lib.Notification;
+import mesquite.lib.duties.TreeSource;
 import mesquite.lib.taxa.Taxa;
 import mesquite.lib.tree.Tree;
-import mesquite.distance.lib.*;
 
 public class SharedProportionalDistance extends IncTaxaDistanceSource implements Incrementable {
 	public void getEmployeeNeeds(){  //This gets called on startup to harvest information; override this and inside, call registerEmployeeNeed

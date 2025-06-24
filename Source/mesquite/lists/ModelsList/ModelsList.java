@@ -14,16 +14,24 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
 package mesquite.lists.ModelsList;
 /*~~  */
 
-import mesquite.lists.lib.*;
-
-import java.util.*;
-import java.awt.*;
-
-import mesquite.lib.*;
-import mesquite.lib.characters.*;
-import mesquite.lib.duties.*;
-import mesquite.lib.table.*;
+import mesquite.lib.EmployeeNeed;
+import mesquite.lib.Listable;
+import mesquite.lib.ListableVector;
+import mesquite.lib.MesquiteFile;
+import mesquite.lib.MesquiteListener;
+import mesquite.lib.MesquiteThread;
+import mesquite.lib.Notification;
+import mesquite.lib.Snapshot;
+import mesquite.lib.StringUtil;
+import mesquite.lib.UndoReference;
+import mesquite.lib.characters.CharacterModel;
+import mesquite.lib.table.EditorPanel;
+import mesquite.lib.table.MesquiteTable;
 import mesquite.lib.ui.MesquiteWindow;
+import mesquite.lists.lib.ListModule;
+import mesquite.lists.lib.ListTable;
+import mesquite.lists.lib.ListWindow;
+import mesquite.lists.lib.ModelsListAssistant;
 
 /* ======================================================================== */
 public class ModelsList extends ListModule {

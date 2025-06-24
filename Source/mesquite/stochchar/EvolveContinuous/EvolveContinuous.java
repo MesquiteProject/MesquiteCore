@@ -14,15 +14,37 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
 package mesquite.stochchar.EvolveContinuous;
 /*~~  */
 
-import java.util.*;
-import java.awt.*;
-import mesquite.lib.*;
-import mesquite.lib.characters.*;
-import mesquite.lib.duties.*;
+import mesquite.cont.lib.ContinuousAdjustable;
+import mesquite.cont.lib.ContinuousData;
+import mesquite.cont.lib.ContinuousHistory;
+import mesquite.cont.lib.ContinuousState;
+import mesquite.cont.lib.ContinuousStateTest;
+import mesquite.lib.CommandChecker;
+import mesquite.lib.CompatibilityTest;
+import mesquite.lib.EmployerEmployee;
+import mesquite.lib.Listable;
+import mesquite.lib.MesquiteFile;
+import mesquite.lib.MesquiteInteger;
+import mesquite.lib.MesquiteListener;
+import mesquite.lib.MesquiteLong;
+import mesquite.lib.MesquiteModule;
+import mesquite.lib.MesquiteProject;
+import mesquite.lib.MesquiteString;
+import mesquite.lib.MesquiteThread;
+import mesquite.lib.Notification;
+import mesquite.lib.Snapshot;
+import mesquite.lib.StringUtil;
+import mesquite.lib.characters.AdjustableDistribution;
+import mesquite.lib.characters.CharacterDistribution;
+import mesquite.lib.characters.CharacterHistory;
+import mesquite.lib.characters.CharacterModel;
+import mesquite.lib.characters.ModelCompatibilityInfo;
+import mesquite.lib.duties.CharModelCurator;
+import mesquite.lib.duties.CharacterSimulator;
 import mesquite.lib.tree.Tree;
 import mesquite.lib.ui.MesquiteSubmenuSpec;
-import mesquite.cont.lib.*;
-import mesquite.stochchar.lib.*;
+import mesquite.stochchar.lib.ProbabilityContCharModel;
+import mesquite.stochchar.lib.SimModelCompatInfo;
 
 
 /* ======================================================================== */

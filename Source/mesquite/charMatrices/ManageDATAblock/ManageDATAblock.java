@@ -14,12 +14,17 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
 package mesquite.charMatrices.ManageDATAblock;
 /*~~  */
 
-import java.util.*;
-import java.awt.*;
-import java.io.*;
-import mesquite.lib.*;
-import mesquite.lib.characters.*;
-import mesquite.lib.duties.*;
+import mesquite.lib.FileBlock;
+import mesquite.lib.MesquiteFile;
+import mesquite.lib.MesquiteInteger;
+import mesquite.lib.MesquiteModule;
+import mesquite.lib.NEXUSFileParser;
+import mesquite.lib.NexusBlock;
+import mesquite.lib.NexusBlockTest;
+import mesquite.lib.StringUtil;
+import mesquite.lib.characters.CharacterData;
+import mesquite.lib.duties.CharactersManager;
+import mesquite.lib.duties.TaxaManager;
 import mesquite.lib.taxa.Taxa;
 
 /** Interprets the DATA block of a NEXUS file (this is more of an importer than manager; see ManageTaxa and ManageCharacters for the full management system for taxa and character blocks)*/

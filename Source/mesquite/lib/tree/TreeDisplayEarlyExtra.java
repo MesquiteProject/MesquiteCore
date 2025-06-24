@@ -13,11 +13,6 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
 */
 package mesquite.lib.tree;
 
-import java.awt.*;
-
-import mesquite.lib.MesquiteModule;
-import mesquite.lib.duties.*;
-
 /* ======================================================================== */
 /** An interface for TreeDisplayExtra to know they are drawn earlier (and thus behind)*/
 public interface TreeDisplayEarlyExtra  {

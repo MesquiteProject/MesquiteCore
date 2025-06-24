@@ -13,7 +13,9 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
 */
 package mesquite.lib.ui;
 
-import java.awt.*;
+import java.awt.Font;
+import java.awt.TextArea;
+import java.awt.TextComponent;
 
 import mesquite.lib.IntegerField;
 import mesquite.lib.LongField;

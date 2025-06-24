@@ -14,12 +14,14 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
 /*~~  */
 
 
-import mesquite.lists.lib.*;
-import mesquite.lib.*;
-import mesquite.lib.table.*;
+import mesquite.lib.CommandChecker;
+import mesquite.lib.Notification;
+import mesquite.lib.table.MesquiteTable;
 import mesquite.lib.taxa.Taxa;
 import mesquite.lib.ui.MesquiteMenuItemSpec;
-import mesquite.opentree.lib.*;
+import mesquite.lists.lib.ListModule;
+import mesquite.lists.lib.TaxonListAssistant;
+import mesquite.opentree.lib.OpenTreeUtil;
 
 
 

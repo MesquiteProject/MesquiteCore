@@ -16,16 +16,12 @@ package mesquite.lib.tree;
 import java.awt.Font;
 
 import mesquite.lib.Associable;
-import mesquite.lib.Debugg;
-import mesquite.lib.Listable;
 import mesquite.lib.ListableVector;
 import mesquite.lib.MesquiteBoolean;
 import mesquite.lib.MesquiteDouble;
 import mesquite.lib.MesquiteInteger;
 import mesquite.lib.MesquiteListener;
 import mesquite.lib.MesquiteLong;
-import mesquite.lib.NameReference;
-import mesquite.lib.Nameable;
 import mesquite.lib.Notification;
 import mesquite.lib.Parser;
 import mesquite.lib.StringUtil;

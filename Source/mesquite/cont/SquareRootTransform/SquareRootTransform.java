@@ -14,14 +14,14 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
 package mesquite.cont.SquareRootTransform;
 /*~~  */
 
-import java.util.*;
-import java.awt.*;
-
-import mesquite.lib.*;
-import mesquite.lib.characters.*;
-import mesquite.lib.duties.*;
-import mesquite.cont.lib.*;
-import mesquite.lib.table.*;
+import mesquite.cont.lib.ContDataAlterer;
+import mesquite.cont.lib.ContinuousData;
+import mesquite.lib.MesquiteDouble;
+import mesquite.lib.ResultCodes;
+import mesquite.lib.UndoReference;
+import mesquite.lib.characters.AltererContinuousTransformations;
+import mesquite.lib.characters.CharacterData;
+import mesquite.lib.table.MesquiteTable;
 
 /* ======================================================================== */
 public class SquareRootTransform extends ContDataAlterer  implements AltererContinuousTransformations {

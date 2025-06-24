@@ -14,14 +14,11 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
 package mesquite.treefarm.ExtractTreeBlock;
 /*~~  */
 
-import java.util.*;
-import java.awt.*;
-import mesquite.lib.*;
-import mesquite.lib.duties.*;
+import mesquite.lib.MesquiteFile;
 import mesquite.lib.taxa.Taxa;
 import mesquite.lib.tree.Tree;
 import mesquite.lib.tree.TreeVector;
-import mesquite.lists.lib.*;
+import mesquite.lists.lib.TreeListUtility;
 
 /* ======================================================================== */
 public class ExtractTreeBlock extends TreeListUtility { 

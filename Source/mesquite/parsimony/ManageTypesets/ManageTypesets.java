@@ -14,13 +14,22 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
 package mesquite.parsimony.ManageTypesets;
 /*~~  */
 
-import java.awt.*;
-import java.util.*;
+import java.util.Enumeration;
 
-import mesquite.lib.*;
-import mesquite.lib.characters.*;
-import mesquite.lib.duties.*;
-import mesquite.parsimony.lib.*;
+import mesquite.lib.EmployeeNeed;
+import mesquite.lib.ListableVector;
+import mesquite.lib.MesquiteFile;
+import mesquite.lib.NexusCommandTest;
+import mesquite.lib.ObjectSpecsSet;
+import mesquite.lib.SpecsSet;
+import mesquite.lib.StringUtil;
+import mesquite.lib.characters.CharSpecsSet;
+import mesquite.lib.characters.CharacterData;
+import mesquite.lib.characters.CharacterModel;
+import mesquite.lib.characters.CharacterStates;
+import mesquite.lib.characters.ModelSet;
+import mesquite.lib.duties.CharSpecsSetManager;
+import mesquite.parsimony.lib.ParsimonyModelSet;
 
 /* ======================================================================== */
 public class ManageTypesets extends CharSpecsSetManager {

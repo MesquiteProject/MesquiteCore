@@ -13,20 +13,6 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
 package mesquite.io.lib;
 /*~~  */
 
-import java.util.*;
-import java.awt.*;
-
-import mesquite.lib.*;
-import mesquite.lib.characters.*;
-import mesquite.lib.duties.*;
-import mesquite.lib.taxa.Taxa;
-import mesquite.lib.tree.Tree;
-import mesquite.lib.tree.TreeUtil;
-import mesquite.lib.tree.TreeVector;
-import mesquite.categ.lib.*;
-import mesquite.io.lib.*;
-
-
 /* ============  way for ReadTreeFile to read as either nexus or phylip automatically ============*/
 
 public interface TryNexusFirstTreeFileInterpreter  {

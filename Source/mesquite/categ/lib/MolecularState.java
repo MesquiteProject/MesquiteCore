@@ -13,12 +13,6 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
 */
 package mesquite.categ.lib;
 
-import java.awt.*;
-import java.util.*;
-import mesquite.lib.*;
-import mesquite.lib.characters.*;
-import mesquite.lib.duties.*;
-
 /* ======================================================================== */
 /** A subclass of CategoricalState set for molecular data. */
 public class MolecularState extends CategoricalState{

@@ -17,7 +17,7 @@ import mesquite.categ.lib.CategoricalState;
 import mesquite.categ.lib.DNAState;
 import mesquite.categ.lib.ProteinState;
 import mesquite.cont.lib.ContinuousState;
-import mesquite.io.lib.*;
+import mesquite.io.lib.InterpretHennig86Base;
 
 public class InterpretTNT extends InterpretHennig86Base {
 

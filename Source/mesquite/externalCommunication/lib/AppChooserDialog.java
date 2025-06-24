@@ -8,7 +8,12 @@ import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 
 import mesquite.externalCommunication.AppHarvester.AppHarvester;
-import mesquite.lib.*;
+import mesquite.lib.ListableVector;
+import mesquite.lib.MesquiteBoolean;
+import mesquite.lib.MesquiteFile;
+import mesquite.lib.MesquiteInteger;
+import mesquite.lib.MesquiteModule;
+import mesquite.lib.MesquiteString;
 import mesquite.lib.ui.ExtensibleDialog;
 import mesquite.lib.ui.RadioButtons;
 import mesquite.lib.ui.SingleLineTextField;

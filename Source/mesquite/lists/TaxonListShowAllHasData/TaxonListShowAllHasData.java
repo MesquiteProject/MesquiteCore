@@ -1,11 +1,18 @@
 /* Mesquite source code.  Copyright 1997 and onward, W. Maddison and D. Maddison. 
-Disclaimer:  The Mesquite source code is lengthy and we are few.  There are no doubt inefficiencies and goofs in this code. The commenting leaves much to be desired. Please approach this source code with the spirit of helping out.Perhaps with your help we can be more than a few, and make Mesquite better.Mesquite is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY.Mesquite's web site is http://mesquiteproject.orgThis source code and its compiled class files are free and modifiable under the terms of GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html) */package mesquite.lists.TaxonListShowAllHasData;/*~~  */import mesquite.lists.lib.*;
+Disclaimer:  The Mesquite source code is lengthy and we are few.  There are no doubt inefficiencies and goofs in this code. The commenting leaves much to be desired. Please approach this source code with the spirit of helping out.Perhaps with your help we can be more than a few, and make Mesquite better.Mesquite is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY.Mesquite's web site is http://mesquiteproject.orgThis source code and its compiled class files are free and modifiable under the terms of GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html) */package mesquite.lists.TaxonListShowAllHasData;/*~~  */import java.util.Vector;
 
-import java.io.IOException;import java.net.URI;import java.net.URISyntaxException;import java.util.*;import java.awt.*;import java.awt.event.*;
-
-import mesquite.lib.*;import mesquite.lib.characters.CharacterData;
-import mesquite.lib.duties.*;import mesquite.lib.table.*;
-import mesquite.lib.taxa.Taxa;/* ======================================================================== */public class TaxonListShowAllHasData extends TaxaListAssistantI  {	Taxa taxa;	MesquiteTable table;	public String getName() {		return "Show Columns for All Matrices";	}	public String getExplanation() {		return "Shows the Has Data column for all matrices.";	}	/*.................................................................................................................*/	public int getVersionOfFirstRelease(){		return 304;  	}	/*.................................................................................................................*/	public boolean startJob(String arguments, Object condition, boolean hiredByName){
+import mesquite.lib.CommandChecker;
+import mesquite.lib.CommandRecord;
+import mesquite.lib.MesquiteCommand;
+import mesquite.lib.MesquiteInteger;
+import mesquite.lib.MesquiteModule;
+import mesquite.lib.MesquiteThread;
+import mesquite.lib.Puppeteer;import mesquite.lib.characters.CharacterData;
+import mesquite.lib.table.MesquiteTable;
+import mesquite.lib.taxa.Taxa;
+import mesquite.lists.lib.ListAssistant;
+import mesquite.lists.lib.ListModule;
+import mesquite.lists.lib.TaxaListAssistantI;/* ======================================================================== */public class TaxonListShowAllHasData extends TaxaListAssistantI  {	Taxa taxa;	MesquiteTable table;	public String getName() {		return "Show Columns for All Matrices";	}	public String getExplanation() {		return "Shows the Has Data column for all matrices.";	}	/*.................................................................................................................*/	public int getVersionOfFirstRelease(){		return 304;  	}	/*.................................................................................................................*/	public boolean startJob(String arguments, Object condition, boolean hiredByName){
 		addMenuItem("Show Columns for All Matrices", new MesquiteCommand("showAll", this));		return true;	}
 	
 	void makeColumn(Puppeteer puppeteer, ListModule listModule, CharacterData data){

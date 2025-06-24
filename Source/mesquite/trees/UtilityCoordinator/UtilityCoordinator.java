@@ -13,10 +13,10 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
  */
 package mesquite.trees.UtilityCoordinator;
 
-import java.util.*;
-import java.awt.*;
-import mesquite.lib.*;
-import mesquite.lib.duties.*;
+import mesquite.lib.CommandChecker;
+import mesquite.lib.EmployeeNeed;
+import mesquite.lib.duties.TreeUtility;
+import mesquite.lib.duties.TreeWindowAssistantI;
 import mesquite.lib.tree.Tree;
 
 //new 1.04

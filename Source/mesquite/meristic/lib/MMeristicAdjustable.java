@@ -13,13 +13,17 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
 */
 package mesquite.meristic.lib;
 
-import java.awt.*;
-import java.util.*;
-import mesquite.lib.duties.*;
-import mesquite.lib.taxa.Taxa;
-import mesquite.lib.*;
-import mesquite.lib.characters.*;
+import java.util.Vector;
+
 import mesquite.cont.lib.ItemContainer;
+import mesquite.lib.Integer2DArray;
+import mesquite.lib.MesquiteInteger;
+import mesquite.lib.NameReference;
+import mesquite.lib.characters.CharacterData;
+import mesquite.lib.characters.CharacterDistribution;
+import mesquite.lib.characters.CharacterState;
+import mesquite.lib.characters.MAdjustableDistribution;
+import mesquite.lib.taxa.Taxa;
 
 /* ======================================================================== */
 /**A class for an array of  meristic character states for many characters, at each of the taxa or nodes.*/

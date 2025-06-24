@@ -14,13 +14,16 @@
 package mesquite.molec.AddSequencesFromFiles;
 /*~~  */
 
-import java.util.*;
 import java.io.File;
+import java.util.Vector;
 
 import mesquite.categ.lib.DNAData;
-import mesquite.lib.*;
+import mesquite.lib.MainThread;
+import mesquite.lib.MesquiteFile;
+import mesquite.lib.MesquiteModule;
 import mesquite.lib.characters.CharacterData;
-import mesquite.lib.duties.*;
+import mesquite.lib.duties.DataWindowMaker;
+import mesquite.lib.duties.FileAssistantFM;
 import mesquite.lib.table.MesquiteTable;
 import mesquite.lib.ui.MesquiteWindow;
 

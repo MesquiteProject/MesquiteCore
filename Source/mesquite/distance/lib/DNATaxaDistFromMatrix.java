@@ -17,12 +17,16 @@ package mesquite.distance.lib;
 
 import java.awt.Checkbox;
 
-import mesquite.lib.*;
-import mesquite.lib.characters.*;
+import mesquite.categ.lib.DNAState;
+import mesquite.categ.lib.RequiresAnyDNAData;
+import mesquite.lib.CommandChecker;
+import mesquite.lib.CompatibilityTest;
+import mesquite.lib.MesquiteBoolean;
+import mesquite.lib.MesquiteFile;
+import mesquite.lib.MesquiteModule;
+import mesquite.lib.Parser;
+import mesquite.lib.Snapshot;
 import mesquite.lib.ui.ExtensibleDialog;
-import mesquite.categ.lib.*;
-import mesquite.cont.lib.GeographicStateTest;
-import mesquite.distance.lib.*;
 
 /* ======================================================================== */
 /* incrementable, with each being based on a different matrix */

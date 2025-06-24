@@ -14,12 +14,17 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
 package mesquite.charMatrices.ManageCharsets;
 /*~~  */
 
-import java.util.*;
-import java.awt.*;
-
-import mesquite.lib.*;
-import mesquite.lib.characters.*;
-import mesquite.lib.duties.*;
+import mesquite.lib.EmployeeNeed;
+import mesquite.lib.ListableVector;
+import mesquite.lib.MesquiteFile;
+import mesquite.lib.NexusCommandTest;
+import mesquite.lib.SpecsSet;
+import mesquite.lib.StringUtil;
+import mesquite.lib.characters.CharSelectionSet;
+import mesquite.lib.characters.CharSpecsSet;
+import mesquite.lib.characters.CharacterData;
+import mesquite.lib.characters.CharacterStates;
+import mesquite.lib.duties.CharSpecsSetManager;
 
 /** Manages CHARSETs (not character matrices; see ManageCharacters), including reading the NEXUS command for CHARSETs */
 public class ManageCharsets extends CharSpecsSetManager {

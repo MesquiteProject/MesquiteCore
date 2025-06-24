@@ -13,11 +13,18 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
  */
 package mesquite.trees.NumForNodesWithCharHist;
 
-import java.util.*;
-import java.awt.*;
-import mesquite.lib.*;
-import mesquite.lib.characters.*;
-import mesquite.lib.duties.*;
+import mesquite.lib.CommandChecker;
+import mesquite.lib.EmployeeNeed;
+import mesquite.lib.MesquiteFile;
+import mesquite.lib.MesquiteModule;
+import mesquite.lib.MesquiteString;
+import mesquite.lib.NumberArray;
+import mesquite.lib.Snapshot;
+import mesquite.lib.characters.MCharactersDistribution;
+import mesquite.lib.characters.MCharactersHistory;
+import mesquite.lib.duties.CharsStatesForNodes;
+import mesquite.lib.duties.NumbersForNodesAndHistory;
+import mesquite.lib.duties.NumbersForNodesAndMatrix;
 import mesquite.lib.tree.Tree;
 
 /* ======================================================================== */

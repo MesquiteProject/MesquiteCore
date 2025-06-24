@@ -13,11 +13,13 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
 */
 package mesquite.trunk;
 
-import java.awt.*;
-import java.awt.image.*;
-import java.util.*;
-import mesquite.lib.*;
-import mesquite.lib.duties.*;
+import java.awt.Color;
+import java.awt.Font;
+
+import mesquite.lib.MesquiteModule;
+import mesquite.lib.MesquiteTrunk;
+import mesquite.lib.SystemWindow;
+import mesquite.lib.duties.BrowseHierarchy;
 import mesquite.lib.misc.HPanel;
 import mesquite.lib.ui.HelpSearchStrip;
 import mesquite.lib.ui.MesquiteWindow;

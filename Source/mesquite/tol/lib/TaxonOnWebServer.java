@@ -13,7 +13,7 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
  */
 package mesquite.tol.lib; 
 
-import mesquite.lib.*;
+import mesquite.lib.MesquiteModule;
 
 
 

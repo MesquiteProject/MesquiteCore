@@ -13,11 +13,29 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
  */
 package mesquite.trees.lib;
 
-import java.util.*;
-import java.awt.*;
+import java.awt.Color;
+import java.awt.Component;
+import java.awt.Graphics;
+import java.awt.Point;
+import java.awt.Rectangle;
+import java.awt.ScrollPane;
+import java.util.Enumeration;
 
-import mesquite.lib.*;
-import mesquite.lib.duties.*;
+import mesquite.lib.CommandChecker;
+import mesquite.lib.ListableVector;
+import mesquite.lib.MesquiteDouble;
+import mesquite.lib.MesquiteFile;
+import mesquite.lib.MesquiteInteger;
+import mesquite.lib.MesquiteMessage;
+import mesquite.lib.MesquiteModule;
+import mesquite.lib.MesquiteThread;
+import mesquite.lib.Parser;
+import mesquite.lib.Snapshot;
+import mesquite.lib.duties.DrawTreeCoordinator;
+import mesquite.lib.duties.TreeDisplayAssistant;
+import mesquite.lib.duties.TreeDisplayAssistantA;
+import mesquite.lib.duties.TreeDisplayAssistantD;
+import mesquite.lib.duties.TreeWindowMaker;
 import mesquite.lib.taxa.Taxa;
 import mesquite.lib.tree.MesquiteTree;
 import mesquite.lib.tree.Tree;
@@ -32,7 +50,6 @@ import mesquite.lib.ui.MQScrollPane;
 import mesquite.lib.ui.MesquiteSubmenuSpec;
 import mesquite.lib.ui.MesquiteWindow;
 import mesquite.lib.ui.MessagePanel;
-import mesquite.assoc.lib.*;
 
 /* ======================================================================== */
 public class SimpleTreeWindow extends MesquiteWindow  {

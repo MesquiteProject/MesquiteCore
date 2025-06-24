@@ -13,10 +13,7 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
 */
 package mesquite.lib.characters; 
 
-import java.awt.*;
-import mesquite.lib.duties.*;
 import mesquite.lib.taxa.Taxa;
-import mesquite.lib.*;
 
 /* ======================================================================== */
 /**An interface to signal that a CharacterDistribution can be changed (i.e. its states set, its parent data set, the number

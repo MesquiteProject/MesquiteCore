@@ -13,9 +13,8 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
 */
 package mesquite.lists.lib;
 
-import java.awt.*;
-import mesquite.lib.*;
-import mesquite.lib.table.*;
+import mesquite.lib.MesquiteModule;
+import mesquite.lib.table.MesquiteTable;
 import mesquite.lib.taxa.Taxa;
 
 

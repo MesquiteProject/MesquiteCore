@@ -13,17 +13,28 @@
  */
 package mesquite.categ.lib;
 
-import java.awt.*;
-import java.util.*;
+import java.awt.Color;
+import java.util.Vector;
 
-import mesquite.lib.*;
-import mesquite.lib.characters.*;
-import mesquite.lib.duties.*;
-import mesquite.lib.table.MesquiteTable;
+import mesquite.lib.Associable;
+import mesquite.lib.AssociableWithSpecs;
+import mesquite.lib.MesquiteInteger;
+import mesquite.lib.MesquiteMessage;
+import mesquite.lib.MesquiteStringBuffer;
+import mesquite.lib.NameReference;
+import mesquite.lib.Notification;
+import mesquite.lib.characters.CharacterData;
+import mesquite.lib.characters.CharacterDistribution;
+import mesquite.lib.characters.CharacterModel;
+import mesquite.lib.characters.CharacterState;
+import mesquite.lib.characters.CodonPositionsSet;
+import mesquite.lib.characters.DefaultReference;
+import mesquite.lib.characters.MCharactersDistribution;
+import mesquite.lib.duties.CharMatrixManager;
+import mesquite.lib.duties.CharactersManager;
 import mesquite.lib.taxa.Taxa;
 import mesquite.lib.ui.ColorDistribution;
-import mesquite.lists.lib.ListModule;
-import mesquite.molec.lib.*;
+import mesquite.molec.lib.GeneticCode;
 
 /* ======================================================================== */
 /** A subclass of CharacterData for DNA data stored as Categorical sets (e.g, "{A, C}" */

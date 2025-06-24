@@ -14,20 +14,40 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
 package mesquite.lists.TaxonList;
 /*~~  */
 
-import java.util.*;
-import java.awt.*;
+import java.awt.Container;
+import java.awt.Graphics;
+import java.util.Enumeration;
 
-import mesquite.lib.*;
-import mesquite.lib.characters.CharacterData;
-import mesquite.lib.duties.*;
-import mesquite.lists.lib.*;
-import mesquite.lib.table.*;
+import mesquite.lib.AssociableWithSpecs;
+import mesquite.lib.CommandChecker;
+import mesquite.lib.EmployeeNeed;
+import mesquite.lib.MesquiteFile;
+import mesquite.lib.MesquiteInteger;
+import mesquite.lib.MesquiteListener;
+import mesquite.lib.MesquiteModule;
+import mesquite.lib.MesquiteString;
+import mesquite.lib.MesquiteThread;
+import mesquite.lib.Notification;
+import mesquite.lib.ParseUtil;
+import mesquite.lib.Snapshot;
+import mesquite.lib.StringUtil;
+import mesquite.lib.UndoInstructions;
+import mesquite.lib.UndoReference;
+import mesquite.lib.Undoer;
+import mesquite.lib.duties.TaxaSelectCoordinator;
+import mesquite.lib.duties.TaxaTableAssistantI;
+import mesquite.lib.duties.TaxonNameAlterer;
+import mesquite.lib.duties.TaxonUtility;
+import mesquite.lib.table.TableWindow;
 import mesquite.lib.taxa.Taxa;
 import mesquite.lib.taxa.TaxaSelectionSet;
 import mesquite.lib.ui.AlertDialog;
-import mesquite.lib.ui.ColorDistribution;
 import mesquite.lib.ui.MesquiteSubmenuSpec;
 import mesquite.lib.ui.MesquiteWindow;
+import mesquite.lists.lib.ListModule;
+import mesquite.lists.lib.ListWindow;
+import mesquite.lists.lib.TaxaListAssistantI;
+import mesquite.lists.lib.TaxonListAssistant;
 
 /* ======================================================================== */
 public class TaxonList extends ListModule {

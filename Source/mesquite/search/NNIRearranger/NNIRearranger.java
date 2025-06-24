@@ -16,10 +16,8 @@ Modified: 25 Aug 01 (WPM) added "|| tree.hasPolytomies(tree.getRoot())" in check
 package mesquite.search.NNIRearranger;
 /*~~  */
 
-import java.util.*;
-import java.awt.*;
-import mesquite.lib.*;
-import mesquite.lib.duties.*;
+import mesquite.lib.MesquiteInteger;
+import mesquite.lib.duties.TreeSwapper;
 import mesquite.lib.tree.AdjustableTree;
 
 /* ======================================================================== */

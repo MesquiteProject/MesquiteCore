@@ -13,9 +13,9 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
 */
 package mesquite.lib.characters; 
 
-import java.awt.*;
-import mesquite.lib.duties.*;
-import mesquite.lib.*;
+import mesquite.lib.AssociableWithSpecs;
+import mesquite.lib.MesquiteNumber;
+import mesquite.lib.SpecsSet;
 
 /*======================================================================== */
 /** a sorting for characters. */

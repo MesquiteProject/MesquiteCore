@@ -13,11 +13,10 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
  */
 package mesquite.molec.ColorTaxonByNumDataInMatrices;
 
-import java.util.*;
-import java.awt.*;
-import mesquite.lib.*;
+import java.awt.Color;
+
 import mesquite.lib.characters.CharacterData;
-import mesquite.lib.duties.*;
+import mesquite.lib.duties.TaxonNameStyler;
 import mesquite.lib.taxa.Taxa;
 import mesquite.lib.taxa.Taxon;
 import mesquite.lib.ui.MesquiteColorTable;

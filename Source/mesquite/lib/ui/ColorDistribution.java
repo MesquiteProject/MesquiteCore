@@ -13,9 +13,12 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
  */
 package mesquite.lib.ui;
 
-import java.awt.*;
+import java.awt.AlphaComposite;
+import java.awt.Color;
+import java.awt.Composite;
+import java.awt.Graphics;
+import java.awt.Graphics2D;
 
-import mesquite.lib.Debugg;
 import mesquite.lib.MesquiteInteger;
 import mesquite.lib.MesquiteModule;
 import mesquite.lib.MesquiteProject;
@@ -24,7 +27,6 @@ import mesquite.lib.ObjectArray;
 import mesquite.lib.Parser;
 import mesquite.lib.RandomBetween;
 import mesquite.lib.StringArray;
-import mesquite.lib.duties.*;
 
 /* ======================================================================== */
 /**A class to indicate how something is to be colored, either an array of colors to be shown in equal pieces, or 

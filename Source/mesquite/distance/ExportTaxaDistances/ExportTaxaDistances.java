@@ -14,13 +14,17 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
 package mesquite.distance.ExportTaxaDistances;
 
 
-import java.util.*;
-import java.awt.*;
-
-import mesquite.lib.*;
-import mesquite.lib.duties.*;
+import mesquite.distance.lib.TaxaDistance;
+import mesquite.distance.lib.TaxaDistanceSource;
+import mesquite.lib.Arguments;
+import mesquite.lib.MesquiteDouble;
+import mesquite.lib.MesquiteFile;
+import mesquite.lib.MesquiteProject;
+import mesquite.lib.MesquiteString;
+import mesquite.lib.Parser;
+import mesquite.lib.StringUtil;
+import mesquite.lib.duties.FileInterpreterI;
 import mesquite.lib.taxa.Taxa;
-import mesquite.distance.lib.*;
 
 
 

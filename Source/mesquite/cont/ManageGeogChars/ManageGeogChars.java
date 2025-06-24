@@ -14,14 +14,11 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
 package mesquite.cont.ManageGeogChars;
 /*~~  */
 
-import java.util.*;
-import java.awt.*;
-import java.io.*;
-import mesquite.lib.*;
-import mesquite.lib.characters.*;
-import mesquite.lib.duties.*;
+import mesquite.cont.lib.GeographicData;
+import mesquite.cont.lib.GeographicState;
+import mesquite.cont.lib.ManageContCharsA;
+import mesquite.lib.characters.CharacterData;
 import mesquite.lib.taxa.Taxa;
-import mesquite.cont.lib.*;
 
 /* ======================================================================== 
 Manages geographic data matrices  */

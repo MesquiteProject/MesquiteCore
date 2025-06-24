@@ -13,10 +13,12 @@
  */
 package mesquite.lib.duties;
 
-import java.awt.*;
-
-import mesquite.lib.*;
-import mesquite.minimal.BasicFileCoordinator.ProjectWindow;
+import mesquite.lib.FileElement;
+import mesquite.lib.MesquiteBoolean;
+import mesquite.lib.MesquiteFile;
+import mesquite.lib.MesquiteModule;
+import mesquite.lib.MesquiteProject;
+import mesquite.lib.Snapshot;
 
 /* ======================================================================== */
 /**

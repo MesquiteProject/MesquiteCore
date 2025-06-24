@@ -13,12 +13,11 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
 */
 package mesquite.rhetenor.lib; 
 
-import java.awt.*;
-import java.util.*;
-import mesquite.lib.*;
-import mesquite.lib.characters.*;
+import mesquite.cont.lib.SquaredReconstructor;
+import mesquite.lib.Double2DArray;
+import mesquite.lib.MesquiteDouble;
+import mesquite.lib.characters.CharacterStates;
 import mesquite.lib.tree.Tree;
-import mesquite.cont.lib.*;
 
 
 /* ======================================================================== */

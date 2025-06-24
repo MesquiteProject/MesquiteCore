@@ -14,13 +14,20 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
 package mesquite.treefarm.ProbRndTreeModifier;
 
 import java.util.Random;
-import mesquite.lib.*;
-import mesquite.lib.duties.CharSourceCoordObed;
-import mesquite.lib.duties.NumberFor2CharAndTree;
+
+import mesquite.lib.CommandChecker;
+import mesquite.lib.EmployeeNeed;
+import mesquite.lib.MesquiteCommand;
+import mesquite.lib.MesquiteDouble;
+import mesquite.lib.MesquiteFile;
+import mesquite.lib.MesquiteString;
+import mesquite.lib.MesquiteThread;
+import mesquite.lib.RandomBetween;
+import mesquite.lib.Snapshot;
 import mesquite.lib.tree.MesquiteTree;
 import mesquite.lib.tree.Tree;
 import mesquite.lib.ui.MesquiteSubmenuSpec;
-import mesquite.treefarm.lib.*;
+import mesquite.treefarm.lib.RndTreeModifier;
 
 /** This module is basically a random tree modifier, but it works by hiring another one, and only invoking it on a tree with a particular probability */
 public class ProbRndTreeModifier extends RndTreeModifier {

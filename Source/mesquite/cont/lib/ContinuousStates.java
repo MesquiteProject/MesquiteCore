@@ -13,13 +13,18 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
 */
 package mesquite.cont.lib;
 
-import java.awt.*;
-import java.util.*;
-import mesquite.lib.duties.*;
+import mesquite.lib.MesquiteDouble;
+import mesquite.lib.MesquiteModule;
+import mesquite.lib.MesquiteProject;
+import mesquite.lib.MesquiteString;
+import mesquite.lib.NameReference;
+import mesquite.lib.StringUtil;
+import mesquite.lib.characters.CharacterModel;
+import mesquite.lib.characters.CharacterState;
+import mesquite.lib.characters.CharacterStates;
+import mesquite.lib.characters.DefaultReference;
 import mesquite.lib.taxa.Taxa;
 import mesquite.lib.ui.ListDialog;
-import mesquite.lib.*;
-import mesquite.lib.characters.*;
 
 /** Contains an array of  continuous character states for one character, at each of the taxa or nodes 
  See notes under <a href = "ContinuousData.html">ContinuousData</a> regarding items */

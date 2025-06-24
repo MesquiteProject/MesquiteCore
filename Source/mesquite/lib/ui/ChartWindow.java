@@ -13,14 +13,12 @@
  */
 package mesquite.lib.ui;
 
-import java.awt.*;
-import java.awt.event.*;
+import java.awt.Cursor;
+import java.awt.Panel;
 
 import mesquite.lib.MesquiteMessage;
 import mesquite.lib.MesquiteModule;
-import mesquite.lib.MesquiteThread;
 import mesquite.lib.StringUtil;
-import mesquite.lib.duties.*;
 
 /* ======================================================================== */
 /** Chart windows can subclass this. Provides standard versions of some methods.. */

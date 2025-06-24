@@ -13,8 +13,8 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
 */
 package mesquite.lib.misc;
 
-import java.awt.*;
-import java.util.*;
+import java.awt.Image;
+import java.util.Vector;
 
 import mesquite.lib.AttachedNote;
 import mesquite.lib.Listened;

@@ -13,8 +13,7 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
 */
 package mesquite.lib.system;
 
-import mesquite.lib.*;
-import java.awt.*;
+import java.awt.Component;
 
 
 public class SystemUtil  {

@@ -13,16 +13,19 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
  */
 package mesquite.cont.lib;
 
-import java.awt.*;
-import java.util.*;
-import mesquite.lib.duties.*;
+import java.awt.Color;
+import java.awt.Point;
+
+import mesquite.lib.MesquiteDouble;
+import mesquite.lib.characters.CharacterDistribution;
+import mesquite.lib.characters.CharacterHistory;
+import mesquite.lib.characters.CharacterState;
+import mesquite.lib.characters.CharacterStates;
 import mesquite.lib.taxa.Taxa;
 import mesquite.lib.tree.Tree;
 import mesquite.lib.ui.ColorDistribution;
 import mesquite.lib.ui.ColorEventVector;
 import mesquite.lib.ui.MesquiteColorTable;
-import mesquite.lib.*;
-import mesquite.lib.characters.*;
 
 /* ======================================================================== */
 /** Contains an array of  continuous character states for one character, at each of the taxa or nodes. 

@@ -13,11 +13,9 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
 */
 package mesquite.lib.ui;
 
-import java.awt.*;
-import java.awt.event.*;
+import java.awt.CardLayout;
 
 import mesquite.lib.MesquiteModule;
-import mesquite.lib.duties.*;
 import mesquite.lib.misc.HPanel;
 /* ======================================================================== */
 /** The ContentArea specifically to show the tree of EmployeeModules.*/

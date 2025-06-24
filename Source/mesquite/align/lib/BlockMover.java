@@ -13,17 +13,28 @@
  */
 package mesquite.align.lib; 
 
-import java.util.*;
-import java.awt.*;
-import java.awt.image.*;
+import java.awt.Point;
 
-import mesquite.lib.*;
-import mesquite.lib.characters.*;
+import mesquite.categ.lib.CategoricalData;
+import mesquite.categ.lib.RequiresAnyMolecularData;
+import mesquite.lib.CommandChecker;
+import mesquite.lib.CompatibilityTest;
+import mesquite.lib.MesquiteBoolean;
+import mesquite.lib.MesquiteCommand;
+import mesquite.lib.MesquiteFile;
+import mesquite.lib.MesquiteInteger;
+import mesquite.lib.MesquiteListener;
+import mesquite.lib.MesquiteModule;
+import mesquite.lib.Notification;
+import mesquite.lib.Snapshot;
+import mesquite.lib.UndoInstructions;
+import mesquite.lib.UndoReference;
+import mesquite.lib.Undoer;
+import mesquite.lib.characters.CellBlock;
 import mesquite.lib.characters.CharacterData;
-import mesquite.lib.duties.*;
-import mesquite.lib.table.*;
+import mesquite.lib.duties.DataWindowAssistantI;
+import mesquite.lib.table.MesquiteTable;
 import mesquite.lib.ui.MesquiteWindow;
-import mesquite.categ.lib.*;
 
 /* ======================================================================== */
 public abstract class BlockMover extends DataWindowAssistantI {

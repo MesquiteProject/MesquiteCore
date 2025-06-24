@@ -13,10 +13,8 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
 */
 package mesquite.molec.lib;
 
-import java.awt.*;
-import java.util.*;
-import mesquite.lib.*;
-import mesquite.lib.characters.*;
+import mesquite.lib.Priority;
+import mesquite.lib.characters.WholeCharacterModel;
 
 /* ======================================================================== */
 /** Sublcass of models of character evolution for parsimony calculations.  It is expected

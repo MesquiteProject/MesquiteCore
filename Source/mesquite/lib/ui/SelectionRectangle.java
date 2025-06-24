@@ -1,7 +1,10 @@
 package mesquite.lib.ui;
 
-import java.awt.*;
-import java.awt.geom.*;
+import java.awt.Component;
+import java.awt.Graphics2D;
+import java.awt.Rectangle;
+import java.awt.Shape;
+import java.awt.geom.Area;
 
 import mesquite.lib.MesquitePath2DFloat;
 

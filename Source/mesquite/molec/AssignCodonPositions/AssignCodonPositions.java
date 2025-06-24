@@ -14,12 +14,21 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
 package mesquite.molec.AssignCodonPositions;
 /*~~  */
 
-import mesquite.lib.*;
-import mesquite.lib.characters.*;
+import mesquite.categ.lib.DNAData;
+import mesquite.categ.lib.DNADataAlterer;
+import mesquite.lib.AssociableWithSpecs;
+import mesquite.lib.CommandChecker;
+import mesquite.lib.MesquiteFile;
+import mesquite.lib.MesquiteInteger;
+import mesquite.lib.MesquiteMessage;
+import mesquite.lib.Notification;
+import mesquite.lib.ResultCodes;
+import mesquite.lib.Snapshot;
+import mesquite.lib.UndoReference;
+import mesquite.lib.characters.AltererMetadata;
 import mesquite.lib.characters.CharacterData;
-import mesquite.align.lib.MultipleSequenceAligner;
-import mesquite.categ.lib.*;
-import mesquite.lib.table.*;
+import mesquite.lib.characters.CodonPositionsSet;
+import mesquite.lib.table.MesquiteTable;
 import mesquite.molec.lib.CodonPositionAssigner;
 
 /* ======================================================================== */

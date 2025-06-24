@@ -3,11 +3,12 @@ package mesquite.molec.lib;
 import java.util.Iterator;
 import java.util.List;
 
-import org.apache.hivemind.util.PropertyUtils;
-import org.dom4j.*;
+import org.dom4j.Element;
 
-import mesquite.categ.lib.*;
-import mesquite.lib.*;
+import mesquite.lib.MesquiteDouble;
+import mesquite.lib.MesquiteInteger;
+import mesquite.lib.StringUtil;
+import mesquite.lib.XMLUtil;
 
 public class BLASTResults {
 	protected double[] eValue;

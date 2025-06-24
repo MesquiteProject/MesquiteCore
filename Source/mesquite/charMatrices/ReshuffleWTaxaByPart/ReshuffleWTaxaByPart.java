@@ -14,12 +14,14 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
 package mesquite.charMatrices.ReshuffleWTaxaByPart;
 /*~~  */
 
-import java.util.*;
-import java.awt.*;
-import mesquite.lib.*;
-import mesquite.lib.characters.*;
-import mesquite.lib.duties.*;
-import mesquite.charMatrices.lib.*;
+import mesquite.charMatrices.lib.RandomMatrixModifier;
+import mesquite.lib.RandomBetween;
+import mesquite.lib.characters.CharacterData;
+import mesquite.lib.characters.CharacterPartition;
+import mesquite.lib.characters.CharacterState;
+import mesquite.lib.characters.CharactersGroup;
+import mesquite.lib.characters.MAdjustableDistribution;
+import mesquite.lib.characters.MCharactersDistribution;
 
 /* ======================================================================== */
 public class ReshuffleWTaxaByPart extends RandomMatrixModifier {

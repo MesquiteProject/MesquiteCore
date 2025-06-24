@@ -13,14 +13,14 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
 */
 package mesquite.lib.characters; 
 
-import java.awt.*;
+import java.awt.Color;
+import java.awt.Point;
 
-import mesquite.lib.duties.*;
+import mesquite.lib.Explainable;
 import mesquite.lib.tree.Tree;
 import mesquite.lib.ui.ColorDistribution;
 import mesquite.lib.ui.ColorEventVector;
 import mesquite.lib.ui.MesquiteColorTable;
-import mesquite.lib.*;
 
 /*Last documented:  April 2003 */
 

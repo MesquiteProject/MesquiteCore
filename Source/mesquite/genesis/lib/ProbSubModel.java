@@ -13,11 +13,11 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
 */
 package mesquite.genesis.lib;
 
-import mesquite.lib.*;
-import mesquite.lib.characters.*;
-import mesquite.lib.duties.*;
+import mesquite.lib.characters.CharacterModel;
+import mesquite.lib.characters.CharacterStatesHolder;
+import mesquite.lib.characters.CharacterSubmodel;
+import mesquite.lib.characters.MCharactersStatesHolder;
 import mesquite.lib.ui.ExtensibleDialog;
-import mesquite.categ.lib.*;
 
 /** A class that provides for a site-to-site rate variation model. */
 /* ======================================================================== */

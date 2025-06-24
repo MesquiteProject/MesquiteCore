@@ -13,10 +13,10 @@
  */
 package mesquite.lib;
 
-import java.awt.*;
-import java.util.*;
-import mesquite.lib.*;
-import mesquite.lib.characters.*;
+import java.awt.Color;
+import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
+
 import mesquite.lib.ui.ExtensibleDialog;
 import mesquite.lib.ui.MQLabel;
 import mesquite.lib.ui.MQPanel;

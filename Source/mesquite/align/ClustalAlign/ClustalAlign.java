@@ -14,17 +14,14 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
 package mesquite.align.ClustalAlign;
 /*~~  */
 
-import java.util.*;
-import java.lang.*;
-import java.io.*;
-import java.awt.*;
-import java.awt.event.*;
-import mesquite.lib.*;
-import mesquite.lib.characters.*;
-import mesquite.lib.duties.*;
-import mesquite.categ.lib.*;
-import mesquite.lib.table.*;
-import mesquite.align.lib.*;
+import mesquite.align.lib.ExternalSequenceAligner;
+import mesquite.categ.lib.MolecularData;
+import mesquite.categ.lib.ProteinData;
+import mesquite.lib.CommandChecker;
+import mesquite.lib.MesquiteFile;
+import mesquite.lib.MesquiteTrunk;
+import mesquite.lib.Snapshot;
+import mesquite.lib.StringUtil;
 
 /* ======================================================================== */
 public class ClustalAlign extends ExternalSequenceAligner{

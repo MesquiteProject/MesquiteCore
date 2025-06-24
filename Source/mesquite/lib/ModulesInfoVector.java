@@ -14,11 +14,9 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
 
 package mesquite.lib;
 
-import java.awt.*;
-import java.awt.image.*;
-import mesquite.lib.duties.*;
+import java.util.Vector;
 
-import java.util.*;
+import mesquite.lib.duties.PackageIntroInterface;
 
 /* ======================================================================== */
 /** The vector of information (MesquiteModuleInfo objects) about available modules.*/

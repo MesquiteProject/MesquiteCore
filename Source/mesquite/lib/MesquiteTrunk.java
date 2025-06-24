@@ -14,9 +14,16 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
 
 package mesquite.lib;
 
-import java.awt.*;
+import java.awt.Image;
+import java.awt.Menu;
+import java.awt.MenuBar;
+import java.awt.MenuItem;
+import java.awt.Panel;
+import java.util.Enumeration;
+import java.util.Vector;
 
-import mesquite.lib.duties.*;
+import mesquite.lib.duties.BrowseHierarchy;
+import mesquite.lib.duties.FileCoordinator;
 import mesquite.lib.misc.HPanel;
 import mesquite.lib.simplicity.InterfaceManager;
 import mesquite.lib.ui.HelpSearchManager;
@@ -30,8 +37,6 @@ import mesquite.lib.ui.MesquiteWindow;
 import mesquite.trunk.ApplicationHandler9;
 import mesquite.trunk.PhoneHomeThread;
 import mesquite.trunk.ProjectTreeWindow;
-
-import java.util.*;
 
 
 

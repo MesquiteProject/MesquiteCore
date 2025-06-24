@@ -13,7 +13,8 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
 */
 package mesquite.lib.duties;
 
-import mesquite.lib.*;
+import mesquite.lib.MesquiteModule;
+import mesquite.lib.SelectionInformer;
 import mesquite.lib.characters.CharacterData;
 
 

@@ -13,26 +13,35 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
  */
 package mesquite.lists.CharMatricesListExport;
 
-import mesquite.lists.lib.*;
-
-import java.util.*;
-
-import javax.swing.JLabel;
-
-import java.awt.*;
+import java.awt.Choice;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 
-import mesquite.lib.*;
-import mesquite.lib.characters.*;
+import javax.swing.JLabel;
+
+import mesquite.lib.CommandChecker;
+import mesquite.lib.ListableVector;
+import mesquite.lib.MainThread;
+import mesquite.lib.MesquiteFile;
+import mesquite.lib.MesquiteInteger;
+import mesquite.lib.MesquiteMessage;
+import mesquite.lib.MesquiteModule;
+import mesquite.lib.MesquiteString;
+import mesquite.lib.StringUtil;
 import mesquite.lib.characters.CharacterData;
-import mesquite.lib.duties.*;
-import mesquite.lib.table.*;
+import mesquite.lib.characters.MCharactersDistribution;
+import mesquite.lib.duties.CharMatrixManager;
+import mesquite.lib.duties.CharactersManager;
+import mesquite.lib.duties.FileCoordinator;
+import mesquite.lib.duties.FileInterpreterI;
+import mesquite.lib.duties.TaxaManager;
+import mesquite.lib.table.MesquiteTable;
 import mesquite.lib.taxa.Taxa;
 import mesquite.lib.ui.ExtensibleDialog;
 import mesquite.lib.ui.ProgressIndicator;
 import mesquite.lib.ui.RadioButtons;
 import mesquite.lib.ui.SingleLineTextField;
+import mesquite.lists.lib.CharMatricesListProcessorUtility;
 
 /* ======================================================================== */
 public class CharMatricesListExport extends CharMatricesListProcessorUtility implements ItemListener {

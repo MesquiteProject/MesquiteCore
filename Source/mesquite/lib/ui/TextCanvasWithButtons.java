@@ -14,7 +14,6 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
 package mesquite.lib.ui;
 
 import java.awt.Button;
-import mesquite.lib.*;
 
 public class TextCanvasWithButtons {
 	Button button = null;

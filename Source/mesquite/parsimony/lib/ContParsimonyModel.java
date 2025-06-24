@@ -13,10 +13,6 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
 */
 package mesquite.parsimony.lib;
 
-import java.awt.*;
-import mesquite.lib.*;
-import mesquite.lib.characters.*;
-
 /* ======================================================================== */
 /** A character model for continuous characters to be used in parsimony calculations*/
 public abstract class ContParsimonyModel  extends ParsimonyModel {

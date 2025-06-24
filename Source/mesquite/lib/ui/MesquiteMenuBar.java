@@ -13,11 +13,12 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
 */
 package mesquite.lib.ui;
 
-import java.awt.*;
+import java.awt.CheckboxMenuItem;
+import java.awt.Menu;
+import java.awt.MenuBar;
+import java.awt.MenuItem;
 import java.awt.event.ActionListener;
 import java.awt.event.ItemListener;
-
-import mesquite.lib.Debugg;
 
 /* ======================================================================== */
 /** A menu bar attached to a window.*/

@@ -13,8 +13,11 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
 */
 package mesquite.trees.SampleManyTreesFromFile;
 
-import mesquite.lib.*;
-import mesquite.trees.lib.*;
+import mesquite.lib.CommandChecker;
+import mesquite.lib.MesquiteInteger;
+import mesquite.lib.MesquiteThread;
+import mesquite.lib.Snapshot;
+import mesquite.trees.lib.ManyTreesFromFileLib;
 
 public class SampleManyTreesFromFile extends ManyTreesFromFileLib {
 

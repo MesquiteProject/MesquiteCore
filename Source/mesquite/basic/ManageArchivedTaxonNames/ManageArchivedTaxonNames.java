@@ -14,11 +14,26 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
 package mesquite.basic.ManageArchivedTaxonNames;
 /*~~  */
 
-import java.util.*;
-import java.awt.*;
-
-import mesquite.lib.*;
-import mesquite.lib.duties.*;
+import mesquite.lib.CommandChecker;
+import mesquite.lib.FileElement;
+import mesquite.lib.IntegerArray;
+import mesquite.lib.ListableVector;
+import mesquite.lib.MesquiteFile;
+import mesquite.lib.MesquiteInteger;
+import mesquite.lib.MesquiteListener;
+import mesquite.lib.MesquiteModule;
+import mesquite.lib.MesquiteString;
+import mesquite.lib.MesquiteTrunk;
+import mesquite.lib.NameReference;
+import mesquite.lib.NexusBlock;
+import mesquite.lib.NexusCommandTest;
+import mesquite.lib.Notification;
+import mesquite.lib.ParseUtil;
+import mesquite.lib.Snapshot;
+import mesquite.lib.SpecsSetVector;
+import mesquite.lib.StringUtil;
+import mesquite.lib.duties.ManagerAssistant;
+import mesquite.lib.duties.SpecsSetManager;
 import mesquite.lib.taxa.Taxa;
 import mesquite.lib.taxa.TaxaStringsSet;
 import mesquite.lib.ui.MesquiteSubmenuSpec;

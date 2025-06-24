@@ -1,21 +1,15 @@
 package mesquite.trees.NewickDialects;
 
+import java.io.File;
+
 import mesquite.lib.CommandChecker;
-import mesquite.lib.Debugg;
 import mesquite.lib.ListableVector;
 import mesquite.lib.MesquiteFile;
-import mesquite.lib.MesquiteMessage;
 import mesquite.lib.MesquiteModule;
 import mesquite.lib.MesquiteTrunk;
-import mesquite.lib.StringUtil;
 import mesquite.lib.duties.MesquiteInit;
 import mesquite.lib.tree.MesquiteTree;
 import mesquite.lib.tree.NewickDialect;
-
-import java.io.File;
-import java.util.Vector;
-
-import mesquite.externalCommunication.lib.*;
 
 public class NewickDialects extends MesquiteInit {
 

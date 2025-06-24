@@ -14,9 +14,13 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
  */
 package mesquite.lib;
 
-import java.util.*;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Vector;
 
-import org.dom4j.*;
+import org.dom4j.Document;
+import org.dom4j.DocumentHelper;
+import org.dom4j.Element;
 
 import mesquite.lib.ui.AlertDialog;
 import mesquite.lib.ui.MesquiteMenuItemSpec;

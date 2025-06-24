@@ -13,12 +13,20 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
 */
 package mesquite.molec.MeanValueLinked; 
 /*~~  */
-import java.util.*;
-import java.awt.*;
-import mesquite.lib.*;
-import mesquite.lib.characters.*;
-import mesquite.lib.duties.*;
-import mesquite.cont.lib.*;
+import java.util.Vector;
+
+import mesquite.cont.lib.ContinuousData;
+import mesquite.cont.lib.ContinuousDistribution;
+import mesquite.lib.MesquiteDouble;
+import mesquite.lib.MesquiteInteger;
+import mesquite.lib.MesquiteNumber;
+import mesquite.lib.MesquiteString;
+import mesquite.lib.Notification;
+import mesquite.lib.characters.CharacterData;
+import mesquite.lib.characters.CharacterDistribution;
+import mesquite.lib.duties.NumForCharTreeIndep;
+import mesquite.lib.duties.NumberForCharacter;
+import mesquite.lib.duties.NumberForCharacterIncr;
 
 
 public class MeanValueLinked extends NumberForCharacter implements NumberForCharacterIncr, NumForCharTreeIndep {   //CHANGE CLASS NAME TO WHAT YOU WANT and use same name for package (see above)

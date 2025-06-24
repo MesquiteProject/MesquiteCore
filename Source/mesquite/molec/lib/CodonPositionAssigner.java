@@ -15,10 +15,8 @@ package mesquite.molec.lib;
 /*~~  */
 
 import mesquite.categ.lib.DNAData;
-import mesquite.lib.*;
-import mesquite.lib.duties.*;
-import mesquite.lib.characters.*;
-import mesquite.lib.table.*;
+import mesquite.lib.MesquiteModule;
+import mesquite.lib.characters.CodonPositionsSet;
 /* ======================================================================== *
 
 /* ======================================================================== */

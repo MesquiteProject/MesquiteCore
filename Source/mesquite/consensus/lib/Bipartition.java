@@ -14,8 +14,8 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
 
 package mesquite.consensus.lib;
 
-import mesquite.consensus.lib.Bipartition;
-import mesquite.lib.*;
+import mesquite.lib.Bits;
+import mesquite.lib.MesquiteDouble;
 import mesquite.lib.tree.Tree;
 
 public class Bipartition {

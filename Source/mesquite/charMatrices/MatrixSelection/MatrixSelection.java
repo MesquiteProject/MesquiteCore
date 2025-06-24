@@ -13,13 +13,17 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
 */
 package mesquite.charMatrices.MatrixSelection; 
 
-import mesquite.lists.lib.*;
-import java.util.*;
-import java.awt.*;
-import mesquite.lib.*;
-import mesquite.lib.characters.*;
-import mesquite.lib.duties.*;
-import mesquite.lib.table.*;
+import mesquite.lib.CommandChecker;
+import mesquite.lib.EmployeeNeed;
+import mesquite.lib.MesquiteListener;
+import mesquite.lib.MesquiteModule;
+import mesquite.lib.Notification;
+import mesquite.lib.characters.CharacterData;
+import mesquite.lib.duties.CharSelectCoordinator;
+import mesquite.lib.duties.DataWSelectionAssistant;
+import mesquite.lib.duties.DataWindowAssistantI;
+import mesquite.lib.duties.TaxaSelectCoordinator;
+import mesquite.lib.table.MesquiteTable;
 import mesquite.lib.taxa.Taxa;
 
 /* ======================================================================== */

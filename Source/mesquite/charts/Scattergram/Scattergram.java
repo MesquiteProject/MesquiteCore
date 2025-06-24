@@ -14,11 +14,42 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
 package mesquite.charts.Scattergram;
 /*~~  */
 
-import java.util.*;
-import java.awt.*;
-import java.awt.event.*;
-import mesquite.lib.*;
-import mesquite.lib.duties.*;
+import java.awt.Color;
+import java.awt.Graphics;
+import java.awt.Point;
+import java.awt.TextArea;
+import java.awt.event.KeyEvent;
+import java.util.Enumeration;
+import java.util.Vector;
+
+import mesquite.cont.lib.ContColorTable;
+import mesquite.lib.CommandChecker;
+import mesquite.lib.CommandRecord;
+import mesquite.lib.EmployeeNeed;
+import mesquite.lib.EmployeeVector;
+import mesquite.lib.Integer2DArray;
+import mesquite.lib.ListableVector;
+import mesquite.lib.LongArray;
+import mesquite.lib.MesquiteBoolean;
+import mesquite.lib.MesquiteCommand;
+import mesquite.lib.MesquiteDouble;
+import mesquite.lib.MesquiteEvent;
+import mesquite.lib.MesquiteFile;
+import mesquite.lib.MesquiteInteger;
+import mesquite.lib.MesquiteListener;
+import mesquite.lib.MesquiteMessage;
+import mesquite.lib.MesquiteModule;
+import mesquite.lib.MesquiteNumber;
+import mesquite.lib.MesquiteString;
+import mesquite.lib.MesquiteThread;
+import mesquite.lib.Notification;
+import mesquite.lib.NumberArray;
+import mesquite.lib.Selectionable;
+import mesquite.lib.Snapshot;
+import mesquite.lib.StringUtil;
+import mesquite.lib.duties.ChartAssistant;
+import mesquite.lib.duties.DrawChart;
+import mesquite.lib.duties.ScattergramAssistantA;
 import mesquite.lib.ui.ChartExtra;
 import mesquite.lib.ui.ChartListener;
 import mesquite.lib.ui.ChartTool;
@@ -35,7 +66,6 @@ import mesquite.lib.ui.MesquiteSubmenuSpec;
 import mesquite.lib.ui.MesquiteWindow;
 import mesquite.lib.ui.RotatedRectangle;
 import mesquite.lib.ui.StringInABox;
-import mesquite.cont.lib.*;
 
 /* ======================================================================== */
 /* A module drawing scattergrams (scatterplots).  Each data point represents an item, for instance a tree or character, and is plotted according to the item's

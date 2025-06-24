@@ -13,13 +13,11 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
  */
 package mesquite.dmanager.RandomizeTaxonOrder;
 
-import java.util.*;
-import java.awt.*;
-import mesquite.lib.characters.*;
-import mesquite.categ.lib.*;
-import mesquite.lib.*;
-import mesquite.lib.duties.*;
-import mesquite.lib.table.*;
+import java.util.Random;
+
+import mesquite.lib.Associable;
+import mesquite.lib.Notification;
+import mesquite.lib.duties.TaxonUtility;
 import mesquite.lib.taxa.Taxa;
 
 

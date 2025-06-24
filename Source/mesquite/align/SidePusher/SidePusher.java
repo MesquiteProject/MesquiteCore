@@ -13,15 +13,10 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
 */
 package mesquite.align.SidePusher; 
 
-import java.util.*;
-import java.awt.*;
-import java.awt.image.*;
-import mesquite.lib.*;
-import mesquite.lib.characters.*;
-import mesquite.lib.duties.*;
-import mesquite.lib.table.*;
-import mesquite.align.lib.*;
-import mesquite.categ.lib.*;
+import java.awt.Point;
+
+import mesquite.align.lib.BlockMover;
+import mesquite.lib.FunctionExplanation;
 
 /* ======================================================================== */
 public class SidePusher extends BlockMover {

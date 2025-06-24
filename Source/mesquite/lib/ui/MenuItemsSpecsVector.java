@@ -13,13 +13,10 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
 */
 package mesquite.lib.ui;
 
-import java.awt.*;
-import java.util.*;
-import java.awt.event.*;
+import java.util.Enumeration;
 
 import mesquite.lib.ListableVector;
 import mesquite.lib.MesquiteListener;
-import mesquite.lib.duties.*;
 
 /*====================================================*/
 /**The vector of menuItems used by a mesquite module.*/

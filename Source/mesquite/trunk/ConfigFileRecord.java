@@ -13,7 +13,8 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
 */
 package mesquite.trunk;
 
-import mesquite.lib.*;
+import mesquite.lib.Explainable;
+import mesquite.lib.Listable;
 public class ConfigFileRecord implements Listable, Explainable {
 	public String[] cStored;
 	public boolean userDefined;

@@ -13,12 +13,13 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
 */
 package mesquite.treefarm.EmailTree;
 
-import mesquite.lib.*;
-import mesquite.lib.duties.*;
+import java.net.URLEncoder;
+
+import mesquite.lib.MesquiteFile;
+import mesquite.lib.MesquiteModule;
+import mesquite.lib.duties.TreeUtility;
 import mesquite.lib.tree.TextTree;
 import mesquite.lib.tree.Tree;
-
-import java.net.*;
 
 /** ======================================================================== */
 

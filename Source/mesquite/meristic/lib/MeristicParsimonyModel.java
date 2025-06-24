@@ -13,7 +13,7 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
 */
 package mesquite.meristic.lib;
 
-import mesquite.parsimony.lib.*;
+import mesquite.parsimony.lib.ParsimonyModel;
 
 /* ======================================================================== */
 /** A character model for meristic characters to be used in parsimony calculations*/

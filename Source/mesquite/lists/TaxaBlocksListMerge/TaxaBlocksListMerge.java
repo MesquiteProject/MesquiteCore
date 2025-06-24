@@ -13,22 +13,28 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
  */
 package mesquite.lists.TaxaBlocksListMerge;
 
-import mesquite.lists.lib.*;
-
-import java.util.*;
-import java.awt.*;
+import java.util.Vector;
 
 import mesquite.charMatrices.BasicDataWindowCoord.BasicDataWindowCoord;
-import mesquite.lib.*;
-import mesquite.lib.characters.*;
+import mesquite.lib.Listable;
+import mesquite.lib.ListableVector;
+import mesquite.lib.MesquiteListener;
+import mesquite.lib.MesquiteProject;
+import mesquite.lib.MesquiteThread;
+import mesquite.lib.Notification;
 import mesquite.lib.characters.CharacterData;
-import mesquite.lib.duties.*;
-import mesquite.lib.table.*;
+import mesquite.lib.duties.CharactersManager;
+import mesquite.lib.duties.DataWindowMaker;
+import mesquite.lib.duties.FileCoordinator;
+import mesquite.lib.duties.TaxaManager;
+import mesquite.lib.table.MesquiteTable;
 import mesquite.lib.taxa.Taxa;
 import mesquite.lib.tree.MesquiteTree;
 import mesquite.lib.tree.TreeVector;
 import mesquite.lib.ui.AlertDialog;
 import mesquite.lib.ui.ListDialog;
+import mesquite.lists.lib.ListModule;
+import mesquite.lists.lib.TaxaBlocksListUtility;
 
 /* ======================================================================== */
 public class TaxaBlocksListMerge extends TaxaBlocksListUtility {

@@ -13,12 +13,14 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
  */
 package mesquite.lib.ui;
 
-import java.awt.*;
-import java.util.*;
-import java.awt.event.*;
+import java.awt.Color;
+import java.awt.Component;
+import java.awt.Cursor;
+import java.awt.Graphics;
+import java.awt.Panel;
+import java.util.Vector;
 
 import mesquite.lib.MesquiteMessage;
-import mesquite.lib.duties.*;
 /* ======================================================================== */
 /** A container fitting within the InterContentArea, below the information bar.  It is within the ContentArea that
 modules draw their stuff.*/

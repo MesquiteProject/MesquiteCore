@@ -14,12 +14,21 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
 package mesquite.trunk;
 
 
-import java.io.IOException;
 import java.util.Vector;
 
 import org.apache.commons.httpclient.NameValuePair;
 
-import mesquite.lib.*;
+import mesquite.lib.ListableVector;
+import mesquite.lib.MesquiteFile;
+import mesquite.lib.MesquiteInteger;
+import mesquite.lib.MesquiteMessage;
+import mesquite.lib.MesquiteModule;
+import mesquite.lib.MesquiteModuleInfo;
+import mesquite.lib.MesquiteThread;
+import mesquite.lib.MesquiteTrunk;
+import mesquite.lib.PhoneHomeRecord;
+import mesquite.lib.PhoneHomeUtil;
+import mesquite.lib.StringUtil;
 import mesquite.lib.ui.AlertDialog;
 import mesquite.tol.lib.BaseHttpRequestMaker;
 

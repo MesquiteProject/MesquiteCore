@@ -14,7 +14,7 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
 package mesquite.molec.lib;
 
 
-import mesquite.categ.lib.*;
+import mesquite.categ.lib.MolecularState;
 
 
 

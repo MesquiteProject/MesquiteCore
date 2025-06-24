@@ -1,16 +1,15 @@
 package mesquite.trunk;
 
-import java.lang.reflect.*;
-import java.io.*;
-import java.net.*;
+import java.io.File;
 import java.io.IOException;
 import java.lang.instrument.Instrumentation;
+import java.lang.reflect.Method;
+import java.net.URI;
+import java.net.URL;
+import java.net.URLClassLoader;
 import java.util.jar.JarFile;
-import net.bytebuddy.agent.ByteBuddyAgent;
 
 import mesquite.lib.MesquiteTrunk;
-
-import java.io.File;
 
 public class JarLoader {
 	private static final Class[] parameters = new Class[]{URL.class};

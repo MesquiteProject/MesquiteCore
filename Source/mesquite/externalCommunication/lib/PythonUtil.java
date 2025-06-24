@@ -1,6 +1,10 @@
 package mesquite.externalCommunication.lib;
 
-import mesquite.lib.*;
+import mesquite.lib.ExternalProcessManager;
+import mesquite.lib.MesquiteInteger;
+import mesquite.lib.MesquiteModule;
+import mesquite.lib.MesquiteTrunk;
+import mesquite.lib.StringUtil;
 import mesquite.lib.ui.ExtensibleDialog;
 import mesquite.lib.ui.SingleLineTextField;
 

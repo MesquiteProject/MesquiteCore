@@ -17,8 +17,6 @@ package mesquite.genomic.TrimByGblocksM;
 
 
 import mesquite.categ.lib.RequiresAnyDNAData;
-
-
 import mesquite.lib.CompatibilityTest;
 import mesquite.lib.duties.MatrixFlagger;
 import mesquite.lib.duties.MatrixFlaggerForTrimming;

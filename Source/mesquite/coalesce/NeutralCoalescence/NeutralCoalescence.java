@@ -13,14 +13,23 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
 package mesquite.coalesce.NeutralCoalescence;
 /*~~  */
 
-import java.util.*;
-import java.awt.*;
-import mesquite.lib.*;
-import mesquite.lib.duties.*;
+import mesquite.coalesce.lib.CoalescedNode;
+import mesquite.coalesce.lib.CoalescerObed;
+import mesquite.lib.CommandChecker;
+import mesquite.lib.ExponentialDistribution;
+import mesquite.lib.IntegerArray;
+import mesquite.lib.MesquiteBoolean;
+import mesquite.lib.MesquiteFile;
+import mesquite.lib.MesquiteInteger;
+import mesquite.lib.MesquiteLong;
+import mesquite.lib.MesquiteMessage;
+import mesquite.lib.MesquiteThread;
+import mesquite.lib.RandomBetween;
+import mesquite.lib.Snapshot;
+import mesquite.lib.StringUtil;
 import mesquite.lib.tree.MesquiteTree;
 import mesquite.lib.ui.AlertDialog;
 import mesquite.lib.ui.MesquiteSubmenuSpec;
-import mesquite.coalesce.lib.*;
 /* ======================================================================== */
 public class NeutralCoalescence extends CoalescerObed {  //coalescer
 	RandomBetween rNG;

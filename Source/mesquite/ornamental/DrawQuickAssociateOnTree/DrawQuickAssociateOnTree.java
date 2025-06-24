@@ -14,23 +14,19 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
 package mesquite.ornamental.DrawQuickAssociateOnTree;
 /*~~  */
 
-import java.util.*;
-import java.awt.*;
-import java.awt.image.*;
+import java.awt.Graphics;
+import java.awt.Shape;
+import java.util.Vector;
 
-import mesquite.lib.*;
-import mesquite.lib.duties.*;
-import mesquite.lib.taxa.Taxa;
-import mesquite.lib.taxa.TaxaGroup;
-import mesquite.lib.taxa.TaxaGroupVector;
-import mesquite.lib.taxa.TaxaPartition;
+import mesquite.lib.CommandChecker;
+import mesquite.lib.MesquiteBoolean;
+import mesquite.lib.MesquiteInteger;
+import mesquite.lib.StringUtil;
+import mesquite.lib.duties.TreeDisplayAssistantDI;
 import mesquite.lib.tree.DisplayableBranchProperty;
 import mesquite.lib.tree.Tree;
 import mesquite.lib.tree.TreeDisplay;
-import mesquite.lib.tree.TreeDisplayEarlyExtra;
 import mesquite.lib.tree.TreeDisplayExtra;
-import mesquite.lib.ui.ColorDistribution;
-import mesquite.lib.ui.MesquiteMenuSpec;
 import mesquite.lib.ui.StringInABox;
 
 /* ======================================================================== */

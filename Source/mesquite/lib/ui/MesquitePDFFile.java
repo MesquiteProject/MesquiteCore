@@ -17,15 +17,23 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
 Modified May 02 especially for annotations*/
 package mesquite.lib.ui;
 
-import java.awt.*;
-import java.awt.geom.*;
-import java.util.*;
-import java.awt.print.*;
-import java.io.*;
-import com.lowagie.text.*;
-import com.lowagie.text.Font;
-import com.lowagie.text.pdf.*;
-import com.lowagie.text.exceptions.*;
+import java.awt.Component;
+import java.awt.Dimension;
+import java.awt.FileDialog;
+import java.awt.Graphics;
+import java.awt.PrintJob;
+import java.awt.print.PageFormat;
+import java.awt.print.PrinterJob;
+import java.io.FileOutputStream;
+import java.io.IOException;
+
+import com.lowagie.text.Document;
+import com.lowagie.text.DocumentException;
+import com.lowagie.text.Paragraph;
+import com.lowagie.text.exceptions.IllegalPdfSyntaxException;
+import com.lowagie.text.pdf.PdfContentByte;
+import com.lowagie.text.pdf.PdfTemplate;
+import com.lowagie.text.pdf.PdfWriter;
 
 import mesquite.lib.MainThread;
 import mesquite.lib.MesquiteFileDialog;

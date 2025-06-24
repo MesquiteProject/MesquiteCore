@@ -13,13 +13,9 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
 */
 package mesquite.lib.taxa;
 
-import java.awt.*;
-import java.math.*;
-
 import mesquite.lib.AssociableWithSpecs;
 import mesquite.lib.ObjectSpecsSet;
 import mesquite.lib.SpecsSet;
-import mesquite.lib.characters.CharactersGroup;
 
 /* ======================================================================== */
 /** A specset with bit information about taxa.   Called "taxa String set" because it stores a string for each of

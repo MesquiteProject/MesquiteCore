@@ -14,16 +14,20 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
 package mesquite.cont.lib;
 /*~~  */
 
-import java.util.*;
-import java.awt.*;
-import java.io.*;
+import java.util.Vector;
 
-import mesquite.lib.*;
-import mesquite.lib.characters.*;
-import mesquite.lib.duties.*;
+import mesquite.lib.MesquiteFile;
+import mesquite.lib.MesquiteInteger;
+import mesquite.lib.MesquiteString;
+import mesquite.lib.MesquiteStringBuffer;
+import mesquite.lib.NexusBlock;
+import mesquite.lib.ParseUtil;
+import mesquite.lib.StringUtil;
+import mesquite.lib.characters.CharacterData;
+import mesquite.lib.characters.CharactersBlock;
+import mesquite.lib.duties.CharMatrixManager;
 import mesquite.lib.taxa.Taxa;
 import mesquite.lib.ui.ProgressIndicator;
-import mesquite.cont.lib.*;
 
 /* ======================================================================== 
 Manages continuous data matrices  */

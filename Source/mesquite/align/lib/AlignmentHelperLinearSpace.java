@@ -13,7 +13,8 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
  */package mesquite.align.lib;
 
 import mesquite.categ.lib.CategoricalState;
-import mesquite.lib.*;
+import mesquite.lib.MesquiteInteger;
+import mesquite.lib.MesquiteTrunk;
 
 public class AlignmentHelperLinearSpace extends AlignmentHelper {
 

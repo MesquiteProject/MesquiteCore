@@ -13,11 +13,8 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
 */
 package mesquite.lib.tree;
 
-import java.awt.*;
-
 import mesquite.lib.CommandChecker;
 import mesquite.lib.MesquiteEvent;
-import mesquite.lib.duties.*;
 import mesquite.lib.taxa.TaxaTool;
 
 /* ��������������������������� commands ������������������������������� */

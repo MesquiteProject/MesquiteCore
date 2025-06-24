@@ -15,9 +15,16 @@ package mesquite.basic.NameParserOnElementName;
 
 
 
-import mesquite.lib.*;
-import mesquite.lib.duties.*;
+import mesquite.lib.Listable;
+import mesquite.lib.ListableVector;
+import mesquite.lib.MesquiteModule;
+import mesquite.lib.MesquiteThread;
+import mesquite.lib.NameParser;
+import mesquite.lib.Nameable;
+import mesquite.lib.NameableWithNotify;
+import mesquite.lib.StringUtil;
 import mesquite.lib.characters.CharacterData;
+import mesquite.lib.duties.ListableNameAlterer;
 
 /* ======================================================================== */
 public class NameParserOnElementName extends ListableNameAlterer {

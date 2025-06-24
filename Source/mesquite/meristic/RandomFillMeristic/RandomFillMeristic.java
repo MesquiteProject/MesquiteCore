@@ -14,13 +14,18 @@ This source code and its compiled class files are free and modifiable under the 
 GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
  */
 /*~~  */
-
-
-import mesquite.lib.*;
-import mesquite.lib.characters.*;
+import mesquite.lib.MesquiteBoolean;
+import mesquite.lib.MesquiteInteger;
+import mesquite.lib.RandomBetween;
+import mesquite.lib.ResultCodes;
+import mesquite.lib.UndoReference;
+import mesquite.lib.characters.AltererRandomizations;
 import mesquite.lib.characters.CharacterData;
-import mesquite.meristic.lib.*;
-import mesquite.lib.table.*;
+import mesquite.lib.characters.CharacterState;
+import mesquite.lib.table.MesquiteTable;
+import mesquite.meristic.lib.MeristicData;
+import mesquite.meristic.lib.MeristicDataAlterer;
+import mesquite.meristic.lib.MeristicState;
 
 /* ======================================================================== */
 public class RandomFillMeristic extends MeristicDataAlterer implements AltererRandomizations{

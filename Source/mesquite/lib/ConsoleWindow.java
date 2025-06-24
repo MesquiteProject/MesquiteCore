@@ -14,10 +14,10 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
 
 package mesquite.lib;
 
-import java.awt.*;
-import java.awt.image.*;
-import java.awt.event.*;
-import mesquite.lib.duties.*;
+import java.awt.Color;
+import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
+
 import mesquite.lib.ui.MesquiteTextWindow;
 
 

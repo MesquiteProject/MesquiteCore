@@ -13,14 +13,20 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
 */
 package mesquite.trees.SearchForBetterTree;
 
-import java.awt.Button;
-import mesquite.trees.lib.*;
 import java.awt.Checkbox;
 
-import mesquite.lib.*;
-import mesquite.lib.duties.*;
+import mesquite.lib.CompatibilityTest;
+import mesquite.lib.EmployeeNeed;
+import mesquite.lib.MesquiteInteger;
+import mesquite.lib.MesquiteString;
+import mesquite.lib.MesquiteThread;
+import mesquite.lib.RandomBetween;
+import mesquite.lib.duties.NumberForTree;
+import mesquite.lib.duties.TreeAlterer;
+import mesquite.lib.duties.TreeSwapper;
 import mesquite.lib.tree.AdjustableTree;
 import mesquite.lib.ui.ExtensibleDialog;
+import mesquite.trees.lib.TreeOptimizer;
 
 
 /*  TODO: ask option of showing live updates

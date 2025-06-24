@@ -14,9 +14,8 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
 package mesquite.search.InvariantsTreeSearch;
 /*~~  */
 
-import mesquite.lib.*;
 import mesquite.lib.analysis.InvariantsAnalysis;
-import mesquite.search.lib.*;
+import mesquite.search.lib.TreeSearch;
 
 /* ======================================================================== */
 public class InvariantsTreeSearch extends TreeSearch  {

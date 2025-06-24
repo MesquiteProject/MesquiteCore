@@ -12,7 +12,10 @@ This source code and its compiled class files are free and modifiable under the 
 GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
  */package mesquite.lib.duties;
 
-import mesquite.lib.*;
+import mesquite.lib.MesquiteBoolean;
+import mesquite.lib.MesquiteInteger;
+import mesquite.lib.MesquiteModule;
+import mesquite.lib.MesquiteString;
 import mesquite.lib.taxa.Taxa;
 
 public abstract class BooleanForTaxon extends MesquiteModule implements BooleanForItem {

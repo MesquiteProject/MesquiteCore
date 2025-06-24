@@ -14,7 +14,6 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
 package mesquite.dmanager.ProcessDataFiles; 
 
 import java.awt.Button;
-
 import java.awt.Choice;
 import java.awt.List;
 import java.awt.event.ActionEvent;
@@ -29,7 +28,6 @@ import javax.swing.JLabel;
 
 import mesquite.lib.CommandChecker;
 import mesquite.lib.CommandRecord;
-import mesquite.lib.Debugg;
 import mesquite.lib.EmployeeVector;
 import mesquite.lib.MesquiteBoolean;
 import mesquite.lib.MesquiteFile;

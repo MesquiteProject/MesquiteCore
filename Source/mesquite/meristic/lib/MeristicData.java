@@ -13,18 +13,33 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
  */
 package mesquite.meristic.lib;
 
-import java.awt.*;
-import java.util.*;
-import java.util.zip.*;
+import java.awt.Color;
+import java.util.Vector;
+import java.util.zip.CRC32;
 
-import mesquite.cont.lib.ContinuousState;
 import mesquite.cont.lib.ItemContainer;
-import mesquite.lib.duties.*;
+import mesquite.lib.Bits;
+import mesquite.lib.Integer2DArray;
+import mesquite.lib.IntegerArray;
+import mesquite.lib.MesquiteInteger;
+import mesquite.lib.MesquiteMessage;
+import mesquite.lib.MesquiteModule;
+import mesquite.lib.MesquiteNumber;
+import mesquite.lib.MesquiteString;
+import mesquite.lib.MesquiteStringBuffer;
+import mesquite.lib.NameReference;
+import mesquite.lib.Parser;
+import mesquite.lib.StringUtil;
+import mesquite.lib.characters.CharacterData;
+import mesquite.lib.characters.CharacterDistribution;
+import mesquite.lib.characters.CharacterModel;
+import mesquite.lib.characters.CharacterState;
+import mesquite.lib.characters.DefaultReference;
+import mesquite.lib.characters.MCharactersDistribution;
+import mesquite.lib.duties.CharMatrixManager;
 import mesquite.lib.taxa.Taxa;
 import mesquite.lib.ui.ColorDistribution;
 import mesquite.lib.ui.MesquiteColorTable;
-import mesquite.lib.*;
-import mesquite.lib.characters.*;
 /* ======================================================================== */
 /** A subclass of CharacterData for meristic-valued data.  Can handle more than one item per matrix of cell
 (e.g., for mean, variance, etc.)  Each item is stored in a separate matrix; new items can be added by adding matrices.   Items are refered to by

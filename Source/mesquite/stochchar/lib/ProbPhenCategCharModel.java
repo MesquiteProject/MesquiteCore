@@ -13,12 +13,7 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
 */
 package mesquite.stochchar.lib;
 
-import java.awt.*;
-import java.util.*;
-import mesquite.lib.*;
-import mesquite.lib.characters.*;
 import mesquite.lib.tree.Tree;
-import mesquite.stochchar.lib.*;
 
 /* ======================================================================== */
 /** A character model for Categorical characters OTHER THAN MOLECULAR to be used in stochastic simulations and in likelihood calculations.

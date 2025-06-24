@@ -13,13 +13,6 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
 */
 package mesquite.lists.lib;
 
-import java.awt.*;
-import java.util.*;
-import mesquite.lib.*;
-import mesquite.lib.duties.*;
-
-
-
 /* ======================================================================== */
 public abstract class TaxaSetListAssistant extends ListAssistant  {
 

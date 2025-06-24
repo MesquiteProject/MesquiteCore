@@ -13,12 +13,11 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
 */
 package mesquite.cont.lib; 
 
-import java.awt.*;
-import java.util.*;
-import mesquite.lib.*;
-import mesquite.lib.characters.*;
 //import Jampack.*;  
-import Jama.*;  
+import Jama.EigenvalueDecomposition;
+import Jama.Matrix;
+import mesquite.lib.Double2DArray;
+import mesquite.lib.MesquiteMessage;  
 
 
 

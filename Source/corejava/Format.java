@@ -28,8 +28,6 @@
 
 package corejava;
 
-import java.io.*;
-
 public class Format
 
 { /** 

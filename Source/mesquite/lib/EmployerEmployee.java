@@ -14,18 +14,22 @@
 
 package mesquite.lib;
 
-import java.awt.*;
-import java.util.*;
-import java.io.*;
+import java.awt.Color;
+import java.awt.Container;
+import java.awt.Image;
+import java.util.Enumeration;
+import java.util.Vector;
 
-import mesquite.lib.duties.*;
+import mesquite.lib.duties.CharModelCurator;
+import mesquite.lib.duties.DataWindowMaker;
+import mesquite.lib.duties.ElementManager;
+import mesquite.lib.duties.FileCoordinator;
 import mesquite.lib.misc.HNode;
 import mesquite.lib.ui.AlertDialog;
 import mesquite.lib.ui.ColorDistribution;
 import mesquite.lib.ui.InfoBar;
 import mesquite.lib.ui.ListDialog;
 import mesquite.lib.ui.MesquiteDialog;
-import mesquite.lib.ui.MesquiteMenuSpec;
 import mesquite.lib.ui.MesquitePopup;
 import mesquite.lib.ui.MesquiteWindow;
 

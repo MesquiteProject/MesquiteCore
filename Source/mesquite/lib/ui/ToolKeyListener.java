@@ -13,7 +13,7 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
 */
 package mesquite.lib.ui;
 
-import java.awt.event.*;
+import java.awt.event.KeyEvent;
 
 /* An interface so that a tool can report a key event */
 

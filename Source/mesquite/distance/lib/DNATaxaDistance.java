@@ -13,9 +13,12 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
  */
 package mesquite.distance.lib;
 
-import mesquite.categ.lib.*;
-import mesquite.lib.*;
-import mesquite.lib.characters.*;
+import mesquite.categ.lib.DNAState;
+import mesquite.categ.lib.RequiresAnyDNAData;
+import mesquite.lib.CompatibilityTest;
+import mesquite.lib.MesquiteModule;
+import mesquite.lib.MesquiteTrunk;
+import mesquite.lib.characters.MCharactersDistribution;
 import mesquite.lib.taxa.Taxa;
 
 public class DNATaxaDistance extends MolecularTaxaDistance {

@@ -15,11 +15,15 @@ This module originally by P. Midford, based on MeanValue.
  */
 package mesquite.categ.NumberOfStates;
 
-import mesquite.categ.lib.*;
-import mesquite.lib.*;
+import mesquite.categ.lib.CategoricalData;
+import mesquite.categ.lib.CategoricalDistribution;
+import mesquite.categ.lib.CategoricalState;
+import mesquite.categ.lib.RequiresAnyCategoricalData;
+import mesquite.lib.CompatibilityTest;
+import mesquite.lib.MesquiteNumber;
+import mesquite.lib.MesquiteString;
 import mesquite.lib.characters.CharacterDistribution;
 import mesquite.lib.duties.NumberForCharacter;
-import mesquite.lib.duties.NumberForCharacterIncr;
 
 public class NumberOfStates extends NumberForCharacter {
     boolean warnedOnce = false;

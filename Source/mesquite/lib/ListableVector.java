@@ -13,11 +13,11 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
 */
 package mesquite.lib;
 
-import java.text.*;
-import java.util.*;
+import java.text.Collator;
+import java.util.Enumeration;
+import java.util.Vector;
 
 import mesquite.lib.characters.CharacterStates;
-import mesquite.lib.characters.CodonPositionsSet;
 import mesquite.lib.taxa.TaxaGroupVector;
 import mesquite.lib.tree.TreeVector;
 import mesquite.lib.ui.HTMLDescribable;

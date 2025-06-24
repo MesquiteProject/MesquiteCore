@@ -13,15 +13,7 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
 package mesquite.bayesian.ExportForBEAST;
 /*~~  */
 
-import java.util.*;
-import java.awt.*;
-
-import mesquite.lib.*;
-import mesquite.lib.characters.*;
-import mesquite.lib.characters.CharacterData;
-import mesquite.lib.duties.*;
-import mesquite.bayesian.lib.*;
-import mesquite.categ.lib.*;
+import mesquite.bayesian.lib.ExportForBEASTLib;
 
 
 

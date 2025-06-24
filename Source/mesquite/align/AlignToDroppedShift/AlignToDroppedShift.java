@@ -14,17 +14,22 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
 package mesquite.align.AlignToDroppedShift; 
 
 
-import java.awt.*;
-
-import mesquite.align.lib.*;
-import mesquite.categ.lib.*;
-import mesquite.lib.*;
-import mesquite.lib.characters.*;
-import mesquite.lib.characters.CharacterData;
-import mesquite.lib.table.*;
-import mesquite.lib.ui.MesquiteWindow;
+import mesquite.align.lib.AlignShiftToDroppedBase;
+import mesquite.categ.lib.CategoricalState;
+import mesquite.categ.lib.DNAData;
+import mesquite.categ.lib.MCategoricalDistribution;
+import mesquite.lib.CommandChecker;
+import mesquite.lib.FunctionExplanation;
+import mesquite.lib.MesquiteBoolean;
+import mesquite.lib.MesquiteCommand;
+import mesquite.lib.MesquiteInteger;
+import mesquite.lib.MesquiteModule;
+import mesquite.lib.MesquiteNumber;
+import mesquite.lib.MesquiteThread;
+import mesquite.lib.Snapshot;
+import mesquite.lib.StringUtil;
+import mesquite.lib.table.TableTool;
 import mesquite.lib.ui.QueryDialogs;
-import mesquite.lib.duties.*;
 
 
 /* ======================================================================== */

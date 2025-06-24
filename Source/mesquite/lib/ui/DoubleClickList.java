@@ -13,13 +13,16 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
 */
 package mesquite.lib.ui; 
 
-import java.awt.*;
-import java.awt.event.*;
+import java.awt.Dimension;
+import java.awt.List;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
 import java.lang.reflect.Method;
 
 import javax.accessibility.AccessibleContext;
 
-import mesquite.lib.*;
+import mesquite.lib.MesquiteInteger;
+import mesquite.lib.MesquiteTrunk;
 
 
 /*===============================================*/

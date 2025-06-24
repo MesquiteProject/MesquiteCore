@@ -13,9 +13,6 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
  */
 package mesquite.molec.lib;
 
-
-import mesquite.molec.lib.*;
-
 public class GenCodeStandard extends GeneticCode {
 
 	public void setCode() {

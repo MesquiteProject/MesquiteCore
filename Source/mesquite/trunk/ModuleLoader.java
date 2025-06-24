@@ -13,16 +13,31 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
  */
 package mesquite.trunk;
 
-import java.io.*;
-import java.util.*;
-import java.lang.reflect.*;
-import java.net.MalformedURLException;
+import java.io.File;
+import java.lang.reflect.Method;
+import java.lang.reflect.Modifier;
 import java.net.URL;
 import java.net.URLClassLoader;
+import java.util.Arrays;
 
-import mesquite.*;
-import mesquite.lib.*;
-import mesquite.lib.duties.*;
+import mesquite.Mesquite;
+import mesquite.lib.CommandChecker;
+import mesquite.lib.EmployerEmployee;
+import mesquite.lib.ListableVector;
+import mesquite.lib.MesquiteFile;
+import mesquite.lib.MesquiteInteger;
+import mesquite.lib.MesquiteLong;
+import mesquite.lib.MesquiteMacro;
+import mesquite.lib.MesquiteMessage;
+import mesquite.lib.MesquiteModule;
+import mesquite.lib.MesquiteModuleInfo;
+import mesquite.lib.MesquitePackageRecord;
+import mesquite.lib.MesquiteTimer;
+import mesquite.lib.MesquiteTrunk;
+import mesquite.lib.ModulesInfoVector;
+import mesquite.lib.Parser;
+import mesquite.lib.StringArray;
+import mesquite.lib.StringUtil;
 import mesquite.lib.ui.ThermoPanel;
 /*======================================================================== */
 public class ModuleLoader {

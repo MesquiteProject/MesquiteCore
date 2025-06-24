@@ -13,13 +13,17 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
  */
 package mesquite.ancstates.ExportAncRec;
 
-import java.util.*;
+import java.util.Vector;
 
-import mesquite.categ.lib.*;
 import mesquite.ancstates.TraceCharacterHistory.TraceCharacterOperator;
-import mesquite.lib.*;
-import mesquite.lib.characters.*;
-import mesquite.lib.duties.*;
+import mesquite.categ.lib.CategInternodeEvent;
+import mesquite.categ.lib.CategoricalState;
+import mesquite.lib.CommandChecker;
+import mesquite.lib.MesquiteDouble;
+import mesquite.lib.MesquiteFile;
+import mesquite.lib.StringUtil;
+import mesquite.lib.characters.CharHistoryContainer;
+import mesquite.lib.duties.TraceCharacterInit;
 import mesquite.lib.taxa.Taxa;
 import mesquite.lib.taxa.Taxon;
 import mesquite.lib.tree.MesquiteTree;

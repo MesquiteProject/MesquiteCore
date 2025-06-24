@@ -20,14 +20,12 @@ package mesquite.genomic.FlagByTrimAl;
 import java.awt.Choice;
 import java.util.Random;
 
-
 import mesquite.categ.lib.MolecularData;
 import mesquite.categ.lib.RequiresAnyMolecularData;
 import mesquite.externalCommunication.lib.AppChooser;
 import mesquite.lib.Bits;
 import mesquite.lib.CommandChecker;
 import mesquite.lib.CompatibilityTest;
-import mesquite.lib.Debugg;
 import mesquite.lib.MesquiteBoolean;
 import mesquite.lib.MesquiteFile;
 import mesquite.lib.MesquiteInteger;
@@ -35,7 +33,6 @@ import mesquite.lib.MesquiteMessage;
 import mesquite.lib.MesquiteThread;
 import mesquite.lib.MesquiteTrunk;
 import mesquite.lib.ParseUtil;
-import mesquite.lib.ResultCodes;
 import mesquite.lib.ShellScriptUtil;
 import mesquite.lib.Snapshot;
 import mesquite.lib.StringUtil;

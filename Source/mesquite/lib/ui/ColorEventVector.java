@@ -13,8 +13,7 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
 */
 package mesquite.lib.ui;
 
-import java.awt.*;
-import java.util.*;
+import java.util.Vector;
 
 /* ======================================================================== */
 public class ColorEventVector extends Vector {

@@ -13,13 +13,6 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
 */
 package mesquite.meristic.lib;
 
-import java.awt.*;
-import mesquite.lib.*;
-import mesquite.lib.characters.*;
-import mesquite.categ.lib.*;
-
-
-
 public class MeristicLinearParsModel extends MeristicParsimonyModel {
 	public MeristicLinearParsModel (String name){
 		super(name);

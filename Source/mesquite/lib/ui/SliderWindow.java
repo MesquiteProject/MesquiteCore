@@ -13,7 +13,14 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
  */
 package mesquite.lib.ui;
 
-import java.awt.*;
+import java.awt.Button;
+import java.awt.Color;
+import java.awt.Dimension;
+import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
+import java.awt.Insets;
+import java.awt.Label;
+import java.awt.Panel;
 
 import mesquite.lib.CommandChecker;
 import mesquite.lib.MesquiteCommand;
@@ -24,7 +31,6 @@ import mesquite.lib.MesquiteMessage;
 import mesquite.lib.MesquiteModule;
 import mesquite.lib.Snapshot;
 import mesquite.lib.StringUtil;
-import mesquite.lib.duties.*;
 /* ======================================================================== */
 public class SliderWindow extends MesquiteWindow {
 	//TextField tF;

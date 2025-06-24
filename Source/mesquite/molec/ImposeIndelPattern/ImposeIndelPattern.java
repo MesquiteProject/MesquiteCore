@@ -14,19 +14,17 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
 package mesquite.molec.ImposeIndelPattern;
 /*~~  */
 
-import java.util.*;
-import java.awt.*;
-import mesquite.lib.*;
-import mesquite.lib.characters.*;
+import mesquite.charMatrices.CharMatrixCoordIndep.CharMatrixCoordIndep;
+import mesquite.lib.EmployeeNeed;
+import mesquite.lib.ResultCodes;
+import mesquite.lib.UndoReference;
+import mesquite.lib.characters.AltererAlignShift;
 import mesquite.lib.characters.CharacterData;
-import mesquite.lib.duties.*;
+import mesquite.lib.characters.CharacterState;
+import mesquite.lib.characters.MCharactersDistribution;
+import mesquite.lib.duties.DataAlterer;
 import mesquite.lib.table.MesquiteTable;
 import mesquite.lib.taxa.Taxa;
-import mesquite.categ.lib.DNAData;
-import mesquite.categ.lib.ProteinData;
-import mesquite.categ.lib.ProteinState;
-import mesquite.charMatrices.CharMatrixCoordIndep.CharMatrixCoordIndep;
-import mesquite.charMatrices.lib.*;
 
 /* ======================================================================== */
 public class ImposeIndelPattern extends DataAlterer implements AltererAlignShift {

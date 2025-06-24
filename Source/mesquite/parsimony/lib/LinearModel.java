@@ -13,13 +13,6 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
 */
 package mesquite.parsimony.lib;
 
-import java.awt.*;
-import mesquite.lib.*;
-import mesquite.lib.characters.*;
-import mesquite.categ.lib.*;
-
-
-
 public class LinearModel extends ContParsimonyModel {
 	public LinearModel (String name, Class stateClass){
 		super(name, stateClass);

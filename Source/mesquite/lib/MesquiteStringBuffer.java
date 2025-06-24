@@ -15,7 +15,7 @@ package mesquite.lib;
 
 
 import java.io.UnsupportedEncodingException;
-import java.util.*;
+import java.util.Vector;
 
 /* ��������������������������� A string buffer that can exceed 2^^31 ������������������������������� */
 

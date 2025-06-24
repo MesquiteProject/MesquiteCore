@@ -1,11 +1,10 @@
 package mesquite.thinkTrees.InformCharBoolean;
 
-import mesquite.categ.lib.CategoricalState;
-import mesquite.lib.*;
-import mesquite.lib.characters.*;
-import mesquite.lib.duties.*;
-import mesquite.parsimony.lib.ParsimonyModelSet;
-import mesquite.categ.lib.*;
+import mesquite.categ.lib.CategoricalData;
+import mesquite.lib.MesquiteBoolean;
+import mesquite.lib.MesquiteString;
+import mesquite.lib.characters.CharacterData;
+import mesquite.lib.duties.BooleanForCharacter;
 
 public class InformCharBoolean extends BooleanForCharacter {
 

@@ -13,14 +13,11 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
  */
 package mesquite.basic.DuplicateTaxa;
 
-import java.util.*;
-import java.awt.*;
-
-import mesquite.lib.characters.*;
-import mesquite.categ.lib.*;
-import mesquite.lib.*;
-import mesquite.lib.duties.*;
-import mesquite.lib.table.*;
+import mesquite.lib.MesquiteListener;
+import mesquite.lib.Notification;
+import mesquite.lib.characters.CharacterData;
+import mesquite.lib.characters.CharacterState;
+import mesquite.lib.duties.TaxonUtility;
 import mesquite.lib.taxa.Taxa;
 
 

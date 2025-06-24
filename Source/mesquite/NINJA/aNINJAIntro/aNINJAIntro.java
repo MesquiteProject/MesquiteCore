@@ -8,8 +8,7 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
 */
 package mesquite.NINJA.aNINJAIntro;
 
-import mesquite.lib.*;
-import mesquite.lib.duties.*;
+import mesquite.lib.duties.PackageIntro;
 
 /* ======================================================================== */
 public class aNINJAIntro extends PackageIntro {

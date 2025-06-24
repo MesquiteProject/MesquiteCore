@@ -13,17 +13,21 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
 */
 package mesquite.genesis.lib;
 
-import java.awt.*;
-import java.util.*;
-import mesquite.lib.*;
-import mesquite.lib.characters.*;
-import mesquite.lib.duties.*;
+import java.awt.Checkbox;
+import java.util.Random;
+
+import JSci.maths.SpecialMath;
+import JSci.maths.statistics.GammaDistribution;
+import mesquite.lib.IntegerField;
+import mesquite.lib.MesquiteDouble;
+import mesquite.lib.MesquiteInteger;
+import mesquite.lib.MesquiteListener;
+import mesquite.lib.Notification;
+import mesquite.lib.ParseUtil;
+import mesquite.lib.StringUtil;
+import mesquite.lib.characters.CharacterModel;
 import mesquite.lib.ui.DoubleField;
 import mesquite.lib.ui.ExtensibleDialog;
-import mesquite.categ.lib.*;
-import java.lang.Math.*;
-import JSci.maths.statistics.*;
-import JSci.maths.*;
 
 /** A class that provides for a site-to-site rate variation model using the gamma distribution. */
 /* ======================================================================== */

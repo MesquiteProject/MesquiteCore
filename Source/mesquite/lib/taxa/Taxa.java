@@ -13,12 +13,9 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
  */
 package mesquite.lib.taxa;
 
-import java.awt.*;
-import java.lang.reflect.InvocationTargetException;
-import java.math.*;
+import java.awt.Color;
 import java.util.Vector;
 
-import mesquite.categ.lib.CategoricalData;
 import mesquite.lib.Bits;
 import mesquite.lib.BitsSpecsSet;
 import mesquite.lib.CommandChecker;
@@ -28,8 +25,6 @@ import mesquite.lib.IntegerArray;
 import mesquite.lib.Listable;
 import mesquite.lib.ListableVector;
 import mesquite.lib.LowLevelListener;
-import mesquite.lib.MesquiteBoolean;
-import mesquite.lib.MesquiteFile;
 import mesquite.lib.MesquiteInteger;
 import mesquite.lib.MesquiteListener;
 import mesquite.lib.MesquiteMessage;
@@ -41,12 +36,10 @@ import mesquite.lib.Notification;
 import mesquite.lib.ObjectSpecsSet;
 import mesquite.lib.ParseUtil;
 import mesquite.lib.SpecsSet;
-import mesquite.lib.SpecsSetVector;
 import mesquite.lib.StringUtil;
 import mesquite.lib.UndoInstructions;
 import mesquite.lib.UndoReference;
 import mesquite.lib.characters.CharacterData;
-import mesquite.lib.characters.CharacterState;
 import mesquite.lib.duties.StringMatcher;
 import mesquite.lib.misc.AttachedNotesVector;
 import mesquite.lib.tree.Clades;

@@ -13,18 +13,19 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
  */
 package mesquite.meristic.lib;
 
-import java.awt.*;
-import java.util.*;
+import java.awt.Color;
+import java.awt.Point;
 
-import mesquite.cont.lib.ContColorTable;
-import mesquite.lib.duties.*;
+import mesquite.lib.MesquiteInteger;
+import mesquite.lib.characters.CharacterDistribution;
+import mesquite.lib.characters.CharacterHistory;
+import mesquite.lib.characters.CharacterState;
+import mesquite.lib.characters.CharacterStates;
 import mesquite.lib.taxa.Taxa;
 import mesquite.lib.tree.Tree;
 import mesquite.lib.ui.ColorDistribution;
 import mesquite.lib.ui.ColorEventVector;
 import mesquite.lib.ui.MesquiteColorTable;
-import mesquite.lib.*;
-import mesquite.lib.characters.*;
 
 /* ======================================================================== */
 /** Contains an array of  meristic character states for one character, at each of the taxa or nodes. 

@@ -14,11 +14,13 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
 package mesquite.genesis.InitDNASubmodels;
 /*~~  */
 
-import mesquite.lib.*;
-import mesquite.lib.characters.*;
-import mesquite.lib.duties.*;
-import mesquite.categ.lib.*;
-import mesquite.genesis.lib.*;
+import mesquite.categ.lib.CategoricalData;
+import mesquite.genesis.lib.CharRatesEqual;
+import mesquite.genesis.lib.CharRatesModel;
+import mesquite.genesis.lib.RateMatrixEqualDNAModel;
+import mesquite.genesis.lib.StateFreqDNAEmpir;
+import mesquite.genesis.lib.StateFreqDNAEqual;
+import mesquite.lib.duties.FileInit;
 
 /* ======================================================================== */
 public class InitDNASubmodels extends FileInit {

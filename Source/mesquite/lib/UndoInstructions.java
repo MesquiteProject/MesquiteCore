@@ -14,12 +14,13 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
  */
 package mesquite.lib;
 
-import mesquite.lib.*;
-import mesquite.lib.characters.*;
-import mesquite.lib.characters.*;
-import mesquite.categ.lib.*;
+import mesquite.categ.lib.CategoricalData;
+import mesquite.categ.lib.CategoricalState;
+import mesquite.lib.characters.CharacterData;
+import mesquite.lib.characters.CharacterState;
 //import mesquite.charMatrices.lib.*;
-import mesquite.lib.table.*;
+import mesquite.lib.table.EditorTextField;
+import mesquite.lib.table.MesquiteTable;
 import mesquite.lib.taxa.Taxa;
 
 /*

@@ -13,8 +13,20 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
 */
 package mesquite.trees.SearchTreeToolAssistant; 
 
-import mesquite.lib.*;
-import mesquite.lib.duties.*;
+import java.awt.Graphics;
+import java.util.Vector;
+
+import mesquite.lib.CommandChecker;
+import mesquite.lib.Commandable;
+import mesquite.lib.MesquiteBoolean;
+import mesquite.lib.MesquiteCommand;
+import mesquite.lib.MesquiteInteger;
+import mesquite.lib.MesquiteModule;
+import mesquite.lib.MesquiteString;
+import mesquite.lib.RandomBetween;
+import mesquite.lib.duties.NumberForTree;
+import mesquite.lib.duties.TreeDisplayAssistantI;
+import mesquite.lib.duties.TreeSwapper;
 import mesquite.lib.tree.AdjustableTree;
 import mesquite.lib.tree.Tree;
 import mesquite.lib.tree.TreeDisplay;
@@ -22,12 +34,7 @@ import mesquite.lib.tree.TreeDisplayExtra;
 import mesquite.lib.tree.TreeTool;
 import mesquite.lib.ui.MesquiteSubmenuSpec;
 import mesquite.lib.ui.MesquiteWindow;
-import mesquite.trees.lib.*;
-
-import java.lang.*;
-import java.util.*;
-import java.awt.*;
-import java.awt.image.*;
+import mesquite.trees.lib.TreeOptimizer;
 
 
 	/* ======================================================================== */

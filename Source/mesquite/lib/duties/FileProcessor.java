@@ -13,12 +13,9 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
 */
 package mesquite.lib.duties;
 
-import java.awt.*;
-
-import mesquite.lib.*;
-import mesquite.lib.table.*;
-import mesquite.molec.lib.SequenceTrimmer;
-import mesquite.lib.characters.*;
+import mesquite.lib.MesquiteFile;
+import mesquite.lib.MesquiteModule;
+import mesquite.lib.MesquiteString;
 
 
 /* ======================================================================== */

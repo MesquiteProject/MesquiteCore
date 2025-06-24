@@ -13,12 +13,20 @@
  */
 package mesquite.basic.GoToWebPage;
 
-import java.awt.*;
-import java.net.*;
-import java.util.*;
-import java.io.*;
-import mesquite.lib.*;
-import mesquite.lib.duties.*;
+import java.awt.BorderLayout;
+import java.awt.Button;
+import java.awt.Color;
+import java.awt.Font;
+import java.awt.Panel;
+import java.awt.TextArea;
+import java.awt.TextField;
+
+import mesquite.lib.CommandChecker;
+import mesquite.lib.MesquiteFile;
+import mesquite.lib.MesquiteThread;
+import mesquite.lib.Snapshot;
+import mesquite.lib.StringUtil;
+import mesquite.lib.duties.FileAssistant;
 import mesquite.lib.ui.ColorDistribution;
 import mesquite.lib.ui.MQPanel;
 import mesquite.lib.ui.MQTextArea;

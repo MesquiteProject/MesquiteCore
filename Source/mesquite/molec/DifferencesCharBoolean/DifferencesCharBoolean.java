@@ -1,11 +1,11 @@
 package mesquite.molec.DifferencesCharBoolean;
 
+import mesquite.categ.lib.CategoricalData;
 import mesquite.categ.lib.CategoricalState;
-import mesquite.lib.*;
-import mesquite.lib.characters.*;
-import mesquite.lib.duties.*;
-import mesquite.parsimony.lib.ParsimonyModelSet;
-import mesquite.categ.lib.*;
+import mesquite.lib.MesquiteBoolean;
+import mesquite.lib.MesquiteString;
+import mesquite.lib.characters.CharacterData;
+import mesquite.lib.duties.BooleanForCharacter;
 
 public class DifferencesCharBoolean extends BooleanForCharacter {
 

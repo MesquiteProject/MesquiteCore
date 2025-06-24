@@ -13,8 +13,10 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
 */
 package mesquite.lib.characters; 
 
-import java.awt.*;
-import mesquite.lib.*;
+import mesquite.lib.CompatibilityChecker;
+import mesquite.lib.EmployerEmployee;
+import mesquite.lib.MesquiteProject;
+import mesquite.lib.MesquiteString;
 
 /*Last documented:  May 2000 */
 /* ======================================================================== */

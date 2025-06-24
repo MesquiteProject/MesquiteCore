@@ -15,14 +15,14 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
 package mesquite.parsimony.InitCategParsimony;
 /*~~  */
 
-import java.awt.*;
-import java.util.*;
-import mesquite.lib.*;
-import mesquite.lib.characters.*;
-
-import mesquite.lib.duties.*;
-import mesquite.parsimony.lib.*;
-import mesquite.categ.lib.*;
+import mesquite.categ.lib.CategoricalData;
+import mesquite.categ.lib.DNAData;
+import mesquite.lib.characters.CharacterModel;
+import mesquite.lib.duties.FileInit;
+import mesquite.parsimony.lib.DolloModel;
+import mesquite.parsimony.lib.IrreversibleModel;
+import mesquite.parsimony.lib.OrderedModel;
+import mesquite.parsimony.lib.UnorderedModel;
 
 public class InitCategParsimony extends FileInit {
 	public String getName() {

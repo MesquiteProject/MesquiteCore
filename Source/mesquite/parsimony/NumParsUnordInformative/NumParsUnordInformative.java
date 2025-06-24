@@ -17,10 +17,11 @@ package mesquite.parsimony.NumParsUnordInformative;
 import mesquite.categ.lib.CategoricalData;
 import mesquite.categ.lib.MCategoricalDistribution;
 import mesquite.categ.lib.RequiresAnyCategoricalData;
-import mesquite.categ.lib.RequiresAnyDNAData;
-import mesquite.lib.*;
-import mesquite.lib.characters.*;
-import mesquite.lib.duties.*;
+import mesquite.lib.CompatibilityTest;
+import mesquite.lib.MesquiteNumber;
+import mesquite.lib.MesquiteString;
+import mesquite.lib.characters.MCharactersDistribution;
+import mesquite.lib.duties.NumberForMatrix;
 
 public class NumParsUnordInformative extends NumberForMatrix {
 

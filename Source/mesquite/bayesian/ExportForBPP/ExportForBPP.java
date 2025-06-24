@@ -14,13 +14,29 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
 package mesquite.bayesian.ExportForBPP;
 
 
-import java.util.*;
-import java.awt.*;
+import java.awt.Checkbox;
+import java.awt.TextArea;
+import java.util.Random;
 
-import mesquite.lib.*;
-import mesquite.lib.characters.*;
+import mesquite.assoc.lib.AssociationSource;
+import mesquite.assoc.lib.TaxaAssociation;
+import mesquite.categ.lib.MolecularState;
+import mesquite.lib.Arguments;
+import mesquite.lib.Bits;
+import mesquite.lib.Debugg;
+import mesquite.lib.IntegerField;
+import mesquite.lib.MesquiteBoolean;
+import mesquite.lib.MesquiteFile;
+import mesquite.lib.MesquiteInteger;
+import mesquite.lib.MesquiteProject;
+import mesquite.lib.MesquiteStringBuffer;
+import mesquite.lib.MesquiteThread;
+import mesquite.lib.Parser;
+import mesquite.lib.StringUtil;
 import mesquite.lib.characters.CharacterData;
-import mesquite.lib.duties.*;
+import mesquite.lib.characters.CharacterStates;
+import mesquite.lib.duties.FileInterpreterI;
+import mesquite.lib.duties.OneTreeSource;
 import mesquite.lib.taxa.Taxa;
 import mesquite.lib.taxa.Taxon;
 import mesquite.lib.tree.MesquiteTree;
@@ -28,8 +44,6 @@ import mesquite.lib.tree.Tree;
 import mesquite.lib.tree.TreeVector;
 import mesquite.lib.ui.ExtensibleDialog;
 import mesquite.lib.ui.SingleLineTextField;
-import mesquite.assoc.lib.*;
-import mesquite.categ.lib.*;
 
 
 

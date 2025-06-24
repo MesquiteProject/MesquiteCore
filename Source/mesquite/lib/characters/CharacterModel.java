@@ -13,12 +13,28 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
 */
 package mesquite.lib.characters; 
 
-import java.awt.*;
-import java.util.*;
-import mesquite.lib.duties.*;
+import java.util.Vector;
+
+import mesquite.lib.CommandChecker;
+import mesquite.lib.CommandRecord;
+import mesquite.lib.CompatibilityChecker;
+import mesquite.lib.EmployerEmployee;
+import mesquite.lib.Explainable;
+import mesquite.lib.FileElement;
+import mesquite.lib.Listable;
+import mesquite.lib.MesquiteFile;
+import mesquite.lib.MesquiteInteger;
+import mesquite.lib.MesquiteListener;
+import mesquite.lib.MesquiteModule;
+import mesquite.lib.MesquiteProject;
+import mesquite.lib.MesquiteString;
+import mesquite.lib.MesquiteTrunk;
+import mesquite.lib.Notification;
+import mesquite.lib.Snapshot;
+import mesquite.lib.duties.CharModelCurator;
+import mesquite.lib.duties.ElementManager;
 import mesquite.lib.ui.ListDialog;
 import mesquite.lib.ui.MesquiteWindow;
-import mesquite.lib.*;
 
 /*Last documented:  May 2000 */
 /* ======================================================================== */

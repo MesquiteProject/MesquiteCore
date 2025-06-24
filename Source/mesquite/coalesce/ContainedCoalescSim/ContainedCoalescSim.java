@@ -13,17 +13,25 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
 package mesquite.coalesce.ContainedCoalescSim;
 /*~~  */
 
-import java.util.*;
-import java.awt.*;
-import mesquite.lib.*;
-import mesquite.lib.duties.*;
+import mesquite.assoc.lib.TaxaAssociation;
+import mesquite.coalesce.lib.Coalescer;
+import mesquite.coalesce.lib.ContainedTreeSim;
+import mesquite.lib.CommandChecker;
+import mesquite.lib.DoubleArray;
+import mesquite.lib.EmployeeNeed;
+import mesquite.lib.MesquiteDouble;
+import mesquite.lib.MesquiteFile;
+import mesquite.lib.MesquiteInteger;
+import mesquite.lib.MesquiteLong;
+import mesquite.lib.MesquiteMessage;
+import mesquite.lib.MesquiteModule;
+import mesquite.lib.NameReference;
+import mesquite.lib.Snapshot;
 import mesquite.lib.taxa.Taxa;
 import mesquite.lib.taxa.Taxon;
 import mesquite.lib.tree.MesquiteTree;
 import mesquite.lib.tree.Tree;
 import mesquite.lib.tree.TreeReference;
-import mesquite.coalesce.lib.*;
-import mesquite.assoc.lib.*;
 /* ======================================================================== 
 For version 1.02 this was split off from Contained Coalescence to allow alternatives to be swapped more easily in the future (e.g, with migration)*/
 public class ContainedCoalescSim extends ContainedTreeSim {

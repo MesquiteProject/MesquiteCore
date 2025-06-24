@@ -2,7 +2,6 @@ package mesquite.lib;
 
 import java.awt.Checkbox;
 import java.awt.Dimension;
-import java.awt.TextArea;
 import java.awt.Toolkit;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;

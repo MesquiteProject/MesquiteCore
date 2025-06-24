@@ -14,16 +14,18 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
 
 package mesquite.dmanager.TaxonNameFromSampleNamesFile;
 
-import java.util.*;
-import java.awt.*;
-import java.awt.event.*;
+import java.awt.Checkbox;
+import java.awt.Choice;
 
-import mesquite.lib.*;
-import mesquite.lib.duties.*;
+import mesquite.lib.CommandChecker;
+import mesquite.lib.MesquiteBoolean;
+import mesquite.lib.MesquiteInteger;
+import mesquite.lib.MesquiteString;
+import mesquite.lib.MesquiteTabDelimitedFileProcessor;
+import mesquite.lib.StringUtil;
+import mesquite.lib.duties.TaxonNameAlterer;
 import mesquite.lib.misc.VoucherInfoFromOTUIDDB;
-import mesquite.lib.table.*;
 import mesquite.lib.taxa.Taxa;
-import mesquite.lib.ui.ColorDistribution;
 import mesquite.lib.ui.ExtensibleDialog;
 
 /* ======================================================================== */

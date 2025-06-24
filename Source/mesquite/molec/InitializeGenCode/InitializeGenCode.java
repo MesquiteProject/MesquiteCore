@@ -15,11 +15,25 @@ package mesquite.molec.InitializeGenCode;
 /*~~  */
 
 
-import mesquite.categ.lib.*;
-import mesquite.lib.*;
-import mesquite.lib.characters.*;
-import mesquite.lib.duties.*;
-import mesquite.molec.lib.*;
+import mesquite.categ.lib.CategoricalData;
+import mesquite.categ.lib.DNAData;
+import mesquite.categ.lib.MolecularData;
+import mesquite.categ.lib.ProteinData;
+import mesquite.lib.FileElement;
+import mesquite.lib.MesquiteMessage;
+import mesquite.lib.characters.CharacterData;
+import mesquite.lib.characters.CharacterModel;
+import mesquite.lib.duties.FileInit;
+import mesquite.molec.lib.GenCodeModel;
+import mesquite.molec.lib.GenCodeModelCiliate;
+import mesquite.molec.lib.GenCodeModelEchino;
+import mesquite.molec.lib.GenCodeModelEuplotid;
+import mesquite.molec.lib.GenCodeModelInvertMito;
+import mesquite.molec.lib.GenCodeModelMoldProtMito;
+import mesquite.molec.lib.GenCodeModelSet;
+import mesquite.molec.lib.GenCodeModelStandard;
+import mesquite.molec.lib.GenCodeModelVertMito;
+import mesquite.molec.lib.GenCodeModelYeastMito;
 
 
 /* ======================================================================== */

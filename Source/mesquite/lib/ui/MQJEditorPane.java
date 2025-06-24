@@ -13,12 +13,10 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
  */
 package mesquite.lib.ui;
 
+import java.awt.Dimension;
+import java.awt.Font;
+
 import javax.swing.JEditorPane;
-
-import mesquite.lib.Debugg;
-import mesquite.lib.MesquiteTrunk;
-
-import java.awt.*;
 
 //workaround for crashes on OS X && Linux  [Search for MQLINUX]
 public class MQJEditorPane extends JEditorPane implements MQComponent{

@@ -13,9 +13,6 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
  */
 package mesquite.lib.tree;
 
-import java.awt.*;
-import java.math.*;
-
 import mesquite.lib.MesquiteListener;
 import mesquite.lib.StringArray;
 import mesquite.lib.taxa.Taxa;

@@ -13,11 +13,8 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
 */
 package mesquite.assoc.lib;
 
-import java.awt.*;
-import java.util.*;
-
-import mesquite.lib.*;
-import mesquite.lib.duties.*;
+import mesquite.lib.ListableVector;
+import mesquite.lib.duties.FileElementManager;
 import mesquite.lib.taxa.Taxa;
 
 

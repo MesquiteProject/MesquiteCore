@@ -16,12 +16,23 @@ package mesquite.diverse.DiversCategCharLikelihood;
 import mesquite.categ.lib.CategoricalDistribution;
 import mesquite.categ.lib.RequiresExactlyCategoricalData;
 import mesquite.diverse.DivCategCharMLCalculator.DivCategCharMLCalculator;
-import mesquite.lib.*;
+import mesquite.diverse.lib.NumForCharAndTreeDivers;
+import mesquite.lib.CommandChecker;
+import mesquite.lib.CompatibilityTest;
+import mesquite.lib.EmployeeNeed;
+import mesquite.lib.MesquiteDouble;
+import mesquite.lib.MesquiteFile;
+import mesquite.lib.MesquiteInteger;
+import mesquite.lib.MesquiteNumber;
+import mesquite.lib.MesquiteParameter;
+import mesquite.lib.MesquiteString;
+import mesquite.lib.MesquiteThread;
+import mesquite.lib.Parser;
+import mesquite.lib.Snapshot;
+import mesquite.lib.StringUtil;
 import mesquite.lib.characters.CharacterDistribution;
-import mesquite.lib.duties.NumberForCharAndTree;
 import mesquite.lib.tree.Tree;
 import mesquite.lib.ui.ParametersDialog;
-import mesquite.diverse.lib.*;
 
 public class DiversCategCharLikelihood extends NumForCharAndTreeDivers {
     public void getEmployeeNeeds(){  //This gets called on startup to harvest information; override this and inside, call registerEmployeeNeed

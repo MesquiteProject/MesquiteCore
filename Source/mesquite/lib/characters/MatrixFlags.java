@@ -1,7 +1,5 @@
 package mesquite.lib.characters;
 
-import java.util.Vector;
-
 import mesquite.lib.Bits;
 
 public class MatrixFlags {

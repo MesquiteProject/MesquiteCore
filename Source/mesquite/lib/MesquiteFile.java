@@ -13,26 +13,47 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
  */
 package mesquite.lib;
 
-import java.awt.*;
+import java.awt.Color;
+import java.awt.Container;
+import java.awt.Desktop;
+import java.awt.FileDialog;
+import java.awt.Image;
+import java.io.BufferedOutputStream;
+import java.io.BufferedReader;
+import java.io.ByteArrayOutputStream;
+import java.io.DataInputStream;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.FilenameFilter;
+import java.io.FilterInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.OutputStream;
+import java.io.OutputStreamWriter;
+import java.io.PrintWriter;
+import java.io.UnsupportedEncodingException;
+import java.io.Writer;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.net.URLConnection;
+import java.util.Enumeration;
+import java.util.Vector;
 
-import java.io.*;
-import java.net.*;
-import java.util.*;
-import java.util.List;
+import javax.swing.JFileChooser;
 
-import com.apple.mrj.*;
+import com.apple.mrj.MRJFileUtils;
+import com.apple.mrj.MRJOSType;
 
-import mesquite.lib.characters.CharactersGroup;
 import mesquite.lib.misc.HNode;
 import mesquite.lib.taxa.Taxa;
-import mesquite.lib.taxa.TaxaGroup;
 import mesquite.lib.taxa.TaxonFilterer;
 import mesquite.lib.ui.ColorTheme;
 import mesquite.lib.ui.MesquitePopup;
 import mesquite.lib.ui.MesquiteWindow;
 import mesquite.lib.ui.ProgressIndicator;
-
-import javax.swing.*;
 
 /* ======================================================================== */
 /**This MesquiteFile is the file on disk, not the project.*/

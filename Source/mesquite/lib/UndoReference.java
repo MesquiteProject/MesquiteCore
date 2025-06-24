@@ -13,9 +13,8 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
  */
 package mesquite.lib;
 
-import mesquite.lib.characters.*;
 import mesquite.lib.characters.CharacterData;
-import mesquite.lib.table.*;
+import mesquite.lib.table.MesquiteTable;
 
 public class UndoReference {
 

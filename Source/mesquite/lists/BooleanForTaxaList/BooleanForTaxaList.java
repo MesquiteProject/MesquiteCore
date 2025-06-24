@@ -15,12 +15,24 @@ package mesquite.lists.BooleanForTaxaList;
 
 import java.util.Vector;
 
-import mesquite.lib.*;
-import mesquite.lib.characters.*;
-import mesquite.lib.duties.*;
-import mesquite.lib.table.*;
+import mesquite.lib.CommandChecker;
+import mesquite.lib.CommandRecord;
+import mesquite.lib.EmployeeNeed;
+import mesquite.lib.IntegerArray;
+import mesquite.lib.MesquiteBoolean;
+import mesquite.lib.MesquiteFile;
+import mesquite.lib.MesquiteListener;
+import mesquite.lib.MesquiteModule;
+import mesquite.lib.MesquiteString;
+import mesquite.lib.Notification;
+import mesquite.lib.Pausable;
+import mesquite.lib.Snapshot;
+import mesquite.lib.StringArray;
+import mesquite.lib.StringUtil;
+import mesquite.lib.duties.BooleanForTaxon;
+import mesquite.lib.table.MesquiteTable;
 import mesquite.lib.taxa.Taxa;
-import mesquite.lists.lib.*;
+import mesquite.lists.lib.TaxonListAssistant;
 
 public class BooleanForTaxaList extends TaxonListAssistant implements MesquiteListener, Pausable {
 	Taxa taxa;

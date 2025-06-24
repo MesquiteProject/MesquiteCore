@@ -13,9 +13,6 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
 */
 package mesquite.lib;
 
-import java.awt.*;
-import java.text.*;
-
 /* ======================================================================== */
 /**Interface for object to claim it is has a special list name method, to prefered over getName 
 in List dialogs.  This was put in place primarily for those classes whose getName method has some special use

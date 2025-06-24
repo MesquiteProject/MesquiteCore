@@ -15,10 +15,18 @@ package mesquite.genomic.AppendTaxaAndSequences;
 /*~~  */
 
 import mesquite.basic.ManageTaxaPartitions.ManageTaxaPartitions;
-import mesquite.lib.*;
-import mesquite.lib.characters.*;
+import mesquite.lib.CommandChecker;
+import mesquite.lib.Listable;
+import mesquite.lib.MesquiteFile;
+import mesquite.lib.MesquiteListener;
+import mesquite.lib.MesquiteProject;
+import mesquite.lib.MesquiteString;
+import mesquite.lib.Notification;
 import mesquite.lib.characters.CharacterData;
-import mesquite.lib.duties.*;
+import mesquite.lib.characters.CharacterState;
+import mesquite.lib.duties.CharactersManager;
+import mesquite.lib.duties.FileAssistantFM;
+import mesquite.lib.duties.NexusFileInterpreter;
 import mesquite.lib.taxa.Taxa;
 import mesquite.lib.taxa.TaxaGroupVector;
 import mesquite.lib.taxa.TaxaPartition;

@@ -12,7 +12,7 @@ This source code and its compiled class files are free and modifiable under the 
 GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
 */
 package mesquite.lib.ui; 
-import java.awt.*;
+import java.awt.Panel;
 
 import mesquite.lib.AttachedNote;
 import mesquite.lib.MesquiteModule;

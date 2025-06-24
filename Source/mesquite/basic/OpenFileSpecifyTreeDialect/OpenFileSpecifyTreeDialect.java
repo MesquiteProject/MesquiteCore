@@ -15,9 +15,15 @@
 package mesquite.basic.OpenFileSpecifyTreeDialect;
 
 import java.awt.Checkbox;
+
 import mesquite.io.InterpretPhylipTreesBasic.InterpretPhylipTreesBasic;
 import mesquite.io.lib.TryNexusFirstTreeFileInterpreter;
-import mesquite.lib.*;
+import mesquite.lib.MesquiteFile;
+import mesquite.lib.MesquiteInteger;
+import mesquite.lib.MesquiteProject;
+import mesquite.lib.MesquiteString;
+import mesquite.lib.MesquiteTrunk;
+import mesquite.lib.ParseUtil;
 import mesquite.lib.duties.GeneralFileMakerSingle;
 import mesquite.lib.duties.NexusFileInterpreter;
 import mesquite.lib.tree.MesquiteTree;

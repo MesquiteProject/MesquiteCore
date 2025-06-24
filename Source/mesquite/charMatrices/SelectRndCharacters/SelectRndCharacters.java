@@ -14,12 +14,12 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
 package mesquite.charMatrices.SelectRndCharacters;
 /*~~  */
 
-import java.util.*;
-import java.awt.*;
-import java.awt.image.*;
-import mesquite.lib.*;
-import mesquite.lib.characters.*;
-import mesquite.lib.duties.*;
+import mesquite.lib.MesquiteInteger;
+import mesquite.lib.MesquiteListener;
+import mesquite.lib.Notification;
+import mesquite.lib.RandomBetween;
+import mesquite.lib.characters.CharacterData;
+import mesquite.lib.duties.CharacterSelector;
 
 /* ======================================================================== */
 public class SelectRndCharacters extends CharacterSelector {

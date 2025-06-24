@@ -14,15 +14,22 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
 package mesquite.charMatrices.AlteredMatrix;
 /*~~  */
 
-import java.util.*;
-import java.awt.*;
-import mesquite.lib.*;
-import mesquite.lib.characters.*;
+import mesquite.charMatrices.lib.SourceModifiedMatrix;
+import mesquite.lib.CommandChecker;
+import mesquite.lib.CompatibilityTest;
+import mesquite.lib.EmployeeNeed;
+import mesquite.lib.MesquiteCommand;
+import mesquite.lib.MesquiteFile;
+import mesquite.lib.MesquiteInteger;
+import mesquite.lib.MesquiteModule;
+import mesquite.lib.MesquiteString;
+import mesquite.lib.Snapshot;
 import mesquite.lib.characters.CharacterData;
-import mesquite.lib.duties.*;
+import mesquite.lib.characters.CharacterStateTest;
+import mesquite.lib.characters.MCharactersDistribution;
+import mesquite.lib.duties.DataAlterer;
 import mesquite.lib.taxa.Taxa;
 import mesquite.lib.ui.MesquiteSubmenuSpec;
-import mesquite.charMatrices.lib.*;
 
 /* ======================================================================== */
 public class AlteredMatrix extends SourceModifiedMatrix {  //So that Altered Matrices are exposed to Make New Matrix From>Alter Matrix>

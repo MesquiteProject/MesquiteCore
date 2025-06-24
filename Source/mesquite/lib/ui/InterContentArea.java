@@ -13,9 +13,8 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
 */
 package mesquite.lib.ui;
 
-import java.awt.*;
-import java.awt.event.*;
-import mesquite.lib.duties.*;
+import java.awt.CardLayout;
+import java.awt.Component;
 /* ======================================================================== */
 /** The container fitting within the OuterContentArea, excluding the information bar.  The InterContentArea contains
 the components (ContentAreas) in which the modules actually draw their stuff.  The ContentArea's added to this are alternative

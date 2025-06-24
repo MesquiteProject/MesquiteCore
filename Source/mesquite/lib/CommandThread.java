@@ -13,12 +13,8 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
 */
 package mesquite.lib;
 
-import java.awt.*;
-import mesquite.lib.duties.*;
 import mesquite.lib.ui.MesquiteDialog;
 import mesquite.lib.ui.MesquiteWindow;
-
-import java.io.*;
 
 public class CommandThread extends MesquiteThread implements SpecialListName, Explainable {
 	MesquiteCommand command;

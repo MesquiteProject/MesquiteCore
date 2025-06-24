@@ -15,10 +15,20 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
  * Mostly copied from TaxonDistance*/
 package mesquite.distance.TaxonPairDistance;
 
-import mesquite.distance.lib.*;
-import mesquite.lib.*;
-import mesquite.lib.characters.*;
-import mesquite.lib.duties.*;
+import mesquite.distance.lib.TaxaDistFromMatrix;
+import mesquite.distance.lib.TaxaDistance;
+import mesquite.lib.CommandChecker;
+import mesquite.lib.MesquiteCommand;
+import mesquite.lib.MesquiteFile;
+import mesquite.lib.MesquiteInteger;
+import mesquite.lib.MesquiteModule;
+import mesquite.lib.MesquiteNumber;
+import mesquite.lib.MesquiteString;
+import mesquite.lib.MesquiteThread;
+import mesquite.lib.Notification;
+import mesquite.lib.Snapshot;
+import mesquite.lib.characters.MCharactersDistribution;
+import mesquite.lib.duties.NumberForMatrix;
 import mesquite.lib.taxa.Taxa;
 import mesquite.lib.ui.MesquiteSubmenuSpec;
 

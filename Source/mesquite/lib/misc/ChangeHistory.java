@@ -13,8 +13,8 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
 */
 package mesquite.lib.misc;
 
-import java.awt.*;
-import java.util.*;
+import java.util.Date;
+import java.util.Vector;
 
 import mesquite.lib.Author;
 import mesquite.lib.NexusBlock;

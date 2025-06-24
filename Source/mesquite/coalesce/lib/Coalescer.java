@@ -12,9 +12,8 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
 */
 package mesquite.coalesce.lib;
 
-import java.awt.*;
-import java.util.*;
-import mesquite.lib.*;
+import mesquite.lib.MesquiteLong;
+import mesquite.lib.MesquiteModule;
 import mesquite.lib.tree.MesquiteTree;
 
 

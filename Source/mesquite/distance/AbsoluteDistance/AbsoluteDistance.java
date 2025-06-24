@@ -19,15 +19,18 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
 
 package mesquite.distance.AbsoluteDistance;
 
-import java.util.*;
-import java.awt.*;
-import mesquite.lib.*;
-import mesquite.lib.characters.*;
-import mesquite.lib.duties.*;
+import mesquite.categ.lib.CategoricalState;
+import mesquite.categ.lib.MCategoricalDistribution;
+import mesquite.cont.lib.MContinuousDistribution;
+import mesquite.distance.lib.TaxaDistFromMatrix;
+import mesquite.distance.lib.TaxaDistance;
+import mesquite.lib.Double2DArray;
+import mesquite.lib.MesquiteDouble;
+import mesquite.lib.MesquiteMessage;
+import mesquite.lib.characters.CharInclusionSet;
+import mesquite.lib.characters.CharacterData;
+import mesquite.lib.characters.MCharactersDistribution;
 import mesquite.lib.taxa.Taxa;
-import mesquite.cont.lib.*;
-import mesquite.categ.lib.*;
-import mesquite.distance.lib.*;
 
 /* ======================================================================== */
 /* incrementable, with each being based on a different matrix */

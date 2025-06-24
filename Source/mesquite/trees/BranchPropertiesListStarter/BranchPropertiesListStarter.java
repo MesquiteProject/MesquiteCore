@@ -13,20 +13,16 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
  */
 package mesquite.trees.BranchPropertiesListStarter;
 
-import java.util.*;
+import java.awt.Graphics;
 
-import java.awt.*;
-
-import mesquite.lib.*;
-import mesquite.lib.duties.*;
+import mesquite.lib.MesquiteModule;
+import mesquite.lib.duties.TreeDisplayAssistantI;
 import mesquite.lib.tree.MesquiteTree;
 import mesquite.lib.tree.Tree;
 import mesquite.lib.tree.TreeDisplay;
 import mesquite.lib.tree.TreeDisplayExtra;
-import mesquite.lib.ui.MesquiteSubmenuSpec;
 import mesquite.lists.lib.ListModule;
 import mesquite.trees.BranchPropertiesList.BranchPropertiesList;
-import mesquite.trees.BranchPropertyDisplayControl.BranchPropertyDisplayControl;
 
 /* ======================================================================== */
 public class BranchPropertiesListStarter extends TreeDisplayAssistantI  {

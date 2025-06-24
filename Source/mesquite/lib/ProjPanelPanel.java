@@ -13,13 +13,19 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
 */
 package mesquite.lib;
 
-import java.awt.*;
+import java.awt.Color;
+import java.awt.Composite;
+import java.awt.Font;
+import java.awt.Graphics;
+import java.awt.Graphics2D;
+import java.awt.Image;
 import java.awt.dnd.DnDConstants;
 import java.awt.dnd.DropTarget;
-import java.util.*;
 import java.util.List;
+import java.util.Vector;
 
-import mesquite.lib.duties.*;
+import mesquite.lib.duties.FileCoordinator;
+import mesquite.lib.duties.FileInterpreter;
 import mesquite.lib.ui.ClosablePanel;
 import mesquite.lib.ui.ClosablePanelContainer;
 import mesquite.lib.ui.ColorDistribution;

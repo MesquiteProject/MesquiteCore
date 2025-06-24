@@ -13,8 +13,7 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
  */
 package mesquite.molec.lib;
 
-import mesquite.categ.lib.*;
-import mesquite.molec.lib.*;
+import mesquite.categ.lib.ProteinData;
 
 public class GenCodeInvertMito extends GeneticCode {
 

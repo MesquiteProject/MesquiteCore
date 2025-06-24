@@ -14,12 +14,11 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
 package mesquite.lists.DefaultTaxaOrder;
 /*~~  */
 
-import mesquite.lists.lib.*;
-import java.util.*;
-import mesquite.lib.*;
-import mesquite.lib.duties.*;
-import mesquite.lib.table.*;
+import mesquite.lib.CommandChecker;
+import mesquite.lib.Notification;
+import mesquite.lib.table.MesquiteTable;
 import mesquite.lib.taxa.Taxa;
+import mesquite.lists.lib.TaxonListAssistant;
 
 /* ======================================================================== */
 public class DefaultTaxaOrder extends TaxonListAssistant {

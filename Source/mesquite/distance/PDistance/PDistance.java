@@ -15,15 +15,22 @@ package mesquite.distance.PDistance;
 /*~~  */
 
 
-import java.awt.Checkbox;
-
-import mesquite.lib.*;
-import mesquite.lib.characters.*;
+import mesquite.categ.lib.DNAData;
+import mesquite.distance.lib.DNATaxaDistFromMatrix;
+import mesquite.distance.lib.DNATaxaDistance;
+import mesquite.distance.lib.TaxaDistance;
+import mesquite.lib.CommandChecker;
+import mesquite.lib.MesquiteBoolean;
+import mesquite.lib.MesquiteDouble;
+import mesquite.lib.MesquiteFile;
+import mesquite.lib.MesquiteMessage;
+import mesquite.lib.MesquiteModule;
+import mesquite.lib.Parser;
+import mesquite.lib.Snapshot;
+import mesquite.lib.characters.MCharactersDistribution;
 import mesquite.lib.taxa.Taxa;
 import mesquite.lib.ui.ExtensibleDialog;
 import mesquite.lib.ui.RadioButtons;
-import mesquite.categ.lib.DNAData;
-import mesquite.distance.lib.*;
 
 /* ======================================================================== */
 /* incrementable, with each being based on a different matrix */

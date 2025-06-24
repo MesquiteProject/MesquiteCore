@@ -15,8 +15,9 @@ package mesquite.genomic.IncludeFlippedFastaFiles;
 /*~~  */
 
 import mesquite.genomic.CombineFlippedFastas.CombineFlippedFastas;
-import mesquite.lib.*;
-import mesquite.lib.duties.*;
+import mesquite.lib.MesquiteFile;
+import mesquite.lib.StringUtil;
+import mesquite.lib.duties.FileAssistantFM;
 
 /* ======================================================================== */
 public class IncludeFlippedFastaFiles extends FileAssistantFM {

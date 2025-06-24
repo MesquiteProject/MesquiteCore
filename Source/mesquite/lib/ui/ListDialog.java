@@ -13,12 +13,16 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
  */
 package mesquite.lib.ui;
 
-import java.awt.*;
-import java.awt.event.*;
-import java.util.*;
+import java.awt.Button;
+import java.awt.Checkbox;
+import java.awt.Component;
+import java.awt.Panel;
+import java.awt.TextArea;
+import java.awt.event.ItemEvent;
+import java.awt.event.ItemListener;
+import java.util.Vector;
 
 import mesquite.lib.Context;
-import mesquite.lib.Debugg;
 import mesquite.lib.EmployerEmployee;
 import mesquite.lib.Explainable;
 import mesquite.lib.IntegerArray;
@@ -34,7 +38,7 @@ import mesquite.lib.Prioritizable;
 import mesquite.lib.Showable;
 import mesquite.lib.SpecialListName;
 import mesquite.lib.StringUtil;
-import mesquite.lib.simplicity.*;
+import mesquite.lib.simplicity.InterfaceManager;
 
 /*===============================================*/
 /** A little dialog box with a list.*/

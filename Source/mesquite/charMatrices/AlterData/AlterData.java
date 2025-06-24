@@ -14,18 +14,32 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
  */
 package mesquite.charMatrices.AlterData; 
 
-import java.util.*;
-import java.awt.*;
-import java.awt.image.*;
-
-import mesquite.align.lib.AlignMultipleSequencesMachine;
-import mesquite.align.lib.MultipleSequenceAligner;
-import mesquite.categ.lib.MolecularData;
-import mesquite.lib.*;
-import mesquite.lib.characters.*;
+import mesquite.lib.CommandChecker;
+import mesquite.lib.EmployeeNeed;
+import mesquite.lib.MesquiteBoolean;
+import mesquite.lib.MesquiteFile;
+import mesquite.lib.MesquiteListener;
+import mesquite.lib.MesquiteModule;
+import mesquite.lib.MesquiteModuleInfo;
+import mesquite.lib.MesquiteTrunk;
+import mesquite.lib.Notification;
+import mesquite.lib.QualificationsTest;
+import mesquite.lib.ResultCodes;
+import mesquite.lib.Snapshot;
+import mesquite.lib.UndoReference;
+import mesquite.lib.characters.AlteredDataParameters;
+import mesquite.lib.characters.AltererAlignShift;
+import mesquite.lib.characters.AltererContinuousTransformations;
+import mesquite.lib.characters.AltererConvertGapMissPolyUncert;
+import mesquite.lib.characters.AltererDNACell;
+import mesquite.lib.characters.AltererMetadata;
+import mesquite.lib.characters.AltererRandomizations;
+import mesquite.lib.characters.AltererSimpleCell;
+import mesquite.lib.characters.AltererWholeCharacterAddRemove;
 import mesquite.lib.characters.CharacterData;
-import mesquite.lib.duties.*;
-import mesquite.lib.table.*;
+import mesquite.lib.duties.DataAlterer;
+import mesquite.lib.duties.DataWindowAssistantI;
+import mesquite.lib.table.MesquiteTable;
 import mesquite.lib.ui.MesquiteMenuItemSpec;
 import mesquite.lib.ui.MesquiteMenuSpec;
 import mesquite.lib.ui.MesquiteSubmenuSpec;

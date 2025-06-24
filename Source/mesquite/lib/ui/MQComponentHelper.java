@@ -17,9 +17,6 @@ import java.awt.Component;
 import java.awt.Container;
 import java.awt.Dimension;
 import java.awt.Font;
-import java.awt.TextComponent;
-
-import javax.swing.text.JTextComponent;
 
 import mesquite.lib.MesquiteTrunk;
 

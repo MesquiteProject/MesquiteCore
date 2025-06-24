@@ -14,13 +14,34 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
 package mesquite.parsimony.StepMatrixCurator;
 /*~~  */
 
-import java.util.*;
-import java.awt.*;
-import mesquite.lib.*;
-import mesquite.lib.characters.*;
-import mesquite.lib.duties.*;
-import mesquite.categ.lib.*;
-import mesquite.parsimony.lib.*;
+import mesquite.categ.lib.CategTModel;
+import mesquite.categ.lib.CategTModelEditWindow;
+import mesquite.categ.lib.CategoricalData;
+import mesquite.categ.lib.CategoricalState;
+import mesquite.categ.lib.DNAData;
+import mesquite.categ.lib.ProteinData;
+import mesquite.categ.lib.RNAData;
+import mesquite.lib.CommandChecker;
+import mesquite.lib.EmployeeNeed;
+import mesquite.lib.MesquiteFile;
+import mesquite.lib.MesquiteInteger;
+import mesquite.lib.MesquiteListener;
+import mesquite.lib.MesquiteModule;
+import mesquite.lib.MesquiteNumber;
+import mesquite.lib.MesquiteProject;
+import mesquite.lib.MesquiteTrunk;
+import mesquite.lib.NexusCommandTest;
+import mesquite.lib.Notification;
+import mesquite.lib.NumberArray;
+import mesquite.lib.ObjectContainer;
+import mesquite.lib.ParseUtil;
+import mesquite.lib.StringArray;
+import mesquite.lib.StringUtil;
+import mesquite.lib.characters.CharacterModel;
+import mesquite.lib.duties.EditingCurator;
+import mesquite.lib.duties.WholeCharModelCurator;
+import mesquite.lib.duties.WindowHolder;
+import mesquite.parsimony.lib.CostMatrixModel;
 
 /* ======================================================================== */
 public class StepMatrixCurator extends WholeCharModelCurator implements EditingCurator {

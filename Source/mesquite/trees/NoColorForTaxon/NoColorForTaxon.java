@@ -13,10 +13,9 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
 */
 package mesquite.trees.NoColorForTaxon;
 
-import java.util.*;
-import java.awt.*;
-import mesquite.lib.*;
-import mesquite.lib.duties.*;
+import java.awt.Color;
+
+import mesquite.lib.duties.TaxonNameStyler;
 import mesquite.lib.taxa.Taxa;
 
 /* ======================================================================== */

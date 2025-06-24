@@ -12,8 +12,6 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
 */
 package mesquite.thinkTrees.AlphabeticTaxonNames;
 
-import mesquite.lib.MesquiteString;
-import mesquite.lib.MesquiteThread;
 import mesquite.lib.duties.TaxonNameAlterer;
 import mesquite.lib.taxa.Taxa;
 

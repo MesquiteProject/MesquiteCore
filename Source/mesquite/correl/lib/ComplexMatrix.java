@@ -13,7 +13,6 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
  */package mesquite.correl.lib;
 
 import mesquite.lib.MesquiteDouble;
-import Jama.Matrix;
 
 // A very minimal implementation of matrices of complex numbers.  Really this
 // only implments multiplication and copying to and from real number matrices

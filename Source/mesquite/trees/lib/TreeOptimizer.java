@@ -13,14 +13,27 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
  */
 package mesquite.trees.lib;
 
-import mesquite.lib.*;
-import mesquite.lib.duties.*;
+import mesquite.lib.CommandRecord;
+import mesquite.lib.Listened;
+import mesquite.lib.MesquiteBoolean;
+import mesquite.lib.MesquiteDouble;
+import mesquite.lib.MesquiteListener;
+import mesquite.lib.MesquiteLong;
+import mesquite.lib.MesquiteMessage;
+import mesquite.lib.MesquiteModule;
+import mesquite.lib.MesquiteNumber;
+import mesquite.lib.MesquiteString;
+import mesquite.lib.MesquiteThread;
+import mesquite.lib.MesquiteTimer;
+import mesquite.lib.Notification;
+import mesquite.lib.RandomBetween;
+import mesquite.lib.duties.NumberForTree;
+import mesquite.lib.duties.TreeSwapper;
 import mesquite.lib.taxa.Taxa;
 import mesquite.lib.tree.AdjustableTree;
 import mesquite.lib.tree.MesquiteTree;
 import mesquite.lib.ui.MesquiteDialog;
 import mesquite.lib.ui.ProgressIndicator;
-import JSci.maths.statistics.*;
 
 public class TreeOptimizer {
 	protected MesquiteModule ownerModule;

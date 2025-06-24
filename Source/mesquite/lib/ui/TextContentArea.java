@@ -13,10 +13,11 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
 */
 package mesquite.lib.ui;
 
-import java.awt.*;
-import java.awt.event.*;
-
-import mesquite.lib.duties.*;
+import java.awt.CardLayout;
+import java.awt.Color;
+import java.awt.Font;
+import java.awt.Graphics;
+import java.awt.TextArea;
 /* ======================================================================== */
 /** A ContentArea specifically for text display.  Has methods to control text, like a TextArea.*/
 class TextContentArea extends ContentArea {

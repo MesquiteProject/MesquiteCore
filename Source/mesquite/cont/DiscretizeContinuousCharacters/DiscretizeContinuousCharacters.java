@@ -14,16 +14,26 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
 package mesquite.cont.DiscretizeContinuousCharacters;
 /*~~  */
 
-import java.util.*;
-import java.awt.*;
-import mesquite.lib.*;
-import mesquite.lib.characters.*;
-import mesquite.lib.duties.*;
+import java.util.Vector;
+
+import mesquite.categ.lib.CategoricalData;
+import mesquite.categ.lib.CategoricalState;
+import mesquite.cont.lib.ContDataUtility;
+import mesquite.cont.lib.ContinuousData;
+import mesquite.cont.lib.ContinuousState;
+import mesquite.lib.AssociableWithSpecs;
+import mesquite.lib.MesquiteDouble;
+import mesquite.lib.MesquiteInteger;
+import mesquite.lib.MesquiteListener;
+import mesquite.lib.MesquiteString;
+import mesquite.lib.Notification;
+import mesquite.lib.StringUtil;
+import mesquite.lib.characters.CharacterData;
+import mesquite.lib.characters.CharacterModel;
+import mesquite.lib.characters.ModelCompatibilityInfo;
 import mesquite.lib.ui.QueryDialogs;
 import mesquite.parsimony.lib.ParsimonyModel;
 import mesquite.parsimony.lib.ParsimonyModelSet;
-import mesquite.cont.lib.*;
-import mesquite.categ.lib.*;
 
 /* ======================================================================== */
 public class DiscretizeContinuousCharacters extends ContDataUtility {

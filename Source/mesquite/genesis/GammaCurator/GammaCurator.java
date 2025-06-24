@@ -14,11 +14,11 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
 package mesquite.genesis.GammaCurator;
 /*~~  */
 
-import mesquite.lib.*;
-import mesquite.lib.characters.*;
-import mesquite.lib.duties.*;
-import mesquite.categ.lib.*;
-import mesquite.genesis.lib.*;
+import mesquite.genesis.lib.CharRatesCurator;
+import mesquite.genesis.lib.CharRatesGamma;
+import mesquite.lib.MesquiteInteger;
+import mesquite.lib.characters.CharacterModel;
+import mesquite.lib.duties.EditingCurator;
 /* ======================================================================== */
 public class GammaCurator extends CharRatesCurator implements EditingCurator {
 	/*.................................................................................................................*

@@ -14,16 +14,14 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
 package mesquite.categ.RemoveInvariant;
 /*~~  */
 
-import java.util.*;
-import java.lang.*;
-import java.awt.*;
-import java.awt.event.*;
-
-import mesquite.lib.*;
-import mesquite.lib.characters.*;
-import mesquite.lib.duties.*;
-import mesquite.categ.lib.*;
-import mesquite.lib.table.*;
+import mesquite.categ.lib.CategoricalData;
+import mesquite.lib.Bits;
+import mesquite.lib.ResultCodes;
+import mesquite.lib.UndoReference;
+import mesquite.lib.characters.AltererWholeCharacterAddRemove;
+import mesquite.lib.characters.CharacterData;
+import mesquite.lib.duties.DataAlterer;
+import mesquite.lib.table.MesquiteTable;
 
 /* ======================================================================== */
 public class RemoveInvariant extends DataAlterer  implements AltererWholeCharacterAddRemove {

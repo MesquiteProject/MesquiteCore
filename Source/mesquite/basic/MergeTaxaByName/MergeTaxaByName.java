@@ -13,19 +13,16 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
  */
 package mesquite.basic.MergeTaxaByName;
 
-import java.util.*;
-import java.awt.*;
-
-import mesquite.lib.characters.*;
+import mesquite.basic.MergeTaxa.MergeTaxa;
+import mesquite.categ.lib.CategoricalData;
+import mesquite.lib.MesquiteThread;
+import mesquite.lib.Notification;
+import mesquite.lib.StringUtil;
 import mesquite.lib.characters.CharacterData;
-import mesquite.categ.lib.*;
-import mesquite.lib.*;
-import mesquite.lib.duties.*;
 import mesquite.lib.taxa.Taxa;
 import mesquite.lib.ui.AlertDialog;
 import mesquite.lib.ui.ExtensibleDialog;
 import mesquite.lib.ui.SingleLineTextField;
-import mesquite.basic.MergeTaxa.*;
 
 
 /* ======================================================================== */

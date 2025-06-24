@@ -13,10 +13,15 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
 */
 package mesquite.charts.ShowMean;
 
-import java.awt.*;
-import java.util.*;
-import mesquite.lib.*;
-import mesquite.lib.duties.*;
+import java.awt.Color;
+import java.awt.Graphics;
+import java.awt.Polygon;
+import java.util.Enumeration;
+import java.util.Vector;
+
+import mesquite.lib.MesquiteModule;
+import mesquite.lib.MesquiteNumber;
+import mesquite.lib.duties.HistogramAssistantA;
 import mesquite.lib.ui.ChartBkgdExtra;
 import mesquite.lib.ui.ChartExtra;
 import mesquite.lib.ui.Charter;

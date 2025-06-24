@@ -13,8 +13,7 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
 */
 package mesquite.lib.taxa;
 
-import java.awt.*;
-import mesquite.lib.duties.*;
+import java.awt.Graphics;
 
 
 public interface TaxaDisplayActive    {

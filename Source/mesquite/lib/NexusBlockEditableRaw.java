@@ -13,8 +13,7 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
 */
 package mesquite.lib;
 
-import java.awt.*;
-import mesquite.lib.duties.*;
+import mesquite.lib.duties.EditRawNexusBlock;
 
 
 /* ======================================================================== */

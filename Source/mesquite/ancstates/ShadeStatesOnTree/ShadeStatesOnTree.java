@@ -13,12 +13,21 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
  */
 package mesquite.ancstates.ShadeStatesOnTree;
 
-import java.util.*;
+import java.awt.Color;
+import java.awt.Graphics;
+import java.util.Vector;
 
-import java.awt.*;
-import mesquite.lib.*;
-import mesquite.lib.characters.*;
-import mesquite.lib.duties.*;
+import mesquite.lib.CommandChecker;
+import mesquite.lib.MesquiteBoolean;
+import mesquite.lib.MesquiteFile;
+import mesquite.lib.MesquiteMessage;
+import mesquite.lib.ObjectArray;
+import mesquite.lib.Snapshot;
+import mesquite.lib.StringUtil;
+import mesquite.lib.characters.CharacterDistribution;
+import mesquite.lib.characters.CharacterHistory;
+import mesquite.lib.characters.CharacterState;
+import mesquite.lib.duties.DisplayStatesAtNodes;
 import mesquite.lib.tree.Tree;
 import mesquite.lib.tree.TreeDecorator;
 import mesquite.lib.tree.TreeDisplay;

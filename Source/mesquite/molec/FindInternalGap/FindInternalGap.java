@@ -14,12 +14,10 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
 package mesquite.molec.FindInternalGap;
 /*~~  */
 
-import mesquite.categ.lib.DNAData;
-import mesquite.categ.lib.DNAState;
-import mesquite.lib.*;
-import mesquite.lib.characters.*;
-import mesquite.lib.table.*;
-import mesquite.molec.lib.*;
+import mesquite.lib.MesquiteInteger;
+import mesquite.lib.characters.CharacterData;
+import mesquite.lib.table.MesquiteTable;
+import mesquite.molec.lib.FindSequenceCriterionG;
 
 /* ======================================================================== */
 public class FindInternalGap extends FindSequenceCriterionG {

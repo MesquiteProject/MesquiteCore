@@ -13,15 +13,14 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
 */
 package mesquite.charMatrices.SearchData; 
 
-import java.util.*;
-import java.awt.*;
-import java.awt.image.*;
-
-import mesquite.charMatrices.lib.RandomMatrixModifier;
-import mesquite.lib.*;
-import mesquite.lib.characters.*;
-import mesquite.lib.duties.*;
-import mesquite.lib.table.*;
+import mesquite.lib.CommandChecker;
+import mesquite.lib.EmployeeNeed;
+import mesquite.lib.MesquiteListener;
+import mesquite.lib.Notification;
+import mesquite.lib.characters.CharacterData;
+import mesquite.lib.duties.DataSearcher;
+import mesquite.lib.duties.DataWindowAssistantI;
+import mesquite.lib.table.MesquiteTable;
 import mesquite.lib.ui.MesquiteSubmenuSpec;
 
 /* ======================================================================== */

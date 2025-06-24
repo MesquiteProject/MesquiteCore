@@ -15,8 +15,8 @@ package mesquite.tol.TreeBaseURLServer;
 
 	
 
-import mesquite.lib.*;
-import mesquite.tol.lib.*;
+import mesquite.lib.StringUtil;
+import mesquite.tol.lib.TaxonOnWebServer;
 
 public class TreeBaseURLServer extends TaxonOnWebServer {
 

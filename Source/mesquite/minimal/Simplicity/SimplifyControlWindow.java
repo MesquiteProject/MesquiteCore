@@ -1,16 +1,51 @@
 package mesquite.minimal.Simplicity;
 
-import mesquite.lib.*;
+import java.awt.Adjustable;
+import java.awt.BorderLayout;
+import java.awt.Checkbox;
+import java.awt.CheckboxGroup;
+import java.awt.Color;
+import java.awt.Component;
+import java.awt.Composite;
+import java.awt.Cursor;
+import java.awt.Dimension;
+import java.awt.Font;
+import java.awt.FontMetrics;
+import java.awt.Graphics;
+import java.awt.Image;
+import java.awt.Polygon;
+import java.awt.ScrollPane;
+import java.awt.TextArea;
+import java.awt.event.ItemEvent;
+import java.awt.event.ItemListener;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
+import java.util.Vector;
+
+import javax.swing.JCheckBox;
+import javax.swing.JEditorPane;
+import javax.swing.JScrollPane;
+
+import mesquite.lib.CommandChecker;
+import mesquite.lib.Listable;
+import mesquite.lib.ListableVector;
+import mesquite.lib.MesquiteCommand;
+import mesquite.lib.MesquiteFile;
+import mesquite.lib.MesquiteModule;
+import mesquite.lib.MesquiteTrunk;
+import mesquite.lib.ObjectContainer;
+import mesquite.lib.StringUtil;
+import mesquite.lib.SystemWindow;
 import mesquite.lib.simplicity.InterfaceManager;
 import mesquite.lib.ui.ColorDistribution;
 import mesquite.lib.ui.ColorTheme;
 import mesquite.lib.ui.MQComponent;
 import mesquite.lib.ui.MQComponentHelper;
+import mesquite.lib.ui.MQJEditorPane;
 import mesquite.lib.ui.MQJScrollPane;
 import mesquite.lib.ui.MQPanel;
 import mesquite.lib.ui.MQScrollPane;
 import mesquite.lib.ui.MQTextArea;
-import mesquite.lib.ui.MQJEditorPane;
 import mesquite.lib.ui.MesquiteImage;
 import mesquite.lib.ui.MesquiteMenuItem;
 import mesquite.lib.ui.MesquitePopup;
@@ -19,11 +54,6 @@ import mesquite.lib.ui.MesquiteTool;
 import mesquite.lib.ui.MesquiteWindow;
 import mesquite.lib.ui.MessagePanel;
 import mesquite.lib.ui.MousePanel;
-
-import java.awt.*;
-import java.util.*;
-import java.awt.event.*;
-import javax.swing.*;
 
 public class SimplifyControlWindow extends MesquiteWindow implements SystemWindow {
 	ClassesPane classesPane;

@@ -13,9 +13,7 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
 */
 package mesquite.lib.characters; 
 
-import java.awt.*;
-import mesquite.lib.duties.*;
-import mesquite.lib.*;
+import mesquite.lib.BitsSpecsSet;
 
 /* ======================================================================== */
 /** A specset with bit information about characters.   Called "character bits set" because it amounts to a selection (bit on = yes, bit off  = no)

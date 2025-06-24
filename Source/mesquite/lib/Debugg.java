@@ -13,8 +13,6 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
 */
 package mesquite.lib;
 
-import java.io.*;
- 
 /*=======================*/
 /** A utility class with method to duplicate System.out.println, but can be searched for.  
  * Intended for temporary use.  Do not leave in released code. */

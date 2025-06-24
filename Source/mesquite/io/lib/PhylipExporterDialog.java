@@ -13,9 +13,9 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
 
 package mesquite.io.lib;
 
-import java.awt.*;
-
-import mesquite.lib.*;
+import mesquite.lib.ExporterDialog;
+import mesquite.lib.IntegerField;
+import mesquite.lib.MesquiteInteger;
 import mesquite.lib.ui.MesquiteWindow;
 	
 public class PhylipExporterDialog extends ExporterDialog {

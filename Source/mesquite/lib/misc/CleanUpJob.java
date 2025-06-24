@@ -13,10 +13,6 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
 */
 package mesquite.lib.misc;
 
-import java.awt.*;
-import java.awt.event.*;
-
-
 public interface CleanUpJob {
 	public void cleanUp();
 

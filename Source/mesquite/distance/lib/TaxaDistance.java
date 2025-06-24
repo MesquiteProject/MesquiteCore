@@ -13,11 +13,11 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
 */
 package mesquite.distance.lib;
 
-import java.awt.*;
-import java.util.*;
-import mesquite.lib.duties.*;
+import mesquite.lib.Bits;
+import mesquite.lib.DoubleArray;
+import mesquite.lib.MesquiteDouble;
+import mesquite.lib.MesquiteTrunk;
 import mesquite.lib.taxa.Taxa;
-import mesquite.lib.*;
 
 
 /* ======================================================================== */

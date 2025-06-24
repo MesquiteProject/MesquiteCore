@@ -16,25 +16,20 @@ package mesquite.lists.TaxonGroupListSymbol;
 import java.awt.Button;
 import java.awt.Choice;
 import java.awt.Color;
-import java.awt.Container;
-import java.awt.FontMetrics;
 import java.awt.Graphics;
-import java.awt.Label;
-import java.awt.Panel;
-import java.awt.Shape;
-import java.awt.event.*;
 
 import javax.swing.JLabel;
 
-import mesquite.lib.*;
-import mesquite.lib.characters.CharInclusionSet;
+import mesquite.lib.CommandChecker;
+import mesquite.lib.StringUtil;
 import mesquite.lib.characters.CharacterData;
 import mesquite.lib.table.MesquiteTable;
 import mesquite.lib.taxa.TaxaGroup;
 import mesquite.lib.taxa.TaxaGroupVector;
 import mesquite.lib.ui.MesquiteSymbol;
 import mesquite.lib.ui.SymbolsVector;
-import mesquite.lists.lib.*;
+import mesquite.lists.lib.GroupSymbolsDialog;
+import mesquite.lists.lib.TaxonGroupListAssistant;
 
 /* ======================================================================== */
 public class TaxonGroupListSymbol extends TaxonGroupListAssistant   {

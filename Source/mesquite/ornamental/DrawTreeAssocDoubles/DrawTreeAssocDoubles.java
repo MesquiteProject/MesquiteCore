@@ -14,22 +14,18 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
 package mesquite.ornamental.DrawTreeAssocDoubles;
 /*~~  */
 
-import java.util.*;
-
-import java.awt.*;
-import mesquite.lib.*;
-import mesquite.lib.duties.*;
-import mesquite.lib.tree.MesquiteTree;
-import mesquite.lib.tree.Tree;
+import mesquite.lib.Associable;
+import mesquite.lib.CommandChecker;
+import mesquite.lib.MesquiteBoolean;
+import mesquite.lib.MesquiteDouble;
+import mesquite.lib.MesquiteFile;
+import mesquite.lib.MesquiteInteger;
+import mesquite.lib.MesquiteModule;
+import mesquite.lib.Snapshot;
+import mesquite.lib.StringUtil;
+import mesquite.lib.duties.TreeDisplayAssistantDI;
 import mesquite.lib.tree.TreeDisplay;
 import mesquite.lib.tree.TreeDisplayExtra;
-import mesquite.lib.ui.ExtensibleDialog;
-import mesquite.lib.ui.MesquiteCheckMenuItem;
-import mesquite.lib.ui.MesquiteMenuItem;
-import mesquite.lib.ui.MesquiteMenuSpec;
-import mesquite.lib.ui.MesquitePopup;
-import mesquite.lib.ui.MesquiteSubmenuSpec;
-import mesquite.lib.ui.StringInABox;
 import mesquite.trees.BranchPropertyDisplayControl.BranchPropertyDisplayControl;
 
 /* ======================================================================== */

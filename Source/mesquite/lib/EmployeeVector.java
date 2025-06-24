@@ -14,10 +14,7 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
 
 package mesquite.lib;
 
-import java.awt.*;
-import java.awt.image.*;
-import java.util.*;
-import mesquite.lib.duties.*;
+import java.util.Enumeration;
 
 /* ======================================================================== */
 /** Vector of employee tasks (MesquiteModule objects).  Each MesquiteModule keeps such a list.*/

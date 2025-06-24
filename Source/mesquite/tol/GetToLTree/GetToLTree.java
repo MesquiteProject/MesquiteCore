@@ -16,11 +16,13 @@ package mesquite.tol.GetToLTree;
 /*~~  */
 
 
-import mesquite.lib.*;
-import mesquite.lib.duties.*;
+import mesquite.lib.IntegerField;
+import mesquite.lib.MesquiteInteger;
+import mesquite.lib.MesquiteProject;
+import mesquite.lib.duties.GeneralFileMakerSingle;
 import mesquite.lib.ui.ExtensibleDialog;
 import mesquite.lib.ui.SingleLineTextField;
-import mesquite.tol.lib.*;
+import mesquite.tol.lib.ToLProjectOpener;
 
 
 public class GetToLTree extends GeneralFileMakerSingle  {

@@ -13,9 +13,13 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
  */package mesquite.lib.duties;
 
 
- import mesquite.lib.*;
-import mesquite.lib.characters.*;
-import mesquite.lib.table.*;
+ import mesquite.lib.MesquiteInteger;
+import mesquite.lib.Notification;
+import mesquite.lib.ResultCodes;
+import mesquite.lib.UndoInstructions;
+import mesquite.lib.UndoReference;
+import mesquite.lib.characters.CharacterData;
+import mesquite.lib.table.MesquiteTable;
 
  public abstract class DataAltererCon extends DataAlterer {
 

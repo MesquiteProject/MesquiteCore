@@ -13,11 +13,7 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
 */
 package mesquite.lib.ui;
 
-import java.awt.event.*;
-import java.awt.*;
-
 import mesquite.lib.MesquiteDouble;
-import mesquite.lib.duties.*;
 
 /*=================*/
 public abstract class ValueToPixel extends Object {

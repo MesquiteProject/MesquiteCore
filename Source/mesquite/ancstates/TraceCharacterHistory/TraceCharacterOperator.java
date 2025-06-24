@@ -13,21 +13,26 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
  */
 package mesquite.ancstates.TraceCharacterHistory;
 
-import java.awt.*;
-import java.util.Vector;
+import java.awt.Color;
+import java.awt.Graphics;
+import java.awt.Point;
+import java.awt.TextArea;
 
 import mesquite.categ.lib.CategoricalState;
-import mesquite.cont.lib.ContinuousState;
-import mesquite.lib.*;
-import mesquite.lib.characters.*;
+import mesquite.lib.Commandable;
+import mesquite.lib.MesquiteInteger;
+import mesquite.lib.MesquiteModule;
+import mesquite.lib.MesquiteString;
+import mesquite.lib.MesquiteTrunk;
+import mesquite.lib.characters.CharHistoryContainer;
+import mesquite.lib.characters.CharacterHistory;
+import mesquite.lib.characters.CharacterState;
 import mesquite.lib.taxa.Taxa;
 import mesquite.lib.tree.Tree;
 import mesquite.lib.tree.TreeDecorator;
 import mesquite.lib.tree.TreeDisplay;
 import mesquite.lib.tree.TreeDisplayDrawnExtra;
 import mesquite.lib.tree.TreeDisplayLegend;
-import mesquite.lib.tree.TreeDisplayRequests;
-import mesquite.lib.tree.TreeDrawing;
 import mesquite.lib.ui.ColorDialog;
 import mesquite.lib.ui.MQPanel;
 import mesquite.lib.ui.MQTextArea;

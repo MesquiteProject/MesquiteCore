@@ -13,10 +13,9 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
  */
 package mesquite.lib.ui;
 
-import java.awt.*;
-import java.util.*;
+import java.awt.Component;
+import java.util.Vector;
 
-import mesquite.lib.Debugg;
 import mesquite.lib.Listable;
 import mesquite.lib.MesquiteTrunk;
 

@@ -13,15 +13,16 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
 */
 package mesquite.cont.lib;
 
-import java.awt.*;
-import java.util.*;
-
-import mesquite.categ.lib.MProteinHistory;
-import mesquite.lib.duties.*;
+import mesquite.lib.Annotatable;
+import mesquite.lib.Double2DArray;
+import mesquite.lib.characters.CharacterData;
+import mesquite.lib.characters.CharacterDistribution;
+import mesquite.lib.characters.MAdjustableDistribution;
+import mesquite.lib.characters.MCharactersDistribution;
+import mesquite.lib.characters.MCharactersHistory;
+import mesquite.lib.duties.CharMatrixManager;
 import mesquite.lib.taxa.Taxa;
 import mesquite.lib.tree.Tree;
-import mesquite.lib.*;
-import mesquite.lib.characters.*;
 
 
 /* ======================================================================== */

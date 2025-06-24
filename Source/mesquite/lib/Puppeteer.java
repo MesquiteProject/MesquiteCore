@@ -15,16 +15,18 @@ Modified 27 July 01: getID output as well in response to message for objects
  */
 package mesquite.lib;
 
-import java.awt.*;
-import mesquite.lib.duties.*;
+import java.awt.FileDialog;
+import java.io.File;
+import java.util.Date;
+import java.util.Random;
+import java.util.Vector;
+
+import mesquite.lib.duties.FileCoordinator;
 import mesquite.lib.ui.AlertDialog;
 import mesquite.lib.ui.ColorTheme;
 import mesquite.lib.ui.ListDialog;
 import mesquite.lib.ui.MesquiteDialog;
 import mesquite.lib.ui.MesquiteWindow;
-
-import java.util.*;
-import java.io.*;
 
 /* ��������������������������� commands ������������������������������� */
 /* includes commands,  buttons, miniscrolls

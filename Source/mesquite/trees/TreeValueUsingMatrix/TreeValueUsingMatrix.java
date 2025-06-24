@@ -13,11 +13,15 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
 */
 package mesquite.trees.TreeValueUsingMatrix;
 
-import java.util.*;
-import java.awt.*;
-import mesquite.lib.*;
-import mesquite.lib.characters.*;
-import mesquite.lib.duties.*;
+import mesquite.lib.EmployeeNeed;
+import mesquite.lib.MesquiteModule;
+import mesquite.lib.MesquiteNumber;
+import mesquite.lib.MesquiteString;
+import mesquite.lib.Notification;
+import mesquite.lib.characters.MCharactersDistribution;
+import mesquite.lib.duties.MatrixSourceCoord;
+import mesquite.lib.duties.NumberForMatrixAndTree;
+import mesquite.lib.duties.NumberForTree;
 import mesquite.lib.taxa.Taxa;
 import mesquite.lib.tree.Tree;
 

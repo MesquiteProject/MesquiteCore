@@ -16,8 +16,13 @@ package mesquite.dmanager.ProcessFile;
 /*~~  */
 
 
-import mesquite.lib.*;
-import mesquite.lib.duties.*;
+import mesquite.lib.CommandChecker;
+import mesquite.lib.MesquiteCommand;
+import mesquite.lib.MesquiteFile;
+import mesquite.lib.MesquiteString;
+import mesquite.lib.MesquiteTrunk;
+import mesquite.lib.duties.FileInit;
+import mesquite.lib.duties.FileProcessor;
 
 public class ProcessFile extends FileInit {
 	/*.................................................................................................................*/

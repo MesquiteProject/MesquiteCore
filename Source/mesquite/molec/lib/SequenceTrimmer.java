@@ -13,11 +13,9 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
 */
 package mesquite.molec.lib;
 
-import java.awt.*;
-import mesquite.lib.*;
-import mesquite.lib.characters.*;
+import mesquite.lib.MesquiteModule;
+import mesquite.lib.UndoReference;
 import mesquite.lib.characters.CharacterData;
-import mesquite.lib.table.MesquiteTable;
 
 
 /* ======================================================================== */

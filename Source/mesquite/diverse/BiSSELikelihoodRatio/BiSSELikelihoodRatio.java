@@ -16,11 +16,17 @@ package mesquite.diverse.BiSSELikelihoodRatio;
 
 import mesquite.categ.lib.CategoricalDistribution;
 import mesquite.categ.lib.RequiresExactlyCategoricalData;
-import mesquite.diverse.lib.*;
-import mesquite.diverse.BiSSELikelihood.*;
-import mesquite.lib.*;
+import mesquite.diverse.BiSSELikelihood.BiSSELikelihood;
+import mesquite.diverse.lib.NumForCharAndTreeDivers;
+import mesquite.lib.CommandChecker;
+import mesquite.lib.CompatibilityTest;
+import mesquite.lib.EmployeeNeed;
+import mesquite.lib.MesquiteFile;
+import mesquite.lib.MesquiteModule;
+import mesquite.lib.MesquiteNumber;
+import mesquite.lib.MesquiteString;
+import mesquite.lib.Snapshot;
 import mesquite.lib.characters.CharacterDistribution;
-import mesquite.lib.duties.*;
 import mesquite.lib.tree.Tree;
 
 public class BiSSELikelihoodRatio extends NumForCharAndTreeDivers {

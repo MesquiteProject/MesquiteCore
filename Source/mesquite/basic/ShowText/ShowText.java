@@ -13,11 +13,8 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
 */
 package mesquite.basic.ShowText;
 
-import java.util.*;
-import java.awt.*;
-import java.io.*;
-import mesquite.lib.*;
-import mesquite.lib.duties.*;
+import mesquite.lib.MesquiteFile;
+import mesquite.lib.duties.TextDisplayer;
 import mesquite.lib.ui.MesquiteTextWindow;
 import mesquite.lib.ui.MesquiteWindow;
 

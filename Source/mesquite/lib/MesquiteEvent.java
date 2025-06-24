@@ -13,9 +13,7 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
 */
 package mesquite.lib;
 
-import java.awt.*;
-import java.awt.event.*;
-import java.text.*;
+import java.awt.event.InputEvent;
 
 /* ======================================================================== */
 /**This class is used to look after events*/

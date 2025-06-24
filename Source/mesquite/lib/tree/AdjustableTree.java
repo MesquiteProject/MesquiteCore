@@ -13,14 +13,11 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
 */
 package mesquite.lib.tree;
 
-import java.awt.*;
-import java.util.*;
+import java.util.Random;
 
 import mesquite.lib.MesquiteInteger;
 import mesquite.lib.taxa.TaxaSelectionSet;
 import mesquite.lib.taxa.TaxonNamer;
-
-import java.math.*;
 
 /** This interface matches some of the basic tree changing methods of MesquiteTree.  It was
 created (Aug. 2000) to allow methods to use the interface, in case tree structures from other 

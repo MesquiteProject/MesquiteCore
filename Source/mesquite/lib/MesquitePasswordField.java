@@ -13,8 +13,10 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
 */
 package mesquite.lib;
 
-import java.awt.*;
-import javax.swing.*;
+import java.awt.Dimension;
+import java.awt.Label;
+
+import javax.swing.JPasswordField;
 
 /*===============================================*/
 /** a field for text that cannot have line feeds/carriage returns in it.  */

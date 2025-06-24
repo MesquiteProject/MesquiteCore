@@ -13,13 +13,14 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
 */
 package mesquite.cont.lib;
 
-import java.awt.*;
-import java.util.*;
-import java.util.zip.*;
-import mesquite.lib.duties.*;
+import mesquite.lib.Double2DArray;
+import mesquite.lib.MesquiteDouble;
+import mesquite.lib.characters.CharacterData;
+import mesquite.lib.characters.CharacterDistribution;
+import mesquite.lib.characters.CharacterState;
+import mesquite.lib.characters.MCharactersDistribution;
+import mesquite.lib.duties.CharMatrixManager;
 import mesquite.lib.taxa.Taxa;
-import mesquite.lib.*;
-import mesquite.lib.characters.*;
 /* ======================================================================== */
 /** A subclass of CharacterData for Geographic data.*/
 public class GeographicData extends ContinuousData {

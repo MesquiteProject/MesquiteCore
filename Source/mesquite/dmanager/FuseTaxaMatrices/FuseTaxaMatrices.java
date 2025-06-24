@@ -14,12 +14,11 @@
 package mesquite.dmanager.FuseTaxaMatrices;
 /*~~  */
 
-import java.util.*;
-import java.awt.*;
-import java.awt.image.*;
-import mesquite.lib.*;
-import mesquite.lib.characters.*;
-import mesquite.lib.duties.*;
+import mesquite.lib.CommandChecker;
+import mesquite.lib.MesquiteCommand;
+import mesquite.lib.MesquiteModule;
+import mesquite.lib.StringUtil;
+import mesquite.lib.duties.FileAssistantFM;
 import mesquite.lib.ui.MesquiteFrame;
 import mesquite.lib.ui.MesquiteWindow;
 
