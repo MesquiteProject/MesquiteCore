@@ -425,7 +425,7 @@ public class ModuleLoader {
 				boolean macrosFound = false;
 				for (int i=0; i<modulesList.length; i++) {
 					if (modulesList[i]==null )
-						;
+						; 
 					else if (!avoidedDirectory(modulesList[i])){
 						String pathFM = packageName + fileName + "."+modulesList[i];
 						if (targetDirectories !=null){
