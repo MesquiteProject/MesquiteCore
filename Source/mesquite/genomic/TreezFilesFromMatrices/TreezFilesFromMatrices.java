@@ -101,7 +101,7 @@ public class TreezFilesFromMatrices extends CharMatricesListUtility {
 		TreeInferer inferer = inferenceTask.getTreeInferer();
 		System.err.println("@ === inferer " + inferer);
 		if (inferer!= null)
-			inferer.setAlwaysAllowAllGroupingOptions(true);
+			inferer.setAlwaysPrepareForAnyMatrices(true);
 		Vector v = pauseAllPausables();
 		int count = 0;
 		int numFailed =0;

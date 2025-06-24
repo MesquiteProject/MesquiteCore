@@ -121,7 +121,7 @@ public class TreesFromSelMatrices extends CharMatricesListUtility {
 		TreeInferer inferer = inferenceTask.getTreeInferer();
 		System.err.println("@ === inferer " + inferer);
 		if (inferer!= null)
-			inferer.setAlwaysAllowAllGroupingOptions(true);
+			inferer.setAlwaysPrepareForAnyMatrices(true);
 		System.err.println("@ done initialize");
 		TreeVector trees = new TreeVector(((CharacterData)datas.elementAt(0)).getTaxa());
 		Vector v = pauseAllPausables();

@@ -51,7 +51,7 @@ public abstract class TreeInferer extends TreeBlockFiller {
 	TWindowMaker tWindowMaker;
 	 MesquiteBoolean autoSaveFile = new MesquiteBoolean(false);
 	 
-	 boolean alwaysAllowAllGroupingOptions=false;
+	 boolean alwaysPrepareForAnyMatrices=false;
 
 	 
 	public Class getDutyClass() {
@@ -70,12 +70,12 @@ public abstract class TreeInferer extends TreeBlockFiller {
 	
 	
 	/*.................................................................................................................*/
-	public boolean getAlwaysAllowAllGroupingOptions() {
-		return alwaysAllowAllGroupingOptions;
+	public boolean getAlwaysPrepareForAnyMatrices() {
+		return alwaysPrepareForAnyMatrices;
 	}
 	/*.................................................................................................................*/
-	public void setAlwaysAllowAllGroupingOptions(boolean alwaysAllowAllGroupingOptions) {
-		this.alwaysAllowAllGroupingOptions = alwaysAllowAllGroupingOptions;
+	public void setAlwaysPrepareForAnyMatrices(boolean alwaysPrepareForAnyMatrices) {
+		this.alwaysPrepareForAnyMatrices = alwaysPrepareForAnyMatrices;
 	}
 
 	/*.................................................................................................................*/
