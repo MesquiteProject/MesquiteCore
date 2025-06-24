@@ -39,7 +39,7 @@ public abstract class TreeInferer extends TreeBlockFiller {
 	TWindowMaker tWindowMaker;
 	 MesquiteBoolean autoSaveFile = new MesquiteBoolean(false);
 	 
-	 
+	 boolean alwaysAllowAllGroupingOptions=false;
 
 	 
 	public Class getDutyClass() {
@@ -57,6 +57,14 @@ public abstract class TreeInferer extends TreeBlockFiller {
 	}
 	
 	
+	/*.................................................................................................................*/
+	public boolean getAlwaysAllowAllGroupingOptions() {
+		return alwaysAllowAllGroupingOptions;
+	}
+	/*.................................................................................................................*/
+	public void setAlwaysAllowAllGroupingOptions(boolean alwaysAllowAllGroupingOptions) {
+		this.alwaysAllowAllGroupingOptions = alwaysAllowAllGroupingOptions;
+	}
 
 	/*.................................................................................................................*/
 	public String getTitleOfTextCommandLink() {
