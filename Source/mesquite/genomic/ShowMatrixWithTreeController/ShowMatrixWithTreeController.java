@@ -13,11 +13,11 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
  */
 package mesquite.genomic.ShowMatrixWithTreeController;
 
-import java.awt.*;
-
 import mesquite.genomic.ShowMatrixInTreeWindow.ShowMatrixInTreeWindow;
-import mesquite.lib.*;
-import mesquite.lib.duties.*;
+import mesquite.lib.CommandChecker;
+import mesquite.lib.MesquiteModule;
+import mesquite.lib.MesquiteThread;
+import mesquite.lib.duties.TreeWindowAssistantN;
 import mesquite.lib.tree.Tree;
 
 /* ======================================================================== */
@@ -36,6 +36,10 @@ public class ShowMatrixWithTreeController extends TreeWindowAssistantN  {
 	/*.................................................................................................................*/
 	public String getName() {
 		return "Show Matrix in Tree Window...";
+	}
+	
+	public boolean isPrerelease(){
+		return false;
 	}
 
 	/*.................................................................................................................*/

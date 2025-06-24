@@ -43,7 +43,7 @@ public class IncludeAllAlt extends DataAlterer implements AltererMetadata {
 		}
 		if (inclusionSet != null) {
 			for (int i=0; i<data.getNumChars(); i++) {
-				if (!data.getSelected(i)) {
+				if (!inclusionSet.getSelected(i)) {
 						inclusionSet.setSelected(i, true);
 					changed = true;
 				}
@@ -66,7 +66,7 @@ public class IncludeAllAlt extends DataAlterer implements AltererMetadata {
    	 }
 	/*.................................................................................................................*/
    	 public boolean isPrerelease(){
-   	 	return true;
+   	 	return false;
    	 }
  	/*.................................................................................................................*/
   	/** returns the version number at which this module was first released.  If 0, then no version number is claimed.  If a POSITIVE integer
@@ -86,7 +86,7 @@ public class IncludeAllAlt extends DataAlterer implements AltererMetadata {
 	/*.................................................................................................................*/
  	/** returns an explanation of what the module does.*/
  	public String getExplanation() {
- 		return "Exclude all characters that are selected." ;
+ 		return "Include all characters, if any are excluded." ;
    	 }
    	 
 }

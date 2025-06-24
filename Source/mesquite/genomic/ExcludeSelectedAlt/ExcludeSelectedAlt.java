@@ -74,7 +74,7 @@ public class ExcludeSelectedAlt extends DataAlterer  implements AltererMetadata 
    	 }
 	/*.................................................................................................................*/
    	 public boolean isPrerelease(){
-   	 	return true;
+   	 	return false;
    	 }
  	/*.................................................................................................................*/
   	/** returns the version number at which this module was first released.  If 0, then no version number is claimed.  If a POSITIVE integer

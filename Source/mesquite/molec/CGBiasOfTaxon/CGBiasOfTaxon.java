@@ -48,7 +48,7 @@ public class CGBiasOfTaxon extends NumberForTaxonAndMatrix {
 
 	/*.................................................................................................................*/
 	public boolean loadModule(){
-		return false;  
+		return true;  
 	}
 
 	
@@ -131,7 +131,7 @@ public class CGBiasOfTaxon extends NumberForTaxonAndMatrix {
 	}
 	/*.................................................................................................................*/
 	public boolean isPrerelease() {
-		return true;
+		return false;
 	}
  	public String getParameters() {
 		if (observedStates != null && getProject().getNumberCharMatricesVisible()>1){

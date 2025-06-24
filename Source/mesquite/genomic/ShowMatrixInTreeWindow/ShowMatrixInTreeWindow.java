@@ -13,42 +13,46 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
  */
 package mesquite.genomic.ShowMatrixInTreeWindow;
 
-import java.util.*;
-
-import java.awt.*;
+import java.awt.Checkbox;
+import java.awt.Color;
+import java.awt.Cursor;
+import java.awt.FontMetrics;
+import java.awt.Graphics;
+import java.awt.Image;
+import java.awt.Rectangle;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 
 import mesquite.categ.lib.CategoricalData;
-import mesquite.categ.lib.CategoricalState;
 import mesquite.categ.lib.MolecularData;
-import mesquite.charMatrices.BasicDataWindowCoord.BasicDataWindowCoord;
-import mesquite.lib.*;
+import mesquite.lib.CommandChecker;
+import mesquite.lib.DoubleArray;
+import mesquite.lib.ListableVector;
+import mesquite.lib.MesquiteBoolean;
+import mesquite.lib.MesquiteCommand;
+import mesquite.lib.MesquiteDouble;
+import mesquite.lib.MesquiteEvent;
+import mesquite.lib.MesquiteFile;
+import mesquite.lib.MesquiteInteger;
+import mesquite.lib.MesquiteModule;
+import mesquite.lib.Notification;
+import mesquite.lib.Snapshot;
+import mesquite.lib.StringUtil;
 import mesquite.lib.characters.CharacterData;
-import mesquite.lib.characters.MCharactersDistribution;
-import mesquite.lib.duties.*;
+import mesquite.lib.duties.TreeWindowAssistantI;
 import mesquite.lib.taxa.Taxa;
 import mesquite.lib.tree.MesquiteTree;
 import mesquite.lib.tree.Tree;
 import mesquite.lib.tree.TreeDisplay;
-import mesquite.lib.tree.TreeDisplayActive;
 import mesquite.lib.tree.TreeDisplayBkgdExtra;
-import mesquite.lib.tree.TreeDisplayEarlyExtra;
 import mesquite.lib.tree.TreeDisplayExtra;
-import mesquite.lib.tree.TreeDisplayHolder;
 import mesquite.lib.tree.TreeDisplayRequests;
 import mesquite.lib.tree.TreeDrawing;
-import mesquite.lib.tree.TreeTool;
 import mesquite.lib.ui.ColorDistribution;
-import mesquite.lib.ui.ColorTheme;
 import mesquite.lib.ui.ExtensibleDialog;
-import mesquite.lib.ui.Legend;
-import mesquite.lib.ui.MQPanel;
 import mesquite.lib.ui.MesquiteImage;
 import mesquite.lib.ui.MesquitePopup;
-import mesquite.lib.ui.MesquiteSubmenuSpec;
 import mesquite.lib.ui.MesquiteWindow;
-import mesquite.lib.ui.MessagePanel;
 import mesquite.lib.ui.RadioButtons;
 import mesquite.lib.ui.TextRotator;
 

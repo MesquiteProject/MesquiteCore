@@ -33,7 +33,11 @@ public class ManyTreesFromFile extends ManyTreesFromFileLib {
 	 public String getNameForMenuItem() {
 	return "Trees from Separate Live File...";
 	 }
-	 
+	 	/*.................................................................................................................*/
+	 	public boolean isPrerelease(){
+	 		return false;  
+	 	}
+
 		/*.................................................................................................................*/
   	 public String getExplanation() {
 		return "Supplies trees directly from a file, without bringing the contained tree block entirely into memory.  " + 

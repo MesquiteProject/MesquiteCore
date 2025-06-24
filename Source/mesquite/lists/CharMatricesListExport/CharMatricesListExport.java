@@ -113,7 +113,6 @@ public class CharMatricesListExport extends CharMatricesListProcessorUtility imp
 
 		MesquiteInteger buttonPressed = new MesquiteInteger(1);
 		int num = datas.size();
-		//ExtensibleDialog dialog = templateManger.getChooseTemplateDLOG(taxa, templateContainer, buttonPressed);
 		dialog = new ExtensibleDialog(containerOfModule(), "Save Matrices", buttonPressed);
 		String message = "This will save a series of files, each containing a matrix";
 		dialog.addLargeTextLabel(message);
@@ -162,8 +161,6 @@ public class CharMatricesListExport extends CharMatricesListProcessorUtility imp
 		dialog = null;
 
 
-		StringBuffer outputBuffer=null;
-		String s2 = "";
 
 		FileCoordinator coord = getFileCoordinator();
 		MesquiteFile tempDataFile = (MesquiteFile)coord.doCommand("newLinkedFile", StringUtil.tokenize(basePath + baseName + ".nex"), CommandChecker.defaultChecker); //TODO: never scripting???
@@ -258,7 +255,7 @@ public class CharMatricesListExport extends CharMatricesListProcessorUtility imp
 	}
 	/*.................................................................................................................*/
 	public boolean isPrerelease(){
-		return true;  
+		return false;  
 	}
 	public void endJob() {
 		super.endJob();

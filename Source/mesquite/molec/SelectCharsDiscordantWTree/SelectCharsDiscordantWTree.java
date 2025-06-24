@@ -41,7 +41,7 @@ public class SelectCharsDiscordantWTree extends CharacterSelector {
 
 	/*.................................................................................................................*/
 	public boolean isPrerelease(){
-		return true;
+		return false;
 	}
 	/*.................................................................................................................*/
 	/** returns whether this module is requesting to appear as a primary choice */
@@ -92,8 +92,6 @@ public class SelectCharsDiscordantWTree extends CharacterSelector {
 			}
 		}
 		long overlap = CategoricalState.intersection(inStates, outStates);
-		//if (ic ==7)
-		//	Debugg.println("   " + CategoricalState.toString(inStates) +  " " +  CategoricalState.toString(outStates) + " overlap card " + CategoricalState.cardinality(overlap));
 		// If they overlap, but that's Ok as long as overlap is in only one state 
 		if (CategoricalState.cardinality(overlap)>1) 
 			return true;
@@ -112,7 +110,6 @@ public class SelectCharsDiscordantWTree extends CharacterSelector {
 			oneTreeSourceTask.initialize(taxa);
 			Tree tree = oneTreeSourceTask.getTree(taxa);
 			if (tree != null) {
-				//Debugg.println("");
 				data.deselectAll();
 				Bits[][] partitions = new Bits[tree.numberOfInternalsInClade(tree.getRoot())][2];
 				for (int i = 0; i<partitions.length; i++)
@@ -123,7 +120,6 @@ public class SelectCharsDiscordantWTree extends CharacterSelector {
 				for (int i=0; i<partitions.length; i++) {
 					Bits bitsIn = partitions[i][0];//we have a bipartition in the tree; now to deselect any characters incompatible with it
 					Bits bitsOut = partitions[i][1];
-				//	Debugg.println(bitsIn.toPlusMinusString() + " / " + bitsOut.toPlusMinusString());
 					for (int ic = 0; ic<data.getNumChars(); ic++) {
 						if (discordantWithBipartition(categData, ic, bitsIn, bitsOut))
 							data.setSelected(ic, true);

@@ -52,7 +52,7 @@ public class DeassignCodonPositions extends CodonPositionAssigner {
 
 	/*.................................................................................................................*/
 	public boolean isPrerelease() {
-		return true;
+		return false;
 	}
 	/*.................................................................................................................*/
 	public boolean requestPrimaryChoice() {

@@ -17,7 +17,6 @@ package mesquite.trees.SisterLengthsProportionAdjust;
 import java.util.*;
 import java.awt.*;
 import java.awt.geom.Point2D;
-import java.awt.image.*;
 import mesquite.lib.*;
 import mesquite.lib.duties.*;
 import mesquite.lib.tree.MesquiteTree;
@@ -28,7 +27,6 @@ import mesquite.lib.tree.TreeTool;
 import mesquite.lib.ui.AlertDialog;
 import mesquite.lib.ui.GraphicsUtil;
 import mesquite.lib.ui.MesquiteWindow;
-import mesquite.trees.BranchLengthsAdjust.BranchLengthsAdjust;
 
 /* ======================================================================== */
 public class SisterLengthsProportionAdjust extends TreeDisplayAssistantI {
@@ -54,15 +52,15 @@ public class SisterLengthsProportionAdjust extends TreeDisplayAssistantI {
 
 	/*.................................................................................................................*/
 	public String getExplanation() {
-		return "Provides a tool to adjust the proportion of length allocated to two sister nodes. Drag to shift the length from one sister to another. This is especially "
-				+ "helpful to shift the allocation at the root of the tree, e.g. the balance between the outgroup and study group. Option-clicking brings up a dialog box in which to enter the proportion explicitly.";
+		return "Adjusts the proportion of length allocated to two sister nodes. Drag to shift the length from one sister to another. This is especially "
+				+ "helpful at the root, e.g. the balance between the outgroup and study group. Option-click for dialog box in which to enter the proportion explicitly.";
 
 	}
 	public boolean isSubstantive(){
 		return true;
 	}   	 
 	public boolean isPrerelease(){
-		return true;
+		return false;
 	}   	 
 	/*.................................................................................................................*/
 	/** returns the version number at which this module was first released.  If 0, then no version number is claimed.  If a POSITIVE integer

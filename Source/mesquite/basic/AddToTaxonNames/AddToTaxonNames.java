@@ -92,7 +92,7 @@ public class AddToTaxonNames extends TaxonNameAlterer {
 
 	/*.................................................................................................................*/
 	public boolean requestPrimaryChoice(){
-		return false;  //ZQ is this OK? It doesn't seem likely to be used a lot?
+		return false;  
 	}
 	/*.................................................................................................................*/
 	public String getNameForMenuItem() {

@@ -280,7 +280,8 @@ public class FlagByPhyIN extends MatrixFlaggerForTrimmingSites implements Action
 		ExtensibleDialog dialog = new ExtensibleDialog(containerOfModule(),  "Criteria for PhyIN (version " + getVersion() + ")",buttonPressed);  //MesquiteTrunk.mesquiteTrunk.containerOfModule()
 		String s = "PhyIN (Phylogenetic Incompatibility among Neighbors) is a method for identifying regions of an alignment with "
 				+"high levels of local phylogenetic conflict.";
-		s += "<p><b>Reference for PhyIN</b>: Maddison WP. 2024. PhyIN: trimming alignments by phylogenetic incompatibilities among neighbouring sites. PeerJ 12:e18504 <a href=\"http://doi.org/10.7717/peerj.18504\">http://doi.org/10.7717/peerj.18504</a>"; 
+		s += "<p>If you use this in a publication, cite the reference below, and indicate the parameters as shown in the dialog.<p>"
+				+"<b>Reference for PhyIN</b>: Maddison WP. 2024. PhyIN: trimming alignments by phylogenetic incompatibilities among neighbouring sites. PeerJ 12:e18504 <a href=\"http://doi.org/10.7717/peerj.18504\">http://doi.org/10.7717/peerj.18504</a>"; 
 		s += "<p>The additional filter for low occupancy sites is not formally part of PhyIN, but is offered here as a convenience, because PhyIN should be combined with a filter that removes highly gappy sites."; 
 		s += "<p>The low occupancy site filter is not available when running Process Data Files, because in that context the total number of taxa (and thus proportions) can vary file by file."; 
 		dialog.appendToHelpString(s);
@@ -323,6 +324,7 @@ public class FlagByPhyIN extends MatrixFlaggerForTrimmingSites implements Action
 		useDefaultsButton = dialog.addAListenedButton("Set to Defaults", null, this);
 		useDefaultsButton.setActionCommand("setToDefaults");
 
+		dialog.addLargeOrSmallTextLabel("If you use this in a publication, cite as described under the (?) help button.");
 
 		dialog.completeAndShowDialog(true);
 		if (buttonPressed.getValue()==0)  {

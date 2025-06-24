@@ -139,7 +139,7 @@ public class TrimSequences extends MolecularDataAlterer implements AltererWholeC
 	}
 	/*.................................................................................................................*/
 	public boolean isPrerelease(){
-		return true;
+		return false;
 	}
 	/*.................................................................................................................*/
 	public String getName() {

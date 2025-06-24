@@ -76,11 +76,7 @@ import mesquite.trees.BranchPropertiesAManager.BranchPropertiesAManager;
 public class BranchPropertyDisplayControl extends TreeDisplayAssistantI implements ActionListener, ItemListener, TextListener {
 	public Vector extras;
 
-	//	MesquiteSubmenuSpec positionSubMenu;
-	//	String[] reservedNames = new String[]{"!color"};
-	//	String[] builtInNames = new String[]{MesquiteTree.branchLengthName, MesquiteTree.nodeLabelName};
-
-	//	ListableVector propertyList;
+	
 	static boolean asked= false;
 
 	boolean moduleIsNaive = true; //so as not to save the snapshot
@@ -594,6 +590,10 @@ public class BranchPropertyDisplayControl extends TreeDisplayAssistantI implemen
 		return null;
 	}
 
+ 	/*.................................................................................................................*/
+ 	public boolean isPrerelease(){
+ 		return false;  
+ 	}
 
 	/*.................................................................................................................*/
 	public String getName() {

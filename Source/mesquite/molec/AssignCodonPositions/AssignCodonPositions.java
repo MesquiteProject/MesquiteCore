@@ -62,7 +62,6 @@ public class AssignCodonPositions extends DNADataAlterer implements AltererMetad
 	/*.................................................................................................................*/
 	/** Called to alter data in those cells selected in table*/
 	public int alterData(CharacterData data, MesquiteTable table, UndoReference undoReference){
-	//	this.table = table;
 		if (assigner ==  null || data == null)
 			return ResultCodes.INPUT_NULL;
 		if (!(data instanceof DNAData)){
@@ -85,7 +84,7 @@ public class AssignCodonPositions extends DNADataAlterer implements AltererMetad
 
 	/*.................................................................................................................*/
 	public boolean isPrerelease() {
-		return true;
+		return false;
 	}
 	/*.................................................................................................................*/
 	public String getName() {

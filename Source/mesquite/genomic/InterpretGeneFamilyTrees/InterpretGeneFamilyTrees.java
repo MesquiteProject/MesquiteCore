@@ -13,22 +13,19 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
 package mesquite.genomic.InterpretGeneFamilyTrees;
 /*~~  */
 
-import java.util.*;
-import java.awt.*;
-import mesquite.lib.*;
-import mesquite.lib.characters.*;
-import mesquite.lib.characters.CharacterData;
-import mesquite.lib.duties.*;
+import mesquite.io.lib.InterpretPhylipTrees;
+import mesquite.lib.Associable;
+import mesquite.lib.MesquiteFile;
+import mesquite.lib.MesquiteProject;
+import mesquite.lib.NameParser;
+import mesquite.lib.NameReference;
+import mesquite.lib.StringUtil;
 import mesquite.lib.taxa.BasicTaxonNamer;
 import mesquite.lib.taxa.Taxa;
 import mesquite.lib.taxa.Taxon;
-import mesquite.lib.taxa.TaxonNamer;
 import mesquite.lib.tree.DisplayableBranchProperty;
 import mesquite.lib.tree.MesquiteTree;
 import mesquite.lib.tree.Tree;
-import mesquite.lib.tree.TreeVector;
-import mesquite.categ.lib.*;
-import mesquite.io.lib.*;
 
 
 /* ============  a file interpreter for gene family trees in standard Newick ============*/

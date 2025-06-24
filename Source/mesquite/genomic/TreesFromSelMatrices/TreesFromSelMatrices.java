@@ -14,21 +14,26 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
 package mesquite.genomic.TreesFromSelMatrices;
 /* created May 02 */
 
-import mesquite.lists.lib.*;
+import java.util.Vector;
 
-import java.util.*;
-import java.awt.*;
-
-import mesquite.lib.*;
-import mesquite.lib.characters.*;
-import mesquite.lib.duties.*;
+import mesquite.lib.ListableVector;
+import mesquite.lib.MesquiteBoolean;
+import mesquite.lib.MesquiteString;
+import mesquite.lib.MesquiteThread;
+import mesquite.lib.ResultCodes;
+import mesquite.lib.StringUtil;
+import mesquite.lib.characters.CharacterData;
+import mesquite.lib.characters.MCharactersDistribution;
 import mesquite.lib.duties.MatrixSourceCoord;
-import mesquite.lib.table.*;
+import mesquite.lib.duties.TreeInferer;
+import mesquite.lib.duties.TreeSearcherFromMatrix;
+import mesquite.lib.table.MesquiteTable;
 import mesquite.lib.taxa.Taxa;
 import mesquite.lib.tree.MesquiteTree;
 import mesquite.lib.tree.Tree;
 import mesquite.lib.tree.TreeVector;
 import mesquite.lib.ui.ProgressIndicator;
+import mesquite.lists.lib.CharMatricesListUtility;
 
 /* ======================================================================== */
 public class TreesFromSelMatrices extends CharMatricesListUtility {
@@ -110,7 +115,14 @@ public class TreesFromSelMatrices extends CharMatricesListUtility {
 			warnedAboutDeleting = true;
 			storePreferences();
 		}
+
+		System.err.println("@ === about to initialize");
 		inferenceTask.initialize(taxa);
+		TreeInferer inferer = inferenceTask.getTreeInferer();
+		System.err.println("@ === inferer " + inferer);
+		if (inferer!= null)
+			inferer.setAlwaysAllowAllGroupingOptions(true);
+		System.err.println("@ done initialize");
 		TreeVector trees = new TreeVector(((CharacterData)datas.elementAt(0)).getTaxa());
 		Vector v = pauseAllPausables();
 		int count = 0;

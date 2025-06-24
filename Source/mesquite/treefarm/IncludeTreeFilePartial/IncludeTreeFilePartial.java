@@ -93,7 +93,7 @@ public class IncludeTreeFilePartial extends FileAssistantTM {
 
 	/*.................................................................................................................*/
 	public boolean isPrerelease() { 
-		return true;
+		return false;
 	}
 	/*.................................................................................................................*/
 	public boolean requestPrimaryChoice() { 

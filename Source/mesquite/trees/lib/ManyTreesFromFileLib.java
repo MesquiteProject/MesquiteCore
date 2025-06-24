@@ -121,7 +121,7 @@ public abstract class ManyTreesFromFileLib extends TreeSource implements Mesquit
 	}
 	/*.................................................................................................................*/
 	public boolean isPrerelease(){
-		return true;
+		return false;
 	}
 	/*.................................................................................................................*/
 	public void setPreferredTaxa(Taxa taxa) {

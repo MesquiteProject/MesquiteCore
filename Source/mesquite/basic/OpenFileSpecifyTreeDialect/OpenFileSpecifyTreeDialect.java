@@ -71,8 +71,6 @@ public class OpenFileSpecifyTreeDialect extends GeneralFileMakerSingle {
 		}
 		else if (!isNexus) //no dialects, but since Phylip/Newick, must ask about auto-convert and also warn about taxon names
 			dialog = new ExtensibleDialog(containerOfModule(), "Reading tree file");
-		//	else if (includingInExistingProject)
-		//		dialog = new ExtensibleDialog(containerOfModule(), "Reading NEXUS file with trees");
 
 		//Completing the dialog with extra items
 		String autoSaveString = "";
@@ -152,7 +150,7 @@ public class OpenFileSpecifyTreeDialect extends GeneralFileMakerSingle {
 	}
 	/*.................................................................................................................*/
 	public boolean isPrerelease() {
-		return true;
+		return false;
 	}
 	/*.................................................................................................................*/
 	public boolean isSubstantive() {

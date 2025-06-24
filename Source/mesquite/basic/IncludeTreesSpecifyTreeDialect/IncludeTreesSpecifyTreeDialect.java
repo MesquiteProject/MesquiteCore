@@ -31,7 +31,7 @@ public class IncludeTreesSpecifyTreeDialect extends FileAssistantTM {
 
 	/*.................................................................................................................*/
 	public boolean isPrerelease() { 
-		return true;
+		return false;
 	}
 	/*.................................................................................................................*/
 	public boolean requestPrimaryChoice() { 

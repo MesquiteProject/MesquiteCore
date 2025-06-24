@@ -43,7 +43,6 @@ public class CombineFlippedFastas extends GeneralFileMakerMultiple {
 	}
 
 	/*.................................................................................................................*/
-	//If incomign project is null, establish new project. 
 	public void processDirectory(String directoryPath, MesquiteProject project){
 		if (StringUtil.blank(directoryPath) || project == null)
 			return;
@@ -282,7 +281,7 @@ public class CombineFlippedFastas extends GeneralFileMakerMultiple {
 	}
 	/*.................................................................................................................*/
 	public boolean isPrerelease() {
-		return true;
+		return false;
 	}
 	/*.................................................................................................................*/
 	public boolean isSubstantive() {

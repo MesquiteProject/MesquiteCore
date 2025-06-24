@@ -160,15 +160,11 @@ public class TraceAllChanges extends TreeDisplayAssistantA {
 		temp.addLine("getCharSource", characterSourceTask);
 		temp.addLine("getReconstructor", historyTask);
 		temp.addLine("desuppress");
-		// temp.addLine("setDisplayMode ",displayTask);
 		return temp;
 	}
 
 	/* ................................................................................................................. */
 	public Object doCommand(String commandName, String arguments, CommandChecker checker) {
-		/*
-		 * if (checker.compare(this.getClass(), "Sets module used to display reconstructed states", "[name of module]", commandName, "setDisplayMode")) { DisplayCharsStsAtNodes temp= (DisplayCharsStsAtNodes)replaceEmployee(DisplayCharsStsAtNodes.class, arguments, "Display mode", displayTask); if (temp != null) { displayTask= temp; displayTask.setHiringCommand(dtC); displayTaskName.setValue(displayTask.getName()); resetAllTraceOperators(); parametersChanged(); return displayTask; } }
-		 */
 		if (checker.compare(this.getClass(), "Undoes suppression of calculations when scripting", null, commandName, "desuppress")) {
 			suppressed = false;
 			recalcAllTraceOperators();
@@ -398,7 +394,7 @@ public class TraceAllChanges extends TreeDisplayAssistantA {
 
 	/* ................................................................................................................. */
 	public boolean isPrerelease() {
-		return true;
+		return false;
 	}
 
 	/* ................................................................................................................. */
@@ -420,11 +416,8 @@ class TraceAllOperator extends TreeDisplayDrawnExtra implements TreeDisplayLateE
 	Tree myTree;
 
 	TraceAllChanges traceAllModule;
-
 	MCharactersHistory charsStates;
-
 	MCharactersDistribution matrix;
-
 	CharacterData oldData;
 
 	TextDisplayer displayer;
@@ -526,11 +519,6 @@ class TraceAllOperator extends TreeDisplayDrawnExtra implements TreeDisplayLateE
 		if (incl != null && incl.numberSelected() == 0) {
 			sb.append("All characters are excluded.  You change the inclusion/exclusion of characters using the first column of the List of Characters window.");
 		}
-		/*
-		 * else if (traceAllModule.selectedOnly.getValue() && !tree.anySelected()) { sb.append("No nodes are selected.  To show the results of Trace All Characters, either turn off the menu item \"Show Selected Nodes Only\", or select some branches of the tree.");
-		 * 
-		 * }
-		 */
 		else if (data != null && traceAllModule.selectedCharactersOnly.getValue() && !data.anySelected()) {
 			sb.append("No characters are selected.  To show the results of Trace All Characters, either turn off the menu item \"Show Selected Characters Only\", or select some characters of the matrix.");
 
@@ -571,13 +559,6 @@ class TraceAllOperator extends TreeDisplayDrawnExtra implements TreeDisplayLateE
 			boolean ignoreSelection = !traceAllModule.selectedOnly.getValue() || !tree.anySelected();
 			composeRecByNodes(tree, drawnRoot, charStates, data, incl, sb, ignoreSelection);
 		}
-
-		/*
-		 * ====experimental sb.append("\nTaxa compared to immediate ancestor\n"); for (int it = 0; it < tree.getTaxa().getNumTaxa(); it++){ int taxon = tree.nodeOfTaxonNumber(it); if (taxon > 0){ int anc = tree.motherOfNode(taxon); if (anc >0){ int differences = 0; CharacterState csTaxon = null; CharacterState csAnc = null; for (int ic = 0; ic < charStates.getNumChars(); ic++){ csTaxon = charStates.getCharacterState(csTaxon, ic, taxon); csAnc = charStates.getCharacterState(csAnc, ic, anc); if (!csAnc.equals(csTaxon)) //if (!csAnc.equals(csTaxon, true, true, true))
-		 * differences++; } if (differences == 0) tree.getTaxa().setSelected(it, true); sb.append(tree.getTaxa().getTaxonName(it) + " with " + differences + " differences compared to immediate ancestor\n");
-		 * 
-		 * } } }
-		 */
 		return sb.toString();
 
 	}
@@ -831,9 +812,6 @@ class TraceAllOperator extends TreeDisplayDrawnExtra implements TreeDisplayLateE
 								GraphicsUtil.drawLine(g, left, topY + offset, left+barLength, topY + offset);
 								offset += barSpacing;
 							}
-					//	}
-					//	else if (MesquiteTrunk.developmentMode)
-					//		System.err.println("Not enough room! " + node + " text " + bdr.text);
 					}
 					else if (treeDisplay.isRight() || treeDisplay.isLeft()) {  //======== RIGHT/LEFT ======
 						double leftX = nodeX;
@@ -841,13 +819,6 @@ class TraceAllOperator extends TreeDisplayDrawnExtra implements TreeDisplayLateE
 						if (treeDisplay.isRight()){
 							leftX = nodeX-total;
 						}
-					//	if (offset + leftX + barWidth + barSpacing < rightX) {
-							/*g.setColor(Color.gray);
-							if (treeDisplay.isRight()) 
-							g.fillRect((int)(leftX + offset-4), (int)(top), (int)barWidth+8, (int)barLength+extraGrabber);
-							else 
-								g.fillRect((int)(leftX + offset-4), (int)(top)-extraGrabber, (int)barWidth+8, (int)barLength + extraGrabber+8);
-	*/
 							if (useColors) {
 								if (traceAllModule.tickOnly.getValue()){
 									g.setColor(Color.black);
@@ -881,9 +852,6 @@ class TraceAllOperator extends TreeDisplayDrawnExtra implements TreeDisplayLateE
 								GraphicsUtil.drawLine(g, leftX + offset, top, leftX + offset,top+barLength);
 								offset += barSpacing;
 							}
-					//	}
-					//	else
-					//		System.err.println("Not enough room! " + node + " text " + bdr.text);
 					}
 				}
 			}

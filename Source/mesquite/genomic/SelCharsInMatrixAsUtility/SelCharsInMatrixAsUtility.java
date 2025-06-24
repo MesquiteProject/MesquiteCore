@@ -14,15 +14,22 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
  */
 package mesquite.genomic.SelCharsInMatrixAsUtility;
 
-import mesquite.lists.lib.*;
-
 import java.util.Vector;
 
-import mesquite.lib.*;
-import mesquite.lib.characters.*;
-import mesquite.lib.duties.*;
-import mesquite.lib.table.*;
+import mesquite.lib.CommandChecker;
+import mesquite.lib.CompatibilityTest;
+import mesquite.lib.Debugg;
+import mesquite.lib.ListableVector;
+import mesquite.lib.MesquiteFile;
+import mesquite.lib.MesquiteListener;
+import mesquite.lib.MesquiteThread;
+import mesquite.lib.Notification;
+import mesquite.lib.Snapshot;
+import mesquite.lib.characters.CharacterData;
+import mesquite.lib.duties.CharacterSelector;
+import mesquite.lib.table.MesquiteTable;
 import mesquite.lib.ui.ProgressIndicator;
+import mesquite.lists.lib.CharMatricesListProcessorUtility;
 
 /* ======================================================================== */
 public class SelCharsInMatrixAsUtility extends CharMatricesListProcessorUtility {

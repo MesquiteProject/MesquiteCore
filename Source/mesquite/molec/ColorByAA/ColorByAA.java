@@ -28,7 +28,7 @@ import mesquite.categ.lib.*;
 
 
 /* ======================================================================== */
-public class ColorByAA extends DataWindowAssistantID implements CellColorer, CellColorerMatrix {
+public class ColorByAA extends DataWindowAssistantID implements CellColorer, CellColorerMatrixHighPriority {
 	MesquiteTable table;
 	protected DNAData data;
 	MesquiteBoolean emphasizeDegeneracy;

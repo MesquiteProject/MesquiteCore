@@ -40,7 +40,7 @@ public class NumForTaxonSummedForMatrices extends NumberForTaxon {
 		}
 		mc =makeCommand("numberTask",  this);
 		numberTask.setHiringCommand(mc);
-		addMenuItem("Value to Calculate...", mc);//TODO: checkmark
+		addMenuItem("Value to Calculate...", mc);
 		getProject().addListener(this);
 		return true;
 	}
@@ -69,7 +69,6 @@ public class NumForTaxonSummedForMatrices extends NumberForTaxon {
 	public void endJob(){
 		super.endJob();
 		getProject().removeListener(this);
-		//need to hire NumberForTaxonAndMatrix
 	}
 	/* ---------------------------------------------------------*/
 	/** passes which object changed, along with optional Notification object with details (e.g., code number (type of change) and integers (e.g. which character))*/
@@ -114,7 +113,7 @@ public class NumForTaxonSummedForMatrices extends NumberForTaxon {
 
 	/*.................................................................................................................*/
 	public boolean isPrerelease() {
-		return true;
+		return false;
 	}
 	/*.................................................................................................................*/
 	public boolean isSubstantive() {
@@ -135,7 +134,6 @@ public class NumForTaxonSummedForMatrices extends NumberForTaxon {
 		int it = taxon.getIndex();
 		clearResultAndLastResult(result);
 		MesquiteNumber temp = new MesquiteNumber(0);
-		int count = 0;
 		result.setValue(0);
 		for (int im = 0; im < getProject().getNumberCharMatrices(taxa); im++){
 			CharacterData data = getProject().getCharacterMatrix(taxa, im);

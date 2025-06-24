@@ -22,7 +22,6 @@ import mesquite.lib.characters.*;
 import mesquite.lib.duties.*;
 import mesquite.lib.taxa.Taxa;
 import mesquite.lib.taxa.Taxon;
-import mesquite.categ.lib.*;
 
 /* ======================================================================== */
 public class NumForTaxonWMatrix extends NumberForTaxon {
@@ -50,7 +49,6 @@ public class NumForTaxonWMatrix extends NumberForTaxon {
 		}
 
 		matrixSourceTask = (MatrixSourceCoord)hireCompatibleEmployee(MatrixSourceCoord.class, null, "Source of character matrix (for " + getName() + ")"); 
-	//	matrixSourceTask = (MatrixSourceCoord)hireCompatibleEmployee(MatrixSourceCoord.class, MolecularState.class, "Source of character matrix (for " + getName() + ")"); 
 		if (matrixSourceTask==null)
 			return sorry(getName() + " couldn't start because no source of character matrices was obtained.");
 		return true;
@@ -159,7 +157,7 @@ public class NumForTaxonWMatrix extends NumberForTaxon {
 
 	/*.................................................................................................................*/
 	public boolean isPrerelease() {
-		return true;
+		return false;
 	}
 	public String getParameters() {
 		if (numberTask == null)

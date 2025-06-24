@@ -40,7 +40,6 @@ public class NumCharsHomoplasious extends NumberForMatrixAndTree {
 	public void getEmployeeNeeds(){  //This gets called on startup to harvest information; override this and inside, call registerEmployeeNeed
 		EmployeeNeed e2 = registerEmployeeNeed(CharacterSteps.class, getName() + " uses a module to calculate parsimony steps.",
 		"The parsimony steps module is employed automatically; you don't have to do anything to choose it.");
-		//e.setAsEntryPoint(true);
 	}
 	/*.................................................................................................................*/
 	MesquiteNumber numHomoplasious;
@@ -119,7 +118,7 @@ public class NumCharsHomoplasious extends NumberForMatrixAndTree {
 	}
 	/*.................................................................................................................*/
 	public boolean isPrerelease() {
-		return true;
+		return false;
 	}
 	public boolean showCitation(){
 		return false;

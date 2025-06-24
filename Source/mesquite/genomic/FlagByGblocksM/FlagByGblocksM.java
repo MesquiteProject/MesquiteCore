@@ -68,9 +68,7 @@ public class FlagByGblocksM extends MatrixFlaggerForTrimmingSites implements Act
 	static final int defaultCP=8;  
 	static final int defaultBL=10;  
 	static final double defaultGapThreshold = 0.0;
-//	static final boolean defaultchooseBadSites = true;
 	static final boolean defaultCountWithinApplicable = false;
-	//static final double defaultTermGapsPropForgiven = 0.0;
 	static final boolean defaultIgnoreTaxaWithoutSequence = true;
 
 	double IS = defaultISMesquite;   // proportion of identical residues that is upper boundary for non-conserved sequences
@@ -80,9 +78,7 @@ public class FlagByGblocksM extends MatrixFlaggerForTrimmingSites implements Act
 	double gapThreshold = defaultGapThresholdMesquite;   // the proportion of gaps allowed at a site
 
 	boolean removeAllGaps = true;
-	//MesquiteBoolean chooseBadSites = new MesquiteBoolean(defaultchooseBadSites);
 	MesquiteBoolean countWithinApplicable  = new MesquiteBoolean(defaultCountWithinApplicableMesquite);   // count proportion of identical residues only within those taxa without gaps at a site
-	//double termGapsPropForgiven = defaultTermGapsPropForgiven;
 	boolean ignoreTaxaWithoutSequence = defaultIgnoreTaxaWithoutSequence;
 	boolean[] taxonHasSequence=null;
 
@@ -119,8 +115,6 @@ public class FlagByGblocksM extends MatrixFlaggerForTrimmingSites implements Act
 			CP = mesquite.molec.GBLOCKSSelector.GBLOCKSSelector.CP;
 		if (MesquiteInteger.isCombinable(mesquite.molec.GBLOCKSSelector.GBLOCKSSelector.BL))
 			BL = mesquite.molec.GBLOCKSSelector.GBLOCKSSelector.BL;
-		//if (mesquite.molec.GBLOCKSSelector.GBLOCKSSelector.chooseAmbiguousSitesRead)
-		//	chooseBadSites.setValue(mesquite.molec.GBLOCKSSelector.GBLOCKSSelector.chooseAmbiguousSites);
 		if (mesquite.molec.GBLOCKSSelector.GBLOCKSSelector.countWithinApplicableRead)
 			countWithinApplicable.setValue(mesquite.molec.GBLOCKSSelector.GBLOCKSSelector.countWithinApplicable);
 		mesquite.molec.GBLOCKSSelector.GBLOCKSSelector.instanceOfMe.prefsCaptured();
@@ -142,14 +136,8 @@ public class FlagByGblocksM extends MatrixFlaggerForTrimmingSites implements Act
 			BL = MesquiteInteger.fromString(content);
 		if ("gapThreshold".equalsIgnoreCase(tag))
 			gapThreshold = MesquiteDouble.fromString(content);
-		//if ("chooseBadSites".equalsIgnoreCase(tag))
-		//	chooseBadSites.setFromTrueFalseString(content);
 		if ("countWithinApplicable".equalsIgnoreCase(tag))
 			countWithinApplicable.setFromTrueFalseString(content);
-		//if ("termGapsPropForgiven".equalsIgnoreCase(tag))
-		//	termGapsPropForgiven = MesquiteDouble.fromString(content);
-		//	if ("ignoreTaxaWithoutSequence".equalsIgnoreCase(tag))
-		//		ignoreTaxaWithoutSequence = MesquiteBoolean.fromTrueFalseString(content);
 	}
 
 	/*.................................................................................................................*/
@@ -160,10 +148,7 @@ public class FlagByGblocksM extends MatrixFlaggerForTrimmingSites implements Act
 		StringUtil.appendXMLTag(buffer, 2, "CP", CP);  
 		StringUtil.appendXMLTag(buffer, 2, "BL", BL);  
 		StringUtil.appendXMLTag(buffer, 2, "gapThreshold", gapThreshold);  
-		//StringUtil.appendXMLTag(buffer, 2, "chooseBadSites", chooseBadSites);  
 		StringUtil.appendXMLTag(buffer, 2, "countWithinApplicable", countWithinApplicable);  
-		//StringUtil.appendXMLTag(buffer, 2, "termGapsPropForgiven", termGapsPropForgiven);  
-		//	StringUtil.appendXMLTag(buffer, 2, "ignoreTaxaWithoutSequence", ignoreTaxaWithoutSequence);  
 
 		return buffer.toString();
 	}
@@ -181,7 +166,6 @@ public class FlagByGblocksM extends MatrixFlaggerForTrimmingSites implements Act
 		temp.addLine("setCP " + CP);
 		temp.addLine("setBL " + BL);
 		temp.addLine("setGapThreshold " + gapThreshold);
-		//temp.addLine("setchooseBadSites" + chooseBadSites.toOffOnString());
 		temp.addLine("setCountWithinApplicable " + countWithinApplicable.toOffOnString());
 		return temp;
 	}
@@ -238,13 +222,7 @@ public class FlagByGblocksM extends MatrixFlaggerForTrimmingSites implements Act
 
 			}
 		}
-	/*	else if (checker.compare(this.getClass(), "Sets whether or not to treat gaps as an extra state.", "[on or off]", commandName, "setchooseBadSites")) {
-			boolean current = chooseBadSites.getValue();
-			chooseBadSites.toggleValue(parser.getFirstToken(arguments));
-			if (current!=chooseBadSites.getValue()) {
-				parametersChanged();
-			}
-		} */
+
 		else if (checker.compare(this.getClass(), "Sets whether or not to count proportion of identical residues only within those taxa without gaps at a site.", "[on or off]", commandName, "setCountWithinApplicable")) {
 			boolean current = countWithinApplicable.getValue();
 			countWithinApplicable.toggleValue(parser.getFirstToken(arguments));
@@ -261,7 +239,7 @@ public class FlagByGblocksM extends MatrixFlaggerForTrimmingSites implements Act
 	/*.................................................................................................................*/
 		/*.................................................................................................................*/
 	public boolean isPrerelease(){
-		return true;
+		return false;
 	}
 	/*.................................................................................................................*/
 
@@ -276,7 +254,6 @@ public class FlagByGblocksM extends MatrixFlaggerForTrimmingSites implements Act
 	DoubleField gapThresholdField=null;
 	RadioButtons chooseBadSitesRadioButtons=null;
 	DoubleField termGapsPropForgivenField=null;
-	//Checkbox ignoreTaxaWithoutSequenceCheckbox=null;
 	/*.................................................................................................................*/
 	/*.................................................................................................................*/
 	/**This queryOptions is provided in case the module that uses this GBLOCKSCalculator doesn't want to add extra options, and just wants to use
@@ -291,8 +268,8 @@ public class FlagByGblocksM extends MatrixFlaggerForTrimmingSites implements Act
 				+ "Mesquite's modifications are to allow the user to specify the proportion of gaps permitted, and "
 				+ "to choose whether nucleotide frequencies are counted only among non-gaps (i.e., judgement of conservativeness ignores gaps)."
 				+ "Mesquite does not count gaps in taxa with no data whatsoever; those taxa are treated as absent."
-				+ "<p>If you use this in a publication, please cite it as GblocksM, a modified version of Gblocks (Castresana 2000) as implemented and modified in Mesquite."
-				+ "<p><b>Reference for the original Gblocks</b>; Castresana J. 2000. Selection of conserved blocks from multiple alignments for their use in phylogenetic analysis. Molecular Biology and Evolution 17: 540–552"
+				+ "<p>If you use this in a publication, please cite it as GblocksM, a version of Gblocks (Castresana 2000) as implemented and modified in Mesquite."
+				+ "<p><b>Reference for the original Gblocks</b>: Castresana J. 2000. Selection of conserved blocks from multiple alignments for their use in phylogenetic analysis. Molecular Biology and Evolution 17: 540–552"
 				+ " <a href = \"http://doi.org/10.1093/oxfordjournals.molbev.a026334\">doi:10.1093/oxfordjournals.molbev.a026334</a>";
 
 		dialog.appendToHelpString(helpString);
@@ -307,6 +284,7 @@ public class FlagByGblocksM extends MatrixFlaggerForTrimmingSites implements Act
 		useDefaultsButton = dialog.addAListenedButton("Set to GBlocks Defaults", null, this);
 		useDefaultsButton.setActionCommand("setToDefaults");
 
+		dialog.addLargeOrSmallTextLabel("If you use this in a publication, cite as described under the (?) help button.");
 		dialog.completeAndShowDialog(true);
 		if (buttonPressed.getValue()==0)  {
 			processQueryOptions(dialog);

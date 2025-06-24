@@ -24,7 +24,7 @@ import mesquite.lib.ui.ColorRecord;
 
 
 /* ======================================================================== */
-public class NoColor extends DataWindowAssistantID implements CellColorer, CellColorerCharacters, CellColorerTaxa, CellColorerMatrix {
+public class NoColor extends DataWindowAssistantID implements CellColorer, CellColorerCharacters, CellColorerTaxa, CellColorerMatrixHighPriority {
 	/*.................................................................................................................*/
 	public boolean startJob(String arguments, Object condition, boolean hiredByName){
 		return true;

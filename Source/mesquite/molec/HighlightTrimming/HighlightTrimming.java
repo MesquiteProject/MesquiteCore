@@ -29,7 +29,7 @@ import mesquite.lib.ui.MesquiteMenuItemSpec;
 import mesquite.categ.lib.*;
 
 /* ======================================================================== */
-public class HighlightTrimming extends DataWindowAssistantID implements CellColorer, CellColorerMatrix {
+public class HighlightTrimming extends DataWindowAssistantID implements CellColorer, CellColorerMatrixHighPriority {
 	MesquiteTable table;
 	CharacterData data;
 	long A = CategoricalState.makeSet(0);
@@ -40,9 +40,6 @@ public class HighlightTrimming extends DataWindowAssistantID implements CellColo
 	boolean suspended = false;
 	/*.................................................................................................................*/
 	public boolean startJob(String arguments, Object condition, boolean hiredByName){
-		//	flaggerTask = (SiteFlagger)hireEmployee(SiteFlagger.class, "Trimming or flagging method to highlight");
-		//	if (flaggerTask == null)
-		//		return false;
 		if (MesquiteThread.isScripting()) {
 			suspended = true;
 		}
@@ -288,18 +285,6 @@ public class HighlightTrimming extends DataWindowAssistantID implements CellColo
 	ColorRecord[] legend;
 	public ColorRecord[] getLegendColors(){
 		return null;
-		/*
-		if (legend == null) {
-			legend = new ColorRecord[6];
-			legend[0] = new ColorRecord(Color.white, "Apparently aligned");
-			legend[1] = new ColorRecord(Color.yellow, "Better shifted to right 1 site");
-			legend[2] = new ColorRecord(Color.red, "Better shifted to right 2 sites");
-			legend[3] = new ColorRecord(Color.green, "Better shifted to left 1 site");
-			legend[4] = new ColorRecord(Color.blue, "Better shifted to left 2 sited");
-			legend[5] = new ColorRecord(ColorDistribution.straw, "Inapplicable");
-		}
-		return legend;
-		 */
 	}
 
 	boolean cellHighlightable(int ic, int it) {
@@ -369,20 +354,8 @@ public class HighlightTrimming extends DataWindowAssistantID implements CellColo
 					return DNAData.getDNAColorOfState(3);
 				return ColorDistribution.veryLightGray;
 			}
-			/*
-			if (offsets[ic][it] == 0)
-				return Color.white;
-			if (offsets[ic][it] ==1)
-				return MesquiteColorTable.getYellowScale(scores[ic][it], 0, 5, false);
-			if (offsets[ic][it] >1)
-				return MesquiteColorTable.getRedScale(scores[ic][it], 0, 5, false);
-			if (offsets[ic][it] ==-1)
-				return MesquiteColorTable.getGreenScale(scores[ic][it], 0, 5, false);
-			if (offsets[ic][it] <-1)
-				return MesquiteColorTable.getBlueScale(scores[ic][it], 0, 5, false);
-			 */
+			
 		}
-		//		return Color.black;
 	}
 	/*.................................................................................................................*/
 	public String getCellString(int ic, int it){
@@ -412,7 +385,7 @@ public class HighlightTrimming extends DataWindowAssistantID implements CellColo
 	}
 	/*.................................................................................................................*/
 	public boolean isPrerelease() {
-		return true;
+		return false;
 	}
 	public CompatibilityTest getCompatibilityTest(){
 		return new RequiresAnyDNAData();

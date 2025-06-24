@@ -23,14 +23,9 @@ import java.awt.*;
 import java.awt.List;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.event.ItemEvent;
-import java.awt.event.ItemListener;
 import java.io.FilenameFilter;
 
 import mesquite.lib.*;
-import mesquite.lib.characters.*;
-import mesquite.lib.characters.CharacterData;
-import mesquite.lib.duties.*;
 import mesquite.lib.table.*;
 import mesquite.lib.ui.AlertDialog;
 import mesquite.lib.ui.ExtensibleDialog;
@@ -355,7 +350,7 @@ public class CharMatricesListProcess extends CharMatricesListUtility implements 
 	}
 	/*.................................................................................................................*/
 	public boolean isPrerelease(){
-		return true;  
+		return false;  
 	}
 	public void endJob() {
 		super.endJob();

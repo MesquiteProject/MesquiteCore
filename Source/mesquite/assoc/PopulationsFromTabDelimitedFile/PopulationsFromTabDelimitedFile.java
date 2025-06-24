@@ -155,7 +155,7 @@ public class PopulationsFromTabDelimitedFile extends PopulationsAndAssociationMa
 
 		}
 
-		if (changed) association.notifyListeners(this, new Notification(MesquiteListener.VALUE_CHANGED)); //ZQ: maybe not needed for a newly created aassociation
+		if (changed) association.notifyListeners(this, new Notification(MesquiteListener.VALUE_CHANGED)); //ZQ: Most likely not needed for a newly created aassociation
 
 		//now associate populations with specimens
 		//see PopulationsFromSpecimenNames for useful code

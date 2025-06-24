@@ -239,9 +239,6 @@ public class FlagByGblocks extends MatrixFlaggerForTrimming implements ActionLis
 		AppChooser appChooser = new AppChooser("Gblocks", "Gblocks", useBuiltInIfAvailable, alternativeManualPath);
 		appChooser.addToDialog(dialog);
 		dialog.addHorizontalLine(1);
-		/*programPathField = dialog.addTextField("Path to Gblocks:", gblocksPath, 40);
-		Button programBrowseButton = dialog.addAListenedButton("Browse...",null, this);
-		programBrowseButton.setActionCommand("programBrowse");*/
 		dialog.addBlankLine();
 		if (b1<0.5)
 			b1 = 0.5;

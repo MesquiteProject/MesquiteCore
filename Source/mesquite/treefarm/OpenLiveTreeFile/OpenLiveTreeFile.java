@@ -29,6 +29,7 @@ import mesquite.lib.tree.TreeVector;
 import mesquite.lib.ui.ExtensibleDialog;
 import mesquite.lib.ui.ListDialog;
 import mesquite.lib.ui.MesquiteWindow;
+import mesquite.lib.ui.QueryDialogs;
 import mesquite.trees.ChronogramDisplay.ChronogramDisplay;
 
 /* ======================================================================== */
@@ -65,8 +66,10 @@ public class OpenLiveTreeFile extends GeneralFileMakerSingle {
 			return null;
 		}
 
+		int choice = QueryDialogs.queryTwoRadioButtons(containerOfModule(), "Consensus or last?", "Do you want to show the majority rules consensus, or the last tree?", null, "Consensus", "Last Tree");
+		boolean showConsensus = choice == 0;
 
-		if (project != null){  //set to false when allow non-NEXUS
+		if (project != null){  
 			//figure out taxa block if needed
 			Taxa taxa = project.chooseTaxa(containerOfModule(), "For which block of taxa does the incoming tree file pertain?");
 			FileCoordinator bfc = project.getCoordinatorModule();
@@ -78,8 +81,25 @@ public class OpenLiveTreeFile extends GeneralFileMakerSingle {
 				bfc.includeFile(path, InterpretPhylipTreesBasic.class, " @autodeleteDuplicateOrSubsetTaxa", 0, null);
 			if (!MesquiteThread.isScripting()){
 				String commands = "getEmployee #BasicTreeWindowCoord; tell it; makeTreeWindow " + getProject().getTaxaReferenceInternal(taxa) + "  #BasicTreeWindowMaker; tell It;";  
-				commands += "  setTreeSource  #ManyTreesFromFile; tell It;  setFilePath " + StringUtil.tokenize(path) + "; toggleLive on;   endTell;  " + 
+				if (showConsensus){
+					commands += " setTreeSource  #ConsensusTree; tell It;  suspend; " + 
+							" setTreeSource  #ManyTreesFromFile; tell It;  setFilePath " + StringUtil.tokenize(path) + "; toggleLive on;   endTell;" + 
+							" setConsenser  #MajRuleTree; tell It; frequencyLimit 0.5; endTell; desuspend; endTell;" +  
+							" showWindowForce; endTell; endTell;";
+				}
+				else {
+					commands += "  setTreeSource  #ManyTreesFromFile; tell It;  setFilePath " + StringUtil.tokenize(path) + "; toggleLive on;   endTell;  " + 
 						"getWindow; tell It; setTreeNumber 1; pinToLastTree true;   endTell; showWindowForce; endTell; endTell;";
+				}
+				
+				
+				/*
+				
+				 	" setTreeSource  #ConsensusTree; tell It;  " + 
+					" setTreeSource  #ManyTreesFromFile; tell It;  setFilePath " + StringUtil.tokenize(path) + "; toggleLive on;   endTell;" + 
+					" setConsenser  #MajRuleTree; tell It; frequencyLimit 0.5; endTell; endTell;" + 
+
+				 * */
 				MesquiteInteger pos = new MesquiteInteger(0);
 				Puppeteer p = new Puppeteer(this);
 				CommandRecord prev = MesquiteThread.getCurrentCommandRecord();
@@ -92,9 +112,16 @@ public class OpenLiveTreeFile extends GeneralFileMakerSingle {
 		}
 
 		String commands = "getEmployee #BasicTreeWindowCoord; tell it; makeTreeWindow 0  #BasicTreeWindowMaker; tell It;";  
-		commands += "  setTreeSource  #ManyTreesFromFile; tell It;  setFilePath " + StringUtil.tokenize(path) + "; toggleLive on;   endTell;  " + 
+		if (showConsensus){
+			commands += " setTreeSource  #ConsensusTree; tell It;  suspend; " + 
+					" setTreeSource  #ManyTreesFromFile; tell It;  setFilePath " + StringUtil.tokenize(path) + "; toggleLive on;   endTell;" + 
+					" setConsenser  #MajRuleTree; tell It; frequencyLimit 0.5; endTell; desuspend; endTell;" +  
+					"showWindowForce; endTell; endTell;";
+		}
+		else {
+			commands += "  setTreeSource  #ManyTreesFromFile; tell It;  setFilePath " + StringUtil.tokenize(path) + "; toggleLive on;   endTell;  " + 
 				"getWindow; tell It; setTreeNumber 1; pinToLastTree true;   endTell; showWindowForce; endTell; endTell;";
-
+		}
 		if (newFile) {
 			String extension = "";
 			if (!isNexus)
@@ -128,7 +155,7 @@ public class OpenLiveTreeFile extends GeneralFileMakerSingle {
 	}
 	/*.................................................................................................................*/
 	public boolean isPrerelease() {
-		return true;
+		return false;
 	}
 	/*.................................................................................................................*/
 	public boolean isSubstantive() {

@@ -1605,7 +1605,7 @@ public abstract class EmployerEmployee extends MenuOwner implements HNode, Lista
 		while (enumeration.hasMoreElements()) {
 			Object obj = enumeration.nextElement();
 			mbi = (MesquiteModuleInfo) obj;
-			if (mbi.doesDuty(dutyClass) && mbi.isCompatible(comp, module.getProject(), module) && (!employeeExists(mbi, dutyClass))) {
+			if (mbi.doesDuty(dutyClass) && mbi.isCompatible(comp, module.getProject(), module) && (!employeeExists(mbi, null))) {
 				MesquiteModule mb = hireEmployeeFromModuleInfo(mbi, dutyClass);
 			}
 		}
@@ -1856,7 +1856,7 @@ public abstract class EmployerEmployee extends MenuOwner implements HNode, Lista
 		Enumeration enumeration = employees.elements();
 		while (enumeration.hasMoreElements()) {
 			MesquiteModule mb = (MesquiteModule) enumeration.nextElement();
-			if (mb.getHiredAs() == dutyClass && mb.getName().equals(mbi.getName())) {
+			if ((dutyClass == null || mb.getHiredAs() == dutyClass) && mb.getName().equals(mbi.getName())) {
 				return true;
 			}
 		}

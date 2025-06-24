@@ -601,16 +601,21 @@ public class NodeLocsStandard extends NodeLocsVH {
 			}
 		}
 		if (treeDisplay.getOrientation() == TreeDisplay.NOTYETSET || !compatibleWithOrientation(treeDisplay.getOrientation())){
-			if (employerAllowsReorientation() && inBasicTreeWindow()){
-				int or = recoverLastOrientation();
-				if (or !=TreeDisplay.INVALIDORIENTATION && or !=TreeDisplay.NOTYETSET){
-					treeDisplay.setOrientation(or);
-					ornt = or;
+			if (employerAllowsReorientation()){
+				if (inBasicTreeWindow()){
+					int or = recoverLastOrientation();
+					if (or !=TreeDisplay.INVALIDORIENTATION && or !=TreeDisplay.NOTYETSET){
+						treeDisplay.setOrientation(or);
+						ornt = or;
+					}
+					else
+						treeDisplay.setOrientation(ornt);
+
+					resetMenus();
 				}
-				else
-					treeDisplay.setOrientation(ornt);
-					
-				resetMenus();
+				else {
+					resetOrientation(ornt);
+				}
 			}
 		}
 		else { //inherited, accept ast ornt
@@ -1341,8 +1346,6 @@ public class NodeLocsStandard extends NodeLocsVH {
 					treeDisplay.setTipsMargin(treeDisplay.getTaxonNameBuffer());
 				g.dispose();
 			}
-			if (ornt != treeDisplay.getOrientation() && MesquiteTrunk.developmentMode)
-				MesquiteMessage.println("NodeLocsStandard has record of orientation being " + ornt + ", but TreeDisplay is set to " + treeDisplay.getOrientation() + "  (" + treeDisplay.hashCode() + ")");
 			boolean branchesProportionalToLength = treeDisplay.branchLengthDisplay == TreeDisplay.DRAWUNASSIGNEDASONE || 
 					(treeDisplay.branchLengthDisplay == TreeDisplay.AUTOSHOWLENGTHS && (tree.hasBranchLengths() || treeDisplay.fixedScalingOn));
 			branchesProportionalToLength = branchesProportionalToLength & 
@@ -1359,7 +1362,7 @@ public class NodeLocsStandard extends NodeLocsVH {
 					treeDisplay.setTaxonSpacing( 1.0*(treeDisplay.effectiveFieldWidth() - treeDisplay.bufferForScaleEtc) / numTerms);
 					treeDisplay.setTaxonSpacing((taxonSqueeze*treeDisplay.getTaxonSpacing()));
 				}
-				
+
 				lastleft = -treeDisplay.getTaxonSpacing()/3*2; //TODO: this causes problems for shrunk, since first taxon doesn't move over enough
 				UPCalcTerminalLocs(treeDisplay, treeDrawing, tree, root);
 				UPCalcInternalLocs( treeDrawing, tree, root);
@@ -1888,9 +1891,9 @@ class NodeLocsExtra extends TreeDisplayExtra implements TreeDisplayBkgdExtra {
 	/*.................................................................................................................*/
 	public   void setTree(Tree tree) {
 	}
-	
 
-	
+
+
 }
 
 

@@ -14,25 +14,9 @@
 package mesquite.genomic.IncludeFlippedFastaFiles;
 /*~~  */
 
-import java.util.*;
-import java.awt.*;
-import java.awt.image.*;
-
-import mesquite.categ.lib.DNAData;
-import mesquite.categ.lib.DNAState;
 import mesquite.genomic.CombineFlippedFastas.CombineFlippedFastas;
 import mesquite.lib.*;
-import mesquite.lib.characters.*;
-import mesquite.lib.characters.CharacterData;
 import mesquite.lib.duties.*;
-import mesquite.lib.taxa.Taxa;
-import mesquite.lib.taxa.TaxaGroup;
-import mesquite.lib.taxa.TaxaGroupVector;
-import mesquite.lib.taxa.Taxon;
-import mesquite.lib.ui.AlertDialog;
-import mesquite.lib.ui.ListDialog;
-import mesquite.lib.ui.MesquiteFrame;
-import mesquite.lib.ui.MesquiteWindow;
 
 /* ======================================================================== */
 public class IncludeFlippedFastaFiles extends FileAssistantFM {

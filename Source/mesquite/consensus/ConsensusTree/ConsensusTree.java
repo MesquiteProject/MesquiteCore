@@ -122,8 +122,14 @@ public class ConsensusTree extends TreeSource {
 			parametersChanged();
 			 */
 		}
-		else
-			if (checker.compare(this.getClass(), "Sets the module doing a consensus", "[name of module]", commandName, "setConsenser")) {
+		else if (checker.compare(this.getClass(), "Suspends calculations", "[]", commandName, "suspend")) {
+			suspended = true;
+		}
+		else if (checker.compare(this.getClass(), "Desuspends calculations", "[]", commandName, "desuspend")) {
+			suspended = false;
+			parametersChanged();
+		}
+		else if (checker.compare(this.getClass(), "Sets the module doing a consensus", "[name of module]", commandName, "setConsenser")) {
 				Consenser temp = (Consenser)replaceEmployee(Consenser.class, arguments, "Consensus module", consenser);
 				if (temp!=null) {
 					consenser = temp;
@@ -139,6 +145,9 @@ public class ConsensusTree extends TreeSource {
 				return  super.doCommand(commandName, arguments, checker);
 		return null;
 	}
+	
+	boolean suspended = false;
+	
     /**Returns whether or not the source can handle asking for the last tree, i.e. for what the source says is maxTrees - 1, even if that is unassigned or infinite, i.e., is not a combinable number. 
      * If asked, and the source has an indefinite number, it will supply a tree (e.g. from a live file) rather than just trying forever. 
      * Used for Pin to Last Tree in BasicTreeWindow.*/
@@ -194,6 +203,8 @@ public class ConsensusTree extends TreeSource {
 	}
 	/*.................................................................................................................*/
 	public Tree getTree(Taxa taxa, int ic, boolean verbose) {  
+		if (suspended)
+			return null;
 		oldTaxa = taxa;
 
 		int numTrees = checkNumTrees(taxa);

@@ -23,7 +23,7 @@ import mesquite.lib.ui.ColorRecord;
 
 
 /* ======================================================================== */
-public class ColorByExcluded extends DataWindowAssistantID implements CellColorer, CellColorerCharacters, CellColorerMatrix {
+public class ColorByExcluded extends DataWindowAssistantID implements CellColorer, CellColorerCharacters, CellColorerMatrixHighPriority {
 	MesquiteTable table;
 	CharacterData data;
 	/*.................................................................................................................*/

@@ -66,12 +66,7 @@ public class TaxonPartitionHelper  extends TaxaSelectedUtility{
 			if (group == null && StringUtil.blank(name))
 				return;
 			TaxaPartition partition = (TaxaPartition) taxa.getOrMakeCurrentSpecsSet(TaxaPartition.class);
-			/*	if (partition==null){
-				partition= new TaxaPartition("Partition", taxa.getNumTaxa(), null, taxa);
-				partition.addToFile(taxa.getFile(), getProject(), findElementManager(TaxaPartition.class));
-				taxa.setCurrentSpecsSet(partition, TaxaPartition.class);
-			}*/
-			if (group == null){
+				if (group == null){
 				TaxaGroupVector groups = (TaxaGroupVector)getProject().getFileElement(TaxaGroupVector.class, 0);
 				Object obj = groups.getElement(name);
 				group = (TaxaGroup)obj;
@@ -134,7 +129,7 @@ public class TaxonPartitionHelper  extends TaxaSelectedUtility{
 
 
 				if (changed)
-					taxa.notifyListeners(this, new Notification(AssociableWithSpecs.SPECSSET_CHANGED)); //TODO: bogus! should notify via specs not data???
+					taxa.notifyListeners(this, new Notification(AssociableWithSpecs.SPECSSET_CHANGED)); 
 				parametersChanged();
 
 			}
@@ -158,7 +153,6 @@ public class TaxonPartitionHelper  extends TaxaSelectedUtility{
 		d.dispose();
 		if (!ok)
 			return null;
-		//String name = MesquiteString.queryString(containerOfModule(), "New character group", "New character group label", "Untitled Group");
 		if (StringUtil.blank(name))
 			return null;
 		TaxaGroup group = new TaxaGroup();
@@ -352,9 +346,6 @@ public class TaxonPartitionHelper  extends TaxaSelectedUtility{
 			//return ((ListWindow)getModuleWindow()).getCurrentObject();
 		}
 		else if (checker.compare(this.getClass(), "Creates a taxa block based upon the current partition, and generates an assocation linking them", null, commandName, "createAndAssociateTaxaBlock")) {
-			//ZQ: FYI: I moved the two methods out of Taxa. They are best not done there. 
-			// A module should do this, partly because it is not just the Taxa's internal management but affects the whole project, and partly to have interface choices.
-			//  ManageTaxa is exactly for this sort of thing. Also changed name of method, since it's from the partition.
 			TaxaManager manager = (TaxaManager)findElementManager(Taxa.class);
 			if (manager!=null) {
 				Taxa containing = manager.createTaxaBlockBasedOnPartition(taxa);
@@ -437,24 +428,14 @@ public class TaxonPartitionHelper  extends TaxaSelectedUtility{
 
 		addMenuSeparator();
 		addMenuItem("Create and Associate new Taxa Block based on current Groups", makeCommand("createAndAssociateTaxaBlock",  this));
-		/*if (taxa != this.taxa){
-			if (this.taxa != null)
-				this.taxa.removeListener(this);
-			taxa.addListener(this);
-		}*/
 		this.taxa = taxa;
 		this.selectionInformer = informer;
 	}
-	/*
-	public void changed(Object caller, Object obj, Notification notification){
-		if (caller == this)
-			return;
-		parametersChanged(notification);
-	}
+	
 
 	/*.................................................................................................................*/
 	public boolean isPrerelease(){
-		return true;  
+		return false;  
 	}
 	/*.................................................................................................................*/
 	/** returns whether this module is requesting to appear as a primary choice */

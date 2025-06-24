@@ -524,8 +524,6 @@ public class TaxaListHasData extends TaxonListAssistant  {
 	/*...............................................................................................................*/
 	/** for those permitting editing, indicates user has edited to incoming string.*/
 	public void setString(int row, String s){
-// QZ ZQ how does one edit the genbank number here? Can we use pasteIntoSelected as in TreeListAttachment?
-
 		if (StringUtil.blank(s))
 			setNote(row, null, CharacterData.taxonMatrixNotesRef);
 		else if (s.equalsIgnoreCase("Yes") || s.equalsIgnoreCase("No Data"))

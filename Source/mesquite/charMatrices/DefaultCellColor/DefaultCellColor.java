@@ -26,7 +26,7 @@ import mesquite.lib.ui.ColorRecord;
 
 
 /* ======================================================================== */
-public class DefaultCellColor extends DataWindowAssistantID implements CellColorer, CellColorerMatrix {
+public class DefaultCellColor extends DataWindowAssistantID implements CellColorer, CellColorerMatrixHighPriority {
 	DataWindowAssistantID colorerByState = null;
 	DataWindowAssistantID noColor = null;
 	/*.................................................................................................................*/

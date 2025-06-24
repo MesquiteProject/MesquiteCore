@@ -545,6 +545,9 @@ class BasicDataWindow extends TableWindow implements MesquiteListener {
 		ownerModule.hireNamedEmployee(DataWindowAssistantI.class, "#NoColor");
 		ownerModule.hireNamedEmployee(DataWindowAssistantI.class, "#ColorByState");
 		ownerModule.hireNamedEmployee(DataWindowAssistantI.class, "#ColorCells");
+		
+		
+		ownerModule.hireAllOtherCompatibleEmployees(CellColorerMatrixHighPriority.class, data.getStateClass());
 		ownerModule.hireNamedEmployee(DataWindowAssistantI.class, "#CharGroupColor");
 		ownerModule.hireNamedEmployee(DataWindowAssistantI.class, "#TaxonGroupColor");
 

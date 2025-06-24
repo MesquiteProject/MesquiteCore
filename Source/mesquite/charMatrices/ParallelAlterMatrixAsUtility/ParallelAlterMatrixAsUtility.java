@@ -42,10 +42,6 @@ public class ParallelAlterMatrixAsUtility extends CharMatricesListProcessorUtili
 		return "Parallel Alter Matrices...";
 	}
 
-	public boolean loadModule() {
-		return true; // too flaky
-	}
-
 	public String getExplanation() {
 		return "Alters selected matrices in List of Character Matrices window, with the option of using parallel processing (multithreading) to speed the completion.";
 	}
@@ -130,9 +126,6 @@ public class ParallelAlterMatrixAsUtility extends CharMatricesListProcessorUtili
 		MesquiteInteger buttonPressed = new MesquiteInteger(1);
 		ExtensibleDialog queryDialog = new ExtensibleDialog(containerOfModule(), "Number of Parallel Calculations", buttonPressed);
 		queryDialog.addLargeOrSmallTextLabel("The calculations will be performed in parallel, on several threads. Choose the number of parallel threads according to your computer's multiprocessing capabilities.");
-		/*
-		 * if (StringUtil.blank(help) && queryDialog.isInWizard()) help = "<h3>" + StringUtil.protectForXML(title) + "</h3>Please enter a whole number (integer).  <p>The initial value is " + value; queryDialog.appendToHelpString(help);
-		 */
 		IntegerField integerField = queryDialog.addIntegerField("Number of threads", numThreads, 20, 1, 255);
 		queryDialog.addLargeOrSmallTextLabel("(Note: the first matrix will be processed alone, and then the others in parallel.)");
 
@@ -315,7 +308,6 @@ public class ParallelAlterMatrixAsUtility extends CharMatricesListProcessorUtili
 			project.getCoordinatorModule().setWhomToAskIfOKToInteractWithUser(null);
 		}
 		zeroMenuResetSuppression(); // set menu and project suppression to zero, just in case of threading issues?
-		// MainThread.zeroSuppressWaitWindow();
 		resetAllMenuBars();
 		if (System.currentTimeMillis()- startTime>100000)
 			MesquiteMessage.beep();
@@ -367,7 +359,7 @@ public class ParallelAlterMatrixAsUtility extends CharMatricesListProcessorUtili
 
 	/* ................................................................................................................. */
 	public boolean isPrerelease() {
-		return true;
+		return false;
 	}
 
 }
