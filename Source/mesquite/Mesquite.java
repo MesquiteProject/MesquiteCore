@@ -2166,6 +2166,7 @@ public class Mesquite extends MesquiteTrunk
 				logln("Mesquite is being used by another program.  You should avoid asking Mesquite to quit, and instead let the other program ask Mesquite to quit");
 				return null;
 			}
+			MesquiteThread.acceptNonMesquiteThreads = true;
 			PendingCommand pc = MainThread.getCurrentlyExecuting();
 
 			if (pc!=null && pc.getCommandRecord() != MesquiteThread.getCurrentCommandRecord() && !pc.permitQuitUnqueried()) {

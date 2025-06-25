@@ -18,6 +18,7 @@ import mesquite.lib.CommandChecker;
 import mesquite.lib.Debugg;
 import mesquite.lib.MesquiteCommand;
 import mesquite.lib.MesquiteInteger;
+import mesquite.lib.MesquiteMessage;
 import mesquite.lib.MesquiteModule;
 import mesquite.lib.characters.CharacterData;
 import mesquite.lib.duties.DataWindowAssistantI;
@@ -101,7 +102,7 @@ public class MatrixNavigationTool extends DataWindowAssistantI {
 			return;
 		int max = data.getNumberApplicableInTaxon(row, false);
 		if (max<1) {
-			Debugg.printStackTrace();
+			MesquiteMessage.printStackTrace("max<1 in moveToBaseInSequence");
 		}
 		int num = MesquiteInteger.queryInteger(table.getWindow(), "Base within sequence to move to", "Base within sequence to move to", 1, 1, max);
 		if (!MesquiteInteger.isCombinable(num)) 	

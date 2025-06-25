@@ -13,6 +13,7 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
 */
 package mesquite.lib.duties;
 
+import mesquite.lib.Debugg;
 import mesquite.lib.MesquiteModule;
 import mesquite.lib.MesquiteNumber;
 import mesquite.lib.MesquiteString;
@@ -68,7 +69,10 @@ public abstract class TreeSearcher extends MesquiteModule  {
    	happening at inopportune times (e.g., while a long chart calculation is in mid-progress)*/
    	public abstract boolean initialize(Taxa taxa);
 
-   	
+	/*.................................................................................................................*/
+	public void setPlaceAllAnalysisFilesInSubdirectory(boolean placeAllAnalysisFilesInSubdirectory) {
+	}
+
 	 
 	 public TreeInferer getTreeInferer() {
 		 return treeInferer;

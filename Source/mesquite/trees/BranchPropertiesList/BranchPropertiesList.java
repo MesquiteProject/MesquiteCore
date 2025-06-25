@@ -31,6 +31,7 @@ import mesquite.lib.MesquiteDouble;
 import mesquite.lib.MesquiteFile;
 import mesquite.lib.MesquiteInteger;
 import mesquite.lib.MesquiteListener;
+import mesquite.lib.MesquiteMessage;
 import mesquite.lib.MesquiteModule;
 import mesquite.lib.MesquiteString;
 import mesquite.lib.MesquiteThread;
@@ -632,7 +633,7 @@ class NodesAssociatesListWindow extends ListWindow implements MesquiteListener {
 			DisplayableBranchProperty property = (DisplayableBranchProperty)mainPropertiesList.elementAt(i);
 			if (MesquiteTrunk.developmentMode){ //Debugg.println delete before release
 				if (tree.isPropertyAssociated(property) != property.inCurrentTree)
-					Debugg.printStackTrace("!!! property.inCurrentTree not up to date!");
+					MesquiteMessage.printStackTrace("!!! property.inCurrentTree not up to date!");
 			}
 			if (property.inCurrentTree)
 				associatesList.addElement(property, false);

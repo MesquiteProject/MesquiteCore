@@ -769,7 +769,7 @@ class BasicDataWindow extends TableWindow implements MesquiteListener {
 			if (data.uniquelyNamed())
 				t = data.getName();
 			else
-				t = data.getName() + " [" + data.getID() + "]";
+				t = data.getName() + " [#" + data.getID() + "]";
 		}
 		else {
 			t = "Character Matrix";

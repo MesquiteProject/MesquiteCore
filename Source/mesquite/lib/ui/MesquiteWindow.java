@@ -2455,7 +2455,7 @@ public abstract class MesquiteWindow implements Listable, Commandable, OwnedByMo
 			catch (Exception e ){
 				needMenuBarReset = true;
 				if (MesquiteTrunk.developmentMode)
-					Debugg.printStackTrace("Menu bar needs resetting! " + getTitle());
+					MesquiteMessage.printStackTrace("Menu bar needs resetting! " + getTitle());
 				return;
 		}
 		}

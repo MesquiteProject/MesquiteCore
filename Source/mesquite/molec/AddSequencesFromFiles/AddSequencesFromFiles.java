@@ -68,11 +68,11 @@ public class AddSequencesFromFiles extends FileAssistantFM {
 	}
 	/*.................................................................................................................*/
 	public String getNameForMenuItem() {
-		return "Add Sequences from Files to Matrix...";
+		return "Add Sequences from FASTA/NBRF/GenBank Files to Matrix...";
 	}
 	/*.................................................................................................................*/
 	public String getName() {
-		return "Add Sequences from Files to Matrix";
+		return "Add Sequences from FASTA/NBRF/GenBank Files to Matrix";
 	}
 	/*.................................................................................................................*/
 	/** returns the version number at which this module was first released.  If 0, then no version number is claimed.  If a POSITIVE integer

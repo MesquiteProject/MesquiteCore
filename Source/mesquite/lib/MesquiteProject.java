@@ -216,7 +216,6 @@ public class MesquiteProject extends Attachable implements Listable, MesquiteLis
 	public void decrementProjectWindowSuppression(){
 		if (refreshSuppression ==0) {
 			MesquiteMessage.warnProgrammer("decrementProjectWindowSuppression when already zero");
-			//Debugg.printStackTrace(); //temporary while debugging v. 4.0
 			return;
 		}
 		refreshSuppression--;

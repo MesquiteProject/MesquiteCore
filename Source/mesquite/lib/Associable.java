@@ -972,13 +972,13 @@ public ListableVector getAssociatesOfKind(int kind){
 						s+=  "} ";
 					}
 					else if (obj instanceof String){
-						Debugg.printStackTrace("Associable: writing string in objectarray!");
+						MesquiteMessage.printStackTrace("Associable: writing string in objectarray!");
 						s+= StringUtil.tokenize(b.getName()) + " = " + ParseUtil.tokenize((String)obj) + " ";
 					}
 					else {
 						MesquiteMessage.warnProgrammer("Warning: Saving of objects of type " + obj.getClass() +" in Associables not yet working!");
 						if (MesquiteTrunk.developmentMode)
-							Debugg.printStackTrace();
+							MesquiteMessage.printStackTrace();
 					}
 				}
 			}

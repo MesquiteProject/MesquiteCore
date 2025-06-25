@@ -67,7 +67,7 @@ public class TreesFromSelMatrices extends CharMatricesListUtility {
 	public boolean pleaseLeaveMeOn(){
 		return false;
 	}
-	
+
 	boolean warnedAboutDeleting = false;
 	/*.................................................................................................................*/
 	public String preparePreferencesForXML () {
@@ -90,7 +90,7 @@ public class TreesFromSelMatrices extends CharMatricesListUtility {
 	boolean compatibleMatrix(CharacterData data) {
 		return data.isCompatible(inferenceTask.getCharacterClass(), getProject(), null, null);
 	}
-	
+
 	/** Called to operate on the CharacterData blocks.  Returns true if taxa altered*/
 	public boolean operateOnDatas(ListableVector datas, MesquiteTable table){
 		if (datas.size() == 0)
@@ -116,11 +116,12 @@ public class TreesFromSelMatrices extends CharMatricesListUtility {
 		}
 
 		inferenceTask.initialize(taxa);
+		inferenceTask.setPlaceAllAnalysisFilesInSubdirectory(true);
 		TreeInferer inferer = inferenceTask.getTreeInferer();
 		if (inferer!= null){
 			inferer.setAlwaysPrepareForAnyMatrices(true);
-			inferer.setPlaceAllAnalysisFilesInSubdirectory(true);
-	}
+			//inferer.setPlaceAllAnalysisFilesInSubdirectory(true);
+		}
 		TreeVector trees = new TreeVector(((CharacterData)datas.elementAt(0)).getTaxa());
 		Vector v = pauseAllPausables();
 		int count = 0;
@@ -136,53 +137,54 @@ public class TreesFromSelMatrices extends CharMatricesListUtility {
 			CharacterData data = (CharacterData)datas.elementAt(im);
 			if (compatibleMatrix(data)) {
 				if (data.getNumChars()==0)
-				logln("Trees not inferred from matrix " +data.getName() + " because it has no characters");
+					logln("Trees not inferred from matrix " +data.getName() + " because it has no characters");
 				else {
-				currentMatrix = data.getMCharactersDistribution();
-				int lastNumTrees = trees.size();
-				logln("Inferring trees from matrix #" +(im+1) + " (" + data.getName() + ", " + data.getNumChars() + " characters)"); 
-				progIndicator.setText("\nInferring trees from matrix " +data.getName());
-				MesquiteThread.setHintToSuppressProgressIndicatorCurrentThread(true);
-				int result = inferenceTask.fillTreeBlock(trees);
-				MesquiteThread.setHintToSuppressProgressIndicatorCurrentThread(false);
-				if (result == ResultCodes.USERCANCELONINITIALIZE) {
-					logln("User cancelled the analyses."); 
-					userCancel=true;
-					stop = true;
-				}
-				else if (result<0){ //error
-				stop = true;
-				logln("Error in tree inference! Tree inferences will be stopped."); 
-				}
-				else {
-					progIndicator.increment();
-					if (im == 0)
-						progIndicator.toFront();
-					if (trees.size() == lastNumTrees) {
-						numFailed++;
-						stringFailed += "\t" + data.getName() + "\n";
-						logln("Trees not inferred from matrix " +data.getName() + " because of some issue with the matrix or the inference program."); 
-						//if (AlertDialog.query(MesquiteTrunk.mesquiteTrunk.containerOfModule(), "Stop?", "Do you want to stop the tree inferences?", "Stop", "Continue", 0)) {
-						//	stop = true;
-						//}
-						MesquiteThread.setQuietPlease(true);
+					currentMatrix = data.getMCharactersDistribution();
+					int lastNumTrees = trees.size();
+					logln("Inferring trees from matrix #" +(im+1) + " (" + data.getName() + ", " + data.getNumChars() + " characters)"); 
+					progIndicator.setText("\nInferring trees from matrix " +data.getName());
+					MesquiteThread.setHintToSuppressProgressIndicatorCurrentThread(true);
+					TreeInferer inf2 = inferenceTask.getTreeInferer();
+					int result = inferenceTask.fillTreeBlock(trees);
+					MesquiteThread.setHintToSuppressProgressIndicatorCurrentThread(false);
+					if (result == ResultCodes.USERCANCELONINITIALIZE) {
+						logln("User cancelled the analyses."); 
+						userCancel=true;
+						stop = true;
 					}
-					boolean mult = false;
-					if (trees.size()-lastNumTrees>1)
-						mult = true;
-					for (int itr = lastNumTrees; itr<trees.size(); itr++) { //multiple trees from same matrix; number trees .#1, 2, 3
-						String num = "";
-						if (mult)
-							num = ".#" + (itr-lastNumTrees + 1);
-						Tree t = trees.getTree(itr);
-						count++;
-						if (t instanceof MesquiteTree){
-							MesquiteTree tM = (MesquiteTree)t;
-							tM.setName(data.getName() + num + ".tree");
-							tM.attach(new MesquiteString("fromMatrix", data.getName()));
+					else if (result<0){ //error
+						stop = true;
+						logln("Error in tree inference! Tree inferences will be stopped."); 
+					}
+					else {
+						progIndicator.increment();
+						if (im == 0)
+							progIndicator.toFront();
+						if (trees.size() == lastNumTrees) {
+							numFailed++;
+							stringFailed += "\t" + data.getName() + "\n";
+							logln("Trees not inferred from matrix " +data.getName() + " because of some issue with the matrix or the inference program."); 
+							//if (AlertDialog.query(MesquiteTrunk.mesquiteTrunk.containerOfModule(), "Stop?", "Do you want to stop the tree inferences?", "Stop", "Continue", 0)) {
+							//	stop = true;
+							//}
+							MesquiteThread.setQuietPlease(true);
+						}
+						boolean mult = false;
+						if (trees.size()-lastNumTrees>1)
+							mult = true;
+						for (int itr = lastNumTrees; itr<trees.size(); itr++) { //multiple trees from same matrix; number trees .#1, 2, 3
+							String num = "";
+							if (mult)
+								num = ".#" + (itr-lastNumTrees + 1);
+							Tree t = trees.getTree(itr);
+							count++;
+							if (t instanceof MesquiteTree){
+								MesquiteTree tM = (MesquiteTree)t;
+								tM.setName(data.getName() + num + ".tree");
+								tM.attach(new MesquiteString("fromMatrix", data.getName()));
+							}
 						}
 					}
-				}
 				}
 			}
 			else

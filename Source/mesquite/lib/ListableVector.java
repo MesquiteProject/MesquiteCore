@@ -394,8 +394,7 @@ public class ListableVector extends FileElement implements StringLister, Command
 		vec.removeElement(obj);
 		numElements = vec.size();
 		if (vec.indexOf(obj)>=0){
-		Debugg.printStackTrace();
-			MesquiteMessage.warnProgrammer("object removed from listableVector but other copy remains " + this.getClass().toString() + "  " + obj);
+			MesquiteMessage.printStackTrace("object removed from listableVector but other copy remains " + this.getClass().toString() + "  " + obj);
 		}
 		if (notify)
 			notifyListeners(this, new Notification(MesquiteListener.PARTS_DELETED));
