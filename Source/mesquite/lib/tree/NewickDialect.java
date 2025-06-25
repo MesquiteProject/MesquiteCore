@@ -21,6 +21,7 @@ import org.dom4j.Document;
 import org.dom4j.Element;
 
 import mesquite.lib.Listable;
+import mesquite.lib.MesquiteBoolean;
 import mesquite.lib.MesquiteFile;
 import mesquite.lib.MesquiteMessage;
 import mesquite.lib.ObjectContainer;
@@ -35,6 +36,7 @@ public class NewickDialect implements Listable {
 	String internalName;
 	String punctuation;
 	String whitespace;
+	boolean permitT0Names = false;
 
 	/*String[2] arrays with replacements to be made using String.replace. 
 	NOTE: Mesquite will have separated NEXUS punctuation via spaces, e.g. 
@@ -82,6 +84,12 @@ public class NewickDialect implements Listable {
 		this.whitespace = punctuation;
 	}
 	
+	public void setT0NamesPermission(boolean permit){
+		permitT0Names = permit;
+	}
+	public boolean getT0NamesPermission(){
+		return permitT0Names;
+	}
 	String replace(String orig, int loc, int targetLength, String replacement, int[] correspondence){
 		String modified = orig.substring(0,loc)+replacement+orig.substring(loc+targetLength);
 		if (correspondence != null){
@@ -202,6 +210,8 @@ public class NewickDialect implements Listable {
 			}
 			else if ("punctuation".equalsIgnoreCase(item.getName()))
 				punctuation = item.getText();
+			else if ("permitT0Names".equalsIgnoreCase(item.getName()))
+				permitT0Names = MesquiteBoolean.fromTrueFalseString( item.getText());
 			else if ("replacement".equalsIgnoreCase(item.getName())){
 				List parts = item.elements();
 				String before = null;

@@ -44,6 +44,8 @@
 	<replacement>
 		<before>effectivebrlenIgrBrlens { 6 , 7 , 8 } _median</before>
 		<after>'effectivebrlenIgrBrlens{6,7,8}_median'</after>	
+	</replacement>
+	<replacement>
 		<before>effectivebrlenIgrBrlens { 9 } _mean</before>
 		<after>'effectivebrlenIgrBrlens{9}_mean'</after>
 	</replacement>

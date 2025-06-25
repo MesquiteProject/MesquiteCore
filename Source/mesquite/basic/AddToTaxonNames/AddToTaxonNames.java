@@ -93,7 +93,7 @@ public class AddToTaxonNames extends TaxonNameAlterer {
 
 	/*.................................................................................................................*/
 	public boolean requestPrimaryChoice(){
-		return false;  
+		return true;  
 	}
 	/*.................................................................................................................*/
 	public String getNameForMenuItem() {

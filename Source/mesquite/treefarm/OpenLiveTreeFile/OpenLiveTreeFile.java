@@ -16,7 +16,9 @@ package mesquite.treefarm.OpenLiveTreeFile;
 
 import mesquite.io.InterpretPhylipTreesBasic.InterpretPhylipTreesBasic;
 import mesquite.io.lib.TryNexusFirstTreeFileInterpreter;
+import mesquite.lib.CommandChecker;
 import mesquite.lib.CommandRecord;
+import mesquite.lib.MesquiteBoolean;
 import mesquite.lib.MesquiteFile;
 import mesquite.lib.MesquiteInteger;
 import mesquite.lib.MesquiteProject;
@@ -24,13 +26,14 @@ import mesquite.lib.MesquiteString;
 import mesquite.lib.MesquiteThread;
 import mesquite.lib.MesquiteTrunk;
 import mesquite.lib.Puppeteer;
+import mesquite.lib.Snapshot;
 import mesquite.lib.StringUtil;
 import mesquite.lib.duties.FileCoordinator;
 import mesquite.lib.duties.GeneralFileMakerSingle;
-import mesquite.lib.duties.NexusFileInterpreter;
 import mesquite.lib.taxa.Taxa;
 import mesquite.lib.ui.ExtensibleDialog;
 import mesquite.lib.ui.QueryDialogs;
+import mesquite.lib.ui.RadioButtons;
 
 /* ======================================================================== */
 public class OpenLiveTreeFile extends GeneralFileMakerSingle {
@@ -39,6 +42,29 @@ public class OpenLiveTreeFile extends GeneralFileMakerSingle {
 	public boolean startJob(String arguments, Object condition, boolean hiredByName){
 		return true;
 	}
+	/* ................................................................................................................. */
+	public Snapshot getSnapshot(MesquiteFile file) {
+		Snapshot temp = new Snapshot();
+		temp.addLine("showConsensus " + showConsensus);
+		temp.addLine("sample " + sample);
+		return temp;
+	}
+	boolean showConsensus = false;
+	boolean sample = false;
+	String sampleString = "";
+	/* ................................................................................................................. */
+	public Object doCommand(String commandName, String arguments, CommandChecker checker) {
+		if (checker.compare(this.getClass(), "Sets whether to show the consensus or last tree", "[true or false]", commandName, "showConsensus")) {
+			showConsensus = MesquiteBoolean.fromTrueFalseString(arguments);
+		}
+		else if (checker.compare(this.getClass(), "Sets whether to sample", "[true or false]", commandName, "sample")) {
+			sample = MesquiteBoolean.fromTrueFalseString(arguments);
+		}
+
+		else
+			return super.doCommand(commandName, arguments, checker);
+		return null;
+	}	
 
 	/*.................................................................................................................*/
 	public MesquiteProject readFile(MesquiteProject project, String path, boolean NEXUSOnly){
@@ -65,41 +91,47 @@ public class OpenLiveTreeFile extends GeneralFileMakerSingle {
 			discreetAlert("Sorry, this is not a NEXUS file");
 			return null;
 		}
-
-		int choice = QueryDialogs.queryTwoRadioButtons(containerOfModule(), "Consensus or last?", "Do you want to show the majority rules consensus, or the last tree?", null, "Consensus", "Last Tree");
-		boolean showConsensus = choice == 0;
+		if (!MesquiteThread.isScripting()){
+			MesquiteInteger buttonPressed = new MesquiteInteger(1);
+			ExtensibleDialog eDialog = new ExtensibleDialog(containerOfModule(),  "Live trees options",buttonPressed);  //MesquiteTrunk.mesquiteTrunk.containerOfModule()
+			eDialog.addLabel("Do you want to show the majority rules consensus, or the last tree?");
+			RadioButtons radios = new RadioButtons(eDialog, new String[] { "Consensus", "Last Tree"}, 0);
+			/*
+			eDialog.addLabel("Do you want to see all of the trees, or just a sample of the trees?");
+			RadioButtons radios2 = new RadioButtons(eDialog, new String[] { "All Trees", "Sample (e.g., minus burn-in, or every 100th)"}, 0);
+			eDialog.addLabel("If you choose to sample, you can set the parameters by items in the Tree menu.");*/
+			eDialog.completeAndShowDialog(true);
+			if (buttonPressed.getValue()==0)  {
+				showConsensus = radios.getValue() == 0;
+				/*sample = radios2.getValue() == 1;
+				sampleString = "";
+				if (sample)
+					sampleString = "Sample";*/
+			}
+			eDialog.dispose();
+			if (buttonPressed.getValue()!=0)
+				return null;
+			//int choice = QueryDialogs.queryTwoRadioButtons(containerOfModule(), "Consensus or last?", "Do you want to show the majority rules consensus, or the last tree?", null, "Consensus", "Last Tree");
+		}
 
 		if (project != null){  
 			//figure out taxa block if needed
 			Taxa taxa = project.chooseTaxa(containerOfModule(), "For which block of taxa does the incoming tree file pertain?");
 			FileCoordinator bfc = project.getCoordinatorModule();
-			if (isNexus){
-				String fra = " @justTheseBlocks.TAXA.DATA.TREES";
-				bfc.includeFile(path, NexusFileInterpreter.class, " @autodeleteDuplicateOrSubsetTaxa" + fra, 0, null);
-			}
-			else
-				bfc.includeFile(path, InterpretPhylipTreesBasic.class, " @autodeleteDuplicateOrSubsetTaxa", 0, null);
+		
 			if (!MesquiteThread.isScripting()){
 				String commands = "getEmployee #BasicTreeWindowCoord; tell it; makeTreeWindow " + getProject().getTaxaReferenceInternal(taxa) + "  #BasicTreeWindowMaker; tell It;";  
 				if (showConsensus){
 					commands += " setTreeSource  #ConsensusTree; tell It;  suspend; " + 
-							" setTreeSource  #ManyTreesFromFile; tell It;  setFilePath " + StringUtil.tokenize(path) + "; toggleLive on;   endTell;" + 
+							" setTreeSource  #" + sampleString +"ManyTreesFromFile; tell It;  setFilePath " + StringUtil.tokenize(path) + "; toggleLive on;   endTell;" + 
 							" setConsenser  #MajRuleTree; tell It; frequencyLimit 0.5; endTell; desuspend; endTell;" +  
 							" showWindowForce; endTell; endTell;";
 				}
 				else {
-					commands += "  setTreeSource  #ManyTreesFromFile; tell It;  setFilePath " + StringUtil.tokenize(path) + "; toggleLive on;   endTell;  " + 
-						"getWindow; tell It; setTreeNumber 1; pinToLastTree true;   endTell; showWindowForce; endTell; endTell;";
+					commands += "  setTreeSource  #" + sampleString +"ManyTreesFromFile; tell It;  setFilePath " + StringUtil.tokenize(path) + "; toggleLive on;   endTell;  " + 
+							"getWindow; tell It; setTreeNumber 1; pinToLastTree true;   endTell; showWindowForce; endTell; endTell;";
 				}
 				
-				
-				/*
-				
-				 	" setTreeSource  #ConsensusTree; tell It;  " + 
-					" setTreeSource  #ManyTreesFromFile; tell It;  setFilePath " + StringUtil.tokenize(path) + "; toggleLive on;   endTell;" + 
-					" setConsenser  #MajRuleTree; tell It; frequencyLimit 0.5; endTell; endTell;" + 
-
-				 * */
 				MesquiteInteger pos = new MesquiteInteger(0);
 				Puppeteer p = new Puppeteer(this);
 				CommandRecord prev = MesquiteThread.getCurrentCommandRecord();
@@ -114,13 +146,13 @@ public class OpenLiveTreeFile extends GeneralFileMakerSingle {
 		String commands = "getEmployee #BasicTreeWindowCoord; tell it; makeTreeWindow 0  #BasicTreeWindowMaker; tell It;";  
 		if (showConsensus){
 			commands += " setTreeSource  #ConsensusTree; tell It;  suspend; " + 
-					" setTreeSource  #ManyTreesFromFile; tell It;  setFilePath " + StringUtil.tokenize(path) + "; toggleLive on;   endTell;" + 
+					" setTreeSource  #" + sampleString +"ManyTreesFromFile; tell It;  setFilePath " + StringUtil.tokenize(path) + "; toggleLive on;   endTell;" + 
 					" setConsenser  #MajRuleTree; tell It; frequencyLimit 0.5; endTell; desuspend; endTell;" +  
 					"showWindowForce; endTell; endTell;";
 		}
 		else {
-			commands += "  setTreeSource  #ManyTreesFromFile; tell It;  setFilePath " + StringUtil.tokenize(path) + "; toggleLive on;   endTell;  " + 
-				"getWindow; tell It; setTreeNumber 1; pinToLastTree true;   endTell; showWindowForce; endTell; endTell;";
+			commands += "  setTreeSource  #" + sampleString +"ManyTreesFromFile; tell It;  setFilePath " + StringUtil.tokenize(path) + "; toggleLive on;   endTell;  " + 
+					"getWindow; tell It; setTreeNumber 1; pinToLastTree true;   endTell; showWindowForce; endTell; endTell;";
 		}
 		if (newFile) {
 			String extension = "";

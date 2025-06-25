@@ -126,6 +126,10 @@ public abstract class ManyTreesFromFileLib extends TreeSource implements Mesquit
 		StringUtil.appendXMLTag(buffer, 2, "warningGiven", warningGiven);  
 		return buffer.toString();
 	}
+	 /**Returns name to show in windows etc. for tree block or source of trees.*/
+	public String getTreesDescriptiveString(Taxa taxa){
+		return getName();
+	}
 
 	/*.................................................................................................................*/
 	protected boolean additionStartJobItems(){

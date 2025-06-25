@@ -25,6 +25,7 @@ import mesquite.lib.Bits;
 import mesquite.lib.CommandChecker;
 import mesquite.lib.Commandable;
 import mesquite.lib.CompatibilityChecker;
+import mesquite.lib.Debugg;
 import mesquite.lib.DoubleArray;
 import mesquite.lib.EmployerEmployee;
 import mesquite.lib.Identifiable;
@@ -3599,13 +3600,15 @@ and the tree has been rerooted. Properties that belong to nodes implicitly have 
 	private String preprocessForDialect(String tD, ObjectContainer correspondenceContainer, String dialectName){
 		if (dialects.indexOfByNameIgnoreCase(dialectName)>=0){
 			NewickDialect dialect = (NewickDialect)dialects.elementAt(dialects.indexOfByNameIgnoreCase(dialectName));
-			punctuationInNewickComments = dialect.getPunctuation();
+		punctuationInNewickComments = dialect.getPunctuation();
 			whitespaceInNewickComments = dialect.getWhitespace();
 			if (punctuationInNewickComments == null)
 				punctuationInNewickComments = wellTokenizedNewickCommentPunctuation;  
 			if (whitespaceInNewickComments == null)
 				whitespaceInNewickComments = wellTokenizedNewickCommentWhitespace;
 			tD = dialect.translate(tD, correspondenceContainer);
+			if (dialect.getT0NamesPermission())
+				permitT0Names = true;
 			return tD;
 		}
 		return tD;
@@ -3665,6 +3668,7 @@ and the tree has been rerooted. Properties that belong to nodes implicitly have 
 		ObjectContainer correspondenceContainer = null;
 		if (startingPos != null)
 			correspondenceContainer = new ObjectContainer();
+
 		TreeDescription = preprocessForDialect(TreeDescription, correspondenceContainer, getDialect());
 		/**
 		if (startingPos !=null) 
@@ -4080,7 +4084,7 @@ and the tree has been rerooted. Properties that belong to nodes implicitly have 
 	public String writeTreeSimpleNewick() {
 		StringBuffer treeDescription = new StringBuffer(100);
 		writeTreeByNames( getRoot(),  treeDescription, true, false, true);
-		return treeDescription.toString();
+		return treeDescription.toString() +";";
 	}
 	/*-----------------------------------------*/
 	/** Writes a tree description into the StringBuffer using taxon names */

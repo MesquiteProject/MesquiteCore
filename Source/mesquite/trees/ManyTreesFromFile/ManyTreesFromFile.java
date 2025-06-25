@@ -14,6 +14,7 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
 package mesquite.trees.ManyTreesFromFile;
 /*~~  */
 
+import mesquite.lib.taxa.Taxa;
 import mesquite.trees.lib.ManyTreesFromFileLib;
 
 
@@ -22,7 +23,7 @@ public class ManyTreesFromFile extends ManyTreesFromFileLib {
 	
 	/*.................................................................................................................*/
 	 public String getName() {
-	return "Trees from Separate File";
+	return "Trees from Separate Live File";
 	 }
 /*.................................................................................................................*/
 	 public String getNameForMenuItem() {
@@ -31,6 +32,10 @@ public class ManyTreesFromFile extends ManyTreesFromFileLib {
 	 	/*.................................................................................................................*/
 	 	public boolean isPrerelease(){
 	 		return false;  
+	 	}
+	 	 /**Returns name to show in windows etc. for tree block or source of trees.*/
+	 	public String getTreesDescriptiveString(Taxa taxa){
+	 		return "Live Trees from File";
 	 	}
 
 		/*.................................................................................................................*/

@@ -430,9 +430,7 @@ public class ModuleLoader {
 					showMessage(true, "Loading from directory: " + fileName, directoryTotal, ++directoryNumber);
 					mesquite.log(" " + fileName);
 					if (MesquiteFile.fileOrDirectoryExists(filePathName + MesquiteFile.fileSeparator + "jars")){
-						//StringBuffer buffer =new StringBuffer();
-						//buffer.append("\n");  //ZQ do you remember what this was for? why not just  logln? Debugg.println
-						//mesquite.logln(buffer.toString());
+						
 					}
 				}
 				else

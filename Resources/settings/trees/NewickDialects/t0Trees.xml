@@ -1,0 +1,9 @@
+<?xml version="1.0"?>
+<mesquite>
+	<humanName>Reduced taxon names (t0, t1, ...)</humanName> <!-- required -->
+	<internalName>t0t1Naming</internalName> <!-- required -->
+	<!-- replacements in sequence -->
+	<permitT0Names>true</permitT0Names>
+
+</mesquite>
+
