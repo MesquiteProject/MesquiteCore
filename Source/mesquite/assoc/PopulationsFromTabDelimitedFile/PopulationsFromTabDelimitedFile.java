@@ -49,7 +49,7 @@ public class PopulationsFromTabDelimitedFile extends PopulationsAndAssociationMa
 	}
 
 	public boolean isPrerelease(){
-		return true;
+		return false;
 	}
 	
 	/*.................................................................................................................*/

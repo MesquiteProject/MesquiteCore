@@ -44,7 +44,7 @@ public class PopulationsFromSpecimenNames extends PopulationsAndAssociationMaker
 	}
 
 	public boolean isPrerelease(){
-		return true;
+		return false;
 	}
 	/*.................................................................................................................*/
 	public String preparePreferencesForXML () {
