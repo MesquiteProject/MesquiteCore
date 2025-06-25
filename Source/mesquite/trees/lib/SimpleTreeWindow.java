@@ -315,6 +315,7 @@ public class SimpleTreeWindow extends MesquiteWindow  {
 	public TreeDisplay  getTreeDisplay(){
 		return treeDisplay;
 	}
+	int oldNumTaxa = -1;
 	/*.................................................................................................................*/
 	public void setTree(Tree newTree, boolean suppressDrawing){
 		if (ownerModule.isDoomed())
@@ -324,11 +325,14 @@ public class SimpleTreeWindow extends MesquiteWindow  {
 
 		if (newTree!=null) {
 			tree = newTree.cloneTree();//no need to establish listener to Taxa, as will be remade when needed?
+			int numTaxa = tree.numberOfTerminalsInClade(tree.getRoot());
 			treeDisplay.setTree(tree);
 			treeDisplay.suppressDrawing(suppressDrawing);
 			treeDisplay.redoCalculations(111113);
 			treeDisplay.recalculatePositions();
-			sizeDisplays();
+			if (numTaxa != oldNumTaxa)
+				sizeDisplays();
+			oldNumTaxa = numTaxa;
 			treeDisplay.setVisible(true);
 
 			treeDisplay.forceRepaint();

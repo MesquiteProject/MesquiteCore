@@ -1009,7 +1009,7 @@ class NodeAssocDisplayExtra extends TreeDisplayExtra implements Commandable, Tre
 					if (!property.vertical)
 						box.draw(g,  x, y);
 					else
-						box.draw(g,  x, y, 0, 1500, treeDisplay, false, false);  //Debugg.println fix
+						box.draw(g,  x, y, 0, 1500, treeDisplay, false, false);  
 
 					if (property.vertical){
 						offsetX += box.getLineHeight();

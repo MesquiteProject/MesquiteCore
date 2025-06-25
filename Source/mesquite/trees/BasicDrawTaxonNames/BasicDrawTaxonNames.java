@@ -796,7 +796,6 @@ public class BasicDrawTaxonNames extends DrawNamesTreeDisplay {
 					textRotator.drawFreeRotatedText(s,  gL, horiz+separation, vert-rise*2, treeDrawing.namesAngle, null, false, namePolys[taxonNumber]); ///2
 				}
 				else */{
-				//Debugg.println must do for other orientations!
 					if (treeDisplay.totalTipsFieldDistance()>0){
 						horiz = treeDisplay.effectiveFieldWidth()+treeDisplay.effectiveFieldLeftMargin()-treeDisplay.getTipsMargin();
 					}

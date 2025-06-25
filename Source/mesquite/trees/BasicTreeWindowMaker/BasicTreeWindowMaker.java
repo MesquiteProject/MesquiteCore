@@ -2157,7 +2157,6 @@ class BasicTreeWindow extends MesquiteWindow implements Fittable, MesquiteListen
 						treePane.setSize(width, height);
 						adjustTreePane(true, false);
 						treePane.doLayout();
-						//treeDisplay.redoCalculations(881153);  //Debugg.println
 					}
 				}
 			}
@@ -4189,8 +4188,8 @@ class BasicTreeWindow extends MesquiteWindow implements Fittable, MesquiteListen
 			addToPopup(bLS);
 		}
 		notifyExtrasOfRightClickPopup(popup, tree, branchFound);
-		//show only if something in there! Debugg.println
-		popup.showPopup(x, y);
+		if (popup.getItemCount()>0)
+			popup.showPopup(x, y);
 	}
 
 	/* _________________________________________________ */

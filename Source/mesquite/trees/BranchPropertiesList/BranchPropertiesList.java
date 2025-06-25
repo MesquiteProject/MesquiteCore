@@ -330,7 +330,7 @@ public class BranchPropertiesList extends ListModule implements Annotatable {
 							return null;
 						}
 						myWindow.makeNewProperty(kind, name, !cb.getState());
-						//REMEMBER IN PREFS //Debugg.println BETWEENNESS = !cb.getState()
+						//REMEMBER IN PREFS BETWEENNESS = !cb.getState()
 					}
 				}
 				dialog.dispose();
@@ -502,7 +502,7 @@ public class BranchPropertiesList extends ListModule implements Annotatable {
 		return false;
 	}
 	public boolean rowsDeletable(){
-		return true;  //Debugg.println
+		return true; 
 	}
 	public boolean deleteRow(int row, boolean notify){
 		return internalDeleteRow(row, true);
@@ -631,10 +631,6 @@ class NodesAssociatesListWindow extends ListWindow implements MesquiteListener {
 		ListableVector mainPropertiesList = twMB.getBranchPropertiesList();
 		for (int i = 0; i<mainPropertiesList.size(); i++){
 			DisplayableBranchProperty property = (DisplayableBranchProperty)mainPropertiesList.elementAt(i);
-			if (MesquiteTrunk.developmentMode){ //Debugg.println delete before release
-				if (tree.isPropertyAssociated(property) != property.inCurrentTree)
-					MesquiteMessage.printStackTrace("!!! property.inCurrentTree not up to date!");
-			}
 			if (property.inCurrentTree)
 				associatesList.addElement(property, false);
 		}

@@ -75,7 +75,7 @@ public class RemoveAssociated extends TreeAltererMult {
 				}
 			}
 			if (notify && tree instanceof Listened) ((Listened)tree).notifyListeners(this, new Notification(MesquiteListener.ASSOCIATED_CHANGED));
-		} //Debugg.println( allow choices of what
+		} 
 		return true;
 	}
 	/*.................................................................................................................*/

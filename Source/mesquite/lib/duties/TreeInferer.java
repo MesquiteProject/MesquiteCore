@@ -209,6 +209,8 @@ public abstract class TreeInferer extends TreeBlockFiller {
 			return;
 		listened.removeListener(listener);
 	}
+	
+	boolean needToSizeDisplay = true;
 	protected void newResultsAvailable(TaxaSelectionSet outgroupSet){
 		MesquiteString title = new MesquiteString();
 		Tree tree = getLatestTree(null, null, title);
@@ -236,8 +238,8 @@ public abstract class TreeInferer extends TreeBlockFiller {
 				}
 				else 
 					stw.setMinimumFieldSize(-1, -1); 
-				stw.sizeDisplays(false);
-				
+				if (needToSizeDisplay) stw.sizeDisplays(false);
+				needToSizeDisplay = false;
 			}
 			String commands = getExtraIntermediateTreeWindowCommands();
 			if (!StringUtil.blank(commands)) {
@@ -256,6 +258,7 @@ public abstract class TreeInferer extends TreeBlockFiller {
 //This is used for just single current tree; a different system is used in ZephyrRunner for consensus trees
 	public MesquiteWindow prepareIntermediatesWindow(){
 		if (tWindowMaker == null) {
+			needToSizeDisplay = true;
 			tWindowMaker = (TWindowMaker)hireNamedEmployee(TWindowMaker.class, "#ObedientTreeWindow");
 			String commands = getExtraTreeWindowCommands(false, MesquiteLong.unassigned);
 			commands += " showWindowForce;";

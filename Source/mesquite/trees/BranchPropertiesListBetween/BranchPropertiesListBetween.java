@@ -96,7 +96,7 @@ public class BranchPropertiesListBetween extends BranchPropertiesListAssistant  
 					prohibited = true;
 				else if (tree.propertyIsBetween(pr) != toBranch) {
 					tree.setPropertyIsBetween(pr, toBranch);
-					//REMEMBER IN PREFS //Debugg.println BETWEENNESS
+					//REMEMBER IN PREFS BETWEENNESS
 					count++;
 				}
 			}

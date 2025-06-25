@@ -177,11 +177,7 @@ public class NodeLocsStandard extends NodeLocsVH {
 			showScaleMenuItem.setEnabled(false);
 			broadScaleMenuItem.setEnabled(false);
 
-			/*Debugg.println: if ultrametric, just add menu and use. If AUTO, add menu but rename as "Inhibit stretch if no BL".
-			 * 	if (showBranchLengths.getValue()==TreeDisplay.DRAWULTRAMETRIC || showBranchLengths.getValue()==TreeDisplay.AUTOSHOWLENGTHS)
-			 */
-			/*stretchMenuItem = addCheckMenuItem(null, "Inhibit Stretch Tree to Fit", makeCommand("inhibitStretchToggle", this), inhibitStretch);
-			evenMenuItem = addCheckMenuItem(null, "Even root to tip spacing", makeCommand("toggleEven", this), even);*/
+		
 		}
 
 
@@ -1643,7 +1639,7 @@ public class NodeLocsStandard extends NodeLocsVH {
 		TreeDrawing treeDrawing = treeDisplay.getTreeDrawing();
 		double buffer = treeDisplay.getTaxonSpacing()/4;
 		double[] scaleValues = null;
-		//Debugg.println CHECK FIXED SCALING
+
 		if (treeDisplay.getOrientation()==TreeDisplay.UP) {
 			double yBase = (totalScaleHeight-totalTreeHeight+extraDepthAtRootRequested)*scaling +treeDisplay.getTreeDrawing().y[drawnRoot];
 			double xPos = treeDisplay.getTreeDrawing().x[tree.rightmostTerminalOfNode(drawnRoot)] + buffer;

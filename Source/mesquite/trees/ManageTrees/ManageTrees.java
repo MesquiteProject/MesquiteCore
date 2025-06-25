@@ -1158,7 +1158,7 @@ public class ManageTrees extends TreesManager implements ItemListener {
 		}
 		else if (separateThread == 0) {// same thread
 			if (!saveDirectTreeFile(treeSourceTask, taxa, howManyTrees, file)){
-				alert("Sorry, no trees were returned by " + treeFillerTask.getName() + " [error code Debugg.println(!!! " + 0 + "]");
+				alert("Sorry, no trees were returned by " + treeFillerTask.getName());
 
 			}
 			return null;
