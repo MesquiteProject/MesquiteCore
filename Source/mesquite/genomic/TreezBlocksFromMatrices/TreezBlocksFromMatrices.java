@@ -92,12 +92,12 @@ public class TreezBlocksFromMatrices extends CharMatricesListUtility {
 				}
 			}
 		}
-		System.err.println("@ === about to initialize");
 		inferenceTask.initialize(taxa);
 		TreeInferer inferer = inferenceTask.getTreeInferer();
-		System.err.println("@ === inferer " + inferer);
-		if (inferer!= null)
+		if (inferer!= null){
 			inferer.setAlwaysPrepareForAnyMatrices(true);
+			inferer.setPlaceAllAnalysisFilesInSubdirectory(true);
+	}
 		Vector v = pauseAllPausables();
 		int count = 0;
 		int numFailed =0;

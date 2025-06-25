@@ -44,6 +44,17 @@ public class CharacterPartition  extends CharObjectSpecsSet {
 	public CharactersGroup getCharactersGroup(int part){
 		return (CharactersGroup)getProperty(part);
 	}
+	/**Returns whether there are groups*/
+	public boolean anyGroups(){
+		int next = 0;
+		for (int i=0; i<getNumberOfParts(); i++) {
+			CharactersGroup mq = getCharactersGroup(i);
+			if (mq!=null) {
+				return true;
+			}
+		}
+		return false;
+	}
 	/**Returns an array of all the partitions for all the charactes*/
 	public CharactersGroup[] getGroups(){
 		CharactersGroup[] temp = new CharactersGroup[getNumberOfParts()];

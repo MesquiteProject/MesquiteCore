@@ -273,6 +273,7 @@ public class FlagByPhyIN extends MatrixFlaggerForTrimmingSites implements Action
 		s += "<p>The additional filter for low occupancy sites is not formally part of PhyIN, but is offered here as a convenience, because PhyIN should be combined with a filter that removes highly gappy sites."; 
 		s += "<p>The low occupancy site filter is not available when running Process Data Files, because in that context the total number of taxa (and thus proportions) can vary file by file."; 
 		dialog.appendToHelpString(s);
+		dialog.setHelpURL("http://doi.org/10.7717/peerj.18504");
 
 		dialog.addLabel("PhyIN criteria for incompatible sites:");
 		SSField = dialog.addIntegerField("Length of blocks (-b)", blockSize, 4);

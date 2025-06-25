@@ -268,6 +268,8 @@ public class FlagByGblocks extends MatrixFlaggerForTrimming implements ActionLis
 				+ "<p><b>Reference for Gblocks</b>; Castresana J. 2000. Selection of conserved blocks from multiple alignments for their use in phylogenetic analysis. Molecular Biology and Evolution 17: 540–552"
 				+ " <a href = \"http://doi.org/10.1093/oxfordjournals.molbev.a026334\">doi:10.1093/oxfordjournals.molbev.a026334</a>";
 		dialog.appendToHelpString(s);
+		dialog.setHelpURL("https://www.biologiaevolutiva.org/jcastresana/Gblocks.html");
+
 		dialog.completeAndShowDialog(true);
 		if (buttonPressed.getValue()==0)  {
 			b1 = b1F.getValue();

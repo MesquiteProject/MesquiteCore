@@ -594,13 +594,9 @@ public abstract class CharacterData extends FileElement implements MesquiteListe
 	}
 	/*.................................................................................................................*/
 	public  boolean hasCharacterGroups(){
-		CharactersGroup[] parts =null;
 		CharacterPartition characterPartition = (CharacterPartition)getCurrentSpecsSet(CharacterPartition.class);
 		if (characterPartition!=null) {
-			parts = characterPartition.getGroups();
-		}
-		if (parts!=null){
-			return true;
+			return characterPartition.anyGroups();
 		}
 		return false;
 	}

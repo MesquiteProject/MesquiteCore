@@ -3077,14 +3077,14 @@ public class MesquiteTable extends MesquitePanel implements KeyListener, MouseWh
 	/* ............................................................................................................... */
 	/** Redraw (directly, without repaint()) all column names */
 	public void redrawColumnNames() {
-		for (int c = firstColumnVisible; c < getNumColumns(); c++)
+		for (int c = firstColumnVisible; c < getNumColumns() && c<= lastColumnVisible; c++)
 			redrawColumnName(c);
 	}
 
 	/* ............................................................................................................... */
 	/** Redraw (directly, without repaint()) all row names */
 	public void redrawRowNames() {
-		for (int c = firstRowVisible; c < getNumRows(); c++)
+		for (int c = firstRowVisible; c < getNumRows() && c<=lastRowVisible; c++)
 			redrawRowName(c);
 	}
 
