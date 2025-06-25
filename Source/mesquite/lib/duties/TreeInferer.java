@@ -52,6 +52,7 @@ public abstract class TreeInferer extends TreeBlockFiller {
 	 MesquiteBoolean autoSaveFile = new MesquiteBoolean(false);
 	 
 	 boolean alwaysPrepareForAnyMatrices=false;
+	 boolean placeAllAnalysisFilesInSubdirectory = false;
 
 	 
 	public Class getDutyClass() {
@@ -76,6 +77,15 @@ public abstract class TreeInferer extends TreeBlockFiller {
 	/*.................................................................................................................*/
 	public void setAlwaysPrepareForAnyMatrices(boolean alwaysPrepareForAnyMatrices) {
 		this.alwaysPrepareForAnyMatrices = alwaysPrepareForAnyMatrices;
+	}
+
+	/*.................................................................................................................*/
+	public boolean getPlaceAllAnalysisFilesInSubdirectory() {
+		return placeAllAnalysisFilesInSubdirectory;
+	}
+	/*.................................................................................................................*/
+	public void setPlaceAllAnalysisFilesInSubdirectory(boolean placeAllAnalysisFilesInSubdirectory) {
+		this.placeAllAnalysisFilesInSubdirectory = placeAllAnalysisFilesInSubdirectory;
 	}
 
 	/*.................................................................................................................*/

@@ -66,10 +66,16 @@ public class MesquiteFileUtil {
 		else if (location == IN_SUBDIRECTORY_BESIDE_HOME_FILE) {
 			String dir = module.getProject().getHomeFile().getDirectoryName();
 			if (StringUtil.notEmpty(subDirectoryName))
-				dir=dir+MesquiteFile.fileSeparator + subDirectoryName;
+				dir=dir+subDirectoryName +MesquiteFile.fileSeparator;
+			File f;
+			boolean b;
+			if (!MesquiteFile.fileExists(dir)) {
+				f = new File(dir);
+				b = f.mkdir();
+			}
 			String path = pathForFiles(dir, name, suffix, createUniqueDatedName);
-			File f = new File(path);
-			boolean b = f.mkdir();
+			f = new File(path);
+			b = f.mkdir();
 			directoryCreated.setValue(b);
 			if (b)
 				rootDir = path + MesquiteFile.fileSeparator;
