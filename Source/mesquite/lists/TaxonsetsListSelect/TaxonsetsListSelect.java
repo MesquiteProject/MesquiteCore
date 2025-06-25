@@ -14,6 +14,7 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
 package mesquite.lists.TaxonsetsListSelect;
 /* created May 02 */
 
+import mesquite.lib.Debugg;
 import mesquite.lib.MesquiteListener;
 import mesquite.lib.Notification;
 import mesquite.lib.SpecsSetVector;
@@ -86,7 +87,7 @@ public class TaxonsetsListSelect extends TaxonsetsListUtility {
 	}
 	/*.................................................................................................................*/
 	public boolean isPrerelease(){
-		return true;  
+		return false;  
 	}
 	public void endJob() {
 		super.endJob();

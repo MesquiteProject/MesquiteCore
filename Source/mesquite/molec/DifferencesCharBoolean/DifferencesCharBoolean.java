@@ -76,11 +76,11 @@ public class DifferencesCharBoolean extends BooleanForCharacter {
 	}
 
 	public String getExplanation() {
-		return "A boolean that is true if a character has variation in states, or some with states and some with gaps/missing data.";
+		return "A boolean that is true if a character has variation in states, or some with states and some with gaps/missing data; taxa without any data are not considered.";
 	}
 
 	public boolean isPrerelease() {
-		return true;
+		return false;
 	}
  	/*.................................................................................................................*/
  	/** returns the version number at which this module was first released.  If 0, then no version number is claimed.  If a POSITIVE integer
