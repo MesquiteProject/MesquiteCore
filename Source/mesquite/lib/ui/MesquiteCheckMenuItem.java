@@ -214,7 +214,6 @@ public class MesquiteCheckMenuItem extends CheckboxMenuItem implements Commandab
 	Journal j =null;
 	public void actionPerformed(ActionEvent e) {
 		//Event queue
-		System.err.println("@@@@@AE");
 		if (previousState != getState()) {   
 			if (disposed)
 				MesquiteMessage.notifyUser("Warning: attempt to use disposed checked menu item");
@@ -234,7 +233,6 @@ public class MesquiteCheckMenuItem extends CheckboxMenuItem implements Commandab
 			}
 			else	{
 				previousState = getState();
-				System.err.println("@@@@@AE2");
 				if ((e.getModifiers() & ActionEvent.ALT_MASK)!=0)
 					MesquiteWindow.respondToQueryMode("Menu item \"" + getLabel() + "\"", command, this);
 				else {
@@ -269,7 +267,6 @@ public class MesquiteCheckMenuItem extends CheckboxMenuItem implements Commandab
 			}
 			else {
 				previousState = getState();
-				System.err.println("@@@@@ISC");
 			/*	if ((e.getModifiers() & ActionEvent.ALT_MASK)!=0)
 					MesquiteWindow.respondToQueryMode("Menu item \"" + getLabel() + "\"", command, this);
 				else{*/
@@ -288,9 +285,7 @@ public class MesquiteCheckMenuItem extends CheckboxMenuItem implements Commandab
 
 	}
 
-	public void processEvent(AWTEvent e ){
-		System.err.println("@PE");
-	}
+	
 	//MesquiteCommand resetCommand = new MesquiteCommand("reset", this);
 	public void chooseItem(String arg) {
 		if (command == null || MesquiteTrunk.suppressMenuResponse)
