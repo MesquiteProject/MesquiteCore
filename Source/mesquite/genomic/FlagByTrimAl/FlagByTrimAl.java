@@ -170,6 +170,7 @@ public class FlagByTrimAl extends MatrixFlaggerForTrimming {
 		s += "<p><b>Reference for trimAl</b>: Capella-Gutiérrez, S., Silla-Martínez, J. M., & Gabaldón, T. (2009). trimAl: a tool for automated alignment trimming in large-scale phylogenetic analyses. Bioinformatics (Oxford, England), 25(15), 1972–1973."
 				+ "<a href = \"https://doi.org/10.1093/bioinformatics/btp348\">https://doi.org/10.1093/bioinformatics/btp348</a>";
 		dialog.appendToHelpString(s);
+		dialog.setHelpURL("https://trimal.readthedocs.io");
 		dialog.completeAndShowDialog(true);
 		if (buttonPressed.getValue()==0)  {
 			autoOption = alignmentMethodChoice.getSelectedIndex();

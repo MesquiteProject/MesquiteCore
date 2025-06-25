@@ -18,13 +18,12 @@
 	<classpathentry kind="lib" path="Resources/jars/dom4j-2.1.3.jar"/>
 	<classpathentry kind="lib" path="Resources/jars/gson-2.6.2.jar"/>
 	<classpathentry kind="lib" path="Resources/jars/httpclient-4.5.13.jar"/>
-	<classpathentry kind="lib" path="Resources/jars/iText.jar"/>
 	<classpathentry kind="lib" path="Resources/jars/Jama-1.0.1.zip"/>
-	<classpathentry kind="lib" path="Resources/jars/jsch-0.1.54.jar"/>
 	<classpathentry kind="lib" path="Resources/jars/JSci.zip"/>
 	<classpathentry kind="lib" path="Resources/jars/MRJToolkitStubs.zip"/>
 	<classpathentry kind="lib" path="Resources/jars/pal.zip"/>
 	<classpathentry kind="lib" path="Resources/jars/Ninja.jar"/>
 	<classpathentry kind="lib" path="Resources/jars/commons-io-2.18.0.jar"/>
+	<classpathentry kind="lib" path="Resources/jars/OpenPDF.jar"/>
 	<classpathentry kind="output" path="Mesquite_Folder"/>
-</classpath> 
+</classpath>
