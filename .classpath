@@ -25,5 +25,6 @@
 	<classpathentry kind="lib" path="Resources/jars/Ninja.jar"/>
 	<classpathentry kind="lib" path="Resources/jars/commons-io-2.18.0.jar"/>
 	<classpathentry kind="lib" path="Resources/jars/OpenPDF.jar"/>
+	<classpathentry kind="lib" path="Resources/jars/jsch-2.27.2.jar"/>
 	<classpathentry kind="output" path="Mesquite_Folder"/>
 </classpath>
