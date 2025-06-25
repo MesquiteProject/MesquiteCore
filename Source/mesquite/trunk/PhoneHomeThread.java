@@ -95,7 +95,8 @@ public class PhoneHomeThread extends Thread {
 	}
 	
 	public void postBean(NameValuePair[] pairs){
-		beans.addElement(pairs);
+		if (!MesquiteTrunk.developmentMode)
+			beans.addElement(pairs);
 	}
 	public void recordError(String s){
 		errorReports.addElement(s);
