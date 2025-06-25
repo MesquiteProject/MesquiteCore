@@ -46,7 +46,7 @@ public class ExportAssociation extends FileInterpreterI {
 	}
 
 	public boolean isPrerelease(){
-		return true;
+		return false;
 	}
 	public boolean isSubstantive(){
 		return true;
@@ -84,24 +84,6 @@ public class ExportAssociation extends FileInterpreterI {
 	String fileName = "Association.dat";
 
 	public boolean getExportOptions(TreeVector trees){
-		/*MesquiteInteger buttonPressed = new MesquiteInteger(1);
-		ExporterDialog exportDialog = new ExporterDialog(this,containerOfModule(), "Export tree file for DELINEATE", buttonPressed);
-		String helpString = "This will save a tree file ready to be uploaded into Open Tree (opentreeoflife.org).  It will optionally convert node values "+
-		"such as consensus frequences as branch lengths (as that is how Open Tree imports support values for branches).";
-		exportDialog.appendToHelpString(helpString);
-		exportDialog.setSuppressLineEndQuery(true);
-		exportDialog.setDefaultButton(null);
-		Checkbox convertToBranchLengthsBox = exportDialog.addCheckBox("convert node values to branch lengths", convertToBranchLengths);
-
-		exportDialog.completeAndShowDialog();
-
-		boolean ok = (exportDialog.query()==0);
-
-		convertToBranchLengths = convertToBranchLengthsBox.getState();
-
-		exportDialog.dispose();
-		return ok;
-		*/
 		return true;
 	}	
 	/*.................................................................................................................*/

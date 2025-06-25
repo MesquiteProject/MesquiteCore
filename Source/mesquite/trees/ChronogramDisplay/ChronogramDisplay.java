@@ -107,6 +107,10 @@ public class ChronogramDisplay extends TreeDisplayAssistantD {
 		return NEXTRELEASE;  
 	}
 	/*.................................................................................................................*/
+	public boolean isPrerelease(){
+		return false;  
+	}
+	/*.................................................................................................................*/
 	public   TreeDisplayExtra createTreeDisplayExtra(TreeDisplay treeDisplay) {
 		newPj = new ChonogramDisplayExtra(this, treeDisplay);
 		extras.addElement(newPj);

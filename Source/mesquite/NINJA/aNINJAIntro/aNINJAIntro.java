@@ -69,6 +69,10 @@ public class aNINJAIntro extends PackageIntro {
  	 public int getPackageVersionInt() {
 		return 100;
   	 }
+		/*.................................................................................................................*/
+ 	 public boolean loadModule() {
+		return false;
+  	 }
 
 	/*.................................................................................................................*/
 	public int getVersionOfFirstRelease(){

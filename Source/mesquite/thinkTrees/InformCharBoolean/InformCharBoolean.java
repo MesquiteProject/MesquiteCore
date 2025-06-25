@@ -40,7 +40,7 @@ public class InformCharBoolean extends BooleanForCharacter {
 	}
 
 	public boolean isPrerelease() {
-		return true; //because unformative teset changed
+		return false; 
 	}
  	/*.................................................................................................................*/
  	/** returns the version number at which this module was first released.  If 0, then no version number is claimed.  If a POSITIVE integer

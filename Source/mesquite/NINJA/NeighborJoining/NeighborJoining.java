@@ -233,9 +233,13 @@ public class NeighborJoining extends TreeInferer implements Incrementable, com.t
    	 }
    	 
    	 public boolean isPrerelease(){
-   	 	return true;
+   	 	return false;
    	 }
-	/*.................................................................................................................*/
+ 	/*.................................................................................................................*/
+   	 public boolean loadModule(){
+   	 	return false;
+   	 }
+ 	/*.................................................................................................................*/
    	 public boolean showCitation(){
    	 	return true;
    	 }
