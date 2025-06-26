@@ -59,7 +59,7 @@ public class CharMatricesListExport extends CharMatricesListProcessorUtility imp
 	}
 	/*.................................................................................................................*/
 	public boolean startJob(String arguments, Object condition, boolean hiredByName) {
-		 return true;
+		return true;
 	}
 	/*.................................................................................................................*/
 
@@ -116,7 +116,7 @@ public class CharMatricesListExport extends CharMatricesListProcessorUtility imp
 	/** Called to operate on the CharacterData blocks.  Returns true if taxa altered*/
 	public boolean operateOnDatas(ListableVector datas, MesquiteTable table){
 		if (datas.size() == 0)
-		return false;
+			return false;
 		incrementMenuResetSuppression();
 		getProject().incrementProjectWindowSuppression();
 
@@ -127,7 +127,7 @@ public class CharMatricesListExport extends CharMatricesListProcessorUtility imp
 		dialog.addLargeTextLabel(message);
 		dialog.addBlankLine();
 		useBaseName = dialog.addRadioButtons (new String[] {"Name files by matrix names", "Name files by base name and number"}, 0);
-		
+
 		baseLabel = dialog.addLabel("Base name for files:");
 		dialog.suppressNewPanel();
 		baseNameField = dialog.addTextField("untitled");
@@ -174,10 +174,7 @@ public class CharMatricesListExport extends CharMatricesListProcessorUtility imp
 		FileCoordinator coord = getFileCoordinator();
 		MesquiteFile tempDataFile = (MesquiteFile)coord.doCommand("newLinkedFile", StringUtil.tokenize(basePath + baseName + ".nex"), CommandChecker.defaultChecker); //TODO: never scripting???
 		TaxaManager taxaManager = (TaxaManager)findElementManager(Taxa.class);
-		CharacterData newMatrix=null;
-		CharacterData data = (CharacterData)datas.elementAt(0);
-		Taxa newTaxa =data.getTaxa().cloneTaxa(); //Debugg.println allow for a different taxa block on a later matrix!!!!!!!!
-		newTaxa.addToFile(tempDataFile, null, taxaManager);
+
 
 		ProgressIndicator progIndicator = new ProgressIndicator(getProject(),"Saving files", num);
 		progIndicator.start();
@@ -185,46 +182,61 @@ public class CharMatricesListExport extends CharMatricesListProcessorUtility imp
 		boolean usePrevious = false;
 		tempDataFile.exporting =1;
 		ListableVector names = new ListableVector();
-		
+
+		CharacterData newMatrix=null;
+		CharacterData data = null;
+
 		try {
-			for (int iMatrix = 0; iMatrix<num; iMatrix++){
-				if (progIndicator!=null)
-					progIndicator.setText("Saving file "+(iMatrix+1)+" of " + num);
-				data = (CharacterData)datas.elementAt(iMatrix);
-				MCharactersDistribution matrix = data.getMCharactersDistribution();
-				if (matrix==null)
-					return bailOut(tempDataFile, progIndicator);
+			ListableVector taxas = getProject().getTaxas();
+			for (int iTaxa = 0; iTaxa<taxas.size(); iTaxa++){
+				Taxa currentTaxa = (Taxa)taxas.elementAt(iTaxa);
+				if (getProject().getNumberCharMatrices(currentTaxa)>0){
+					Taxa newTaxa =currentTaxa.cloneTaxa(); 
+					newTaxa.addToFile(tempDataFile, null, taxaManager);
+					for (int iMatrix = 0; iMatrix<num; iMatrix++){
+						if (progIndicator!=null)
+							progIndicator.setText("Saving file "+(iMatrix+1)+" of " + num);
+						data = (CharacterData)datas.elementAt(iMatrix);
+						if (data.getTaxa() == currentTaxa){
+							MCharactersDistribution matrix = data.getMCharactersDistribution();
+							if (matrix==null)
+								return bailOut(tempDataFile, progIndicator);
 
-				CharactersManager manageCharacters = (CharactersManager)findElementManager(CharacterData.class);
-				CharMatrixManager manager = manageCharacters.getMatrixManager(matrix.getCharacterDataClass());
-				if (manager != null){
-					String fileName = baseName + (iMatrix+1);
-					if (!useBaseNameForFiles)
-						fileName = data.getName();
-					fileName = names.getUniqueName(fileName, "-");
-					newMatrix = matrix.makeCharacterData(manager, newTaxa);
-					newMatrix.setName(data.getName());
-					
-					logln("Saving file " + basePath + fileName + "\n" + newMatrix.getExplanation() + "\n");	
-					newMatrix.addToFile(tempDataFile, getProject(), null);
-					tempDataFile.setPath(basePath +  fileName + ".nex");  //if nexus
+							CharactersManager manageCharacters = (CharactersManager)findElementManager(CharacterData.class);
+							CharMatrixManager manager = manageCharacters.getMatrixManager(matrix.getCharacterDataClass());
+							if (manager != null){
+								String fileName = baseName + (iMatrix+1);
+								if (!useBaseNameForFiles)
+									fileName = data.getName();
+								fileName = names.getUniqueName(fileName, "-");
+								newMatrix = matrix.makeCharacterData(manager, newTaxa);
+								newMatrix.setName(data.getName());
 
-					names.addElement(new MesquiteString(fileName, fileName), false);
-					//should allow choice here
-					saveFile(exporterString, tempDataFile, fileName, directoryPath, usePrevious, coord); 
-					tempDataFile.exporting = 2;  //to say it's the second or later export in sequence
+								logln("Saving file " + basePath + fileName + "\n" + newMatrix.getExplanation() + "\n");	
+								newMatrix.addToFile(tempDataFile, getProject(), null);
+								tempDataFile.setPath(basePath +  fileName + ".nex");  //if nexus
 
-					newMatrix.deleteMe(false);
-					newMatrix = null;
-					System.gc();
-				}
-				if (progIndicator!=null) {
-					progIndicator.setCurrentValue(iMatrix+1);
-					if (progIndicator.isAborted()) {
-						break;
+								names.addElement(new MesquiteString(fileName, fileName), false);
+								//should allow choice here
+								saveFile(exporterString, tempDataFile, fileName, directoryPath, usePrevious, coord); 
+								tempDataFile.exporting = 2;  //to say it's the second or later export in sequence
+
+								newMatrix.deleteMe(false);
+								newMatrix = null;
+								System.gc();
+							}
+							if (progIndicator!=null) {
+								progIndicator.setCurrentValue(iMatrix+1);
+								if (progIndicator.isAborted()) {
+									break;
+								}
+							}
+							usePrevious = true;
+						}
 					}
+					newTaxa.deleteMe(false);
+
 				}
-				usePrevious = true;
 			}
 		}
 		catch (Exception e) {
@@ -239,9 +251,9 @@ public class CharMatricesListExport extends CharMatricesListProcessorUtility imp
 			}
 		}
 		names.dispose(true);
-		
+
 		tempDataFile.close();
-		
+
 		if (progIndicator!=null) 
 			progIndicator.goAway();
 
@@ -249,7 +261,7 @@ public class CharMatricesListExport extends CharMatricesListProcessorUtility imp
 		getProject().decrementProjectWindowSuppression();
 		decrementMenuResetSuppression();	
 		return true;
-}
+	}
 	/*.................................................................................................................*/
 	/** returns whether this module is requesting to appear as a primary choice */
 	public boolean requestPrimaryChoice(){

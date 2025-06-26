@@ -80,7 +80,7 @@ public class BranchProperty extends PropertyRecord  {
 		if (kind == Associable.BUILTIN || BranchProperty.findInBranchPropertySettings(nRef, kind) != null)
 			return false;
 		if (this.belongsToBranch != belongsToBranch){
-			//Debugg.println("!!!  recordInVector;
+			//Record this?
 		}
 		this.belongsToBranch = belongsToBranch;
 		return true;

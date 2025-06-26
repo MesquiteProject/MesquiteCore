@@ -366,7 +366,6 @@ public class ModulesInfoVector extends ListableVector {
 		while ((mbi = findNextModule(dutyClass, mbi))!=null) {
 			//todo: could check for compatibility here as in menus
 			if (mbi.doesDuty(dutyClass) && mbi.getUserChooseable()) {
-				//Debugg.println("  " + mbi.getName() + " condition " + condition + " isCompatible " + mbi.isCompatible(condition, proj, prospectiveEmployer));
 				if (mbi.isCompatible(condition, proj, prospectiveEmployer))
 					count++;
 			}

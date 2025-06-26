@@ -86,9 +86,10 @@ public class OpenFileSpecifyTreeDialect extends GeneralFileMakerSingle {
 			//NOTE these two check boxes might seem to interact, but will autosave only if Phylip, 
 			//and will include only if NEXUS. The reason inclusion is allowed only with NEXUS is that 
 			//phylip reading will try to use an existing taxa block, which can cause unrecognized taxon name warnings.
-			//Debugg.println fix this by file reading hint to switch to invent taxa block if taxon name not recognized?!?!
+			
+			//Fix this by file reading hint to switch to invent taxa block if taxon name not recognized?!?!
 			//or warn user that only to be used if same taxa block???
-			if (!isNexus)
+			if (!isNexus && !includingInExistingProject)
 				autoSaveB = dialog.addCheckBox("Auto-save converted NEXUS file", true); 
 			dialog.addHorizontalLine(1);
 			if (!isNexus) {

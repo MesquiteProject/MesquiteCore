@@ -1303,7 +1303,7 @@ public abstract class CharacterData extends FileElement implements MesquiteListe
 	}
 	/*-----------------------------------------------------------*/
 	/** Deletes characters in linked data matrices. */
-	public final void deleteInLinked(int starting, int num, boolean notify){ //WAYNEEFF Debugg.println
+	public final void deleteInLinked(int starting, int num, boolean notify){ //WAYNEEFF 
 		if (linkedDatas.size()>0){
 			for (int i=0; i<linkedDatas.size(); i++){
 				CharacterData d = (CharacterData)linkedDatas.elementAt(i);
@@ -1315,7 +1315,7 @@ public abstract class CharacterData extends FileElement implements MesquiteListe
 	}
 	/*-----------------------------------------------------------*/
 	/** Deletes characters in linked data matrices. */
-	public final void deleteInLinkedFlagged(Bits bits, boolean notify){ //WAYNEEFF Debugg.println
+	public final void deleteInLinkedFlagged(Bits bits, boolean notify){ //WAYNEEFF 
 		if (linkedDatas.size()>0){
 			for (int i=0; i<linkedDatas.size(); i++){
 				CharacterData d = (CharacterData)linkedDatas.elementAt(i);
@@ -1324,7 +1324,7 @@ public abstract class CharacterData extends FileElement implements MesquiteListe
 		}
 	}
 	/** Deletes characters in linked data matrices. *
-	protected void deleteInLinkedBy Blocks(int[][] blocks){ //WAYNEEFF Debugg.println
+	protected void deleteInLinkedBy Blocks(int[][] blocks){ //WAYNEEFF
 		if (linkedDatas.size()>0){
 			for (int i=0; i<linkedDatas.size(); i++){
 				CharacterData d = (CharacterData)linkedDatas.elementAt(i);
@@ -3645,7 +3645,7 @@ public boolean removeCharactersThatAreEntirelyGaps(boolean notify){
 			for (int iA = 0; iA<num; iA++){
 				StringArray array = getAssociatedStrings(iA); //CAssocStrings
 				//	updateChecksum(checksum, array.getValue(ic));
-				updateChecksum(components[CS_CAssocObjects], array.getValue(ic));  //Debugg.println change to strings?
+				updateChecksum(components[CS_CAssocObjects], array.getValue(ic));  
 			}
 			num = getNumberAssociatedObjects();
 			for (int iA = 0; iA<num; iA++){

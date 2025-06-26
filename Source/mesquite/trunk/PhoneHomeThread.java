@@ -114,7 +114,7 @@ public class PhoneHomeThread extends Thread {
 				BaseHttpRequestMaker.contactServer(contactMessage, "", url, response);
 				String r = response.toString();
 				System.err.println(r);
-				//if mqrv or Feedback included in response, then this is real response
+
 				if (!StringUtil.blank(r) && (r.indexOf("mq4v")>=0 || r.indexOf("Version")>=0)){
 					PhoneHomeUtil.phoneHomeSuccessful = true;
 					MesquiteTrunk.mesquiteTrunk.logln("\nMesquite contacted its server to log your version and check for notices and updates. (To turn this off, choose \"Contact Mesquite Server on Startup\" in File>Defaults> submenu.)");

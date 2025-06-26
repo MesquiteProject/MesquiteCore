@@ -172,7 +172,7 @@ public class ManageTaxa extends TaxaManager {
 		}
 		return newTaxa;
 	}
-	/*.................................................................................................................*/   //Debugg.println    WAYNECHECK
+	/*.................................................................................................................*/  
 	public Taxa quietMakeNewTaxaBlock(int numTaxa) {
 		Taxa newTaxa=null;
 		String title= getProject().getTaxas().getUniqueName("Taxa");

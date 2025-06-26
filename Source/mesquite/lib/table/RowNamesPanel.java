@@ -413,7 +413,7 @@ public class RowNamesPanel extends EditorPanel implements FocusListener  {
 					table.shimmerHorizontalOn(y);
 					lastY=y;
 				}
-				else if (table.getUserMoveRow()) {  //Debugg.println( why was this usermovecolumn? 
+				else if (table.getUserMoveRow()) {  
 					table.shimmerHorizontalOff(lastY, shimmerRow);
 					shimmerRow = findRow(x, y);
 					table.shimmerHorizontalOn(y);

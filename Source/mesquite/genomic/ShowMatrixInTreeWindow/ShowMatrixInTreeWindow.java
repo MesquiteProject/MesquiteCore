@@ -859,7 +859,7 @@ class ShowMatrixLinkedExtra extends TreeDisplayExtra implements TreeDisplayBkgdE
 		}
 		g.setColor(oldColor);
 		//	timers[4].end();
-		//	System.err.println("  before " + timers[0].getAccumulatedTime() + " draw "  + timers[1].getAccumulatedTime() + " rect " + timers[2].getAccumulatedTime()  + " overallBefore " + timers[3].getAccumulatedTime() + " overallAfter " + timers[4].getAccumulatedTime());
+		//	println("  before " + timers[0].getAccumulatedTime() + " draw "  + timers[1].getAccumulatedTime() + " rect " + timers[2].getAccumulatedTime()  + " overallBefore " + timers[3].getAccumulatedTime() + " overallAfter " + timers[4].getAccumulatedTime());
 	}
 	/*.................................................................................................................*/
 	/* ========================================= */

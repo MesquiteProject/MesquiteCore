@@ -166,7 +166,7 @@ public abstract class DataSpecssetList extends ListModule {
     	 	}
     	 	else if (checker.compare(this.getClass(), "Returns the current data matrix", null, commandName, "getData")) {
     	 		Object o = ((ListWindow)getModuleWindow()).getCurrentObject(); 
-    	 		if (o instanceof SpecsSetVector) {//Debugg.println -- make sure this handles all types returned
+    	 		if (o instanceof SpecsSetVector) {
     	 			SpecsSetVector ssv = (SpecsSetVector)o;
     	 			o = (CharacterData)ssv.getObjectCharacterized();
     	 		}

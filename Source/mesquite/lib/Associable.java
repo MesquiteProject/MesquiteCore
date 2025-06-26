@@ -1004,14 +1004,14 @@ public ListableVector getAssociatesOfKind(int kind){
 		if (pos==null || node>numParts || node<0 || StringUtil.blank(assocString))
 			return;
 		String key=ParseUtil.getToken(assocString, pos, whitespace, punctuation);
-		if (reportReading) Debugg.println("!!!" + pos.getValue() + " ~~~~~~~~~~~~readAssociated at " + pos.getValue() + "  " + assocString);
+		if (reportReading) MesquiteMessage.println("!!!" + pos.getValue() + " ~~~~~~~~~~~~readAssociated at " + pos.getValue() + "  " + assocString);
 		while (!">".equals(key)) {
 			if (StringUtil.blank(key))
 				return;
-			if (reportReading) Debugg.println("!!!~~KEY " + key);
-			if (reportReading) Debugg.println("     @~~preferred kind " + PropertyRecord.preferredKind(key));
+			if (reportReading) MesquiteMessage.println("!!!~~KEY " + key);
+			if (reportReading) MesquiteMessage.println("     @~~preferred kind " + PropertyRecord.preferredKind(key));
 			String eq = ParseUtil.getToken(assocString, pos, whitespace, punctuation); //eating up equals
-			if (reportReading) Debugg.println("     !!!~~equal " + eq);
+			if (reportReading) MesquiteMessage.println("     !!!~~equal " + eq);
 			int oldPos = pos.getValue();
 			String value = ParseUtil.getToken(assocString, pos, whitespace, punctuation); //finding value
 			value=StringUtil.removeFirstCharacterIfMatch(value, '\'');
@@ -1019,7 +1019,7 @@ public ListableVector getAssociatesOfKind(int kind){
 			//if (whitespace != null && whitespace.length() == 0){
 			value = StringUtil.stripLeadingWhitespace(value);
 			value = StringUtil.stripTrailingWhitespace(value);
-			if (reportReading) Debugg.println("     !!!~~[value] [" + value + "]");
+			if (reportReading) MesquiteMessage.println("     !!!~~[value] [" + value + "]");
 			//}
 			if (StringUtil.blank(value))
 				return;
@@ -1083,7 +1083,7 @@ public ListableVector getAssociatesOfKind(int kind){
 			else if (value.indexOf("{") == 0) { //treat as Objects (DoubleArray or StringArray) bounded by {}; e.g., added to read BEAST results
 				int pPos = pos.getValue();
 				double vn = MesquiteDouble.fromString(assocString, pos);
-				if (reportReading) Debugg.println("    {}~~ vn " + vn);
+				if (reportReading) MesquiteMessage.println("    {}~~ vn " + vn);
 				if (MesquiteDouble.isCombinable(vn)){ //Objects: DoubleArrays
 					pos.setValue(pPos);
 					DoubleArray values = new DoubleArray(1);
@@ -1091,12 +1091,12 @@ public ListableVector getAssociatesOfKind(int kind){
 					int count = 1;
 					while (!"}".equals(s)) {
 						double v = MesquiteDouble.fromString(assocString, pos);
-						if (reportReading) Debugg.println("    v~~ " + v);
+						if (reportReading) MesquiteMessage.println("    v~~ " + v);
 						values.resetSize(count);
 						values.setValue(count-1, v);
 						count++;
 						s=ParseUtil.getToken(assocString, pos, whitespace, punctuation); //comma or }
-						if (reportReading) Debugg.println("    s{}~~ " + s);
+						if (reportReading) MesquiteMessage.println("    s{}~~ " + s);
 
 					}
 
@@ -1115,7 +1115,7 @@ public ListableVector getAssociatesOfKind(int kind){
 						values.setValue(count-1, s);
 						count++;
 						s=ParseUtil.getToken(assocString, pos, whitespace, punctuation); //comma or }
-						if (reportReading) Debugg.println("    s{}~~ " + s);
+						if (reportReading) MesquiteMessage.println("    s{}~~ " + s);
 					}
 
 					NameReference nr = makeAssociatedObjects(key);
@@ -1124,7 +1124,7 @@ public ListableVector getAssociatesOfKind(int kind){
 				}
 			}
 			else if ((PropertyRecord.preferredKind(key)== Associable.DOUBLES) || (forceNumberToDouble && MesquiteNumber.isNumber(value)) || ((value.indexOf(".")>=0) && MesquiteDouble.interpretableAsDouble(assocString, pos, oldPos))) { //treat as double 
-				if (reportReading) Debugg.println("    ~~to double " + value);
+				if (reportReading) MesquiteMessage.println("    ~~to double " + value);
 				NameReference nrEx= NameReference.getNameReference(key);   // fixed in 3.01
 				DoubleArray bb = getAssociatedDoubles(nrEx);       //Finding doubles if they exist
 				if (bb == null) {
@@ -1148,15 +1148,15 @@ public ListableVector getAssociatesOfKind(int kind){
 			//at this point there are just two alternatives left that are recognized: a string, and an integer
 			//first check to see if it could be a number
 			else if ("0123456789-+".indexOf(value.charAt(0))<0 || MesquiteLong.fromString(value) == MesquiteLong.impossible) {  //doesn't start as number or starts as number but not interpretable as long
-				if (reportReading) Debugg.println("    ~~to string " + value);
-				if (reportReading) Debugg.println("          ~~\"0123456789-+\".indexOf(value.charAt(0))<0 " + ("0123456789-+".indexOf(value.charAt(0))<0));
-				if (reportReading) Debugg.println("          ~~MesquiteLong.fromString(value) == MesquiteLong.impossible " + (MesquiteLong.fromString(value) == MesquiteLong.impossible));
+				if (reportReading) MesquiteMessage.println("    ~~to string " + value);
+				if (reportReading) MesquiteMessage.println("          ~~\"0123456789-+\".indexOf(value.charAt(0))<0 " + ("0123456789-+".indexOf(value.charAt(0))<0));
+				if (reportReading) MesquiteMessage.println("          ~~MesquiteLong.fromString(value) == MesquiteLong.impossible " + (MesquiteLong.fromString(value) == MesquiteLong.impossible));
 				NameReference nr = makeAssociatedStrings(key);
 				StringArray bb = getAssociatedStrings(nr);
 				bb.setValue(node, value);
 			}
 			else {  //treat as long, unless (fixed in 3.01) same name exists as DoubleArray in which case put there
-				if (reportReading) Debugg.println("    {}~~to long or double " + value );
+				if (reportReading) MesquiteMessage.println("    {}~~to long or double " + value );
 				NameReference nrEx= NameReference.getNameReference(key);   // 
 				DoubleArray bbd = getAssociatedDoubles(nrEx);       //Finding doubles if they exist; if so, use as doubles instead!!!!!
 				if (bbd != null){

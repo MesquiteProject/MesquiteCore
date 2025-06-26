@@ -393,7 +393,7 @@ public abstract class InterpretFasta extends FileInterpreterI implements ReadFil
 								setFastaState(data,ic, taxonNumber, c);    // setting state to that specified by character c
 						}
 						if (numFilledChars<ic) //DAVIDCHECK This had been after the ic += 1 which led to a blank site at end for some matrices
-							numFilledChars=ic;  //Debugg.println
+							numFilledChars=ic; 
 						ic += 1;
 						if (ic % 100==0)//== 0 && timer.timeSinceVeryStartInSeconds() % 1.0 <0.001)
 							progIndicator.setSecondaryMessage("Reading character " + ic);
@@ -675,7 +675,7 @@ public abstract class InterpretFasta extends FileInterpreterI implements ReadFil
 		return false;
 	}
 	protected boolean includeOnlyTaxaWithData = true;// TO DO: also have the option of only writing taxa with data in them
-	//Debugg.println how is this different from !writeTaxaWithAllMissing?
+	//ZQ how is this different from !writeTaxaWithAllMissing?
 
 	
 	/*------------------*/

@@ -20,9 +20,7 @@ import mesquite.lib.tree.TreeVector;
 
 /* ======================================================================== */
 public abstract class TreeListInit extends MesquiteModule  {
-	public boolean loadModule(){ //Debugg.println replaced by eye show tool
-		return false;
-	}
+	//Not yet used? 4.0
 
    	 public Class getDutyClass() {
    	 	return TreeListInit.class;
