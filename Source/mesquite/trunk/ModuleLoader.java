@@ -231,6 +231,16 @@ public class ModuleLoader {
 		}
 	}
 
+	String[] builtIns= new String[]{"trunk", "align", "ancstates", "assoc", "basic", "batchArch", "bayesian", "categ", "charMatrices", "charts", 
+			"coalesce", "consensus", "cont", "correl", "distance", "diverse", "dmanager", "externalCommunication", "genesis", 
+			"genomic", "io", "iText", "jama", "jsci", "lib", "lists", "meristic", "minimal", "molec", "NINJA", "opentree", 
+			"ornamental", "pairwise", "pal", "parsimony", "rhetenor", "search", "stochchar", "thinkTrees", "tol", 
+			"treefarm", "trees", "zephyr", "chromaseq", "cartographer"};
+	boolean isBuiltInPackage(String folder){
+		if (folder == null || folder.length() == 0 || folder.charAt(0) == '.' || folder.endsWith(".class"))
+			return true;
+		return StringArray.indexOf(builtIns, folder)>=0;
+	}
 	
 	void addModulesAtPaths(String relativeTo, String[] pathsFileContents){
 		if (pathsFileContents == null)return;
@@ -384,6 +394,10 @@ public class ModuleLoader {
 	String[] indent = {" ", "    ", "        ", "            ", "                ", "                   ", "                        "};
 	void getModules(ClassLoader loader, String packageName, String path, String fileName, int level, StringArray targetDirectories, boolean targetOn, boolean loadingAll){ //path has no slash at the end of it
 		String filePathName;
+		if (level == 1){
+			if (!isBuiltInPackage(fileName))
+				MesquiteTrunk.mesquiteTrunk.postMicroBean("ExtrPkg", fileName);
+		}
 		if (StringUtil.blank(fileName))
 			filePathName = path;  //
 		else

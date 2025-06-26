@@ -1406,6 +1406,21 @@ public abstract class MesquiteModule extends EmployerEmployee implements Command
 	/*.................................................................................................................*/
 
 	/** posts a Bean to the bean log on the MesquiteServer*/
+	public void postMicroBean(String heading, String value) {
+		if (!MesquiteTrunk.reportUse){
+			return;
+		}
+		if (MesquiteTrunk.noBeans) {
+			return;
+		}
+		NameValuePair[] pairs = new NameValuePair[2];
+		pairs[0] = new NameValuePair("note", StringUtil.tokenize(heading));
+		pairs[1] = new NameValuePair("value", StringUtil.tokenize(value));
+		if (MesquiteTrunk.phoneHomeThread != null)
+			MesquiteTrunk.phoneHomeThread.postBean(pairs);
+
+	}
+	/** posts a Bean to the bean log on the MesquiteServer*/
 	public void postBean(String notes, boolean notifyUser) {
 		if (!MesquiteTrunk.reportUse){
 			return;
