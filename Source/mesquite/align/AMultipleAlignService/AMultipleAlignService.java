@@ -22,7 +22,7 @@ import mesquite.lib.table.MesquiteTable;
 public class AMultipleAlignService extends MolecularDataAlterer  implements AltererAlignShift{
 	public void getEmployeeNeeds(){  //This gets called on startup to harvest information; override this and inside, call registerEmployeeNeed
 		EmployeeNeed e2 = registerEmployeeNeed(MultipleSequenceAligner.class, getName() + " needs a module to calculate alignments.",
-		"The sequence aligner is chosen in dialogs or in the Align Sequences or Selected Block submenu");
+		"The sequence aligner is chosen in dialogs or in the Align Sequences or Selected Cell Block submenu");
 	}
 	MultipleSequenceAligner aligner;
 	/*.................................................................................................................*/
@@ -136,7 +136,7 @@ public class AMultipleAlignService extends MolecularDataAlterer  implements Alte
 	 }
 	/*.................................................................................................................*/
 	 public String getNameForMenuItem() {
-	return "Align Sequences or Selected Block";
+	return "Align Sequences or Selected Cell Block";
 	 }
 	/*.................................................................................................................*/
  	/** returns an explanation of what the module does.*/
