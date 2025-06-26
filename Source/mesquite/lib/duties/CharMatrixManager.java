@@ -121,8 +121,6 @@ public abstract class CharMatrixManager extends MesquiteModule   {
 		if (data.interleaved) {  //vvvvvvvv  INTERLEAVED #################################################################
 			boolean warned = false;
 
-			//	if (FileParser.READ_MATRIX_DIRECT_FROM_FILE)  //Debugg.println
-			//		alert("Reading of interleaved files is currently broken. Please change FileParser.READ_MATRIX_DIRECT_FROM_FILE to false and try again");
 			int[] currentCharacter = new int[taxa.getNumTaxa()];
 			for (int i=firstTaxon; i<taxa.getNumTaxa(); i++) currentCharacter[i] =0;
 			boolean done = false;
@@ -290,7 +288,7 @@ public abstract class CharMatrixManager extends MesquiteModule   {
 			String problem = null;
 			int lastTaxonNumber = -1;
 
-			if (NEXUSFileParser.verbose) Debugg.println("###############  CMM ");
+			if (NEXUSFileParser.verbose) MesquiteMessage.println("###############  CMM ");
 			for (int it=firstTaxon; it<taxa.getNumTaxa() && !isEndLine(taxonName=parser.getNextToken(false)); it++) {
 
 				boolean preserveNewTaxon = false;
@@ -336,7 +334,7 @@ public abstract class CharMatrixManager extends MesquiteModule   {
 					}
 				}
 				CommandRecord.tick("Reading character states for " + taxa.getTaxonName(whichTaxon));
-				if (NEXUSFileParser.verbose)  Debugg.println("###############  CMM1");
+				if (NEXUSFileParser.verbose)  MesquiteMessage.println("###############  CMM1");
 				int ic=0;
 				lastTaxonNumber = whichTaxon;
 				if (fuse){ //vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv    FUSE
@@ -416,7 +414,6 @@ public abstract class CharMatrixManager extends MesquiteModule   {
 					extraTaxon++;
 
 			}
-			//		MatrixFileParser.verbose = true; //Debugg.println delete
 			if (fuse){
 				taxa.deleteTaxa(extraTaxon, 1, false); 
 				data.deleteTaxa(extraTaxon, 1);

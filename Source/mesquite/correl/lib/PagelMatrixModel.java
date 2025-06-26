@@ -1685,7 +1685,7 @@ public class PagelMatrixModel extends MultipleProbCategCharModel implements Eval
 		switch (modelType){
 			case MODEL4PARAM:{
 				return "q12(alpha1) =" + params[1] + "\nq13(alpha2) = " 
-				             + params[0] + "\nq21(beta1) = " + params[3] + "\nq31(beta2) = " + params[2]+ "\nRATEMATRIX\n" + Double2DArray.toString(rateMatrix);  //Debugg.println
+				             + params[0] + "\nq21(beta1) = " + params[3] + "\nq31(beta2) = " + params[2]+ "\nRATEMATRIX\n" + Double2DArray.toString(rateMatrix);  
 			}
 			case MODEL8PARAM:{
 				return "q12 = " + params[0] + "\nq13 = " + params[1] + 
@@ -1722,13 +1722,13 @@ public class PagelMatrixModel extends MultipleProbCategCharModel implements Eval
 				return "q12 = " + params[0] + " q13 = " + params[1] + 
 		                  " q21 = " + params[2] + " q31 = " + params[3] +
 		                  " q24 = " + params[4] + " q34 = " + params[0] +
-		                  " q42 = " + params[5] + " q43 = " + params[2] + "\nRATEMATRIX\n" + Double2DArray.toString(rateMatrix);  //Debugg.println
+		                  " q42 = " + params[5] + " q43 = " + params[2] + "\nRATEMATRIX\n" + Double2DArray.toString(rateMatrix);  
 			}
 			case MODEL6PARAMINDEPENDENTY:{  //TODO trim me
 				return "q12 = " + params[0] + " q13 = " + params[1] + 
 		                  " q21 = " + params[2] + " q31 = " + params[3] +
 		                  " q24 = " + params[1] + " q34 = " + params[4] +
-		                  " q42 = " + params[3] + " q43 = " + params[5]+ "\nRATEMATRIX\n" + Double2DArray.toString(rateMatrix);  //Debugg.println
+		                  " q42 = " + params[3] + " q43 = " + params[5]+ "\nRATEMATRIX\n" + Double2DArray.toString(rateMatrix);  
 			}
 		}
 		return null;

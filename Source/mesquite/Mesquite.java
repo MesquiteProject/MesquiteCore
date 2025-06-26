@@ -286,11 +286,11 @@ public class Mesquite extends MesquiteTrunk
 		if (verboseStartup) System.out.println("main init 2");
 
 		// [Search for MQLINUX]
-		if (isLinux()) {
+		/*if (isLinux()) {
 			linuxGWAThread = new LinuxGWAThread();
 			linuxGWAThread.start();
 		}
-
+*/
 
 		String sep = MesquiteFile.fileSeparator;
 
@@ -685,11 +685,12 @@ public class Mesquite extends MesquiteTrunk
 		if (minimalStartup)
 			logln("File called \"minimalStartup\" detected at " + MesquiteModule.getRootPath()+ ".  Mesquite will start with a minimal configuration of modules.");
 
-
+		//==============  LOADING MODULES   ===============
 		if (verboseStartup) System.out.println("main init 26");
 		mBL.init(configFile, configurations, minimalStartup);
 		if (verboseStartup) System.out.println("main init 27");
-
+		//==============================================
+		
 		int count = 0;
 		if (isPrerelease())
 			count++;
@@ -911,6 +912,8 @@ public class Mesquite extends MesquiteTrunk
 		if (debugMode) MesquiteMessage.println("startup time: " + (System.currentTimeMillis()-startingTime));
 		if (MesquiteTrunk.debugMode)
 			addMenuItem(helpMenu, "Test Error Reporting", makeCommand("testError", this));
+		
+		postExtraPackagesReport();
 
 	} 
 

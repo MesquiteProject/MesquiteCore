@@ -312,7 +312,7 @@ public class Parser extends StringUtil {
 		return line == null;
 	}
 	private boolean storageZeroLength() {
-		return line != null && (line.equals(""));  //Debugg.println this equals should have a special method; it will always return false here
+		return line != null && (line.equals(""));  
 	}
 	private String getQuoted() {
 		if (storageNull())
@@ -417,7 +417,7 @@ public class Parser extends StringUtil {
 		else if (pos.getValue()<0 || line.length() == 0)
 			return null;
 		else
-			return line.toString().substring((int)pos.getValue(), (int)line.length());  //Debugg.println deal with longs?
+			return line.toString().substring((int)pos.getValue(), (int)line.length());  
 	}
 
 	public void setQuoteCharacter(char c){
@@ -1216,7 +1216,7 @@ public class Parser extends StringUtil {
 		else {
 			String st = line.toString();
 
-			return st.substring((int)startPos,(int)endPos.getValue()); //Debugg.println
+			return st.substring((int)startPos,(int)endPos.getValue()); 
 		}
 	}
 	/*............................................  ....................................................*/

@@ -322,12 +322,12 @@ public class MesquiteFrame extends Frame implements Commandable, MQComponent {
 		catch (Exception e){
 			//strange things can happen with threading...
 		}
-		MesquiteThread.shouldBeOnMesquiteThread(true);	//Debugg.println set to false before release	
+		MesquiteThread.shouldBeOnMesquiteThread(false);	//Debugg.println set to false before release	
 		alreadyDisposed = true;
 		if (activeWindow == this)
 			activeWindow = null;
 		totalDisposed++;
-		MesquiteThread.shouldBeOnMesquiteThread(true);
+		MesquiteThread.shouldBeOnMesquiteThread(false);
 		super.dispose();
 		ownerModule = null;
 		if (project != null && project.getFrame() == this) {

@@ -58,7 +58,6 @@ public class ColorDistribution {
 
 	public static StringArray standardColorNames;
 	static ObjectArray standardColors, standardColorsDimmed, standardColorsAsHex;
-	static int[] translationOldToNewStandardNumbers;
 	public static double dimmingConstant = 0.3;
 	public static int NO_COLOR = 18;
 	static {
@@ -183,7 +182,6 @@ public class ColorDistribution {
 		standardColorNames.setValue(13, "Cyan");
 		standardColorNames.setValue(15, "Light Blue");
 
-		translationOldToNewStandardNumbers = new int[]{}; //Debugg.println()
 
 		//DO NOT ASSIGN A COLOR AT OR ABOVE NO_COLOR (currently 18)
 		standardColorsDimmed = new ObjectArray(18);

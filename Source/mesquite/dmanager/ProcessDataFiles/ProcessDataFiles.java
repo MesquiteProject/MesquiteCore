@@ -461,9 +461,9 @@ public class ProcessDataFiles extends GeneralFileMakerMultiple implements Action
 						if (progIndicator!= null)
 							progIndicator.setSecondaryMessage("Processing by " + fProcessor.getNameAndParameters());
 						int returnCode = fProcessor.processFile(fileToRead, result);
-						if (returnCode!=0) { //Debugg.println this fails if doing gene trees and raxml fails to get tree because of 3 taxa. Should there be different levels of failure?
+						if (returnCode!=0) { 
 							logln("Sorry,  " + fProcessor.getNameAndParameters() + " did not succeed in processing the file " + fileToRead.getFileName());
-							if (returnCode <0 && !warned[i]) { //Debugg.println this fails if doing gene trees and raxml fails to get tree because of 3 taxa. Should there be different levels of failure?
+							if (returnCode <0 && !warned[i]) { 
 								continuePlease = AlertDialog.query(containerOfModule(), "Processing step failed", "Processing of file " + fileToRead.getFileName() + " by " + fProcessor.getNameAndParameters() + " failed. Do you want to continue with this file?", "Continue", "Stop with This File");
 								warned[i] = true;
 							}
@@ -645,7 +645,7 @@ public class ProcessDataFiles extends GeneralFileMakerMultiple implements Action
 		if (fi != null)
 			fi.sortAllBlocks();
 		}
-		//Debugg.println see if any other suppressions are on! pauseables?
+		//See if any other suppressions are on! pauseables?
 		zeroMenuResetSuppression();
 		logln("Total time for processing (excluding first file): " + timer.timeSinceVeryStartInHoursMinutesSeconds());
 

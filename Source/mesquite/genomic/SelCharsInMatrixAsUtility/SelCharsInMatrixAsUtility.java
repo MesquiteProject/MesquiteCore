@@ -101,7 +101,6 @@ public class SelCharsInMatrixAsUtility extends CharMatricesListProcessorUtility 
 	/** Called to operate on the CharacterData blocks.  Returns true if taxa altered*/
 	public boolean operateOnDatas(ListableVector datas, MesquiteTable table){
 		CompatibilityTest test = selectTask.getCompatibilityTest();
-		Debugg.println("selectTask " + selectTask.getName() + " test ");
 		firstTime = true;
 		getProject().getCoordinatorModule().setWhomToAskIfOKToInteractWithUser(this);
 		if (getProject() != null)

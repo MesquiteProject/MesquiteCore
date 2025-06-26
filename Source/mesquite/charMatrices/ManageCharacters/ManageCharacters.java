@@ -2198,7 +2198,7 @@ public class ManageCharacters extends CharactersManager {
 				 }
 			 }
 			 else if (commandName.equalsIgnoreCase("MATRIX")) {
-				 if (NEXUSFileParser.verbose)  Debugg.println("###############  MATRIX");
+				 if (NEXUSFileParser.verbose)  MesquiteMessage.println("###############  MATRIX");
 				 if (data==null) {
 					 alert("Error in NEXUS file:  Matrix without FORMAT statement");
 				 }
@@ -2209,9 +2209,9 @@ public class ManageCharacters extends CharactersManager {
 					 }
 					 boolean wassave = data.saveChangeHistory;
 					 data.saveChangeHistory = false;
-					 if (NEXUSFileParser.verbose) Debugg.println("  [[[[[[[[[[[[ processMatrix");
+					 if (NEXUSFileParser.verbose) MesquiteMessage.println("  [[[[[[[[[[[[ processMatrix");
 					 data.getMatrixManager().processMatrix(taxa, data, commandParser, numChars, false, 0, newTaxaFlag, fuse, file);
-					 if (NEXUSFileParser.verbose)  Debugg.println("  ]]]]]]]]]]]] processMatrix");
+					 if (NEXUSFileParser.verbose)  MesquiteMessage.println("  ]]]]]]]]]]]] processMatrix");
 					 if (data.interleaved) 
 						 commandParser.setLineEndingsDark(false);
 					 commandParser.consumeNextIfSemicolon();
@@ -2259,12 +2259,12 @@ public class ManageCharacters extends CharactersManager {
 				 boolean success = false;
 				 
 				 if (NEXUSFileParser.verbose)
-					 Debugg.println("###############<<<  " + commandParser.getFilePosition());
+					 MesquiteMessage.println("###############<<<  " + commandParser.getFilePosition());
 				 String commandString = commandParser.getNextCommand();
 				 if (NEXUSFileParser.verbose)
-					 Debugg.println("###############>>>>>  " + commandParser.getFilePosition() + " " + commandString);
+					 MesquiteMessage.println("###############>>>>>  " + commandParser.getFilePosition() + " " + commandString);
 				 if (NEXUSFileParser.verbose)
-					 Debugg.println("############ (next is  " + commandParser.getNextCommandNameWithoutConsuming() + " ");
+					 MesquiteMessage.println("############ (next is  " + commandParser.getNextCommandNameWithoutConsuming() + " ");
 				 if (data !=null && data.getMatrixManager()!=null)
 					 success = data.getMatrixManager().processCommand(data, commandName, commandString);
 				 if (!success && b != null) {

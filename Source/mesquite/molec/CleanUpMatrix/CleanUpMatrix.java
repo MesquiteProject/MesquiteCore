@@ -4,6 +4,7 @@ import java.awt.Checkbox;
 
 import mesquite.categ.lib.CategDataAlterer;
 import mesquite.categ.lib.DNAData;
+import mesquite.categ.lib.MolecularDataAlterer;
 import mesquite.categ.lib.MolecularDataUtil;
 import mesquite.lib.IntegerField;
 import mesquite.lib.MesquiteInteger;
@@ -24,12 +25,12 @@ import mesquite.lib.ui.RadioButtons;
  *  
  */
 /* ======================================================================== */
-public class CleanUpMatrix extends CategDataAlterer implements AltererAlignShift {
+public class CleanUpMatrix extends MolecularDataAlterer implements AltererAlignShift {
 	boolean reverseComplementIfNecessary = true;
 	boolean multipleSequenceAlignment = true;
 	int referenceSequence = 1;
 	boolean setCodonPositions = false;
-	CategDataAlterer aligner = null;
+	MolecularDataAlterer aligner = null;
 	
 	/*.................................................................................................................*/
 	public boolean startJob(String arguments, Object condition, boolean hiredByName) {
@@ -117,7 +118,8 @@ public String preparePreferencesForXML () {
   			MolecularDataUtil.reverseComplementSequencesIfNecessary(data, module, taxa, 0, taxa.getNumTaxa(), referenceSequence, false, false, false);
    		if (multipleSequenceAlignment){
    			if (aligner==null)
-   				aligner= (CategDataAlterer)hireNamedEmployee(CategDataAlterer.class, "#AMultipleAlignService");
+   				aligner= (MolecularDataAlterer)hireNamedEmployee(MolecularDataAlterer.class, "#AMultipleAlignService");
+   			
    			if (aligner!=null)
    				aligner.alterData(data, null,  null);
    		} else

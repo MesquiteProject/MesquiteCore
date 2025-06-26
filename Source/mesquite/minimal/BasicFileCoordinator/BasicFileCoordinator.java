@@ -1226,7 +1226,7 @@ public class BasicFileCoordinator extends FileCoordinator implements PackageIntr
 			if (getProject() == null || getProject().getHomeFile() == null)
 				siga = false; //can't revert
 			else {
-				boolean otherModulesOKWithClosing = fileCloseRequested(); //Debugg.println should pass sometjhing to learn if user was already pstered?
+				boolean otherModulesOKWithClosing = fileCloseRequested(); 
 				// if not, no need to ask further and leave siga set to false
 				if (otherModulesOKWithClosing){
 					if (getProject().isDirty() || getProject().getIgnoreDirtWhenCloseRequested()){ //ok, dirty, so need to ask

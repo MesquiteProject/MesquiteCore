@@ -22,6 +22,8 @@ import java.awt.Panel;
 import java.util.Enumeration;
 import java.util.Vector;
 
+import org.apache.commons.httpclient.NameValuePair;
+
 import mesquite.lib.duties.BrowseHierarchy;
 import mesquite.lib.duties.FileCoordinator;
 import mesquite.lib.misc.HPanel;
@@ -347,6 +349,25 @@ public abstract class MesquiteTrunk extends MesquiteModule
 	/** Records new or newly opened file among Recent Files */
 	public static String[] getRecentFileNames(){
 		return recentFiles.getStrings();
+	}
+	
+	/*.................................................................................................................*/
+	/** posts a Bean to the bean log on the MesquiteServer*/
+	public void postExtraPackagesReport() {
+		if (!MesquiteTrunk.reportUse || MesquiteTrunk.phoneHomeThread == null || MesquiteTrunk.noBeans) 
+			return;
+		if (extraPkgs.size() == 0)
+			return;
+		String value = "ExtrPkgs";
+		for (int i= 0; i< extraPkgs.size(); i++)
+			value += " " + (String)extraPkgs.elementAt(i);
+		postMicroBean(value);
+	}
+	Vector extraPkgs = new Vector();
+	/*.................................................................................................................*/
+	/** Notes that extra package found*/
+	public void noteExtraPackage(String pkgName) {
+		extraPkgs.addElement(pkgName);
 	}
 	/*.................................................................................................................*/
 	public static Thread startupShutdownThread = null;

@@ -123,7 +123,6 @@ public class FileBlock {
 		while (!emptyToken(unconsumed) && !unconsumed.equals(";")) 
 			unconsumed = file.nextToken(null);
 
-		if (NEXUSFileParser.verbose) Debugg.println("======GNCNWC-FB -[" + unconsumed + "]");
 		return unconsumed;
 	}
 

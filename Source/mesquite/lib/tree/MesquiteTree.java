@@ -3096,12 +3096,7 @@ public class MesquiteTree extends Associable implements AdjustableTree, Listable
 			if (taxon>=0){
 				System.out.println("Observed taxon " + c + " in ancestral position; not yet allowed by Mesquite.  Tree will not be read in properly");
 			}
-			//if (cosmeticInternalNames){
-			/* Debugg.println delete this? if (MesquiteNumber.isNumber(c) && checkNumericalLabelInterpretation(c)){
-				double d = MesquiteDouble.fromString(c);
-				setAssociatedDouble(defaultValueCodeRef, sN, d, interpretNumericalLabelsAsOnBranches);
-			}
-			else */
+			
 			setNodeLabel(c, sN); 
 
 			if (!MesquiteNumber.isNumber(c) && taxa!=null && taxa.getClades()!=null && taxa.getClades().findClade(c) == null){
@@ -3656,14 +3651,14 @@ and the tree has been rerooted. Properties that belong to nodes implicitly have 
 	/** Reads the tree description string and sets the tree object to store the tree described.*/
 	public boolean readTree(String TreeDescription, MesquiteInteger startingPos, TaxonNamer namer, String whitespaceString, String punctuationString, boolean readAssociated) {
 		deassignAssociated();
-		/**
-		Debugg.printStackTrace("###################################################");
+		/**  //here to debug new dialects
+		MesquiteMessage.printStackTrace("###################################################");
 		if (startingPos != null) {
-			Debugg.println("DESCRIPTION AS RECEIVED BY TREE (stringLoc " + startingPos.getValue() + ") =\n" + TreeDescription +"\n");
-			Debugg.println("   substring " + justAfter(TreeDescription, startingPos.getValue()));
+			MesquiteMessage.println("DESCRIPTION AS RECEIVED BY TREE (stringLoc " + startingPos.getValue() + ") =\n" + TreeDescription +"\n");
+			MesquiteMessage.println("   substring " + justAfter(TreeDescription, startingPos.getValue()));
 		}
 		else
-			Debugg.println("DESCRIPTION AS RECEIVED BY TREE=\n" + TreeDescription +"\n");
+			MesquiteMessage.println("DESCRIPTION AS RECEIVED BY TREE=\n" + TreeDescription +"\n");
 		/**/
 		ObjectContainer correspondenceContainer = null;
 		if (startingPos != null)
@@ -3674,13 +3669,13 @@ and the tree has been rerooted. Properties that belong to nodes implicitly have 
 		if (startingPos !=null) 
 			startingPos.setValue(getTranslatedLoc(correspondenceContainer, startingPos.getValue()));//this needs to be reset to the translated position!
 		if (startingPos != null){
-			Debugg.println("#####################DESCRIPTION AS PROCESSED (stringLoc " + startingPos.getValue() + ") =\n" + TreeDescription +"\n");
-			Debugg.println("   substring " + justAfter(TreeDescription, startingPos.getValue()));
+			MesquiteMessage.println("#####################DESCRIPTION AS PROCESSED (stringLoc " + startingPos.getValue() + ") =\n" + TreeDescription +"\n");
+			MesquiteMessage.println("   substring " + justAfter(TreeDescription, startingPos.getValue()));
 		}
 		else 
-			Debugg.println("#####################DESCRIPTION AS PROCESSED=\n" + TreeDescription +"\n");
+			MesquiteMessage.println("#####################DESCRIPTION AS PROCESSED=\n" + TreeDescription +"\n");
 		if (correspondenceContainer != null)
-			Debugg.println("!!! " + IntegerArray.toString((int[])correspondenceContainer.getObject()));
+			MesquiteMessage.println("!!! " + IntegerArray.toString((int[])correspondenceContainer.getObject()));
 
 		/**/
 		//QZ: if whitespace or punc passed in, don't override?
@@ -5752,7 +5747,7 @@ public DisplayableBranchProperty[] getPropertyRecords(){
 	return names;
 }
 /* NOTE: if you add a name to one of these lists, you should consider if it should be added to the 
-	values in ManageTrees.queryAboutNumericalLabelIntepretation() */ //Debugg.println
+	values in ManageTrees.queryAboutNumericalLabelIntepretation() */ 
 
 
 

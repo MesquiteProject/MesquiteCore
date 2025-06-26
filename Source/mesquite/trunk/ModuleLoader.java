@@ -396,7 +396,7 @@ public class ModuleLoader {
 		String filePathName;
 		if (level == 1){
 			if (!isBuiltInPackage(fileName))
-				MesquiteTrunk.mesquiteTrunk.postMicroBean("ExtrPkg", fileName);
+				MesquiteTrunk.mesquiteTrunk.noteExtraPackage(fileName);
 		}
 		if (StringUtil.blank(fileName))
 			filePathName = path;  //
