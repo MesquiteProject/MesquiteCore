@@ -73,6 +73,7 @@ public class ProcessDataFiles extends GeneralFileMakerMultiple implements Action
 	boolean incorporateScript = false;
 	Vector fileProcessors = null;
 	boolean cancelProcessing = false;
+	static boolean beaned = false;
 	/*.................................................................................................................*/
 	public boolean startJob(String arguments, Object condition, boolean hiredByName){
 		loadPreferences();
@@ -698,7 +699,6 @@ public class ProcessDataFiles extends GeneralFileMakerMultiple implements Action
 
 	/*.................................................................................................................*/
 	public MesquiteProject establishProject(String arguments) {
-		boolean success= false;
 		directoryPath = MesquiteFile.chooseDirectory("Choose folder containing data files:", lastDirectoryUsed); //MesquiteFile.saveFileAsDialog("Base name for files (files will be named <name>1.nex, <name>2.nex, etc.)", baseName);
 		if (StringUtil.blank(directoryPath))
 			return null;
@@ -724,10 +724,10 @@ public class ProcessDataFiles extends GeneralFileMakerMultiple implements Action
 		processDirectory(directoryPath);  //DLOG: here asks for file extension filter and whether to save as NEXUS
 		//and inside that, //DLOG asks abotu processors
 		storePreferences(); //Do this regardless of success
-		if (success){
-			//project.autosave = true;
-			processProject.isProcessDataFilesProject = false;
-			return processProject;
+		
+		if (!beaned){
+			postBean("ProcessDataFiles-started");
+			beaned = true;
 		}
 		processProject.isProcessDataFilesProject = false;
 		processProject.developing = false;

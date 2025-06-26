@@ -62,7 +62,7 @@ public class ParallelAlterMatrixAsUtility extends CharMatricesListProcessorUtili
 	}
 
 	DataAlterer firstAlterTask = null;
-
+static boolean beaned = false;
 	/* ................................................................................................................. */
 	public boolean startJob(String arguments, Object condition, boolean hiredByName) {
 		loadPreferences();
@@ -79,6 +79,10 @@ public class ParallelAlterMatrixAsUtility extends CharMatricesListProcessorUtili
 		if (!queryOptions()) {
 			fireEmployee(firstAlterTask);
 			return false;
+		}
+		if (!beaned){
+			postBean("ParallelAlterMatrixAsUtility-started");
+			beaned = true;
 		}
 		return true;
 	}

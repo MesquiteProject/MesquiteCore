@@ -2596,14 +2596,19 @@ public class Mesquite extends MesquiteTrunk
 		}
 		else if (checker.compare(this.getClass(), "Causes intentional crash", null, commandName, "pleaseCrash")) {
 			String s = null;
+			fakeCrashCount++;
+			System.err.println("###PleaseCrash### " + fakeCrashCount);
 			s.substring(0, 2);
+		}
+		else if (checker.compare(this.getClass(), "Shows useless dialog", null, commandName, "fakeDialog")) {
+			AlertDialog.query(containerOfModule(), "Hello", "Hi!", "OK", "OK");
 		}
 
 		else
 			return  super.doCommand(commandName, arguments, checker);
 		return null;
 	}
-
+int fakeCrashCount = 0;
 	/*.................................................................................................................*/
 	private void dumpFileList(String path, String name, String spacer){
 		File f = new File(path);  //

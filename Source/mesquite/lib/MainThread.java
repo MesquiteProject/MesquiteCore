@@ -127,7 +127,10 @@ public class MainThread extends MesquiteThread {
 								MesquiteThread.setLoggerCurrentThread(c.getSupplementalLogger());
 								loggerSet = true;
 							}
-							setWindowContext(c.getWindowContext()); //in case a command wants to know what was the window from which it was called. Currently (v 4) works only for MesquiteMenuItem called commands
+							if (c != null)
+								setWindowContext(c.getWindowContext()); //in case a command wants to know what was the window from which it was called. Currently (v 4) works only for MesquiteMenuItem called commands
+							else
+								setWindowContext(MesquiteTrunk.mesquiteTrunk.containerOfModule());
 							pc.go();
 							setWindowContext(null); //in case a command wants to know what was the window from which it was called. Currently (v 4) works only for MesquiteMenuItem called commands
 							if (loggerSet){

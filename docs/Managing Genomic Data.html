@@ -41,7 +41,7 @@
     <td width="51%"><strong id="PackageTitle">Mesquite</strong></td>
     <td width="33%" align="right"><div id="subtitle"><!-- InstanceBeginEditable name="subtitle" -->Working with Phylogenomic Data<!-- InstanceEndEditable --></div></td>
     <td width="2%">&nbsp;</td>
-    <td width="14%">Version 4.0beta2<br />
+    <td width="14%">Version 4.0<br />
       June 2025<br /></td>
   </tr>
 </table>
@@ -307,6 +307,7 @@
    <li><strong>Spruceup</strong> (Borowiec 2019) — A partial implementation of Spruceup v.2024.07.22, restricted to "criterion:mean" and "distance_method:uncorrected".</li>
    <li><strong>Sparse Ends</strong> — Deletes terminal regions (ends) of alignment if too many of the sequences are in the regions of terminal gaps. (That is, beyond the last observed nucleotide.) "Too many" can be defined either in terms of proportions or absolute numbers of taxa.&nbsp;</li>
  </ul>
+	  We are grateful to Salvador Capella-Gutierrez and Jose Castresana for permitting us to bundle trimAl and Gblocks with Mesquite, and to Marek Borowiec for assisting us in reprogramming parts of Spruceup in Mesquite.
  	  <h3 id="toc10">Trimming before or after concatenation<a name="beforeOrAfter"></a></h3>
 <p>A major choice you face is <strong>whether to trim before or after concatenation of loci</strong>. Some methods like trimAl and Spruceup trim more effectively with the concatenated data, because then they have more information from which to judge expected patterns of similarity (see Maddison 2025). However, trimming after concatenation has the potential disadvantage of obscuring discordances among loci due to incomplete lineage sorting or hybridization (Maddison, 2025). PhyIN and Gblocks are about equally efficient before or after concatenation.</p><p>Trimming that counts gaps can have different effects when done at different stages. For example, trimAl and Gblocks will generally result in harsher trimming if done after concatenation because of incomplete locus occupancy. If a taxon has no data for a locus, its gaps are not counted against the sites in that locus when the locus is trimmed individually. Gblocks and trimAl are only given the data for those taxa that actually do have sequence data for the locus. But, in a concatenation, those taxa are shown as all gaps in those loci. Those gaps count against the sites because trimAl and Gblocks do not know that they represent the locus being missing in a few taxa. PhyIN can also show different trimming, because in a concatenation, PhyIN is no longer able to distinguish internal and terminal gaps. Trimming results can also differ depending on whether they are done on individual data files (e.g. during importing by Process Data Files) or on the matrices after they all part of the same file. When part of the same file, Mesquite knows about the existence of all of the taxa, even if some have no sequence for some of the matrices. Thus,  Gappy Sites (Low Occupancy Sites) has a choice as to how to count taxa. If you want to treat this filter as a site-level occupancy criterion, then do NOT select "Ignore gaps in taxa with no data in matrix". If you want to mimic the results you would obtain were you to process the loci individually in separate files (e.g. in a scripted pipeline), choose "Ignore". </p>
  <p>Here are our recommendations:</p>
@@ -323,10 +324,15 @@
 	  	  <iframe width="800" height = "450" src="https://www.youtube.com/embed/ndWfwyAJilU" frameborder="0" allow="autoplay; encrypted-media" allowfullscreen></iframe><p>&nbsp;</p>
  <hr />
  <h2 id="toc10">Gene trees<a name="geneTrees"></a></h2>
- <p>Mesquite can reconstruct gene trees for all of the individual matrices in a file using the Utilities>Trees from Matrices... menu item in the List of Characters Window. [MORE TO COME HERE]</p>
-	  <p>paralogy test (including reroot all)</p>
-	  <p>using with ASTRAL</p>
-	  <p>concordance factors?</p>
+ <p>Mesquite can reconstruct gene trees for all of the individual matrices in a file using the Utilities>Trees from Matrices... menu item in the List of Characters Window.</p>
+	  <p>You can reroot all gene trees by selecting the outgroup taxa and then, in the List of Trees window, selecting List&gt;Utilities&gt;Alter Trees&gt;Root tree with selected taxa as outgroup. Given that gene trees are often missing taxa, you had best root in stages. For instance, if you have to outgroups O1 and O2, such that O2 is closer to the ingroup (study group), we would suggest you first select the taxa in O1 AND O2, reroot the gene trees, then selet only those in O1, and reroot again. That way, if a gene has no taxa in O1 but does in O2, it will get rooted by them, but the later O1 rooting will ensure it has priority in the rooting in case a gene has both O1 and O2 taxa. After rerooting, you can get rid of all the +'s in the gene tree names by List&gt;Tree Names&gt;Remove from Name.
+
+<p>In the List of Trees, a useful statistic to show via Column&gt;Number for Tree is the Ratio of Longest Branches. If the longest branch is much longer than the second longest branch, it make suggest paralogy. We have sometimes used a ratio of 5 as casting doubt on the gene, and deleted matrices whose branch length ratio is 5 or more. To do this, touch on the magic wand tool in the list window, and hold the mouse button until the popup appears. Select Specify and Use Target Value. In the dialog, choose Ratio of Longest Branches from the list, enter the cutoff (e.g., 5) in the target value, select equal and greater than, and choose OK. The trees with Ratio of Longest Branches greater than or equal to 5 will be selected. Then the task is to find the corresponding matrices. If the tree name is based on the matrix name (as it would be if you inferred them in the List of Character Matrices&gt;Utilities&gt;Trees from Matrices), then you may be able to go to List&gt;Utilities&gt;Select Matrices Linked to Selected Trees to select the matrices. You may also be able to use, in the List of Character Matrices window, List&gt;Select&gt;Select by List in Clipboard, after you have copied into the clipboard a list of the suspicious matrix names.
+
+<p>If you want to see all of the gene trees of a particular sort, select them in the List of Trees window (e.g., all with a Ratio of Longest Branches greater than or equal to 5), and then show a tree window (e.g. touch on tree block name in the project panel and choose View Trees). If you hold the option/alt key as you click on the scroll arrows in upper left, it will go from selected tree to selected tree.
+
+<p>To see the alignment from which a gene tree was derived, in the Tree window showing the gene tree, select Tree&gt;Show Matrix in Tree Window.
+
 
 
 <!-- InstanceEndEditable -->

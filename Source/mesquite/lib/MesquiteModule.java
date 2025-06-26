@@ -1268,15 +1268,16 @@ public abstract class MesquiteModule extends EmployerEmployee implements Command
 		MesquiteTrunk.errorReportedToHome++;
 	}
 	boolean okToReportErrors(){
-		return PhoneHomeUtil.phoneHomeSuccessful  && !MesquiteTrunk.suppressErrorReporting && !MesquiteTrunk.developmentMode;
+		return PhoneHomeUtil.phoneHomeSuccessful  && !MesquiteTrunk.suppressErrorReporting && !MesquiteTrunk.developmentMode;  
 	}
 	boolean reportErrorsAutomatically(){
-		return MesquiteException.reportErrorsAutomatically.getValue() || mesquiteTrunk.isPrerelease();
+		return (MesquiteException.reportErrorsAutomatically.getValue() || mesquiteTrunk.isPrerelease());
 	}
 	/*.................................................................................................................*/
 	/** Displays an alert in connection to an exception*/
 	public void exceptionAlert(Throwable e, String s) {
 		String incompatibilityMessage = null;
+		String origS = s;
 		if (e instanceof NoSuchMethodError){
 			incompatibilityMessage = "An error indicates that you may have a package installed that is incompatible "
 					+ "with this version of Mesquite. Please check your add-on packages like Zephyr, Chromaseq, etc. to ensure they are up to date,"
@@ -1307,6 +1308,7 @@ public abstract class MesquiteModule extends EmployerEmployee implements Command
 		if (!okToReportErrors()){
 			if (StringUtil.notEmpty(incompatibilityMessage))
 				discreetAlert(incompatibilityMessage + "\n" + rep);
+			System.err.println(origS);
 			if (!MesquiteThread.isScripting() && !AlertDialog.query(containerOfModule(), "Crash", s, "OK", "Force Quit"))
 				MesquiteTrunk.mesquiteTrunk.exit(true, 0);
 			return;
@@ -1328,6 +1330,8 @@ public abstract class MesquiteModule extends EmployerEmployee implements Command
 			if (reportErrorsAutomatically()) {
 				reportCrashToHome(e, s);
 			}
+			System.err.println(origS);
+
 			if (!MesquiteThread.isScripting() && !AlertDialog.query(containerOfModule(), "Crash", s, "OK", "Force Quit"))
 				MesquiteTrunk.mesquiteTrunk.exit(true, 0);
 		}

@@ -10,8 +10,4 @@ java
 
 Place the above line as the first line of this file if you want to use your system's current default version of Java. 
 
-JAVA 1.8:
-/Library/Internet Plug-Ins/JavaAppletPlugin.plugin/Contents/Home/bin/java
-
-Place the above line as the first line of this file if you want to use Java 1.8. Mesquite will crash with Java 1.8 in places, but you may learn to avoid those!
-
+NOTE: Mesquite 4 and above require at least Java 9 or above, preferably Java 17 or above.
