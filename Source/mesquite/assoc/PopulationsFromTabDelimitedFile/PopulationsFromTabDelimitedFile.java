@@ -19,6 +19,7 @@ import mesquite.assoc.lib.PopulationsAndAssociationMaker;
 import mesquite.assoc.lib.TaxaAssociation;
 import mesquite.lib.MesquiteInteger;
 import mesquite.lib.MesquiteListener;
+import mesquite.lib.MesquiteMessage;
 import mesquite.lib.MesquiteString;
 import mesquite.lib.MesquiteTabDelimitedFileProcessor;
 import mesquite.lib.Notification;
@@ -92,17 +93,20 @@ public class PopulationsFromTabDelimitedFile extends PopulationsAndAssociationMa
 				+ "If two contained taxa have the same name in the later column, they will be assigned to the same population";
 		
 		dialog.appendToHelpString(helpString);
-
+		
 		SingleLineTextField populationBlockNameField = dialog.addTextField("Name of population/containing taxa block:",nameOfPopulationTaxaBlock, 20);
 		mesquiteTabbedFile.addTabbedFileChooser(dialog, "File containing columns of specimen and population names", "Column containing population names");
-
+		
 		dialog.completeAndShowDialog(true);
 		boolean success=(buttonPressed.getValue()== dialog.defaultOK);
 		if (success)  {
-			mesquiteTabbedFile.processTabbedFileChoiceExtensibleDialog();
+			if (!mesquiteTabbedFile.processTabbedFileChoiceExtensibleDialog()) {
+				MesquiteMessage.discreetNotifyUser("You must enter a path to the tabbed file.");
+				return false;
+			} 
 			sampleCodeList = mesquiteTabbedFile.getSampleCodeList();
 			if (sampleCodeList==null)
-					return false;
+				return false;
 			mesquiteTabbedFile.processNameCategories();
 			chosenNameCategory = mesquiteTabbedFile.getChosenNameCategory();
 			nameOfPopulationTaxaBlock = populationBlockNameField.getText();

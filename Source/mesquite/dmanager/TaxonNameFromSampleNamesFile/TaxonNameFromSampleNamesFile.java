@@ -20,6 +20,7 @@ import java.awt.Choice;
 import mesquite.lib.CommandChecker;
 import mesquite.lib.MesquiteBoolean;
 import mesquite.lib.MesquiteInteger;
+import mesquite.lib.MesquiteMessage;
 import mesquite.lib.MesquiteString;
 import mesquite.lib.MesquiteTabDelimitedFileProcessor;
 import mesquite.lib.StringUtil;
@@ -215,7 +216,10 @@ public class TaxonNameFromSampleNamesFile extends TaxonNameAlterer  {
 		dialog.completeAndShowDialog(true);
 		boolean success=(buttonPressed.getValue()== dialog.defaultOK);
 		if (success)  {
-			mesquiteTabbedFile.processTabbedFileChoiceExtensibleDialog();
+			if (!mesquiteTabbedFile.processTabbedFileChoiceExtensibleDialog()) {
+				MesquiteMessage.discreetNotifyUser("You must enter a path to the tabbed file.");
+				return false;
+			} 
 			mesquiteTabbedFile.processNameCategories();
 			sampleCodeList = mesquiteTabbedFile.getSampleCodeList();
 			chosenNameCategory = mesquiteTabbedFile.getChosenNameCategory();

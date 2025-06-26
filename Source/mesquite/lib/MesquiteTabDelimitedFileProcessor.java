@@ -128,9 +128,11 @@ import mesquite.lib.ui.SingleLineTextField;
 		}
 		
 		/*.................................................................................................................*/
-		public void processTabbedFileChoiceExtensibleDialog () {
+		public boolean  processTabbedFileChoiceExtensibleDialog () {
 			sampleCodeListPath = sampleCodeFilePathField.getText();
 			chosenNameCategory = categoryChoice.getSelectedIndex();
+			return StringUtil.notEmpty(sampleCodeListPath);
+				
 	}
 
 		/*.................................................................................................................*/
