@@ -210,20 +210,18 @@
   <a name="New Features, Bugs, and History of Features and Bug Fixes--Features in the next release version of Mesquite; the latest source code in the development branch of the MesquiteProject/MesquiteCore repository on GitHub contains these changes" id="New Features, Bugs, and History of Features and Bug Fixes--Features in the next release version of Mesquite; the latest source code in the development branch of the MesquiteProject/MesquiteCore repository on GitHub contains these changes"></a>Features to come in the next release version of Mesquite are listed <a href="https://github.com/MesquiteProject/MesquiteCore/wiki/New-features-and-bug-fixes-in-the-development-version">on this web page</a>. These new features and bug fixes are already contained in latest source code in the development branch of the MesquiteProject/MesquiteCore repository on GitHub.</p>
   <hr />
  <h3>Version 4.0</h3>
-<ul><li>Many new convenience features</li>
-<li>Much faster and cleaner graphics under Windows and Linux</li>
-<li>Many bug fixes</li>
-<li>New ways to manage matrices, taxa, groups, and taxa associations</li>
-</ul>
+This major update has many new features, both big and small. There are new ways to build workflows and manage taxa, characters, and trees. The interface has many improvements, including new tools and actions from right-clicking. It has much faster and cleaner graphics under Windows and Linux. There are many bug fixes.
+<p>
 	  The following is a brief summary of some of the areas of improvement.
 <h4>Phylogenomics and molecular phylogenetics</h4>
 <ul><li>Performance with big data (tested to 150 taxa X 3500 genes = 2M sites)</li>
 <li>Pipeline building (“Process data files”)</li>
 <li>“Batch processing”, e.g., align all matrices or infer gene tree for each matrix </li>
-<li>Alignment trimming by built-in trimAl, Gblocks, Spruceup, and the new PhyIN.</li>
+<li>Alignment visualizaton and trimming/exclusion by built-in trimAl, Gblocks, Spruceup, and the new PhyIN</li>
 <li>Aligners MAFFT and MUSCLE built-in</li>
 <li>Parallel processing for trimming and alignment</li>
-<li>Improved Genbank information management</li>
+<li>BLAST integration, including ability to make BLASTable local database from fasta files</li>
+<li>Improved Genbank information and submission management</li>
 </ul>
 <h4>Tree inference managed by Zephyr</h4>
 <ul><li>IQ-TREE, RAxML built-in</li>
@@ -237,19 +235,7 @@
 <li>Showing matrix beside tree (“character data boxes”)</li>
 <li>Trace all changes</li>
 </ul>
-	  FOLLOWING TO BE DELETED?<h4 id="toc90">New Features </h4>
- <ul>
-   <li>Added ability to make BLASTable database from FASTA files (Utilities&gt;Make BLASTable files from FASTA ...).</li>
-   <li>Added feature to trim a specified length from the start and end of each taxon's data (e.g., trimming 40 bases from the start and end of each selected sequence) - available in the Alter&gt;Basic Data Cell Manipulation submenu.</li>
-   <li><strong>Export NEXUS for BEAST2</strong> now optionally exports the current character partition as charsets for import into BEAUTi.</li>
-   <li>Added Exclude Character by GBLOCKS (Matrix &gt; Character Inclusion / Exclusion &gt; Exclude Character by GBLOCKS</li>
-   <li>Added ability to remove selected branches from tree (Tree &gt; Alter/Transform Tree &gt; Remove Selected Internal Branches from Tree)</li>
- </ul>
- <h4 id="toc91">Bug Fixes, Workarounds, and Improvements</h4>
- <ul>
-   <li>Bug that caused BLASTing of local databases to fail if more than one hit was to be returned has been fixed (introduced in Mesquite version 3.80).</li>
-   <li>&quot;OTU ID&quot; has been renamed &quot;Taxon ID&quot;</li>
- </ul>
+	 
  <p></p>
  <hr />
  <h3>Version 3.81</h3>

@@ -94,8 +94,8 @@ public class PopulationsFromTabDelimitedFile extends PopulationsAndAssociationMa
 		
 		dialog.appendToHelpString(helpString);
 		
-		SingleLineTextField populationBlockNameField = dialog.addTextField("Name of population/containing taxa block:",nameOfPopulationTaxaBlock, 20);
-		mesquiteTabbedFile.addTabbedFileChooser(dialog, "File containing columns of specimen and population names", "Column containing population names");
+		SingleLineTextField populationBlockNameField = dialog.addTextField("Name of containing taxa block (e.g., populations):",nameOfPopulationTaxaBlock, 20);
+		mesquiteTabbedFile.addTabbedFileChooser(dialog, "File with columns of contained and containing taxon names", "Column with containing taxon (e.g. population) names");
 		
 		dialog.completeAndShowDialog(true);
 		boolean success=(buttonPressed.getValue()== dialog.defaultOK);
@@ -178,17 +178,17 @@ public class PopulationsFromTabDelimitedFile extends PopulationsAndAssociationMa
 
 	/*.................................................................................................................*/
 	public String getName() {
-		return "Make Populations from Specimens Table";
+		return "Make Containing from Contained Taxa Table";
 	}
 	/*.................................................................................................................*/
 	public String getNameForMenuItem() {
-		return "Specimens – Populations Tab Delimited File...";
+		return "Tab Delimited File of Contained and Containing Taxa...";
 	}
 
 	
 	/*.................................................................................................................*/
 	public String getExplanation() {
-		return "Makes a new taxa block of populations based on a tab-delimited text file containing a table of a specimens and populations.";
+		return "Makes a new taxa block of containing taxa (e.g. populations) based on a tab-delimited text file indicating how contained taxa (e.g. specimens) belong to the containing taxa.";
 	}
 	
 	/*.................................................................................................................*/
@@ -196,7 +196,7 @@ public class PopulationsFromTabDelimitedFile extends PopulationsAndAssociationMa
 	 * then the number refers to the Mesquite version.  This should be used only by modules part of the core release of Mesquite.
 	 * If a NEGATIVE integer, then the number refers to the local version of the package, e.g. a third party package*/
 	public int getVersionOfFirstRelease(){
-		return NEXTRELEASE;  
+		return 400;  
 	}
 
 }

@@ -104,7 +104,7 @@ public class ChronogramDisplay extends TreeDisplayAssistantD {
 
 	/*.................................................................................................................*/
 	public int getVersionOfFirstRelease(){
-		return NEXTRELEASE;  
+		return 400;  
 	}
 	/*.................................................................................................................*/
 	public boolean isPrerelease(){

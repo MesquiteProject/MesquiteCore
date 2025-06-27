@@ -40,7 +40,8 @@ public class JarLoader {
 				jarAdded = true;
 			}
 		} catch (IOException e) {
-			System.out.println("\nIOException\n");
+			if (MesquiteTrunk.developmentMode)
+				System.out.println("\nIOException\n");
 		}
 		catch (NoClassDefFoundError e) {
 			if (!noClassDefWarningGiven)

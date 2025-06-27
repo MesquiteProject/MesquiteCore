@@ -80,7 +80,7 @@ public class RemoveAssociated extends TreeAltererMult {
 	}
 	/*.................................................................................................................*/
 	public int getVersionOfFirstRelease(){
-		return NEXTRELEASE;  
+		return 400;  
 	}
 	/*.................................................................................................................*/
 	public String getName() {

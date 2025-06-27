@@ -40,7 +40,7 @@ public class RemoveSelectedNodes extends TreeAltererMult {
    	 }
 
 	public int getVersionOfFirstRelease(){
-		return NEXTRELEASE;  
+		return 400;  
 	}
 	/** passes which object changed, along with optional code number (type of change) and integers (e.g. which character)*/
 	public void changed(Object caller, Object obj, Notification notification){
