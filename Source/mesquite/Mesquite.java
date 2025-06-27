@@ -105,7 +105,6 @@ import mesquite.lib.ui.GraphicsUtil;
 import mesquite.lib.ui.HelpSearchManager;
 import mesquite.lib.ui.HelpSearchStrip;
 import mesquite.lib.ui.InfoBar;
-import mesquite.lib.ui.LinuxGWAThread;
 import mesquite.lib.ui.ListDialog;
 import mesquite.lib.ui.MesquiteColorTable;
 import mesquite.lib.ui.MesquiteDialogParent;
