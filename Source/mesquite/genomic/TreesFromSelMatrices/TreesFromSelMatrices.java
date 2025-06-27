@@ -224,7 +224,7 @@ public class TreesFromSelMatrices extends CharMatricesListUtility {
 	}
 	/*.................................................................................................................*/
 	public boolean isPrerelease(){
-		return true;  
+		return false;  
 	}
 	public void endJob() {
 		super.endJob();
