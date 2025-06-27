@@ -1195,7 +1195,7 @@ public class MesquiteFile extends Listened implements HNode, Commandable, Listab
 				File writingFile = new File(writingFileName);
 				String setFileType = "MESQ";
 				if (isNexus && writingFile.exists()){
-					try {
+					/*try {
 						MRJOSType type = MRJFileUtils.getFileCreator(writingFile);
 						String ts = null;
 						if (type !=null)
@@ -1206,7 +1206,7 @@ public class MesquiteFile extends Listened implements HNode, Commandable, Listab
 						}
 					}
 					catch (Throwable t){
-					}
+					}*/
 				}
 				if (autoCopySuffix == null && numBackups>0){
 					File bkpDir = new File(backupDirPath);
@@ -1231,8 +1231,8 @@ public class MesquiteFile extends Listened implements HNode, Commandable, Listab
 						if (MesquiteTrunk.isWindows())
 							MesquiteMessage.warnProgrammer("If you are working on a Windows machine, you may have modified the original file with another program, which may mysteriously prevent you from modifying it in Mesquite.  This appears to be a bug in Windows.   Try duplicating the file, or using Save As in Mesquite to make a new copy of the file which should be free of the problem, or using another operating system.");
 					}
-					try {MRJFileUtils.setFileTypeAndCreator(writingFile, new MRJOSType("TEXT"), new MRJOSType(setFileType));}
-					catch (Throwable t){}
+				/*	try {MRJFileUtils.setFileTypeAndCreator(writingFile, new MRJOSType("TEXT"), new MRJOSType(setFileType));}
+					catch (Throwable t){}*/
 				}
 			}
 			catch (IOException ioe){}
