@@ -713,7 +713,7 @@ public class Mesquite extends MesquiteTrunk
 				if (!StringUtil.blank(mmi.getPackageVersion()))
 					citationsString += " version " + mmi.getPackageVersion();
 				if (mmi.getPackageBuildNumber() > 0)
-					citationsString += " build " + mmi.getPackageBuildNumber();
+					citationsString += " (build " + mmi.getPackageBuildNumber() + ")";
 				if (StringUtil.notEmpty(mmi.getPackageDateReleased()))
 					citationsString += ", " + mmi.getPackageDateReleased();
 				if (!StringUtil.blank(mmi.getPackageAuthors()))
