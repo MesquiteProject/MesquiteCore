@@ -207,5 +207,9 @@ public class AppChooser implements ActionListener {
 	public String getVersion() {
 		return versionOfBuiltIn; //return string only for Built In
 	}
+	
+	public boolean builtInAppAvailableForUse() {
+		return builtInExecutableAllowed;
+	}
 }
 
