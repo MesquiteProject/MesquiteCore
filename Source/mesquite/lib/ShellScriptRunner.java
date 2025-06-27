@@ -93,13 +93,17 @@ public class ShellScriptRunner implements Commandable  {
 			long childID = ShellScriptUtil.getChildProcessID(proc);
 			if (MesquiteTrunk.debugMode) {
 				System.out.println("Process ID of script: "+ ShellScriptUtil.getProcessID(proc));
-				System.out.println("Process ID of first child of script: "+ ShellScriptUtil.getProcessID(proc));
+				System.out.println("Process ID of first child of script: "+ childID);
 			}
 			if (MesquiteLong.isCombinable(childID)) {
 				temp.addLine("setProcessID " + childID);
 				if (externalProcessManager!=null)
 					externalProcessManager.setDiesOnClosing(false);//at this point set run to not be killed automatically on closing. 
-			}
+			} 
+		}else if (MesquiteLong.isCombinable(reconnectedProcessID)) {
+			temp.addLine("setProcessID " + reconnectedProcessID);
+			if (externalProcessManager!=null)
+				externalProcessManager.setDiesOnClosing(false);//at this point set run to not be killed automatically on closing. 
 		}
 		if (StringUtil.notEmpty(runningFilePath))
 			temp.addLine("setRunningFilePath " + ParseUtil.tokenize(runningFilePath));
@@ -114,6 +118,7 @@ public class ShellScriptRunner implements Commandable  {
 	}
 	Parser parser = new Parser();
 	boolean reconnectToExternal = false;
+	long reconnectedProcessID= MesquiteLong.impossible;
 
 	/*.................................................................................................................*/
 	public void pleaseReconnectToExternalProcess() {
@@ -125,7 +130,8 @@ public class ShellScriptRunner implements Commandable  {
 			String s = parser.getFirstToken(arguments);
 			long temp = MesquiteLong.fromString(s);
 			if (MesquiteLong.isCombinable(temp)) {
-				ProcessHandle procH = ShellScriptUtil.getProcessHandleFromProcID(temp);
+				reconnectedProcessID = temp;  //save this so we can save it into the snapshot
+				procH = ShellScriptUtil.getProcessHandleFromProcID(temp);
 				if (MesquiteTrunk.debugMode) {
 					System.out.println("Attempting to reconnect with external analysis with process ID "+ temp);
 					if (procH==null)
@@ -229,7 +235,7 @@ public class ShellScriptRunner implements Commandable  {
 		this.procH = procH;
 		if (MesquiteTrunk.debugMode) {
 			System.out.println("Reconnecting to external : "+ ShellScriptUtil.getProcessID(proc));
-			System.out.println("Process ID of first child of script: "+ ShellScriptUtil.getProcessID(proc));
+			System.out.println("Process ID of first child of script: "+ ShellScriptUtil.getChildProcessID(proc));
 		}
 		externalProcessManager = new MesquiteExternalProcess(procH, false);
 		setOutErrFilePaths();
