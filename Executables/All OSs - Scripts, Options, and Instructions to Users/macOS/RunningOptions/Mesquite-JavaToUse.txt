@@ -1,17 +1,8 @@
 java
 
 INSTRUCTIONS
-The first line, above, is used as the path to the version of Java to be used by "Mesquite-Starter-Flex.app"
+The first line, above, is used as the path to the version of Java to be used by Mesquite-Starter.app
 
-Below is a library of suggested alternatives:
+If you want Mesquite to start with another version of Java, put its path on the first line above.
 
-DEFAULT:
-java
-
-Place the above line as the first line of this file if you want to use your system's current default version of Java. If it is a very new version, e.g. Java 16, you may need to set a flag (see Mesquite-FlagsForFlex.txt)
-
-JAVA 1.8:
-/Library/Internet Plug-Ins/JavaAppletPlugin.plugin/Contents/Home/bin/java
-
-Place the above line as the first line of this file if you want to use Java 1.8 on some versions of Mesquite. It works for macOS mojave, Catalina and Big Sur, assuming Java 1.8 is installed. You can get Java 1.8 from java.com.
-
+NOTE: Mesquite 4 and above require at least Java 9 or above, preferably Java 17 or higher.
