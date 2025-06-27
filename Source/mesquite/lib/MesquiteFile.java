@@ -44,8 +44,8 @@ import java.util.Vector;
 
 import javax.swing.JFileChooser;
 
-import com.apple.mrj.MRJFileUtils;
-import com.apple.mrj.MRJOSType;
+//import com.apple.mrj.MRJFileUtils;
+//import com.apple.mrj.MRJOSType;
 
 import mesquite.lib.misc.HNode;
 import mesquite.lib.taxa.Taxa;
@@ -3210,8 +3210,8 @@ public class MesquiteFile extends Listened implements HNode, Commandable, Listab
 					}
 				}
 				stream.close();
-				try {MRJFileUtils.setFileTypeAndCreator(new File(relativePath), new MRJOSType("TEXT"), new MRJOSType("R*ch"));}
-				catch (Throwable t){}
+			//	try {MRJFileUtils.setFileTypeAndCreator(new File(relativePath), new MRJOSType("TEXT"), new MRJOSType("R*ch"));}
+			//	catch (Throwable t){}
 			}
 			catch( FileNotFoundException e ) {
 				MesquiteMessage.warnProgrammer( "File Busy or Not Found:  put file contents (0)");
@@ -3255,8 +3255,8 @@ public class MesquiteFile extends Listened implements HNode, Commandable, Listab
 					}
 				}
 				stream.close();
-				try {MRJFileUtils.setFileTypeAndCreator(new File(relativePath), new MRJOSType("TEXT"), new MRJOSType("R*ch"));}
-				catch (Throwable t){}
+			//	try {MRJFileUtils.setFileTypeAndCreator(new File(relativePath), new MRJOSType("TEXT"), new MRJOSType("R*ch"));}
+		//		catch (Throwable t){}
 			}
 			catch( FileNotFoundException e ) {
 				MesquiteMessage.warnProgrammer( "File Busy or Not Found: put file contents  (1) [" + relativePath + "]");
@@ -3300,8 +3300,8 @@ public class MesquiteFile extends Listened implements HNode, Commandable, Listab
 					}
 				}
 				stream.close();
-				try {MRJFileUtils.setFileTypeAndCreator(new File(relativePath), new MRJOSType("TEXT"), new MRJOSType("R*ch"));}
-				catch (Throwable t){}
+				//try {MRJFileUtils.setFileTypeAndCreator(new File(relativePath), new MRJOSType("TEXT"), new MRJOSType("R*ch"));}
+			//	catch (Throwable t){}
 			}
 			catch( FileNotFoundException e ) {
 				MesquiteMessage.warnProgrammer( "File Busy or Not Found: put file contents  (1) [" + relativePath + "]");
@@ -3348,8 +3348,8 @@ public class MesquiteFile extends Listened implements HNode, Commandable, Listab
 					stream.write(contents);
 					stream.flush();
 					stream.close();
-					try {MRJFileUtils.setFileTypeAndCreator(new File(relativePath), new MRJOSType("TEXT"), new MRJOSType("R*ch"));}
-					catch (Throwable t){}
+				//	try {MRJFileUtils.setFileTypeAndCreator(new File(relativePath), new MRJOSType("TEXT"), new MRJOSType("R*ch"));}
+				//	catch (Throwable t){}
 				}
 			}
 			catch( FileNotFoundException e ) {
@@ -3521,8 +3521,8 @@ public class MesquiteFile extends Listened implements HNode, Commandable, Listab
 		if (logStream!=null) {
 			logStream.close();
 			logStream = null;
-			try {MRJFileUtils.setFileTypeAndCreator(new File(MesquiteModule.supportFilesDirectory + fileSeparator + MesquiteTrunk.logFileName), new MRJOSType("TEXT"), new MRJOSType("R*ch"));}
-			catch (Throwable t){}
+			//try {MRJFileUtils.setFileTypeAndCreator(new File(MesquiteModule.supportFilesDirectory + fileSeparator + MesquiteTrunk.logFileName), new MRJOSType("TEXT"), new MRJOSType("R*ch"));}
+			//catch (Throwable t){}
 		}
 	}
 	/*.................................................................................................................*/
