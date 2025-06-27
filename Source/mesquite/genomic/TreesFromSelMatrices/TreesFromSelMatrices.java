@@ -67,21 +67,21 @@ public class TreesFromSelMatrices extends CharMatricesListUtility {
 	public boolean pleaseLeaveMeOn(){
 		return false;
 	}
-
+/*
 	boolean warnedAboutDeleting = false;
-	/*.................................................................................................................*/
+	/*.................................................................................................................*
 	public String preparePreferencesForXML () {
 		StringBuffer buffer = new StringBuffer();
 		StringUtil.appendXMLTag(buffer, 2, "warnedAboutDeleting", warnedAboutDeleting);  
 		return buffer.toString();
 	}
-	/*.................................................................................................................*/
+	/*.................................................................................................................*
 	public void processSingleXMLPreference (String tag, String content) {
 		if ("warnedAboutDeleting".equalsIgnoreCase(tag)) {
 			warnedAboutDeleting = MesquiteBoolean.fromTrueFalseString(content);
 		}
 	}
-
+*/
 	MCharactersDistribution currentMatrix = null;
 	public MCharactersDistribution getCurrentMatrix(Taxa taxa) {
 		return currentMatrix;
@@ -109,12 +109,12 @@ public class TreesFromSelMatrices extends CharMatricesListUtility {
 				}
 			}
 		}
-		if (!warnedAboutDeleting && datas.size()>=10 && !MesquiteThread.isScripting()){
+	/*	if (!warnedAboutDeleting && datas.size()>=10 && !MesquiteThread.isScripting()){
 			alert("If the tree inferences will be done locally and analysis folders will be created, you may want to check the \"Delete analysis folder after completion\" check box so as not to generate many new folders.\n\nThis suggestion won't be repeated.");
 			warnedAboutDeleting = true;
 			storePreferences();
 		}
-
+*/
 		inferenceTask.initialize(taxa);
 		inferenceTask.setPlaceAllAnalysisFilesInSubdirectory(true);
 		TreeInferer inferer = inferenceTask.getTreeInferer();

@@ -49,20 +49,7 @@ public class GenCodeModelSet  extends ModelSet {
 	}
 	 
 	
-	/*.................................................................................................................*   WAYNECHECK2024
- 	/** Gets default model specified for ModelSet*
-	public Object getDefaultProperty(int ic) {
-		if (getModel(ic) != null)
-			return getModel(ic);
-		int icLeft = ic;
-		while (--icLeft>=0 && getModel(icLeft) != null)  //looking left
-			return getModel(icLeft);
-		int icRight = ic;
-		while (++icRight< getNumChars() && getModel(icRight) != null)
-			return getModel(icRight);
-		return super.getDefaultModel(ic);
-	}
-	/*.................................................................................................................*/
+	
 
 }
 

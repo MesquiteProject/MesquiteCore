@@ -3678,7 +3678,6 @@ and the tree has been rerooted. Properties that belong to nodes implicitly have 
 			MesquiteMessage.println("!!! " + IntegerArray.toString((int[])correspondenceContainer.getObject()));
 
 		/**/
-		//QZ: if whitespace or punc passed in, don't override?
 		MesquiteInteger stringLoc = new MesquiteInteger(0);
 		if (startingPos !=null) 
 			stringLoc.setValue(startingPos.getValue());
