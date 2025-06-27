@@ -11,21 +11,22 @@ Mesquite's web site is http://mesquiteproject.org
 This source code and its compiled class files are free and modifiable under the terms of 
 GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
 */
-package mesquite.lib.duties;
+package mesquite.lists.lib;
 
 import mesquite.lib.MesquiteModule;
+import mesquite.lib.table.MesquiteTable;
 import mesquite.lib.taxa.Taxa;
 
 
 
 /* ======================================================================== */
-public abstract class TaxonUtility extends MesquiteModule  {
+public abstract class TaxonListUtility extends MesquiteModule  {
 
    	 public Class getDutyClass() {
-   	 	return TaxonUtility.class;
+   	 	return TaxonListUtility.class;
    	 }
  	public String getDutyName() {
- 		return "Taxon utility";
+ 		return "Taxon list utility";
    	 }
 
    	/** if returns true, then requests to remain on even after operateOnTaxa is called.  Default is false*/
@@ -33,6 +34,6 @@ public abstract class TaxonUtility extends MesquiteModule  {
    		return false;
    	}
    	/** Called to operate on the taxa in the block.  Returns true if taxa altered*/
-   	public abstract boolean operateOnTaxa(Taxa taxa);
+   	public abstract boolean operateOnTaxa(MesquiteTable table, Taxa taxa);
 }
 

@@ -3,11 +3,6 @@ java
 INSTRUCTIONS
 The first line, above, is used as the path to the version of Java to be used by Mesquite-Starter.app
 
-Below is a library of suggested alternatives:
+If you want Mesquite to start with another version of Java, put its path on the first line above.
 
-DEFAULT:
-java
-
-Place the above line as the first line of this file if you want to use your system's current default version of Java. 
-
-NOTE: Mesquite 4 and above require at least Java 9 or above, preferably Java 17 or above.
+NOTE: Mesquite 4 and above require at least Java 9 or above, preferably Java 17 or higher.

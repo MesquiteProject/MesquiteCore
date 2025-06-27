@@ -46,6 +46,7 @@ import mesquite.lib.ui.MesquiteSubmenuSpec;
 import mesquite.lib.ui.MesquiteWindow;
 import mesquite.lists.lib.ListModule;
 import mesquite.lists.lib.ListWindow;
+import mesquite.lists.lib.TaxonListUtility;
 import mesquite.lists.lib.TaxaListAssistantI;
 import mesquite.lists.lib.TaxonListAssistant;
 
@@ -127,6 +128,8 @@ public class TaxonList extends ListModule {
 			MesquiteSubmenuSpec mss3 = addSubmenu(null, "Taxon Names", MesquiteModule.makeCommand("doNames",  this));
 			mss3.setList(TaxonNameAlterer.class);
 			addMenuItem( "Save selected as taxon set...", makeCommand("saveSelectedRows", this));
+			MesquiteSubmenuSpec mss4 = addSubmenu(null, "Other Utilities", MesquiteModule.makeCommand("doOtherUtility",  this));
+			mss4.setList(TaxonListUtility.class);
 			addMenuSeparator();
 
 			/* default columns*
@@ -294,7 +297,17 @@ public class TaxonList extends ListModule {
 				}
 			}
 		}
-		else if (checker.compare(this.getClass(), "Hires utility module to alter names of the taxa", "[name of module]", commandName, "doNames")) {
+		else if (checker.compare(this.getClass(), "Hires utility module to operate on the taxa", "[name of module]", commandName, "doOtherUtility")) {
+			if (taxa !=null){
+				TaxonListUtility tda= (TaxonListUtility)hireNamedEmployee(TaxonListUtility.class, arguments);
+				if (tda!=null) {
+					tda.operateOnTaxa(((TableWindow)getModuleWindow()).getTable(), taxa);
+					if (!tda.pleaseLeaveMeOn())
+						fireEmployee(tda);
+				}
+			}
+		}
+	else if (checker.compare(this.getClass(), "Hires utility module to alter names of the taxa", "[name of module]", commandName, "doNames")) {
 			if (taxa !=null && getModuleWindow() != null && ((TableWindow)getModuleWindow()).getTable()!=null){
 				TaxonNameAlterer tda= (TaxonNameAlterer)hireNamedEmployee(TaxonNameAlterer.class, arguments);
 				if (tda!=null) {
