@@ -18,7 +18,9 @@ import java.util.Vector;
 
 import org.apache.commons.httpclient.NameValuePair;
 
+import mesquite.lib.Debugg;
 import mesquite.lib.ListableVector;
+import mesquite.lib.MesquiteCommand;
 import mesquite.lib.MesquiteFile;
 import mesquite.lib.MesquiteInteger;
 import mesquite.lib.MesquiteMessage;
@@ -183,8 +185,10 @@ public class PhoneHomeThread extends Thread {
 		if (!StringUtil.blank(notices)){
 			String note = ("<h2>Notices from the websites of Mesquite and installed packages</h2><hr>" + notices.toString() + "<br><h4>(You can ask Mesquite not to check for messages on its websites using the menu item in the Defaults submenu of the File menu)</h4>");
 			if (!MesquiteThread.isScripting()){
-				AlertDialog.noticeHTML(MesquiteTrunk.mesquiteTrunk.containerOfModule(),"Note", note, 600, 400, PhoneHomeUtil.getPhoneHomeDialogLinkCommand(), true);
-			}
+				if (MesquiteTrunk.developmentMode)
+					System.err.println("Notice:\n" + notices);
+			AlertDialog.noticeHTML(MesquiteTrunk.mesquiteTrunk.containerOfModule(),"Note", note, 600, 400, PhoneHomeUtil.getPhoneHomeDialogLinkCommand(), true);
+		}
 			else
 				System.out.println(note);
 		}

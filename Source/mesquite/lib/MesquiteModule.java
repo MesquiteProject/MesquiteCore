@@ -86,12 +86,12 @@ public abstract class MesquiteModule extends EmployerEmployee implements Command
 	/*.................................................................................................................*/
 	/** returns build date of the Mesquite system (e.g., "22 September 2003") */
 	public final static String getBuildDate() {
-		return "26 June 2025";
+		return "27 June 2025";
 	}
 	/*.................................................................................................................*/
 	/** returns version of the Mesquite system */
 	public final static String getMesquiteVersion() {
-		return "4.beta2+";
+		return "4.0";
 	}
 	/*.................................................................................................................*/
 	/** returns letter in the build number of the Mesquite system (e.g., "e" of "e58") */
@@ -104,7 +104,7 @@ public abstract class MesquiteModule extends EmployerEmployee implements Command
 	public final static int getBuildNumber() {
 		//as of 26 Dec 08, build naming changed from letter + number to just number.  Accordingly j105 became 473, based on
 		// highest build numbers of d51+e81+g97+h66+i69+j105 + 3 for a, b, c
-		return 1084;  
+		return 1085;  
 	}
 	//0.95.80    14 Mar 01 - first beta release 
 	//0.96  2 April 01 beta  - second beta release
@@ -180,13 +180,13 @@ public abstract class MesquiteModule extends EmployerEmployee implements Command
 	public static String errorReportURL =  "http://error.mesquiteproject.org/mesquite/mesquiteError.php"; //see exceptionAlert in MesquiteModule
 	public static String prereleaseErrorReportURL =  "http://error.mesquiteproject.org/mesquite/mesquitePrereleaseError.php"; //see exceptionAlert in MesquiteModule
 	public static String beansReportURL = "http://beans.mesquiteproject.org/mesquite/mesquiteBeans.php";
+	//See Mesquite.java for notices.xml URLs (getHomePhoneNumber)
+	//See Installer for updates.xml URLs
 
 	/* 3.x URLs
 	public static String errorReportURL =  "http://mesquiteproject.org/pyMesquiteFeedback";
 	public static String versionReportURL =  "http://mesquiteproject.org/pyMesquiteStartup";
 	public static String beansReportURL = "http://mesquiteproject.org/pyMesquiteBeans";
-	//See Mesquite.java for notices.xml URLs
-	//See Installer for updates.xml URLs
 	/*.................................................................................................................*/
 
 

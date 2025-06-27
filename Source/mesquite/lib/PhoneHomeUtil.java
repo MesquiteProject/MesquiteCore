@@ -35,7 +35,7 @@ public class PhoneHomeUtil {
 	public static String errorReportURL =  "http://error.mesquiteproject.org/mesquite/mesquiteError.php"; //see exceptionAlert in MesquiteModule
 	public static String prereleaseErrorReportURL =  "http://error.mesquiteproject.org/mesquite/mesquitePrereleaseError.php"; //see exceptionAlert in MesquiteModule
 	public static String beansReportURL = "http://beans.mesquiteproject.org/mesquite/mesquiteBeans.php";
-	
+
 	//See Mesquite.java for notices.xml URLs
 	//See Installer for updates.xml URLs
 
@@ -326,7 +326,7 @@ public class PhoneHomeUtil {
 					if (!hideFromDialog){
 						notices.append(message + "<hr>\n");
 						countNotices.increment();
-				}
+					}
 				}
 				//vvvvvvvvvvvvvvvvvvvv====INSTALL/UPDATE SYSTEM ====vvvvvvvvvvvvvvvvvvvv
 				else if (noticeType != null && noticeType.equalsIgnoreCase("update")){
@@ -361,13 +361,13 @@ public class PhoneHomeUtil {
 							MesquiteString uniqueID = (MesquiteString)v.getElement("uniqueID");
 							if (requirementsNotMet && requiredName != null){
 								notices.append("<h2>Available for installation: " + packageName + "</h2>");
-								notices.append("HOWEVER, this package requires " + requiredName.getValue() + ", which apparently is not installed.  If you install this other package, you may install " + packageName + " later by selecting the item in the \"Available to Install or Update\" submenu of the File menu.<hr>\n");
+								notices.append("HOWEVER, this package requires " + requiredName.getValue() + ", which apparently is not installed."); //  If you install this other package, you may install " + packageName + " later by selecting the item in the \"Available to Install or Update\" submenu of the File menu.<hr>\n");
 								pleaseDeleteFromUpdates = true;
 								countNotices.increment();
 							}
 							else if (javaInsufficient){
 								notices.append("<h2>Available for installation: " + packageName + "</h2>");
-								notices.append("HOWEVER, your version of Java is too old for this package.  You need Java version " + java.getValue() + ".  If you install a sufficiently recent version of java, you may install this package later by selecting the item in the \"Available to Install or Update\" submenu of the File menu.<hr>\n");
+								notices.append("HOWEVER, your version of Java is too old for this package.  You need Java version " + java.getValue() + "." );// If you install a sufficiently recent version of java, you may install this package later by selecting the item in the \"Available to Install or Update\" submenu of the File menu.<hr>\n");
 								pleaseDeleteFromUpdates = true;
 								countNotices.increment();
 							}
@@ -379,13 +379,13 @@ public class PhoneHomeUtil {
 								notices.append(explanation);
 								String installHTML = null;
 								if (!MesquiteFile.canWrite(MesquiteTrunk.getRootPath() + "mesquite")){
-									installHTML = ("<p>HOWEVER, you cannot install this update because you do not have privileges to write into the Mesquite_Folder." +
-									"&nbsp; Once this is resolved, you may install later by selecting the item in the \"Available to Install or Update\" submenu of the File menu.");
+									installHTML = ("<p>HOWEVER, you cannot install this update because you do not have privileges to write into the Mesquite_Folder.");// +
+										//	"&nbsp; Once this is resolved, you may install later by selecting the item in the \"Available to Install or Update\" submenu of the File menu.");
 								}
 								else {
 									installHTML = "<p><a href = \"install:" + uniqueID + "\"><img border = 0 src =\"" + MesquiteFile.massageFilePathToURL(MesquiteTrunk.mesquiteTrunk.getRootPath()+"images" + MesquiteFile.fileSeparator + "download.gif") + "\"> Install</a>";
-									if (!adHoc)
-										installHTML += "&nbsp; If you do not install now, you may install later by selecting the item in the \"Available to Install or Update\" submenu of the File menu.";
+								/*	if (!adHoc)
+										installHTML += "&nbsp; If you do not install now, you may install later by selecting the item in the \"Available to Install or Update\" submenu of the File menu.";*/
 								}
 
 								notices.append(installHTML);
@@ -464,8 +464,9 @@ public class PhoneHomeUtil {
 		PhoneHomeRecord phr = new PhoneHomeRecord("");
 		String notices = handleMessages(true, noticesFromHome, null, phr, null);
 		if (!StringUtil.blank(notices)){
-			String note = ("<h2>Notices from " + StringUtil.protectForXML(URLString) + "</h2><hr><b>NOTE:</b> these notices may include some that have already been seen and dealt with.  When you ask specifically to check for notices, you are shown all whether seen previously or not.<hr>" + notices.toString() + "<br>");
+			String note = ("<h2>Notices from " + StringUtil.protectForXML(URLString) + "</h2><hr><b>NOTE:</b> these notices may include some that have already been seen and dealt with.  When you ask specifically to check for notices, you are shown all whether seen previously or not.<hr>" + notices + "<br>");
 			if (!MesquiteThread.isScripting()){
+
 				AlertDialog.noticeHTML(MesquiteTrunk.mesquiteTrunk.containerOfModule(),"Note", note, 600, 400, new MesquiteCommand("phoneHomeLinkTouchedAdHoc", getLinkHandler()), true);
 			}
 			else
@@ -519,7 +520,7 @@ public class PhoneHomeUtil {
 		int lastVersionNoticed = phoneHomeRecord.getLastVersionNoticed();
 
 		//String name = mmi.getName();
-		
+
 		Element root = XMLUtil.getRootXMLElementFromString("mesquite",noticesFromHome);
 		if (root==null)
 			return null;
@@ -677,8 +678,8 @@ public class PhoneHomeUtil {
 							releaseString+=" The home page is: " + URL+ ". ";
 						}
 						if (!StringUtil.blank(downloadURL)) {
-							releaseStringHTML +="&nbsp;<a href=\"" + downloadURL + "\">Download page</a>.   You may also find an option to install this using Mesquite's automatic installation system (look in File menu under Available to Install or Update).";
-							releaseString+=" The latest version is downloadable at: " + downloadURL+ ".   You may also be able to install this using Mesquite's automatic installation system (look in File menu under Available to Install or Update).";
+							releaseStringHTML +="&nbsp;<a href=\"" + downloadURL + "\">Download page</a>.";//   You may also find an option to install this using Mesquite's automatic installation system (look in File menu under Available to Install or Update).";
+							releaseString+=" The latest version is downloadable at: " + downloadURL+ ".";//   You may also be able to install this using Mesquite's automatic installation system (look in File menu under Available to Install or Update).";
 						}
 					}
 
@@ -693,7 +694,8 @@ public class PhoneHomeUtil {
 				}
 
 			}
-
+			if (MesquiteTrunk.developmentMode)
+				System.err.println("Notice from server:\n" + notices);
 			// process other tags if they are there
 			return notices.toString();
 

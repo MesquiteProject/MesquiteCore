@@ -142,16 +142,16 @@ public class Mesquite extends MesquiteTrunk
 	}
 	/*.................................................................................................................*/
 	public String getVersion() {
-		return "4.beta";
+		return "4.0";
 	}
 
 	/*.................................................................................................................*/
 	public int getVersionInt() {
-		return 399;
+		return 400;
 	}
 	/*.................................................................................................................*/
 	public double getMesquiteVersionNumber(){
-		return 3.99;
+		return 4.00;
 	}
 	/*.................................................................................................................*/
 	public String getDateReleased() {
@@ -168,7 +168,11 @@ public class Mesquite extends MesquiteTrunk
 		//See MesquiteModule for version reporter and error reporter URLs
 		//See Installer for updates.xml URLs
 
-		if (!isPrerelease() && !debugMode)
+		/*if (true)
+			return "https://raw.githubusercontent.com/wmaddisn/Tuatara/refs/heads/master/docs/notices.xml";   
+
+		else */
+			if (!isPrerelease() && !debugMode)
 			return "http://www.mesquiteproject.org/noticesAndUpdates/notices.xml";   
 		else
 			return "https://raw.githubusercontent.com/MesquiteProject/MesquiteCore/development/noticesAndUpdates/noticesPrerelease.xml";   

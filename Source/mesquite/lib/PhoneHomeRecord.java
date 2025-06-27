@@ -23,7 +23,7 @@ public class PhoneHomeRecord implements Listable {
 	public static String prereleaseErrorReportURL =  "http://error.mesquiteproject.org/mesquite/mesquitePrereleaseError.php"; //see exceptionAlert in MesquiteModule
 	public static String beansReportURL = "http://beans.mesquiteproject.org/mesquite/mesquiteBeans.php";
 	
-	//See Mesquite.java for notices.xml URLs
+	//See Mesquite.java for notices.xml URLs (getHomePhoneNumber)
 	//See Installer for updates.xml URLs
 
 	 * */

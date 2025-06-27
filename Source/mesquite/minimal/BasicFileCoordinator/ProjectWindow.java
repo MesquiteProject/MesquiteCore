@@ -152,7 +152,6 @@ public class ProjectWindow extends MesquiteWindow implements MesquiteListener {
 			return;
 
 		temp.addLine("findWindow " + StringUtil.tokenize(w.getUniqueID()));
-		System.err.println("@w " + w.getUniqueID() + " = " + w.getTitle() + " owner: " + w.getOwnerModule().getName());
 		temp.addLine("tell It");
 		temp.addLine("\tsetAsFront");
 		temp.addLine("endTell");
