@@ -7,7 +7,6 @@
 			<attribute name="module" value="true"/>
 		</attributes>
 	</classpathentry>
-	<classpathentry kind="lib" path="Resources/jars/AppleJavaExtensions.jar"/>
 	<classpathentry kind="lib" path="Resources/jars/byte-buddy-agent-1.7.8.jar"/>
 	<classpathentry kind="lib" path="Resources/jars/commons-codec-1.11.jar"/>
 	<classpathentry kind="lib" path="Resources/jars/commons-httpclient-3.1.jar"/>
@@ -20,7 +19,6 @@
 	<classpathentry kind="lib" path="Resources/jars/httpclient-4.5.13.jar"/>
 	<classpathentry kind="lib" path="Resources/jars/Jama-1.0.1.zip"/>
 	<classpathentry kind="lib" path="Resources/jars/JSci.zip"/>
-	<classpathentry kind="lib" path="Resources/jars/MRJToolkitStubs.zip"/>
 	<classpathentry kind="lib" path="Resources/jars/pal.zip"/>
 	<classpathentry kind="lib" path="Resources/jars/Ninja.jar"/>
 	<classpathentry kind="lib" path="Resources/jars/commons-io-2.18.0.jar"/>
