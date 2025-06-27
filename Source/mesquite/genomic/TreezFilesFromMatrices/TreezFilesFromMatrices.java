@@ -97,7 +97,7 @@ public class TreezFilesFromMatrices extends CharMatricesListUtility {
 		String basePath = directoryPath + MesquiteFile.fileSeparator ; //+ baseName;
 		String treeFileListPath = StringUtil.getAllButLastItem(directoryPath, MesquiteFile.fileSeparator) + MesquiteFile.fileSeparator + "ListOfTreeFiles.txt";
 		inferenceTask.initialize(taxa);
-		inferenceTask.setPlaceAllAnalysisFilesInSubdirectory(true);
+		inferenceTask.setMultipleMatrixMode(true);
 		TreeInferer inferer = inferenceTask.getTreeInferer();
 		if (inferer!= null){
 			inferer.setAlwaysPrepareForAnyMatrices(true);

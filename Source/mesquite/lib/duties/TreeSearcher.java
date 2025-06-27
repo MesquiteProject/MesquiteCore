@@ -70,7 +70,7 @@ public abstract class TreeSearcher extends MesquiteModule  {
    	public abstract boolean initialize(Taxa taxa);
 
 	/*.................................................................................................................*/
-	public void setPlaceAllAnalysisFilesInSubdirectory(boolean placeAllAnalysisFilesInSubdirectory) {
+	public void setMultipleMatrixMode(boolean multipleMatrixMode) {
 	}
 
 	 
