@@ -14,19 +14,42 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
 package mesquite.assoc.ManageAssociations;
 /*~~  */
 
-import java.util.*;
-import java.awt.*;
-import java.io.*;
-import mesquite.lib.*;
-import mesquite.lib.duties.*;
+import mesquite.assoc.lib.AssociationsManager;
+import mesquite.assoc.lib.PopulationsAndAssociationMaker;
+import mesquite.assoc.lib.TaxaAssociation;
+import mesquite.lib.CommandChecker;
+import mesquite.lib.CommandRecord;
+import mesquite.lib.EmployeeVector;
+import mesquite.lib.FileBlock;
+import mesquite.lib.FileElement;
+import mesquite.lib.Listable;
+import mesquite.lib.ListableVector;
+import mesquite.lib.MesquiteFile;
+import mesquite.lib.MesquiteInteger;
+import mesquite.lib.MesquiteListener;
+import mesquite.lib.MesquiteLong;
+import mesquite.lib.MesquiteMessage;
+import mesquite.lib.MesquiteModule;
+import mesquite.lib.MesquiteProject;
+import mesquite.lib.MesquiteString;
+import mesquite.lib.MesquiteThread;
+import mesquite.lib.MesquiteTrunk;
+import mesquite.lib.NexusBlock;
+import mesquite.lib.NexusBlockEditableRaw;
+import mesquite.lib.NexusBlockTest;
+import mesquite.lib.Notification;
+import mesquite.lib.ObjectContainer;
+import mesquite.lib.ParseUtil;
+import mesquite.lib.Parser;
+import mesquite.lib.Puppeteer;
+import mesquite.lib.StringUtil;
+import mesquite.lib.duties.TaxaManager;
 import mesquite.lib.taxa.Taxa;
 import mesquite.lib.taxa.TaxaBlock;
 import mesquite.lib.taxa.Taxon;
 import mesquite.lib.ui.AlertDialog;
 import mesquite.lib.ui.ListDialog;
 import mesquite.lib.ui.MesquiteSubmenuSpec;
-import mesquite.lists.lib.ListModule;
-import mesquite.assoc.lib.*;
 
 /* ========================================================================  */
 public class ManageAssociations extends AssociationsManager {
@@ -64,7 +87,7 @@ public class ManageAssociations extends AssociationsManager {
 	public void projectEstablished() {
 		getFileCoordinator().addMenuItem(MesquiteTrunk.treesMenu, "New Association...", makeCommand("newAssociation",  this));
 		MesquiteSubmenuSpec mss = getFileCoordinator().addSubmenu(MesquiteTrunk.treesMenu, "Edit Association", makeCommand("editAssociation",  this), associationsVector);
-		getFileCoordinator().addSubmenu(MesquiteTrunk.treesMenu, "Make Populations (Containing Taxa) From", makeCommand("createTaxaAndAssociation",  this), PopulationsAndAssociationMaker.class);
+		getFileCoordinator().addSubmenu(MesquiteTrunk.treesMenu, "Make Containing Taxa & Association From", makeCommand("createTaxaAndAssociation",  this), PopulationsAndAssociationMaker.class);
 		getFileCoordinator().addMenuItem(MesquiteTrunk.treesMenu, "-", null);
 		super.projectEstablished();
 	}

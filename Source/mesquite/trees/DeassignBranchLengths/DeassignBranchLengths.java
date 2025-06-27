@@ -13,10 +13,12 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
 */
 package mesquite.trees.DeassignBranchLengths;
 
-import java.util.*;
-import java.awt.*;
-import mesquite.lib.*;
-import mesquite.lib.duties.*;
+import mesquite.lib.CommandChecker;
+import mesquite.lib.Listened;
+import mesquite.lib.MesquiteListener;
+import mesquite.lib.MesquiteString;
+import mesquite.lib.Notification;
+import mesquite.lib.duties.BranchLengthsAltererMult;
 import mesquite.lib.tree.AdjustableTree;
 import mesquite.lib.tree.MesquiteTree;
 

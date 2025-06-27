@@ -14,7 +14,7 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
 package mesquite.tol.CatalogueOfLifeURLServer;
 
 
-	import mesquite.lib.*;
+	import mesquite.lib.StringUtil;
 import mesquite.tol.lib.TaxonOnWebServer;
 
 	public class CatalogueOfLifeURLServer extends TaxonOnWebServer {

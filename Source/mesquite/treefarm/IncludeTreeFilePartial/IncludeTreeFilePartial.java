@@ -18,7 +18,9 @@ import mesquite.lib.IntegerField;
 import mesquite.lib.MesquiteFile;
 import mesquite.lib.MesquiteInteger;
 import mesquite.lib.MesquiteThread;
-import mesquite.lib.duties.*;
+import mesquite.lib.duties.FileAssistantTM;
+import mesquite.lib.duties.FileElementManager;
+import mesquite.lib.duties.TreeSource;
 import mesquite.lib.taxa.Taxa;
 import mesquite.lib.tree.Tree;
 import mesquite.lib.tree.TreeVector;
@@ -93,7 +95,7 @@ public class IncludeTreeFilePartial extends FileAssistantTM {
 
 	/*.................................................................................................................*/
 	public boolean isPrerelease() { 
-		return true;
+		return false;
 	}
 	/*.................................................................................................................*/
 	public boolean requestPrimaryChoice() { 
@@ -112,7 +114,7 @@ public class IncludeTreeFilePartial extends FileAssistantTM {
 	 * then the number refers to the Mesquite version.  This should be used only by modules part of the core release of Mesquite.
 	 * If a NEGATIVE integer, then the number refers to the local version of the package, e.g. a third party package*/
 	public int getVersionOfFirstRelease(){
-		return NEXTRELEASE;  
+		return 400;  
 	}
 	/*.................................................................................................................*/
 	/** returns an explanation of what the module does.*/

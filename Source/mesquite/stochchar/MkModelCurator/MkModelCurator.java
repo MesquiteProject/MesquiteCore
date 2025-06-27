@@ -14,15 +14,26 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
 package mesquite.stochchar.MkModelCurator;
 /*~~  */
 
-import java.util.*;
-import java.awt.*;
-import mesquite.lib.*;
-import mesquite.lib.characters.*;
-import mesquite.lib.duties.*;
+import mesquite.categ.lib.CategoricalData;
+import mesquite.categ.lib.CategoricalState;
+import mesquite.lib.EmployeeNeed;
+import mesquite.lib.MesquiteDouble;
+import mesquite.lib.MesquiteInteger;
+import mesquite.lib.MesquiteModule;
+import mesquite.lib.Notification;
+import mesquite.lib.ObjectContainer;
+import mesquite.lib.StringUtil;
+import mesquite.lib.characters.CModelEstimator;
+import mesquite.lib.characters.CentralModelListener;
+import mesquite.lib.characters.CharacterModel;
+import mesquite.lib.duties.CuratorWithSettings;
+import mesquite.lib.duties.EditingCurator;
+import mesquite.lib.duties.WindowHolder;
 import mesquite.lib.ui.MesquiteWindow;
 import mesquite.lib.ui.SliderWindow;
-import mesquite.categ.lib.*;
-import mesquite.stochchar.lib.*;
+import mesquite.stochchar.lib.AsymmModel;
+import mesquite.stochchar.lib.CategProbModelCurator;
+import mesquite.stochchar.lib.MkModel;
 /* ======================================================================== */
 public class MkModelCurator extends CategProbModelCurator implements EditingCurator, CuratorWithSettings  {
 	public void getEmployeeNeeds(){  //This gets called on startup to harvest information; override this and inside, call registerEmployeeNeed

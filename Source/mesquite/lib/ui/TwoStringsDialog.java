@@ -13,7 +13,8 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
 */
 package mesquite.lib.ui;
 
-import java.awt.*;
+import java.awt.Label;
+import java.awt.TextArea;
 
 import mesquite.lib.MesquiteBoolean;
 import mesquite.lib.MesquiteString;

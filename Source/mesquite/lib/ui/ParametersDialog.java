@@ -13,8 +13,11 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
  */
 package mesquite.lib.ui;
 
-import java.awt.*;
-import java.awt.event.*;
+import java.awt.Checkbox;
+import java.awt.Choice;
+import java.awt.Label;
+import java.awt.event.ItemEvent;
+import java.awt.event.ItemListener;
 
 import mesquite.lib.MesquiteInteger;
 import mesquite.lib.MesquiteParameter;

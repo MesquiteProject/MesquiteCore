@@ -14,12 +14,21 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
 package mesquite.molec.AssignCodonPositions;
 /*~~  */
 
-import mesquite.lib.*;
-import mesquite.lib.characters.*;
+import mesquite.categ.lib.DNAData;
+import mesquite.categ.lib.DNADataAlterer;
+import mesquite.lib.AssociableWithSpecs;
+import mesquite.lib.CommandChecker;
+import mesquite.lib.MesquiteFile;
+import mesquite.lib.MesquiteInteger;
+import mesquite.lib.MesquiteMessage;
+import mesquite.lib.Notification;
+import mesquite.lib.ResultCodes;
+import mesquite.lib.Snapshot;
+import mesquite.lib.UndoReference;
+import mesquite.lib.characters.AltererMetadata;
 import mesquite.lib.characters.CharacterData;
-import mesquite.align.lib.MultipleSequenceAligner;
-import mesquite.categ.lib.*;
-import mesquite.lib.table.*;
+import mesquite.lib.characters.CodonPositionsSet;
+import mesquite.lib.table.MesquiteTable;
 import mesquite.molec.lib.CodonPositionAssigner;
 
 /* ======================================================================== */
@@ -62,7 +71,6 @@ public class AssignCodonPositions extends DNADataAlterer implements AltererMetad
 	/*.................................................................................................................*/
 	/** Called to alter data in those cells selected in table*/
 	public int alterData(CharacterData data, MesquiteTable table, UndoReference undoReference){
-	//	this.table = table;
 		if (assigner ==  null || data == null)
 			return ResultCodes.INPUT_NULL;
 		if (!(data instanceof DNAData)){
@@ -85,7 +93,7 @@ public class AssignCodonPositions extends DNADataAlterer implements AltererMetad
 
 	/*.................................................................................................................*/
 	public boolean isPrerelease() {
-		return true;
+		return false;
 	}
 	/*.................................................................................................................*/
 	public String getName() {
@@ -96,7 +104,7 @@ public class AssignCodonPositions extends DNADataAlterer implements AltererMetad
 	 * then the number refers to the Mesquite version.  This should be used only by modules part of the core release of Mesquite.
 	 * If a NEGATIVE integer, then the number refers to the local version of the package, e.g. a third party package*/
 	public int getVersionOfFirstRelease(){
-		return NEXTRELEASE;  
+		return 400;  
 	}
 	/*.................................................................................................................*/
 	/** returns an explanation of what the module does.*/

@@ -14,15 +14,27 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
 package mesquite.rhetenor.CharsFromMatrices;
 /*~~  */
 
-import java.util.*;
-import java.awt.*;
+import java.awt.Color;
+import java.util.Vector;
 
-import mesquite.lib.*;
-import mesquite.lib.characters.*;
-import mesquite.lib.duties.*;
+import mesquite.lib.CompatibilityTest;
+import mesquite.lib.EmployeeNeed;
+import mesquite.lib.MesquiteListener;
+import mesquite.lib.MesquiteModule;
+import mesquite.lib.Notification;
+import mesquite.lib.Selectionable;
+import mesquite.lib.characters.CharInclusionSet;
+import mesquite.lib.characters.CharacterData;
+import mesquite.lib.characters.CharacterDistribution;
+import mesquite.lib.characters.CharacterPartition;
+import mesquite.lib.characters.CharacterStateTest;
+import mesquite.lib.characters.CharacterStates;
+import mesquite.lib.characters.CharactersGroup;
+import mesquite.lib.characters.MCharactersDistribution;
+import mesquite.lib.duties.MatrixSourceCoord;
 import mesquite.lib.taxa.Taxa;
 import mesquite.lib.tree.Tree;
-import mesquite.rhetenor.lib.*;
+import mesquite.rhetenor.lib.CharsFromMatrixSource;
 
 /* ======================================================================== */
 /* This is a character source used privately by Rhetenor for ShowCharLoadings.  Note that it is not user chooseable. */

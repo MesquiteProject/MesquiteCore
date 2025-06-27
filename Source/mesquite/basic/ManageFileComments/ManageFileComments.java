@@ -13,11 +13,26 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
 */
 package mesquite.basic.ManageFileComments;
 
-import java.util.*;
-import java.io.*;
-import java.awt.*;
-import mesquite.lib.*;
-import mesquite.lib.duties.*;
+import java.util.Vector;
+
+import mesquite.lib.CommandChecker;
+import mesquite.lib.FileBlock;
+import mesquite.lib.FileElement;
+import mesquite.lib.MesquiteFile;
+import mesquite.lib.MesquiteInteger;
+import mesquite.lib.MesquiteLong;
+import mesquite.lib.MesquiteProject;
+import mesquite.lib.MesquiteString;
+import mesquite.lib.MesquiteThread;
+import mesquite.lib.MesquiteTrunk;
+import mesquite.lib.NexusBlock;
+import mesquite.lib.NexusBlockTest;
+import mesquite.lib.NexusCommandTest;
+import mesquite.lib.ParseUtil;
+import mesquite.lib.Parser;
+import mesquite.lib.Snapshot;
+import mesquite.lib.StringUtil;
+import mesquite.lib.duties.FileInit;
 import mesquite.lib.ui.MesquiteSubmenuSpec;
 import mesquite.lib.ui.MesquiteTextWindow;
 import mesquite.lib.ui.MesquiteWindow;

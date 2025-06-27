@@ -14,15 +14,16 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
 package mesquite.lists.CharInclSetList;
 /*~~  */
 
-import mesquite.lists.lib.*;
-
-import java.util.*;
-import java.awt.*;
-import mesquite.lib.*;
-import mesquite.lib.characters.*;
-import mesquite.lib.duties.*;
-import mesquite.lib.table.*;
+import mesquite.lib.CommandChecker;
+import mesquite.lib.Commandable;
+import mesquite.lib.EmployeeNeed;
+import mesquite.lib.SpecsSet;
+import mesquite.lib.characters.CharInclusionSet;
+import mesquite.lib.characters.CharacterData;
 import mesquite.lib.ui.AlertDialog;
+import mesquite.lists.lib.CharInclSetListAsst;
+import mesquite.lists.lib.DataSpecssetList;
+import mesquite.lists.lib.ListWindow;
 
 /* ======================================================================== */
 public class CharInclSetList extends DataSpecssetList {

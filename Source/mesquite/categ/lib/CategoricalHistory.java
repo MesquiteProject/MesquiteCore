@@ -13,20 +13,21 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
  */
 package mesquite.categ.lib;
 
-import java.awt.*;
-import java.util.*;
+import java.awt.Color;
+import java.awt.Point;
+import java.util.Vector;
 
-import mesquite.cont.lib.ContColorTable;
-import mesquite.lib.*;
-import mesquite.lib.characters.*;
-import mesquite.lib.duties.*;
+import mesquite.lib.MesquiteDouble;
+import mesquite.lib.characters.CharacterDistribution;
+import mesquite.lib.characters.CharacterHistory;
+import mesquite.lib.characters.CharacterState;
 import mesquite.lib.taxa.Taxa;
 import mesquite.lib.tree.Tree;
 import mesquite.lib.ui.ColorDistribution;
 import mesquite.lib.ui.ColorEvent;
 import mesquite.lib.ui.ColorEventVector;
 import mesquite.lib.ui.MesquiteColorTable;
-import mesquite.parsimony.lib.*;
+import mesquite.parsimony.lib.MPRProcessor;
 
 /* ======================================================================== */
 public class CategoricalHistory extends CategoricalAdjustable implements CharacterHistory {

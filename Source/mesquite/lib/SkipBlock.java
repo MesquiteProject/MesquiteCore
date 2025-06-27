@@ -13,17 +13,6 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
  */
 package mesquite.lib;
 
-import java.awt.*;
-import java.util.*;
-import java.text.*;
-
-import mesquite.lib.duties.*;
-import mesquite.lib.taxa.Taxa;
-import mesquite.lib.ui.ProgressIndicator;
-import mesquite.lib.characters.*;
-
-
-
 /* ======================================================================== */
 /**Represents a block in a NEXUS file to be ignored
  */

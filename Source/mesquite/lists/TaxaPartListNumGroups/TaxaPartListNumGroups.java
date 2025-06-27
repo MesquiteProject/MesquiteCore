@@ -14,14 +14,13 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
 package mesquite.lists.TaxaPartListNumGroups;
 /*~~  */
 
-import mesquite.lists.lib.*;
-import java.util.*;
-import java.awt.*;
-import mesquite.lib.*;
-import mesquite.lib.duties.*;
-import mesquite.lib.table.*;
+import mesquite.lib.MesquiteListener;
+import mesquite.lib.Notification;
+import mesquite.lib.SpecsSetVector;
+import mesquite.lib.table.MesquiteTable;
 import mesquite.lib.taxa.Taxa;
 import mesquite.lib.taxa.TaxaPartition;
+import mesquite.lists.lib.TaxaPartListAssistant;
 
 /* ======================================================================== */
 public class TaxaPartListNumGroups extends TaxaPartListAssistant implements MesquiteListener {

@@ -13,9 +13,11 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
 */
 package mesquite.lib.ui;
 
-import java.awt.*;
-import java.awt.event.*;
-import mesquite.lib.duties.*;
+import java.awt.Container;
+import java.awt.MenuContainer;
+import java.awt.MenuItem;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 
 public class MRPopup extends MesquitePopup implements ActionListener {
 	public MRPopup(Container c){

@@ -11,12 +11,7 @@ Mesquite's web site is http://mesquiteproject.org
 This source code and its compiled class files are free and modifiable under the terms of 
 GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
 */
-package mesquite.lib.characters; 
-
-import java.awt.*;
-import java.util.*;
-import mesquite.lib.duties.*;
-import mesquite.lib.*;
+package mesquite.lib.characters;
 
 /** An intermediary superclass that subclasses can extend to help with GUI, so that choices know whether a model
  is complete (e.g, as in composite DNA mode) or a submodel (e.g., state frequencies model with DNA) */

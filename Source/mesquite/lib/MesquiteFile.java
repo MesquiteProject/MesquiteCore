@@ -13,25 +13,47 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
  */
 package mesquite.lib;
 
-import java.awt.*;
-import java.io.*;
-import java.net.*;
-import java.util.*;
-import java.util.List;
+import java.awt.Color;
+import java.awt.Container;
+import java.awt.Desktop;
+import java.awt.FileDialog;
+import java.awt.Image;
+import java.io.BufferedOutputStream;
+import java.io.BufferedReader;
+import java.io.ByteArrayOutputStream;
+import java.io.DataInputStream;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.FilenameFilter;
+import java.io.FilterInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.OutputStream;
+import java.io.OutputStreamWriter;
+import java.io.PrintWriter;
+import java.io.UnsupportedEncodingException;
+import java.io.Writer;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.net.URLConnection;
+import java.util.Enumeration;
+import java.util.Vector;
 
-import com.apple.mrj.*;
+import javax.swing.JFileChooser;
 
-import mesquite.lib.characters.CharactersGroup;
+//import com.apple.mrj.MRJFileUtils;
+//import com.apple.mrj.MRJOSType;
+
 import mesquite.lib.misc.HNode;
 import mesquite.lib.taxa.Taxa;
-import mesquite.lib.taxa.TaxaGroup;
 import mesquite.lib.taxa.TaxonFilterer;
 import mesquite.lib.ui.ColorTheme;
 import mesquite.lib.ui.MesquitePopup;
 import mesquite.lib.ui.MesquiteWindow;
 import mesquite.lib.ui.ProgressIndicator;
-
-import javax.swing.*;
 
 /* ======================================================================== */
 /**This MesquiteFile is the file on disk, not the project.*/
@@ -1173,7 +1195,7 @@ public class MesquiteFile extends Listened implements HNode, Commandable, Listab
 				File writingFile = new File(writingFileName);
 				String setFileType = "MESQ";
 				if (isNexus && writingFile.exists()){
-					try {
+					/*try {
 						MRJOSType type = MRJFileUtils.getFileCreator(writingFile);
 						String ts = null;
 						if (type !=null)
@@ -1184,7 +1206,7 @@ public class MesquiteFile extends Listened implements HNode, Commandable, Listab
 						}
 					}
 					catch (Throwable t){
-					}
+					}*/
 				}
 				if (autoCopySuffix == null && numBackups>0){
 					File bkpDir = new File(backupDirPath);
@@ -1209,8 +1231,8 @@ public class MesquiteFile extends Listened implements HNode, Commandable, Listab
 						if (MesquiteTrunk.isWindows())
 							MesquiteMessage.warnProgrammer("If you are working on a Windows machine, you may have modified the original file with another program, which may mysteriously prevent you from modifying it in Mesquite.  This appears to be a bug in Windows.   Try duplicating the file, or using Save As in Mesquite to make a new copy of the file which should be free of the problem, or using another operating system.");
 					}
-					try {MRJFileUtils.setFileTypeAndCreator(writingFile, new MRJOSType("TEXT"), new MRJOSType(setFileType));}
-					catch (Throwable t){}
+				/*	try {MRJFileUtils.setFileTypeAndCreator(writingFile, new MRJOSType("TEXT"), new MRJOSType(setFileType));}
+					catch (Throwable t){}*/
 				}
 			}
 			catch (IOException ioe){}
@@ -1940,6 +1962,7 @@ public class MesquiteFile extends Listened implements HNode, Commandable, Listab
 
 
 		if (StringUtil.blank(token)) {
+			status.setValue(-1);
 			return token;
 		}
 		if (ParseUtil.darkBeginsWithIgnoreCase(token, "Begin"))
@@ -3187,8 +3210,8 @@ public class MesquiteFile extends Listened implements HNode, Commandable, Listab
 					}
 				}
 				stream.close();
-				try {MRJFileUtils.setFileTypeAndCreator(new File(relativePath), new MRJOSType("TEXT"), new MRJOSType("R*ch"));}
-				catch (Throwable t){}
+			//	try {MRJFileUtils.setFileTypeAndCreator(new File(relativePath), new MRJOSType("TEXT"), new MRJOSType("R*ch"));}
+			//	catch (Throwable t){}
 			}
 			catch( FileNotFoundException e ) {
 				MesquiteMessage.warnProgrammer( "File Busy or Not Found:  put file contents (0)");
@@ -3232,8 +3255,8 @@ public class MesquiteFile extends Listened implements HNode, Commandable, Listab
 					}
 				}
 				stream.close();
-				try {MRJFileUtils.setFileTypeAndCreator(new File(relativePath), new MRJOSType("TEXT"), new MRJOSType("R*ch"));}
-				catch (Throwable t){}
+			//	try {MRJFileUtils.setFileTypeAndCreator(new File(relativePath), new MRJOSType("TEXT"), new MRJOSType("R*ch"));}
+		//		catch (Throwable t){}
 			}
 			catch( FileNotFoundException e ) {
 				MesquiteMessage.warnProgrammer( "File Busy or Not Found: put file contents  (1) [" + relativePath + "]");
@@ -3277,8 +3300,8 @@ public class MesquiteFile extends Listened implements HNode, Commandable, Listab
 					}
 				}
 				stream.close();
-				try {MRJFileUtils.setFileTypeAndCreator(new File(relativePath), new MRJOSType("TEXT"), new MRJOSType("R*ch"));}
-				catch (Throwable t){}
+				//try {MRJFileUtils.setFileTypeAndCreator(new File(relativePath), new MRJOSType("TEXT"), new MRJOSType("R*ch"));}
+			//	catch (Throwable t){}
 			}
 			catch( FileNotFoundException e ) {
 				MesquiteMessage.warnProgrammer( "File Busy or Not Found: put file contents  (1) [" + relativePath + "]");
@@ -3325,8 +3348,8 @@ public class MesquiteFile extends Listened implements HNode, Commandable, Listab
 					stream.write(contents);
 					stream.flush();
 					stream.close();
-					try {MRJFileUtils.setFileTypeAndCreator(new File(relativePath), new MRJOSType("TEXT"), new MRJOSType("R*ch"));}
-					catch (Throwable t){}
+				//	try {MRJFileUtils.setFileTypeAndCreator(new File(relativePath), new MRJOSType("TEXT"), new MRJOSType("R*ch"));}
+				//	catch (Throwable t){}
 				}
 			}
 			catch( FileNotFoundException e ) {
@@ -3498,9 +3521,17 @@ public class MesquiteFile extends Listened implements HNode, Commandable, Listab
 		if (logStream!=null) {
 			logStream.close();
 			logStream = null;
-			try {MRJFileUtils.setFileTypeAndCreator(new File(MesquiteModule.supportFilesDirectory + fileSeparator + MesquiteTrunk.logFileName), new MRJOSType("TEXT"), new MRJOSType("R*ch"));}
-			catch (Throwable t){}
+			//try {MRJFileUtils.setFileTypeAndCreator(new File(MesquiteModule.supportFilesDirectory + fileSeparator + MesquiteTrunk.logFileName), new MRJOSType("TEXT"), new MRJOSType("R*ch"));}
+			//catch (Throwable t){}
 		}
+	}
+	/*.................................................................................................................*/
+	boolean requiresSaveAs = false;
+	public boolean getRequiresSaveAs(){
+		return requiresSaveAs;
+	}
+	public void setRequiresSaveAs(boolean req){
+		requiresSaveAs = req;
 	}
 	/*.................................................................................................................*/
 	public boolean getWriteProtected(){

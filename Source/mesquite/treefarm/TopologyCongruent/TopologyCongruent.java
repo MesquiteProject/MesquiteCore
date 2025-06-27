@@ -16,11 +16,19 @@ package mesquite.treefarm.TopologyCongruent;
 /*New October 7, '08. oliver
  * Modified 16 October 2008  to use the built-in Tree.equalsTopology method - DRM 
  * January 2012: added non-exact match. */
-import java.awt.*;
+import java.awt.Checkbox;
 
 import mesquite.consensus.lib.StrictConsenser;
-import mesquite.lib.*;
-import mesquite.lib.duties.*;
+import mesquite.lib.CommandChecker;
+import mesquite.lib.MesquiteBoolean;
+import mesquite.lib.MesquiteFile;
+import mesquite.lib.MesquiteInteger;
+import mesquite.lib.MesquiteString;
+import mesquite.lib.MesquiteThread;
+import mesquite.lib.Snapshot;
+import mesquite.lib.StringUtil;
+import mesquite.lib.duties.BooleanForTree;
+import mesquite.lib.duties.OneTreeSource;
 import mesquite.lib.tree.MesquiteTree;
 import mesquite.lib.tree.Tree;
 import mesquite.lib.ui.ExtensibleDialog;

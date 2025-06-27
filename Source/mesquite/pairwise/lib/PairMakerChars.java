@@ -13,11 +13,7 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
 */
 package mesquite.pairwise.lib;
 
-import java.awt.*;
-import java.util.*;
-import mesquite.lib.*;
-import mesquite.lib.characters.*;
-import mesquite.lib.duties.*;
+import mesquite.lib.characters.CharacterDistribution;
 
 
 /* ======================================================================== */

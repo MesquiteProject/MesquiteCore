@@ -2,8 +2,17 @@ package mesquite.genomic.ExportTiledBaits;
 
 import java.awt.Checkbox;
 
-import mesquite.categ.lib.*;
-import mesquite.lib.*;
+import mesquite.categ.lib.DNAData;
+import mesquite.categ.lib.DNAState;
+import mesquite.lib.ExporterDialog;
+import mesquite.lib.IntegerField;
+import mesquite.lib.MesquiteBoolean;
+import mesquite.lib.MesquiteFile;
+import mesquite.lib.MesquiteInteger;
+import mesquite.lib.MesquiteProject;
+import mesquite.lib.MesquiteStringBuffer;
+import mesquite.lib.MesquiteThread;
+import mesquite.lib.StringUtil;
 import mesquite.lib.characters.CharacterData;
 import mesquite.lib.duties.FileInterpreterI;
 import mesquite.lib.taxa.Taxa;

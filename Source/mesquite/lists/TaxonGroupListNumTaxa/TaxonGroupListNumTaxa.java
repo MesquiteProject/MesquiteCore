@@ -13,15 +13,18 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
  */
 package mesquite.lists.TaxonGroupListNumTaxa;
 
-import mesquite.lib.*;
+import mesquite.lib.CommandChecker;
+import mesquite.lib.MesquiteCommand;
+import mesquite.lib.MesquiteFile;
+import mesquite.lib.MesquiteString;
+import mesquite.lib.Snapshot;
 import mesquite.lib.characters.CharacterData;
-import mesquite.lib.duties.*;
 import mesquite.lib.table.MesquiteTable;
 import mesquite.lib.taxa.Taxa;
 import mesquite.lib.taxa.TaxaGroup;
 import mesquite.lib.taxa.TaxaGroupVector;
 import mesquite.lib.taxa.TaxaPartition;
-import mesquite.lists.lib.*;
+import mesquite.lists.lib.TaxonGroupListAssistant;
 
 
 //TODO: add choice of taxa block

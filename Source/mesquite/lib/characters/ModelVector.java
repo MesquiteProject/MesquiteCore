@@ -13,10 +13,9 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
 */
 package mesquite.lib.characters; 
 
-import java.awt.*;
-import java.util.*;
-import mesquite.lib.duties.*;
-import mesquite.lib.*;
+import java.util.Enumeration;
+
+import mesquite.lib.ListableVector;
 
 /*Last documented:  May 2000 */
 /*======================================================================== */

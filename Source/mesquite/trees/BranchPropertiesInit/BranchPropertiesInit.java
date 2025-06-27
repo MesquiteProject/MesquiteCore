@@ -1,32 +1,21 @@
 package mesquite.trees.BranchPropertiesInit;
 
+import java.io.File;
+
 import mesquite.lib.Associable;
-import mesquite.lib.CommandChecker;
-import mesquite.lib.Debugg;
 import mesquite.lib.ListableVector;
-import mesquite.lib.MesquiteBoolean;
-import mesquite.lib.MesquiteDouble;
 import mesquite.lib.MesquiteFile;
 import mesquite.lib.MesquiteInteger;
 import mesquite.lib.MesquiteListener;
-import mesquite.lib.MesquiteMessage;
-import mesquite.lib.MesquiteTrunk;
 import mesquite.lib.NameReference;
 import mesquite.lib.Notification;
 import mesquite.lib.ParseUtil;
 import mesquite.lib.Parser;
-import mesquite.lib.PropertyRecord;
 import mesquite.lib.StringUtil;
 import mesquite.lib.duties.MesquiteInit;
-import mesquite.lib.tree.MesquiteTree;
-import mesquite.lib.tree.NewickDialect;
-import mesquite.lib.tree.DisplayableBranchProperty;
 import mesquite.lib.tree.BranchProperty;
-
-import java.io.File;
-import java.util.Vector;
-
-import mesquite.externalCommunication.lib.*;
+import mesquite.lib.tree.DisplayableBranchProperty;
+import mesquite.lib.tree.MesquiteTree;
 
 public class BranchPropertiesInit extends MesquiteInit implements MesquiteListener {
 
@@ -185,8 +174,8 @@ public class BranchPropertiesInit extends MesquiteInit implements MesquiteListen
 	public void changed(Object caller, Object obj, Notification notification){
 		int code = Notification.getCode(notification); 
 		if (obj == DisplayableBranchProperty.branchPropertyDisplayPreferences){
-			if (MesquiteTrunk.developmentMode)
-				System.out.println("Branch/node property display preferences saved.");
+			//if (MesquiteTrunk.developmentMode)
+			//	System.out.println("Branch/node property display preferences saved.");
 			storePreferences();
 		}
 				

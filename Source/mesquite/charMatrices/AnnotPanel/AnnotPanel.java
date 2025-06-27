@@ -13,14 +13,35 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
  */
 package mesquite.charMatrices.AnnotPanel; 
 
-import java.util.*;
-import java.awt.*;
-import java.awt.event.*;
-import mesquite.lib.*;
-import mesquite.lib.characters.*;
-import mesquite.lib.duties.*;
+import java.awt.Color;
+import java.awt.Dimension;
+import java.awt.Panel;
+import java.awt.event.KeyEvent;
+
+import mesquite.lib.AttachedNote;
+import mesquite.lib.CommandChecker;
+import mesquite.lib.CommandRecord;
+import mesquite.lib.MesquiteBoolean;
+import mesquite.lib.MesquiteFile;
+import mesquite.lib.MesquiteInteger;
+import mesquite.lib.MesquiteListener;
+import mesquite.lib.MesquiteMessage;
+import mesquite.lib.MesquiteModule;
+import mesquite.lib.MesquiteString;
+import mesquite.lib.MesquiteThread;
+import mesquite.lib.NameReference;
+import mesquite.lib.Notification;
+import mesquite.lib.Snapshot;
+import mesquite.lib.StringUtil;
+import mesquite.lib.characters.CharacterData;
+import mesquite.lib.duties.CellColorer;
+import mesquite.lib.duties.CellColorerCharacters;
+import mesquite.lib.duties.CellColorerMatrix;
+import mesquite.lib.duties.CellColorerTaxa;
+import mesquite.lib.duties.DataWindowAssistantID;
 import mesquite.lib.misc.AttachedNotesVector;
-import mesquite.lib.table.*;
+import mesquite.lib.table.MesquiteTable;
+import mesquite.lib.table.TableWindow;
 import mesquite.lib.taxa.Taxa;
 import mesquite.lib.ui.AlertDialog;
 import mesquite.lib.ui.AnnotPanelOwner;
@@ -31,8 +52,6 @@ import mesquite.lib.ui.MesquiteButton;
 import mesquite.lib.ui.MesquiteMenuItemSpec;
 import mesquite.lib.ui.MesquiteSubmenuSpec;
 import mesquite.lib.ui.MesquiteWindow;
-
-import java.awt.image.*;
 
 
 /** ======================================================================== */

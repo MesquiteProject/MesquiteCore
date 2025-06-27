@@ -33,7 +33,7 @@ public class ProcessUtil {
 			
 			if (command==null || command.length==0 || StringUtil.blank(command[0])) {
 				MesquiteMessage.printLogln("Error in attempting to start external program: commands empty. \n");
-				Debugg.printStackTrace();
+				MesquiteMessage.printStackTrace();
 				return null;
 			}
 			ProcessBuilder pb = new ProcessBuilder(command);

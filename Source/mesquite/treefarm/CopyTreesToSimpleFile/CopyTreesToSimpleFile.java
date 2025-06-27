@@ -16,9 +16,11 @@ package mesquite.treefarm.CopyTreesToSimpleFile;
 
 import java.awt.FileDialog;
 
-import mesquite.lib.*;
-import mesquite.lib.characters.CharacterData;
-import mesquite.lib.duties.*;
+import mesquite.lib.Listable;
+import mesquite.lib.MesquiteFile;
+import mesquite.lib.MesquiteFileDialog;
+import mesquite.lib.StringUtil;
+import mesquite.lib.duties.FileProcessor;
 import mesquite.lib.tree.Tree;
 import mesquite.lib.tree.TreeVector;
 import mesquite.lib.ui.ColorTheme;

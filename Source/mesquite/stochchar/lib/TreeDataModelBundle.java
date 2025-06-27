@@ -13,8 +13,11 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
 */
 package mesquite.stochchar.lib;
 
-import mesquite.lib.*;
-import mesquite.lib.characters.*;
+import mesquite.lib.CommandRecord;
+import mesquite.lib.MesquiteThread;
+import mesquite.lib.characters.CLikelihoodCalculator;
+import mesquite.lib.characters.CharacterDistribution;
+import mesquite.lib.characters.ProbabilityModel;
 import mesquite.lib.tree.Tree;
 
 

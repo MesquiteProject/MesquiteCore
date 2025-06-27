@@ -13,11 +13,6 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
 */
 package mesquite.lib;
 
-import java.awt.*;
-import java.text.*;
-
-
-
 public interface Listenable {
  	/*.................................................................................................................*/
 	/** notifies listeners that element has changed*/

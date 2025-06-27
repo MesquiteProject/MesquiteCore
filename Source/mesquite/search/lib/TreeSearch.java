@@ -14,12 +14,19 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
 package mesquite.search.lib;
 /*~~  */
 
-import java.util.*;
-import java.awt.*;
-
-import mesquite.lib.*;
-import mesquite.lib.characters.CharacterData;
-import mesquite.lib.duties.*;
+import mesquite.lib.CommandChecker;
+import mesquite.lib.EmployeeNeed;
+import mesquite.lib.Incrementable;
+import mesquite.lib.MesquiteFile;
+import mesquite.lib.MesquiteInteger;
+import mesquite.lib.MesquiteModule;
+import mesquite.lib.MesquiteNumber;
+import mesquite.lib.MesquiteString;
+import mesquite.lib.OutputTextListener;
+import mesquite.lib.Reconnectable;
+import mesquite.lib.Snapshot;
+import mesquite.lib.duties.TreeInferer;
+import mesquite.lib.duties.TreeSearcher;
 import mesquite.lib.misc.CanRetrieveTreeBlock;
 import mesquite.lib.taxa.Taxa;
 import mesquite.lib.tree.Tree;
@@ -237,8 +244,8 @@ public void processUserClickingOnTextCommandLink(String command) {
 	/** Called to provoke any necessary initialization.  This helps prevent the module's intialization queries to the user from
    	happening at inopportune times (e.g., while a long chart calculation is in mid-progress)*/
 	public void initialize(Taxa taxa){
-		searchTask.initialize(taxa);
 		searchTask.setTreeInferer(this);
+		searchTask.initialize(taxa);
 	}
 	/*.................................................................................................................*/
 	public int fillTreeBlock(TreeVector treeList, int numberIfUnlimited){

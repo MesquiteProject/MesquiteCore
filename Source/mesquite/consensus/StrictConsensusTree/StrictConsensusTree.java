@@ -13,8 +13,8 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
 */
 package mesquite.consensus.StrictConsensusTree;
 
-import mesquite.consensus.lib.*;
-import mesquite.lib.*;
+import mesquite.consensus.lib.BasicTreeConsenser;
+import mesquite.consensus.lib.BipartitionVector;
 import mesquite.lib.tree.Tree;
 
 /* ======================================================================== */

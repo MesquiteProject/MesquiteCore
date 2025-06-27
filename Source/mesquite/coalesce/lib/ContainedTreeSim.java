@@ -13,15 +13,12 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
 package mesquite.coalesce.lib;
 /*~~  */
 
-import java.util.*;
-import java.awt.*;
-import mesquite.lib.*;
-import mesquite.lib.duties.*;
+import mesquite.assoc.lib.TaxaAssociation;
+import mesquite.lib.MesquiteLong;
+import mesquite.lib.MesquiteModule;
 import mesquite.lib.taxa.Taxa;
 import mesquite.lib.tree.MesquiteTree;
 import mesquite.lib.tree.Tree;
-import mesquite.coalesce.lib.*;
-import mesquite.assoc.lib.*;
 /* ======================================================================== */
 public abstract class ContainedTreeSim extends MesquiteModule {
  	public Class getDutyClass() {

@@ -11,12 +11,19 @@ Mesquite's web site is http://mesquiteproject.org
 This source code and its compiled class files are free and modifiable under the terms of 
 GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
 */
-import mesquite.lib.*;
-import mesquite.lib.duties.*;
+import mesquite.lib.CommandChecker;
+import mesquite.lib.EmployeeNeed;
+import mesquite.lib.MesquiteBoolean;
+import mesquite.lib.MesquiteCommand;
+import mesquite.lib.MesquiteFile;
+import mesquite.lib.MesquiteNumber;
+import mesquite.lib.MesquiteString;
+import mesquite.lib.Snapshot;
+import mesquite.lib.duties.BooleanForTree;
+import mesquite.lib.duties.NumberForTreeBlock;
 import mesquite.lib.tree.Tree;
 import mesquite.lib.tree.TreeVector;
 import mesquite.lib.ui.MesquiteSubmenuSpec;
-import mesquite.stochchar.lib.ProbModelSourceLike;
 
 public class NumTreesMatchingCriterion extends NumberForTreeBlock {
 	BooleanForTree treeCriterionTask;

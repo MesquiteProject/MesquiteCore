@@ -14,12 +14,9 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
 package mesquite.distance.UPGMA;
 /*~~  */
 
-import java.util.*;
-import java.awt.*;
-import mesquite.lib.*;
-import mesquite.lib.duties.*;
+import mesquite.distance.lib.TreeClusterer;
+import mesquite.lib.MesquiteDouble;
 import mesquite.lib.taxa.Taxa;
-import mesquite.distance.lib.*;
 
 /* ======================================================================== */
 //eventually have DistanceTree as treeblock filler, which hires TreeClusterer and TaxaDistanceSource

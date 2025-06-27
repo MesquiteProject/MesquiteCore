@@ -13,11 +13,10 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
 */
 package mesquite.align.lib;
 
-import java.awt.*;
-import java.awt.event.*;
-import mesquite.lib.table.*;
+import mesquite.lib.MesquiteCommand;
+import mesquite.lib.table.EditorPanel;
+import mesquite.lib.table.TableTool;
 import mesquite.lib.ui.MesquiteCursor;
-import mesquite.lib.*;
 
 /* ======================================================================== */
 	/** This subclass of TableTool is used in data windows for aligning data; adds an edgeCursor for between cells.

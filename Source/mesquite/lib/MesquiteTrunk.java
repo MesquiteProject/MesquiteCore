@@ -14,9 +14,18 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
 
 package mesquite.lib;
 
-import java.awt.*;
+import java.awt.Image;
+import java.awt.Menu;
+import java.awt.MenuBar;
+import java.awt.MenuItem;
+import java.awt.Panel;
+import java.util.Enumeration;
+import java.util.Vector;
 
-import mesquite.lib.duties.*;
+import org.apache.commons.httpclient.NameValuePair;
+
+import mesquite.lib.duties.BrowseHierarchy;
+import mesquite.lib.duties.FileCoordinator;
 import mesquite.lib.misc.HPanel;
 import mesquite.lib.simplicity.InterfaceManager;
 import mesquite.lib.ui.HelpSearchManager;
@@ -30,8 +39,6 @@ import mesquite.lib.ui.MesquiteWindow;
 import mesquite.trunk.ApplicationHandler9;
 import mesquite.trunk.PhoneHomeThread;
 import mesquite.trunk.ProjectTreeWindow;
-
-import java.util.*;
 
 
 
@@ -49,6 +56,7 @@ public abstract class MesquiteTrunk extends MesquiteModule
 	//turns on checking of classes in FileElement, NexusBlock and MesquiteCommand (possibly others), to detect memory leaks
 	public static final boolean checkMemory = false;  
 	public static boolean attemptingToQuit = false;
+	public static boolean quitting = false;
 	public static LeakFinder leakFinderObject;
 	public static String tempDirectory ="";
 	public static String[] startupArguments = null;  //ask if flag "-myFlag" is in startupArguments by StringArray.indexOf(MesquiteTrunk.startupArguments, "-myFlag")>=0
@@ -341,6 +349,25 @@ public abstract class MesquiteTrunk extends MesquiteModule
 	/** Records new or newly opened file among Recent Files */
 	public static String[] getRecentFileNames(){
 		return recentFiles.getStrings();
+	}
+	
+	/*.................................................................................................................*/
+	/** posts a Bean to the bean log on the MesquiteServer*/
+	public void postExtraPackagesReport() {
+		if (!MesquiteTrunk.reportUse || MesquiteTrunk.phoneHomeThread == null || MesquiteTrunk.noBeans) 
+			return;
+		if (extraPkgs.size() == 0)
+			return;
+		String value = "ExtrPkgs";
+		for (int i= 0; i< extraPkgs.size(); i++)
+			value += " " + (String)extraPkgs.elementAt(i);
+		postMicroBean(value);
+	}
+	Vector extraPkgs = new Vector();
+	/*.................................................................................................................*/
+	/** Notes that extra package found*/
+	public void noteExtraPackage(String pkgName) {
+		extraPkgs.addElement(pkgName);
 	}
 	/*.................................................................................................................*/
 	public static Thread startupShutdownThread = null;

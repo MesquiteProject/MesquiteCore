@@ -13,8 +13,8 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
 */
 package mesquite.lib.duties;
 
-import java.awt.*;
-import mesquite.lib.*;
+import mesquite.lib.MesquiteModule;
+import mesquite.lib.Selectionable;
 import mesquite.lib.ui.ChartListener;
 import mesquite.lib.ui.Charter;
 

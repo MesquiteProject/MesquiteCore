@@ -15,15 +15,20 @@ package mesquite.align.AlignDNAToProtein;
 
 import java.awt.Checkbox;
 
-import mesquite.categ.lib.*;
-import mesquite.lib.*;
-import mesquite.lib.characters.*;
-import mesquite.lib.duties.*;
-import mesquite.lib.table.*;
+import mesquite.categ.lib.DNAData;
+import mesquite.categ.lib.DNADataAltererCon;
+import mesquite.categ.lib.ProteinData;
+import mesquite.categ.lib.ProteinState;
+import mesquite.charMatrices.CharMatrixCoordIndep.CharMatrixCoordIndep;
+import mesquite.lib.EmployeeNeed;
+import mesquite.lib.MesquiteBoolean;
+import mesquite.lib.MesquiteInteger;
+import mesquite.lib.MesquiteThread;
+import mesquite.lib.characters.AltererAlignShift;
+import mesquite.lib.characters.CharacterData;
+import mesquite.lib.characters.MCharactersDistribution;
 import mesquite.lib.taxa.Taxa;
 import mesquite.lib.ui.ExtensibleDialog;
-import mesquite.molec.lib.*;
-import mesquite.charMatrices.CharMatrixCoordIndep.CharMatrixCoordIndep;
 
 
 

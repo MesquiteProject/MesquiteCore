@@ -13,7 +13,10 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
 */
 package mesquite.lib.ui;
 
-import java.awt.*;
+import java.awt.Color;
+import java.awt.Font;
+import java.awt.FontMetrics;
+import java.awt.Graphics;
 
 import mesquite.lib.MesquiteDouble;
 import mesquite.lib.MesquiteInteger;

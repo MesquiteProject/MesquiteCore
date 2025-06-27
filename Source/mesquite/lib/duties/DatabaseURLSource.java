@@ -13,7 +13,7 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
 */
 package mesquite.lib.duties;
 
-import java.util.*;
+import java.util.Vector;
 
 import mesquite.lib.MesquiteModule;
 

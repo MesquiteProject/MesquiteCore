@@ -13,10 +13,7 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
 */
 package mesquite.lists.lib;
 
-import java.awt.*;
-import java.util.*;
-import mesquite.lib.*;
-import mesquite.lib.duties.*;
+import java.awt.Graphics;
 
 /* ======================================================================== */
 public abstract class TreeblocksListAssistant extends ListAssistant  {

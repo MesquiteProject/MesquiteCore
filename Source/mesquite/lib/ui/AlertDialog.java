@@ -13,19 +13,12 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
  */
 package mesquite.lib.ui;
 
-import java.awt.event.*;
-
-import javax.swing.JScrollBar;
-
 import mesquite.lib.MesquiteCommand;
 import mesquite.lib.MesquiteInteger;
 import mesquite.lib.MesquiteMessage;
 import mesquite.lib.MesquiteThread;
 import mesquite.lib.MesquiteTrunk;
 import mesquite.lib.StringUtil;
-
-import java.awt.*;
-/*===============================================*/
 
 
 

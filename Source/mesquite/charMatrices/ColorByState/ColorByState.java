@@ -13,21 +13,36 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
  */
 package mesquite.charMatrices.ColorByState; 
 
-import java.util.*;
-import java.awt.*;
+import java.awt.Color;
 
-import mesquite.lib.*;
-import mesquite.lib.characters.*;
-import mesquite.lib.duties.*;
-import mesquite.lib.table.*;
+import mesquite.categ.lib.CategoricalData;
+import mesquite.categ.lib.DNAData;
+import mesquite.categ.lib.DNAState;
+import mesquite.categ.lib.MolecularData;
+import mesquite.categ.lib.ProteinData;
+import mesquite.categ.lib.ProteinState;
+import mesquite.lib.CommandChecker;
+import mesquite.lib.CompatibilityTest;
+import mesquite.lib.MesquiteBoolean;
+import mesquite.lib.MesquiteFile;
+import mesquite.lib.MesquiteInteger;
+import mesquite.lib.MesquiteModule;
+import mesquite.lib.MesquiteThread;
+import mesquite.lib.Parser;
+import mesquite.lib.Snapshot;
+import mesquite.lib.characters.CharacterData;
+import mesquite.lib.characters.CharacterStateTest;
+import mesquite.lib.duties.CellColorer;
+import mesquite.lib.duties.CellColorerMatrixHighPriority;
+import mesquite.lib.duties.DataWindowAssistantID;
+import mesquite.lib.table.MesquiteTable;
 import mesquite.lib.ui.ColorRecord;
 import mesquite.lib.ui.MesquiteColorTable;
 import mesquite.lib.ui.MesquiteMenuItemSpec;
-import mesquite.categ.lib.*;
 
 
 /* ======================================================================== */
-public class ColorByState extends DataWindowAssistantID implements CellColorer, CellColorerMatrix {
+public class ColorByState extends DataWindowAssistantID implements CellColorer, CellColorerMatrixHighPriority {
 	MesquiteTable table;
 	CharacterData data;
 	int stateLimit = 9;

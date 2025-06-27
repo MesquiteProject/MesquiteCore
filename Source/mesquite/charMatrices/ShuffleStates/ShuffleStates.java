@@ -14,14 +14,14 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
 package mesquite.charMatrices.ShuffleStates;
 /*~~  */
 
-import java.util.*;
-import java.awt.*;
-import java.awt.image.*;
-
-import mesquite.lib.*;
-import mesquite.lib.characters.*;
-import mesquite.lib.duties.*;
-import mesquite.lib.table.*;
+import mesquite.lib.RandomBetween;
+import mesquite.lib.ResultCodes;
+import mesquite.lib.UndoInstructions;
+import mesquite.lib.UndoReference;
+import mesquite.lib.characters.AltererRandomizations;
+import mesquite.lib.characters.CharacterData;
+import mesquite.lib.duties.DataAlterer;
+import mesquite.lib.table.MesquiteTable;
 
 /* ======================================================================== */
 public class ShuffleStates extends DataAlterer implements AltererRandomizations{

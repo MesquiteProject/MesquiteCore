@@ -15,8 +15,14 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
 
 package mesquite.trees.BLFromNodeAgeConstraints;
 
-import mesquite.lib.*;
-import mesquite.lib.duties.*;
+import mesquite.lib.Listened;
+import mesquite.lib.MesquiteDouble;
+import mesquite.lib.MesquiteListener;
+import mesquite.lib.MesquiteString;
+import mesquite.lib.NameReference;
+import mesquite.lib.Notification;
+import mesquite.lib.StringUtil;
+import mesquite.lib.duties.BranchLengthsAltererMult;
 import mesquite.lib.tree.AdjustableTree;
 import mesquite.lib.tree.Tree;
 

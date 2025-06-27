@@ -12,11 +12,6 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
 */
 package mesquite.coalesce.lib;
 
-import java.awt.*;
-import java.util.*;
-import mesquite.lib.*;
-
-
 /* ======================================================================== */
 /* equivalent to Coalescer but when hired as this, it knows that it shouldn't present its own interface for setting population size*/
 public abstract class CoalescerObed extends Coalescer   {

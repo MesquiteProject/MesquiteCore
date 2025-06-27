@@ -13,10 +13,9 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)*/
 package mesquite.minimal.WindowBabysitter;
 /*~~  */
 
-import java.util.*;
-import java.awt.*;
-import mesquite.lib.*;
-import mesquite.lib.duties.*;
+import mesquite.lib.MesquiteFile;
+import mesquite.lib.Snapshot;
+import mesquite.lib.duties.WindowHolder;
 import mesquite.lib.ui.MesquiteWindow;
 
 

@@ -14,15 +14,38 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
 package mesquite.stochchar.EvolveCategChars;
 /*~~  */
 
-import java.util.*;
-import java.awt.*;
-import mesquite.lib.*;
-import mesquite.lib.characters.*;
-import mesquite.lib.duties.*;
+import mesquite.categ.lib.CategoricalAdjustable;
+import mesquite.categ.lib.CategoricalData;
+import mesquite.categ.lib.CategoricalHistory;
+import mesquite.categ.lib.CategoricalState;
+import mesquite.categ.lib.OffersCategoricalData;
+import mesquite.lib.CommandChecker;
+import mesquite.lib.CompatibilityTest;
+import mesquite.lib.EmployerEmployee;
+import mesquite.lib.Listable;
+import mesquite.lib.MesquiteFile;
+import mesquite.lib.MesquiteInteger;
+import mesquite.lib.MesquiteListener;
+import mesquite.lib.MesquiteLong;
+import mesquite.lib.MesquiteProject;
+import mesquite.lib.MesquiteString;
+import mesquite.lib.MesquiteThread;
+import mesquite.lib.Notification;
+import mesquite.lib.ParseUtil;
+import mesquite.lib.Snapshot;
+import mesquite.lib.StringUtil;
+import mesquite.lib.characters.AdjustableDistribution;
+import mesquite.lib.characters.CharacterDistribution;
+import mesquite.lib.characters.CharacterHistory;
+import mesquite.lib.characters.CharacterModel;
+import mesquite.lib.characters.CharacterState;
+import mesquite.lib.characters.ModelCompatibilityInfo;
+import mesquite.lib.duties.CharModelCurator;
+import mesquite.lib.duties.CharacterSimulator;
 import mesquite.lib.tree.Tree;
 import mesquite.lib.ui.MesquiteSubmenuSpec;
-import mesquite.categ.lib.*;
-import mesquite.stochchar.lib.*;
+import mesquite.stochchar.lib.ProbPhenCategCharModel;
+import mesquite.stochchar.lib.SimModelCompatInfo;
 
 /* ======================================================================== */
 public class EvolveCategChars extends CharacterSimulator implements MesquiteListener {

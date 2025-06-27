@@ -13,22 +13,30 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
  */
 package mesquite.molec.ColorByAA; 
 
-import java.util.*;
-import java.awt.*;
+import java.awt.Color;
 
-import mesquite.lib.*;
-import mesquite.lib.characters.*;
-import mesquite.lib.duties.*;
-import mesquite.lib.table.*;
+import mesquite.categ.lib.CategoricalState;
+import mesquite.categ.lib.DNAData;
+import mesquite.categ.lib.ProteinData;
+import mesquite.categ.lib.ProteinState;
+import mesquite.categ.lib.RequiresAnyDNAData;
+import mesquite.lib.CommandChecker;
+import mesquite.lib.CompatibilityTest;
+import mesquite.lib.MesquiteBoolean;
+import mesquite.lib.MesquiteFile;
+import mesquite.lib.MesquiteInteger;
+import mesquite.lib.Snapshot;
+import mesquite.lib.characters.CharacterData;
+import mesquite.lib.duties.CellColorer;
+import mesquite.lib.duties.CellColorerMatrixHighPriority;
+import mesquite.lib.duties.DataWindowAssistantID;
+import mesquite.lib.table.MesquiteTable;
 import mesquite.lib.ui.ColorDistribution;
 import mesquite.lib.ui.ColorRecord;
-import mesquite.lib.ui.MesquiteSubmenuSpec;
-import mesquite.molec.lib.AAProperty;
-import mesquite.categ.lib.*;
 
 
 /* ======================================================================== */
-public class ColorByAA extends DataWindowAssistantID implements CellColorer, CellColorerMatrix {
+public class ColorByAA extends DataWindowAssistantID implements CellColorer, CellColorerMatrixHighPriority {
 	MesquiteTable table;
 	protected DNAData data;
 	MesquiteBoolean emphasizeDegeneracy;

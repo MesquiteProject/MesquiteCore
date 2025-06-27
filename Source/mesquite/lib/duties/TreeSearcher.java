@@ -13,9 +13,11 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
 */
 package mesquite.lib.duties;
 
-import java.awt.*;
-
-import mesquite.lib.*;
+import mesquite.lib.Debugg;
+import mesquite.lib.MesquiteModule;
+import mesquite.lib.MesquiteNumber;
+import mesquite.lib.MesquiteString;
+import mesquite.lib.OutputTextListener;
 import mesquite.lib.taxa.Taxa;
 import mesquite.lib.taxa.TaxaSelectionSet;
 import mesquite.lib.tree.Tree;
@@ -67,7 +69,10 @@ public abstract class TreeSearcher extends MesquiteModule  {
    	happening at inopportune times (e.g., while a long chart calculation is in mid-progress)*/
    	public abstract boolean initialize(Taxa taxa);
 
-   	
+	/*.................................................................................................................*/
+	public void setMultipleMatrixMode(boolean multipleMatrixMode) {
+	}
+
 	 
 	 public TreeInferer getTreeInferer() {
 		 return treeInferer;

@@ -15,10 +15,15 @@ modified 26 July 01: protected against NullPointerException if null images in pa
  */
 package mesquite.lib.ui;
 
-import java.awt.*;
-import java.awt.event.*;
-import java.util.*;
-/* ======================================================================== */
+import java.awt.Color;
+import java.awt.Cursor;
+import java.awt.Font;
+import java.awt.Graphics;
+import java.awt.Image;
+import java.awt.Rectangle;
+import java.awt.TextArea;
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
 
 import mesquite.lib.CommandChecker;
 import mesquite.lib.Commandable;

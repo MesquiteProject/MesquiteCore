@@ -14,18 +14,28 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
 package mesquite.coalesce.DeepCoalMultLoci;
 /*~~  */
 
-import java.util.*;
-import java.awt.*;
-import mesquite.lib.*;
-import mesquite.lib.duties.*;
+import mesquite.assoc.lib.AssociationSource;
+import mesquite.assoc.lib.ReconstructAssociation;
+import mesquite.assoc.lib.TaxaAssociation;
+import mesquite.lib.CommandChecker;
+import mesquite.lib.EmployeeNeed;
+import mesquite.lib.Incrementable;
+import mesquite.lib.MesquiteCommand;
+import mesquite.lib.MesquiteFile;
+import mesquite.lib.MesquiteInteger;
+import mesquite.lib.MesquiteModule;
+import mesquite.lib.MesquiteNumber;
+import mesquite.lib.MesquiteString;
+import mesquite.lib.MesquiteThread;
+import mesquite.lib.Snapshot;
+import mesquite.lib.duties.NumberForTree;
+import mesquite.lib.duties.TreeBlockSource;
 import mesquite.lib.taxa.Taxa;
 import mesquite.lib.taxa.Taxon;
 import mesquite.lib.tree.MesquiteTree;
 import mesquite.lib.tree.Tree;
 import mesquite.lib.tree.TreeVector;
 import mesquite.lib.ui.MesquiteSubmenuSpec;
-import mesquite.coalesce.lib.*;
-import mesquite.assoc.lib.*;
 
 
 /* ======================================================================== */

@@ -14,14 +14,26 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
 package mesquite.trees.ChronogramDisplay;
 /*~~  */
 
-import java.util.*;
+import java.awt.Color;
+import java.awt.Composite;
+import java.awt.Graphics;
+import java.awt.Graphics2D;
+import java.util.Enumeration;
+import java.util.Vector;
 
-
-import java.awt.*;
-import java.awt.event.KeyEvent;
-
-import mesquite.lib.*;
-import mesquite.lib.duties.*;
+import mesquite.lib.CommandChecker;
+import mesquite.lib.DoubleArray;
+import mesquite.lib.MesquiteBoolean;
+import mesquite.lib.MesquiteDouble;
+import mesquite.lib.MesquiteFile;
+import mesquite.lib.MesquiteInteger;
+import mesquite.lib.MesquiteString;
+import mesquite.lib.MesquiteThread;
+import mesquite.lib.MesquiteTrunk;
+import mesquite.lib.NameReference;
+import mesquite.lib.Snapshot;
+import mesquite.lib.StringUtil;
+import mesquite.lib.duties.TreeDisplayAssistantD;
 import mesquite.lib.taxa.Taxa;
 import mesquite.lib.tree.MesquiteTree;
 import mesquite.lib.tree.Tree;
@@ -32,10 +44,8 @@ import mesquite.lib.tree.TreeDisplayRequests;
 import mesquite.lib.tree.TreeDrawing;
 import mesquite.lib.ui.ColorDistribution;
 import mesquite.lib.ui.GraphicsUtil;
-import mesquite.lib.ui.MesquiteMenuItemSpec;
 import mesquite.lib.ui.MesquiteSubmenu;
 import mesquite.lib.ui.MesquiteSubmenuSpec;
-import mesquite.lib.ui.StringInABox;
 import mesquite.lib.ui.TextRotator;
 
 /* ======================================================================== */
@@ -94,7 +104,11 @@ public class ChronogramDisplay extends TreeDisplayAssistantD {
 
 	/*.................................................................................................................*/
 	public int getVersionOfFirstRelease(){
-		return NEXTRELEASE;  
+		return 400;  
+	}
+	/*.................................................................................................................*/
+	public boolean isPrerelease(){
+		return false;  
 	}
 	/*.................................................................................................................*/
 	public   TreeDisplayExtra createTreeDisplayExtra(TreeDisplay treeDisplay) {
@@ -397,7 +411,6 @@ class ChonogramDisplayExtra extends TreeDisplayExtra implements TreeDisplayBkgdE
 			g.fillOval((int)(x-nodeCircleSize/2), (int)(y-nodeCircleSize/2), nodeCircleSize, nodeCircleSize);
 		}
 		else {
-			//Debugg.println(taxa.getTaxonName(node)+" x="+x +", y="+y);
 		}
 
 	}

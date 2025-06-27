@@ -16,10 +16,22 @@ package mesquite.io.ExportFusedPhylip;
 
 import java.awt.Checkbox;
 
-import mesquite.categ.lib.*;
-import mesquite.io.lib.*;
-import mesquite.lib.*;
-import mesquite.lib.characters.*;
+import mesquite.categ.lib.CategoricalData;
+import mesquite.categ.lib.CategoricalState;
+import mesquite.categ.lib.DNAData;
+import mesquite.categ.lib.DNAState;
+import mesquite.categ.lib.ProteinData;
+import mesquite.categ.lib.ProteinState;
+import mesquite.io.lib.InterpretPhylip;
+import mesquite.io.lib.PhylipExporterDialog;
+import mesquite.lib.MesquiteFile;
+import mesquite.lib.MesquiteInteger;
+import mesquite.lib.MesquiteProject;
+import mesquite.lib.MesquiteStringBuffer;
+import mesquite.lib.MesquiteThread;
+import mesquite.lib.SimpleNamesTaxonNamer;
+import mesquite.lib.StringUtil;
+import mesquite.lib.characters.CharacterData;
 import mesquite.lib.duties.CharactersManager;
 import mesquite.lib.taxa.Taxa;
 import mesquite.lib.tree.TreeUtil;

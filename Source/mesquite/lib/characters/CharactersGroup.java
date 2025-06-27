@@ -13,12 +13,7 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
 */
 package mesquite.lib.characters; 
 
-import java.awt.*;
-
-import mesquite.lib.duties.*;
-import mesquite.lib.*;
-import mesquite.lists.lib.CharListPartitionUtil;
-import mesquite.lists.lib.GroupDialog;
+import mesquite.lib.GroupLabel;
 
 	
 /* ======================================================================== */

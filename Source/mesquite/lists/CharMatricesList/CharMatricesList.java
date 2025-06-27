@@ -14,18 +14,29 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
 package mesquite.lists.CharMatricesList;
 /*~~  */
 
-import mesquite.lists.lib.*;
-
-import java.util.*;
-import java.awt.*;
-
-import mesquite.lib.*;
-import mesquite.lib.characters.*;
-import mesquite.lib.duties.*;
-import mesquite.lib.table.*;
+import mesquite.lib.CommandChecker;
+import mesquite.lib.EmployeeNeed;
+import mesquite.lib.ListableVector;
+import mesquite.lib.MesquiteFile;
+import mesquite.lib.MesquiteListener;
+import mesquite.lib.MesquiteModule;
+import mesquite.lib.MesquiteThread;
+import mesquite.lib.Notification;
+import mesquite.lib.Snapshot;
+import mesquite.lib.StringUtil;
+import mesquite.lib.characters.CharacterData;
+import mesquite.lib.duties.ListableNameAlterer;
+import mesquite.lib.table.MesquiteTable;
+import mesquite.lib.table.TableWindow;
 import mesquite.lib.ui.MesquiteMenuSpec;
 import mesquite.lib.ui.MesquiteSubmenuSpec;
 import mesquite.lib.ui.MesquiteWindow;
+import mesquite.lists.lib.CharMatricesListAssistant;
+import mesquite.lists.lib.CharMatricesListUtility;
+import mesquite.lists.lib.CharMatricesListWindow;
+import mesquite.lists.lib.ListLVModule;
+import mesquite.lists.lib.ListWindow;
+import mesquite.lists.lib.ListableVectorWindow;
 
 /* ======================================================================== */
 public class CharMatricesList extends ListLVModule {

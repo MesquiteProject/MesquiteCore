@@ -16,11 +16,9 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
 
 package mesquite.correl.lib;
 
-import java.util.ArrayList;
-
 import mesquite.categ.lib.RequiresExactlyCategoricalData;
-import mesquite.lib.*;
-import mesquite.lib.duties.*;
+import mesquite.lib.CompatibilityTest;
+import mesquite.lib.duties.NumberFor2CharAndTree;
 
 
 public abstract class Pagel94Calculator extends NumberFor2CharAndTree {

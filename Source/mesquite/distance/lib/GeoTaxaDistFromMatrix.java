@@ -15,11 +15,9 @@ package mesquite.distance.lib;
 /*~~  */
 
 
-import mesquite.lib.*;
-import mesquite.lib.characters.*;
-import mesquite.categ.lib.*;
-import mesquite.distance.lib.*;
-import mesquite.cont.lib.*;
+import mesquite.cont.lib.GeographicState;
+import mesquite.cont.lib.GeographicStateTest;
+import mesquite.lib.CompatibilityTest;
 
 /* ======================================================================== */
 /* incrementable, with each being based on a different matrix */

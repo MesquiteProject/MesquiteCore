@@ -13,11 +13,26 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
  */
 package mesquite.charMatrices.ConcatenateMatrices; 
 
-import java.util.*;
-import java.awt.*;
-import mesquite.lib.*;
-import mesquite.lib.characters.*;
-import mesquite.lib.duties.*;
+import java.awt.Color;
+import java.util.Vector;
+
+import mesquite.lib.CommandRecord;
+import mesquite.lib.Listable;
+import mesquite.lib.ListableVector;
+import mesquite.lib.MesquiteFile;
+import mesquite.lib.MesquiteListener;
+import mesquite.lib.MesquiteString;
+import mesquite.lib.MesquiteThread;
+import mesquite.lib.MesquiteTrunk;
+import mesquite.lib.Notification;
+import mesquite.lib.RandomBetween;
+import mesquite.lib.Snapshot;
+import mesquite.lib.StringUtil;
+import mesquite.lib.characters.CharacterData;
+import mesquite.lib.characters.CharacterPartition;
+import mesquite.lib.characters.CharacterState;
+import mesquite.lib.characters.CharactersGroup;
+import mesquite.lib.duties.DataUtility;
 import mesquite.lib.taxa.Taxa;
 import mesquite.lib.ui.AlertDialog;
 import mesquite.lib.ui.ListDialog;

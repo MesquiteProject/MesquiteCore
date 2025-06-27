@@ -13,17 +13,20 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
  */
 package mesquite.lib.ui;
 
-import java.awt.*;
-import java.awt.event.*;
+import java.awt.Color;
+import java.awt.Component;
+import java.awt.Composite;
+import java.awt.Graphics;
+import java.awt.Image;
+import java.awt.MediaTracker;
+import java.awt.Polygon;
 
 import mesquite.lib.CommandChecker;
-import mesquite.lib.Debugg;
 import mesquite.lib.Explainable;
 import mesquite.lib.MesquiteCommand;
 import mesquite.lib.MesquiteEvent;
 import mesquite.lib.MesquiteModule;
 import mesquite.lib.MesquiteTrunk;
-import mesquite.lib.duties.*;
 import mesquite.lib.simplicity.InterfaceManager;
 
 /* ��������������������������� commands ������������������������������� */

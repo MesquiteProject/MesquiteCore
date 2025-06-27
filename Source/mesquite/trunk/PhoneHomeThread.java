@@ -14,12 +14,23 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
 package mesquite.trunk;
 
 
-import java.io.IOException;
 import java.util.Vector;
 
 import org.apache.commons.httpclient.NameValuePair;
 
-import mesquite.lib.*;
+import mesquite.lib.Debugg;
+import mesquite.lib.ListableVector;
+import mesquite.lib.MesquiteCommand;
+import mesquite.lib.MesquiteFile;
+import mesquite.lib.MesquiteInteger;
+import mesquite.lib.MesquiteMessage;
+import mesquite.lib.MesquiteModule;
+import mesquite.lib.MesquiteModuleInfo;
+import mesquite.lib.MesquiteThread;
+import mesquite.lib.MesquiteTrunk;
+import mesquite.lib.PhoneHomeRecord;
+import mesquite.lib.PhoneHomeUtil;
+import mesquite.lib.StringUtil;
 import mesquite.lib.ui.AlertDialog;
 import mesquite.tol.lib.BaseHttpRequestMaker;
 
@@ -86,7 +97,8 @@ public class PhoneHomeThread extends Thread {
 	}
 	
 	public void postBean(NameValuePair[] pairs){
-		beans.addElement(pairs);
+		if (!MesquiteTrunk.developmentMode)
+			beans.addElement(pairs);
 	}
 	public void recordError(String s){
 		errorReports.addElement(s);
@@ -104,7 +116,7 @@ public class PhoneHomeThread extends Thread {
 				BaseHttpRequestMaker.contactServer(contactMessage, "", url, response);
 				String r = response.toString();
 				System.err.println(r);
-				//if mqrv or Feedback included in response, then this is real response
+
 				if (!StringUtil.blank(r) && (r.indexOf("mq4v")>=0 || r.indexOf("Version")>=0)){
 					PhoneHomeUtil.phoneHomeSuccessful = true;
 					MesquiteTrunk.mesquiteTrunk.logln("\nMesquite contacted its server to log your version and check for notices and updates. (To turn this off, choose \"Contact Mesquite Server on Startup\" in File>Defaults> submenu.)");
@@ -173,8 +185,10 @@ public class PhoneHomeThread extends Thread {
 		if (!StringUtil.blank(notices)){
 			String note = ("<h2>Notices from the websites of Mesquite and installed packages</h2><hr>" + notices.toString() + "<br><h4>(You can ask Mesquite not to check for messages on its websites using the menu item in the Defaults submenu of the File menu)</h4>");
 			if (!MesquiteThread.isScripting()){
-				AlertDialog.noticeHTML(MesquiteTrunk.mesquiteTrunk.containerOfModule(),"Note", note, 600, 400, PhoneHomeUtil.getPhoneHomeDialogLinkCommand(), true);
-			}
+				if (MesquiteTrunk.developmentMode)
+					System.err.println("Notice:\n" + notices);
+			AlertDialog.noticeHTML(MesquiteTrunk.mesquiteTrunk.containerOfModule(),"Note", note, 600, 400, PhoneHomeUtil.getPhoneHomeDialogLinkCommand(), true);
+		}
 			else
 				System.out.println(note);
 		}

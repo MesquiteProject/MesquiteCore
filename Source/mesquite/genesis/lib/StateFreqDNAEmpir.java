@@ -13,11 +13,16 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
 */
 package mesquite.genesis.lib;
 
-import mesquite.lib.*;
-import mesquite.lib.characters.*;
-import mesquite.lib.duties.*;
+import mesquite.categ.lib.CategoricalState;
+import mesquite.categ.lib.DNAData;
+import mesquite.categ.lib.DNAState;
+import mesquite.categ.lib.MCategoricalStates;
+import mesquite.lib.MesquiteDouble;
+import mesquite.lib.MesquiteMessage;
+import mesquite.lib.characters.CharacterData;
+import mesquite.lib.characters.CharacterModel;
+import mesquite.lib.characters.MCharactersStatesHolder;
 import mesquite.lib.ui.ExtensibleDialog;
-import mesquite.categ.lib.*;
 
 
 /* ======================================================================== */

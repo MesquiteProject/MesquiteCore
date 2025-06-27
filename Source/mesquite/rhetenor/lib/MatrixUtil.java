@@ -13,16 +13,20 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
 */
 package mesquite.rhetenor.lib; 
 
-import java.awt.*;
-import java.util.*;
+import java.awt.Graphics;
 
-import mesquite.lib.*;
-import mesquite.lib.characters.*;
+import Jama.Matrix;
+import mesquite.cont.lib.ContinuousState;
+import mesquite.cont.lib.MContinuousAdjustable;
+import mesquite.cont.lib.MContinuousDistribution;
+import mesquite.lib.MesquiteBoolean;
+import mesquite.lib.MesquiteDouble;
+import mesquite.lib.MesquiteInteger;
+import mesquite.lib.characters.CharInclusionSet;
+import mesquite.lib.characters.CharacterData;
 import mesquite.lib.taxa.Taxa;
 import mesquite.lib.taxa.TaxaGroup;
-import mesquite.lib.taxa.TaxaPartition;
-import mesquite.cont.lib.*;
-import Jama.*;  
+import mesquite.lib.taxa.TaxaPartition;  
 
 /* ======================================================================== 
 This library contains a utility class (MatrixUtil) with static methods for manipulating matrices.  

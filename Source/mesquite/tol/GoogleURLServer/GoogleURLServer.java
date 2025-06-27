@@ -13,7 +13,7 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
 */
 package mesquite.tol.GoogleURLServer;
 
-import mesquite.lib.*;
+import mesquite.lib.StringUtil;
 import mesquite.tol.lib.TaxonOnWebServer;
 
 public class GoogleURLServer extends TaxonOnWebServer {

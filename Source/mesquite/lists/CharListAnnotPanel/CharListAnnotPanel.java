@@ -14,21 +14,32 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
 package mesquite.lists.CharListAnnotPanel;
 /*~~  */
 
-import mesquite.lists.lib.*;
-import java.util.*;
-import java.awt.*;
-import java.awt.event.*;
-import mesquite.lib.*;
-import mesquite.lib.characters.*;
-import mesquite.lib.duties.*;
+import java.awt.Panel;
+import java.awt.event.KeyEvent;
+
+import mesquite.lib.AttachedNote;
+import mesquite.lib.CommandChecker;
+import mesquite.lib.MesquiteBoolean;
+import mesquite.lib.MesquiteFile;
+import mesquite.lib.MesquiteInteger;
+import mesquite.lib.MesquiteMessage;
+import mesquite.lib.MesquiteModule;
+import mesquite.lib.MesquiteString;
+import mesquite.lib.MesquiteThread;
+import mesquite.lib.NameReference;
+import mesquite.lib.Snapshot;
+import mesquite.lib.StringUtil;
+import mesquite.lib.characters.CharacterData;
 import mesquite.lib.misc.AttachedNotesVector;
-import mesquite.lib.table.*;
+import mesquite.lib.table.MesquiteTable;
+import mesquite.lib.table.TableWindow;
 import mesquite.lib.ui.AnnotPanelOwner;
 import mesquite.lib.ui.AnnotationsPanel;
 import mesquite.lib.ui.MesquiteButton;
 import mesquite.lib.ui.MesquiteMenuItemSpec;
 import mesquite.lib.ui.MesquiteSubmenuSpec;
 import mesquite.lib.ui.MesquiteWindow;
+import mesquite.lists.lib.CharListAssistantI;
 
 /* ======================================================================== */
 public class CharListAnnotPanel extends CharListAssistantI implements AnnotPanelOwner{

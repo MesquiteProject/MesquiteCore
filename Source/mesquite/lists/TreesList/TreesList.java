@@ -14,14 +14,26 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
 package mesquite.lists.TreesList;
 /*~~  */
 
-import mesquite.lists.lib.*;
+import java.util.Enumeration;
 
-import java.util.*;
-import java.awt.*;
-
-import mesquite.lib.*;
-import mesquite.lib.duties.*;
-import mesquite.lib.table.*;
+import mesquite.lib.Associable;
+import mesquite.lib.CommandChecker;
+import mesquite.lib.EmployeeNeed;
+import mesquite.lib.Listable;
+import mesquite.lib.MesquiteFile;
+import mesquite.lib.MesquiteInteger;
+import mesquite.lib.MesquiteListener;
+import mesquite.lib.MesquiteModule;
+import mesquite.lib.MesquiteThread;
+import mesquite.lib.Notification;
+import mesquite.lib.Snapshot;
+import mesquite.lib.StringUtil;
+import mesquite.lib.UndoReference;
+import mesquite.lib.duties.ListableNameAlterer;
+import mesquite.lib.duties.TreeWindowMaker;
+import mesquite.lib.duties.TreesManager;
+import mesquite.lib.table.MesquiteTable;
+import mesquite.lib.table.TableWindow;
 import mesquite.lib.taxa.Taxa;
 import mesquite.lib.tree.AdjustableTree;
 import mesquite.lib.tree.MesquiteTree;
@@ -29,6 +41,12 @@ import mesquite.lib.tree.Tree;
 import mesquite.lib.tree.TreeVector;
 import mesquite.lib.ui.MesquiteSubmenuSpec;
 import mesquite.lib.ui.MesquiteWindow;
+import mesquite.lists.lib.ListLVModule;
+import mesquite.lists.lib.ListWindow;
+import mesquite.lists.lib.ListableVectorWindow;
+import mesquite.lists.lib.TreeListAssistant;
+import mesquite.lists.lib.TreeListInit;
+import mesquite.lists.lib.TreeListUtility;
 
 /* ======================================================================== */
 public class TreesList extends ListLVModule {

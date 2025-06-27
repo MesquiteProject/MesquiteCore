@@ -12,27 +12,65 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
  */
 package mesquite.lib.characters; 
 
-import java.awt.*;
+import java.awt.Color;
+import java.awt.Image;
+import java.awt.MenuItem;
+import java.awt.Toolkit;
 import java.awt.datatransfer.Clipboard;
 import java.awt.datatransfer.DataFlavor;
 import java.awt.datatransfer.StringSelection;
 import java.awt.datatransfer.Transferable;
-import java.util.*;
-import java.util.zip.*;
+import java.util.Vector;
+import java.util.zip.CRC32;
 
-import javax.swing.text.JTextComponent;
-
-import mesquite.categ.lib.CategoricalState;
-import mesquite.categ.lib.MolecularData;
-import mesquite.lib.duties.*;
+import mesquite.lib.Associable;
+import mesquite.lib.AssociableWithSpecs;
+import mesquite.lib.Bits;
+import mesquite.lib.CommandChecker;
+import mesquite.lib.CommandRecord;
+import mesquite.lib.Commandable;
+import mesquite.lib.CompatibilityChecker;
+import mesquite.lib.DoubleArray;
+import mesquite.lib.EmployerEmployee;
+import mesquite.lib.FileElement;
+import mesquite.lib.Identifiable;
+import mesquite.lib.IntegerArray;
+import mesquite.lib.Listable;
+import mesquite.lib.LongArray;
+import mesquite.lib.LowLevelListener;
+import mesquite.lib.MesquiteBoolean;
+import mesquite.lib.MesquiteFile;
+import mesquite.lib.MesquiteInteger;
+import mesquite.lib.MesquiteListener;
+import mesquite.lib.MesquiteMessage;
+import mesquite.lib.MesquiteModule;
+import mesquite.lib.MesquiteProject;
+import mesquite.lib.MesquiteString;
+import mesquite.lib.MesquiteStringBuffer;
+import mesquite.lib.MesquiteThread;
+import mesquite.lib.MesquiteTrunk;
+import mesquite.lib.NameReference;
+import mesquite.lib.NameableWithNotify;
+import mesquite.lib.NexusBlock;
+import mesquite.lib.Notification;
+import mesquite.lib.Object2DArray;
+import mesquite.lib.ObjectArray;
+import mesquite.lib.Parser;
+import mesquite.lib.Snapshot;
+import mesquite.lib.SpecsSet;
+import mesquite.lib.SpecsSetVector;
+import mesquite.lib.StringArray;
+import mesquite.lib.StringLister;
+import mesquite.lib.StringUtil;
+import mesquite.lib.UndoInstructions;
+import mesquite.lib.duties.CharMatrixManager;
+import mesquite.lib.duties.CharactersManager;
+import mesquite.lib.duties.ElementManager;
 import mesquite.lib.misc.AttachedNotesVector;
 import mesquite.lib.misc.ChangeAuthority;
 import mesquite.lib.misc.ChangeEvent;
 import mesquite.lib.misc.ChangeHistory;
-import mesquite.lib.*;
-import mesquite.lib.characters.CharacterData;
-import mesquite.lists.lib.ListModule;
-import mesquite.lib.table.*;
+import mesquite.lib.table.MesquiteTable;
 import mesquite.lib.taxa.Taxa;
 import mesquite.lib.taxa.Taxon;
 import mesquite.lib.tree.Tree;
@@ -556,13 +594,9 @@ public abstract class CharacterData extends FileElement implements MesquiteListe
 	}
 	/*.................................................................................................................*/
 	public  boolean hasCharacterGroups(){
-		CharactersGroup[] parts =null;
 		CharacterPartition characterPartition = (CharacterPartition)getCurrentSpecsSet(CharacterPartition.class);
 		if (characterPartition!=null) {
-			parts = characterPartition.getGroups();
-		}
-		if (parts!=null){
-			return true;
+			return characterPartition.anyGroups();
 		}
 		return false;
 	}
@@ -696,6 +730,9 @@ public abstract class CharacterData extends FileElement implements MesquiteListe
 	public abstract CharacterData cloneData(); //SHOULD HERE PASS boolean to say whether to DEAL WITH CHARACTER SPEC SETS, character names, etc.
 
 	public void copyMetadataTo(CharacterData targetData){
+		if (targetData.getNumChars()!= numChars)
+			return;
+		
 		for (int ic=0; ic<numChars; ic++){
 			if (characterHasName(ic))
 				targetData.setCharacterName(ic, getCharacterName(ic));
@@ -727,6 +764,32 @@ public abstract class CharacterData extends FileElement implements MesquiteListe
 
 			}
 		}
+		if (cellObjects.size()>0){
+			for (int k =0; k<cellObjects.size(); k++){
+				Object2DArray objArray = (Object2DArray)cellObjects.elementAt(k);
+				NameReference nr = objArray.getNameReference();
+				Object2DArray targetArray = targetData.getOrMakeCellObjects(nr);	
+				Object[][] myObjects = objArray.getMatrix();
+				Object[][] targetObjects = targetArray.getMatrix();
+				for (int j = 0; j<numTaxa; j++){
+					for (int i=0; i<numChars; i++)
+						targetObjects[i][j] = myObjects[i][j];
+				}
+				targetArray.setMatrix(targetObjects);
+			}
+		}
+		if (footnotes!=null){
+			String[][] targetFootnotes = new String[numChars][numTaxa];
+			for (int j = 0; j<numTaxa; j++){
+				for (int i=0; i<numChars; i++) {
+					targetFootnotes[i][j] = footnotes[i][j];
+				}
+			}
+			targetData.footnotes = targetFootnotes;
+		}
+		for (int j = 0; j<numChars; j++)
+				targetData.setAnnotation(j, getAnnotation(j));
+
 	}
 	//TODO: also need setToClone(data) method to set specsets and names etc. including super.setToClone()
 
@@ -1240,7 +1303,7 @@ public abstract class CharacterData extends FileElement implements MesquiteListe
 	}
 	/*-----------------------------------------------------------*/
 	/** Deletes characters in linked data matrices. */
-	public final void deleteInLinked(int starting, int num, boolean notify){ //WAYNEEFF Debugg.println
+	public final void deleteInLinked(int starting, int num, boolean notify){ //WAYNEEFF 
 		if (linkedDatas.size()>0){
 			for (int i=0; i<linkedDatas.size(); i++){
 				CharacterData d = (CharacterData)linkedDatas.elementAt(i);
@@ -1252,7 +1315,7 @@ public abstract class CharacterData extends FileElement implements MesquiteListe
 	}
 	/*-----------------------------------------------------------*/
 	/** Deletes characters in linked data matrices. */
-	public final void deleteInLinkedFlagged(Bits bits, boolean notify){ //WAYNEEFF Debugg.println
+	public final void deleteInLinkedFlagged(Bits bits, boolean notify){ //WAYNEEFF 
 		if (linkedDatas.size()>0){
 			for (int i=0; i<linkedDatas.size(); i++){
 				CharacterData d = (CharacterData)linkedDatas.elementAt(i);
@@ -1261,7 +1324,7 @@ public abstract class CharacterData extends FileElement implements MesquiteListe
 		}
 	}
 	/** Deletes characters in linked data matrices. *
-	protected void deleteInLinkedBy Blocks(int[][] blocks){ //WAYNEEFF Debugg.println
+	protected void deleteInLinkedBy Blocks(int[][] blocks){ //WAYNEEFF
 		if (linkedDatas.size()>0){
 			for (int i=0; i<linkedDatas.size(); i++){
 				CharacterData d = (CharacterData)linkedDatas.elementAt(i);
@@ -3582,7 +3645,7 @@ public boolean removeCharactersThatAreEntirelyGaps(boolean notify){
 			for (int iA = 0; iA<num; iA++){
 				StringArray array = getAssociatedStrings(iA); //CAssocStrings
 				//	updateChecksum(checksum, array.getValue(ic));
-				updateChecksum(components[CS_CAssocObjects], array.getValue(ic));  //Debugg.println change to strings?
+				updateChecksum(components[CS_CAssocObjects], array.getValue(ic));  
 			}
 			num = getNumberAssociatedObjects();
 			for (int iA = 0; iA<num; iA++){

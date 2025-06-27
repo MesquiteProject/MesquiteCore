@@ -13,11 +13,29 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
 */
 package mesquite.charts.ShowPercentile;
 
-import java.awt.*;
-import java.awt.event.*;
-import java.util.*;
-import mesquite.lib.*;
-import mesquite.lib.duties.*;
+import java.awt.Checkbox;
+import java.awt.Choice;
+import java.awt.Color;
+import java.awt.Graphics;
+import java.awt.Polygon;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.util.Enumeration;
+import java.util.Vector;
+
+import mesquite.lib.CommandChecker;
+import mesquite.lib.MesquiteBoolean;
+import mesquite.lib.MesquiteDouble;
+import mesquite.lib.MesquiteFile;
+import mesquite.lib.MesquiteInteger;
+import mesquite.lib.MesquiteMessage;
+import mesquite.lib.MesquiteModule;
+import mesquite.lib.MesquiteNumber;
+import mesquite.lib.MesquiteThread;
+import mesquite.lib.MesquiteTrunk;
+import mesquite.lib.NumberArray;
+import mesquite.lib.Snapshot;
+import mesquite.lib.duties.HistogramAssistantA;
 import mesquite.lib.ui.ChartBkgdExtra;
 import mesquite.lib.ui.ChartExtra;
 import mesquite.lib.ui.Charter;
@@ -25,10 +43,6 @@ import mesquite.lib.ui.ColorDistribution;
 import mesquite.lib.ui.DoubleField;
 import mesquite.lib.ui.ExtensibleDialog;
 import mesquite.lib.ui.MesquiteChart;
-import mesquite.charts.Histogram.*;
-/*
-DRM May 2003
-*/
 
 public class ShowPercentile extends HistogramAssistantA implements ActionListener  {
 	/*.................................................................................................................*/

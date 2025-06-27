@@ -13,10 +13,10 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
 */
 package mesquite.lib.ui;
 
-import java.awt.*;
+import java.awt.Color;
+import java.awt.Graphics;
+import java.awt.Rectangle;
 import java.awt.geom.Rectangle2D;
-
-import mesquite.lib.duties.*;
 
 /* ======================================================================== */
 public class CircleSymbol extends FillableMesquiteSymbol  {

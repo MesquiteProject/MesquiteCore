@@ -13,17 +13,20 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
 */
 package mesquite.charMatrices.ColorByExcluded; 
 
-import java.util.*;
-import java.awt.*;
-import mesquite.lib.*;
-import mesquite.lib.characters.*;
-import mesquite.lib.duties.*;
-import mesquite.lib.table.*;
+import java.awt.Color;
+
+import mesquite.lib.characters.CharInclusionSet;
+import mesquite.lib.characters.CharacterData;
+import mesquite.lib.duties.CellColorer;
+import mesquite.lib.duties.CellColorerCharacters;
+import mesquite.lib.duties.CellColorerMatrixHighPriority;
+import mesquite.lib.duties.DataWindowAssistantID;
+import mesquite.lib.table.MesquiteTable;
 import mesquite.lib.ui.ColorRecord;
 
 
 /* ======================================================================== */
-public class ColorByExcluded extends DataWindowAssistantID implements CellColorer, CellColorerCharacters, CellColorerMatrix {
+public class ColorByExcluded extends DataWindowAssistantID implements CellColorer, CellColorerCharacters, CellColorerMatrixHighPriority {
 	MesquiteTable table;
 	CharacterData data;
 	/*.................................................................................................................*/

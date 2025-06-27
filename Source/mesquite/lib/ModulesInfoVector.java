@@ -14,11 +14,9 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
 
 package mesquite.lib;
 
-import java.awt.*;
-import java.awt.image.*;
-import mesquite.lib.duties.*;
+import java.util.Vector;
 
-import java.util.*;
+import mesquite.lib.duties.PackageIntroInterface;
 
 /* ======================================================================== */
 /** The vector of information (MesquiteModuleInfo objects) about available modules.*/
@@ -368,7 +366,6 @@ public class ModulesInfoVector extends ListableVector {
 		while ((mbi = findNextModule(dutyClass, mbi))!=null) {
 			//todo: could check for compatibility here as in menus
 			if (mbi.doesDuty(dutyClass) && mbi.getUserChooseable()) {
-				//Debugg.println("  " + mbi.getName() + " condition " + condition + " isCompatible " + mbi.isCompatible(condition, proj, prospectiveEmployer));
 				if (mbi.isCompatible(condition, proj, prospectiveEmployer))
 					count++;
 			}

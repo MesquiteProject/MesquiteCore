@@ -17,19 +17,21 @@ package mesquite.genomic.FlagBySpruceup;
 
 
 import java.awt.Button;
-
 import java.awt.Checkbox;
+import java.awt.TextArea;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.ItemEvent;
+import java.awt.event.ItemListener;
+import java.awt.event.TextEvent;
+import java.awt.event.TextListener;
 
 import mesquite.categ.lib.CategoricalData;
 import mesquite.categ.lib.CategoricalState;
 import mesquite.categ.lib.RequiresAnyCategoricalData;
-import mesquite.categ.lib.RequiresAnyMolecularData;
 import mesquite.lib.CommandChecker;
 import mesquite.lib.CommandRecord;
 import mesquite.lib.CompatibilityTest;
-import mesquite.lib.Debugg;
 import mesquite.lib.IntegerField;
 import mesquite.lib.MesquiteBoolean;
 import mesquite.lib.MesquiteDouble;
@@ -41,20 +43,18 @@ import mesquite.lib.Snapshot;
 import mesquite.lib.StringUtil;
 import mesquite.lib.characters.CharacterData;
 import mesquite.lib.characters.MatrixFlags;
-import mesquite.lib.duties.MatrixFlagger;
 import mesquite.lib.duties.MatrixFlaggerForTrimming;
+import mesquite.lib.ui.ColorTheme;
 import mesquite.lib.ui.DoubleField;
 import mesquite.lib.ui.ExtensibleDialog;
+import mesquite.lib.ui.SingleLineTextField;
 
 /* ======================================================================== */
-public class FlagBySpruceup extends MatrixFlaggerForTrimming implements ActionListener {
+public class FlagBySpruceup extends MatrixFlaggerForTrimming implements ActionListener, TextListener, ItemListener {
 
 	/* This replicates the calculations of Spruceup v. 2024.07.22 */
 
-	/* suggestions:
-	 * -- Option to remove gaps only characters (default yet)
-	 * -- Option to do it iteratively until nothing left
-	 * */
+	
 	/* parameters =================================*/
 	static double cutoffDEFAULT = 5.0; 
 	static int windowSizeDEFAULT = 50;
@@ -131,6 +131,7 @@ public class FlagBySpruceup extends MatrixFlaggerForTrimming implements ActionLi
 	IntegerField ov;
 	IntegerField nT;
 	Checkbox iter, fGO;
+	TextArea paramsInfo;
 
 	private boolean queryOptions() {
 		MesquiteInteger buttonPressed = new MesquiteInteger(1);
@@ -140,13 +141,17 @@ public class FlagBySpruceup extends MatrixFlaggerForTrimming implements ActionLi
 		wS = dialog.addIntegerField("Window Size", windowSize, 4);
 		ov = dialog.addIntegerField("Overlap", overlap, 4);
 		nT = dialog.addIntegerField("Number of processing cores to use", numThreads, 4);
-
+		cutoffField.getTextField().addTextListener(this);
+		wS.getTextField().addTextListener(this);
+		nT.getTextField().addTextListener(this);
+		ov.getTextField().addTextListener(this);
 		dialog.addHorizontalLine(1);
 
 		if (forTrimming()){
 			dialog.addLabel("Mesquite modifications");
 			fGO = dialog.addCheckBox("After Spruceup trimming, trim gaps-only characters", flagGapsOnly.getValue()); 
 			iter = dialog.addCheckBox("Iterate until no more to trim", iterate.getValue());  //Show ONLY IF HIRED FOR TRIMMING
+			iter.addItemListener(this);
 			dialog.addHorizontalLine(1);
 		}
 		/*
@@ -165,8 +170,13 @@ public class FlagBySpruceup extends MatrixFlaggerForTrimming implements ActionLi
 				+ "<p><b>Reference for Spruceup</b>: Boroweic ML (2019) Spruceup: fast and flexible identification, visualization, and removal of outliers from large multiple sequence alignments."
 				+ " Journal of Open Source Software 4:1635. <a href= \"https://doi.org/10.21105/joss.01635\">https://doi.org/10.21105/joss.01635</a>";
 		dialog.appendToHelpString(s);
-		dialog.addBlankLine();
+		dialog.setHelpURL("https://doi.org/10.21105/joss.01635");
 
+		dialog.addBlankLine();
+		paramsInfo = dialog.addLargeTextLabel("Report parameters as:\n");
+		paramsInfo.setEditable(false);
+		paramsInfo.setBackground(ColorTheme.getInterfaceBackgroundPale());
+		resetParamsInfo();
 
 		dialog.completeAndShowDialog(true);
 		if (buttonPressed.getValue()==0)  {
@@ -195,6 +205,19 @@ public class FlagBySpruceup extends MatrixFlaggerForTrimming implements ActionLi
 			if (iter != null)
 			iter.setState(false);
 		} 
+	}
+	
+	public void itemStateChanged(ItemEvent e) {
+		resetParamsInfo();
+	}
+	public void textValueChanged(TextEvent e) {
+		resetParamsInfo();
+	}
+	void resetParamsInfo(){
+		String info = "Report parameters as:\ncriterion:mean  window_size:" + wS.getValue() + " cutoffs:" + cutoffField.getValue() +  " overlap:" + ov.getValue() + " distance_method:uncorrected ";
+		if (iter != null && iter.getState())
+			info += "(iterated)";
+		paramsInfo.setText(info);
 	}
 	public void queryLocalOptions () {
 		if (queryOptions())
@@ -425,7 +448,7 @@ public class FlagBySpruceup extends MatrixFlaggerForTrimming implements ActionLi
 	}
 	/*.................................................................................................................*/
 	public boolean isPrerelease() {
-		return true;
+		return false;
 	}
 
 	/*.................................................................................................................*/
@@ -446,7 +469,7 @@ public class FlagBySpruceup extends MatrixFlaggerForTrimming implements ActionLi
 	 * then the number refers to the Mesquite version.  This should be used only by modules part of the core release of Mesquite.
 	 * If a NEGATIVE integer, then the number refers to the local version of the package, e.g. a third party package*/
 	public int getVersionOfFirstRelease(){
-		return NEXTRELEASE;  
+		return 400;  
 	}
 	public CompatibilityTest getCompatibilityTest(){
 		return new RequiresAnyCategoricalData();

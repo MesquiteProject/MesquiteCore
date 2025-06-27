@@ -13,10 +13,6 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
 */
 package mesquite.lib.duties;
 
-import java.awt.*;
-import mesquite.lib.*;
-
-
 /* ======================================================================== */
 /** This abstract class is for modules that are TaxaDisplayAssistants for analysis; these are allowed for use by windows with multiple taxa displays*/
 public abstract class TaxaDisplayAssistantMA extends TaxaDisplayAssistantA  {

@@ -13,7 +13,8 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
 */
 package mesquite.basic.DeleteTaxonFootnotes;
 
-import mesquite.lib.*;
+import mesquite.lib.MesquiteListener;
+import mesquite.lib.Notification;
 import mesquite.lib.duties.TaxonUtility;
 import mesquite.lib.taxa.Taxa;
 

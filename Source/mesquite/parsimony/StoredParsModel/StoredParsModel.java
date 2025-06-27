@@ -14,11 +14,26 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
 package mesquite.parsimony.StoredParsModel;
 /*~~  */
 
-import mesquite.lib.*;
-import mesquite.lib.characters.*;
-import mesquite.lib.duties.*;
+import mesquite.lib.CommandChecker;
+import mesquite.lib.EmployerEmployee;
+import mesquite.lib.MesquiteFile;
+import mesquite.lib.MesquiteInteger;
+import mesquite.lib.MesquiteProject;
+import mesquite.lib.MesquiteString;
+import mesquite.lib.MesquiteThread;
+import mesquite.lib.Notification;
+import mesquite.lib.ParseUtil;
+import mesquite.lib.Snapshot;
+import mesquite.lib.characters.CharacterData;
+import mesquite.lib.characters.CharacterModel;
+import mesquite.lib.characters.CharacterStatesHolder;
+import mesquite.lib.characters.ModelCompatibilityInfo;
+import mesquite.lib.characters.WholeCharacterModel;
 import mesquite.lib.ui.MesquiteSubmenuSpec;
-import mesquite.parsimony.lib.*;
+import mesquite.parsimony.lib.DolloModel;
+import mesquite.parsimony.lib.IrreversibleModel;
+import mesquite.parsimony.lib.ParsModelSource;
+import mesquite.parsimony.lib.ParsimonyModel;
 
 /* ======================================================================== */
 public class StoredParsModel extends ParsModelSource {

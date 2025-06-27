@@ -14,11 +14,12 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
 
 package mesquite.lib;
 
-import java.awt.*;
-import java.util.*;
-import java.awt.event.*;
-import java.io.*;
-import mesquite.lib.duties.*;
+import java.awt.Component;
+import java.awt.Menu;
+import java.awt.MenuBar;
+import java.io.File;
+import java.util.Vector;
+
 import mesquite.lib.ui.MesquiteDialog;
 import mesquite.lib.ui.MesquiteMenu;
 import mesquite.lib.ui.MesquiteWindow;

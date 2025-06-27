@@ -13,13 +13,14 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
 package mesquite.io.xExportConservativeNexus;
 /*~~  */
 
-import java.util.*;
-import java.awt.*;
-
-import mesquite.lib.*;
-import mesquite.lib.characters.*;
-import mesquite.lib.duties.*;
-import mesquite.categ.lib.*;
+import mesquite.lib.Arguments;
+import mesquite.lib.MesquiteFile;
+import mesquite.lib.MesquiteProject;
+import mesquite.lib.MesquiteString;
+import mesquite.lib.MesquiteThread;
+import mesquite.lib.Parser;
+import mesquite.lib.duties.FileInterpreterI;
+import mesquite.lib.duties.NexusFileInterpreter;
 
 
 

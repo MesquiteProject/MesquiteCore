@@ -14,16 +14,8 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
 package mesquite.molec.TargetSeqMatch;
 /*~~  */
 
-import java.util.*;
-import java.awt.*;
-import mesquite.lib.*;
-import mesquite.lib.characters.*;
-import mesquite.lib.duties.*;
-import mesquite.lib.table.*;
-import mesquite.categ.lib.*;
-import mesquite.molec.lib.*;
-import java.awt.datatransfer.*;
-import java.awt.event.*;
+import mesquite.lib.StringUtil;
+import mesquite.molec.lib.MaintainSequenceMatch;
 /* ======================================================================== *
 
 *new in 1. 06*

@@ -14,13 +14,16 @@
 package mesquite.molec.AddSequencesFromFiles;
 /*~~  */
 
-import java.util.*;
 import java.io.File;
+import java.util.Vector;
 
 import mesquite.categ.lib.DNAData;
-import mesquite.lib.*;
+import mesquite.lib.MainThread;
+import mesquite.lib.MesquiteFile;
+import mesquite.lib.MesquiteModule;
 import mesquite.lib.characters.CharacterData;
-import mesquite.lib.duties.*;
+import mesquite.lib.duties.DataWindowMaker;
+import mesquite.lib.duties.FileAssistantFM;
 import mesquite.lib.table.MesquiteTable;
 import mesquite.lib.ui.MesquiteWindow;
 
@@ -61,22 +64,22 @@ public class AddSequencesFromFiles extends FileAssistantFM {
 
 	/*.................................................................................................................*/
 	public boolean isPrerelease() { 
-		return true;
+		return false;
 	}
 	/*.................................................................................................................*/
 	public String getNameForMenuItem() {
-		return "Add Sequences from Files to Matrix...";
+		return "Add Sequences from FASTA/NBRF/GenBank Files to Matrix...";
 	}
 	/*.................................................................................................................*/
 	public String getName() {
-		return "Add Sequences from Files to Matrix";
+		return "Add Sequences from FASTA/NBRF/GenBank Files to Matrix";
 	}
 	/*.................................................................................................................*/
 	/** returns the version number at which this module was first released.  If 0, then no version number is claimed.  If a POSITIVE integer
 	 * then the number refers to the Mesquite version.  This should be used only by modules part of the core release of Mesquite.
 	 * If a NEGATIVE integer, then the number refers to the local version of the package, e.g. a third party package*/
 	public int getVersionOfFirstRelease(){
-		return NEXTRELEASE;  
+		return 400;  
 	}
 	/*.................................................................................................................*/
 	/** returns an explanation of what the module does.*/

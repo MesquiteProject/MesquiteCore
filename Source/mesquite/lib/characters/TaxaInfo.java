@@ -13,16 +13,7 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
  */
 package mesquite.lib.characters; 
 
-import java.awt.*;
-import java.util.*;
-import java.util.zip.*;
-
-import mesquite.categ.lib.CategoricalData;
-import mesquite.categ.lib.CategoricalState;
-import mesquite.lib.duties.*;
-import mesquite.lib.table.MesquiteTable;
-import mesquite.lib.*;
-import mesquite.lists.lib.ListModule;
+import mesquite.lib.Associable;
 
 
 //used in CharacterData

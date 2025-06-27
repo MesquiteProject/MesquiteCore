@@ -13,9 +13,6 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
 */
 package mesquite.lib;
 
-import java.awt.*;
-import mesquite.lib.duties.*;
-
 public class MesquiteException extends RuntimeException{
 	public static int lastLocation = 0;
 	public static String lastCommand = "";

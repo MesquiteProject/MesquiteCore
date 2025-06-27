@@ -14,14 +14,9 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
 package mesquite.molec.DeassignCodonPositions;
 /*~~  */
 
-import mesquite.lib.*;
-import mesquite.lib.characters.*;
-import mesquite.lib.characters.CharacterData;
-import mesquite.lib.duties.DataAlterer;
-import mesquite.align.lib.MultipleSequenceAligner;
-import mesquite.categ.lib.*;
-import mesquite.lib.table.*;
-import mesquite.lists.lib.ListModule;
+import mesquite.categ.lib.DNAData;
+import mesquite.lib.ResultCodes;
+import mesquite.lib.characters.CodonPositionsSet;
 import mesquite.molec.lib.CodonPositionAssigner;
 
 /* ======================================================================== */
@@ -52,7 +47,7 @@ public class DeassignCodonPositions extends CodonPositionAssigner {
 
 	/*.................................................................................................................*/
 	public boolean isPrerelease() {
-		return true;
+		return false;
 	}
 	/*.................................................................................................................*/
 	public boolean requestPrimaryChoice() {
@@ -71,7 +66,7 @@ public class DeassignCodonPositions extends CodonPositionAssigner {
 	 * then the number refers to the Mesquite version.  This should be used only by modules part of the core release of Mesquite.
 	 * If a NEGATIVE integer, then the number refers to the local version of the package, e.g. a third party package*/
 	public int getVersionOfFirstRelease(){
-		return NEXTRELEASE;  
+		return 400;  
 	}
 	/*.................................................................................................................*/
 	/** returns an explanation of what the module does.*/

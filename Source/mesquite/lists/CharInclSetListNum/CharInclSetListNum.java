@@ -14,14 +14,13 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
 package mesquite.lists.CharInclSetListNum;
 /*~~  */
 
-import mesquite.lists.lib.*;
-import java.util.*;
-import java.awt.*;
-import mesquite.lib.*;
-import mesquite.lib.characters.*;
+import mesquite.lib.MesquiteListener;
+import mesquite.lib.Notification;
+import mesquite.lib.SpecsSetVector;
+import mesquite.lib.characters.CharInclusionSet;
 import mesquite.lib.characters.CharacterData;
-import mesquite.lib.duties.*;
-import mesquite.lib.table.*;
+import mesquite.lib.table.MesquiteTable;
+import mesquite.lists.lib.CharInclSetListAsst;
 
 /* ======================================================================== */
 public class CharInclSetListNum extends CharInclSetListAsst implements MesquiteListener {

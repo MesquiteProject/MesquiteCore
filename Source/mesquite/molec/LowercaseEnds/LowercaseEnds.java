@@ -14,16 +14,14 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
 package mesquite.molec.LowercaseEnds;
 /*~~  */
 
-import java.util.*;
-import java.awt.*;
-import java.awt.image.*;
-import mesquite.lib.*;
-import mesquite.lib.characters.*;
-import mesquite.lib.duties.*;
-import mesquite.lib.table.*;
-import mesquite.categ.lib.*;
-import mesquite.molec.lib.*;
-import java.awt.event.*;
+import mesquite.categ.lib.CategoricalData;
+import mesquite.categ.lib.CategoricalState;
+import mesquite.categ.lib.RequiresAnyCategoricalData;
+import mesquite.lib.CompatibilityTest;
+import mesquite.lib.MesquiteInteger;
+import mesquite.lib.characters.CharacterData;
+import mesquite.lib.duties.DataWSelectionAssistant;
+import mesquite.lib.table.MesquiteTable;
 /* ======================================================================== *
 
 *new in 1.05*

@@ -13,12 +13,6 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
 */
 package mesquite.lib.duties;
 
-import java.awt.*;
-import java.util.*;
-import mesquite.lib.*;
-import mesquite.lib.characters.*;
-
-
 /* ======================================================================== */
 /**
 Model curators that wish to have their names listed under Model Settings need to implement this.*/

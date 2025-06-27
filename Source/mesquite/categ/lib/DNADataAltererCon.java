@@ -12,8 +12,8 @@ This source code and its compiled class files are free and modifiable under the 
 GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
  */package mesquite.categ.lib;
 
-import mesquite.lib.*;
-import mesquite.lib.duties.*;
+import mesquite.lib.CompatibilityTest;
+import mesquite.lib.duties.DataAltererCon;
 
 public abstract class DNADataAltererCon extends DataAltererCon {
 

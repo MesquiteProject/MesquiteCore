@@ -13,7 +13,13 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
  */
 package mesquite.categ.lib;
 
-import mesquite.lib.*;
+import mesquite.lib.Double2DArray;
+import mesquite.lib.Integer2DArray;
+import mesquite.lib.MesquiteInteger;
+import mesquite.lib.MesquiteLong;
+import mesquite.lib.MesquiteThread;
+import mesquite.lib.RandomBetween;
+import mesquite.lib.StringUtil;
 import mesquite.lib.duties.CharHistorySource;
 import mesquite.lib.tree.Tree;
 import mesquite.lib.ui.ProgressIndicator;

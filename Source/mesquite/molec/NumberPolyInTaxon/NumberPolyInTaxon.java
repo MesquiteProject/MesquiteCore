@@ -14,16 +14,19 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
 package mesquite.molec.NumberPolyInTaxon;
 /*~~  */
 
-import java.util.*;
-import java.awt.*;
-
-import mesquite.lib.*;
-import mesquite.lib.characters.*;
+import mesquite.categ.lib.CategoricalState;
+import mesquite.categ.lib.RequiresAnyCategoricalData;
+import mesquite.lib.CompatibilityTest;
+import mesquite.lib.MesquiteModule;
+import mesquite.lib.MesquiteNumber;
+import mesquite.lib.MesquiteString;
+import mesquite.lib.Notification;
+import mesquite.lib.characters.CharInclusionSet;
 import mesquite.lib.characters.CharacterData;
-import mesquite.lib.duties.*;
+import mesquite.lib.characters.MCharactersDistribution;
+import mesquite.lib.duties.NumberForTaxonAndMatrix;
 import mesquite.lib.taxa.Taxa;
 import mesquite.lib.taxa.Taxon;
-import mesquite.categ.lib.*;
 
 /* ======================================================================== */
 public class NumberPolyInTaxon extends NumberForTaxonAndMatrix {

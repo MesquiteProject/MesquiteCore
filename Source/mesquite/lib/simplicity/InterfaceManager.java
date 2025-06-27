@@ -13,16 +13,25 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
  */
 package mesquite.lib.simplicity;
 
-import mesquite.lib.*;
+import java.awt.Menu;
+import java.util.Vector;
+
+import mesquite.lib.ListableVector;
+import mesquite.lib.MesquiteCommand;
+import mesquite.lib.MesquiteFile;
+import mesquite.lib.MesquiteMessage;
+import mesquite.lib.MesquiteString;
+import mesquite.lib.MesquiteTrunk;
+import mesquite.lib.ObjectContainer;
+import mesquite.lib.Parser;
+import mesquite.lib.StringArray;
+import mesquite.lib.StringUtil;
 import mesquite.lib.ui.MenuVisibility;
 import mesquite.lib.ui.MesquiteMenu;
 import mesquite.lib.ui.MesquiteMenuItem;
 import mesquite.lib.ui.MesquiteMenuItemSpec;
 import mesquite.lib.ui.MesquiteTool;
 import mesquite.lib.ui.MesquiteWindow;
-
-import java.awt.*;
-import java.util.*;
 
 public class InterfaceManager {
 

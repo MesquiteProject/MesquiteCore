@@ -1,7 +1,7 @@
 /* Mesquite source code.  Copyright 2002-2003 D. Swofford & W. Maddison and D. Maddison. All Rights reserved.
 Version 1.0, September 2003. */
 package mesquite.lib;
-import java.util.*;
+import java.util.Random;
 /* ======================================================================== */
 /* translated april 2002 from C translation by D. Swofford of Algol version by Brent */
 public class Optimizer {

@@ -14,13 +14,20 @@
 package mesquite.molec.TranslateToProtein;
 /*~~  */
 
-import java.util.*;
-import java.awt.*;
-import mesquite.lib.*;
-import mesquite.lib.characters.*;
-import mesquite.lib.duties.*;
+import mesquite.categ.lib.DNAData;
+import mesquite.categ.lib.DNAState;
+import mesquite.categ.lib.ProteinData;
+import mesquite.lib.CommandChecker;
+import mesquite.lib.CompatibilityTest;
+import mesquite.lib.EmployeeNeed;
+import mesquite.lib.MesquiteFile;
+import mesquite.lib.MesquiteModule;
+import mesquite.lib.Snapshot;
+import mesquite.lib.characters.CharacterData;
+import mesquite.lib.characters.CharacterStateTest;
+import mesquite.lib.characters.MCharactersDistribution;
+import mesquite.lib.duties.CharMatrixSource;
 import mesquite.lib.taxa.Taxa;
-import mesquite.categ.lib.*;
 
 /* ======================================================================== */
 public class TranslateToProtein extends CharMatrixSource {

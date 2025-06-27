@@ -13,10 +13,14 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
 */
 package mesquite.lib.duties;
 
-import java.awt.*;
-import java.util.*;
+import java.util.Vector;
 
-import mesquite.lib.*;
+import mesquite.lib.ListableVector;
+import mesquite.lib.MesquiteFile;
+import mesquite.lib.MesquiteListener;
+import mesquite.lib.MesquiteProject;
+import mesquite.lib.MesquiteString;
+import mesquite.lib.NexusBlock;
 import mesquite.lib.taxa.Taxa;
 import mesquite.lib.tree.TreeVector;
 

@@ -13,7 +13,9 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
  */
 package mesquite.lib.ui;
 
-import java.awt.*;
+import java.awt.Dimension;
+import java.awt.Font;
+import java.awt.Panel;
 
 import mesquite.lib.MesquiteTrunk;
 
@@ -37,7 +39,18 @@ public class MQPanel extends Panel implements MQComponent {
 	public MQComponentHelper getHelper(){
 		return helper;
 	}
+	public void validateTree(){
+		//if (!MesquiteWindow.itemIsShown(this))
+		//	return;
+		if (MesquiteTrunk.quitting)
+			return;
+		super.validateTree();
+	}
 	public void superValidate(){
+		//if (!MesquiteWindow.itemIsShown(this))
+		//	return;
+		if (MesquiteTrunk.quitting)
+			return;
 		super.validate();
 	}
 	public void superSetBounds(int x, int y, int w, int h){

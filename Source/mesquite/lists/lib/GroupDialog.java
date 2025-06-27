@@ -14,9 +14,22 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
 package mesquite.lists.lib;
 /*~~  */
 
-import java.util.*;
-import java.awt.*;
-import mesquite.lib.*;
+import java.awt.Button;
+import java.awt.Choice;
+import java.awt.Color;
+import java.awt.Label;
+import java.awt.Panel;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.ItemEvent;
+import java.awt.event.ItemListener;
+
+import javax.swing.JLabel;
+
+import mesquite.lib.Listable;
+import mesquite.lib.MesquiteInteger;
+import mesquite.lib.MesquiteProject;
+import mesquite.lib.StringArray;
 import mesquite.lib.ui.ColorPickerPanel;
 import mesquite.lib.ui.Colorable;
 import mesquite.lib.ui.ExtensibleDialog;
@@ -26,10 +39,6 @@ import mesquite.lib.ui.MesquiteWindow;
 import mesquite.lib.ui.SingleLineTextField;
 import mesquite.lib.ui.SymbolGraphicsPanel;
 import mesquite.lib.ui.SymbolsVector;
-
-import java.awt.event.*;
-
-import javax.swing.JLabel;
 
 
 public class GroupDialog extends ExtensibleDialog implements Colorable, ItemListener, ActionListener {

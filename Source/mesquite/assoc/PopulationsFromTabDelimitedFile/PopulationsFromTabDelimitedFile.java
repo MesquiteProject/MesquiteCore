@@ -14,14 +14,22 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
 package mesquite.assoc.PopulationsFromTabDelimitedFile;
 /*~~  */
 
-import java.util.*;
-import java.awt.*;
-import mesquite.lib.*;
-import mesquite.lib.duties.*;
+import mesquite.assoc.lib.AssociationsManager;
+import mesquite.assoc.lib.PopulationsAndAssociationMaker;
+import mesquite.assoc.lib.TaxaAssociation;
+import mesquite.lib.MesquiteInteger;
+import mesquite.lib.MesquiteListener;
+import mesquite.lib.MesquiteMessage;
+import mesquite.lib.MesquiteString;
+import mesquite.lib.MesquiteTabDelimitedFileProcessor;
+import mesquite.lib.Notification;
+import mesquite.lib.ObjectContainer;
+import mesquite.lib.StringArray;
+import mesquite.lib.StringUtil;
+import mesquite.lib.duties.TaxaManager;
 import mesquite.lib.taxa.Taxa;
 import mesquite.lib.ui.ExtensibleDialog;
 import mesquite.lib.ui.SingleLineTextField;
-import mesquite.assoc.lib.*;
 
 /* ======================================================================== */
 public class PopulationsFromTabDelimitedFile extends PopulationsAndAssociationMaker {
@@ -42,7 +50,7 @@ public class PopulationsFromTabDelimitedFile extends PopulationsAndAssociationMa
 	}
 
 	public boolean isPrerelease(){
-		return true;
+		return false;
 	}
 	
 	/*.................................................................................................................*/
@@ -85,17 +93,20 @@ public class PopulationsFromTabDelimitedFile extends PopulationsAndAssociationMa
 				+ "If two contained taxa have the same name in the later column, they will be assigned to the same population";
 		
 		dialog.appendToHelpString(helpString);
-
-		SingleLineTextField populationBlockNameField = dialog.addTextField("Name of population/containing taxa block:",nameOfPopulationTaxaBlock, 20);
-		mesquiteTabbedFile.addTabbedFileChooser(dialog, "File containing columns of specimen and population names", "Column containing population names");
-
+		
+		SingleLineTextField populationBlockNameField = dialog.addTextField("Name of containing taxa block (e.g., populations):",nameOfPopulationTaxaBlock, 20);
+		mesquiteTabbedFile.addTabbedFileChooser(dialog, "File with columns of contained and containing taxon names", "Column with containing taxon (e.g. population) names");
+		
 		dialog.completeAndShowDialog(true);
 		boolean success=(buttonPressed.getValue()== dialog.defaultOK);
 		if (success)  {
-			mesquiteTabbedFile.processTabbedFileChoiceExtensibleDialog();
+			if (!mesquiteTabbedFile.processTabbedFileChoiceExtensibleDialog()) {
+				MesquiteMessage.discreetNotifyUser("You must enter a path to the tabbed file.");
+				return false;
+			} 
 			sampleCodeList = mesquiteTabbedFile.getSampleCodeList();
 			if (sampleCodeList==null)
-					return false;
+				return false;
 			mesquiteTabbedFile.processNameCategories();
 			chosenNameCategory = mesquiteTabbedFile.getChosenNameCategory();
 			nameOfPopulationTaxaBlock = populationBlockNameField.getText();
@@ -155,7 +166,7 @@ public class PopulationsFromTabDelimitedFile extends PopulationsAndAssociationMa
 
 		}
 
-		if (changed) association.notifyListeners(this, new Notification(MesquiteListener.VALUE_CHANGED)); //ZQ: maybe not needed for a newly created aassociation
+		if (changed) association.notifyListeners(this, new Notification(MesquiteListener.VALUE_CHANGED)); //ZQ: Most likely not needed for a newly created aassociation
 
 		//now associate populations with specimens
 		//see PopulationsFromSpecimenNames for useful code
@@ -167,17 +178,17 @@ public class PopulationsFromTabDelimitedFile extends PopulationsAndAssociationMa
 
 	/*.................................................................................................................*/
 	public String getName() {
-		return "Make Populations from Specimens Table";
+		return "Make Containing from Contained Taxa Table";
 	}
 	/*.................................................................................................................*/
 	public String getNameForMenuItem() {
-		return "Specimens – Populations Tab Delimited File...";
+		return "Tab Delimited File of Contained and Containing Taxa...";
 	}
 
 	
 	/*.................................................................................................................*/
 	public String getExplanation() {
-		return "Makes a new taxa block of populations based on a tab-delimited text file containing a table of a specimens and populations.";
+		return "Makes a new taxa block of containing taxa (e.g. populations) based on a tab-delimited text file indicating how contained taxa (e.g. specimens) belong to the containing taxa.";
 	}
 	
 	/*.................................................................................................................*/
@@ -185,7 +196,7 @@ public class PopulationsFromTabDelimitedFile extends PopulationsAndAssociationMa
 	 * then the number refers to the Mesquite version.  This should be used only by modules part of the core release of Mesquite.
 	 * If a NEGATIVE integer, then the number refers to the local version of the package, e.g. a third party package*/
 	public int getVersionOfFirstRelease(){
-		return NEXTRELEASE;  
+		return 400;  
 	}
 
 }

@@ -14,11 +14,23 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
 package mesquite.ornamental.Projector;
 /*~~  */
 
-import java.util.*;
-import java.awt.*;
-import java.awt.image.*;
-import mesquite.lib.*;
-import mesquite.lib.duties.*;
+import java.awt.Color;
+import java.awt.Graphics;
+import java.awt.Image;
+import java.awt.image.ImageObserver;
+import java.util.Vector;
+
+import mesquite.lib.AttachedNote;
+import mesquite.lib.CommandChecker;
+import mesquite.lib.Commandable;
+import mesquite.lib.MesquiteFile;
+import mesquite.lib.MesquiteInteger;
+import mesquite.lib.MesquiteModule;
+import mesquite.lib.MesquiteString;
+import mesquite.lib.NameReference;
+import mesquite.lib.Snapshot;
+import mesquite.lib.StringUtil;
+import mesquite.lib.duties.TreeDisplayAssistantI;
 import mesquite.lib.misc.AttachedNotesVector;
 import mesquite.lib.taxa.Taxa;
 import mesquite.lib.taxa.Taxon;
@@ -138,7 +150,7 @@ class ProjectorToolExtra extends TreeDisplayDrawnExtra implements Commandable  {
 			if (im!=null) {
 				int imWidth = im.getWidth((ImageObserver)treeDisplay);
 				int imHeight = im.getHeight((ImageObserver)treeDisplay);
-				int taxonSpacing = treeDisplay.getTaxonSpacing();
+				int taxonSpacing = (int)treeDisplay.getTaxonSpacing();
 				if (taxonSpacing <80)
 					taxonSpacing = 80;
 				double scale = MesquiteImage.getScaleToReduce(imWidth, imHeight, taxonSpacing, taxonSpacing);

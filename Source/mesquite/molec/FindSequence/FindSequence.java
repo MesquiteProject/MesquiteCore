@@ -14,19 +14,26 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
 package mesquite.molec.FindSequence;
 /*~~  */
 
-import java.util.*;
-import java.awt.*;
-import java.awt.image.*;
-import mesquite.lib.*;
-import mesquite.lib.characters.*;
-import mesquite.lib.duties.*;
-import mesquite.lib.table.*;
+import java.awt.Toolkit;
+import java.awt.datatransfer.Clipboard;
+import java.awt.datatransfer.StringSelection;
+import java.awt.event.KeyEvent;
+
+import mesquite.categ.lib.RequiresAnyMolecularData;
+import mesquite.lib.CommandChecker;
+import mesquite.lib.CompatibilityTest;
+import mesquite.lib.EmployeeNeed;
+import mesquite.lib.MesquiteInteger;
+import mesquite.lib.MesquiteModule;
+import mesquite.lib.MesquiteString;
+import mesquite.lib.MesquiteTrunk;
+import mesquite.lib.characters.CharacterData;
+import mesquite.lib.duties.DataWindowAssistantI;
+import mesquite.lib.table.MesquiteTable;
 import mesquite.lib.ui.MesquiteMenuItemSpec;
 import mesquite.lib.ui.MesquiteSubmenuSpec;
-import mesquite.categ.lib.*;
-import java.awt.event.*;
-import mesquite.molec.lib.*;
-import java.awt.datatransfer.*;
+import mesquite.molec.lib.FindSequenceCriterion;
+import mesquite.molec.lib.FindSequenceCriterionG;
 /* ======================================================================== *
 
 *new in 1.05*

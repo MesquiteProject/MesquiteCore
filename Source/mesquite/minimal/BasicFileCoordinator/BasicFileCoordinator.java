@@ -14,14 +14,69 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
 package mesquite.minimal.BasicFileCoordinator;
 /*~~  */
 
-import java.util.*;
-import java.awt.*;
+import java.awt.Checkbox;
+import java.awt.FileDialog;
+import java.util.Enumeration;
+import java.util.Vector;
 
-import mesquite.charMatrices.lib.MatrixInfoExtraPanel;
 import mesquite.io.lib.TryNexusFirstTreeFileInterpreter;
-import mesquite.lib.*;
+import mesquite.lib.CommandChecker;
+import mesquite.lib.CommandRecord;
+import mesquite.lib.CommandRecordHolder;
+import mesquite.lib.Commandable;
+import mesquite.lib.EmployeeNeed;
+import mesquite.lib.EmployeeVector;
+import mesquite.lib.FileBlock;
+import mesquite.lib.FileElement;
+import mesquite.lib.IntegerField;
+import mesquite.lib.Listable;
+import mesquite.lib.ListableVector;
+import mesquite.lib.MainThread;
+import mesquite.lib.MesquiteBoolean;
+import mesquite.lib.MesquiteCommand;
+import mesquite.lib.MesquiteFile;
+import mesquite.lib.MesquiteFileDialog;
+import mesquite.lib.MesquiteInteger;
+import mesquite.lib.MesquiteLong;
+import mesquite.lib.MesquiteMessage;
+import mesquite.lib.MesquiteModule;
+import mesquite.lib.MesquiteModuleInfo;
+import mesquite.lib.MesquiteProject;
+import mesquite.lib.MesquiteString;
+import mesquite.lib.MesquiteThread;
+import mesquite.lib.MesquiteTrunk;
+import mesquite.lib.ObjectContainer;
+import mesquite.lib.ParseUtil;
+import mesquite.lib.Parser;
+import mesquite.lib.ProjectReadThread;
+import mesquite.lib.Snapshot;
+import mesquite.lib.StringUtil;
 import mesquite.lib.characters.CharacterData;
-import mesquite.lib.duties.*;
+import mesquite.lib.duties.CharactersManager;
+import mesquite.lib.duties.ElementManager;
+import mesquite.lib.duties.FileAssistant;
+import mesquite.lib.duties.FileAssistantA;
+import mesquite.lib.duties.FileAssistantC;
+import mesquite.lib.duties.FileAssistantCH;
+import mesquite.lib.duties.FileAssistantCP;
+import mesquite.lib.duties.FileAssistantCS;
+import mesquite.lib.duties.FileAssistantFM;
+import mesquite.lib.duties.FileAssistantN;
+import mesquite.lib.duties.FileAssistantTM;
+import mesquite.lib.duties.FileCoordinator;
+import mesquite.lib.duties.FileElementManager;
+import mesquite.lib.duties.FileInit;
+import mesquite.lib.duties.FileInitEarlyLoad;
+import mesquite.lib.duties.FileInterpreter;
+import mesquite.lib.duties.FileInterpreterI;
+import mesquite.lib.duties.FileInterpreterITree;
+import mesquite.lib.duties.GeneralFileMaker;
+import mesquite.lib.duties.NEXUSInterpreter;
+import mesquite.lib.duties.NexusFileInterpreter;
+import mesquite.lib.duties.PackageIntroInterface;
+import mesquite.lib.duties.ReadFileFromString;
+import mesquite.lib.duties.TaxaManager;
+import mesquite.lib.duties.TextDisplayer;
 import mesquite.lib.taxa.Taxa;
 import mesquite.lib.tree.MesquiteTree;
 import mesquite.lib.tree.Tree;
@@ -32,7 +87,6 @@ import mesquite.lib.ui.ColorTheme;
 import mesquite.lib.ui.ExtensibleDialog;
 import mesquite.lib.ui.ListDialog;
 import mesquite.lib.ui.MesquiteDialog;
-import mesquite.lib.ui.MesquiteFrame;
 import mesquite.lib.ui.MesquiteMenuItemSpec;
 import mesquite.lib.ui.MesquiteMenuSpec;
 import mesquite.lib.ui.MesquiteSubmenuSpec;
@@ -40,7 +94,6 @@ import mesquite.lib.ui.MesquiteWindow;
 import mesquite.lib.ui.RadioButtons;
 import mesquite.lib.ui.SingleLineTextField;
 import mesquite.lists.TaxonList.TaxonList;
-import mesquite.lists.lib.TaxonListAssistant;
 import mesquite.trees.ChronogramDisplay.ChronogramDisplay;
 
 /** The "vice president" of the Mesquite system (the MesquiteTrunk module "Mesquite" being the president).  One of these is hired to coordinate each project.
@@ -423,6 +476,8 @@ public class BasicFileCoordinator extends FileCoordinator implements PackageIntr
 	}
 
 	public void refreshProjectWindow(){
+		if (getProject() == null)
+			return;
 		if (getProject().refreshSuppression == 0){
 			getProject().refreshPending = false;
 			MesquiteWindow w = getModuleWindow();
@@ -699,7 +754,7 @@ public class BasicFileCoordinator extends FileCoordinator implements PackageIntr
 					if (obj != null && obj instanceof MesquiteModule){
 						TreeVector trees = getProject().getTreesByNumber(0);
 						if (trees.size()>0){
-						Tree t = trees.getTree(0);
+							Tree t = trees.getTree(0);
 							if (t instanceof MesquiteTree){
 								MesquiteTree tree = (MesquiteTree)t;
 								if (tree.getAssociatedObjects(ChronogramDisplay.errorBarNameRef)!= null){
@@ -840,7 +895,7 @@ public class BasicFileCoordinator extends FileCoordinator implements PackageIntr
 		cleanFusedReadingSuppressions();
 		getProject().decrementProjectWindowSuppression();
 	}
-	
+
 	void cleanFusedReadingSuppressions(){
 		int num = getProject().getNumberCharMatrices();
 		for (int im = 0; im< num; im++){
@@ -848,8 +903,9 @@ public class BasicFileCoordinator extends FileCoordinator implements PackageIntr
 			data.setSuppressSpecssetReading(false);
 		}
 	}
+	
 	/*.................................................................................................................*/
-	public MesquiteFile getNEXUSFileForReading(String arguments, String message){ 
+	public MesquiteFile getFileForReading(String arguments, String message, MesquiteBoolean fileChosenIsNexus){ 
 		String path = parser.getFirstToken(arguments); //optional argument
 
 
@@ -867,10 +923,10 @@ public class BasicFileCoordinator extends FileCoordinator implements PackageIntr
 		}
 		if (file == null)
 			return null;
-		NexusFileInterpreter nfi = (NexusFileInterpreter)findImmediateEmployeeWithDuty(NexusFileInterpreter.class);
-		if (nfi==null || !nfi.canReadFile(file)) {
-			return null; //not a nexus file
-		}
+			NexusFileInterpreter nfi = (NexusFileInterpreter)findImmediateEmployeeWithDuty(NexusFileInterpreter.class);
+			if (fileChosenIsNexus!=null) 
+				fileChosenIsNexus.setValue(!(nfi==null || !nfi.canReadFile(file))); //is it a nexus file
+
 		return file;
 	}
 	/*.................................................................................................................*/
@@ -924,6 +980,8 @@ public class BasicFileCoordinator extends FileCoordinator implements PackageIntr
 	}
 	/*.................................................................................................................*/
 	void afterProjectRead() {
+		if (getProject() == null)
+			return;
 		if (getModuleWindow()!=null) {
 			getModuleWindow().resetTitle(); //WHAT IF MULTIPLE LINKED FILES??
 		}
@@ -1072,7 +1130,7 @@ public class BasicFileCoordinator extends FileCoordinator implements PackageIntr
 				}
 				else {
 					boolean close = fileCloseRequested();
-					if (!close)  //WAYNECHECK
+					if (!close)  
 						return false;
 					if (!getProject().isDirty() || getProject().getIgnoreDirtWhenCloseRequested()) {
 						waitWriting(null);
@@ -1168,7 +1226,7 @@ public class BasicFileCoordinator extends FileCoordinator implements PackageIntr
 			if (getProject() == null || getProject().getHomeFile() == null)
 				siga = false; //can't revert
 			else {
-				boolean otherModulesOKWithClosing = fileCloseRequested(); //Debugg.println should pass sometjhing to learn if user was already pstered?
+				boolean otherModulesOKWithClosing = fileCloseRequested(); 
 				// if not, no need to ask further and leave siga set to false
 				if (otherModulesOKWithClosing){
 					if (getProject().isDirty() || getProject().getIgnoreDirtWhenCloseRequested()){ //ok, dirty, so need to ask
@@ -1226,7 +1284,7 @@ public class BasicFileCoordinator extends FileCoordinator implements PackageIntr
 	}
 	/*.................................................................................................................*/
 	/*  */
-	public void saveFile(int id){
+	void saveFile(int id, boolean newFile){
 		if (getProject() ==null)
 			return;
 		MainThread.incrementSuppressWaitWindow();
@@ -1236,7 +1294,7 @@ public class BasicFileCoordinator extends FileCoordinator implements PackageIntr
 		else
 			fi = getProject().getFileByID(id);
 		if (fi != null) { 
-			if (!getProject().getHomeFile().fileExists()){ //no longer exists! user must have changed directories
+			if (!newFile && (fi.getRequiresSaveAs() || !getProject().getHomeFile().fileExists())){ //no longer exists! user must have changed directories
 				saveFileAs(id);
 			}
 			else 
@@ -1312,6 +1370,23 @@ public class BasicFileCoordinator extends FileCoordinator implements PackageIntr
 			fi.changeLocation(fi.getDirectoryName(), name);
 			fi.setWriteProtected(false);
 			writeFile(fi);
+		}
+		MainThread.decrementSuppressWaitWindow();
+		getProject().decrementProjectWindowSuppression();
+	}
+	public void renameFile(int id, String name){
+		if (StringUtil.blank(name))
+			return;
+		getProject().incrementProjectWindowSuppression();
+		MainThread.incrementSuppressWaitWindow();
+		MesquiteFile fi;
+		if (!MesquiteInteger.isCombinable(id) && getProject().getNumberLinkedFiles()==1)
+			fi = getProject().getHomeFile();
+		else
+			fi = getProject().getFileByID(id);
+		if (fi !=null){
+			fi.changeLocation(fi.getDirectoryName(), name);
+			fi.setWriteProtected(false);
 		}
 		MainThread.decrementSuppressWaitWindow();
 		getProject().decrementProjectWindowSuppression();
@@ -1589,6 +1664,11 @@ public class BasicFileCoordinator extends FileCoordinator implements PackageIntr
 		else if (checker.compare(this.getClass(), "Sets the home file of the project so it is write protected", null, commandName, "writeProtect")) { //TODO: should use arguments to toggle
 			getProject().getHomeFile().setWriteProtected(true);
 		}
+		else if (checker.compare(this.getClass(), "Sets whether or not to require a save as for the home file.", "[on or off]", commandName, "requireSaveAs")) {
+			MesquiteBoolean rsa = new MesquiteBoolean();
+			rsa.toggleValue(parser.getFirstToken(arguments));
+			getProject().getHomeFile().setRequiresSaveAs(rsa.getValue());
+		}
 		else if (checker.compare(this.getClass(), "Returns the number of sets of taxa stored in the project", null, commandName, "getNumberOfTaxas")) {
 			MesquiteInteger mi = new MesquiteInteger(getProject().getNumberTaxas());
 			return (mi);
@@ -1635,7 +1715,12 @@ public class BasicFileCoordinator extends FileCoordinator implements PackageIntr
 			revertToSaved(true);
 		}
 		else if (checker.compare(this.getClass(), "Opens a NEXUS file and returns it for reading", "[path to file]", commandName, "getNEXUSFileForReading")) {
-			return getNEXUSFileForReading(arguments, "Choose file to open");
+			MesquiteBoolean fileChosenIsNexus = new MesquiteBoolean(false);
+			MesquiteFile file = getFileForReading(arguments, "Choose file to open", fileChosenIsNexus);
+			if (fileChosenIsNexus.getValue())
+			return file;
+			else
+				return null;
 		}
 		else if (checker.compare(this.getClass(), "Opens a NEXUS file and returns the first block of a given type", "[block type][path to file]", commandName, "getNEXUSFileBlock")) {
 			String blockType = parser.getFirstToken(arguments); //required argument
@@ -1697,7 +1782,6 @@ public class BasicFileCoordinator extends FileCoordinator implements PackageIntr
 		else if (checker.compare(this.getClass(), "Hires new file assistant module", "[name of module]", commandName, "newAssistant")) {
 			return (FileAssistant)hireNamedEmployee(FileAssistant.class, arguments);
 		}
-		//QZ: make general system?
 		else if (checker.compare(this.getClass(), "Explains the Include & Merge menu items", "[]", commandName, "explainIncludeChoices")) {
 			String explanation = "<h3>Including &amp; Merging Other Files</h3>These menu items allow you to bring information — e.g., taxa, matrices and trees — from other files "
 					+ "into your already-open project, so that it can be used alongside the information already in the project. The options are built for different purposes, "
@@ -1721,7 +1805,7 @@ public class BasicFileCoordinator extends FileCoordinator implements PackageIntr
 			while ((mbi = getNextCompatibleModuleOfDuty(mbi, mmis)) != null) 
 				explanation += "<li><b>" + StringUtil.protectForXML(mbi.getNameForMenuItem()) + "</b>— " + StringUtil.protectForXML(mbi.getExplanation()) + "</li><br>";
 			explanation += "</ul></body></html>";
-		//AlertDialog.noticeHTML(containerOfModule(), "Including & Merging Other Files", explanation, 500, 500, null);
+			//AlertDialog.noticeHTML(containerOfModule(), "Including & Merging Other Files", explanation, 500, 500, null);
 			alertHTML(containerOfModule().getParentFrame(), explanation,"Including & Merging Other Files", null, 600, 500);
 		}
 		else if (checker.compare(this.getClass(), "Save all files in project", null, commandName, "saveFiles")) {  //all files in project
@@ -1735,17 +1819,26 @@ public class BasicFileCoordinator extends FileCoordinator implements PackageIntr
 			if (MesquiteThread.isScripting() || AlertDialog.query(containerOfModule(), "Save All Files?", "Do you want to save all of the following files?" + fileNames + "\n\n(If you want to save only one, go to the submenu of the File menu.)"))
 				saveAllFiles();
 		}
+		else if (checker.compare(this.getClass(), "Saves file", "[number of file]", commandName, "saveNewFile")) {  //Single file only
+			saveFile(MesquiteInteger.fromString(arguments, new MesquiteInteger(0)), true);
+		}
 		else if (checker.compare(this.getClass(), "Saves file", "[number of file]", commandName, "saveFile")) {  //Single file only
-			saveFile(MesquiteInteger.fromString(arguments, new MesquiteInteger(0)));
+			saveFile(MesquiteInteger.fromString(arguments, new MesquiteInteger(0)), false);
 		}
 		else if (checker.compare(this.getClass(), "Saves home file", "[number of file]", commandName, "saveHomeFile")) {  //Single file only
-			saveFile((int)getProject().getHomeFile().getID());
+			saveFile((int)getProject().getHomeFile().getID(), false);
 		}
 		else if (checker.compare(this.getClass(), "Renames file", "[number of file]", commandName, "renameAndSaveFile")) {
 			MesquiteInteger pos = new MesquiteInteger(0);
 			int i = MesquiteInteger.fromString(arguments, pos);
 			String name = ParseUtil.getToken(arguments, pos);
 			renameAndSaveFile(i, name);
+		}
+		else if (checker.compare(this.getClass(), "Renames file", "[number of file]", commandName, "renameFile")) {
+			MesquiteInteger pos = new MesquiteInteger(0);
+			int i = MesquiteInteger.fromString(arguments, pos);
+			String name = ParseUtil.getToken(arguments, pos);
+			renameFile(i, name);
 		}
 		else if (checker.compare(this.getClass(), "Saves file as... to create a separate copy", "[number of file]", commandName, "saveFileAs")) {
 			saveFileAs(MesquiteInteger.fromString(arguments, new MesquiteInteger(0)));

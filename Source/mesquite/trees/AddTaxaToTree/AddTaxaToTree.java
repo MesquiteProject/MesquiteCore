@@ -13,10 +13,13 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
  */
 package mesquite.trees.AddTaxaToTree;
 
-import java.util.*;
-import java.awt.*;
-import mesquite.lib.*;
-import mesquite.lib.duties.*;
+import mesquite.lib.Listable;
+import mesquite.lib.ListableVector;
+import mesquite.lib.Listened;
+import mesquite.lib.MesquiteListener;
+import mesquite.lib.MesquiteString;
+import mesquite.lib.Notification;
+import mesquite.lib.duties.TreeAlterer;
 import mesquite.lib.taxa.Taxa;
 import mesquite.lib.taxa.Taxon;
 import mesquite.lib.tree.AdjustableTree;

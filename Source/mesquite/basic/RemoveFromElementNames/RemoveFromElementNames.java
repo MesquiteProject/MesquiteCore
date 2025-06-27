@@ -13,12 +13,17 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
 */
 package mesquite.basic.RemoveFromElementNames;
 
-import java.util.*;
-import java.awt.*;
+import java.awt.Label;
 
-import mesquite.lib.*;
-import mesquite.lib.duties.*;
-import mesquite.lib.table.*;
+import mesquite.lib.CommandChecker;
+import mesquite.lib.Listable;
+import mesquite.lib.ListableVector;
+import mesquite.lib.MesquiteInteger;
+import mesquite.lib.MesquiteThread;
+import mesquite.lib.Nameable;
+import mesquite.lib.NameableWithNotify;
+import mesquite.lib.StringUtil;
+import mesquite.lib.duties.ListableNameAlterer;
 import mesquite.lib.ui.ExtensibleDialog;
 import mesquite.lib.ui.SingleLineTextField;
 
@@ -30,8 +35,23 @@ public class RemoveFromElementNames extends ListableNameAlterer {
 	
 	/*.................................................................................................................*/
 	public boolean startJob(String arguments, Object condition, boolean hiredByName){
+		loadPreferences();
 		return true;
 	}
+	
+	/*.................................................................................................................*/
+	public void processSingleXMLPreference (String tag, String content) {
+		if ("searchText".equalsIgnoreCase(tag))
+			searchText= content;
+	}
+	/*.................................................................................................................*/
+	public String preparePreferencesForXML () {
+		StringBuffer buffer = new StringBuffer(60);	
+		StringUtil.appendXMLTag(buffer, 2, "searchText",searchText);
+
+		return buffer.toString();
+	}
+
 	/*.................................................................................................................*/
    	public boolean getOptions(ListableVector datas, int firstSelected){
    		if (MesquiteThread.isScripting())
@@ -46,6 +66,7 @@ public class RemoveFromElementNames extends ListableNameAlterer {
 		
 		if (ok) {
 			searchText = searchField.getText();
+			storePreferences();
 		}
 		
 		queryDialog.dispose();

@@ -13,10 +13,12 @@
  */
 package mesquite.lib.duties;
 
-import java.awt.*;
-
-import mesquite.lib.*;
-import mesquite.minimal.BasicFileCoordinator.ProjectWindow;
+import mesquite.lib.FileElement;
+import mesquite.lib.MesquiteBoolean;
+import mesquite.lib.MesquiteFile;
+import mesquite.lib.MesquiteModule;
+import mesquite.lib.MesquiteProject;
+import mesquite.lib.Snapshot;
 
 /* ======================================================================== */
 /**
@@ -80,7 +82,7 @@ public abstract class FileCoordinator extends MesquiteModule {
 	public abstract void includeFile(String pathName, String importer, String arguments, int fileType, String fileDescriptionText); //make new/read new linked file
 	public abstract void includeFile(String pathName, Class importer, String arguments, int fileType, String fileDescriptionText); //make new/read new linked file
 	public abstract void wrapUpAfterFileRead(MesquiteFile f);  //call after read() methods of file interpreters called outside context of the file Coordinator's project/file reading
-	public abstract MesquiteFile getNEXUSFileForReading(String arguments, String message);
+	public abstract MesquiteFile getFileForReading(String arguments, String message, MesquiteBoolean fileChosenIsNexus);
 
 	public FileInterpreter findImporter(MesquiteFile f, int fileType, String arguments){
 		return findImporter(f, fileType, null, arguments);

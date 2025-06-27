@@ -13,11 +13,14 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
 */
 package mesquite.trunk;
 
-import java.awt.*;
-import java.awt.event.*;
-import java.awt.image.*;
-import java.util.*;
-import mesquite.lib.*;
+import java.awt.Color;
+import java.awt.Graphics;
+import java.awt.Image;
+import java.awt.image.ImageObserver;
+
+import mesquite.lib.MesquiteModule;
+import mesquite.lib.MesquiteTrunk;
+import mesquite.lib.StringUtil;
 import mesquite.lib.misc.HPanel;
 import mesquite.lib.ui.ColorDistribution;
 import mesquite.lib.ui.InfoBar;

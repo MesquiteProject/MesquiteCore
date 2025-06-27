@@ -12,9 +12,10 @@ This source code and its compiled class files are free and modifiable under the 
 GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
  */package mesquite.categ.lib;
 
-import mesquite.lib.*;
-import mesquite.categ.lib.*;
-import mesquite.lib.table.*;
+import mesquite.lib.MesquiteDouble;
+import mesquite.lib.MesquiteModule;
+import mesquite.lib.MesquiteString;
+import mesquite.lib.table.MesquiteTable;
 
 public abstract class CategStateForCharacter extends MesquiteModule {
 	boolean selectedOnly=true;

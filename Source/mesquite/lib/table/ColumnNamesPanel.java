@@ -13,18 +13,27 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
  */
 package mesquite.lib.table;
 
-import java.awt.*;
-import java.awt.event.*;
+import java.awt.Color;
+import java.awt.Cursor;
+import java.awt.Font;
+import java.awt.Graphics;
+import java.awt.Polygon;
+import java.awt.Shape;
+import java.awt.event.FocusEvent;
+import java.awt.event.FocusListener;
+import java.awt.event.KeyEvent;
 
-import mesquite.lib.*;
+import mesquite.lib.MesquiteEvent;
+import mesquite.lib.MesquiteFile;
+import mesquite.lib.MesquiteInteger;
+import mesquite.lib.MesquiteMessage;
+import mesquite.lib.StringUtil;
 import mesquite.lib.ui.ColorDistribution;
 import mesquite.lib.ui.ColorTheme;
 import mesquite.lib.ui.GraphicsUtil;
 import mesquite.lib.ui.MesquiteTool;
 import mesquite.lib.ui.MesquiteWindow;
 import mesquite.lib.ui.TextRotator;
-
-import java.io.*;
 
 /* ======================================================================== */
 /** A panel for column headings for use in MesquiteTable*/

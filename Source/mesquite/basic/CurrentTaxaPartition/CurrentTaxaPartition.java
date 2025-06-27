@@ -14,10 +14,9 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
 package mesquite.basic.CurrentTaxaPartition;
 /*~~  */
 
-import java.util.*;
-import java.awt.*;
-import mesquite.lib.*;
-import mesquite.lib.duties.*;
+import mesquite.lib.MesquiteListener;
+import mesquite.lib.Notification;
+import mesquite.lib.duties.TaxaPartitionSource;
 import mesquite.lib.taxa.Taxa;
 import mesquite.lib.taxa.TaxaPartition;
 

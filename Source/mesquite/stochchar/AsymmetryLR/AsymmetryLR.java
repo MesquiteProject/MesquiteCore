@@ -13,14 +13,21 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
 */
 package mesquite.stochchar.AsymmetryLR;
 
-import java.awt.*;
-import mesquite.lib.*;
-import mesquite.lib.characters.*;
-import mesquite.lib.duties.*;
-import mesquite.lib.tree.Tree;
-import mesquite.stochchar.lib.*;
-import mesquite.categ.lib.*;
 import JSci.maths.statistics.ChiSqrDistribution;
+import mesquite.categ.lib.CategoricalState;
+import mesquite.categ.lib.RequiresExactlyCategoricalData;
+import mesquite.lib.CompatibilityTest;
+import mesquite.lib.EmployeeNeed;
+import mesquite.lib.MesquiteDouble;
+import mesquite.lib.MesquiteNumber;
+import mesquite.lib.MesquiteString;
+import mesquite.lib.Notification;
+import mesquite.lib.characters.CharacterDistribution;
+import mesquite.lib.duties.NumberForCharAndTree;
+import mesquite.lib.tree.Tree;
+import mesquite.stochchar.lib.AsymmModel;
+import mesquite.stochchar.lib.MargLikelihoodForModel;
+import mesquite.stochchar.lib.MkModel;
 
 
 /* ======================================================================== */

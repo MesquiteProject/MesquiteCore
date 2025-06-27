@@ -14,11 +14,22 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
 package mesquite.ornamental.PictureWindowMaker;
 /*~~  */
 
-import java.util.*;
-import java.awt.*;
-import java.awt.image.*;
-import mesquite.lib.*;
-import mesquite.lib.duties.*;
+import java.awt.Color;
+import java.awt.Graphics;
+import java.awt.Image;
+import java.awt.MediaTracker;
+import java.awt.image.ImageObserver;
+
+import mesquite.lib.CommandChecker;
+import mesquite.lib.Commandable;
+import mesquite.lib.MesquiteFile;
+import mesquite.lib.MesquiteInteger;
+import mesquite.lib.MesquiteString;
+import mesquite.lib.MesquiteThread;
+import mesquite.lib.ParseUtil;
+import mesquite.lib.Snapshot;
+import mesquite.lib.StringUtil;
+import mesquite.lib.duties.FileAssistantN;
 import mesquite.lib.ui.MQPanel;
 import mesquite.lib.ui.MesquiteImage;
 import mesquite.lib.ui.MesquiteWindow;

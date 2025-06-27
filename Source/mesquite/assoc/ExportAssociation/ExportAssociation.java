@@ -14,18 +14,19 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
 package mesquite.assoc.ExportAssociation;
 
 
-import java.util.*;
-import java.awt.*;
-
-import mesquite.lib.*;
-import mesquite.lib.characters.*;
-import mesquite.lib.characters.CharacterData;
-import mesquite.lib.duties.*;
+import mesquite.assoc.lib.AssociationSource;
+import mesquite.assoc.lib.TaxaAssociation;
+import mesquite.lib.Arguments;
+import mesquite.lib.MesquiteFile;
+import mesquite.lib.MesquiteProject;
+import mesquite.lib.MesquiteStringBuffer;
+import mesquite.lib.MesquiteThread;
+import mesquite.lib.Parser;
+import mesquite.lib.StringUtil;
+import mesquite.lib.duties.FileInterpreterI;
 import mesquite.lib.taxa.Taxa;
 import mesquite.lib.taxa.Taxon;
 import mesquite.lib.tree.TreeVector;
-import mesquite.assoc.lib.*;
-import mesquite.categ.lib.*;
 
 
 
@@ -45,7 +46,7 @@ public class ExportAssociation extends FileInterpreterI {
 	}
 
 	public boolean isPrerelease(){
-		return true;
+		return false;
 	}
 	public boolean isSubstantive(){
 		return true;
@@ -83,24 +84,6 @@ public class ExportAssociation extends FileInterpreterI {
 	String fileName = "Association.dat";
 
 	public boolean getExportOptions(TreeVector trees){
-		/*MesquiteInteger buttonPressed = new MesquiteInteger(1);
-		ExporterDialog exportDialog = new ExporterDialog(this,containerOfModule(), "Export tree file for DELINEATE", buttonPressed);
-		String helpString = "This will save a tree file ready to be uploaded into Open Tree (opentreeoflife.org).  It will optionally convert node values "+
-		"such as consensus frequences as branch lengths (as that is how Open Tree imports support values for branches).";
-		exportDialog.appendToHelpString(helpString);
-		exportDialog.setSuppressLineEndQuery(true);
-		exportDialog.setDefaultButton(null);
-		Checkbox convertToBranchLengthsBox = exportDialog.addCheckBox("convert node values to branch lengths", convertToBranchLengths);
-
-		exportDialog.completeAndShowDialog();
-
-		boolean ok = (exportDialog.query()==0);
-
-		convertToBranchLengths = convertToBranchLengthsBox.getState();
-
-		exportDialog.dispose();
-		return ok;
-		*/
 		return true;
 	}	
 	/*.................................................................................................................*/
@@ -215,7 +198,7 @@ public class ExportAssociation extends FileInterpreterI {
 	 * then the number refers to the Mesquite version.  This should be used only by modules part of the core release of Mesquite.
 	 * If a NEGATIVE integer, then the number refers to the local version of the package, e.g. a third party package*/
 	public int getVersionOfFirstRelease(){
-		return NEXTRELEASE;  
+		return 400;  
 	}
 
 }

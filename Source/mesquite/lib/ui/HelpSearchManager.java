@@ -14,8 +14,12 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
 package mesquite.lib.ui;
 
 
+import java.awt.Component;
+import java.awt.Container;
+import java.awt.Menu;
+import java.awt.MenuBar;
+import java.awt.MenuItem;
 import java.util.Vector;
-import java.awt.*;
 
 import mesquite.lib.CommandChecker;
 import mesquite.lib.CommandRecord;

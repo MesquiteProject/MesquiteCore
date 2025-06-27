@@ -18,7 +18,6 @@ package mesquite.genomic.FlagByGblocks;
 
 
 import java.awt.Button;
-import java.awt.Checkbox;
 import java.awt.Choice;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -31,38 +30,24 @@ import java.util.Random;
 import mesquite.categ.lib.MolecularData;
 import mesquite.categ.lib.RequiresAnyMolecularData;
 import mesquite.externalCommunication.lib.AppChooser;
-import mesquite.externalCommunication.lib.AppUser;
 import mesquite.lib.Bits;
 import mesquite.lib.CommandChecker;
 import mesquite.lib.CompatibilityTest;
-import mesquite.lib.Debugg;
 import mesquite.lib.IntegerField;
 import mesquite.lib.MesquiteBoolean;
 import mesquite.lib.MesquiteDouble;
 import mesquite.lib.MesquiteFile;
 import mesquite.lib.MesquiteInteger;
 import mesquite.lib.MesquiteMessage;
-import mesquite.lib.MesquiteString;
 import mesquite.lib.MesquiteThread;
 import mesquite.lib.MesquiteTrunk;
-import mesquite.lib.OutputFileProcessor;
 import mesquite.lib.Parser;
-import mesquite.lib.ShellScriptRunner;
 import mesquite.lib.ShellScriptUtil;
-import mesquite.lib.ProcessWatcher;
 import mesquite.lib.Snapshot;
 import mesquite.lib.StringUtil;
 import mesquite.lib.characters.CharacterData;
-import mesquite.lib.characters.MCharactersDistribution;
 import mesquite.lib.characters.MatrixFlags;
-import mesquite.lib.duties.CharMatrixManager;
-import mesquite.lib.duties.CharactersManager;
-import mesquite.lib.duties.FileCoordinator;
-import mesquite.lib.duties.FileInterpreterI;
-import mesquite.lib.duties.MatrixFlagger;
 import mesquite.lib.duties.MatrixFlaggerForTrimming;
-import mesquite.lib.duties.TaxaManager;
-import mesquite.lib.taxa.Taxa;
 import mesquite.lib.ui.ColorTheme;
 import mesquite.lib.ui.DoubleField;
 import mesquite.lib.ui.ExtensibleDialog;
@@ -239,9 +224,6 @@ public class FlagByGblocks extends MatrixFlaggerForTrimming implements ActionLis
 		AppChooser appChooser = new AppChooser("Gblocks", "Gblocks", useBuiltInIfAvailable, alternativeManualPath);
 		appChooser.addToDialog(dialog);
 		dialog.addHorizontalLine(1);
-		/*programPathField = dialog.addTextField("Path to Gblocks:", gblocksPath, 40);
-		Button programBrowseButton = dialog.addAListenedButton("Browse...",null, this);
-		programBrowseButton.setActionCommand("programBrowse");*/
 		dialog.addBlankLine();
 		if (b1<0.5)
 			b1 = 0.5;
@@ -286,6 +268,8 @@ public class FlagByGblocks extends MatrixFlaggerForTrimming implements ActionLis
 				+ "<p><b>Reference for Gblocks</b>; Castresana J. 2000. Selection of conserved blocks from multiple alignments for their use in phylogenetic analysis. Molecular Biology and Evolution 17: 540–552"
 				+ " <a href = \"http://doi.org/10.1093/oxfordjournals.molbev.a026334\">doi:10.1093/oxfordjournals.molbev.a026334</a>";
 		dialog.appendToHelpString(s);
+		dialog.setHelpURL("https://www.biologiaevolutiva.org/jcastresana/Gblocks.html");
+
 		dialog.completeAndShowDialog(true);
 		if (buttonPressed.getValue()==0)  {
 			b1 = b1F.getValue();
@@ -305,14 +289,7 @@ public class FlagByGblocks extends MatrixFlaggerForTrimming implements ActionLis
 
 	/*.................................................................................................................*/
 	public  void actionPerformed(ActionEvent e) {
-		/*if (e.getActionCommand().equalsIgnoreCase("programBrowse")) {
-			gblocksPath = MesquiteFile.openFileDialog("Choose Gblocks: ", null, null);
-			if (!StringUtil.blank(gblocksPath)) {
-				programPathField.setText(gblocksPath);
-			}
-		}
-		else */
-		if (e.getActionCommand().equalsIgnoreCase("setToDefaults")) {
+			if (e.getActionCommand().equalsIgnoreCase("setToDefaults")) {
 			b1F.setValue(b1DEFAULT);
 			b2F.setValue(b2DEFAULT);
 			b3F.setValue(b3DEFAULT);
@@ -423,30 +400,7 @@ public class FlagByGblocks extends MatrixFlaggerForTrimming implements ActionLis
 										count++;
 								}
 								done = true;
-								/*					columns = resultText.split(", ");
-							columns[0] = columns[0].substring(12, columns[0].length());
-							Bits charFlags = flags.getCharacterFlags();
-							int lastKeep = -1;
-							int count = 0;
-							for (int k = 0; k<columns.length; k++) {
-								int keep = MesquiteInteger.fromString(StringUtil.stripWhitespace(columns[k]));
-								if (keep < data.getNumChars())
-									for (int d = lastKeep+1; d<keep; d++) {
-										boolean wasSet = charFlags.isBitOn(d);
-										charFlags.setBit(d);
-										if (!wasSet)
-											count++;
-									}
-								lastKeep = keep;
-							}
-							for (int d = lastKeep+1; d<data.getNumChars(); d++) {
-								boolean wasSet = charFlags.isBitOn(d);
-								charFlags.setBit(d);
-								if (!wasSet)
-									count++;
-							}
-							}
-								 */
+								
 							}
 						}
 					}
@@ -454,7 +408,6 @@ public class FlagByGblocks extends MatrixFlaggerForTrimming implements ActionLis
 				else
 					MesquiteMessage.warnProgrammer("No results from Gblocks found!");
 
-				//logln("" + count + " character(s) flagged in " + data.getName());
 			}
 			else MesquiteMessage.warnUser(" Error status returned from attempt to run Gblocs: " + resultStatus);
 		deleteSupportDirectory();
@@ -472,7 +425,7 @@ public class FlagByGblocks extends MatrixFlaggerForTrimming implements ActionLis
 	}
 	/*.................................................................................................................*/
 	public boolean isPrerelease() {
-		return true;
+		return false;
 	}
 
 	/*.................................................................................................................*/
@@ -493,7 +446,7 @@ public class FlagByGblocks extends MatrixFlaggerForTrimming implements ActionLis
 	 * then the number refers to the Mesquite version.  This should be used only by modules part of the core release of Mesquite.
 	 * If a NEGATIVE integer, then the number refers to the local version of the package, e.g. a third party package*/
 	public int getVersionOfFirstRelease(){
-		return NEXTRELEASE;  
+		return 400;  
 	}
 
 

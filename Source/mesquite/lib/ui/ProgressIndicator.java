@@ -13,8 +13,7 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
  */
 package mesquite.lib.ui;
 
-import java.awt.*;
-import java.awt.event.*;
+import java.awt.Color;
 
 import mesquite.lib.Abortable;
 import mesquite.lib.MainThread;
@@ -84,7 +83,7 @@ public class ProgressIndicator implements Abortable {
 		t = new ProgressWindowThread(this,title, initialMessage, total, buttonName);
 	}
 
-	public ProgressIndicator (MesquiteProject mp, String title, String initialMessage, long total, boolean showStop) {
+	public ProgressIndicator (MesquiteProject mp, String title, String initialMessage, long total, boolean showStop) {  //0, true
 		this(mp, title, initialMessage, total, showStop ? "Stop" : null);
 		setButtonMode(FLAG_AND_HIDE);
 	}
@@ -99,7 +98,7 @@ public class ProgressIndicator implements Abortable {
 		this(mp,title, 0, true);
 	}
 	public void toFront(){
-		if (MesquiteThread.pleaseSuppressProgressIndicatorsCurrentThread())
+		if (MesquiteThread.getHintToSuppressProgressIndicatorsCurrentThread())
 			return;
 		if (t != null && t.dlog != null)
 			t.dlog.toFront();
@@ -154,7 +153,7 @@ public class ProgressIndicator implements Abortable {
 		try {
 			if (getOwnerThread() == null && Thread.currentThread() instanceof MesquiteThread)
 				setOwnerThread((MesquiteThread)Thread.currentThread()); //by default the owner thread is the one that requests the window to start
-			if (!MesquiteThread.pleaseSuppressProgressIndicatorsCurrentThread()){
+			if (!MesquiteThread.getHintToSuppressProgressIndicatorsCurrentThread()){
 				t.start();
 			}
 		}
@@ -231,7 +230,7 @@ public class ProgressIndicator implements Abortable {
 	}
 	/*.................................................................................................................*/
 	public void setVisible (boolean v) {
-		if (MesquiteThread.pleaseSuppressProgressIndicatorsCurrentThread())
+		if (MesquiteThread.getHintToSuppressProgressIndicatorsCurrentThread())
 			return;
 		t.dlog.setVisible(v);
 	}
@@ -370,13 +369,13 @@ class ProgressWindowThread extends Thread {
 			dlog.setTertiaryMessage(message);
 	}
 	public void start() {
-	if (MesquiteThread.pleaseSuppressProgressIndicatorsCurrentThread())
+	if (MesquiteThread.getHintToSuppressProgressIndicatorsCurrentThread())
 		return;
 	super.start();
 	}
 	
 	public void run() {
-		if (!dontStart  && !MesquiteThread.pleaseSuppressProgressIndicatorsCurrentThread()){
+		if (!dontStart  && !MesquiteThread.getHintToSuppressProgressIndicatorsCurrentThread()){
 			dlog = new ProgressWindow(progressIndicator, title, initialMessage, total, buttonName);
 			if (!dontStart) {
 				dlog.setVisible(true); //TODO: if thread doesn't show until after file reading started, and alert appears, could be hidden under this, with STOP being only option

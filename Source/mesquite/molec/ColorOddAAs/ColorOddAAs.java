@@ -13,16 +13,22 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
  */
 package mesquite.molec.ColorOddAAs; 
 
-import java.util.*;
-import java.awt.*;
+import java.awt.Color;
 
-import mesquite.lib.*;
-import mesquite.lib.characters.*;
-import mesquite.lib.duties.*;
-import mesquite.lib.table.*;
+import mesquite.categ.lib.CategoricalState;
+import mesquite.categ.lib.DNAData;
+import mesquite.categ.lib.ProteinData;
+import mesquite.categ.lib.ProteinState;
+import mesquite.categ.lib.RequiresAnyDNAData;
+import mesquite.lib.CompatibilityTest;
+import mesquite.lib.MesquiteInteger;
+import mesquite.lib.characters.CharacterData;
+import mesquite.lib.duties.CellColorer;
+import mesquite.lib.duties.CellColorerMatrix;
+import mesquite.lib.duties.DataWindowAssistantID;
+import mesquite.lib.table.MesquiteTable;
 import mesquite.lib.ui.ColorDistribution;
 import mesquite.lib.ui.ColorRecord;
-import mesquite.categ.lib.*;
 
 
 /* ======================================================================== */

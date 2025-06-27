@@ -20,14 +20,12 @@ package mesquite.genomic.FlagByTrimAl;
 import java.awt.Choice;
 import java.util.Random;
 
-
 import mesquite.categ.lib.MolecularData;
 import mesquite.categ.lib.RequiresAnyMolecularData;
 import mesquite.externalCommunication.lib.AppChooser;
 import mesquite.lib.Bits;
 import mesquite.lib.CommandChecker;
 import mesquite.lib.CompatibilityTest;
-import mesquite.lib.Debugg;
 import mesquite.lib.MesquiteBoolean;
 import mesquite.lib.MesquiteFile;
 import mesquite.lib.MesquiteInteger;
@@ -35,7 +33,6 @@ import mesquite.lib.MesquiteMessage;
 import mesquite.lib.MesquiteThread;
 import mesquite.lib.MesquiteTrunk;
 import mesquite.lib.ParseUtil;
-import mesquite.lib.ResultCodes;
 import mesquite.lib.ShellScriptUtil;
 import mesquite.lib.Snapshot;
 import mesquite.lib.StringUtil;
@@ -161,10 +158,7 @@ public class FlagByTrimAl extends MatrixFlaggerForTrimming {
 		appChooser.addToDialog(dialog);
 		dialog.addHorizontalLine(1);
 
-		/*programPathField = dialog.addTextField("Path to trimAl:", trimAlPath, 40);
-		Button programBrowseButton = dialog.addAListenedButton("Browse...",null, this);
-		programBrowseButton.setActionCommand("programBrowse");
-		*/
+		
 		dialog.addBlankLine();
 		Choice alignmentMethodChoice = dialog.addPopUpMenu("Automated option", autoOptionNames, autoOption);
 		manualOptionsField = dialog.addTextField("Additional options (do NOT set -in or -out):", manualOptions, 40);
@@ -176,6 +170,7 @@ public class FlagByTrimAl extends MatrixFlaggerForTrimming {
 		s += "<p><b>Reference for trimAl</b>: Capella-Gutiérrez, S., Silla-Martínez, J. M., & Gabaldón, T. (2009). trimAl: a tool for automated alignment trimming in large-scale phylogenetic analyses. Bioinformatics (Oxford, England), 25(15), 1972–1973."
 				+ "<a href = \"https://doi.org/10.1093/bioinformatics/btp348\">https://doi.org/10.1093/bioinformatics/btp348</a>";
 		dialog.appendToHelpString(s);
+		dialog.setHelpURL("https://trimal.readthedocs.io");
 		dialog.completeAndShowDialog(true);
 		if (buttonPressed.getValue()==0)  {
 			autoOption = alignmentMethodChoice.getSelectedIndex();
@@ -190,16 +185,7 @@ public class FlagByTrimAl extends MatrixFlaggerForTrimming {
 		return (buttonPressed.getValue()==0);
 	}
 
-	/*.................................................................................................................*
-	public  void actionPerformed(ActionEvent e) {
-		if (e.getActionCommand().equalsIgnoreCase("programBrowse")) {
-			trimAlPath = MesquiteFile.openFileDialog("Choose trimAl: ", null, null);
-			if (!StringUtil.blank(alternativeManualPath)) {
-				programPathField.setText(alternativeManualPath);
-			}
-		}
-	}
-*/
+	/*.................................................................................................................*/
 	String[] columns;
 
 	/*.................................................................................................................*/
@@ -284,8 +270,6 @@ public class FlagByTrimAl extends MatrixFlaggerForTrimming {
 				}
 				else
 					MesquiteMessage.warnUser(" No trimming results file for matrix " + data.getName());
-
-				//logln("" + count + " character(s) flagged in " + data.getName());
 			}
 			else {
 				MesquiteMessage.warnUser(" Error status returned from attempt to run trimAl: " + resultStatus);
@@ -308,7 +292,7 @@ public class FlagByTrimAl extends MatrixFlaggerForTrimming {
 	}
 	/*.................................................................................................................*/
 	public boolean isPrerelease() {
-		return true;
+		return false;
 	}
 
 	/*.................................................................................................................*/
@@ -329,7 +313,7 @@ public class FlagByTrimAl extends MatrixFlaggerForTrimming {
 	 * then the number refers to the Mesquite version.  This should be used only by modules part of the core release of Mesquite.
 	 * If a NEGATIVE integer, then the number refers to the local version of the package, e.g. a third party package*/
 	public int getVersionOfFirstRelease(){
-		return NEXTRELEASE;  
+		return 400;  
 	}
 
 

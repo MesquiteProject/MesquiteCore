@@ -14,12 +14,12 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
 package mesquite.parsimony.InitializeParsimony;
 /*~~  */
 
-import java.util.*;
-import java.awt.*;
-import mesquite.lib.*;
-import mesquite.lib.characters.*;
-import mesquite.lib.duties.*;
-import mesquite.parsimony.lib.*;
+import mesquite.lib.FileElement;
+import mesquite.lib.MesquiteMessage;
+import mesquite.lib.characters.CharacterData;
+import mesquite.lib.characters.CharacterModel;
+import mesquite.lib.duties.FileInit;
+import mesquite.parsimony.lib.ParsimonyModelSet;
 
 /* ======================================================================== */
 public class InitializeParsimony extends FileInit {

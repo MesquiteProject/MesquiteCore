@@ -16,7 +16,6 @@ package mesquite.genomic.TrimByGblocks;
 
 
 
-import mesquite.categ.lib.RequiresAnyDNAData;
 import mesquite.categ.lib.RequiresAnyMolecularData;
 import mesquite.lib.CompatibilityTest;
 import mesquite.lib.duties.MatrixFlagger;
@@ -40,7 +39,7 @@ public class TrimByGblocks extends TrimSitesByFlagger {
 	
 	/*.................................................................................................................*/
 	public boolean isPrerelease() {
-		return true;
+		return false;
 	}
 
 	/*.................................................................................................................*/
@@ -61,7 +60,7 @@ public class TrimByGblocks extends TrimSitesByFlagger {
 	 * then the number refers to the Mesquite version.  This should be used only by modules part of the core release of Mesquite.
 	 * If a NEGATIVE integer, then the number refers to the local version of the package, e.g. a third party package*/
 	public int getVersionOfFirstRelease(){
-		return NEXTRELEASE;  
+		return 400;  
 	}
 
 }

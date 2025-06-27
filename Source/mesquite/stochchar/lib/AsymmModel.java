@@ -13,18 +13,33 @@
  */
 package mesquite.stochchar.lib;
 
-/* ~~ */
-
-import java.util.*;
-import java.awt.*;
-import mesquite.lib.*;
-import mesquite.lib.characters.*;
+import Jama.Matrix;
+import mesquite.categ.lib.CategoricalState;
+import mesquite.cont.lib.EigenAnalysis;
+import mesquite.lib.CommandChecker;
+import mesquite.lib.CommandRecord;
+import mesquite.lib.Double2DArray;
+import mesquite.lib.DoubleArray;
+import mesquite.lib.Evaluator;
+import mesquite.lib.MesquiteBoolean;
+import mesquite.lib.MesquiteDouble;
+import mesquite.lib.MesquiteInteger;
+import mesquite.lib.MesquiteListener;
+import mesquite.lib.MesquiteMessage;
+import mesquite.lib.MesquiteNumber;
+import mesquite.lib.MesquiteString;
+import mesquite.lib.MesquiteTrunk;
+import mesquite.lib.Notification;
+import mesquite.lib.Optimizer;
+import mesquite.lib.ParseUtil;
+import mesquite.lib.StringUtil;
+import mesquite.lib.characters.CLikelihoodCalculator;
+import mesquite.lib.characters.CModelEstimator;
+import mesquite.lib.characters.CharacterDistribution;
+import mesquite.lib.characters.CharacterModel;
+import mesquite.lib.characters.CharacterStatesHolder;
 import mesquite.lib.tree.MesquiteTree;
 import mesquite.lib.tree.Tree;
-import mesquite.cont.lib.*;
-import mesquite.categ.lib.*;
-import mesquite.stochchar.lib.*;
-import Jama.*;
 
 public class AsymmModel extends ProbPhenCategCharModel implements CModelEstimator, Evaluator {
 	double param0 = MesquiteDouble.unassigned;

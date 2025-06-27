@@ -14,15 +14,34 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
 package mesquite.trees.NodeLocsStandard;
 /*~~  */
 
-import java.util.*;
-
-
-
-import java.awt.*;
+import java.awt.Color;
+import java.awt.Font;
+import java.awt.FontMetrics;
+import java.awt.Graphics;
+import java.awt.Graphics2D;
 import java.awt.event.KeyEvent;
+import java.util.Enumeration;
+import java.util.Vector;
 
-import mesquite.lib.*;
-import mesquite.lib.duties.*;
+import mesquite.lib.CommandChecker;
+import mesquite.lib.MesquiteBoolean;
+import mesquite.lib.MesquiteCommand;
+import mesquite.lib.MesquiteDouble;
+import mesquite.lib.MesquiteFile;
+import mesquite.lib.MesquiteInteger;
+import mesquite.lib.MesquiteModule;
+import mesquite.lib.MesquiteNumber;
+import mesquite.lib.MesquiteThread;
+import mesquite.lib.MesquiteTrunk;
+import mesquite.lib.NameReference;
+import mesquite.lib.Notification;
+import mesquite.lib.Parser;
+import mesquite.lib.Snapshot;
+import mesquite.lib.StringUtil;
+import mesquite.lib.duties.DrawNamesTreeDisplay;
+import mesquite.lib.duties.DrawTree;
+import mesquite.lib.duties.NodeLocsVH;
+import mesquite.lib.duties.TreeWindowMaker;
 import mesquite.lib.tree.DiagonalRootDrawer;
 import mesquite.lib.tree.MesquiteTree;
 import mesquite.lib.tree.Tree;
@@ -32,13 +51,11 @@ import mesquite.lib.tree.TreeDisplayExtra;
 import mesquite.lib.tree.TreeDisplayHolder;
 import mesquite.lib.tree.TreeDisplayRequests;
 import mesquite.lib.tree.TreeDrawing;
-import mesquite.lib.tree.TreeTool;
 import mesquite.lib.ui.ColorDistribution;
 import mesquite.lib.ui.GraphicsUtil;
 import mesquite.lib.ui.MesquiteMenuItemSpec;
 import mesquite.lib.ui.MesquiteSubmenuSpec;
 import mesquite.lib.ui.MesquiteWindow;
-import mesquite.trees.lib.DrawTreeUtil;
 
 /** Calculates node locations for tree drawing in a standard vertical/horizontal position, as used by DiagonalDrawTree and SquareTree (for example).*/
 public class NodeLocsStandard extends NodeLocsVH {
@@ -57,7 +74,7 @@ public class NodeLocsStandard extends NodeLocsVH {
 	MesquiteInteger branchLengthsDisplayMode;  
 
 	boolean resetShowBranchLengths = false;
-	int fixedTaxonDistance = 0;
+	double fixedTaxonDistance = 0;
 
 	static final int totalHeight = 0;
 	static final int stretchfactor = 1;
@@ -160,11 +177,7 @@ public class NodeLocsStandard extends NodeLocsVH {
 			showScaleMenuItem.setEnabled(false);
 			broadScaleMenuItem.setEnabled(false);
 
-			/*Debugg.println: if ultrametric, just add menu and use. If AUTO, add menu but rename as "Inhibit stretch if no BL".
-			 * 	if (showBranchLengths.getValue()==TreeDisplay.DRAWULTRAMETRIC || showBranchLengths.getValue()==TreeDisplay.AUTOSHOWLENGTHS)
-			 */
-			/*stretchMenuItem = addCheckMenuItem(null, "Inhibit Stretch Tree to Fit", makeCommand("inhibitStretchToggle", this), inhibitStretch);
-			evenMenuItem = addCheckMenuItem(null, "Even root to tip spacing", makeCommand("toggleEven", this), even);*/
+		
 		}
 
 
@@ -308,7 +321,7 @@ public class NodeLocsStandard extends NodeLocsVH {
 		temp.addLine("toggleBroadScale " + broadScale.toOffOnString());
 		temp.addLine("toggleCenter " + center.toOffOnString());
 		temp.addLine("toggleEven " + even.toOffOnString());
-		temp.addLine("setFixedTaxonDistance " + fixedTaxonDistance); 
+		temp.addLine("setFixedTaxonDistance " + (int)fixedTaxonDistance); 
 		temp.addLine("setTaxonSqueeze " + taxonSqueeze); 
 
 		if (fixedScale)
@@ -316,7 +329,7 @@ public class NodeLocsStandard extends NodeLocsVH {
 		return temp;
 	}
 
-	void setFixedTaxonSpacings(int fixedTaxonDistance){
+	void setFixedTaxonSpacings(double fixedTaxonDistance){
 		if (extras!=null) {
 			for (int i=0; i<extras.size(); i++){
 				TreeDisplayExtra extra = (TreeDisplayExtra)extras.elementAt(i);
@@ -382,7 +395,7 @@ public class NodeLocsStandard extends NodeLocsVH {
 
 			int newDistance= MesquiteInteger.fromFirstToken(arguments, pos);
 			if (!MesquiteInteger.isCombinable(newDistance))
-				newDistance = MesquiteInteger.queryInteger(containerOfModule(), "Set taxon distance", "Distance between taxa:", "(Use a value of 0 to tell Mesquite to calculate the distance itself.)", "", fixedTaxonDistance, 0, 99, true);
+				newDistance = MesquiteInteger.queryInteger(containerOfModule(), "Set taxon distance", "Distance between taxa:", "(Use a value of 0 to tell Mesquite to calculate the distance itself.)", "", (int)fixedTaxonDistance, 0, 99, true);
 			if (newDistance>=0 && newDistance<100 && newDistance!=fixedTaxonDistance) {
 				fixedTaxonDistance=newDistance;
 				setFixedTaxonSpacings(fixedTaxonDistance);
@@ -601,16 +614,21 @@ public class NodeLocsStandard extends NodeLocsVH {
 			}
 		}
 		if (treeDisplay.getOrientation() == TreeDisplay.NOTYETSET || !compatibleWithOrientation(treeDisplay.getOrientation())){
-			if (employerAllowsReorientation() && inBasicTreeWindow()){
-				int or = recoverLastOrientation();
-				if (or !=TreeDisplay.INVALIDORIENTATION && or !=TreeDisplay.NOTYETSET){
-					treeDisplay.setOrientation(or);
-					ornt = or;
+			if (employerAllowsReorientation()){
+				if (inBasicTreeWindow()){
+					int or = recoverLastOrientation();
+					if (or !=TreeDisplay.INVALIDORIENTATION && or !=TreeDisplay.NOTYETSET){
+						treeDisplay.setOrientation(or);
+						ornt = or;
+					}
+					else
+						treeDisplay.setOrientation(ornt);
+
+					resetMenus();
 				}
-				else
-					treeDisplay.setOrientation(ornt);
-					
-				resetMenus();
+				else {
+					resetOrientation(ornt);
+				}
 			}
 		}
 		else { //inherited, accept ast ornt
@@ -1253,8 +1271,8 @@ public class NodeLocsStandard extends NodeLocsVH {
 	double zoomFactor = 1.0;
 	void setZoom(TreeDisplay treeDisplay, int node, double factor){
 		if (!treeDisplay.getTree().descendantOf(node, zoomNode)){ //in zoom
-			int inZoom = treeDisplay.getTree().numberOfVisibleTerminalsInClade(zoomNode);
-			int outZoom = treeDisplay.getTree().numberOfVisibleTerminalsInClade(treeDisplay.getTreeDrawing().getDrawnRoot()) - inZoom;
+			double inZoom = treeDisplay.getTree().numberOfVisibleTerminalsInClade(zoomNode);
+			double outZoom = treeDisplay.getTree().numberOfVisibleTerminalsInClade(treeDisplay.getTreeDrawing().getDrawnRoot()) - inZoom;
 			double currentFactor = (1 - (zoomFactor-1)*inZoom/outZoom);
 			factor *= currentFactor;
 		}
@@ -1268,15 +1286,15 @@ public class NodeLocsStandard extends NodeLocsVH {
 		if (treeDisplay.selectedTaxonHighlightMode > TreeDisplay.sTHM_GREYBOX  && tree.getTaxa().getSelected(tree.taxonNumberOfNode(node)))
 			baseSpacing = baseSpacing *highlightMultiplier(treeDisplay)*0.89;  //0.89 is magical constant to prevent too big a space for highlighted taxa
 		if (zoomNode > 0){
-			int inZoom = tree.numberOfVisibleTerminalsInClade(zoomNode);
+			double inZoom = tree.numberOfVisibleTerminalsInClade(zoomNode);
 			if (inZoom<2)
 				return baseSpacing;
-			int outZoom = tree.numberOfVisibleTerminalsInClade(treeDisplay.getTreeDrawing().getDrawnRoot()) - inZoom;
+			double outZoom = tree.numberOfVisibleTerminalsInClade(treeDisplay.getTreeDrawing().getDrawnRoot()) - inZoom;
 
 			if (tree.descendantOf(node, zoomNode)) //in zoom
-				return (int)(baseSpacing *zoomFactor);
+				return (baseSpacing *zoomFactor);
 			else 
-				return (int)(baseSpacing * (1 - (zoomFactor-1)*inZoom/outZoom));
+				return (baseSpacing * (1 - (zoomFactor-1)*inZoom/outZoom));
 		}
 		return baseSpacing;
 	}
@@ -1322,7 +1340,6 @@ public class NodeLocsStandard extends NodeLocsVH {
 			TreeDisplayRequests requested = treeDisplay.getExtraTreeDisplayRequests(); //accumulated if needed in checkAndAdjustParameterSettings
 			if (requested != null)
 				extraDepthAtRootRequested = requested.extraDepthAtRoot;
-			double taxonSpacingTolerance = 0.99;
 
 			//Resetting tips margin according to length of taxon names
 			Graphics g = treeDisplay.getGraphics();
@@ -1342,8 +1359,6 @@ public class NodeLocsStandard extends NodeLocsVH {
 					treeDisplay.setTipsMargin(treeDisplay.getTaxonNameBuffer());
 				g.dispose();
 			}
-			if (ornt != treeDisplay.getOrientation() && MesquiteTrunk.developmentMode)
-				MesquiteMessage.println("NodeLocsStandard has record of orientation being " + ornt + ", but TreeDisplay is set to " + treeDisplay.getOrientation() + "  (" + treeDisplay.hashCode() + ")");
 			boolean branchesProportionalToLength = treeDisplay.branchLengthDisplay == TreeDisplay.DRAWUNASSIGNEDASONE || 
 					(treeDisplay.branchLengthDisplay == TreeDisplay.AUTOSHOWLENGTHS && (tree.hasBranchLengths() || treeDisplay.fixedScalingOn));
 			branchesProportionalToLength = branchesProportionalToLength & 
@@ -1354,15 +1369,13 @@ public class NodeLocsStandard extends NodeLocsVH {
 				int numTerms = (int)effectiveNumberOfTerminals(tree, root, treeDisplay);
 				if (numTerms == 0)
 					numTerms = 1;
-				if (fixedTaxonDistance!=0 && MesquiteInteger.isCombinable(fixedTaxonDistance))
+				if (fixedTaxonDistance!=0 && MesquiteDouble.isCombinable(fixedTaxonDistance))
 					treeDisplay.setTaxonSpacing(fixedTaxonDistance);
 				else {
-					treeDisplay.setTaxonSpacing( (treeDisplay.effectiveFieldWidth() - treeDisplay.bufferForScaleEtc) / numTerms);
-					treeDisplay.setTaxonSpacing((int)(taxonSqueeze*treeDisplay.getTaxonSpacing()));
+					treeDisplay.setTaxonSpacing( 1.0*(treeDisplay.effectiveFieldWidth() - treeDisplay.bufferForScaleEtc) / numTerms);
+					treeDisplay.setTaxonSpacing((taxonSqueeze*treeDisplay.getTaxonSpacing()));
 				}
-				if (numTerms*treeDisplay.getTaxonSpacing()>taxonSpacingTolerance*treeDisplay.effectiveFieldWidth() && treeDisplay.getTaxonSpacing()/2*2 != treeDisplay.getTaxonSpacing())  //if odd
-					treeDisplay.setTaxonSpacing(treeDisplay.getTaxonSpacing()-1);
-				
+
 				lastleft = -treeDisplay.getTaxonSpacing()/3*2; //TODO: this causes problems for shrunk, since first taxon doesn't move over enough
 				UPCalcTerminalLocs(treeDisplay, treeDrawing, tree, root);
 				UPCalcInternalLocs( treeDrawing, tree, root);
@@ -1415,14 +1428,12 @@ public class NodeLocsStandard extends NodeLocsVH {
 				int numTerms = (int)effectiveNumberOfTerminals(tree, root, treeDisplay);
 				if (numTerms == 0)
 					numTerms = 1;
-				if (fixedTaxonDistance!=0 && MesquiteInteger.isCombinable(fixedTaxonDistance))
+				if (fixedTaxonDistance!=0 && MesquiteDouble.isCombinable(fixedTaxonDistance))
 					treeDisplay.setTaxonSpacing(fixedTaxonDistance);
 				else {
-					treeDisplay.setTaxonSpacing( (treeDisplay.effectiveFieldWidth() - treeDisplay.bufferForScaleEtc) / numTerms);
-					treeDisplay.setTaxonSpacing((int)(taxonSqueeze*treeDisplay.getTaxonSpacing()));
+					treeDisplay.setTaxonSpacing( 1.0*(treeDisplay.effectiveFieldWidth() - treeDisplay.bufferForScaleEtc) / numTerms);
+					treeDisplay.setTaxonSpacing((taxonSqueeze*treeDisplay.getTaxonSpacing()));
 				}
-				if (numTerms*treeDisplay.getTaxonSpacing()>taxonSpacingTolerance*treeDisplay.effectiveFieldWidth() && treeDisplay.getTaxonSpacing()/2*2 != treeDisplay.getTaxonSpacing())  //if odd
-					treeDisplay.setTaxonSpacing(treeDisplay.getTaxonSpacing()-1);
 
 				lastleft = -treeDisplay.getTaxonSpacing()/3*2;
 				DOWNCalcTerminalLocs(treeDisplay, treeDrawing, tree, root, availableTreeHeight);
@@ -1474,17 +1485,16 @@ public class NodeLocsStandard extends NodeLocsVH {
 				int numTerms = (int)effectiveNumberOfTerminals(tree, root, treeDisplay);
 				if (numTerms == 0)
 					numTerms = 1;
-				if (fixedTaxonDistance!=0 && MesquiteInteger.isCombinable(fixedTaxonDistance))
+				if (fixedTaxonDistance!=0 && MesquiteDouble.isCombinable(fixedTaxonDistance))
 					treeDisplay.setTaxonSpacing(fixedTaxonDistance);
 				else {
-					treeDisplay.setTaxonSpacing( (treeDisplay.effectiveFieldHeight() - treeDisplay.bufferForScaleEtc) / numTerms);
-					treeDisplay.setTaxonSpacing((int)(taxonSqueeze*treeDisplay.getTaxonSpacing()));
+					treeDisplay.setTaxonSpacing( 1.0*(treeDisplay.effectiveFieldHeight() - treeDisplay.bufferForScaleEtc) / numTerms);
+					treeDisplay.setTaxonSpacing((taxonSqueeze*treeDisplay.getTaxonSpacing()));
 				}
-				if (numTerms*treeDisplay.getTaxonSpacing()>taxonSpacingTolerance*treeDisplay.effectiveFieldHeight() && treeDisplay.getTaxonSpacing()/2*2 != treeDisplay.getTaxonSpacing())  //if odd
-					treeDisplay.setTaxonSpacing(treeDisplay.getTaxonSpacing()-1);
 
 
 				lastleft = -treeDisplay.getTaxonSpacing()/3*2;
+
 				RIGHTCalcTerminalLocs(treeDisplay, treeDrawing, tree, root, availableTreeHeight);
 				RIGHTCalcInternalLocs(treeDrawing, tree, root);
 				if (center.getValue())
@@ -1534,14 +1544,12 @@ public class NodeLocsStandard extends NodeLocsVH {
 				int numTerms = (int)effectiveNumberOfTerminals(tree, root, treeDisplay);
 				if (numTerms == 0)
 					numTerms = 1;
-				if (fixedTaxonDistance!=0 && MesquiteInteger.isCombinable(fixedTaxonDistance))
+				if (fixedTaxonDistance!=0 && MesquiteDouble.isCombinable(fixedTaxonDistance))
 					treeDisplay.setTaxonSpacing(fixedTaxonDistance);
 				else {
-					treeDisplay.setTaxonSpacing( (treeDisplay.effectiveFieldHeight() - treeDisplay.bufferForScaleEtc) / numTerms);
-					treeDisplay.setTaxonSpacing((int)(taxonSqueeze*treeDisplay.getTaxonSpacing()));
+					treeDisplay.setTaxonSpacing( 1.0*(treeDisplay.effectiveFieldHeight() - treeDisplay.bufferForScaleEtc) / numTerms);
+					treeDisplay.setTaxonSpacing((taxonSqueeze*treeDisplay.getTaxonSpacing()));
 				}
-				if (numTerms*treeDisplay.getTaxonSpacing()>taxonSpacingTolerance*treeDisplay.effectiveFieldHeight() && treeDisplay.getTaxonSpacing()/2*2 != treeDisplay.getTaxonSpacing())  //if odd
-					treeDisplay.setTaxonSpacing(treeDisplay.getTaxonSpacing()-1);
 
 				lastleft = -treeDisplay.getTaxonSpacing()/3*2;
 				LEFTCalcTerminalLocs(treeDisplay, treeDrawing, tree, root);
@@ -1629,9 +1637,9 @@ public class NodeLocsStandard extends NodeLocsVH {
 	//returned are startingX, starting Y, ending X, ending Y, starting scale value, ending scale value
 	public void calculateScale(double totalTreeHeight, double totalScaleHeight, double scaling, Tree tree, int drawnRoot, TreeDisplay treeDisplay, double extraDepthAtRootRequested) {
 		TreeDrawing treeDrawing = treeDisplay.getTreeDrawing();
-		int buffer = treeDisplay.getTaxonSpacing()/4;
+		double buffer = treeDisplay.getTaxonSpacing()/4;
 		double[] scaleValues = null;
-		//Debugg.println CHECK FIXED SCALING
+
 		if (treeDisplay.getOrientation()==TreeDisplay.UP) {
 			double yBase = (totalScaleHeight-totalTreeHeight+extraDepthAtRootRequested)*scaling +treeDisplay.getTreeDrawing().y[drawnRoot];
 			double xPos = treeDisplay.getTreeDrawing().x[tree.rightmostTerminalOfNode(drawnRoot)] + buffer;
@@ -1809,11 +1817,11 @@ public class NodeLocsStandard extends NodeLocsVH {
 			g.setColor(c);
 	}
 
-	public int getFixedTaxonDistance() {
+	public double getFixedTaxonDistance() {
 		return fixedTaxonDistance;
 	}
 
-	public void setFixedTaxonDistance(int fixedTaxonDistance) {
+	public void setFixedTaxonDistance(double fixedTaxonDistance) {
 		this.fixedTaxonDistance = fixedTaxonDistance;
 	}
 }
@@ -1864,7 +1872,6 @@ class NodeLocsExtra extends TreeDisplayExtra implements TreeDisplayBkgdExtra {
 	public   void drawUnderTree(Tree tree, int drawnRoot, Graphics g) {
 
 		if (showRectangles){  //rectangles
-			System.out.println("tree " + tree.writeTreeSimpleByNumbers());
 			drawTranslatedRect(g, 2, 2, treeDisplay.getField().width, treeDisplay.getField().height, Color.green);
 			drawTranslatedRect(g, 2, 2, treeDisplay.effectiveFieldWidth(), treeDisplay.effectiveFieldHeight(), Color.cyan);
 
@@ -1897,9 +1904,9 @@ class NodeLocsExtra extends TreeDisplayExtra implements TreeDisplayBkgdExtra {
 	/*.................................................................................................................*/
 	public   void setTree(Tree tree) {
 	}
-	
 
-	
+
+
 }
 
 

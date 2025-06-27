@@ -14,13 +14,34 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
 package mesquite.minimal.ManageMesquiteBlock;
 /*~~  */
 
-import java.util.*;
-import java.awt.*;
-import java.io.*;
+import java.util.Random;
 
-import mesquite.assoc.lib.AssociationSource;
-import mesquite.lib.*;
-import mesquite.lib.duties.*;
+import mesquite.lib.CommandChecker;
+import mesquite.lib.CommandRecord;
+import mesquite.lib.CommandRecordHolder;
+import mesquite.lib.EmployeeNeed;
+import mesquite.lib.EmployeeVector;
+import mesquite.lib.FileBlock;
+import mesquite.lib.FileElement;
+import mesquite.lib.ListableVector;
+import mesquite.lib.MesquiteFile;
+import mesquite.lib.MesquiteInteger;
+import mesquite.lib.MesquiteLong;
+import mesquite.lib.MesquiteMessage;
+import mesquite.lib.MesquiteModule;
+import mesquite.lib.MesquiteThread;
+import mesquite.lib.MesquiteTrunk;
+import mesquite.lib.NexusBlock;
+import mesquite.lib.NexusBlockEditableRaw;
+import mesquite.lib.NexusBlockTest;
+import mesquite.lib.Parser;
+import mesquite.lib.Puppeteer;
+import mesquite.lib.Snapshot;
+import mesquite.lib.StringUtil;
+import mesquite.lib.duties.EditRawNexusBlock;
+import mesquite.lib.duties.FileCoordinator;
+import mesquite.lib.duties.FileElementManager;
+import mesquite.lib.duties.ScriptingManager;
 import mesquite.lib.ui.AlertDialog;
 import mesquite.lib.ui.ProgressIndicator;
 

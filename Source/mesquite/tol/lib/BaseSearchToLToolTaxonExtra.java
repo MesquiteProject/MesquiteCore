@@ -30,7 +30,6 @@ import mesquite.lib.tree.TreeDisplay;
 import mesquite.lib.tree.TreeDisplayExtra;
 import mesquite.lib.tree.TreeTool;
 import mesquite.lib.ui.MesquiteWindow;
-import mesquite.tol.lib.*;
 
 public abstract class BaseSearchToLToolTaxonExtra  extends TreeDisplayExtra implements Commandable  {
 		TreeTool tolTool;

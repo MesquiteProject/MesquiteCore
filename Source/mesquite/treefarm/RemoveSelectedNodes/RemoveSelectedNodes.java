@@ -16,9 +16,11 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
 
 package mesquite.treefarm.RemoveSelectedNodes;
 
-import java.awt.*;
-import mesquite.lib.*;
-import mesquite.lib.duties.*;
+import mesquite.lib.Listened;
+import mesquite.lib.MesquiteListener;
+import mesquite.lib.MesquiteString;
+import mesquite.lib.Notification;
+import mesquite.lib.duties.TreeAltererMult;
 import mesquite.lib.taxa.Taxa;
 import mesquite.lib.tree.AdjustableTree;
 
@@ -38,7 +40,7 @@ public class RemoveSelectedNodes extends TreeAltererMult {
    	 }
 
 	public int getVersionOfFirstRelease(){
-		return NEXTRELEASE;  
+		return 400;  
 	}
 	/** passes which object changed, along with optional code number (type of change) and integers (e.g. which character)*/
 	public void changed(Object caller, Object obj, Notification notification){
@@ -89,7 +91,7 @@ public class RemoveSelectedNodes extends TreeAltererMult {
 	}
 	/*.................................................................................................................*/
 	public boolean isPrerelease(){
-		return true;
+		return false;
 	}
 	/*.................................................................................................................*/
     	 public String getName() {

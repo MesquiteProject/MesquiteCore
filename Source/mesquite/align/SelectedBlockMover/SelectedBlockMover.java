@@ -16,17 +16,22 @@ package mesquite.align.SelectedBlockMover;
 
 
 
-import java.util.*;
-import java.awt.*;
-import java.awt.image.*;
-import mesquite.lib.*;
-import mesquite.lib.characters.*;
-import mesquite.lib.duties.*;
-import mesquite.lib.table.*;
+import mesquite.align.lib.MultiBlockMoveBase;
+import mesquite.categ.lib.CategoricalData;
+import mesquite.lib.Bits;
+import mesquite.lib.CommandChecker;
+import mesquite.lib.MesquiteBoolean;
+import mesquite.lib.MesquiteCommand;
+import mesquite.lib.MesquiteInteger;
+import mesquite.lib.MesquiteModule;
+import mesquite.lib.Snapshot;
+import mesquite.lib.characters.CellBlock;
+import mesquite.lib.characters.CharacterData;
+import mesquite.lib.table.EditorPanel;
+import mesquite.lib.table.MesquiteTable;
+import mesquite.lib.table.TableTool;
 import mesquite.lib.ui.MesquiteCursor;
 import mesquite.lib.ui.MesquiteWindow;
-import mesquite.categ.lib.*;
-import mesquite.align.lib.*;
 
 
 /*

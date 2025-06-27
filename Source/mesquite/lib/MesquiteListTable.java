@@ -13,10 +13,10 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
 */
 package mesquite.lib;
 
-import java.awt.*;
-import java.awt.event.*;
-import mesquite.lib.duties.*;
-import mesquite.lib.table.*;
+import java.awt.Graphics;
+
+import mesquite.lib.table.EditorPanel;
+import mesquite.lib.table.MesquiteTable;
 import mesquite.lib.ui.ColorDistribution;
 /* ======================================================================== */
 /** A table for List windows*/

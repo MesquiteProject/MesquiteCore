@@ -16,12 +16,20 @@ package mesquite.consensus.MajRuleTree;
 
 import java.awt.Checkbox;
 
-import mesquite.lib.duties.*;
+import mesquite.consensus.lib.BasicTreeConsenser;
+import mesquite.consensus.lib.BipartitionVector;
+import mesquite.lib.Attachable;
+import mesquite.lib.CommandChecker;
+import mesquite.lib.MesquiteBoolean;
+import mesquite.lib.MesquiteDouble;
+import mesquite.lib.MesquiteFile;
+import mesquite.lib.MesquiteThread;
+import mesquite.lib.Snapshot;
+import mesquite.lib.StringUtil;
+import mesquite.lib.duties.TreesManager;
 import mesquite.lib.tree.Tree;
 import mesquite.lib.ui.DoubleField;
 import mesquite.lib.ui.ExtensibleDialog;
-import mesquite.lib.*;
-import mesquite.consensus.lib.*;
 
 
 /* ======================================================================== */

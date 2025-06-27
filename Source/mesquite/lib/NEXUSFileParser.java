@@ -19,7 +19,7 @@ public class NEXUSFileParser {
 	Parser parser;
 	MesquiteStringBuffer tempBuffer;
 	FileBlock block;
-	public static final boolean READ_DIRECT_FROM_FILE_DEFAULT = true;  //set as True??? Debugg.println
+	public static final boolean READ_DIRECT_FROM_FILE_DEFAULT = true;  
 	public boolean readDirectFromFile =READ_DIRECT_FROM_FILE_DEFAULT;
 	public static boolean verbose = false;
 
@@ -93,7 +93,6 @@ public class NEXUSFileParser {
 	public String getNextToken(boolean forceStripWhite) {
 		if (!readDirectFromFile) {
 			String s = parser.getNextToken();
-			if (verbose) Debugg.println("~~~gNT [" + s + "]");
 			return s;
 		}
 		String s = "";
@@ -114,7 +113,6 @@ public class NEXUSFileParser {
 		}
 		if (s != null && s.equals("") && atEOF())
 			s = null;
-		if (verbose) Debugg.println("~~~gNT [" + s + "] [" + parser.getBuffer() + "]");
 
 		return s;
 	}
@@ -130,7 +128,6 @@ public class NEXUSFileParser {
 			posJustBeforeCommand.setValue(parser.getPosition());
 		if (!readDirectFromFile) {
 			String s= parser.getNextCommand();
-			if (verbose) Debugg.println("~~~gNC [" + s + "]");
 			return s;
 		}
 		String c = "";
@@ -149,7 +146,6 @@ public class NEXUSFileParser {
 		}
 		if (c != null && c.equals("") && atEOF())
 			c = null;
-		if (verbose) Debugg.println("~~~gNC [" + c + "]");
 		return c;
 	}
 
@@ -157,7 +153,6 @@ public class NEXUSFileParser {
 	public String getNextCommandNameWithoutConsuming() { 
 		if (!readDirectFromFile) {
 			String s = parser.getNextCommandNameWithoutConsuming();
-			if (verbose) Debugg.println("~~~gNCNameWC [" + s + "]");
 			return s;
 		}
 		checkAndRefreshParser();
@@ -165,7 +160,6 @@ public class NEXUSFileParser {
 		String s = "";
 		while (!atEOF() && !commandNameDone) {
 			s = parser.getNextCommandNameWithoutConsuming(); //this could fail if the parser hits its end, so we need to see if we actually got something
-			if (verbose) Debugg.println("*****************[[[" + s + "]]]*********");
 			s = StringUtil.stripTrailingWhitespace(s, parser.getWhitespaceString());  //not sure if needed, but let's be clean
 			s = StringUtil.stripLeadingWhitespace(s, parser.getWhitespaceString());
 			if (StringUtil.blank(s, parser.getWhitespaceString())) {
@@ -177,7 +171,6 @@ public class NEXUSFileParser {
 		}
 		if (s != null && s.equals("") && atEOF())
 			s = null;
-		if (verbose) Debugg.println("~~~gNCNameWC [" + s + "]");
 		return s;
 	}
 
@@ -185,12 +178,10 @@ public class NEXUSFileParser {
 	public String getPieceOfLine(int len) {
 		if (!readDirectFromFile) {
 			String s= parser.getPieceOfLine(len);
-			if (verbose) Debugg.println("~~~gPOL [" + s + "]");
 			return s;
 		}
 		checkAndRefreshParser();
 		String s = parser.getPieceOfLine(len);
-		if (verbose) Debugg.println("~~~gPOL [" + s + "]");
 		return s;
 	}
 
@@ -198,14 +189,11 @@ public class NEXUSFileParser {
 	MesquiteLong posBefore = new MesquiteLong();
 	public void consumeNextIfSemicolon() {
 		long currentPos = parser.getPosition();
-		if (verbose) Debugg.println("~~~CNISstart " + currentPos); // + " buffer [" + parser.getBuffer() + "]");
 		String token = getNextCommand(posBefore);
-		if (verbose) Debugg.println("~~~CNISmid " +  parser.getPosition()); // + " buffer [" + parser.getBuffer() + "]");
 		token = StringUtil.stripTrailingWhitespace(token);  //not sure if needed, but let's be clean
 		token = StringUtil.stripLeadingWhitespace(token);
 		if (token == null || !token.equals(";"))
 			parser.setPosition(posBefore.getValue());
-		if (verbose) Debugg.println("~~~CNIS [" + token + "]");
 	}
 
 	/*  -------------------------------------------------------------  */

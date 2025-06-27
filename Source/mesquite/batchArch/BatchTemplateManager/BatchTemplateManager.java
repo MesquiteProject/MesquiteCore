@@ -14,16 +14,41 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
 package mesquite.batchArch.BatchTemplateManager; 
 
 
-import java.util.*;
-import java.awt.*;
-import java.awt.event.*;
-import java.io.*;
+import java.awt.Button;
+import java.awt.Choice;
+import java.awt.Color;
+import java.awt.GridBagConstraints;
+import java.awt.Label;
+import java.awt.Panel;
+import java.awt.TextArea;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.ItemEvent;
+import java.awt.event.ItemListener;
+import java.awt.event.WindowEvent;
+import java.io.File;
 
 import javax.swing.JLabel;
 
-import mesquite.lib.*;
-import mesquite.lib.characters.*;
-import mesquite.lib.duties.*;
+import mesquite.batchArch.lib.TemplateManager;
+import mesquite.batchArch.lib.TemplateRecord;
+import mesquite.lib.CommandChecker;
+import mesquite.lib.EmployeeNeed;
+import mesquite.lib.Listable;
+import mesquite.lib.ListableVector;
+import mesquite.lib.MesquiteBoolean;
+import mesquite.lib.MesquiteFile;
+import mesquite.lib.MesquiteInteger;
+import mesquite.lib.MesquiteMessage;
+import mesquite.lib.MesquiteModule;
+import mesquite.lib.MesquiteString;
+import mesquite.lib.MesquiteTrunk;
+import mesquite.lib.ObjectContainer;
+import mesquite.lib.Snapshot;
+import mesquite.lib.StringUtil;
+import mesquite.lib.duties.FileCoordinator;
+import mesquite.lib.duties.FileInterpreter;
+import mesquite.lib.duties.TreeSource;
 import mesquite.lib.taxa.Taxa;
 import mesquite.lib.tree.Tree;
 import mesquite.lib.ui.AlertDialog;
@@ -36,8 +61,6 @@ import mesquite.lib.ui.MQTextArea;
 import mesquite.lib.ui.MesquiteSubmenuSpec;
 import mesquite.lib.ui.PopUpPanelOfCards;
 import mesquite.lib.ui.SingleLineTextField;
-import mesquite.assoc.lib.AssociationSource;
-import mesquite.batchArch.lib.*;
 
 /* =========================== */
 public class BatchTemplateManager extends TemplateManager {

@@ -13,18 +13,31 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
  */
 package mesquite.stochchar.AsymmMkExplorer;
 
-import java.util.*;
-import java.awt.*;
-import java.awt.event.*;
-import mesquite.lib.*;
-import mesquite.lib.characters.*;
-import mesquite.lib.duties.*;
+import mesquite.categ.lib.CategoricalState;
+import mesquite.categ.lib.RequiresExactlyCategoricalData;
+import mesquite.lib.CommandChecker;
+import mesquite.lib.EmployeeNeed;
+import mesquite.lib.MesquiteBoolean;
+import mesquite.lib.MesquiteDouble;
+import mesquite.lib.MesquiteFile;
+import mesquite.lib.MesquiteInteger;
+import mesquite.lib.MesquiteModule;
+import mesquite.lib.MesquiteNumber;
+import mesquite.lib.MesquiteParameter;
+import mesquite.lib.MesquiteString;
+import mesquite.lib.MesquiteThread;
+import mesquite.lib.Notification;
+import mesquite.lib.Snapshot;
+import mesquite.lib.characters.CharacterDistribution;
+import mesquite.lib.characters.CharacterStates;
+import mesquite.lib.duties.CharSourceCoordObed;
+import mesquite.lib.duties.ParametersExplorer;
+import mesquite.lib.duties.TreeWindowAssistantOA;
 import mesquite.lib.taxa.Taxa;
 import mesquite.lib.tree.Tree;
 import mesquite.lib.ui.ParametersExplorable;
 import mesquite.stochchar.lib.AsymmModel;
 import mesquite.stochchar.lib.MargLikelihoodForModel;
-import mesquite.categ.lib.*;
 
 /* ======================================================================== */
 public class AsymmMkExplorer extends TreeWindowAssistantOA implements ParametersExplorable {

@@ -13,14 +13,8 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
 */
 package mesquite.molec.AASize; 
 
-import java.util.*;
-import java.awt.*;
-import mesquite.lib.*;
-import mesquite.lib.characters.*;
-import mesquite.lib.duties.*;
-import mesquite.lib.table.*;
-import mesquite.categ.lib.*;
-import mesquite.molec.lib.*;
+import mesquite.lib.MesquiteDouble;
+import mesquite.molec.lib.AAProperty;
 
 
 /* ======================================================================== */

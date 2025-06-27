@@ -13,8 +13,10 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
  */
 package mesquite.trees.ProportionBrLengthsTerminal;
 
-import mesquite.lib.*;
-import mesquite.lib.duties.*;
+import mesquite.lib.MesquiteDouble;
+import mesquite.lib.MesquiteNumber;
+import mesquite.lib.MesquiteString;
+import mesquite.lib.duties.NumberForTree;
 import mesquite.lib.tree.Tree;
 
 /** this is a silly little module that can be used as a demonstration for NumberForTree modules */
@@ -31,14 +33,14 @@ public class ProportionBrLengthsTerminal extends NumberForTree {
 	}
 	/*.................................................................................................................*/
 	public boolean isPrerelease(){
-		return true;
+		return false;
 	}
 	/*.................................................................................................................*/
 	/** returns the version number at which this module was first released.  If 0, then no version number is claimed.  If a POSITIVE integer
 	 * then the number refers to the Mesquite version.  This should be used only by modules part of the core release of Mesquite.
 	 * If a NEGATIVE integer, then the number refers to the local version of the package, e.g. a third party package*/
 	public int getVersionOfFirstRelease(){
-		return NEXTRELEASE;  
+		return 400;  
 	}
 	/*-----------------------------------------*/
 	public void surveyBranches(Tree tree, int node, MesquiteDouble termBL, MesquiteDouble totalBL) {
@@ -73,7 +75,7 @@ public class ProportionBrLengthsTerminal extends NumberForTree {
 			nt.setValue(termBL.getValue()/totalBL.getValue());
 			result.setValue(nt);
 			if (resultString!=null)
-				resultString.setValue("Ratio: "+ nt.toString());
+				resultString.setValue("Proportion: "+ nt.toString());
 		}
 		saveLastResult(result);
 		saveLastResultString(resultString);

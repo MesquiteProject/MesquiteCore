@@ -1,9 +1,11 @@
 package mesquite.molec.NumInternalGapsMatrix;
 
 
-import mesquite.lib.*;
-import mesquite.lib.characters.*;
-import mesquite.lib.duties.*;
+import mesquite.lib.MesquiteNumber;
+import mesquite.lib.MesquiteString;
+import mesquite.lib.characters.CharacterData;
+import mesquite.lib.characters.MCharactersDistribution;
+import mesquite.lib.duties.NumberForMatrix;
 
 public class NumInternalGapsMatrix extends NumberForMatrix {
 

@@ -13,14 +13,11 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
 */
 package mesquite.molec.lib; 
 
-import java.util.*;
-import java.awt.*;
-import mesquite.lib.*;
-import mesquite.lib.characters.*;
-import mesquite.lib.duties.*;
-import mesquite.lib.table.*;
-import mesquite.lib.ui.ColorRecord;
-import mesquite.categ.lib.*;
+import mesquite.categ.lib.ProteinState;
+import mesquite.categ.lib.RequiresProteinData;
+import mesquite.lib.CompatibilityTest;
+import mesquite.lib.MesquiteDouble;
+import mesquite.lib.MesquiteModule;
 
 
 /* ======================================================================== */

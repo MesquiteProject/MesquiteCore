@@ -12,11 +12,12 @@ This source code and its compiled class files are free and modifiable under the 
 GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
  */package mesquite.align.AlignScoreForTaxonRC;
 
-import mesquite.align.lib.*;
-import mesquite.categ.lib.*;
-import mesquite.lib.*;
-import mesquite.lib.characters.*;
-import mesquite.lib.duties.*;
+import mesquite.align.lib.AlignScoreForTaxonGen;
+import mesquite.categ.lib.CategoricalState;
+import mesquite.categ.lib.DNAData;
+import mesquite.categ.lib.DNAState;
+import mesquite.categ.lib.MCategoricalDistribution;
+import mesquite.lib.MesquiteNumber;
 
 
 

@@ -13,11 +13,6 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
 */
 package mesquite.lib.ui;
 
-import java.awt.*;
-
-import mesquite.lib.MesquiteModule;
-import mesquite.lib.duties.*;
-
 /* ======================================================================== */
 /** An interface (as of 4.0 used only for TreeDisplayExtras) to indicate they are highest priority for user interfaces*/
 public interface Priority0  {

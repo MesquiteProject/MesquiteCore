@@ -13,12 +13,11 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
 */
 package mesquite.treefarm.DuplicateTreeBlocks;
 
-import java.awt.*;
-import java.util.*;
-import mesquite.lib.*;
-import mesquite.lib.duties.*;
+import java.util.Vector;
+
+import mesquite.lib.CommandChecker;
 import mesquite.lib.tree.TreeVector;
-import mesquite.lists.lib.*;
+import mesquite.lists.lib.TreeBlockListUtility;
 
 
 /* ======================================================================== */

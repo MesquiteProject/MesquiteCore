@@ -14,26 +14,26 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
 package mesquite.molec.lib;
 /*~~  */
 
-import java.util.*;
-import java.awt.*;
-import mesquite.lib.*;
-import mesquite.lib.characters.*;
-import mesquite.lib.duties.*;
-import mesquite.lib.table.*;
+import java.awt.Color;
+import java.awt.Graphics;
+import java.awt.Image;
+import java.awt.Label;
+
+import mesquite.lib.MesquiteInteger;
+import mesquite.lib.MesquiteModule;
+import mesquite.lib.MesquiteTimer;
+import mesquite.lib.StringUtil;
+import mesquite.lib.characters.CharacterData;
+import mesquite.lib.table.MesquiteTable;
 import mesquite.lib.taxa.Taxa;
 import mesquite.lib.taxa.Taxon;
 import mesquite.lib.ui.ColorDistribution;
-import mesquite.lib.ui.MQJLabel;
 import mesquite.lib.ui.MQLabel;
 import mesquite.lib.ui.MQTextField;
 import mesquite.lib.ui.MesquiteImage;
 import mesquite.lib.ui.MesquiteTool;
 import mesquite.lib.ui.MesquiteWindow;
 import mesquite.lib.ui.MousePanel;
-import mesquite.categ.lib.*;
-import mesquite.molec.lib.*;
-import java.awt.datatransfer.*;
-import java.awt.event.*;
 /* ======================================================================== *
 
 *new in 1. 06*

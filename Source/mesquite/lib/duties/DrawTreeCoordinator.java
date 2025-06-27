@@ -13,13 +13,14 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
  */
 package mesquite.lib.duties;
 
-import java.awt.*;
-import mesquite.lib.*;
+import java.awt.Color;
+import java.awt.Dimension;
+import java.util.Vector;
+
+import mesquite.lib.MesquiteModule;
 import mesquite.lib.taxa.Taxa;
 import mesquite.lib.tree.TreeDisplay;
 import mesquite.lib.ui.MesquiteWindow;
-
-import java.util.*;
 
 
 /* ======================================================================== */

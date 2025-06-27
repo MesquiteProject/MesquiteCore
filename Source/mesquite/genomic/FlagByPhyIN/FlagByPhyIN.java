@@ -18,7 +18,6 @@ package mesquite.genomic.FlagByPhyIN;
 
 import java.awt.Button;
 import java.awt.Checkbox;
-import java.awt.Color;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.ItemEvent;
@@ -26,35 +25,24 @@ import java.awt.event.ItemListener;
 import java.awt.event.TextEvent;
 import java.awt.event.TextListener;
 
-import javax.swing.JLabel;
-
 import mesquite.categ.lib.CategoricalData;
 import mesquite.categ.lib.CategoricalState;
 import mesquite.categ.lib.RequiresAnyDNAData;
-import mesquite.categ.lib.RequiresAnyMolecularData;
-import mesquite.lib.Bits;
 import mesquite.lib.CommandChecker;
 import mesquite.lib.CompatibilityTest;
-import mesquite.lib.Debugg;
 import mesquite.lib.IntegerField;
 import mesquite.lib.MesquiteBoolean;
 import mesquite.lib.MesquiteDouble;
 import mesquite.lib.MesquiteFile;
 import mesquite.lib.MesquiteInteger;
-import mesquite.lib.MesquiteListener;
 import mesquite.lib.MesquiteMessage;
-import mesquite.lib.MesquiteModule;
 import mesquite.lib.MesquiteThread;
-import mesquite.lib.Notification;
 import mesquite.lib.Snapshot;
 import mesquite.lib.StringUtil;
 import mesquite.lib.characters.CharInclusionSet;
 import mesquite.lib.characters.CharacterData;
 import mesquite.lib.characters.MatrixFlags;
-import mesquite.lib.duties.MatrixFlagger;
-import mesquite.lib.duties.MatrixFlaggerForTrimming;
 import mesquite.lib.duties.MatrixFlaggerForTrimmingSites;
-import mesquite.lib.ui.ColorDistribution;
 import mesquite.lib.ui.ColorTheme;
 import mesquite.lib.ui.DoubleField;
 import mesquite.lib.ui.ExtensibleDialog;
@@ -142,7 +130,7 @@ public class FlagByPhyIN extends MatrixFlaggerForTrimmingSites implements Action
 				parametersChanged();
 
 		}
-		else if (checker.compare(this.getClass(), "Sets proportion of sites in span incompatible to trigger selection.", "[on or off]", commandName, "setProportionIncompat")) {
+		else if (checker.compare(this.getClass(), "Sets proportion of sites in span incompatible to trigger selection.", "[number between 0 and 1 inclusive]", commandName, "setProportionIncompat")) {
 			double s = MesquiteDouble.fromString(parser.getFirstToken(arguments));
 			if (MesquiteDouble.isCombinable(s)){
 				proportionIncompat = s;
@@ -151,7 +139,7 @@ public class FlagByPhyIN extends MatrixFlaggerForTrimmingSites implements Action
 
 			}
 		}
-		else if (checker.compare(this.getClass(), "Sets block size of PhyIN selection.", "[on or off]", commandName, "setSpanSize")) {
+		else if (checker.compare(this.getClass(), "Sets block size of PhyIN selection.", "[integer]", commandName, "setSpanSize")) {
 			int s = MesquiteInteger.fromString(parser.getFirstToken(arguments));
 			if (MesquiteInteger.isCombinable(s)){
 				blockSize = s;
@@ -160,7 +148,7 @@ public class FlagByPhyIN extends MatrixFlaggerForTrimmingSites implements Action
 			}
 
 		}
-		else if (checker.compare(this.getClass(), "Sets neighbour distance of PhyIN selection.", "[on or off]", commandName, "setNeighbourDistance")) {
+		else if (checker.compare(this.getClass(), "Sets neighbour distance of PhyIN selection.", "[integer]", commandName, "setNeighbourDistance")) {
 			int s = MesquiteInteger.fromString(parser.getFirstToken(arguments));
 			if (MesquiteInteger.isCombinable(s)){
 				neighbourDistance = s;
@@ -280,10 +268,12 @@ public class FlagByPhyIN extends MatrixFlaggerForTrimmingSites implements Action
 		ExtensibleDialog dialog = new ExtensibleDialog(containerOfModule(),  "Criteria for PhyIN (version " + getVersion() + ")",buttonPressed);  //MesquiteTrunk.mesquiteTrunk.containerOfModule()
 		String s = "PhyIN (Phylogenetic Incompatibility among Neighbors) is a method for identifying regions of an alignment with "
 				+"high levels of local phylogenetic conflict.";
-		s += "<p><b>Reference for PhyIN</b>: Maddison WP. 2024. PhyIN: trimming alignments by phylogenetic incompatibilities among neighbouring sites. PeerJ 12:e18504 <a href=\"http://doi.org/10.7717/peerj.18504\">http://doi.org/10.7717/peerj.18504</a>"; 
+		s += "<p>If you use this in a publication, cite the reference below, and indicate the parameters as shown in the dialog.<p>"
+				+"<b>Reference for PhyIN</b>: Maddison WP. 2024. PhyIN: trimming alignments by phylogenetic incompatibilities among neighbouring sites. PeerJ 12:e18504 <a href=\"http://doi.org/10.7717/peerj.18504\">http://doi.org/10.7717/peerj.18504</a>"; 
 		s += "<p>The additional filter for low occupancy sites is not formally part of PhyIN, but is offered here as a convenience, because PhyIN should be combined with a filter that removes highly gappy sites."; 
 		s += "<p>The low occupancy site filter is not available when running Process Data Files, because in that context the total number of taxa (and thus proportions) can vary file by file."; 
 		dialog.appendToHelpString(s);
+		dialog.setHelpURL("http://doi.org/10.7717/peerj.18504");
 
 		dialog.addLabel("PhyIN criteria for incompatible sites:");
 		SSField = dialog.addIntegerField("Length of blocks (-b)", blockSize, 4);
@@ -303,7 +293,7 @@ public class FlagByPhyIN extends MatrixFlaggerForTrimmingSites implements Action
 		if (!getProject().isProcessDataFilesProject){
 			dialog.addLabel("Additional filter for low occupancy (gappy) sites");
 			fSO = dialog.addCheckBox("Filter gappy sites (i.e. keep only those with high enough occupancy).", filterSiteOccupancy);
-			pgSField = dialog.addDoubleField("Minimum occupancy (proportion of non-gaps, i.e. observed states) (-sot):", siteOccupancyThreshold, 4);
+			pgSField = dialog.addDoubleField("Minimum occupancy (proportion of non-gaps, i.e. observed states) (-occ):", siteOccupancyThreshold, 4);
 			fSO.addItemListener(this);
 			pgSField.getTextField().addTextListener(this);
 			dialog.addLabelSmallText("Sites with fewer observed states than this are considered too gappy.");
@@ -323,6 +313,7 @@ public class FlagByPhyIN extends MatrixFlaggerForTrimmingSites implements Action
 		useDefaultsButton = dialog.addAListenedButton("Set to Defaults", null, this);
 		useDefaultsButton.setActionCommand("setToDefaults");
 
+		dialog.addLargeOrSmallTextLabel("If you use this in a publication, cite as described under the (?) help button.");
 
 		dialog.completeAndShowDialog(true);
 		if (buttonPressed.getValue()==0)  {
@@ -370,12 +361,12 @@ public class FlagByPhyIN extends MatrixFlaggerForTrimmingSites implements Action
 	void resetParamsInfo(){
 		String info = "b=" + SSField.getValueAsString() + " d=" + NDField.getValueAsString() + " p=" + PIField.getValueAsString() + " e=" + tGAS.getState();
 		if (!getProject().isProcessDataFilesProject && fSO.getState())
-			info += " sot=" + pgSField.getValue();
+			info += " occ=" + pgSField.getValue();
 		paramsInfo.setText(info);
 	}
 	/*.................................................................................................................*/
 	public boolean isPrerelease(){
-		return true;
+		return false;
 	}
 	/*.................................................................................................................*/
 	/** returns whether this module is requesting to appear as a primary choice */
@@ -705,7 +696,7 @@ public class FlagByPhyIN extends MatrixFlaggerForTrimmingSites implements Action
 	 * then the number refers to the Mesquite version.  This should be used only by modules part of the core release of Mesquite.
 	 * If a NEGATIVE integer, then the number refers to the local version of the package, e.g. a third party package*/
 	public int getVersionOfFirstRelease(){
-		return NEXTRELEASE;  
+		return 400;  
 	}
 }
 

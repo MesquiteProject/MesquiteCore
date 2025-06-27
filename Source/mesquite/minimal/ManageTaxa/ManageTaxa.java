@@ -14,12 +14,43 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
 package mesquite.minimal.ManageTaxa;
 /*~~  */
 
-import java.util.*;
-import java.awt.*;
-import java.io.*;
-import mesquite.lib.*;
-import mesquite.lib.characters.CharacterData;
-import mesquite.lib.duties.*;
+import java.util.Vector;
+
+import mesquite.lib.Bits;
+import mesquite.lib.CommandChecker;
+import mesquite.lib.CommandRecord;
+import mesquite.lib.DoubleArray;
+import mesquite.lib.EmployeeNeed;
+import mesquite.lib.FileBlock;
+import mesquite.lib.FileElement;
+import mesquite.lib.IntegerArray;
+import mesquite.lib.ListableVector;
+import mesquite.lib.LongArray;
+import mesquite.lib.MesquiteBoolean;
+import mesquite.lib.MesquiteDouble;
+import mesquite.lib.MesquiteFile;
+import mesquite.lib.MesquiteInteger;
+import mesquite.lib.MesquiteListener;
+import mesquite.lib.MesquiteLong;
+import mesquite.lib.MesquiteModule;
+import mesquite.lib.MesquiteProject;
+import mesquite.lib.MesquiteString;
+import mesquite.lib.MesquiteThread;
+import mesquite.lib.MesquiteTrunk;
+import mesquite.lib.NameReference;
+import mesquite.lib.NexusBlock;
+import mesquite.lib.NexusBlockTest;
+import mesquite.lib.NexusCommandTest;
+import mesquite.lib.Notification;
+import mesquite.lib.ObjectArray;
+import mesquite.lib.ObjectContainer;
+import mesquite.lib.ParseUtil;
+import mesquite.lib.Parser;
+import mesquite.lib.Snapshot;
+import mesquite.lib.StringArray;
+import mesquite.lib.StringUtil;
+import mesquite.lib.duties.ManagerAssistant;
+import mesquite.lib.duties.TaxaManager;
 import mesquite.lib.taxa.Taxa;
 import mesquite.lib.taxa.TaxaBlock;
 import mesquite.lib.taxa.TaxaGroup;
@@ -141,7 +172,7 @@ public class ManageTaxa extends TaxaManager {
 		}
 		return newTaxa;
 	}
-	/*.................................................................................................................*/   //Debugg.println    WAYNECHECK
+	/*.................................................................................................................*/  
 	public Taxa quietMakeNewTaxaBlock(int numTaxa) {
 		Taxa newTaxa=null;
 		String title= getProject().getTaxas().getUniqueName("Taxa");
@@ -1349,7 +1380,7 @@ public class ManageTaxa extends TaxaManager {
 		if (hasBlankNames(taxa)){
 			discreetAlert("The block of taxa being saved (" + taxa.getName() + ") has blank taxon names.  This will cause problems in saving and reading trees and other functions, and will be fixed (Summary: " +fixBlankNames(taxa) + ")");
 		}
-		CommandRecord.tick("Checking for duplicate taxon names");
+		CommandRecord.tick("About to compose taxa block");
 		String d = taxa.hasDuplicateNames(true);
 		if (d !=null){
 			if (MesquiteThread.isScripting())
@@ -1360,8 +1391,9 @@ public class ManageTaxa extends TaxaManager {
 
 		if (file == null)
 			file = taxa.getFile();
-		if (file!=null && file.useDataBlocks) //removed 19Jan02 so as not to make minimal dependent on categorical: &&  file.getFileElements().size(mesquite.categ.lib.CategoricalData.class)>0
+		if (file!=null && file.useDataBlocks){ //removed 19Jan02 so as not to make minimal dependent on categorical: &&  file.getFileElements().size(mesquite.categ.lib.CategoricalData.class)>0
 			return null;
+		}
 		StringBuffer block = new StringBuffer();
 		String end = StringUtil.lineEnding();
 		block.append(end);

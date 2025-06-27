@@ -3,9 +3,15 @@ package mesquite.align.lib;
 
 import mesquite.categ.lib.MCategoricalDistribution;
 import mesquite.categ.lib.MolecularData;
-import mesquite.lib.*;
+import mesquite.lib.CalculationMonitor;
+import mesquite.lib.MesquiteInteger;
+import mesquite.lib.MesquiteListener;
+import mesquite.lib.MesquiteModule;
+import mesquite.lib.MesquiteThread;
+import mesquite.lib.Notification;
+import mesquite.lib.ResultCodes;
+import mesquite.lib.SeparateThreadStorage;
 import mesquite.lib.characters.CharacterData;
-import mesquite.lib.duties.DataAlterer;
 import mesquite.lib.table.MesquiteTable;
 import mesquite.lib.ui.AlertDialog;
 
@@ -62,7 +68,7 @@ public class AlignMultipleSequencesMachine {
 //		if (table.anyCellSelectedAnyWay() && (!this.data.contiguousSelection() || !this.data.anySelected() || this.data.numberSelected()<=1)) {
 		if (table != null && table.anyCellSelectedAnyWay() && !table.contiguousColumnsSelected()) {
 			if (!MesquiteThread.isScripting()) {
-				if (AlertDialog.query(ownerModule.containerOfModule(), "Align entire matrix?", "Some data are currently selected, but not a block of data that can be aligned by Mesquite.  Data can be aligned only for the whole matrix or for a contiguous set of selected characters. If you wish to align only part of the matrix, then press Cancel and select a contiguous set of whole characters. ", "Align entire matrix", "Cancel"))
+				if (AlertDialog.query(ownerModule.containerOfModule(), "Align entire matrix?", "Some data are currently selected, but not the sort of cell block that can be aligned by Mesquite.  Data can be aligned only for the whole matrix or for a contiguous set of selected characters. If you wish to align only part of the matrix, then press Cancel and select a contiguous set of whole characters. ", "Align entire matrix", "Cancel"))
 					table.deselectAll();
 				else
 					return ResultCodes.USER_STOPPED;
@@ -139,7 +145,7 @@ class AlignThread extends Thread {
 			if (table !=null) 
 				table.selectColumns(firstColumn.getValue(),lastColumn.getValue()- (oldNumChars - data.getNumChars()));
 		}
-		if (separateThread) //ZQ: Why is this here? Probably should be the responsibility of the caller when it receives the notification that the calculation is complete
+		if (separateThread) 
 			data.notifyListeners(ownerModule, new Notification(MesquiteListener.DATA_CHANGED));
 		if (table != null)
 			table.repaintAll();

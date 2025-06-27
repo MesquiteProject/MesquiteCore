@@ -1,7 +1,5 @@
 package mesquite.externalCommunication.lib;
 
-import java.util.Vector;
-
 import org.dom4j.Document;
 import org.dom4j.Element;
 

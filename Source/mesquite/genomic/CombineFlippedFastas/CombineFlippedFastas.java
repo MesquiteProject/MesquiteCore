@@ -16,12 +16,21 @@ package mesquite.genomic.CombineFlippedFastas;
 
 import java.io.File;
 
-
-import mesquite.lib.characters.CharacterData;
 import mesquite.categ.lib.DNAData;
 import mesquite.categ.lib.DNAState;
 import mesquite.io.InterpretFastaDNA.InterpretFastaDNA;
-import mesquite.lib.*;
+import mesquite.lib.CommandRecord;
+import mesquite.lib.Listable;
+import mesquite.lib.ListableVector;
+import mesquite.lib.MesquiteFile;
+import mesquite.lib.MesquiteListener;
+import mesquite.lib.MesquiteMessage;
+import mesquite.lib.MesquiteProject;
+import mesquite.lib.MesquiteThread;
+import mesquite.lib.MesquiteTimer;
+import mesquite.lib.Notification;
+import mesquite.lib.StringUtil;
+import mesquite.lib.characters.CharacterData;
 import mesquite.lib.duties.CharactersManager;
 import mesquite.lib.duties.FileCoordinator;
 import mesquite.lib.duties.GeneralFileMakerMultiple;
@@ -29,7 +38,6 @@ import mesquite.lib.duties.NexusFileInterpreter;
 import mesquite.lib.duties.TaxaManager;
 import mesquite.lib.taxa.Taxa;
 import mesquite.lib.taxa.Taxon;
-import mesquite.lib.ui.AlertDialog;
 import mesquite.lib.ui.ListDialog;
 import mesquite.lib.ui.MesquiteWindow;
 import mesquite.lib.ui.ProgressIndicator;
@@ -43,7 +51,6 @@ public class CombineFlippedFastas extends GeneralFileMakerMultiple {
 	}
 
 	/*.................................................................................................................*/
-	//If incomign project is null, establish new project. 
 	public void processDirectory(String directoryPath, MesquiteProject project){
 		if (StringUtil.blank(directoryPath) || project == null)
 			return;
@@ -75,13 +82,6 @@ public class CombineFlippedFastas extends GeneralFileMakerMultiple {
 		overallTime.start();
 		if (directory!=null) {
 			if (directory.exists() && directory.isDirectory()) {
-				//FileCoordinator fileCoord = getFileCoordinator();  //this is the temporary one for this GeneralFileMaker
-				//if (fileCoord == null){
-				//	alert("oops, no file coordinator");
-				//}
-			//	if (project == null)
-			//		project = fileCoord.initiateProject(directoryPath, new MesquiteFile()); //this is the reading project
-
 				int countWarnings = 0;
 				//If taxa is not passed, need to establish new project
 				if (taxa == null){
@@ -97,7 +97,10 @@ public class CombineFlippedFastas extends GeneralFileMakerMultiple {
 					logln("Adding taxa to block " + taxa.getName() + " in file " + taxa.getFile().getFileName());
 				InterpretFastaDNA importer = (InterpretFastaDNA)findNearestColleagueWithDuty(InterpretFastaDNA.class);
 				String[] files = directory.list();
-				ProgressIndicator progIndicator = new ProgressIndicator(null,"Processing Folder of Data Files", files.length);
+				if (files == null || files.length ==0)
+					return;
+				
+				ProgressIndicator progIndicator = new ProgressIndicator(null,"Processing Folder of Data Files", "Reading file: " + files[0], files.length, true);//MesquiteProject mp, String title, String initialMessage, long total, boolean showStop
 				progIndicator.start();
 				int filesFound = 0;
 				DNAState state = new DNAState();
@@ -286,7 +289,7 @@ public class CombineFlippedFastas extends GeneralFileMakerMultiple {
 	}
 	/*.................................................................................................................*/
 	public boolean isPrerelease() {
-		return true;
+		return false;
 	}
 	/*.................................................................................................................*/
 	public boolean isSubstantive() {
@@ -297,7 +300,7 @@ public class CombineFlippedFastas extends GeneralFileMakerMultiple {
 	 * then the number refers to the Mesquite version.  This should be used only by modules part of the core release of Mesquite.
 	 * If a NEGATIVE integer, then the number refers to the local version of the package, e.g. a third party package*/
 	public int getVersionOfFirstRelease(){
-		return NEXTRELEASE;  
+		return 400;  
 	}
 
 	/*.................................................................................................................*/

@@ -13,8 +13,6 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
  */
 package mesquite.lib;
 
-import java.awt.Font;
-
 /* ======================================================================== */
 /*represents the bits, longs, doubles, strings and objects belonging to parts of an Associable.
  *  Not permanently in an Associable, but for temporary use, e.g. for display in tree window, hence the graphics parameters*/

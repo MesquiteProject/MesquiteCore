@@ -14,17 +14,37 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
 package mesquite.align.lib; 
 
 
-import java.awt.*;
-
-import mesquite.align.lib.*;
-import mesquite.categ.lib.*;
-import mesquite.lib.*;
-import mesquite.lib.characters.*;
+import mesquite.categ.lib.CategoricalData;
+import mesquite.categ.lib.CategoricalState;
+import mesquite.categ.lib.DNAData;
+import mesquite.categ.lib.MCategoricalDistribution;
+import mesquite.categ.lib.MolecularDataUtil;
+import mesquite.categ.lib.RequiresAnyMolecularData;
+import mesquite.lib.CommandChecker;
+import mesquite.lib.CompatibilityTest;
+import mesquite.lib.FunctionExplanation;
+import mesquite.lib.Integer2DArray;
+import mesquite.lib.Long2DArray;
+import mesquite.lib.MesquiteBoolean;
+import mesquite.lib.MesquiteCommand;
+import mesquite.lib.MesquiteFile;
+import mesquite.lib.MesquiteInteger;
+import mesquite.lib.MesquiteListener;
+import mesquite.lib.MesquiteModule;
+import mesquite.lib.MesquiteNumber;
+import mesquite.lib.MesquiteThread;
+import mesquite.lib.Notification;
+import mesquite.lib.Parser;
+import mesquite.lib.Snapshot;
+import mesquite.lib.StringUtil;
+import mesquite.lib.UndoInstructions;
+import mesquite.lib.UndoReference;
 import mesquite.lib.characters.CharacterData;
-import mesquite.lib.table.*;
+import mesquite.lib.duties.DataWindowAssistantI;
+import mesquite.lib.table.MesquiteTable;
+import mesquite.lib.table.TableTool;
 import mesquite.lib.ui.MesquiteWindow;
 import mesquite.lib.ui.ProgressIndicator;
-import mesquite.lib.duties.*;
 
 
 /* ======================================================================== */

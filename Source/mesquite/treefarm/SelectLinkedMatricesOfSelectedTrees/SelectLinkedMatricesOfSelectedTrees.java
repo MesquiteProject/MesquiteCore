@@ -14,15 +14,15 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
 package mesquite.treefarm.SelectLinkedMatricesOfSelectedTrees;
 /*~~  */
 
-import java.util.*;
-import java.awt.*;
-import mesquite.lib.*;
+import mesquite.lib.ListableVector;
+import mesquite.lib.MesquiteListener;
+import mesquite.lib.MesquiteModule;
+import mesquite.lib.Notification;
 import mesquite.lib.characters.CharacterData;
-import mesquite.lib.duties.*;
 import mesquite.lib.tree.MesquiteTree;
 import mesquite.lib.tree.Tree;
 import mesquite.lib.tree.TreeVector;
-import mesquite.lists.lib.*;
+import mesquite.lists.lib.TreeListUtility;
 
 /* ======================================================================== */
 public class SelectLinkedMatricesOfSelectedTrees extends TreeListUtility { 
@@ -71,7 +71,7 @@ public class SelectLinkedMatricesOfSelectedTrees extends TreeListUtility {
 	 * then the number refers to the Mesquite version.  This should be used only by modules part of the core release of Mesquite.
 	 * If a NEGATIVE integer, then the number refers to the local version of the package, e.g. a third party package*/
 	public int getVersionOfFirstRelease(){
-		return MesquiteModule.NEXTRELEASE;  
+		return 400;  
 	}
 	/*.................................................................................................................*/
     	 public String getName() {

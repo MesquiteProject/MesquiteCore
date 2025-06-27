@@ -13,26 +13,14 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
  */
 package mesquite.trees.BranchPropertiesListKind;
 
-import java.awt.Color;
-import java.awt.Container;
-import java.awt.Graphics;
-import java.awt.Shape;
-import java.util.Vector;
-
-import javax.swing.*;
-
-import mesquite.lib.*;
-import mesquite.lib.characters.CharInclusionSet;
-import mesquite.lib.characters.CharacterData;
+import mesquite.lib.Associable;
+import mesquite.lib.DoubleArray;
+import mesquite.lib.LongArray;
+import mesquite.lib.ObjectArray;
+import mesquite.lib.StringArray;
 import mesquite.lib.table.MesquiteTable;
-import mesquite.lib.taxa.TaxaGroup;
-import mesquite.lib.taxa.TaxaGroupVector;
-import mesquite.lib.tree.MesquiteTree;
 import mesquite.lib.tree.DisplayableBranchProperty;
-import mesquite.lib.tree.Tree;
-import mesquite.lib.ui.ColorDistribution;
-import mesquite.lib.ui.MesquiteSymbol;
-import mesquite.lists.lib.*;
+import mesquite.lib.tree.MesquiteTree;
 import mesquite.trees.lib.BranchPropertiesListAssistant;
 
 /* ======================================================================== */
@@ -351,7 +339,7 @@ public class BranchPropertiesListKind extends BranchPropertiesListAssistant  {
 	 * then the number refers to the Mesquite version.  This should be used only by modules part of the core release of Mesquite.
 	 * If a NEGATIVE integer, then the number refers to the local version of the package, e.g. a third party package*/
 	public int getVersionOfFirstRelease(){
-		return NEXTRELEASE;  
+		return 400;  
 	}
 
 

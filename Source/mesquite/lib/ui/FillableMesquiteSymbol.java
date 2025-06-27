@@ -13,14 +13,17 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
 */
 package mesquite.lib.ui;
 
-import java.awt.*;
+import java.awt.Checkbox;
+import java.awt.Color;
+import java.awt.Graphics;
+import java.awt.Graphics2D;
+import java.awt.Rectangle;
 import java.awt.geom.AffineTransform;
 import java.awt.geom.Path2D;
 
 import mesquite.lib.IntegerField;
 import mesquite.lib.MesquiteInteger;
 import mesquite.lib.Parser;
-import mesquite.lib.duties.*;
 
 /* ======================================================================== */
 public abstract class FillableMesquiteSymbol extends MesquiteSymbol {

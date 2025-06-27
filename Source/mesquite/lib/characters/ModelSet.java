@@ -11,11 +11,7 @@ Mesquite's web site is http://mesquiteproject.org
 This source code and its compiled class files are free and modifiable under the terms of 
 GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
 */
-package mesquite.lib.characters; 
-
-import java.awt.*;
-import mesquite.lib.duties.*;
-import mesquite.lib.*;
+package mesquite.lib.characters;
 
 /* ======================================================================== */
 /**A ModelSet is a specification of which character model applies to each character (TYPESET in NEXUS 1 file format).

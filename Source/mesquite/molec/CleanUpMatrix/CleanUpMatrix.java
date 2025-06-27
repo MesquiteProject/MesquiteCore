@@ -1,19 +1,21 @@
 package mesquite.molec.CleanUpMatrix;
 
-import java.util.*;
-import java.lang.*;
-import java.awt.*;
-import java.awt.image.*;
+import java.awt.Checkbox;
 
-import mesquite.lib.*;
-import mesquite.lib.characters.*;
-import mesquite.lib.duties.*;
-import mesquite.categ.lib.*;
-import mesquite.lib.table.*;
+import mesquite.categ.lib.CategDataAlterer;
+import mesquite.categ.lib.DNAData;
+import mesquite.categ.lib.MolecularDataAlterer;
+import mesquite.categ.lib.MolecularDataUtil;
+import mesquite.lib.IntegerField;
+import mesquite.lib.MesquiteInteger;
+import mesquite.lib.ResultCodes;
+import mesquite.lib.UndoReference;
+import mesquite.lib.characters.AltererAlignShift;
+import mesquite.lib.characters.CharacterData;
+import mesquite.lib.table.MesquiteTable;
 import mesquite.lib.taxa.Taxa;
 import mesquite.lib.ui.ExtensibleDialog;
 import mesquite.lib.ui.RadioButtons;
-import mesquite.align.lib.*;
 
 
 /*  Authors: David Maddison, Wayne Maddison
@@ -23,12 +25,12 @@ import mesquite.align.lib.*;
  *  
  */
 /* ======================================================================== */
-public class CleanUpMatrix extends CategDataAlterer implements AltererAlignShift {
+public class CleanUpMatrix extends MolecularDataAlterer implements AltererAlignShift {
 	boolean reverseComplementIfNecessary = true;
 	boolean multipleSequenceAlignment = true;
 	int referenceSequence = 1;
 	boolean setCodonPositions = false;
-	CategDataAlterer aligner = null;
+	MolecularDataAlterer aligner = null;
 	
 	/*.................................................................................................................*/
 	public boolean startJob(String arguments, Object condition, boolean hiredByName) {
@@ -116,7 +118,8 @@ public String preparePreferencesForXML () {
   			MolecularDataUtil.reverseComplementSequencesIfNecessary(data, module, taxa, 0, taxa.getNumTaxa(), referenceSequence, false, false, false);
    		if (multipleSequenceAlignment){
    			if (aligner==null)
-   				aligner= (CategDataAlterer)hireNamedEmployee(CategDataAlterer.class, "#AMultipleAlignService");
+   				aligner= (MolecularDataAlterer)hireNamedEmployee(MolecularDataAlterer.class, "#AMultipleAlignService");
+   			
    			if (aligner!=null)
    				aligner.alterData(data, null,  null);
    		} else

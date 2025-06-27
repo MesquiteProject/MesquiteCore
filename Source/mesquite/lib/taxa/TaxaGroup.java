@@ -13,15 +13,11 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
 */
 package mesquite.lib.taxa;
 
-import java.awt.*;
-import java.math.*;
+import java.awt.Color;
 
-import mesquite.lib.AssociableWithSpecs;
 import mesquite.lib.GroupLabel;
 import mesquite.lib.MesquiteFile;
-import mesquite.lib.MesquiteListener;
 import mesquite.lib.MesquiteModule;
-import mesquite.lib.Notification;
 import mesquite.lib.StringUtil;
 import mesquite.lib.ui.MesquiteSymbol;
 import mesquite.lists.lib.GroupDialog;

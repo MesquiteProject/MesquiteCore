@@ -14,7 +14,6 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
 package mesquite.dmanager.ProcessDataFiles; 
 
 import java.awt.Button;
-
 import java.awt.Choice;
 import java.awt.List;
 import java.awt.event.ActionEvent;
@@ -29,7 +28,6 @@ import javax.swing.JLabel;
 
 import mesquite.lib.CommandChecker;
 import mesquite.lib.CommandRecord;
-import mesquite.lib.Debugg;
 import mesquite.lib.EmployeeVector;
 import mesquite.lib.MesquiteBoolean;
 import mesquite.lib.MesquiteFile;
@@ -75,6 +73,7 @@ public class ProcessDataFiles extends GeneralFileMakerMultiple implements Action
 	boolean incorporateScript = false;
 	Vector fileProcessors = null;
 	boolean cancelProcessing = false;
+	static boolean beaned = false;
 	/*.................................................................................................................*/
 	public boolean startJob(String arguments, Object condition, boolean hiredByName){
 		loadPreferences();
@@ -463,9 +462,9 @@ public class ProcessDataFiles extends GeneralFileMakerMultiple implements Action
 						if (progIndicator!= null)
 							progIndicator.setSecondaryMessage("Processing by " + fProcessor.getNameAndParameters());
 						int returnCode = fProcessor.processFile(fileToRead, result);
-						if (returnCode!=0) { //Debugg.println this fails if doing gene trees and raxml fails to get tree because of 3 taxa. Should there be different levels of failure?
+						if (returnCode!=0) { 
 							logln("Sorry,  " + fProcessor.getNameAndParameters() + " did not succeed in processing the file " + fileToRead.getFileName());
-							if (returnCode <0 && !warned[i]) { //Debugg.println this fails if doing gene trees and raxml fails to get tree because of 3 taxa. Should there be different levels of failure?
+							if (returnCode <0 && !warned[i]) { 
 								continuePlease = AlertDialog.query(containerOfModule(), "Processing step failed", "Processing of file " + fileToRead.getFileName() + " by " + fProcessor.getNameAndParameters() + " failed. Do you want to continue with this file?", "Continue", "Stop with This File");
 								warned[i] = true;
 							}
@@ -630,6 +629,8 @@ public class ProcessDataFiles extends GeneralFileMakerMultiple implements Action
 
 				String finalScript = recaptureScript();
 				MesquiteFile.putFileContents(writingFile.getDirectoryName() + "ProcessingScript", finalScript, true);
+				preferencesScript = finalScript;
+				storePreferences();
 
 				removeAllProcessors();
 				progIndicator.goAway();
@@ -645,7 +646,7 @@ public class ProcessDataFiles extends GeneralFileMakerMultiple implements Action
 		if (fi != null)
 			fi.sortAllBlocks();
 		}
-		//Debugg.println see if any other suppressions are on! pauseables?
+		//See if any other suppressions are on! pauseables?
 		zeroMenuResetSuppression();
 		logln("Total time for processing (excluding first file): " + timer.timeSinceVeryStartInHoursMinutesSeconds());
 
@@ -698,7 +699,6 @@ public class ProcessDataFiles extends GeneralFileMakerMultiple implements Action
 
 	/*.................................................................................................................*/
 	public MesquiteProject establishProject(String arguments) {
-		boolean success= false;
 		directoryPath = MesquiteFile.chooseDirectory("Choose folder containing data files:", lastDirectoryUsed); //MesquiteFile.saveFileAsDialog("Base name for files (files will be named <name>1.nex, <name>2.nex, etc.)", baseName);
 		if (StringUtil.blank(directoryPath))
 			return null;
@@ -724,10 +724,10 @@ public class ProcessDataFiles extends GeneralFileMakerMultiple implements Action
 		processDirectory(directoryPath);  //DLOG: here asks for file extension filter and whether to save as NEXUS
 		//and inside that, //DLOG asks abotu processors
 		storePreferences(); //Do this regardless of success
-		if (success){
-			//project.autosave = true;
-			processProject.isProcessDataFilesProject = false;
-			return processProject;
+		
+		if (!beaned){
+			postBean("ProcessDataFiles-started");
+			beaned = true;
 		}
 		processProject.isProcessDataFilesProject = false;
 		processProject.developing = false;

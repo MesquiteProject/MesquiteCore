@@ -13,10 +13,6 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
 */
 package mesquite.lib.ui;
 
-import java.awt.event.*;
-import java.awt.*;
-import mesquite.lib.duties.*;
-
 /*=================*/
 public class LogValueToPixel extends ValueToPixel {
 	public LogValueToPixel  (double minValue, double maxValue, double minSweetSpotValue, double maxSweetSpotValue, int totalPixels) {

@@ -13,8 +13,9 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
  */
 package mesquite.assoc.lib;
 
-import mesquite.lib.*;
-import mesquite.assoc.lib.*;
+import mesquite.lib.MesquiteModule;
+import mesquite.lib.MesquiteNumber;
+import mesquite.lib.MesquiteString;
 import mesquite.lib.duties.ItemsSource;
 import mesquite.lib.duties.NumberForItem;
 

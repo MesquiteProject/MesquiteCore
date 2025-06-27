@@ -14,17 +14,13 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
 package mesquite.lists.ShowItemInList;
 /*~~  */
 
-import mesquite.lists.lib.*;
-import java.util.*;
-import java.awt.*;
-import mesquite.lib.*;
-import mesquite.lib.characters.*;
-import mesquite.lib.duties.*;
-import mesquite.lib.table.*;
-import mesquite.lib.tree.TreeVector;
-import mesquite.lib.ui.ColorDistribution;
-import mesquite.lib.ui.ListDialog;
-import mesquite.lib.ui.MesquiteMenuItemSpec;
+import mesquite.lib.CommandChecker;
+import mesquite.lib.MesquiteInteger;
+import mesquite.lib.MesquiteModule;
+import mesquite.lib.table.MesquiteTable;
+import mesquite.lib.table.TableTool;
+import mesquite.lists.lib.ListModule;
+import mesquite.lists.lib.ListWindow;
 
 /* ======================================================================== */
 public class ShowItemInList extends MesquiteModule {
@@ -96,7 +92,7 @@ public class ShowItemInList extends MesquiteModule {
 	 * then the number refers to the Mesquite version.  This should be used only by modules part of the core release of Mesquite.
 	 * If a NEGATIVE integer, then the number refers to the local version of the package, e.g. a third party package*/
 	public int getVersionOfFirstRelease(){
-		return MesquiteModule.NEXTRELEASE;  
+		return 400;  
 	}
 
 }

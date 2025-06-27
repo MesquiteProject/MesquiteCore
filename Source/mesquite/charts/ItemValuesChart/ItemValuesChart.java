@@ -14,12 +14,39 @@
 package mesquite.charts.ItemValuesChart;
 
 /* ~~ */
+import java.awt.Button;
+import java.awt.Color;
+import java.awt.Panel;
+import java.awt.TextArea;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 
-import java.awt.*;
-import java.awt.event.*;
-import java.util.*;
-import mesquite.lib.*;
-import mesquite.lib.duties.*;
+import mesquite.lib.CommandChecker;
+import mesquite.lib.CommandRecord;
+import mesquite.lib.EmployeeNeed;
+import mesquite.lib.Incrementable;
+import mesquite.lib.Listable;
+import mesquite.lib.MesquiteBoolean;
+import mesquite.lib.MesquiteCommand;
+import mesquite.lib.MesquiteDouble;
+import mesquite.lib.MesquiteFile;
+import mesquite.lib.MesquiteInteger;
+import mesquite.lib.MesquiteListener;
+import mesquite.lib.MesquiteMessage;
+import mesquite.lib.MesquiteModule;
+import mesquite.lib.MesquiteNumber;
+import mesquite.lib.MesquiteString;
+import mesquite.lib.MesquiteThread;
+import mesquite.lib.Notification;
+import mesquite.lib.NumberArray;
+import mesquite.lib.ParseUtil;
+import mesquite.lib.Parser;
+import mesquite.lib.Snapshot;
+import mesquite.lib.StringUtil;
+import mesquite.lib.duties.DrawChart;
+import mesquite.lib.duties.ItemsCharter;
+import mesquite.lib.duties.ItemsSource;
+import mesquite.lib.duties.NumberForItem;
 import mesquite.lib.taxa.Taxa;
 import mesquite.lib.ui.AlertDialog;
 import mesquite.lib.ui.ChartListener;

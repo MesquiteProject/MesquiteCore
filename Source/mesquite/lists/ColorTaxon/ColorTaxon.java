@@ -14,16 +14,21 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
 package mesquite.lists.ColorTaxon;
 /*~~  */
 
-import mesquite.lists.lib.*;
-import java.util.*;
-import java.awt.*;
-import java.awt.event.*;
-import mesquite.lib.*;
-import mesquite.lib.duties.*;
-import mesquite.lib.table.*;
+import mesquite.lib.CommandChecker;
+import mesquite.lib.MesquiteBoolean;
+import mesquite.lib.MesquiteFile;
+import mesquite.lib.MesquiteInteger;
+import mesquite.lib.MesquiteLong;
+import mesquite.lib.MesquiteModule;
+import mesquite.lib.Snapshot;
+import mesquite.lib.StringUtil;
+import mesquite.lib.table.MesquiteTable;
+import mesquite.lib.table.TableTool;
 import mesquite.lib.taxa.Taxa;
 import mesquite.lib.ui.ColorDistribution;
 import mesquite.lib.ui.MesquiteSubmenuSpec;
+import mesquite.lists.lib.ListWindow;
+import mesquite.lists.lib.TaxaListAssistantI;
 
 /* ======================================================================== */
 public class ColorTaxon extends TaxaListAssistantI  {

@@ -4,9 +4,12 @@ package mesquite.molec.AvgSequenceLengthMatrix;
 
 import mesquite.categ.lib.MolecularData;
 import mesquite.categ.lib.RequiresAnyMolecularData;
-import mesquite.lib.*;
-import mesquite.lib.characters.*;
-import mesquite.lib.duties.*;
+import mesquite.lib.CompatibilityTest;
+import mesquite.lib.MesquiteNumber;
+import mesquite.lib.MesquiteString;
+import mesquite.lib.characters.CharacterData;
+import mesquite.lib.characters.MCharactersDistribution;
+import mesquite.lib.duties.NumberForMatrix;
 
 public class AvgSequenceLengthMatrix extends NumberForMatrix {
 

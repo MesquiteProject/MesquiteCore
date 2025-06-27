@@ -14,8 +14,9 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
 package mesquite.meristic.InitMeristicParsimony;
 /*~~  */
 
-import mesquite.lib.duties.*;
-import mesquite.meristic.lib.*;
+import mesquite.lib.duties.FileInit;
+import mesquite.meristic.lib.MeristicData;
+import mesquite.meristic.lib.MeristicLinearParsModel;
 
 /**/
 public class InitMeristicParsimony extends FileInit {

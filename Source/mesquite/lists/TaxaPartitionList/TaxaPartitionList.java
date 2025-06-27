@@ -14,16 +14,16 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
 package mesquite.lists.TaxaPartitionList;
 /*~~  */
 
-import mesquite.lists.lib.*;
-
-import java.util.*;
-import java.awt.*;
-import mesquite.lib.*;
-import mesquite.lib.duties.*;
-import mesquite.lib.table.*;
+import mesquite.lib.CommandChecker;
+import mesquite.lib.Commandable;
+import mesquite.lib.EmployeeNeed;
+import mesquite.lib.SpecsSet;
 import mesquite.lib.taxa.Taxa;
 import mesquite.lib.taxa.TaxaPartition;
 import mesquite.lib.ui.AlertDialog;
+import mesquite.lists.lib.ListWindow;
+import mesquite.lists.lib.TaxaPartListAssistant;
+import mesquite.lists.lib.TaxaSpecssetList;
 
 /* ======================================================================== */
 public class TaxaPartitionList extends TaxaSpecssetList {

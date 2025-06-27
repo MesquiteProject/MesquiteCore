@@ -14,20 +14,41 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
 package mesquite.lists.TaxonList;
 /*~~  */
 
-import java.util.*;
-import java.awt.*;
+import java.awt.Container;
+import java.awt.Graphics;
+import java.util.Enumeration;
 
-import mesquite.lib.*;
-import mesquite.lib.characters.CharacterData;
-import mesquite.lib.duties.*;
-import mesquite.lists.lib.*;
-import mesquite.lib.table.*;
+import mesquite.lib.AssociableWithSpecs;
+import mesquite.lib.CommandChecker;
+import mesquite.lib.EmployeeNeed;
+import mesquite.lib.MesquiteFile;
+import mesquite.lib.MesquiteInteger;
+import mesquite.lib.MesquiteListener;
+import mesquite.lib.MesquiteModule;
+import mesquite.lib.MesquiteString;
+import mesquite.lib.MesquiteThread;
+import mesquite.lib.Notification;
+import mesquite.lib.ParseUtil;
+import mesquite.lib.Snapshot;
+import mesquite.lib.StringUtil;
+import mesquite.lib.UndoInstructions;
+import mesquite.lib.UndoReference;
+import mesquite.lib.Undoer;
+import mesquite.lib.duties.TaxaSelectCoordinator;
+import mesquite.lib.duties.TaxaTableAssistantI;
+import mesquite.lib.duties.TaxonNameAlterer;
+import mesquite.lib.duties.TaxonUtility;
+import mesquite.lib.table.TableWindow;
 import mesquite.lib.taxa.Taxa;
 import mesquite.lib.taxa.TaxaSelectionSet;
 import mesquite.lib.ui.AlertDialog;
-import mesquite.lib.ui.ColorDistribution;
 import mesquite.lib.ui.MesquiteSubmenuSpec;
 import mesquite.lib.ui.MesquiteWindow;
+import mesquite.lists.lib.ListModule;
+import mesquite.lists.lib.ListWindow;
+import mesquite.lists.lib.TaxonListUtility;
+import mesquite.lists.lib.TaxaListAssistantI;
+import mesquite.lists.lib.TaxonListAssistant;
 
 /* ======================================================================== */
 public class TaxonList extends ListModule {
@@ -107,6 +128,8 @@ public class TaxonList extends ListModule {
 			MesquiteSubmenuSpec mss3 = addSubmenu(null, "Taxon Names", MesquiteModule.makeCommand("doNames",  this));
 			mss3.setList(TaxonNameAlterer.class);
 			addMenuItem( "Save selected as taxon set...", makeCommand("saveSelectedRows", this));
+			MesquiteSubmenuSpec mss4 = addSubmenu(null, "Other Utilities", MesquiteModule.makeCommand("doOtherUtility",  this));
+			mss4.setList(TaxonListUtility.class);
 			addMenuSeparator();
 
 			/* default columns*
@@ -274,7 +297,17 @@ public class TaxonList extends ListModule {
 				}
 			}
 		}
-		else if (checker.compare(this.getClass(), "Hires utility module to alter names of the taxa", "[name of module]", commandName, "doNames")) {
+		else if (checker.compare(this.getClass(), "Hires utility module to operate on the taxa", "[name of module]", commandName, "doOtherUtility")) {
+			if (taxa !=null){
+				TaxonListUtility tda= (TaxonListUtility)hireNamedEmployee(TaxonListUtility.class, arguments);
+				if (tda!=null) {
+					tda.operateOnTaxa(((TableWindow)getModuleWindow()).getTable(), taxa);
+					if (!tda.pleaseLeaveMeOn())
+						fireEmployee(tda);
+				}
+			}
+		}
+	else if (checker.compare(this.getClass(), "Hires utility module to alter names of the taxa", "[name of module]", commandName, "doNames")) {
 			if (taxa !=null && getModuleWindow() != null && ((TableWindow)getModuleWindow()).getTable()!=null){
 				TaxonNameAlterer tda= (TaxonNameAlterer)hireNamedEmployee(TaxonNameAlterer.class, arguments);
 				if (tda!=null) {

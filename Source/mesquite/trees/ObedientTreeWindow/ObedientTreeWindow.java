@@ -13,13 +13,14 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
  */
 package mesquite.trees.ObedientTreeWindow;
 
-import java.util.*;
-import java.awt.*;
-import mesquite.lib.*;
-import mesquite.lib.duties.*;
+import mesquite.lib.CommandChecker;
+import mesquite.lib.MesquiteInteger;
+import mesquite.lib.Parser;
+import mesquite.lib.duties.DrawTreeCoordinator;
 import mesquite.lib.tree.MesquiteTree;
 import mesquite.lib.tree.Tree;
-import mesquite.trees.lib.*;
+import mesquite.trees.lib.SimpleTreeWindow;
+import mesquite.trees.lib.SimpleTreeWindowMaker;
 
 /* ======================================================================== */
 //see mesquite.lib.duties.TreeInferer for example of use

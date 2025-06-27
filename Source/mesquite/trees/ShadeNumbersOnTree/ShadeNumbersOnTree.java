@@ -13,12 +13,25 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
 */
 package mesquite.trees.ShadeNumbersOnTree;
 
-import java.util.*;
-import java.awt.*;
+import java.awt.Color;
+import java.awt.FontMetrics;
+import java.awt.Graphics;
+import java.util.Enumeration;
+import java.util.Vector;
 
-import mesquite.lib.*;
-import mesquite.lib.characters.*;
-import mesquite.lib.duties.*;
+import mesquite.cont.lib.ContColorTable;
+import mesquite.lib.CommandChecker;
+import mesquite.lib.MesquiteBoolean;
+import mesquite.lib.MesquiteDouble;
+import mesquite.lib.MesquiteFile;
+import mesquite.lib.MesquiteInteger;
+import mesquite.lib.MesquiteMessage;
+import mesquite.lib.MesquiteNumber;
+import mesquite.lib.MesquiteThread;
+import mesquite.lib.NumberArray;
+import mesquite.lib.Snapshot;
+import mesquite.lib.StringUtil;
+import mesquite.lib.duties.DisplayNumbersAtNodes;
 import mesquite.lib.tree.Tree;
 import mesquite.lib.tree.TreeDecorator;
 import mesquite.lib.tree.TreeDisplay;
@@ -28,7 +41,6 @@ import mesquite.lib.ui.ColorRecord;
 import mesquite.lib.ui.GraphicsUtil;
 import mesquite.lib.ui.MesquiteColorTable;
 import mesquite.lib.ui.MesquiteSubmenuSpec;
-import mesquite.cont.lib.*;
 
 /* ======================================================================== */
 public class ShadeNumbersOnTree extends DisplayNumbersAtNodes {
@@ -173,6 +185,9 @@ class ShadeNumbersDecorator extends TreeDecorator {
 		super(treeDisplay, ownerExtra);
 		this.ownerModule=ownerModule;
  		colors = new ColorDistribution();
+	}
+	public boolean requestTraceMode(){
+		return true;
 	}
 	/*.................................................................................................................*/
 	private void writeAtNode(NumberArray numbers,Graphics g, FontMetrics fm, int N,  Tree tree) {

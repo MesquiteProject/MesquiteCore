@@ -13,8 +13,11 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
 */
 package mesquite.genesis.lib;
 
-import mesquite.lib.*;
-import mesquite.lib.characters.*;
+import mesquite.lib.AssociableWithSpecs;
+import mesquite.lib.SpecsSet;
+import mesquite.lib.characters.CharacterData;
+import mesquite.lib.characters.CharacterModel;
+import mesquite.lib.characters.ModelSet;
 
 /*======================================================================== */
 /** a ModelSet for probability models. */

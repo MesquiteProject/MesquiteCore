@@ -13,12 +13,10 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
  */
 package mesquite.lib;
 
-import java.awt.*;
-import java.net.*;
-import java.util.*;
-import java.io.*;
-import mesquite.lib.*;
-import mesquite.lib.duties.*;
+import java.io.InputStream;
+import java.util.Date;
+
+import mesquite.lib.duties.FileCoordinator;
 import mesquite.lib.ui.MesquiteDialog;
 
 /* ======================================================================== */
@@ -36,7 +34,7 @@ public class ProjectRead implements Runnable {
 		projCont = p;
 		this.arguments = arguments;
 		wasScripting = MesquiteThread.isScripting();
-		this.category = category;
+		this.category = category;  //This is whether it's regular, URL, general, etc.
 		this.mesquite = mesquite;
 		totalCreated++;
 		//spontaneousIndicator = false;
@@ -171,7 +169,7 @@ public class ProjectRead implements Runnable {
 			CommandRecord comRec = new CommandRecord(wasScripting);
 			CommandRecord prevRec = MesquiteThread.getCurrentCommandRecord();
 			MesquiteThread.setCurrentCommandRecord(comRec);
-			
+
 			if (originalArguments == null) //hackathon
 				originalArguments = arguments;
 			mb.readProject(true, pathname, originalArguments, importerSubclass); 
@@ -191,7 +189,7 @@ public class ProjectRead implements Runnable {
 	}
 	/*.................................................................................................................*/
 	/* makes and returns a new project.*/
-	 private MesquiteProject newFile(String arguments, boolean makeTaxa){
+	private MesquiteProject newFile(String arguments, boolean makeTaxa){
 		FileCoordinator mb = (FileCoordinator)mesquite.hireEmployee(FileCoordinator.class, null);
 		if (mb==null) {
 			mesquite.alert("Mesquite cannot function: no file coordinator available");
@@ -210,7 +208,7 @@ public class ProjectRead implements Runnable {
 			if (mf != null)
 				mf.okForRecentRereading = true;
 			if (!MesquiteThread.isScripting())
-				mb.doCommand("saveFile", null, CommandChecker.defaultChecker);
+				mb.doCommand("saveNewFile", null, CommandChecker.defaultChecker);
 			return mb.getProject();
 		}
 	}
@@ -241,10 +239,26 @@ public class ProjectRead implements Runnable {
 				proj = openURLString(arguments);
 			else if (category == 3)
 				proj = openGeneral(arguments);
+
+			if (originalArguments !=null){
+				Parser parser = new Parser();
+				if (parser.hasFileReadingArgument(originalArguments, "scriptToFileCoordinator")){
+					String commands = parser.getFileReadingArgumentSubtype(originalArguments, "scriptToFileCoordinator");
+					if (StringUtil.notEmpty(commands)){
+						CommandRecord prev = MesquiteThread.getCurrentCommandRecord();
+						CommandRecord cRec = new CommandRecord(true);
+						MesquiteThread.setCurrentCommandRecord(cRec);
+						MesquiteInteger pos = new MesquiteInteger(0);
+						Puppeteer puppeteer = new Puppeteer(proj.getCoordinatorModule());
+						puppeteer.execute(proj.getCoordinatorModule(), commands, pos, null, false, null, null);
+						MesquiteThread.setCurrentCommandRecord(prev);
+					}
+				}
+			}
 			if (proj != null){
 				MesquiteFile mf = proj.getHomeFile();
-			if (mf != null)
-				MesquiteTrunk.recentFileRecord(mf, true);  //updating Recents
+				if (mf != null)
+					MesquiteTrunk.recentFileRecord(mf, true);  //updating Recents
 			}
 			//	else if (category == 4)
 			//		openStream(arguments);

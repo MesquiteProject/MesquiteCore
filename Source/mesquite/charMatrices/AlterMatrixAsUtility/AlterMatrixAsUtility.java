@@ -14,15 +14,23 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
  */
 package mesquite.charMatrices.AlterMatrixAsUtility;
 
-import mesquite.lists.lib.*;
-
 import java.util.Vector;
 
-import mesquite.lib.*;
-import mesquite.lib.characters.*;
-import mesquite.lib.duties.*;
-import mesquite.lib.table.*;
+import mesquite.lib.CommandChecker;
+import mesquite.lib.CompatibilityTest;
+import mesquite.lib.ListableVector;
+import mesquite.lib.MesquiteFile;
+import mesquite.lib.MesquiteListener;
+import mesquite.lib.MesquiteMessage;
+import mesquite.lib.MesquiteThread;
+import mesquite.lib.Notification;
+import mesquite.lib.Snapshot;
+import mesquite.lib.characters.AlteredDataParameters;
+import mesquite.lib.characters.CharacterData;
+import mesquite.lib.duties.DataAlterer;
+import mesquite.lib.table.MesquiteTable;
 import mesquite.lib.ui.ProgressIndicator;
+import mesquite.lists.lib.CharMatricesListProcessorUtility;
 
 /* ======================================================================== */
 public class AlterMatrixAsUtility extends CharMatricesListProcessorUtility {
@@ -100,7 +108,7 @@ public class AlterMatrixAsUtility extends CharMatricesListProcessorUtility {
 			getProject().incrementProjectWindowSuppression();
 		Vector v = pauseAllPausables();
 		int count = 0;
-		
+		long startTime = System.currentTimeMillis();
 		ProgressIndicator progIndicator = new ProgressIndicator(getProject(),"Altering matrices", "", datas.size(), true);
 		progIndicator.start();
 		boolean abort = false;
@@ -140,6 +148,8 @@ public class AlterMatrixAsUtility extends CharMatricesListProcessorUtility {
 			getProject().decrementProjectWindowSuppression();
 		getProject().getCoordinatorModule().setWhomToAskIfOKToInteractWithUser(null);
 		resetAllMenuBars();
+		if (System.currentTimeMillis()- startTime>100000)
+			MesquiteMessage.beep();
 		return true;
 	}
 	public boolean okToInteractWithUser(int howImportant, String messageToUser){

@@ -14,16 +14,64 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
 package mesquite.charMatrices.ManageCharacters;
 /*~~  */
 
-import java.util.*;
-import java.awt.*;
-import java.io.*;
+import java.util.Vector;
 
 import mesquite.categ.lib.CategoricalData;
 import mesquite.categ.lib.MolecularData;
-import mesquite.lib.*;
-import mesquite.lib.characters.*;
+import mesquite.lib.Associable;
+import mesquite.lib.Bits;
+import mesquite.lib.CommandChecker;
+import mesquite.lib.CommandRecord;
+import mesquite.lib.DoubleArray;
+import mesquite.lib.EmployeeNeed;
+import mesquite.lib.FileBlock;
+import mesquite.lib.FileElement;
+import mesquite.lib.IntegerArray;
+import mesquite.lib.Listable;
+import mesquite.lib.ListableVector;
+import mesquite.lib.LongArray;
+import mesquite.lib.MainThread;
+import mesquite.lib.MesquiteBoolean;
+import mesquite.lib.MesquiteCommand;
+import mesquite.lib.MesquiteDouble;
+import mesquite.lib.MesquiteFile;
+import mesquite.lib.MesquiteInteger;
+import mesquite.lib.MesquiteListener;
+import mesquite.lib.MesquiteLong;
+import mesquite.lib.MesquiteMessage;
+import mesquite.lib.MesquiteModule;
+import mesquite.lib.MesquiteProject;
+import mesquite.lib.MesquiteString;
+import mesquite.lib.MesquiteStringExplainable;
+import mesquite.lib.MesquiteThread;
+import mesquite.lib.MesquiteTrunk;
+import mesquite.lib.NEXUSFileParser;
+import mesquite.lib.NameReference;
+import mesquite.lib.NexusBlock;
+import mesquite.lib.NexusBlockTest;
+import mesquite.lib.NexusCommandTest;
+import mesquite.lib.Notification;
+import mesquite.lib.Object2DArray;
+import mesquite.lib.ObjectArray;
+import mesquite.lib.ParseUtil;
+import mesquite.lib.Snapshot;
+import mesquite.lib.StringArray;
+import mesquite.lib.StringUtil;
+import mesquite.lib.characters.CharWeightSet;
 import mesquite.lib.characters.CharacterData;
-import mesquite.lib.duties.*;
+import mesquite.lib.characters.CharacterState;
+import mesquite.lib.characters.CharacterStates;
+import mesquite.lib.characters.CharactersBlock;
+import mesquite.lib.characters.MCharactersDistribution;
+import mesquite.lib.duties.CharMatrixFiller;
+import mesquite.lib.duties.CharMatrixManager;
+import mesquite.lib.duties.CharactersManager;
+import mesquite.lib.duties.DataWindowMaker;
+import mesquite.lib.duties.ElementManager;
+import mesquite.lib.duties.FileAssistantM;
+import mesquite.lib.duties.FileCoordinator;
+import mesquite.lib.duties.ManagerAssistant;
+import mesquite.lib.duties.TaxaManager;
 import mesquite.lib.taxa.Taxa;
 import mesquite.lib.taxa.Taxon;
 import mesquite.lib.ui.AlertDialog;
@@ -544,6 +592,7 @@ public class ManageCharacters extends CharactersManager {
 		s += " NumMatrices " + getProject().getNumberCharMatrices();
 		return s;
 	}
+	boolean matrixChecksumWarned = false;
 	/*.................................................................................................................*/
 	public Object doCommand(String commandName, String arguments, CommandChecker checker) {
 		if (checker.compare(this.getClass(), "Creates a new empty character data matrix", "[number of characters] [title] [data type name]", commandName, "newMatrix")) {
@@ -686,6 +735,8 @@ public class ManageCharacters extends CharactersManager {
 
 		}
 		else if (checker.compare(this.getClass(), "Indicates the checksum of a matrix; new version", "[number of matrix][id number of data matrix]", commandName, "checksumv")) {
+			if (matrixChecksumWarned)
+			return null;
 			int t = MesquiteInteger.fromString(parser.getFirstToken(arguments));
 			int version  = MesquiteInteger.fromString(parser.getNextToken());
 			long checksumRecorded  = MesquiteLong.fromString(parser.getNextToken());
@@ -716,7 +767,11 @@ public class ManageCharacters extends CharactersManager {
 							}
 						}
 					}
-					String warning = "Error: checksum on data matrix \"" + d.getName() + "\" (" + d.getDataTypeName() + ") does not match that expected and stored in file.  Either the matrix has been modified with a program other than Mesquite, or the file had another issue already reported to you, or there is a bug in Mesquite.  If you are unaware of an intentional change, it is recommended that you use Save As to leave the previous copy of the file intact.";
+					matrixChecksumWarned = true;
+					String warning = "Error: checksum on data matrix \"" + d.getName() + "\" (" + d.getDataTypeName() + ") does not match that expected and stored in file.  "
+					+"Either the matrix has been modified with a program other than Mesquite, or the file had another issue already reported to you, or there is a bug in Mesquite. "
+					+" If you are unaware of an intentional change, it is recommended that you use Save As to leave the previous copy of the file intact."
+					+ " This warning will not be repeated for this file.";
 
 
 					String diffFileSave = "";
@@ -745,11 +800,15 @@ public class ManageCharacters extends CharactersManager {
 						details += "\n[NOTE: the data matrix appears corrupt; it is possible that it had been saved incorrectly in the file [" + integrity + "]]";
 					ListableVector datas = getProject().getCharacterMatrices();
 					if (datas != null && datas.size() > 1){
+						if (datas.size()<10){
 						details += "\nSummary of matrices in file:";
 						for (int i=0; i<datas.size(); i++){
 							CharacterData dd = (CharacterData)datas.elementAt(i);
 							details += "\n    matrix " + dd.getName() + "  ID  " + dd.getUniqueID() + "  for taxa " + dd.getTaxa().getName();
 						}
+						}
+						else
+						details +="\nThe file has " + datas.size() + " matrix(ces)";
 					}
 					if (diff>20){//assume file writing is at most 20 seconds off; anything more assumes user fiddling so don't report!!!!
 						logln("Note: checksum on data matrix \"" + d.getName() + "\" (" + d.getDataTypeName() + ") does not match that expected and stored in file.  This appears to be caused by the file having been modified by a program other than Mesquite.");
@@ -1246,6 +1305,7 @@ public class ManageCharacters extends CharactersManager {
 	public boolean writeNexusCommands(MesquiteFile file, String blockName, MesquiteString pending){ 
 		boolean found = false;
 		if (blockName.equalsIgnoreCase("NOTES")) {
+			CommandRecord.tick("Composing Notes block");
 			StringBuffer s = new StringBuffer(100);
 			StringBuffer tokSB = new StringBuffer(100);
 			MesquiteProject project = file.getProject();
@@ -2137,7 +2197,7 @@ public class ManageCharacters extends CharactersManager {
 				 }
 			 }
 			 else if (commandName.equalsIgnoreCase("MATRIX")) {
-				 if (NEXUSFileParser.verbose)  Debugg.println("###############  MATRIX");
+				 if (NEXUSFileParser.verbose)  MesquiteMessage.println("###############  MATRIX");
 				 if (data==null) {
 					 alert("Error in NEXUS file:  Matrix without FORMAT statement");
 				 }
@@ -2148,9 +2208,9 @@ public class ManageCharacters extends CharactersManager {
 					 }
 					 boolean wassave = data.saveChangeHistory;
 					 data.saveChangeHistory = false;
-					 if (NEXUSFileParser.verbose) Debugg.println("  [[[[[[[[[[[[ processMatrix");
+					 if (NEXUSFileParser.verbose) MesquiteMessage.println("  [[[[[[[[[[[[ processMatrix");
 					 data.getMatrixManager().processMatrix(taxa, data, commandParser, numChars, false, 0, newTaxaFlag, fuse, file);
-					 if (NEXUSFileParser.verbose)  Debugg.println("  ]]]]]]]]]]]] processMatrix");
+					 if (NEXUSFileParser.verbose)  MesquiteMessage.println("  ]]]]]]]]]]]] processMatrix");
 					 if (data.interleaved) 
 						 commandParser.setLineEndingsDark(false);
 					 commandParser.consumeNextIfSemicolon();
@@ -2198,12 +2258,12 @@ public class ManageCharacters extends CharactersManager {
 				 boolean success = false;
 				 
 				 if (NEXUSFileParser.verbose)
-					 Debugg.println("###############<<<  " + commandParser.getFilePosition());
+					 MesquiteMessage.println("###############<<<  " + commandParser.getFilePosition());
 				 String commandString = commandParser.getNextCommand();
 				 if (NEXUSFileParser.verbose)
-					 Debugg.println("###############>>>>>  " + commandParser.getFilePosition() + " " + commandString);
+					 MesquiteMessage.println("###############>>>>>  " + commandParser.getFilePosition() + " " + commandString);
 				 if (NEXUSFileParser.verbose)
-					 Debugg.println("############ (next is  " + commandParser.getNextCommandNameWithoutConsuming() + " ");
+					 MesquiteMessage.println("############ (next is  " + commandParser.getNextCommandNameWithoutConsuming() + " ");
 				 if (data !=null && data.getMatrixManager()!=null)
 					 success = data.getMatrixManager().processCommand(data, commandName, commandString);
 				 if (!success && b != null) {

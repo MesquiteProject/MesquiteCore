@@ -13,28 +13,33 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
  */
 package mesquite.trees.BranchInfo;
 
-import java.util.*;
-import java.awt.*;
-import java.awt.image.*;
-import mesquite.lib.*;
-import mesquite.lib.duties.*;
+import java.awt.Graphics;
+import java.awt.Image;
+import java.awt.Rectangle;
+import java.util.Vector;
+
+import mesquite.lib.CommandChecker;
+import mesquite.lib.Commandable;
+import mesquite.lib.ListableVector;
+import mesquite.lib.MesquiteCommand;
+import mesquite.lib.MesquiteDouble;
+import mesquite.lib.MesquiteInteger;
+import mesquite.lib.MesquiteListener;
+import mesquite.lib.Notification;
+import mesquite.lib.ParseUtil;
+import mesquite.lib.Parser;
+import mesquite.lib.duties.TreeDisplayAssistantDI;
 import mesquite.lib.taxa.Taxa;
-import mesquite.lib.taxa.TaxaGroup;
-import mesquite.lib.taxa.TaxaGroupVector;
 import mesquite.lib.tree.MesquiteTree;
 import mesquite.lib.tree.Tree;
 import mesquite.lib.tree.TreeDisplay;
 import mesquite.lib.tree.TreeDisplayExtra;
 import mesquite.lib.tree.TreeDrawing;
-import mesquite.lib.tree.TreeTool;
-import mesquite.lib.ui.AlertDialog;
 import mesquite.lib.ui.ColorDistribution;
 import mesquite.lib.ui.MesquiteImage;
 import mesquite.lib.ui.MesquiteMenu;
 import mesquite.lib.ui.MesquiteMenuItem;
-import mesquite.lib.ui.MesquiteMenuItemSpec;
 import mesquite.lib.ui.MesquitePopup;
-import mesquite.lib.ui.MesquiteWindow;
 
 /* ======================================================================== */
 public class BranchInfo extends TreeDisplayAssistantDI {
@@ -219,7 +224,7 @@ class BranchInfoExtra extends TreeDisplayExtra implements Commandable  {
 						tree.setBranchLength(branch, cBL/2, false);
 						tree.setBranchLength(tree.motherOfNode(branch), cBL/2, false);
 						currentHeight += cBL/2;
-						tree.setBranchLength(node, currentHeight, false);  //Debugg.println(" OK to do this even though arbitrary?
+						tree.setBranchLength(node, currentHeight, false);  
 						tree.setAssociatedString(ColorDistribution.colorRGBNameReference, node, "#33BB00");
 					}
 					else

@@ -14,20 +14,35 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
  */
 package mesquite.charMatrices.ParallelAlterMatrixAsUtility;
 
-import mesquite.lists.lib.*;
-
 import java.util.Date;
 import java.util.Vector;
 
-import mesquite.categ.lib.CategoricalState;
-import mesquite.genomic.FlagBySpruceup.FlagBySpruceup;
-import mesquite.lib.*;
-import mesquite.lib.characters.*;
+import mesquite.lib.Bits;
+import mesquite.lib.CommandChecker;
+import mesquite.lib.CommandRecord;
+import mesquite.lib.CompatibilityTest;
+import mesquite.lib.IntegerField;
+import mesquite.lib.ListableVector;
+import mesquite.lib.MesquiteFile;
+import mesquite.lib.MesquiteInteger;
+import mesquite.lib.MesquiteListener;
+import mesquite.lib.MesquiteMessage;
+import mesquite.lib.MesquiteModule;
+import mesquite.lib.MesquiteProject;
+import mesquite.lib.MesquiteThread;
+import mesquite.lib.Notification;
+import mesquite.lib.Puppeteer;
+import mesquite.lib.ResultCodes;
+import mesquite.lib.Snapshot;
+import mesquite.lib.StringUtil;
+import mesquite.lib.characters.AlteredDataParameters;
 import mesquite.lib.characters.CharacterData;
-import mesquite.lib.duties.*;
-import mesquite.lib.table.*;
+import mesquite.lib.duties.DataAlterer;
+import mesquite.lib.duties.FileCoordinator;
+import mesquite.lib.table.MesquiteTable;
 import mesquite.lib.ui.ExtensibleDialog;
 import mesquite.lib.ui.ProgressIndicator;
+import mesquite.lists.lib.CharMatricesListProcessorUtility;
 
 /* ======================================================================== */
 public class ParallelAlterMatrixAsUtility extends CharMatricesListProcessorUtility {
@@ -42,16 +57,12 @@ public class ParallelAlterMatrixAsUtility extends CharMatricesListProcessorUtili
 		return "Parallel Alter Matrices...";
 	}
 
-	public boolean loadModule() {
-		return true; // too flaky
-	}
-
 	public String getExplanation() {
 		return "Alters selected matrices in List of Character Matrices window, with the option of using parallel processing (multithreading) to speed the completion.";
 	}
 
 	DataAlterer firstAlterTask = null;
-
+static boolean beaned = false;
 	/* ................................................................................................................. */
 	public boolean startJob(String arguments, Object condition, boolean hiredByName) {
 		loadPreferences();
@@ -68,6 +79,10 @@ public class ParallelAlterMatrixAsUtility extends CharMatricesListProcessorUtili
 		if (!queryOptions()) {
 			fireEmployee(firstAlterTask);
 			return false;
+		}
+		if (!beaned){
+			postBean("ParallelAlterMatrixAsUtility-started");
+			beaned = true;
 		}
 		return true;
 	}
@@ -130,9 +145,6 @@ public class ParallelAlterMatrixAsUtility extends CharMatricesListProcessorUtili
 		MesquiteInteger buttonPressed = new MesquiteInteger(1);
 		ExtensibleDialog queryDialog = new ExtensibleDialog(containerOfModule(), "Number of Parallel Calculations", buttonPressed);
 		queryDialog.addLargeOrSmallTextLabel("The calculations will be performed in parallel, on several threads. Choose the number of parallel threads according to your computer's multiprocessing capabilities.");
-		/*
-		 * if (StringUtil.blank(help) && queryDialog.isInWizard()) help = "<h3>" + StringUtil.protectForXML(title) + "</h3>Please enter a whole number (integer).  <p>The initial value is " + value; queryDialog.appendToHelpString(help);
-		 */
 		IntegerField integerField = queryDialog.addIntegerField("Number of threads", numThreads, 20, 1, 255);
 		queryDialog.addLargeOrSmallTextLabel("(Note: the first matrix will be processed alone, and then the others in parallel.)");
 
@@ -171,19 +183,22 @@ public class ParallelAlterMatrixAsUtility extends CharMatricesListProcessorUtili
 		return false;
 	}
 
+	/* ................................................................................................................. */
 	static int PATIENCE = 3; // How much longer than first matrix is subsequent matrix considered stalled
 	static int SLEEPTIME = 50; // How much sleep between each check of threads
 	static long REPORTDELAY = 10000; // If there is a stalled calculation (determined by PATIENCE), how often to report (in milliseconds)
 	Bits matricesDone;
 
+	/* ................................................................................................................. */
 	/** Called to operate on the CharacterData blocks. Returns true if taxa altered */
 	public boolean operateOnDatas(ListableVector datas, MesquiteTable table) {
-
+		
 		incrementMenuResetSuppression(numThreads + 1);
 		CompatibilityTest test = firstAlterTask.getCompatibilityTest();
-		if (getProject() != null) {
-			getProject().getCoordinatorModule().setWhomToAskIfOKToInteractWithUser(this);
-			getProject().incrementProjectWindowSuppression();
+		MesquiteProject project = getProject();
+		if (project != null) {
+			project.getCoordinatorModule().setWhomToAskIfOKToInteractWithUser(this);
+			project.incrementProjectWindowSuppression();
 		}
 		Vector v = pauseAllPausables();
 		matricesDone = new Bits(datas.size());
@@ -194,7 +209,7 @@ public class ParallelAlterMatrixAsUtility extends CharMatricesListProcessorUtili
 		logln("Parallel Alter Matrices started at " + StringUtil.getDateTime(new Date(startTime)));
 		for (int im = 0; im < datas.size() && !doneFirstMatrix; im++) {
 			CharacterData data = (CharacterData) datas.elementAt(im);
-			if (test.isCompatible(data, getProject(), this)) {
+			if (test.isCompatible(data, project, this)) {
 				if (datas.size() > 1)
 					logln("Altering first matrix \"" + data.getName() + "\"");
 				AlteredDataParameters alteredDataParameters = new AlteredDataParameters();
@@ -214,8 +229,8 @@ public class ParallelAlterMatrixAsUtility extends CharMatricesListProcessorUtili
 
 		if (successFirstMatrix < 0) {
 			unpauseAllPausables(v);
-			if (getProject() != null)
-				getProject().decrementProjectWindowSuppression();
+			if (project != null)
+				project.decrementProjectWindowSuppression();
 			decrementMenuResetSuppression(numThreads + 1);
 			return false;
 		}
@@ -224,7 +239,7 @@ public class ParallelAlterMatrixAsUtility extends CharMatricesListProcessorUtili
 
 		long startParallel = System.currentTimeMillis();
 		long longWait = (startParallel - startTime) * PATIENCE;
-		ProgressIndicator progIndicator = new ProgressIndicator(getProject(), "Altering matrices", "", datas.size(), true);
+		ProgressIndicator progIndicator = new ProgressIndicator(project, "Altering matrices", "", datas.size(), true);
 		progIndicator.start();
 		progIndicator.setText("Setting up " + numThreads + " threads");
 		// making threads and getting them started
@@ -307,16 +322,17 @@ public class ParallelAlterMatrixAsUtility extends CharMatricesListProcessorUtili
 		progIndicator.goAway();
 		logln("Altered: " + (matricesDone.numBitsOn()) + " matrices. (Finished " + StringUtil.getDateTime(new Date(System.currentTimeMillis())) + ")");
 		unpauseAllPausables(v);
-		if (getProject() != null) {
-			getProject().zeroProjectWindowSuppression();
-			getProject().getCoordinatorModule().setWhomToAskIfOKToInteractWithUser(null);
+		if (project != null) {
+			project.zeroProjectWindowSuppression();
+			project.getCoordinatorModule().setWhomToAskIfOKToInteractWithUser(null);
 		}
 		zeroMenuResetSuppression(); // set menu and project suppression to zero, just in case of threading issues?
-		// MainThread.zeroSuppressWaitWindow();
 		resetAllMenuBars();
-
+		if (System.currentTimeMillis()- startTime>100000)
+			MesquiteMessage.beep();
 		return true;
 	}
+	/* ................................................................................................................. */
 
 	boolean aborted;
 
@@ -324,6 +340,7 @@ public class ParallelAlterMatrixAsUtility extends CharMatricesListProcessorUtili
 		return firstTime;
 	}
 
+	/* ................................................................................................................. */
 	DataAlterer cloneFirstAlterTask(AlterThread thread) {
 		String snapshot = Snapshot.getSnapshotCommands(firstAlterTask, null, "");
 		MesquiteInteger pos = new MesquiteInteger(0);
@@ -356,37 +373,27 @@ public class ParallelAlterMatrixAsUtility extends CharMatricesListProcessorUtili
 	 * returns the version number at which this module was first released. If 0, then no version number is claimed. If a POSITIVE integer then the number refers to the Mesquite version. This should be used only by modules part of the core release of Mesquite. If a NEGATIVE integer, then the number refers to the local version of the package, e.g. a third party package
 	 */
 	public int getVersionOfFirstRelease() {
-		return NEXTRELEASE;
+		return 400;
 	}
 
 	/* ................................................................................................................. */
 	public boolean isPrerelease() {
-		return true;
+		return false;
 	}
 
 }
 
 class AlterThread extends MesquiteThread {
 	ParallelAlterMatrixAsUtility ownerModule;
-
 	ListableVector datas;
-
 	int firstMatrix;
-
 	int lastMatrix;
-
 	boolean done = false;
-
 	CompatibilityTest test;
-
 	DataAlterer alterTask;
-
 	FileCoordinator fileCoordinator;
-
 	int imPreviousReportedAsSlow = 0;
-
 	long lastTimeChanged = -1;
-
 	long longWait = 10000;
 
 	public AlterThread(ParallelAlterMatrixAsUtility ownerModule, ListableVector datas, int startWindow, int endWindow, CompatibilityTest test, long longWait) {

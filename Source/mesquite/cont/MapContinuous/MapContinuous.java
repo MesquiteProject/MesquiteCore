@@ -14,15 +14,30 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
 package mesquite.cont.MapContinuous;
 /*~~  */
 
-import java.util.*;
-import java.awt.*;
-import mesquite.lib.*;
-import mesquite.lib.characters.*;
-import mesquite.lib.duties.*;
+import mesquite.cont.lib.ContinuousHistory;
+import mesquite.cont.lib.ContinuousState;
+import mesquite.lib.CommandChecker;
+import mesquite.lib.DoubleArray;
+import mesquite.lib.EmployeeNeed;
+import mesquite.lib.Incrementable;
+import mesquite.lib.MesquiteCommand;
+import mesquite.lib.MesquiteFile;
+import mesquite.lib.MesquiteInteger;
+import mesquite.lib.MesquiteModule;
+import mesquite.lib.MesquiteString;
+import mesquite.lib.MesquiteTrunk;
+import mesquite.lib.Notification;
+import mesquite.lib.NumberArray;
+import mesquite.lib.Snapshot;
+import mesquite.lib.StringUtil;
+import mesquite.lib.characters.CharacterDistribution;
+import mesquite.lib.characters.CharacterStates;
+import mesquite.lib.duties.CharSourceCoordObed;
+import mesquite.lib.duties.CharStatesForNodes;
+import mesquite.lib.duties.NumbersForNodesIncr;
 import mesquite.lib.taxa.Taxa;
 import mesquite.lib.tree.Tree;
 import mesquite.lib.ui.MesquiteMenuItemSpec;
-import mesquite.cont.lib.*;
 
 /* ======================================================================== */
 public class MapContinuous extends NumbersForNodesIncr implements Incrementable {

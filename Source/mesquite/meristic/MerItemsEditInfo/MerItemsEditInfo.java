@@ -15,15 +15,29 @@ Modified 27 July 01: name reverted to "Tree Legend"; added getNameForMenuItem "T
  */
 package mesquite.meristic.MerItemsEditInfo;
 
-import java.awt.*;
-import java.awt.event.*;
-import java.util.*;
-import mesquite.lib.*;
-import mesquite.lib.characters.*;
-import mesquite.lib.duties.*;
-import mesquite.meristic.lib.*;
+import java.awt.Graphics;
+import java.awt.Image;
+import java.awt.event.FocusEvent;
+import java.awt.event.FocusListener;
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
+
 import mesquite.charMatrices.lib.MatrixInfoExtraPanel;
-import mesquite.lib.table.*;
+import mesquite.lib.CommandChecker;
+import mesquite.lib.CompatibilityTest;
+import mesquite.lib.MesquiteFile;
+import mesquite.lib.MesquiteInteger;
+import mesquite.lib.MesquiteListener;
+import mesquite.lib.MesquiteModule;
+import mesquite.lib.MesquiteString;
+import mesquite.lib.MesquiteTrunk;
+import mesquite.lib.NameReference;
+import mesquite.lib.Notification;
+import mesquite.lib.Snapshot;
+import mesquite.lib.StringUtil;
+import mesquite.lib.characters.CharacterData;
+import mesquite.lib.duties.MatrixInfoPanelAssistantI;
+import mesquite.lib.table.MesquiteTable;
 import mesquite.lib.ui.ClosablePanelContainer;
 import mesquite.lib.ui.ListDialog;
 import mesquite.lib.ui.MQPanel;
@@ -32,6 +46,8 @@ import mesquite.lib.ui.MesquiteImage;
 import mesquite.lib.ui.MesquiteTool;
 import mesquite.lib.ui.MesquiteWindow;
 import mesquite.lib.ui.StringInABox;
+import mesquite.meristic.lib.MeristicData;
+import mesquite.meristic.lib.MeristicStateTest;
 
 public class MerItemsEditInfo extends MatrixInfoPanelAssistantI  {
 	ItemsPanel panel;

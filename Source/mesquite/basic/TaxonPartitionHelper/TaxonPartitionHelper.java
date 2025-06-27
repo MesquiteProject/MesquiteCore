@@ -14,14 +14,31 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
 package mesquite.basic.TaxonPartitionHelper;
 /*~~  */
 
-import mesquite.lists.lib.*;
+import java.awt.Color;
 
-
-import java.awt.*;
-
+import mesquite.assoc.lib.AssociationsManager;
+import mesquite.assoc.lib.TaxaAssociation;
 import mesquite.basic.ManageTaxaPartitions.ManageTaxaPartitions;
-import mesquite.lib.*;
-import mesquite.lib.duties.*;
+import mesquite.lib.AssociableWithSpecs;
+import mesquite.lib.Bits;
+import mesquite.lib.CommandChecker;
+import mesquite.lib.MesquiteCommand;
+import mesquite.lib.MesquiteFile;
+import mesquite.lib.MesquiteInteger;
+import mesquite.lib.MesquiteListener;
+import mesquite.lib.MesquiteMessage;
+import mesquite.lib.MesquiteModule;
+import mesquite.lib.MesquiteString;
+import mesquite.lib.MesquiteThread;
+import mesquite.lib.NameParser;
+import mesquite.lib.Notification;
+import mesquite.lib.SelectionInformer;
+import mesquite.lib.SpecsSet;
+import mesquite.lib.SpecsSetVector;
+import mesquite.lib.StringLister;
+import mesquite.lib.StringUtil;
+import mesquite.lib.duties.TaxaManager;
+import mesquite.lib.duties.TaxaSelectedUtility;
 import mesquite.lib.taxa.Taxa;
 import mesquite.lib.taxa.TaxaGroup;
 import mesquite.lib.taxa.TaxaGroupVector;
@@ -30,6 +47,7 @@ import mesquite.lib.ui.ColorDistribution;
 import mesquite.lib.ui.ListDialog;
 import mesquite.lib.ui.MesquiteSubmenuSpec;
 import mesquite.lib.ui.MesquiteSymbol;
+import mesquite.lists.lib.GroupDialog;
 
 /* ======================================================================== */
 public class TaxonPartitionHelper  extends TaxaSelectedUtility{
@@ -64,12 +82,7 @@ public class TaxonPartitionHelper  extends TaxaSelectedUtility{
 			if (group == null && StringUtil.blank(name))
 				return;
 			TaxaPartition partition = (TaxaPartition) taxa.getOrMakeCurrentSpecsSet(TaxaPartition.class);
-			/*	if (partition==null){
-				partition= new TaxaPartition("Partition", taxa.getNumTaxa(), null, taxa);
-				partition.addToFile(taxa.getFile(), getProject(), findElementManager(TaxaPartition.class));
-				taxa.setCurrentSpecsSet(partition, TaxaPartition.class);
-			}*/
-			if (group == null){
+				if (group == null){
 				TaxaGroupVector groups = (TaxaGroupVector)getProject().getFileElement(TaxaGroupVector.class, 0);
 				Object obj = groups.getElement(name);
 				group = (TaxaGroup)obj;
@@ -99,7 +112,7 @@ public class TaxonPartitionHelper  extends TaxaSelectedUtility{
 						taxonTouched(-1);
 						outputInvalid();
 						changed = true;
-				}
+					}
 
 				}
 
@@ -128,11 +141,11 @@ public class TaxonPartitionHelper  extends TaxaSelectedUtility{
 					taxonTouched(-1);
 					outputInvalid();
 					changed = true;
-			}
+				}
 
 
 				if (changed)
-					taxa.notifyListeners(this, new Notification(AssociableWithSpecs.SPECSSET_CHANGED)); //TODO: bogus! should notify via specs not data???
+					taxa.notifyListeners(this, new Notification(AssociableWithSpecs.SPECSSET_CHANGED)); 
 				parametersChanged();
 
 			}
@@ -156,7 +169,6 @@ public class TaxonPartitionHelper  extends TaxaSelectedUtility{
 		d.dispose();
 		if (!ok)
 			return null;
-		//String name = MesquiteString.queryString(containerOfModule(), "New character group", "New character group label", "Untitled Group");
 		if (StringUtil.blank(name))
 			return null;
 		TaxaGroup group = new TaxaGroup();
@@ -349,13 +361,33 @@ public class TaxonPartitionHelper  extends TaxaSelectedUtility{
 			createPartitionBasedOnNames();
 			//return ((ListWindow)getModuleWindow()).getCurrentObject();
 		}
-		else if (checker.compare(this.getClass(), "Creates a taxa block based upon the current partition", null, commandName, "createTaxaBlock")) {
-			//ZQ: FYI: I moved the two methods out of Taxa. They are best not done there. 
-			// A module should do this, partly because it is not just the Taxa's internal management but affects the whole project, and partly to have interface choices.
-			//  ManageTaxa is exactly for this sort of thing. Also changed name of method, since it's from the partition.
+		else if (checker.compare(this.getClass(), "Creates a taxa block based upon the current partition, and generates an assocation linking them", null, commandName, "createAndAssociateTaxaBlock")) {
 			TaxaManager manager = (TaxaManager)findElementManager(Taxa.class);
 			if (manager!=null) {
-				manager.createTaxaBlockBasedOnPartition(taxa);
+				Taxa containing = manager.createTaxaBlockBasedOnPartition(taxa);
+				TaxaAssociation association=null;
+				AssociationsManager assocManager = (AssociationsManager)findElementManager(TaxaAssociation.class);
+				association = assocManager.makeNewAssociation(containing, taxa, "Association");
+
+				if (association != null) { 
+					TaxaPartition part = (TaxaPartition)taxa.getCurrentSpecsSet(TaxaPartition.class);
+					for (int it=0; it<containing.getNumTaxa(); it++)
+						for (int ito = 0; ito<taxa.getNumTaxa(); ito++){
+							String name = containing.getTaxonName(it);
+							TaxaGroup tg = part.getTaxaGroup(ito);
+							if (tg!=null){
+								String nameOther = tg.getName();
+								if (name == null || nameOther == null)
+									continue;
+								boolean matches = name.equals(nameOther);
+								if (matches){
+									association.setAssociation(containing.getTaxon(it), taxa.getTaxon(ito), true);
+								}
+							}
+						}
+
+				}			
+				return taxa;
 			}
 			//return ((ListWindow)getModuleWindow()).getCurrentObject();
 		}
@@ -396,6 +428,13 @@ public class TaxonPartitionHelper  extends TaxaSelectedUtility{
 		MesquiteSubmenuSpec mEGC = addSubmenu(null, "Edit Group...", makeCommand("editGroup", this));
 		mEGC.setList((StringLister)getProject().getFileElement(TaxaGroupVector.class, 0));
 		addMenuSeparator();
+		addMenuItem("Store Current Partition...", makeCommand("storeCurrent",  this));
+		if (taxa !=null) {
+			addSubmenu(null, "Load partition", makeCommand("loadToCurrent",  this), taxa.getSpecSetsVector(TaxaPartition.class));
+		}
+		addMenuItem("Replace stored partition by current", makeCommand("replaceWithCurrent",  this));
+		addMenuSeparator();
+		addMenuItem("Create and assign Groups based on Taxon Names...", makeCommand("createBasedOnNames",  this));
 		ManageTaxaPartitions manageTaxPart = (ManageTaxaPartitions)findElementManager(TaxaPartition.class);
 		addMenuItem("Import Partition (Groups) from File...", new MesquiteCommand("importPartitions",  "#" + taxa.getAssignedID(), manageTaxPart));
 		addMenuItem("Export Current Partition and Group Labels/Colors to File...", new MesquiteCommand("exportPartitionAndLabels",  "#" + taxa.getAssignedID(), manageTaxPart));
@@ -404,31 +443,15 @@ public class TaxonPartitionHelper  extends TaxaSelectedUtility{
 		addMenuItem("Assign Colours Randomly to Colourless Groups", makeCommand("assignColorsRandomly", this));
 
 		addMenuSeparator();
-		addMenuItem("Store Current Partition...", makeCommand("storeCurrent",  this));
-		addMenuItem("Create and assign groups based on taxon names...", makeCommand("createBasedOnNames",  this));
-		addMenuItem("Create taxa block based on current groups...", makeCommand("createTaxaBlock",  this));
-		addMenuItem("Replace stored partition by current", makeCommand("replaceWithCurrent",  this));
-		if (taxa !=null) {
-			addSubmenu(null, "Load partition", makeCommand("loadToCurrent",  this), taxa.getSpecSetsVector(TaxaPartition.class));
-		}
-		/*if (taxa != this.taxa){
-			if (this.taxa != null)
-				this.taxa.removeListener(this);
-			taxa.addListener(this);
-		}*/
+		addMenuItem("Create and Associate new Taxa Block based on current Groups", makeCommand("createAndAssociateTaxaBlock",  this));
 		this.taxa = taxa;
 		this.selectionInformer = informer;
 	}
-	/*
-	public void changed(Object caller, Object obj, Notification notification){
-		if (caller == this)
-			return;
-		parametersChanged(notification);
-	}
+	
 
 	/*.................................................................................................................*/
 	public boolean isPrerelease(){
-		return true;  
+		return false;  
 	}
 	/*.................................................................................................................*/
 	/** returns whether this module is requesting to appear as a primary choice */

@@ -13,9 +13,13 @@
  */
 package mesquite.assoc.lib;
 
-import java.awt.*;
-import java.util.*;
-import mesquite.lib.*;
+import mesquite.lib.Bits;
+import mesquite.lib.CommandChecker;
+import mesquite.lib.FileElement;
+import mesquite.lib.MesquiteInteger;
+import mesquite.lib.MesquiteMessage;
+import mesquite.lib.MesquiteTrunk;
+import mesquite.lib.RandomBetween;
 import mesquite.lib.taxa.Taxa;
 import mesquite.lib.taxa.Taxon;
 

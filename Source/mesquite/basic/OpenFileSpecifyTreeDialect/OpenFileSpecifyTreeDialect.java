@@ -15,9 +15,15 @@
 package mesquite.basic.OpenFileSpecifyTreeDialect;
 
 import java.awt.Checkbox;
+
 import mesquite.io.InterpretPhylipTreesBasic.InterpretPhylipTreesBasic;
 import mesquite.io.lib.TryNexusFirstTreeFileInterpreter;
-import mesquite.lib.*;
+import mesquite.lib.MesquiteFile;
+import mesquite.lib.MesquiteInteger;
+import mesquite.lib.MesquiteProject;
+import mesquite.lib.MesquiteString;
+import mesquite.lib.MesquiteTrunk;
+import mesquite.lib.ParseUtil;
 import mesquite.lib.duties.GeneralFileMakerSingle;
 import mesquite.lib.duties.NexusFileInterpreter;
 import mesquite.lib.tree.MesquiteTree;
@@ -40,7 +46,7 @@ public class OpenFileSpecifyTreeDialect extends GeneralFileMakerSingle {
 		MesquiteString fileName = new MesquiteString();
 		String choice = "Choose NEXUS file with trees";
 		if (!NEXUSOnly)
-			choice += " or Phylip/Newick tree file";
+			choice = "Choose NEXUS or Phylip/Newick tree file";
 		String path = MesquiteFile.openFileDialog( choice,  null, fileName);
 		if (path == null)
 			return null;
@@ -71,8 +77,6 @@ public class OpenFileSpecifyTreeDialect extends GeneralFileMakerSingle {
 		}
 		else if (!isNexus) //no dialects, but since Phylip/Newick, must ask about auto-convert and also warn about taxon names
 			dialog = new ExtensibleDialog(containerOfModule(), "Reading tree file");
-		//	else if (includingInExistingProject)
-		//		dialog = new ExtensibleDialog(containerOfModule(), "Reading NEXUS file with trees");
 
 		//Completing the dialog with extra items
 		String autoSaveString = "";
@@ -82,9 +86,10 @@ public class OpenFileSpecifyTreeDialect extends GeneralFileMakerSingle {
 			//NOTE these two check boxes might seem to interact, but will autosave only if Phylip, 
 			//and will include only if NEXUS. The reason inclusion is allowed only with NEXUS is that 
 			//phylip reading will try to use an existing taxa block, which can cause unrecognized taxon name warnings.
-			//Debugg.println fix this by file reading hint to switch to invent taxa block if taxon name not recognized?!?!
+			
+			//Fix this by file reading hint to switch to invent taxa block if taxon name not recognized?!?!
 			//or warn user that only to be used if same taxa block???
-			if (!isNexus)
+			if (!isNexus && !includingInExistingProject)
 				autoSaveB = dialog.addCheckBox("Auto-save converted NEXUS file", true); 
 			dialog.addHorizontalLine(1);
 			if (!isNexus) {
@@ -152,7 +157,7 @@ public class OpenFileSpecifyTreeDialect extends GeneralFileMakerSingle {
 	}
 	/*.................................................................................................................*/
 	public boolean isPrerelease() {
-		return true;
+		return false;
 	}
 	/*.................................................................................................................*/
 	public boolean isSubstantive() {
@@ -163,7 +168,7 @@ public class OpenFileSpecifyTreeDialect extends GeneralFileMakerSingle {
 	 * then the number refers to the Mesquite version.  This should be used only by modules part of the core release of Mesquite.
 	 * If a NEGATIVE integer, then the number refers to the local version of the package, e.g. a third party package*/
 	public int getVersionOfFirstRelease(){
-		return NEXTRELEASE;  
+		return 400;  
 	}
 
 	/*.................................................................................................................*/

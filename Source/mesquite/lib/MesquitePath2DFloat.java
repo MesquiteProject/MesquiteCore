@@ -13,10 +13,8 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
 */
 package mesquite.lib;
 
-import java.awt.*;
+import java.awt.Graphics2D;
 import java.awt.geom.Area;
-import java.awt.geom.Path2D;
-import java.text.*;
 
 
 /* ======================================================================== */

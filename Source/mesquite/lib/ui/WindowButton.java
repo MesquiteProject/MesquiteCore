@@ -13,8 +13,9 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
 */
 package mesquite.lib.ui;
 
-import java.awt.*;
-import java.awt.event.*;
+import java.awt.Button;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
 
 
 /* ======================================================================== */

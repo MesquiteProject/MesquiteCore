@@ -14,12 +14,19 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
 package mesquite.tol.TaxonOnWebDB;
 /*~~  */
 
-import java.util.*;
-import java.awt.*;
-import java.awt.image.*;
+import java.awt.Graphics;
+import java.util.Vector;
 
-import mesquite.lib.*;
-import mesquite.lib.duties.*;
+import mesquite.lib.CommandChecker;
+import mesquite.lib.Commandable;
+import mesquite.lib.Listable;
+import mesquite.lib.MesquiteCommand;
+import mesquite.lib.MesquiteInteger;
+import mesquite.lib.MesquiteModule;
+import mesquite.lib.MesquiteModuleInfo;
+import mesquite.lib.MesquiteTrunk;
+import mesquite.lib.StringUtil;
+import mesquite.lib.duties.TreeDisplayAssistantI;
 import mesquite.lib.tree.Tree;
 import mesquite.lib.tree.TreeDisplay;
 import mesquite.lib.tree.TreeDisplayExtra;
@@ -28,7 +35,7 @@ import mesquite.lib.ui.MesquiteButton;
 import mesquite.lib.ui.MesquiteCheckMenuItem;
 import mesquite.lib.ui.MesquitePopup;
 import mesquite.lib.ui.MesquiteWindow;
-import mesquite.tol.lib.*;
+import mesquite.tol.lib.TaxonOnWebServer;
 
 /* ======================================================================== */
 public class TaxonOnWebDB extends TreeDisplayAssistantI {

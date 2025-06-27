@@ -13,9 +13,6 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
 */
 package mesquite.lib.tree;
 
-import java.awt.*;
-import java.math.*;
-
 import mesquite.lib.Context;
 import mesquite.lib.Listable;
 import mesquite.lib.MesquiteModule;

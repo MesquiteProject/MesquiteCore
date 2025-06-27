@@ -14,10 +14,32 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
 package mesquite.charts.NodesScattergram;
 /*~~  */
 
-import java.awt.*;
-import java.util.*;
-import mesquite.lib.*;
-import mesquite.lib.duties.*;
+import java.awt.Color;
+import java.awt.Graphics;
+
+import mesquite.lib.Associable;
+import mesquite.lib.CommandChecker;
+import mesquite.lib.EmployeeNeed;
+import mesquite.lib.Incrementable;
+import mesquite.lib.MesquiteBoolean;
+import mesquite.lib.MesquiteCommand;
+import mesquite.lib.MesquiteFile;
+import mesquite.lib.MesquiteInteger;
+import mesquite.lib.MesquiteModule;
+import mesquite.lib.MesquiteNumber;
+import mesquite.lib.MesquiteString;
+import mesquite.lib.MesquiteThread;
+import mesquite.lib.Notification;
+import mesquite.lib.NumberArray;
+import mesquite.lib.ParseUtil;
+import mesquite.lib.Selectionable;
+import mesquite.lib.Snapshot;
+import mesquite.lib.StringUtil;
+import mesquite.lib.duties.DrawChart;
+import mesquite.lib.duties.NumbersForNodes;
+import mesquite.lib.duties.NumbersForNodesIncr;
+import mesquite.lib.duties.TreeWindowAssistantC;
+import mesquite.lib.duties.TreeWindowMaker;
 import mesquite.lib.tree.LabelsAtNodes;
 import mesquite.lib.tree.Tree;
 import mesquite.lib.tree.TreeDisplay;

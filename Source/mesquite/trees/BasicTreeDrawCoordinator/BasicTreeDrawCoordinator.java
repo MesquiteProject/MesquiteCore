@@ -14,25 +14,50 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
 package mesquite.trees.BasicTreeDrawCoordinator;
 /*~~  */
 
-import java.util.*;
-
-import mesquite.assoc.lib.*;
-
-import java.awt.*;
+import java.awt.Color;
+import java.awt.Component;
+import java.awt.Container;
+import java.awt.Dimension;
+import java.awt.FontMetrics;
+import java.awt.Graphics;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
-import java.io.*;
-import java.awt.image.*;
 
-import mesquite.lib.*;
-import mesquite.lib.duties.*;
+import com.lowagie.text.pdf.PdfGraphics2D;
+
+import mesquite.lib.Associable;
+import mesquite.lib.CommandChecker;
+import mesquite.lib.EmployeeNeed;
+import mesquite.lib.Listable;
+import mesquite.lib.ListableVector;
+import mesquite.lib.MesquiteBoolean;
+import mesquite.lib.MesquiteCommand;
+import mesquite.lib.MesquiteDouble;
+import mesquite.lib.MesquiteFile;
+import mesquite.lib.MesquiteInteger;
+import mesquite.lib.MesquiteMessage;
+import mesquite.lib.MesquiteModule;
+import mesquite.lib.MesquiteNumber;
+import mesquite.lib.MesquiteString;
+import mesquite.lib.MesquiteThread;
+import mesquite.lib.MesquiteTrunk;
+import mesquite.lib.Notification;
+import mesquite.lib.ParseUtil;
+import mesquite.lib.Snapshot;
+import mesquite.lib.StringArray;
+import mesquite.lib.StringUtil;
+import mesquite.lib.duties.DrawNamesTreeDisplay;
+import mesquite.lib.duties.DrawTree;
+import mesquite.lib.duties.DrawTreeCoordinator;
+import mesquite.lib.duties.TWindowMaker;
+import mesquite.lib.duties.TreeDrawAssistantI;
+import mesquite.lib.duties.TreeWindowMaker;
 import mesquite.lib.taxa.Taxa;
 import mesquite.lib.tree.MesquiteTree;
 import mesquite.lib.tree.Tree;
 import mesquite.lib.tree.TreeDisplay;
 import mesquite.lib.tree.TreeDisplayActive;
 import mesquite.lib.tree.TreeDrawing;
-import mesquite.lib.ui.ColorDialog;
 import mesquite.lib.ui.ColorDistribution;
 import mesquite.lib.ui.GraphicsUtil;
 import mesquite.lib.ui.MesquiteMenuSpec;
@@ -40,8 +65,6 @@ import mesquite.lib.ui.MesquiteSubmenuSpec;
 import mesquite.lib.ui.MesquiteTool;
 import mesquite.lib.ui.MesquiteWindow;
 import mesquite.trees.BranchPropertyDisplayControl.BranchPropertyDisplayControl;
-
-import com.lowagie.text.pdf.PdfGraphics2D;
 
 /** Coordinates the drawing of trees in windows (e.g., used in the Tree Window and other places) */
 public class BasicTreeDrawCoordinator extends DrawTreeCoordinator {

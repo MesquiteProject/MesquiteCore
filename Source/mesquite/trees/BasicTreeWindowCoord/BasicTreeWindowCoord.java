@@ -14,10 +14,22 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
 package mesquite.trees.BasicTreeWindowCoord;
 /*~~  */
 
-import java.util.*;
-import java.awt.*;
-import mesquite.lib.*;
-import mesquite.lib.duties.*;
+import mesquite.lib.CommandChecker;
+import mesquite.lib.CommandRecord;
+import mesquite.lib.EmployeeNeed;
+import mesquite.lib.Listable;
+import mesquite.lib.ListableVector;
+import mesquite.lib.MesquiteFile;
+import mesquite.lib.MesquiteInteger;
+import mesquite.lib.MesquiteModule;
+import mesquite.lib.MesquiteThread;
+import mesquite.lib.MesquiteTrunk;
+import mesquite.lib.Snapshot;
+import mesquite.lib.StringUtil;
+import mesquite.lib.duties.FileInit;
+import mesquite.lib.duties.TreeSource;
+import mesquite.lib.duties.TreeWindowMaker;
+import mesquite.lib.duties.TreesManager;
 import mesquite.lib.taxa.Taxa;
 import mesquite.lib.tree.TreeVector;
 import mesquite.lib.ui.MesquiteMenuItemSpec;

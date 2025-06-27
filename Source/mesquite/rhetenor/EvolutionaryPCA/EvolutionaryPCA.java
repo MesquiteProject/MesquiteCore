@@ -14,15 +14,15 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
 package mesquite.rhetenor.EvolutionaryPCA;
 /*~~  */
 
-import java.util.*;
-import java.awt.*;
-import mesquite.lib.*;
-import mesquite.lib.characters.*;
-import mesquite.lib.duties.*;
+import mesquite.cont.lib.MContinuousDistribution;
+import mesquite.lib.EmployeeNeed;
+import mesquite.lib.MesquiteModule;
+import mesquite.lib.duties.OneTreeSource;
 import mesquite.lib.taxa.Taxa;
 import mesquite.lib.tree.Tree;
-import mesquite.cont.lib.*;
-import mesquite.rhetenor.lib.*;
+import mesquite.rhetenor.lib.EPCAOrdination;
+import mesquite.rhetenor.lib.Ordination;
+import mesquite.rhetenor.lib.Ordinator;
 
 /* ======================================================================== */
 public class EvolutionaryPCA extends Ordinator {

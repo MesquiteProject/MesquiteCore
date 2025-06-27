@@ -13,12 +13,27 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
 */
 package mesquite.categ.lib;
 
-import java.awt.*;
-import java.util.*;
-import mesquite.lib.*;
-import mesquite.lib.characters.*;
-import mesquite.lib.duties.*;
-import mesquite.lib.table.*;
+import java.awt.BorderLayout;
+import java.awt.Color;
+import java.awt.FontMetrics;
+import java.awt.Graphics;
+
+import mesquite.lib.CommandChecker;
+import mesquite.lib.Commandable;
+import mesquite.lib.FileElement;
+import mesquite.lib.MesquiteInteger;
+import mesquite.lib.MesquiteListener;
+import mesquite.lib.MesquiteModule;
+import mesquite.lib.MesquiteNumber;
+import mesquite.lib.MesquiteString;
+import mesquite.lib.Notification;
+import mesquite.lib.StringUtil;
+import mesquite.lib.characters.CharacterModel;
+import mesquite.lib.duties.CharModelCurator;
+import mesquite.lib.table.EditorPanel;
+import mesquite.lib.table.MesquiteTable;
+import mesquite.lib.table.TableTool;
+import mesquite.lib.table.TableWindow;
 import mesquite.lib.ui.ColorDistribution;
 import mesquite.lib.ui.MesquiteWindow;
 import mesquite.lib.ui.ToolPalette;

@@ -14,10 +14,12 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
 package mesquite.minimal.ShowEmployeeTree;
 /*~~  */
 
-import java.util.*;
-import java.awt.*;
-import mesquite.lib.*;
-import mesquite.lib.duties.*;
+import java.awt.BorderLayout;
+import java.awt.Font;
+
+import mesquite.lib.MesquiteModule;
+import mesquite.lib.duties.BrowseHierarchy;
+import mesquite.lib.duties.EmployeeTree;
 import mesquite.lib.misc.HPanel;
 import mesquite.lib.ui.ColorDistribution;
 import mesquite.lib.ui.MesquiteWindow;

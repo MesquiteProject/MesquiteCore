@@ -14,11 +14,7 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
 package mesquite.genesis.lib;
 /*~~  */
 
-import mesquite.lib.*;
-import mesquite.lib.characters.*;
-import mesquite.lib.duties.*;
-import mesquite.categ.lib.*;
-import mesquite.stochchar.lib.*;
+import mesquite.stochchar.lib.CategProbModelCurator;
 
 public abstract class ProbabilityDNAModel extends CompositProbCategModel {
 	

@@ -13,16 +13,27 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
  */
 package mesquite.categ.ManageCategoricalChars;
 
-import java.util.*;
-import java.awt.*;
-import java.io.*;
+import java.util.Vector;
 
-import mesquite.lib.*;
-import mesquite.lib.characters.*;
-import mesquite.lib.duties.*;
+import mesquite.categ.lib.CategoricalData;
+import mesquite.categ.lib.CategoricalState;
+import mesquite.lib.CommandRecord;
+import mesquite.lib.MesquiteFile;
+import mesquite.lib.MesquiteInteger;
+import mesquite.lib.MesquiteProject;
+import mesquite.lib.MesquiteString;
+import mesquite.lib.MesquiteStringBuffer;
+import mesquite.lib.NexusBlock;
+import mesquite.lib.NexusCommandTest;
+import mesquite.lib.ParseUtil;
+import mesquite.lib.StringArray;
+import mesquite.lib.StringUtil;
+import mesquite.lib.characters.CharacterData;
+import mesquite.lib.characters.CharacterStates;
+import mesquite.lib.characters.CharactersBlock;
+import mesquite.lib.duties.CharMatrixManager;
 import mesquite.lib.taxa.Taxa;
 import mesquite.lib.ui.ProgressIndicator;
-import mesquite.categ.lib.*;
 
 /* ======================================================================== 
 Manages matrices of categorical characters (excluding molecular sequences)*/
@@ -386,10 +397,14 @@ public class ManageCategoricalChars extends CharMatrixManager {
 			file = data.getFile();
 		if (file == null)
 			return;
-		if (file.useDataBlocks)
+		if (file.useDataBlocks){
 			file.write("BEGIN DATA");
-		else
+			CommandRecord.tick("Composing Characters block");
+		}
+		else {
 			file.write("BEGIN CHARACTERS");
+			CommandRecord.tick("Composing Data block");
+		}
 		if (data.getAnnotation()!=null && !file.useSimplifiedNexus) {
 			file.write("[!" + StringUtil.tokenize(data.getAnnotation()) + "]");
 		}

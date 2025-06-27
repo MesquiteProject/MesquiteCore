@@ -3,26 +3,13 @@ package mesquite.lib;
 
 	
 	
-	/* Mesquite source code.  Copyright 1997 and onward, W. Maddison and D. Maddison. 
+	import java.awt.Button;
+import java.awt.Choice;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.TextEvent;
+import java.awt.event.TextListener;
 
-
-	Disclaimer:  The Mesquite source code is lengthy and we are few.  There are no doubt inefficiencies and goofs in this code. 
-	The commenting leaves much to be desired. Please approach this source code with the spirit of helping out.
-	Perhaps with your help we can be more than a few, and make Mesquite better.
-
-	Mesquite is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY.
-	Mesquite's web site is http://mesquiteproject.org
-
-	This source code and its compiled class files are free and modifiable under the terms of 
-	GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
-	 */
-
-
-	import java.util.*;
-	import java.awt.*;
-	import java.awt.event.*;
-
-	import mesquite.lib.*;
 import mesquite.lib.ui.ExtensibleDialog;
 import mesquite.lib.ui.SingleLineTextField;
 
@@ -141,9 +128,11 @@ import mesquite.lib.ui.SingleLineTextField;
 		}
 		
 		/*.................................................................................................................*/
-		public void processTabbedFileChoiceExtensibleDialog () {
+		public boolean  processTabbedFileChoiceExtensibleDialog () {
 			sampleCodeListPath = sampleCodeFilePathField.getText();
 			chosenNameCategory = categoryChoice.getSelectedIndex();
+			return StringUtil.notEmpty(sampleCodeListPath);
+				
 	}
 
 		/*.................................................................................................................*/

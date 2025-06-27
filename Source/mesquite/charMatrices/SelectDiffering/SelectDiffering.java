@@ -14,13 +14,12 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
 package mesquite.charMatrices.SelectDiffering;
 /*~~  */
 
-import java.util.*;
-import java.awt.*;
-import java.awt.image.*;
-import mesquite.lib.*;
-import mesquite.lib.characters.*;
-import mesquite.lib.duties.*;
-import mesquite.lib.table.*;
+import mesquite.lib.Listable;
+import mesquite.lib.MesquiteString;
+import mesquite.lib.characters.CharacterData;
+import mesquite.lib.characters.CharacterState;
+import mesquite.lib.duties.DataWSelectionAssistant;
+import mesquite.lib.table.MesquiteTable;
 import mesquite.lib.taxa.Taxa;
 import mesquite.lib.ui.ListDialog;
 

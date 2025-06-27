@@ -13,10 +13,19 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
 */
 package mesquite.ancstates.UnambigChangesAtNodes;
 
-import mesquite.categ.lib.*;
-import mesquite.lib.*;
-import mesquite.lib.characters.*;
-import mesquite.lib.duties.*;
+import mesquite.categ.lib.CategoricalData;
+import mesquite.categ.lib.CategoricalState;
+import mesquite.categ.lib.RequiresAnyCategoricalData;
+import mesquite.lib.CompatibilityTest;
+import mesquite.lib.MesquiteNumber;
+import mesquite.lib.MesquiteString;
+import mesquite.lib.NumberArray;
+import mesquite.lib.characters.CharInclusionSet;
+import mesquite.lib.characters.CharacterData;
+import mesquite.lib.characters.CharacterHistory;
+import mesquite.lib.characters.CharacterState;
+import mesquite.lib.characters.MCharactersHistory;
+import mesquite.lib.duties.NumbersForNodesAndHistory;
 import mesquite.lib.tree.MesquiteTree;
 import mesquite.lib.tree.Tree;
 

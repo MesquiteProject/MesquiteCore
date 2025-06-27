@@ -13,13 +13,13 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
 */
 package mesquite.lib.ui;
 
-import java.awt.*;
-import java.awt.event.*;
+import java.awt.Container;
+import java.awt.Polygon;
+import java.awt.PopupMenu;
 
 import mesquite.lib.MesquiteCommand;
 import mesquite.lib.MesquiteMessage;
 import mesquite.lib.MesquiteModule;
-import mesquite.lib.duties.*;
 
 public class MesquitePopup extends PopupMenu {
 	Container c;

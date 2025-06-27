@@ -14,14 +14,11 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
 package mesquite.lists.TreeListRooted;
 /*~~  */
 
-import mesquite.lists.lib.*;
-import java.util.*;
-import java.awt.*;
-import mesquite.lib.*;
-import mesquite.lib.duties.*;
-import mesquite.lib.table.*;
+import mesquite.lib.Notification;
+import mesquite.lib.table.MesquiteTable;
 import mesquite.lib.tree.Tree;
 import mesquite.lib.tree.TreeVector;
+import mesquite.lists.lib.TreeListAssistant;
 
 /* ======================================================================== */
 public class TreeListRooted extends TreeListAssistant {

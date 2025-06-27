@@ -13,10 +13,7 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
 */
 package mesquite.lib.duties;
 
-import java.awt.*;
-import java.util.*;
-import mesquite.lib.*;
-import mesquite.lib.duties.*;
+import mesquite.lib.MesquiteModule;
 import mesquite.lib.taxa.Taxa;
 
 
@@ -28,7 +25,7 @@ public abstract class TaxonUtility extends MesquiteModule  {
    	 	return TaxonUtility.class;
    	 }
  	public String getDutyName() {
- 		return "Taxon list utility";
+ 		return "Taxon utility";
    	 }
 
    	/** if returns true, then requests to remain on even after operateOnTaxa is called.  Default is false*/

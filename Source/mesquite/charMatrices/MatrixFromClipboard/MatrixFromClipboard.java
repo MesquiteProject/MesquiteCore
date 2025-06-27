@@ -14,18 +14,31 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
 package mesquite.charMatrices.MatrixFromClipboard;
 /*~~  */
 
-import java.util.*;
-import java.awt.*;
-import java.awt.event.*;
-import java.awt.datatransfer.*;
-import mesquite.lib.*;
-import mesquite.lib.table.*;
+import java.awt.Checkbox;
+import java.awt.Choice;
+import java.awt.Toolkit;
+import java.awt.datatransfer.Clipboard;
+import java.awt.datatransfer.DataFlavor;
+import java.awt.datatransfer.Transferable;
+import java.awt.event.ItemEvent;
+import java.awt.event.ItemListener;
+
+import mesquite.lib.IntegerArray;
+import mesquite.lib.MesquiteBoolean;
+import mesquite.lib.MesquiteInteger;
+import mesquite.lib.MesquiteListener;
+import mesquite.lib.MesquiteString;
+import mesquite.lib.Parser;
+import mesquite.lib.StringUtil;
+import mesquite.lib.characters.CharacterData;
+import mesquite.lib.characters.CharacterState;
+import mesquite.lib.characters.MCharactersDistribution;
+import mesquite.lib.duties.CharMatrixFiller;
+import mesquite.lib.duties.CharactersManager;
+import mesquite.lib.table.MesquiteTable;
 import mesquite.lib.taxa.Taxa;
 import mesquite.lib.ui.ExtensibleDialog;
 import mesquite.lib.ui.MesquiteSubmenuSpec;
-import mesquite.lib.characters.*;
-import mesquite.categ.lib.*;
-import mesquite.lib.duties.*;
 
 /** Makes a character matrix from the clipboard.*/
 public class MatrixFromClipboard extends CharMatrixFiller implements MesquiteListener {

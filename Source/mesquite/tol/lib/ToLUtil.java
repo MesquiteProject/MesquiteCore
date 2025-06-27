@@ -16,12 +16,14 @@ package mesquite.tol.lib;
 import java.util.Iterator;
 import java.util.List;
 
+import org.dom4j.Attribute;
+import org.dom4j.CDATA;
+import org.dom4j.Element;
+
 import mesquite.lib.MesquiteInteger;
 import mesquite.lib.MesquiteString;
 import mesquite.lib.taxa.Taxa;
 import mesquite.lib.tree.MesquiteTree;
-
-import org.dom4j.*;
 
 public class ToLUtil {
 

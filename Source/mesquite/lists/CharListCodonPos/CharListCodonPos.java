@@ -14,16 +14,29 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
 package mesquite.lists.CharListCodonPos;
 /*~~  */
 
-import mesquite.lists.lib.*;
-
-import mesquite.lib.*;
-import mesquite.lib.characters.*;
-import mesquite.lib.table.*;
+import mesquite.categ.lib.DNAData;
+import mesquite.categ.lib.ProteinData;
+import mesquite.categ.lib.RequiresAnyDNAData;
+import mesquite.lib.AssociableWithSpecs;
+import mesquite.lib.CommandChecker;
+import mesquite.lib.CompatibilityTest;
+import mesquite.lib.MesquiteInteger;
+import mesquite.lib.MesquiteListener;
+import mesquite.lib.MesquiteMessage;
+import mesquite.lib.MesquiteNumber;
+import mesquite.lib.MesquiteString;
+import mesquite.lib.Notification;
+import mesquite.lib.SpecsSet;
+import mesquite.lib.SpecsSetVector;
+import mesquite.lib.StringUtil;
+import mesquite.lib.characters.CharacterData;
+import mesquite.lib.characters.CodonPositionsSet;
+import mesquite.lib.table.MesquiteTable;
 import mesquite.lib.taxa.Taxa;
 import mesquite.lib.ui.ListDialog;
-import mesquite.lib.ui.MesquiteMenuItemSpec;
 import mesquite.lib.ui.MesquiteSubmenuSpec;
-import mesquite.categ.lib.*;
+import mesquite.lists.lib.CharListAssistant;
+import mesquite.lists.lib.ListModule;
 
 /* ======================================================================== */
 public class CharListCodonPos extends CharListAssistant {

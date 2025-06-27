@@ -13,14 +13,12 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
  */
 package mesquite.lib;
 
-import java.awt.*;
-import mesquite.lib.duties.*;
+import java.awt.Component;
+
 import mesquite.lib.ui.MesquiteDialog;
 import mesquite.lib.ui.MesquiteDialogParent;
 import mesquite.lib.ui.MesquiteWindow;
 import mesquite.lib.ui.ProgressIndicator;
-
-import java.io.*;
 
 public class PendingCommand implements SpecialListName, Explainable {
 	MesquiteCommand command;

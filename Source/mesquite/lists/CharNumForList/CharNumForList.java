@@ -14,18 +14,32 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
 package mesquite.lists.CharNumForList;
 /*~~  */
 
-import mesquite.lists.lib.*;
+import java.awt.Color;
 
-import java.util.*;
-import java.awt.*;
-
-import mesquite.lib.*;
-import mesquite.lib.characters.*;
-import mesquite.lib.duties.*;
-import mesquite.lib.table.*;
+import mesquite.lib.AssociableWithSpecs;
+import mesquite.lib.CommandChecker;
+import mesquite.lib.CommandRecord;
+import mesquite.lib.EmployeeNeed;
+import mesquite.lib.MesquiteBoolean;
+import mesquite.lib.MesquiteFile;
+import mesquite.lib.MesquiteInteger;
+import mesquite.lib.MesquiteListener;
+import mesquite.lib.MesquiteModule;
+import mesquite.lib.MesquiteNumber;
+import mesquite.lib.MesquiteString;
+import mesquite.lib.MesquiteThread;
+import mesquite.lib.Notification;
+import mesquite.lib.NumberArray;
+import mesquite.lib.Snapshot;
+import mesquite.lib.StringArray;
+import mesquite.lib.characters.CharacterData;
+import mesquite.lib.characters.CharacterDistribution;
+import mesquite.lib.duties.NumberForCharacter;
+import mesquite.lib.table.MesquiteTable;
 import mesquite.lib.ui.ExtensibleDialog;
 import mesquite.lib.ui.MesquiteColorTable;
 import mesquite.lib.ui.SingleLineTextField;
+import mesquite.lists.lib.CharListAssistant;
 
 /* ======================================================================== */
 public class CharNumForList extends CharListAssistant implements MesquiteListener {
@@ -250,10 +264,10 @@ public class CharNumForList extends CharListAssistant implements MesquiteListene
 		if (numberTask==null || data == null || suppressed)
 			return;
 		int numChars = data.getNumChars();
+		na.deassignArrayToInteger();
 		na.resetSize(numChars);
 		explArray.resetSize(numChars);
 		MesquiteString expl = new MesquiteString();
-		na.deassignArrayToInteger();
 		MesquiteNumber mn = new MesquiteNumber();
 		for (int ic=0; ic<numChars; ic++) {
 

@@ -13,12 +13,28 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
  */
 package mesquite.trees.BranchLengthsAdjust;
 
-import java.util.*;
-import java.awt.*;
+import java.awt.Color;
+import java.awt.Graphics;
 import java.awt.geom.Point2D;
-import java.awt.image.*;
-import mesquite.lib.*;
-import mesquite.lib.duties.*;
+import java.util.Enumeration;
+import java.util.Vector;
+
+import mesquite.lib.CommandChecker;
+import mesquite.lib.Commandable;
+import mesquite.lib.FunctionExplanation;
+import mesquite.lib.MesquiteCommand;
+import mesquite.lib.MesquiteDouble;
+import mesquite.lib.MesquiteInteger;
+import mesquite.lib.MesquiteListener;
+import mesquite.lib.MesquiteMessage;
+import mesquite.lib.MesquiteModule;
+import mesquite.lib.Notification;
+import mesquite.lib.ParseUtil;
+import mesquite.lib.StringUtil;
+import mesquite.lib.duties.BranchLengthsAlterer;
+import mesquite.lib.duties.TreeDisplayAssistantI;
+import mesquite.lib.duties.TreeTransformer;
+import mesquite.lib.duties.TreeWindowMaker;
 import mesquite.lib.tree.AdjustableTree;
 import mesquite.lib.tree.MesquiteTree;
 import mesquite.lib.tree.Tree;

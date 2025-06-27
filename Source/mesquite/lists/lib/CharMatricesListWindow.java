@@ -4,9 +4,6 @@ import java.awt.Color;
 import java.awt.Graphics;
 
 import mesquite.lib.ListableVector;
-import mesquite.lib.Listenable;
-import mesquite.lib.MesquiteListener;
-import mesquite.lib.Notification;
 import mesquite.lib.characters.CharacterData;
 
 public class CharMatricesListWindow extends ListableVectorWindow {

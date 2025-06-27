@@ -14,11 +14,22 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
 package mesquite.stochchar.lib;
 /*~~  */
 
-import java.util.*;
-import java.awt.*;
-import mesquite.lib.*;
-import mesquite.lib.characters.*;
-import mesquite.lib.duties.*;
+import java.util.Vector;
+
+import mesquite.categ.lib.CategoricalData;
+import mesquite.categ.lib.CategoricalState;
+import mesquite.lib.ExporterDialog;
+import mesquite.lib.MesquiteDouble;
+import mesquite.lib.MesquiteFile;
+import mesquite.lib.MesquiteInteger;
+import mesquite.lib.MesquiteModule;
+import mesquite.lib.MesquiteProject;
+import mesquite.lib.MesquiteStringBuffer;
+import mesquite.lib.Puppeteer;
+import mesquite.lib.characters.CharacterData;
+import mesquite.lib.duties.CharactersManager;
+import mesquite.lib.duties.FileInterpreterI;
+import mesquite.lib.duties.TaxaManager;
 import mesquite.lib.taxa.Taxa;
 import mesquite.lib.taxa.Taxon;
 import mesquite.lib.tree.AdjustableTree;
@@ -26,7 +37,6 @@ import mesquite.lib.tree.MesquiteTree;
 import mesquite.lib.tree.Tree;
 import mesquite.lib.tree.TreeVector;
 import mesquite.lib.ui.ProgressIndicator;
-import mesquite.categ.lib.*;
 
 /* ============  a file interpreter for Pagel's format files; extended to handle files for programs Discrete and Multistate ============*/
 

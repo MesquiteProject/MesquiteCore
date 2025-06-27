@@ -1,36 +1,22 @@
 package mesquite.align.MAFFTAlign;
 
-/* Mesquite source code.  Copyright 1997 and onward, W. Maddison and D. Maddison. 
+import java.awt.Checkbox;
+import java.awt.Choice;
+import java.awt.event.ItemEvent;
+import java.awt.event.ItemListener;
 
-
-Disclaimer:  The Mesquite source code is lengthy and we are few.  There are no doubt inefficiencies and goofs in this code. 
-The commenting leaves much to be desired. Please approach this source code with the spirit of helping out.
-Perhaps with your help we can be more than a few, and make Mesquite better.
-
-Mesquite is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY.
-Mesquite's web site is http://mesquiteproject.org
-
-This source code and its compiled class files are free and modifiable under the terms of 
-GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
- */
-/*~~  */
-
-import java.util.*;
-import java.lang.*;
-import java.io.*;
-import java.awt.*;
-import java.awt.event.*;
-
-import javax.swing.JLabel;
-
-import mesquite.lib.*;
-import mesquite.lib.characters.*;
-import mesquite.lib.duties.*;
-import mesquite.categ.lib.*;
-import mesquite.lib.table.*;
+import mesquite.align.lib.ExternalSequenceAligner;
+import mesquite.categ.lib.MolecularData;
+import mesquite.lib.CommandChecker;
+import mesquite.lib.MesquiteBoolean;
+import mesquite.lib.MesquiteFile;
+import mesquite.lib.MesquiteInteger;
+import mesquite.lib.MesquiteTrunk;
+import mesquite.lib.ParseUtil;
+import mesquite.lib.Snapshot;
+import mesquite.lib.StringUtil;
 import mesquite.lib.ui.ExtensibleDialog;
 import mesquite.lib.ui.SingleLineTextField;
-import mesquite.align.lib.*;
 
 /* ======================================================================== */
 public class MAFFTAlign extends ExternalSequenceAligner implements ItemListener{

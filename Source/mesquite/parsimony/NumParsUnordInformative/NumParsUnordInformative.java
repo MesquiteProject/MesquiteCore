@@ -17,10 +17,11 @@ package mesquite.parsimony.NumParsUnordInformative;
 import mesquite.categ.lib.CategoricalData;
 import mesquite.categ.lib.MCategoricalDistribution;
 import mesquite.categ.lib.RequiresAnyCategoricalData;
-import mesquite.categ.lib.RequiresAnyDNAData;
-import mesquite.lib.*;
-import mesquite.lib.characters.*;
-import mesquite.lib.duties.*;
+import mesquite.lib.CompatibilityTest;
+import mesquite.lib.MesquiteNumber;
+import mesquite.lib.MesquiteString;
+import mesquite.lib.characters.MCharactersDistribution;
+import mesquite.lib.duties.NumberForMatrix;
 
 public class NumParsUnordInformative extends NumberForMatrix {
 
@@ -63,14 +64,14 @@ public class NumParsUnordInformative extends NumberForMatrix {
 	} 
 
 	public boolean isPrerelease (){
-		return true;
+		return false;
 	}
 	/*.................................................................................................................*/
 	/** returns the version number at which this module was first released.  If 0, then no version number is claimed.  If a POSITIVE integer
 	 * then the number refers to the Mesquite version.  This should be used only by modules part of the core release of Mesquite.
 	 * If a NEGATIVE integer, then the number refers to the local version of the package, e.g. a third party package*/
 	public int getVersionOfFirstRelease(){
-		return NEXTRELEASE;  
+		return 400;  
 	}
 
 	public String getName() {

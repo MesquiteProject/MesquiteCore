@@ -13,10 +13,10 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
 */
 package mesquite.lib.duties;
 
-import java.awt.*;
+import java.awt.Dimension;
 import java.util.Vector;
 
-import mesquite.lib.*;
+import mesquite.lib.MesquiteModule;
 import mesquite.lib.tree.TreeDisplay;
 import mesquite.lib.tree.TreeDisplayHolder;
 import mesquite.lib.tree.TreeDrawing;

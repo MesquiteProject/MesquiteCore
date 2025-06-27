@@ -13,17 +13,34 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
  */
 package mesquite.lib.ui;
 
-import java.awt.*;
+import java.awt.CardLayout;
+import java.awt.Color;
+import java.awt.Component;
+import java.awt.Container;
+import java.awt.Cursor;
+import java.awt.Dimension;
+import java.awt.Font;
+import java.awt.Frame;
+import java.awt.Graphics;
+import java.awt.Graphics2D;
+import java.awt.Image;
+import java.awt.Insets;
+import java.awt.Menu;
+import java.awt.MenuBar;
+import java.awt.Panel;
+import java.awt.Rectangle;
+import java.awt.RenderingHints;
+import java.awt.Shape;
+import java.awt.Stroke;
+import java.awt.Toolkit;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
-import java.awt.geom.*;
-import java.util.*;
+import java.util.Vector;
 
 import mesquite.lib.CommandChecker;
 import mesquite.lib.Commandable;
-import mesquite.lib.Debugg;
 import mesquite.lib.MesquiteCommand;
 import mesquite.lib.MesquiteEvent;
 import mesquite.lib.MesquiteFile;
@@ -36,7 +53,7 @@ import mesquite.lib.MesquiteThread;
 import mesquite.lib.MesquiteTrunk;
 import mesquite.lib.StringUtil;
 import mesquite.lib.SystemWindow;
-import mesquite.lib.duties.*;
+import mesquite.lib.duties.FileCoordinator;
 import mesquite.lib.simplicity.InterfaceManager;
 /* ======================================================================== */
 /** an intermediary class that can be changed to extend Panel versus Frame, to allow embedding versus not 
@@ -305,12 +322,12 @@ public class MesquiteFrame extends Frame implements Commandable, MQComponent {
 		catch (Exception e){
 			//strange things can happen with threading...
 		}
-		MesquiteThread.shouldBeOnMesquiteThread(true);	//Debugg.println set to false before release	
+		MesquiteThread.shouldBeOnMesquiteThread(false);	//Debugg.println set to false before release	  LEAVE THIS HERE
 		alreadyDisposed = true;
 		if (activeWindow == this)
 			activeWindow = null;
 		totalDisposed++;
-		MesquiteThread.shouldBeOnMesquiteThread(true);
+		MesquiteThread.shouldBeOnMesquiteThread(false);
 		super.dispose();
 		ownerModule = null;
 		if (project != null && project.getFrame() == this) {

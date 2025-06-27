@@ -14,15 +14,16 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
 package mesquite.align.ZapGaps;
 /*~~  */
 
-import java.util.*;
-import java.lang.*;
-import java.awt.*;
-import java.awt.event.*;
-import mesquite.lib.*;
-import mesquite.lib.characters.*;
-import mesquite.lib.duties.*;
-import mesquite.categ.lib.*;
-import mesquite.lib.table.*;
+import mesquite.categ.lib.MolecularData;
+import mesquite.categ.lib.MolecularDataAlterer;
+import mesquite.lib.MesquiteInteger;
+import mesquite.lib.MesquiteListener;
+import mesquite.lib.Notification;
+import mesquite.lib.ResultCodes;
+import mesquite.lib.UndoReference;
+import mesquite.lib.characters.AltererAlignShift;
+import mesquite.lib.characters.CharacterData;
+import mesquite.lib.table.MesquiteTable;
 
 
 

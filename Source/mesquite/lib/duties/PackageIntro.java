@@ -13,12 +13,9 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
  */
 package mesquite.lib.duties;
 
-import java.awt.*;
-import java.io.*;
-import java.util.Iterator;
-
-
-import mesquite.lib.*;
+import mesquite.lib.MesquiteFile;
+import mesquite.lib.MesquiteModule;
+import mesquite.lib.StringUtil;
 
 
 /* ======================================================================== */

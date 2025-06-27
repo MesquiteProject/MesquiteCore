@@ -13,13 +13,12 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
 */
 package mesquite.categ.CategVariable;
 
-import mesquite.categ.lib.CategoricalState;
-import mesquite.lib.*;
-import mesquite.lib.characters.*;
-import mesquite.lib.duties.*;
+import mesquite.categ.lib.CategoricalData;
+import mesquite.lib.MesquiteBoolean;
+import mesquite.lib.MesquiteString;
+import mesquite.lib.characters.CharacterData;
+import mesquite.lib.duties.BooleanForCharacter;
 import mesquite.lib.taxa.Taxa;
-import mesquite.parsimony.lib.ParsimonyModelSet;
-import mesquite.categ.lib.*;
 
 public class CategVariable extends BooleanForCharacter {
 

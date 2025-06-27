@@ -14,7 +14,13 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
 
 package mesquite.charMatrices.NumForTaxonSummedForMatrices;
 
-import mesquite.lib.*;
+import mesquite.lib.CommandChecker;
+import mesquite.lib.MesquiteCommand;
+import mesquite.lib.MesquiteFile;
+import mesquite.lib.MesquiteNumber;
+import mesquite.lib.MesquiteString;
+import mesquite.lib.Notification;
+import mesquite.lib.Snapshot;
 import mesquite.lib.characters.CharacterData;
 import mesquite.lib.duties.NumberForTaxon;
 import mesquite.lib.duties.NumberForTaxonAndMatrix;
@@ -40,7 +46,7 @@ public class NumForTaxonSummedForMatrices extends NumberForTaxon {
 		}
 		mc =makeCommand("numberTask",  this);
 		numberTask.setHiringCommand(mc);
-		addMenuItem("Value to Calculate...", mc);//TODO: checkmark
+		addMenuItem("Value to Calculate...", mc);
 		getProject().addListener(this);
 		return true;
 	}
@@ -69,7 +75,6 @@ public class NumForTaxonSummedForMatrices extends NumberForTaxon {
 	public void endJob(){
 		super.endJob();
 		getProject().removeListener(this);
-		//need to hire NumberForTaxonAndMatrix
 	}
 	/* ---------------------------------------------------------*/
 	/** passes which object changed, along with optional Notification object with details (e.g., code number (type of change) and integers (e.g. which character))*/
@@ -95,7 +100,7 @@ public class NumForTaxonSummedForMatrices extends NumberForTaxon {
 	 * then the number refers to the Mesquite version.  This should be used only by modules part of the core release of Mesquite.
 	 * If a NEGATIVE integer, then the number refers to the local version of the package, e.g. a third party package*/
 	public int getVersionOfFirstRelease(){
-		return NEXTRELEASE;  
+		return 400;  
 	}
 	/*.................................................................................................................*/
 	public String getName() {
@@ -114,7 +119,7 @@ public class NumForTaxonSummedForMatrices extends NumberForTaxon {
 
 	/*.................................................................................................................*/
 	public boolean isPrerelease() {
-		return true;
+		return false;
 	}
 	/*.................................................................................................................*/
 	public boolean isSubstantive() {
@@ -135,7 +140,6 @@ public class NumForTaxonSummedForMatrices extends NumberForTaxon {
 		int it = taxon.getIndex();
 		clearResultAndLastResult(result);
 		MesquiteNumber temp = new MesquiteNumber(0);
-		int count = 0;
 		result.setValue(0);
 		for (int im = 0; im < getProject().getNumberCharMatrices(taxa); im++){
 			CharacterData data = getProject().getCharacterMatrix(taxa, im);

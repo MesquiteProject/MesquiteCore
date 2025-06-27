@@ -13,20 +13,28 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
  */
 package mesquite.lists.TaxaBlocksListMerge;
 
-import mesquite.lists.lib.*;
+import java.util.Vector;
 
-import java.util.*;
-import java.awt.*;
-import mesquite.lib.*;
-import mesquite.lib.characters.*;
+import mesquite.charMatrices.BasicDataWindowCoord.BasicDataWindowCoord;
+import mesquite.lib.Listable;
+import mesquite.lib.ListableVector;
+import mesquite.lib.MesquiteListener;
+import mesquite.lib.MesquiteProject;
+import mesquite.lib.MesquiteThread;
+import mesquite.lib.Notification;
 import mesquite.lib.characters.CharacterData;
-import mesquite.lib.duties.*;
-import mesquite.lib.table.*;
+import mesquite.lib.duties.CharactersManager;
+import mesquite.lib.duties.DataWindowMaker;
+import mesquite.lib.duties.FileCoordinator;
+import mesquite.lib.duties.TaxaManager;
+import mesquite.lib.table.MesquiteTable;
 import mesquite.lib.taxa.Taxa;
 import mesquite.lib.tree.MesquiteTree;
 import mesquite.lib.tree.TreeVector;
 import mesquite.lib.ui.AlertDialog;
 import mesquite.lib.ui.ListDialog;
+import mesquite.lists.lib.ListModule;
+import mesquite.lists.lib.TaxaBlocksListUtility;
 
 /* ======================================================================== */
 public class TaxaBlocksListMerge extends TaxaBlocksListUtility {
@@ -49,7 +57,7 @@ public class TaxaBlocksListMerge extends TaxaBlocksListUtility {
 	public boolean queryOptions() {
 		if (!MesquiteThread.isScripting()){
 
-		//	duplicateExcludedCharacters = !AlertDialog.query(containerOfModule(), "Remove excluded characters?","Remove excluded characters?", "Yes", "No");
+			//	duplicateExcludedCharacters = !AlertDialog.query(containerOfModule(), "Remove excluded characters?","Remove excluded characters?", "Yes", "No");
 		}
 		return true;
 	}
@@ -65,6 +73,46 @@ public class TaxaBlocksListMerge extends TaxaBlocksListUtility {
 		boolean recipientAdded = false;
 		boolean reorderedDonor  = false; //donor.notifyListeners(this, new Notification(MesquiteListener.PARTS_MOVED));
 
+		MesquiteProject recipientProject = recipient.getProject();
+		MesquiteProject donorProject = donor.getProject();
+
+		// . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 
+		//closing down windows of things to be deleted so as not to have graphics issues
+		FileCoordinator bfc = donorProject.getCoordinatorModule();
+		BasicDataWindowCoord bdwc = (BasicDataWindowCoord)bfc.findEmployeeWithDuty(BasicDataWindowCoord.class);
+		for (int i =bdwc.getNumberOfEmployees()-1; i>=0; i--) {
+			Object e=bdwc.getEmployeeVector().elementAt(i);
+			if (e instanceof DataWindowMaker) {
+				DataWindowMaker dwm = (DataWindowMaker)e;
+				if (dwm.getCharacterData().getTaxa() == donor) {
+					dwm.windowGoAway(dwm.getModuleWindow());
+				}
+			}
+		}
+		CharactersManager cManager = (CharactersManager)bfc.findEmployeeWithDuty(CharactersManager.class);
+		for (int i =cManager.getNumberOfEmployees()-1; i>=0; i--) {
+			Object e=cManager.getEmployeeVector().elementAt(i);
+			if (e instanceof ListModule) {
+				ListModule listModule = (ListModule)e;
+				for (int iM = 0; iM < donorProject.getNumberCharMatrices(donor); iM++){
+					CharacterData donorData = donorProject.getCharacterMatrix(donor, iM);
+					if (listModule.showing(donorData))
+						listModule.windowGoAway(listModule.getModuleWindow());
+				}
+			}
+		}
+		TaxaManager tManager = (TaxaManager)bfc.findEmployeeWithDuty(TaxaManager.class);
+		for (int i =tManager.getNumberOfEmployees()-1; i>=0; i--) {
+			Object e=tManager.getEmployeeVector().elementAt(i);
+			if (e instanceof ListModule) {
+				ListModule listModule = (ListModule)e;
+				if (listModule.showing(donor))
+					listModule.windowGoAway(listModule.getModuleWindow());
+			}
+		}
+		// . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 
+
+
 		//adding taxa from donor that aren't in recipient
 		for (int it = 0; it<donor.getNumTaxa(); it++){
 			String donorName = donor.getTaxonName(it);
@@ -72,6 +120,7 @@ public class TaxaBlocksListMerge extends TaxaBlocksListUtility {
 				int rNumTaxa = recipient.getNumTaxa();
 				recipient.addTaxa(rNumTaxa, 1, false);
 				recipient.setTaxonName(rNumTaxa, donorName);
+				recipient.equalizeParts(donor, it, rNumTaxa);
 				recipientAdded = true;
 			}
 		}
@@ -85,6 +134,7 @@ public class TaxaBlocksListMerge extends TaxaBlocksListUtility {
 				int dNumTaxa = donor.getNumTaxa();
 				donor.addTaxa(dNumTaxa, 1, false);
 				donor.setTaxonName(dNumTaxa, recipientName);
+				donor.equalizeParts(recipient, it, dNumTaxa);
 				donorAdded = true;
 			}
 		}
@@ -95,9 +145,8 @@ public class TaxaBlocksListMerge extends TaxaBlocksListUtility {
 		reorderedDonor = donor.matchOrderIfEqual(recipient);
 		if (reorderedDonor)
 			donor.notifyListeners(this, new Notification(MesquiteListener.PARTS_MOVED));
-		
-		MesquiteProject donorProject = donor.getProject();
-		MesquiteProject recipientProject = donor.getProject();
+		// . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 
+
 
 		//Now copying matrices from donor to recipient
 		boolean setTaxaMatrixSucceeded = true;
@@ -105,7 +154,9 @@ public class TaxaBlocksListMerge extends TaxaBlocksListUtility {
 			CharacterData data = donorProject.getCharacterMatrix(donor, iM);
 			CharacterData cloned = data.cloneData();
 			cloned.addToFile(recipientProject.getHomeFile(),recipientProject, findElementManager(CharacterData.class));  
-			data.copyMetadataTo(cloned);
+			data.copyMetadataTo(cloned); //this has to be after file has been set
+			for (int ic = 0; ic<cloned.getNumChars(); ic++)
+				cloned.equalizeParts(data, ic, ic);
 			boolean sTMS = cloned.setTaxa(recipient, true);
 			setTaxaMatrixSucceeded = setTaxaMatrixSucceeded && sTMS;
 			cloned.setName(data.getName());
@@ -117,6 +168,7 @@ public class TaxaBlocksListMerge extends TaxaBlocksListUtility {
 			alert("Merging failed: the taxa block of a matrix could not be reset. The data file may be left in an unstable state. If you save it, use Save As so as not to overwrite the previous version.");
 			return false;
 		}
+		// . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 
 		//Now copying tree blocks from donor to recipient
 		boolean setTaxaTreesSucceeded = true;
 		for (int iM = 0; iM < donorProject.getNumberTreeVectors(donor); iM++){
@@ -127,6 +179,9 @@ public class TaxaBlocksListMerge extends TaxaBlocksListUtility {
 				MesquiteTree t = (MesquiteTree)donorTrees.elementAt(i);
 				MesquiteTree cloned = t.cloneTree();
 				boolean sTTS = cloned.setTaxa(recipient, true);
+				for (int ic = 0; ic<cloned.getNumNodeSpaces() &&  ic<t.getNumNodeSpaces(); ic++){
+					cloned.equalizeParts(t, ic, ic);
+				}
 				setTaxaTreesSucceeded = setTaxaTreesSucceeded && sTTS;
 				receivingTrees.addElement(cloned, false);
 
@@ -135,6 +190,7 @@ public class TaxaBlocksListMerge extends TaxaBlocksListUtility {
 			receivingTrees.setName(donorTrees.getName());
 			receivingTrees.setAnnotation(donorTrees.getAnnotation(), false);
 		}
+		// . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 
 		if (!setTaxaTreesSucceeded) {
 			alert("Merging failed: the taxa block of a tree block could not be reset. The data file may be left in an unstable state. If you save it, use Save As so as not to overwrite the previous version.");
 			return false;
@@ -202,7 +258,7 @@ public class TaxaBlocksListMerge extends TaxaBlocksListUtility {
 			recipient = (Taxa)result;
 		}
 		String message = "The selected taxa blocks will be deleted after their taxa, matrices, and trees have been merged into the taxa block \"" + recipient.getName() + "\"."
-				+ " This cannot be undone.\n\nYou are strongly advised to save a copy of the file before doing this, because some information such as important metadata, footnotes or colors might be lost. Also, some ongoing analyses might be disrupted. "
+				+ " This CANNOT BE UNDONE.\n\nYou are strongly advised to save a copy of the file before doing this, because some information such as important metadata, footnotes or colors might be lost. Also, some ongoing analyses might be disrupted. "
 				+ " Would you like to continue with the merger?";
 		boolean contn = AlertDialog.query(containerOfModule(), "Merge and delete taxa blocks?", message, "Merge", "Cancel", 1);
 		if (!contn)
@@ -232,7 +288,7 @@ public class TaxaBlocksListMerge extends TaxaBlocksListUtility {
 	 * then the number refers to the Mesquite version.  This should be used only by modules part of the core release of Mesquite.
 	 * If a NEGATIVE integer, then the number refers to the local version of the package, e.g. a third party package*/
 	public int getVersionOfFirstRelease(){
-		return NEXTRELEASE;  
+		return 400;  
 	}
 	/*.................................................................................................................*/
 	public boolean isPrerelease(){

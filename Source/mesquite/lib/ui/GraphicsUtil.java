@@ -13,8 +13,28 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
  */
 package mesquite.lib.ui;
 
-import java.awt.*;
-import java.awt.geom.*;
+import java.awt.BasicStroke;
+import java.awt.Color;
+import java.awt.Component;
+import java.awt.Composite;
+import java.awt.Font;
+import java.awt.FontMetrics;
+import java.awt.Graphics;
+import java.awt.Graphics2D;
+import java.awt.Polygon;
+import java.awt.Rectangle;
+import java.awt.RenderingHints;
+import java.awt.Shape;
+import java.awt.Stroke;
+import java.awt.TexturePaint;
+import java.awt.geom.AffineTransform;
+import java.awt.geom.Arc2D;
+import java.awt.geom.Area;
+import java.awt.geom.Ellipse2D;
+import java.awt.geom.Line2D;
+import java.awt.geom.Path2D;
+import java.awt.geom.Rectangle2D;
+import java.awt.geom.RoundRectangle2D;
 
 import mesquite.lib.MesquiteDouble;
 import mesquite.lib.MesquiteMessage;
@@ -201,7 +221,8 @@ public class GraphicsUtil {
 			return;
 		Graphics2D g2 = (Graphics2D)g;
 		g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-		g2.setStroke(new BasicStroke(strokeWidth));
+		if (strokeWidth>=0)
+			g2.setStroke(new BasicStroke(strokeWidth));
 		g2.draw(shape);
 		g2.setStroke(new BasicStroke(1));
 	}
@@ -682,6 +703,15 @@ public class GraphicsUtil {
 		g.fillRect(x,y,w, h);
 		ColorDistribution.setComposite(g, composite);		
 	}
+	public static void fillTransparentOval5 (Graphics g, double x, double y, double w, double h, Color color) {
+		Composite composite = ColorDistribution.getComposite(g);
+		ColorDistribution.setTransparentGraphics5(g);		
+		Color oldColor = g.getColor();
+		g.setColor(color);
+		fillOval(g, x, y, w, h);
+		g.setColor(oldColor);
+		ColorDistribution.setComposite(g, composite);		
+	}
 	public static void fillTransparentSelectionRectangle (Graphics g, int x, int y, int w, int h) {
 		Composite composite = ColorDistribution.getComposite(g);
 		ColorDistribution.setTransparentGraphics3(g);		
@@ -834,7 +864,8 @@ public class GraphicsUtil {
 		try {
 			Graphics2D g2 = (Graphics2D)g;
 			Stroke st = g2.getStroke();
-			g2.setStroke(new BasicStroke(strokeWidth));
+			if (strokeWidth>=0)
+				g2.setStroke(new BasicStroke(strokeWidth));
 			g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
 			Ellipse2D oval = new Ellipse2D.Double(x,y,w,h);
 			g2.draw(oval); 

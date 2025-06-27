@@ -13,13 +13,19 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
  */
 package mesquite.lib.ui;
 
-import java.awt.*;
-import java.awt.event.*;
+import java.awt.MenuBar;
+import java.awt.MenuComponent;
+import java.awt.MenuContainer;
+import java.awt.MenuItem;
+import java.awt.MenuShortcut;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
 
-import javax.swing.UIManager;
+import javax.accessibility.AccessibleContext;
 
 import mesquite.lib.CommandChecker;
-import mesquite.lib.Debugg;
 import mesquite.lib.Journal;
 import mesquite.lib.Listable;
 import mesquite.lib.MesquiteCommand;
@@ -31,7 +37,6 @@ import mesquite.lib.MesquiteString;
 import mesquite.lib.MesquiteThread;
 import mesquite.lib.MesquiteTrunk;
 import mesquite.lib.ParseUtil;
-import mesquite.lib.duties.*;
 import mesquite.lib.simplicity.InterfaceManager;
 
 
@@ -94,7 +99,7 @@ public class MesquiteMenuItem extends MenuItem implements ActionListener {
 	//This is constructor used to make menu from specs
 	public MesquiteMenuItem(MesquiteMenuItemSpec specification) {
 		super();
-		constructorUsed = 2;
+	constructorUsed = 2;
 		if (specification==null)
 			return;
 		addActionListener(this);
@@ -125,6 +130,7 @@ public class MesquiteMenuItem extends MenuItem implements ActionListener {
 		//	addActionListener(this);
 		totalCreated++;
 	}
+	
 	public MesquiteMenuItemSpec getSpecification(){
 		return specification;
 	}
@@ -217,7 +223,7 @@ public class MesquiteMenuItem extends MenuItem implements ActionListener {
 	}
 	Journal j =null;
 	public void actionPerformed(ActionEvent e) {
-		//Event queue
+	//Event queue
 		if (command==null || !command.isExecutable())
 			return ;//true;
 		if (hideable && hiddenStatusSet && InterfaceManager.isEditingMode()){
@@ -238,7 +244,6 @@ public class MesquiteMenuItem extends MenuItem implements ActionListener {
 				s += " (duty class: " + ((MesquiteSubmenu)getParent()).getDutyClass().getName() + ")";
 			if (getParent() instanceof MesquiteSubmenu && ((MesquiteSubmenu)getParent()).getFilter() != null)
 				s += " (filter: " + ((MesquiteSubmenu)getParent()).getFilter().getName() + ")";
-
 			MesquiteWindow.respondToQueryMode(s, command, this);
 		}
 		else {

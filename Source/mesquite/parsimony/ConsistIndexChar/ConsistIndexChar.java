@@ -14,18 +14,18 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
 package mesquite.parsimony.ConsistIndexChar;
 /*~~  */
 
-import java.util.*;
-import java.awt.*;
-
 import mesquite.categ.lib.CategoricalDistribution;
-import mesquite.categ.lib.MCategoricalDistribution;
 import mesquite.categ.lib.RequiresAnyCategoricalData;
-import mesquite.lib.*;
-import mesquite.lib.characters.*;
-import mesquite.lib.duties.*;
+import mesquite.lib.CompatibilityTest;
+import mesquite.lib.EmployeeNeed;
+import mesquite.lib.MesquiteModule;
+import mesquite.lib.MesquiteNumber;
+import mesquite.lib.MesquiteString;
+import mesquite.lib.characters.CharacterDistribution;
+import mesquite.lib.duties.NumberForCharAndTree;
 import mesquite.lib.tree.MesquiteTree;
 import mesquite.lib.tree.Tree;
-import mesquite.parsimony.lib.*;
+import mesquite.parsimony.lib.CharacterSteps;
 
 /* ======================================================================== */
 public class ConsistIndexChar extends NumberForCharAndTree {

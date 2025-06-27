@@ -14,17 +14,21 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
 package mesquite.consensus.lib;
 
 
-import java.awt.Button;
 import java.awt.Choice;
-import java.awt.Label;
 
-import mesquite.lib.duties.*;
+import mesquite.lib.CommandChecker;
+import mesquite.lib.MesquiteFile;
+import mesquite.lib.MesquiteInteger;
+import mesquite.lib.MesquiteThread;
+import mesquite.lib.MesquiteTimer;
+import mesquite.lib.Snapshot;
+import mesquite.lib.StringUtil;
+import mesquite.lib.duties.IncrementalConsenser;
 import mesquite.lib.taxa.Taxa;
 import mesquite.lib.tree.Tree;
 import mesquite.lib.tree.Trees;
 import mesquite.lib.ui.ExtensibleDialog;
 import mesquite.lib.ui.ProgressIndicator;
-import mesquite.lib.*;
 
 
 public abstract class BasicTreeConsenser extends IncrementalConsenser   {

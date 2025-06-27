@@ -13,15 +13,22 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
  */
 
 package mesquite.trees.lib;
-import mesquite.lib.*;
+import java.awt.BasicStroke;
+import java.awt.Color;
+import java.awt.Graphics;
+import java.awt.Graphics2D;
+import java.awt.RenderingHints;
+import java.awt.Shape;
+import java.awt.Stroke;
+import java.awt.geom.Arc2D;
+import java.awt.geom.Line2D;
+import java.awt.geom.Path2D;
+
 import mesquite.lib.tree.Tree;
 import mesquite.lib.tree.TreeDisplay;
 import mesquite.lib.tree.TreeDrawing;
 import mesquite.lib.ui.ColorDistribution;
 import mesquite.lib.ui.GraphicsUtil;
-
-import java.awt.*;
-import java.awt.geom.*;
 
 
 public class DrawTreeUtil {

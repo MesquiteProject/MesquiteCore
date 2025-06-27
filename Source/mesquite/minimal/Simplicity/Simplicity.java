@@ -15,21 +15,32 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
 package mesquite.minimal.Simplicity;
 /*~~  */
 
-import mesquite.lib.*;
-import mesquite.lib.duties.*;
-import mesquite.lib.simplicity.*;
-import mesquite.lib.ui.ListDialog;
-import mesquite.lib.ui.MenuVisibility;
-import mesquite.lib.ui.QueryDialogs;
-
-import java.util.zip.*;
-import java.util.*;
-import java.awt.Font;
-import java.io.*;
+import java.io.File;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Vector;
 
 import org.dom4j.Document;
 import org.dom4j.DocumentHelper;
 import org.dom4j.Element;
+
+import mesquite.lib.CommandChecker;
+import mesquite.lib.Listable;
+import mesquite.lib.MesquiteBoolean;
+import mesquite.lib.MesquiteFile;
+import mesquite.lib.MesquiteInteger;
+import mesquite.lib.MesquiteString;
+import mesquite.lib.MesquiteTrunk;
+import mesquite.lib.ObjectContainer;
+import mesquite.lib.Parser;
+import mesquite.lib.StringArray;
+import mesquite.lib.StringUtil;
+import mesquite.lib.XMLUtil;
+import mesquite.lib.simplicity.InterfaceManager;
+import mesquite.lib.simplicity.SimplicityManagerModule;
+import mesquite.lib.ui.ListDialog;
+import mesquite.lib.ui.MenuVisibility;
+import mesquite.lib.ui.QueryDialogs;
 
 
 public class Simplicity extends SimplicityManagerModule {

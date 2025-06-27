@@ -13,11 +13,10 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
 */
 package mesquite.molec.ReverseComplement;
 
-import mesquite.categ.lib.*;
-import mesquite.lib.*;
-import mesquite.lib.characters.*;
-import mesquite.lib.table.*;
-import mesquite.molec.lib.*;
+import mesquite.categ.lib.DNAData;
+import mesquite.categ.lib.DNADataAltererCon;
+import mesquite.lib.characters.AltererAlignShift;
+import mesquite.lib.characters.CharacterData;
 
 public class ReverseComplement extends DNADataAltererCon  implements AltererAlignShift{
 

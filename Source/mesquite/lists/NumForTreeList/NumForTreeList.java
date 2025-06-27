@@ -14,15 +14,29 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
 package mesquite.lists.NumForTreeList;
 /*~~  */
 
-import mesquite.lists.lib.*;
-import java.util.*;
-import java.awt.*;
-import mesquite.lib.*;
-import mesquite.lib.duties.*;
-import mesquite.lib.table.*;
+import java.awt.Color;
+import java.util.Vector;
+
+import mesquite.lib.CommandChecker;
+import mesquite.lib.CommandRecord;
+import mesquite.lib.EmployeeNeed;
+import mesquite.lib.MesquiteBoolean;
+import mesquite.lib.MesquiteFile;
+import mesquite.lib.MesquiteListener;
+import mesquite.lib.MesquiteModule;
+import mesquite.lib.MesquiteNumber;
+import mesquite.lib.MesquiteString;
+import mesquite.lib.Notification;
+import mesquite.lib.NumberArray;
+import mesquite.lib.Pausable;
+import mesquite.lib.Snapshot;
+import mesquite.lib.StringArray;
+import mesquite.lib.duties.NumberForTree;
+import mesquite.lib.table.MesquiteTable;
 import mesquite.lib.tree.Tree;
 import mesquite.lib.tree.TreeVector;
 import mesquite.lib.ui.MesquiteColorTable;
+import mesquite.lists.lib.TreeListAssistant;
 
 /* ======================================================================== */
 public class NumForTreeList extends TreeListAssistant implements MesquiteListener, Pausable {
@@ -201,6 +215,7 @@ public class NumForTreeList extends TreeListAssistant implements MesquiteListene
 			return;
 
 		int numTrees = treesBlock.size();
+		na.deassignArrayToInteger();
 		na.resetSize(numTrees);
 		explArray.resetSize(numTrees);
 		MesquiteNumber mn = new MesquiteNumber();

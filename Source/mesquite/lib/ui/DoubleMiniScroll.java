@@ -13,11 +13,13 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
 */
 package mesquite.lib.ui;
 
-import java.awt.*;
+import java.awt.Color;
+import java.awt.Cursor;
+import java.awt.Graphics;
+import java.awt.PrintGraphics;
 
 import mesquite.lib.MesquiteCommand;
 import mesquite.lib.StringUtil;
-import mesquite.lib.duties.*;
 
 /* ======================================================================== */
 /** A miniature scroller containing two MiniScrolls. */

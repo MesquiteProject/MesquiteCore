@@ -13,12 +13,31 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
  */
 package mesquite.lib.duties;
 
-import java.awt.*;
-import java.util.*;
+import java.util.Enumeration;
 
-import mesquite.lib.*;
-import mesquite.lib.characters.*;
+import mesquite.lib.Bits;
+import mesquite.lib.CommandChecker;
+import mesquite.lib.FileElement;
+import mesquite.lib.ListableVector;
+import mesquite.lib.MesquiteFile;
+import mesquite.lib.MesquiteInteger;
+import mesquite.lib.MesquiteMessage;
+import mesquite.lib.MesquiteModule;
+import mesquite.lib.MesquiteProject;
+import mesquite.lib.MesquiteString;
+import mesquite.lib.MesquiteTrunk;
+import mesquite.lib.NexusBlock;
+import mesquite.lib.ParseUtil;
+import mesquite.lib.Snapshot;
+import mesquite.lib.SpecsSet;
+import mesquite.lib.SpecsSetVector;
+import mesquite.lib.StringUtil;
+import mesquite.lib.characters.CharSelectionSet;
+import mesquite.lib.characters.CharSpecsSet;
 import mesquite.lib.characters.CharacterData;
+import mesquite.lib.characters.CharacterModel;
+import mesquite.lib.characters.CharacterStates;
+import mesquite.lib.characters.ModelSet;
 import mesquite.lib.ui.ListDialog;
 import mesquite.lib.ui.MesquiteWindow;
 
@@ -221,7 +240,7 @@ public abstract class CharSpecsSetManager extends SpecsSetManager {
 	}
 
 
-
+int referentWarnings = 0;
 	/*.................................................................................................................*/
 	public boolean readNexusCommand(MesquiteFile file, NexusBlock nBlock, String blockName, String command, MesquiteString comment, String fileReadingArguments){ 
 		if (appropriateBlockForReading(blockName)) { 
@@ -277,8 +296,14 @@ public abstract class CharSpecsSetManager extends SpecsSetManager {
 				}
 
 				if (data==null) {
-					if (!noWarnMissingReferent)
+					if (!noWarnMissingReferent){
+					referentWarnings++;
+					if (referentWarnings<2)
 						MesquiteMessage.discreetNotifyUser("Sorry, a " + lowerCaseTypeName() + " could not be read because its associated data set was not found.  This can occur if you are fusing files, or if you have edited files by hand or with another program.  Another possible cause is that your current Mesquite configuration doesn't include packages to read matrices of that type.  Try restarting Mesquite after selecting \"Use all installed packages\" in the Activate/Deactivate submenu of the File menu.\n\nCommand: " + command);
+					else if (referentWarnings==2)
+						MesquiteMessage.discreetNotifyUser("Another " + lowerCaseTypeName() + " could not be read because its associated data set was not found.  "
+						+"With this one, warnings will cease, but there may be more such cases in the file.");
+					}
 					return false;
 				}
 				if (data.getSuppressSpecssetReading())

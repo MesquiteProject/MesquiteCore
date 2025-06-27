@@ -14,18 +14,22 @@
 
 package mesquite.lib;
 
-import java.awt.*;
-import java.util.*;
-import java.io.*;
+import java.awt.Color;
+import java.awt.Container;
+import java.awt.Image;
+import java.util.Enumeration;
+import java.util.Vector;
 
-import mesquite.lib.duties.*;
+import mesquite.lib.duties.CharModelCurator;
+import mesquite.lib.duties.DataWindowMaker;
+import mesquite.lib.duties.ElementManager;
+import mesquite.lib.duties.FileCoordinator;
 import mesquite.lib.misc.HNode;
 import mesquite.lib.ui.AlertDialog;
 import mesquite.lib.ui.ColorDistribution;
 import mesquite.lib.ui.InfoBar;
 import mesquite.lib.ui.ListDialog;
 import mesquite.lib.ui.MesquiteDialog;
-import mesquite.lib.ui.MesquiteMenuSpec;
 import mesquite.lib.ui.MesquitePopup;
 import mesquite.lib.ui.MesquiteWindow;
 
@@ -349,6 +353,17 @@ public abstract class EmployerEmployee extends MenuOwner implements HNode, Lista
 			return 0;
 		else
 			return employees.size();
+	}
+	/* ................................................................................................................. */
+	/** Returns number of employees in the clade of the employee tree, including this one. */
+	public int getTotalNumEmployed() {
+		int total = 1; 
+		if (employees != null && employees.size()>0){
+			for (int i=0; i< employees.size(); i++){
+				total += ((EmployerEmployee)employees.elementAt(i)).getTotalNumEmployed();
+			}
+		}
+		return total;
 	}
 
 	/* ................................................................................................................. */
@@ -1594,7 +1609,7 @@ public abstract class EmployerEmployee extends MenuOwner implements HNode, Lista
 		while (enumeration.hasMoreElements()) {
 			Object obj = enumeration.nextElement();
 			mbi = (MesquiteModuleInfo) obj;
-			if (mbi.doesDuty(dutyClass) && mbi.isCompatible(comp, module.getProject(), module) && (!employeeExists(mbi, dutyClass))) {
+			if (mbi.doesDuty(dutyClass) && mbi.isCompatible(comp, module.getProject(), module) && (!employeeExists(mbi, null))) {
 				MesquiteModule mb = hireEmployeeFromModuleInfo(mbi, dutyClass);
 			}
 		}
@@ -1845,7 +1860,7 @@ public abstract class EmployerEmployee extends MenuOwner implements HNode, Lista
 		Enumeration enumeration = employees.elements();
 		while (enumeration.hasMoreElements()) {
 			MesquiteModule mb = (MesquiteModule) enumeration.nextElement();
-			if (mb.getHiredAs() == dutyClass && mb.getName().equals(mbi.getName())) {
+			if ((dutyClass == null || mb.getHiredAs() == dutyClass) && mb.getName().equals(mbi.getName())) {
 				return true;
 			}
 		}

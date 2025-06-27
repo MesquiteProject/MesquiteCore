@@ -15,17 +15,32 @@ Modified 27 July 01: name reverted to "Tree Legend"; added getNameForMenuItem "T
  */
 package mesquite.cont.ItemsEditorForInfoPanel;
 
-import java.awt.*;
-import java.awt.event.*;
-import java.util.*;
-import mesquite.lib.*;
-import mesquite.lib.characters.*;
-import mesquite.lib.duties.*;
-import mesquite.cont.lib.*;
-import mesquite.categ.lib.CategoricalState;
-import mesquite.categ.lib.RequiresExactlyCategoricalData;
+import java.awt.Graphics;
+import java.awt.Image;
+import java.awt.event.FocusEvent;
+import java.awt.event.FocusListener;
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
+
 import mesquite.charMatrices.lib.MatrixInfoExtraPanel;
-import mesquite.lib.table.*;
+import mesquite.cont.lib.ContinuousData;
+import mesquite.cont.lib.ContinuousStateTest;
+import mesquite.cont.lib.ItemContainer;
+import mesquite.lib.CommandChecker;
+import mesquite.lib.CompatibilityTest;
+import mesquite.lib.MesquiteFile;
+import mesquite.lib.MesquiteInteger;
+import mesquite.lib.MesquiteListener;
+import mesquite.lib.MesquiteModule;
+import mesquite.lib.MesquiteString;
+import mesquite.lib.MesquiteTrunk;
+import mesquite.lib.NameReference;
+import mesquite.lib.Notification;
+import mesquite.lib.Snapshot;
+import mesquite.lib.StringUtil;
+import mesquite.lib.characters.CharacterData;
+import mesquite.lib.duties.MatrixInfoPanelAssistantI;
+import mesquite.lib.table.MesquiteTable;
 import mesquite.lib.ui.ClosablePanelContainer;
 import mesquite.lib.ui.ListDialog;
 import mesquite.lib.ui.MQPanel;

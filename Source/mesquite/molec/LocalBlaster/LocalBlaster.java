@@ -20,12 +20,31 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
 
-import mesquite.lib.*;
+import mesquite.externalCommunication.AppHarvester.AppHarvester;
+import mesquite.externalCommunication.lib.AppChooser;
+import mesquite.externalCommunication.lib.AppInformationFile;
+import mesquite.externalCommunication.lib.AppUser;
+import mesquite.lib.Debugg;
+import mesquite.lib.ExternalProcessManager;
+import mesquite.lib.IntegerField;
+import mesquite.lib.MesquiteBoolean;
+import mesquite.lib.MesquiteFile;
+import mesquite.lib.MesquiteInteger;
+import mesquite.lib.MesquiteMessage;
+import mesquite.lib.MesquiteThread;
+import mesquite.lib.MesquiteTimer;
+import mesquite.lib.MesquiteTrunk;
+import mesquite.lib.OutputFileProcessor;
+import mesquite.lib.Parser;
+import mesquite.lib.ProcessWatcher;
+import mesquite.lib.ShellScriptRunner;
+import mesquite.lib.ShellScriptUtil;
+import mesquite.lib.StringUtil;
 import mesquite.lib.ui.ExtensibleDialog;
 import mesquite.lib.ui.SingleLineTextField;
-import mesquite.molec.lib.*;
-import mesquite.externalCommunication.AppHarvester.AppHarvester;
-import mesquite.externalCommunication.lib.*;
+import mesquite.molec.lib.BLASTResults;
+import mesquite.molec.lib.Blaster;
+import mesquite.molec.lib.NCBIUtil;
 
 /*  Initiator: DRM
  * */
@@ -108,7 +127,6 @@ public class LocalBlaster extends Blaster implements ActionListener,  AppUser, P
 		}
 		if (appInfoFile!=null) {
 			String fullPath = appInfoFile.getFullPath();
-			Debugg.println(getAppInfoForLog());
 			return fullPath;
 		}
 		return null;

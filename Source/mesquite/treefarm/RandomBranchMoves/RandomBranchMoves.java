@@ -14,14 +14,17 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
 package mesquite.treefarm.RandomBranchMoves;
 /*~~  */
 
-import java.util.*;
-import java.awt.*;
-import mesquite.lib.*;
-import mesquite.lib.duties.*;
+import mesquite.lib.Associable;
+import mesquite.lib.CommandChecker;
+import mesquite.lib.MesquiteFile;
+import mesquite.lib.MesquiteInteger;
+import mesquite.lib.MesquiteMessage;
+import mesquite.lib.MesquiteThread;
+import mesquite.lib.RandomBetween;
+import mesquite.lib.Snapshot;
 import mesquite.lib.tree.MesquiteTree;
 import mesquite.lib.tree.Tree;
-import mesquite.lib.ui.ColorDistribution;
-import mesquite.treefarm.lib.*;
+import mesquite.treefarm.lib.RndTreeModifier;
 
 /* ======================================================================== */
 public class RandomBranchMoves extends RndTreeModifier {

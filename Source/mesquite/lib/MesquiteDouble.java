@@ -13,9 +13,9 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
 */
 package mesquite.lib;
 
-import java.awt.*;
-import java.text.*;
-import corejava.Format;
+import java.text.DecimalFormat;
+import java.text.NumberFormat;
+
 import mesquite.lib.ui.EnglishDecimalFormatSymbols;
 import mesquite.lib.ui.MesquiteWindow;
 import mesquite.lib.ui.QueryDialogs;

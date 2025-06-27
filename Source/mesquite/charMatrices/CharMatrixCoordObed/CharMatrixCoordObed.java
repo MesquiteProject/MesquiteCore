@@ -14,11 +14,26 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
 package mesquite.charMatrices.CharMatrixCoordObed;
 /*~~  */
 
-import java.util.*;
-import java.awt.*;
-import mesquite.lib.*;
-import mesquite.lib.characters.*;
-import mesquite.lib.duties.*;
+import java.awt.Color;
+
+import mesquite.lib.Arguments;
+import mesquite.lib.CommandChecker;
+import mesquite.lib.EmployeeNeed;
+import mesquite.lib.MesquiteCommand;
+import mesquite.lib.MesquiteDouble;
+import mesquite.lib.MesquiteFile;
+import mesquite.lib.MesquiteModule;
+import mesquite.lib.MesquiteModuleInfo;
+import mesquite.lib.MesquiteString;
+import mesquite.lib.MesquiteTrunk;
+import mesquite.lib.NameHolder;
+import mesquite.lib.Parser;
+import mesquite.lib.Selectionable;
+import mesquite.lib.Snapshot;
+import mesquite.lib.characters.MCharactersDistribution;
+import mesquite.lib.duties.CharMatrixObedSource;
+import mesquite.lib.duties.CharacterSource;
+import mesquite.lib.duties.MatrixSourceCoordObed;
 import mesquite.lib.taxa.Taxa;
 import mesquite.lib.ui.MesquiteDialog;
 import mesquite.lib.ui.MesquiteSubmenuSpec;

@@ -13,13 +13,22 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
  */
 package mesquite.charMatrices.DataPainter; 
 
-import java.util.*;
-import java.awt.*;
-import java.awt.image.*;
-import mesquite.lib.*;
-import mesquite.lib.characters.*;
-import mesquite.lib.duties.*;
-import mesquite.lib.table.*;
+import mesquite.lib.CommandChecker;
+import mesquite.lib.FunctionExplanation;
+import mesquite.lib.MesquiteCommand;
+import mesquite.lib.MesquiteInteger;
+import mesquite.lib.MesquiteListener;
+import mesquite.lib.MesquiteModule;
+import mesquite.lib.MesquiteString;
+import mesquite.lib.Notification;
+import mesquite.lib.StringUtil;
+import mesquite.lib.UndoInstructions;
+import mesquite.lib.UndoReference;
+import mesquite.lib.characters.CharacterData;
+import mesquite.lib.characters.CharacterState;
+import mesquite.lib.duties.DataWindowAssistantI;
+import mesquite.lib.table.MesquiteTable;
+import mesquite.lib.table.TableTool;
 import mesquite.lib.ui.MesquiteButton;
 import mesquite.lib.ui.MesquitePopup;
 import mesquite.lib.ui.MesquiteWindow;

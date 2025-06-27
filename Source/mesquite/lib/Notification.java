@@ -13,11 +13,6 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
 */
 package mesquite.lib;
 
-import java.awt.*;
-import java.text.*;
-
-
-
 /* ======================================================================== */
 /** An object that contains information about a notification event (e.g., call to notifyListeners or parametersChanged)*/
 public class Notification implements Identifiable {

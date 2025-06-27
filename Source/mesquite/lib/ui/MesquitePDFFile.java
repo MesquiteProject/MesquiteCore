@@ -17,13 +17,23 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
 Modified May 02 especially for annotations*/
 package mesquite.lib.ui;
 
-import java.awt.*;
-import java.awt.geom.*;
-import java.util.*;
-import java.awt.print.*;
-import java.io.*;
-import com.lowagie.text.*;
-import com.lowagie.text.pdf.*;
+import java.awt.Component;
+import java.awt.Dimension;
+import java.awt.FileDialog;
+import java.awt.Graphics;
+import java.awt.PrintJob;
+import java.awt.print.PageFormat;
+import java.awt.print.PrinterJob;
+import java.io.FileOutputStream;
+import java.io.IOException;
+
+import com.lowagie.text.Document;
+import com.lowagie.text.DocumentException;
+import com.lowagie.text.Paragraph;
+import com.lowagie.text.exceptions.IllegalPdfSyntaxException;
+import com.lowagie.text.pdf.PdfContentByte;
+import com.lowagie.text.pdf.PdfTemplate;
+import com.lowagie.text.pdf.PdfWriter;
 
 import mesquite.lib.MainThread;
 import mesquite.lib.MesquiteFileDialog;
@@ -68,6 +78,9 @@ public class MesquitePDFFile {
 	@param fitToPage integer controlling whether the image is fit to the page
 	 */
 	public static MesquitePDFFile getPDFFile(MesquiteWindow w, String name) {
+		if (MesquiteTrunk.isJavaVersionLessThan(17)) {
+			AlertDialog.notice(w, "Requires Java 17 or above", "Saving PDF files requires Java version 17 or above.  Please install the latest version of Java.");
+		}
 		MesquitePDFFile f = new MesquitePDFFile(w,name);
 		if (f.prepareDocument())
 			return f;
@@ -225,7 +238,7 @@ public class MesquitePDFFile {
 		catch (IOException ioe) {
 			MesquiteTrunk.mesquiteTrunk.alert(exceptionMessage  + ioe.getMessage());
 		}
-		this.end();
+		this.endDocument();
 	}
 
 
@@ -337,6 +350,7 @@ public class MesquitePDFFile {
 		catch (com.lowagie.text.DocumentException e) {
 			MesquiteTrunk.mesquiteTrunk.alert(exceptionMessage + e);
 		}
+		//GraphicsUtil.setFontSize(12, g);
 		return g;
 	}
 
@@ -353,7 +367,6 @@ public class MesquitePDFFile {
 		float imageableWidth;
 		float pageHeight;   //dimensions of the virtual page, not the imageable area
 		float pageWidth;    // actually these are only different for Java2D pages
-
 
 		if ((component == null)) { 
 			return;
@@ -372,56 +385,56 @@ public class MesquitePDFFile {
 			double shrinkRatioLANDSCAPE = 0.0;
 			double shrinkRatioPORTRAIT = 0.0;
 			double shrink;
-			   //Java2Davailable == true
-				if ((job2 == null) || pf == null)
-					return;
-				//pf = job2.defaultPage();
+			//Java2Davailable == true
+			if ((job2 == null) || pf == null)
+				return;
+			//pf = job2.defaultPage();
 
+			pf.setOrientation(PageFormat.LANDSCAPE);
+			shrinkWidth = pf.getImageableWidth()*1.0/dimension.width;
+			shrinkHeight = pf.getImageableHeight()*1.0/dimension.height;
+			if (shrinkWidth < shrinkHeight)
+				shrinkRatioLANDSCAPE = shrinkWidth;
+			else
+				shrinkRatioLANDSCAPE = shrinkHeight;	
+			pf.setOrientation(PageFormat.PORTRAIT);
+			shrinkWidth = pf.getImageableWidth()*1.0/dimension.width;
+			shrinkHeight = pf.getImageableHeight()*1.0/dimension.height;
+			if (shrinkWidth < shrinkHeight)
+				shrinkRatioPORTRAIT = shrinkWidth;
+			else
+				shrinkRatioPORTRAIT = shrinkHeight;
+			if (shrinkRatioPORTRAIT < shrinkRatioLANDSCAPE){
 				pf.setOrientation(PageFormat.LANDSCAPE);
-				shrinkWidth = pf.getImageableWidth()*1.0/dimension.width;
-				shrinkHeight = pf.getImageableHeight()*1.0/dimension.height;
-				if (shrinkWidth < shrinkHeight)
-					shrinkRatioLANDSCAPE = shrinkWidth;
-				else
-					shrinkRatioLANDSCAPE = shrinkHeight;	
-				pf.setOrientation(PageFormat.PORTRAIT);
-				shrinkWidth = pf.getImageableWidth()*1.0/dimension.width;
-				shrinkHeight = pf.getImageableHeight()*1.0/dimension.height;
-				if (shrinkWidth < shrinkHeight)
-					shrinkRatioPORTRAIT = shrinkWidth;
-				else
-					shrinkRatioPORTRAIT = shrinkHeight;
-				if (shrinkRatioPORTRAIT < shrinkRatioLANDSCAPE){
-					pf.setOrientation(PageFormat.LANDSCAPE);
-					shrink = shrinkRatioLANDSCAPE;
-				}
-				else {
-					pf.setOrientation(PageFormat.PORTRAIT);
-					shrink = shrinkRatioPORTRAIT;
-				}	
-				pageOrientation = pf.getOrientation();
-
-				imageableWidth = (float)pf.getImageableWidth();
-				imageableHeight = (float)pf.getImageableHeight();
-				pageWidth = (float)pf.getWidth();
-				pageHeight = (float)pf.getHeight();
-				//pageMatrix = zeroPageMatrix();
-				pageMatrix[0] = (float)shrink;
-				pageMatrix[3] = (float)shrink;  
+				shrink = shrinkRatioLANDSCAPE;
 			}
-		
+			else {
+				pf.setOrientation(PageFormat.PORTRAIT);
+				shrink = shrinkRatioPORTRAIT;
+			}	
+			pageOrientation = pf.getOrientation();
+
+			imageableWidth = (float)pf.getImageableWidth();
+			imageableHeight = (float)pf.getImageableHeight();
+			pageWidth = (float)pf.getWidth();
+			pageHeight = (float)pf.getHeight();
+			//pageMatrix = zeroPageMatrix();
+			pageMatrix[0] = (float)shrink;
+			pageMatrix[3] = (float)shrink;  
+		}
+
 		else {    // not fit to page
-			    // Java2Davailable == true
-				if (job2 == null) 
-					return;
-				imageableWidth = (float)pf.getImageableWidth();
-				imageableHeight = (float)pf.getImageableHeight();
-				pageHeight = (float)pf.getHeight();
-				pageWidth = (float)pf.getWidth(); 
-				//pageMatrix = zeroPageMatrix();
-				pageOrientation = pf.getOrientation();
-				pageMatrix[0] = pageMatrix[3] = 1f;
-			
+			// Java2Davailable == true
+			if (job2 == null) 
+				return;
+			imageableWidth = (float)pf.getImageableWidth();
+			imageableHeight = (float)pf.getImageableHeight();
+			pageHeight = (float)pf.getHeight();
+			pageWidth = (float)pf.getWidth(); 
+			//pageMatrix = zeroPageMatrix();
+			pageOrientation = pf.getOrientation();
+			pageMatrix[0] = pageMatrix[3] = 1f;
+
 		}
 		pageRectangle = new com.lowagie.text.Rectangle(0.0f,imageableHeight,imageableWidth,0.0f);
 		try {
@@ -441,20 +454,20 @@ public class MesquitePDFFile {
 			float verticalIncrement = imageableHeight/pageMatrix[0];
 			float horizontalIncrement = imageableWidth/pageMatrix[3];
 			float heightLimit = (imageableHeight/pageMatrix[0]);
-			float widthLimit = -1*outImage.width();
-			float verticalStart = (imageableHeight/pageMatrix[0])-outImage.height();
+			float widthLimit = -1*outImage.getWidth();
+			float verticalStart = (imageableHeight/pageMatrix[0])-outImage.getHeight();
 			for (float vertical = verticalStart; vertical < heightLimit ; vertical += verticalIncrement) {
 				for (float horizontal = 0; horizontal > widthLimit; horizontal -= horizontalIncrement) {
 					document.newPage();
 					cb.concatCTM(pageMatrix[0],pageMatrix[1],pageMatrix[2],pageMatrix[3],pageMatrix[4],pageMatrix[5]);
 					switch (pageOrientation) {
 					case PageFormat.LANDSCAPE: {
-						cb.addImage(outImage,outImage.width(),0f,0f,outImage.height(),horizontal,vertical);
+						cb.addImage(outImage,outImage.getWidth(),0f,0f,outImage.getHeight(),horizontal,vertical);
 						break;
 					}
 					case PageFormat.PORTRAIT: 
 					default: {
-						cb.addImage(outImage,outImage.width(),0.0f,0.0f,outImage.height(),horizontal,vertical);
+						cb.addImage(outImage,outImage.getWidth(),0.0f,0.0f,outImage.getHeight(),horizontal,vertical);
 						break;
 					}
 					}
@@ -470,16 +483,25 @@ public class MesquitePDFFile {
 		catch (com.lowagie.text.DocumentException e) {
 			MesquiteTrunk.mesquiteTrunk.alert(exceptionMessage + e);
 		}
-		end();
+		endDocument();
 	}
 
 
 	/**
 	 */
-	public void end() {
+	public void endDocument() {
 		// step 5: we close the document
-		if (document != null)
+		if (document != null) {
+			if (cb!=null) {
+				try {
+					for (int i = 0; i<100; i++)   // it seems as if somewhere 
+						cb.restoreState();  //TODO: why do we need to do this?????
+				} catch (IllegalPdfSyntaxException e) {
+
+				}
+			}
 			document.close();
+		}
 	}
 
 }

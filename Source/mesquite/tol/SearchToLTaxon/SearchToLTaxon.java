@@ -14,15 +14,10 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
 package mesquite.tol.SearchToLTaxon;
 /*~~  */
 
-import java.util.*;
-import java.awt.*;
-import java.awt.image.*;
-
-import mesquite.lib.*;
-import mesquite.lib.duties.*;
 import mesquite.lib.tree.TreeDisplay;
 import mesquite.lib.tree.TreeDisplayExtra;
-import mesquite.tol.lib.*;
+import mesquite.tol.lib.BaseSearchToLTaxon;
+import mesquite.tol.lib.BaseSearchToLToolTaxonExtra;
 
 /* ======================================================================== */
 public class SearchToLTaxon extends BaseSearchToLTaxon {

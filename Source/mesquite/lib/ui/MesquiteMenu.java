@@ -13,8 +13,8 @@
  */
 package mesquite.lib.ui;
 
-import java.awt.*;
-import java.awt.event.*;
+import java.awt.Menu;
+import java.awt.MenuItem;
 
 import mesquite.lib.CommandChecker;
 import mesquite.lib.Commandable;
@@ -22,7 +22,6 @@ import mesquite.lib.ConsoleThread;
 import mesquite.lib.Listable;
 import mesquite.lib.MesquiteInteger;
 import mesquite.lib.MesquiteMessage;
-import mesquite.lib.duties.*;
 import mesquite.lib.simplicity.InterfaceManager;
 
 

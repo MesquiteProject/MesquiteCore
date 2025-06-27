@@ -14,8 +14,16 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
  */
 package mesquite.lib.ui;
 
-import java.awt.*;
-import java.awt.event.*;
+import java.awt.Color;
+import java.awt.Font;
+import java.awt.TextArea;
+import java.awt.Toolkit;
+import java.awt.datatransfer.Clipboard;
+import java.awt.datatransfer.DataFlavor;
+import java.awt.datatransfer.StringSelection;
+import java.awt.datatransfer.Transferable;
+import java.awt.event.FocusEvent;
+import java.awt.event.FocusListener;
 
 import mesquite.lib.CommandChecker;
 import mesquite.lib.MesquiteCommand;
@@ -24,9 +32,6 @@ import mesquite.lib.MesquiteMessage;
 import mesquite.lib.MesquiteModule;
 import mesquite.lib.ParseUtil;
 import mesquite.lib.StringUtil;
-import mesquite.lib.duties.*;
-
-import java.awt.datatransfer.*;
 
 /* ======================================================================== */
 /** A window that displays text.  Yet to do: make it editable or not, have getText, etc.. */

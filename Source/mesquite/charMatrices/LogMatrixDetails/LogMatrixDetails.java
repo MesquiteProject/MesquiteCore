@@ -13,14 +13,10 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
  */
 package mesquite.charMatrices.LogMatrixDetails; 
 
-import java.util.*;
-import java.awt.*;
-
 import mesquite.categ.lib.CategoricalState;
 import mesquite.categ.lib.DNAData;
-import mesquite.lib.*;
-import mesquite.lib.characters.*;
-import mesquite.lib.duties.*;
+import mesquite.lib.characters.CharacterData;
+import mesquite.lib.duties.DataUtilityNoAlterer;
 
 /* ======================================================================== */
 public class LogMatrixDetails extends DataUtilityNoAlterer { 

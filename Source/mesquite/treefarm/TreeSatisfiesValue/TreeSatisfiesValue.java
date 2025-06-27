@@ -13,14 +13,29 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
  */
 package mesquite.treefarm.TreeSatisfiesValue;
 
-import mesquite.lib.*;
-import mesquite.lib.duties.*;
+import java.awt.Checkbox;
+import java.awt.Label;
+
+import mesquite.lib.CommandChecker;
+import mesquite.lib.EmployeeNeed;
+import mesquite.lib.MesquiteBoolean;
+import mesquite.lib.MesquiteCommand;
+import mesquite.lib.MesquiteDouble;
+import mesquite.lib.MesquiteFile;
+import mesquite.lib.MesquiteInteger;
+import mesquite.lib.MesquiteListener;
+import mesquite.lib.MesquiteModule;
+import mesquite.lib.MesquiteNumber;
+import mesquite.lib.MesquiteString;
+import mesquite.lib.MesquiteThread;
+import mesquite.lib.ParseUtil;
+import mesquite.lib.Snapshot;
+import mesquite.lib.duties.BooleanForTree;
+import mesquite.lib.duties.NumberForTree;
 import mesquite.lib.tree.Tree;
 import mesquite.lib.ui.DoubleField;
 import mesquite.lib.ui.ExtensibleDialog;
 import mesquite.lib.ui.MesquiteSubmenuSpec;
-
-import java.awt.*;
 
 /** this is a module that deterimines whether or not a tree has a value the same as, greater than or less than a specified value */
 public class TreeSatisfiesValue extends BooleanForTree implements MesquiteListener {

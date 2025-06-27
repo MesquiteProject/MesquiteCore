@@ -13,12 +13,23 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
  */
 package mesquite.trunk;
 
-import java.util.*;
 import java.awt.Desktop;
-import java.awt.desktop.*;
-import java.io.*;
-import mesquite.lib.*;
-import mesquite.*;
+import java.awt.desktop.AboutEvent;
+import java.awt.desktop.AboutHandler;
+import java.awt.desktop.QuitEvent;
+import java.awt.desktop.QuitHandler;
+import java.awt.desktop.QuitResponse;
+import java.io.File;
+import java.util.Vector;
+
+import mesquite.Mesquite;
+import mesquite.lib.CommandChecker;
+import mesquite.lib.CommandRecord;
+import mesquite.lib.CommandThread;
+import mesquite.lib.MesquiteDouble;
+import mesquite.lib.MesquiteModule;
+import mesquite.lib.MesquiteThread;
+import mesquite.lib.MesquiteTrunk;
 
 
 

@@ -13,15 +13,19 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
 */
 package mesquite.genesis.lib;
 
-import mesquite.lib.*;
-import mesquite.lib.characters.*;
-import mesquite.lib.duties.*;
+import mesquite.lib.MesquiteDouble;
+import mesquite.lib.MesquiteInteger;
+import mesquite.lib.MesquiteListener;
+import mesquite.lib.MesquiteMessage;
+import mesquite.lib.Notification;
+import mesquite.lib.ParseUtil;
+import mesquite.lib.StringUtil;
+import mesquite.lib.characters.CharacterModel;
 import mesquite.lib.tree.Tree;
 import mesquite.lib.ui.DoubleSqMatrixFields;
 import mesquite.lib.ui.ExtensibleDialog;
-import mesquite.categ.lib.*;
-import mesquite.cont.lib.*;
-import pal.substmodel.*;
+import pal.substmodel.GTR;
+import pal.substmodel.TransitionProbability;
 
 
 /** A class that provides a General Time Reversible rate matrix. */

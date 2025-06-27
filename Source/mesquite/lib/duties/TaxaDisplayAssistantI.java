@@ -13,10 +13,6 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
 */
 package mesquite.lib.duties;
 
-import java.awt.*;
-import mesquite.lib.*;
-
-
 /* ======================================================================== */
 /** This abstract class is for modules that are TaxaDisplayAssistants that are INITS.  Used by Basic Taxa Window for tool modules*/
 public abstract class TaxaDisplayAssistantI extends TaxaDisplayAssistant  {

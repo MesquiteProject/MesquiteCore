@@ -14,17 +14,22 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
 package mesquite.genomic.ExportFlippedFASTAs;
 
 /*~~  */
+import java.awt.Checkbox;
 
-import java.awt.*;
-
-
-import mesquite.lib.*;
+import mesquite.categ.lib.MolecularData;
+import mesquite.categ.lib.MolecularState;
+import mesquite.lib.Arguments;
+import mesquite.lib.ExporterDialog;
+import mesquite.lib.MesquiteBoolean;
+import mesquite.lib.MesquiteFile;
+import mesquite.lib.MesquiteInteger;
+import mesquite.lib.MesquiteProject;
+import mesquite.lib.MesquiteStringBuffer;
+import mesquite.lib.Parser;
+import mesquite.lib.StringUtil;
 import mesquite.lib.characters.CharacterData;
-import mesquite.lib.duties.*;
+import mesquite.lib.duties.FileInterpreterI;
 import mesquite.lib.taxa.Taxa;
-import mesquite.lib.ui.SingleLineTextField;
-import mesquite.categ.lib.*;
-import mesquite.io.InterpretFastaProtein.InterpretFastaProtein;
 
 
 /* ============  a file exporter ============*/

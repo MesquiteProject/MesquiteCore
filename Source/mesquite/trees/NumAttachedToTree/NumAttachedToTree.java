@@ -13,11 +13,23 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
  */
 package mesquite.trees.NumAttachedToTree;
 
-import java.util.Enumeration;
 import java.util.Vector;
 
-import mesquite.lib.*;
-import mesquite.lib.duties.*;
+import mesquite.lib.Attachable;
+import mesquite.lib.CommandChecker;
+import mesquite.lib.Listable;
+import mesquite.lib.ListableVector;
+import mesquite.lib.MesquiteDouble;
+import mesquite.lib.MesquiteFile;
+import mesquite.lib.MesquiteInteger;
+import mesquite.lib.MesquiteLong;
+import mesquite.lib.MesquiteNumber;
+import mesquite.lib.MesquiteString;
+import mesquite.lib.MesquiteThread;
+import mesquite.lib.ParseUtil;
+import mesquite.lib.Snapshot;
+import mesquite.lib.StringUtil;
+import mesquite.lib.duties.NumberForTree;
 import mesquite.lib.tree.Tree;
 import mesquite.lib.ui.ListDialog;
 

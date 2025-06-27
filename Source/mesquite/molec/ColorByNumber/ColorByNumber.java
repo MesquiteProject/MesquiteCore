@@ -13,17 +13,36 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
 */
 package mesquite.molec.ColorByNumber; 
 
-import java.util.*;
-import java.awt.*;
-import mesquite.lib.*;
-import mesquite.lib.characters.*;
-import mesquite.lib.duties.*;
-import mesquite.lib.table.*;
+import java.awt.Color;
+
+import mesquite.lib.CommandChecker;
+import mesquite.lib.CompatibilityTest;
+import mesquite.lib.EmployeeNeed;
+import mesquite.lib.EmployerEmployee;
+import mesquite.lib.MesquiteCommand;
+import mesquite.lib.MesquiteDouble;
+import mesquite.lib.MesquiteFile;
+import mesquite.lib.MesquiteInteger;
+import mesquite.lib.MesquiteModule;
+import mesquite.lib.MesquiteNumber;
+import mesquite.lib.MesquiteProject;
+import mesquite.lib.MesquiteString;
+import mesquite.lib.MesquiteThread;
+import mesquite.lib.Notification;
+import mesquite.lib.Snapshot;
+import mesquite.lib.StringUtil;
+import mesquite.lib.characters.CharacterData;
+import mesquite.lib.characters.CharacterStateTest;
+import mesquite.lib.duties.CellColorer;
+import mesquite.lib.duties.CellColorerCharacters;
+import mesquite.lib.duties.CellColorerMatrix;
+import mesquite.lib.duties.DataWindowAssistantID;
+import mesquite.lib.duties.NumberForCharAndTaxon;
+import mesquite.lib.table.MesquiteTable;
 import mesquite.lib.ui.ColorDistribution;
 import mesquite.lib.ui.ColorRecord;
 import mesquite.lib.ui.MesquiteColorTable;
 import mesquite.lib.ui.MesquiteSubmenuSpec;
-import mesquite.cont.lib.*;
 
 /* ======================================================================== */
 public class ColorByNumber extends DataWindowAssistantID implements CellColorer, CellColorerCharacters, CellColorerMatrix {

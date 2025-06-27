@@ -13,17 +13,23 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
  */
 package mesquite.assoc.DepContTreeWindow;
 
-import java.util.*;
-import java.awt.*;
-import mesquite.lib.*;
-import mesquite.lib.duties.*;
+import java.awt.Dimension;
+import java.awt.Graphics;
+import java.util.Vector;
+
+import mesquite.lib.Associable;
+import mesquite.lib.MesquiteModule;
+import mesquite.lib.NameReference;
+import mesquite.lib.ObjectArray;
+import mesquite.lib.StringUtil;
+import mesquite.lib.duties.DrawTreeCoordinator;
 import mesquite.lib.taxa.Taxa;
 import mesquite.lib.tree.Tree;
 import mesquite.lib.tree.TreeDisplay;
 import mesquite.lib.tree.TreeDisplayExtra;
 import mesquite.lib.ui.MesquiteWindow;
-import mesquite.assoc.lib.*;
-import mesquite.trees.lib.*;
+import mesquite.trees.lib.SimpleTreeWindow;
+import mesquite.trees.lib.SimpleTreeWindowMaker;
 
 /* ======================================================================== */
 public class DepContTreeWindow extends SimpleTreeWindowMaker  {

@@ -13,8 +13,13 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
 */
 package mesquite.align.ScrollToData;
 
-import mesquite.categ.lib.*;
-import mesquite.lib.*;
+import mesquite.categ.lib.CategoricalData;
+import mesquite.categ.lib.RequiresAnyMolecularData;
+import mesquite.lib.CommandChecker;
+import mesquite.lib.CompatibilityTest;
+import mesquite.lib.MesquiteCommand;
+import mesquite.lib.MesquiteInteger;
+import mesquite.lib.MesquiteModule;
 import mesquite.lib.characters.CharacterData;
 import mesquite.lib.duties.DataWindowAssistantI;
 import mesquite.lib.table.MesquiteTable;

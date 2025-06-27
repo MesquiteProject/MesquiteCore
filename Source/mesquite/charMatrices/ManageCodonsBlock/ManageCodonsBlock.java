@@ -14,14 +14,19 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
 package mesquite.charMatrices.ManageCodonsBlock;
 /*~~  */
 
-import java.util.*;
+import java.util.Enumeration;
 
-import java.awt.*;
-import java.io.*;
-
-import mesquite.lib.*;
-import mesquite.lib.characters.*;
-import mesquite.lib.duties.*;
+import mesquite.lib.FileBlock;
+import mesquite.lib.FileElement;
+import mesquite.lib.MesquiteFile;
+import mesquite.lib.MesquiteLong;
+import mesquite.lib.MesquiteMessage;
+import mesquite.lib.MesquiteModule;
+import mesquite.lib.NexusBlock;
+import mesquite.lib.NexusBlockTest;
+import mesquite.lib.Parser;
+import mesquite.lib.StringUtil;
+import mesquite.lib.duties.FileInit;
 
 /** Manages the NEXUS block specifying codon position sets*/
 public class ManageCodonsBlock extends FileInit {

@@ -14,15 +14,16 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
 package mesquite.cont.Standardize;
 /*~~  */
 
-import java.util.*;
-import java.awt.*;
-
-import mesquite.lib.table.*;
+import mesquite.cont.lib.ContDataAlterer;
+import mesquite.cont.lib.ContinuousData;
+import mesquite.lib.MesquiteDouble;
+import mesquite.lib.ResultCodes;
+import mesquite.lib.UndoInstructions;
+import mesquite.lib.UndoReference;
+import mesquite.lib.characters.AltererContinuousTransformations;
+import mesquite.lib.characters.CharacterData;
+import mesquite.lib.table.MesquiteTable;
 import mesquite.lib.ui.AlertDialog;
-import mesquite.lib.*;
-import mesquite.lib.characters.*;
-import mesquite.lib.duties.*;
-import mesquite.cont.lib.*;
 
 /* ======================================================================== */
 public class Standardize extends ContDataAlterer  implements AltererContinuousTransformations{

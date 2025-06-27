@@ -13,9 +13,6 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
 */
 package mesquite.lib;
 
-import java.awt.*;
-import java.text.*;
-
 /* ======================================================================== */
 /**Interface for object to claim whether or not it is of first or second priority (in future may allow other priorities as well)*/
 public interface Prioritizable {

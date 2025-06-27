@@ -13,8 +13,6 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
  */
 package mesquite.lib;
 
-import java.awt.*;
-
 /*Last documented:  August 1999 */
 
 /* ======================================================================== */
@@ -518,6 +516,7 @@ public class NumberArray {
 	elements 0 through numToCheck-1, and places the minimum in the MesquiteNumber r */
 	public void placeMinimumValue(MesquiteNumber r, int numToCheck) {
 		if (r!=null) {
+			r.setToUnassigned();
 			if (valueClass==INT) {
 				if (intValues.length==0)
 					return;
@@ -554,6 +553,7 @@ public class NumberArray {
 	elements 0 through numToCheck-1, and places the maximum in the MesquiteNumber r */
 	public void placeMaximumValue(MesquiteNumber r, int numToCheck) {
 		if (r!=null) {
+			r.setToUnassigned();
 			if (valueClass==INT) {
 				if (intValues.length==0)
 					return;

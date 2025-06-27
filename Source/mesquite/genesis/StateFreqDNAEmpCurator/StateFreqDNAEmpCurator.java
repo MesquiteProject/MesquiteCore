@@ -14,13 +14,11 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
 package mesquite.genesis.StateFreqDNAEmpCurator;
 /*~~  */
 
-import java.util.*;
-import java.awt.*;
-import mesquite.lib.*;
-import mesquite.lib.duties.*;
-import mesquite.categ.lib.*;
-import mesquite.genesis.lib.*;
-import mesquite.lib.characters.*;
+import mesquite.genesis.lib.StateFreqCurator;
+import mesquite.genesis.lib.StateFreqDNAEmpir;
+import mesquite.lib.MesquiteInteger;
+import mesquite.lib.MesquiteModule;
+import mesquite.lib.characters.CharacterModel;
 /* ======================================================================== */
 public class StateFreqDNAEmpCurator extends StateFreqCurator {
 	StateFreqDNAEmpir modelToEdit;

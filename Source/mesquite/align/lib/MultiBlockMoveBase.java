@@ -16,15 +16,27 @@ package mesquite.align.lib;
 
 
 
-import java.awt.Color;
-import java.awt.Graphics;
-
-import mesquite.lib.*;
-import mesquite.lib.characters.*;
+import mesquite.categ.lib.CategoricalData;
+import mesquite.categ.lib.RequiresAnyMolecularData;
+import mesquite.lib.Bits;
+import mesquite.lib.CommandChecker;
+import mesquite.lib.CompatibilityTest;
+import mesquite.lib.MesquiteBoolean;
+import mesquite.lib.MesquiteCommand;
+import mesquite.lib.MesquiteFile;
+import mesquite.lib.MesquiteInteger;
+import mesquite.lib.MesquiteListener;
+import mesquite.lib.MesquiteTrunk;
+import mesquite.lib.Notification;
+import mesquite.lib.PendingCommand;
+import mesquite.lib.Snapshot;
+import mesquite.lib.UndoInstructions;
+import mesquite.lib.UndoReference;
+import mesquite.lib.Undoer;
+import mesquite.lib.characters.CellBlock;
 import mesquite.lib.characters.CharacterData;
-import mesquite.lib.duties.*;
-import mesquite.lib.table.*;
-import mesquite.categ.lib.*;
+import mesquite.lib.duties.DataWindowAssistantI;
+import mesquite.lib.table.MesquiteTable;
 
 /* ======================================================================== */
 public  abstract class MultiBlockMoveBase extends DataWindowAssistantI {

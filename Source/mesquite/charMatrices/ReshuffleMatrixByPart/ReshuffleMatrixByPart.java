@@ -14,15 +14,13 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
 package mesquite.charMatrices.ReshuffleMatrixByPart;
 /*~~  */
 
-import java.util.*;
-import java.awt.*;
-import mesquite.lib.*;
-import mesquite.lib.characters.*;
-import mesquite.lib.duties.*;
+import mesquite.charMatrices.lib.RandomMatrixModifier;
+import mesquite.lib.RandomBetween;
+import mesquite.lib.characters.MAdjustableDistribution;
+import mesquite.lib.characters.MCharactersDistribution;
 import mesquite.lib.taxa.Taxa;
 import mesquite.lib.taxa.TaxaGroup;
 import mesquite.lib.taxa.TaxaPartition;
-import mesquite.charMatrices.lib.RandomMatrixModifier;
 
 /* ======================================================================== */
 public class ReshuffleMatrixByPart extends RandomMatrixModifier {

@@ -13,10 +13,12 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
  */
 package mesquite.lib.ui;
 
-import java.awt.*;
-import java.awt.event.*;
-import java.awt.image.*;
-import java.util.*;
+import java.awt.Color;
+import java.awt.Cursor;
+import java.awt.Graphics;
+import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
+import java.util.Enumeration;
 
 import mesquite.lib.CommandChecker;
 import mesquite.lib.Commandable;
@@ -389,6 +391,16 @@ public class ToolPalette extends MesquitePanel implements Commandable, KeyListen
 	public void setCurrentTool(int button) {
 		MesquiteTool tool =  toolButtons[button].getTool();
 		setCurrentTool(tool);
+	}
+	public void resetOffOnToolButtons() {
+		Parser parser = new Parser();
+		for (int i=0; i<numTools ; i++) {
+			if (toolButtons[i].getTool().getInUse()) { 
+				toolButtons[i].setOn();
+			}
+			else
+				toolButtons[i].setOff();
+		}
 	}
 	public void setCurrentTool(MesquiteTool tool) {
 		if (tool==null || !tool.getEnabled())

@@ -14,20 +14,31 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
 package mesquite.trees.SisterLengthsProportionAdjust;
 /*~~  */
 
-import java.util.*;
-import java.awt.*;
+import java.awt.Color;
+import java.awt.Graphics;
+import java.awt.Shape;
 import java.awt.geom.Point2D;
-import java.awt.image.*;
-import mesquite.lib.*;
-import mesquite.lib.duties.*;
+import java.util.Vector;
+
+import mesquite.lib.CommandChecker;
+import mesquite.lib.Commandable;
+import mesquite.lib.MesquiteDouble;
+import mesquite.lib.MesquiteInteger;
+import mesquite.lib.MesquiteListener;
+import mesquite.lib.MesquiteMessage;
+import mesquite.lib.MesquiteModule;
+import mesquite.lib.Notification;
+import mesquite.lib.ParseUtil;
+import mesquite.lib.StringUtil;
+import mesquite.lib.duties.TreeDisplayAssistantI;
 import mesquite.lib.tree.MesquiteTree;
 import mesquite.lib.tree.Tree;
 import mesquite.lib.tree.TreeDisplay;
 import mesquite.lib.tree.TreeDisplayExtra;
 import mesquite.lib.tree.TreeTool;
 import mesquite.lib.ui.AlertDialog;
+import mesquite.lib.ui.GraphicsUtil;
 import mesquite.lib.ui.MesquiteWindow;
-import mesquite.trees.BranchLengthsAdjust.BranchLengthsAdjust;
 
 /* ======================================================================== */
 public class SisterLengthsProportionAdjust extends TreeDisplayAssistantI {
@@ -48,49 +59,54 @@ public class SisterLengthsProportionAdjust extends TreeDisplayAssistantI {
 	}
 	/*.................................................................................................................*/
 	public String getName() {
-		return "Adjust length balance of sister nodes"; 
+		return "Slide length between sister nodes"; 
 	}
 
 	/*.................................................................................................................*/
 	public String getExplanation() {
-		return "Provides a tool to adjust the proportion of length allocated to two sister nodes. Thus, if the branch touched on had length 1.0 and its sister 1.0, the proportion of the " 
-				+ "length belong to this node would be 0.5. Adjusting to its proportion to 0.25 would shift the lengths to 0.5 and 1.5. Their total would be constant. This is especially "
-				+ "helpful to shift the allocation at the root of the tree, e.g. the balance between the outgroup and study group.";
+		return "Adjusts the proportion of length allocated to two sister nodes. Drag to shift the length from one sister to another. This is especially "
+				+ "helpful at the root, e.g. the balance between the outgroup and study group. Option-click for dialog box in which to enter the proportion explicitly.";
 
 	}
 	public boolean isSubstantive(){
 		return true;
 	}   	 
 	public boolean isPrerelease(){
-		return true;
+		return false;
 	}   	 
 	/*.................................................................................................................*/
 	/** returns the version number at which this module was first released.  If 0, then no version number is claimed.  If a POSITIVE integer
 	 * then the number refers to the Mesquite version.  This should be used only by modules part of the core release of Mesquite.
 	 * If a NEGATIVE integer, then the number refers to the local version of the package, e.g. a third party package*/
 	public int getVersionOfFirstRelease(){
-		return NEXTRELEASE;  
+		return 400;  
 	}
 }
 
 /* ======================================================================== */
 class SLPAdjustToolExtra extends TreeDisplayExtra implements Commandable  {
 	TreeTool adjustTool;
-	SisterLengthsProportionAdjust selectModule;
+	SisterLengthsProportionAdjust slideModule;
 	Tree tree;
-	double originalX, originalY, lastX, lastY;
-	boolean lineOn = true;
+	double originalTouchX, originalTouchY, lastX, lastY, lastNodeX, lastNodeY, lastSisterX, lastSisterY;
+	double distanceOrigPtToTip ;
+	double distanceOrigPtToBase;
+	boolean lineOn = false;
+	boolean dragOn = false;
 	double lastBL;	
 	boolean editorOn = false;
 	int editorNode = -1;
-
+	MesquiteWindow window;
 	public SLPAdjustToolExtra (SisterLengthsProportionAdjust ownerModule, TreeDisplay treeDisplay) {
 		super(ownerModule, treeDisplay);
-		selectModule = ownerModule;
-		adjustTool = new TreeTool(this,  "adjustor", ownerModule.getPath() , "sisterLengthsAdjust.gif", 2,1,"Adjust sister length proportions", "This tool adjusts branch lengths of two sister branches, sliding their total branch length between them.");
+		slideModule = ownerModule;
+		adjustTool = new TreeTool(this,  "adjustor", ownerModule.getPath() , "sisterLengthsAdjust.gif", 2,1,"Slide branch length between sister nodes", "This tool adjusts branch lengths of two sister branches, sliding their total branch length between them. Option-click for dialog box.");
 		adjustTool.setTouchedCommand(MesquiteModule.makeCommand("touchedLengthsAdjust",  this));
+		adjustTool.setDraggedCommand(MesquiteModule.makeCommand("draggedLengthsAdjust",  this));
+		adjustTool.setDroppedCommand(MesquiteModule.makeCommand("droppedLengthsAdjust",  this));
 		if (ownerModule.containerOfModule() instanceof MesquiteWindow) {
-			((MesquiteWindow)ownerModule.containerOfModule()).addTool(adjustTool);
+			window = ((MesquiteWindow)ownerModule.containerOfModule());
+			window.addTool(adjustTool);
 		}
 	}
 	public void doTreeCommand(String command, String arguments){
@@ -117,8 +133,19 @@ class SLPAdjustToolExtra extends TreeDisplayExtra implements Commandable  {
 	public Tree getTree() {
 		return treeDisplay.getTree();
 	}
+	int touchedNode = 0;
+	int sisterNode = 0;
+	double totalBranchLength = 0;
+	double screenLengthNode = 0;
+	double gainBranchLengthByNode = 0;
+	double totalScreenLength = 0;
+	double proportionThis = 0;
+	int ovalRadius = 8;
+	boolean slideUnassignedSisterWarning = false;
 
-	
+	double length(double x, double y, double x2, double y2){
+		return Math.sqrt((x-x2)*(x-x2) + (y-y2)*(y-y2));
+	}
 	/*.................................................................................................................*/
 	public Object doCommand(String commandName, String arguments, CommandChecker checker) { 
 		MesquiteTree t=null; //
@@ -129,33 +156,33 @@ class SLPAdjustToolExtra extends TreeDisplayExtra implements Commandable  {
 			else
 				t = null;
 		}
-		
+
 		if (checker.compare(this.getClass(), "Touch on branch to change its length versus its sister\'s", "[branch number] [x coordinate touched] [y coordinate touched] [modifiers]", commandName, "touchedLengthsAdjust")) {
 			if (t==null)
 				return null;
 			MesquiteInteger io = new MesquiteInteger(0);
-			int node= MesquiteInteger.fromString(arguments, io);
+			touchedNode= MesquiteInteger.fromString(arguments, io);
 			int x= MesquiteInteger.fromString(arguments, io);
 			int y= MesquiteInteger.fromString(arguments, io);
 			String mod= ParseUtil.getRemaining(arguments, io);
-
-			int mother = t.motherOfNode(node);
-			
+			int mother = t.motherOfNode(touchedNode);
+			dragOn = false;
 			//If node has just one sister, proceed
 			if (t.numberOfDaughtersOfNode(mother)==2) {
-				int sister = 0;
-				if (t.firstDaughterOfNode(mother) == node)
-					sister = t.lastDaughterOfNode(mother);
+				sisterNode = 0;
+				if (t.firstDaughterOfNode(mother) == touchedNode)
+					sisterNode = t.lastDaughterOfNode(mother);
 				else
-					sister = t.firstDaughterOfNode(mother);
-					
-				double thisLength = t.getBranchLength(node);
-				double sisterLength = t.getBranchLength(sister);
-				if (thisLength == MesquiteDouble.unassigned && sisterLength == MesquiteDouble.unassigned)
-					AlertDialog.notice(selectModule.containerOfModule(), "Tool needs assigned branch lengths", "This tool can be applied only when least one of sisters has an assigned branch length.");
+					sisterNode = t.firstDaughterOfNode(mother);
+
+				double thisLength = t.getBranchLength(touchedNode);
+				double sisterLength = t.getBranchLength(sisterNode);
+				if (thisLength == MesquiteDouble.unassigned)
+					AlertDialog.notice(slideModule.containerOfModule(), "Tool needs assigned branch lengths", "This tool cannot be be applied to a branch without an assigned branch length. "
+							+" You can assign branch lengths individually, or choose Tree>Alter>All Unassigned Branch Lengths to 1.0");
 				else if (thisLength + sisterLength == 0)
-					AlertDialog.notice(selectModule.containerOfModule(), "Tool needs nonzero branch lengths", "This tool can be applied only when least one of sisters has a non-zero branch length.");
-				else {
+					AlertDialog.notice(slideModule.containerOfModule(), "Tool needs nonzero branch lengths", "This tool can be applied only when least one of sisters has a non-zero branch length.");
+				else if (mod != null && StringUtil.indexOfIgnoreCase(mod, "option")>=0){
 					if (thisLength == MesquiteDouble.unassigned)
 						thisLength = 0;
 					if (sisterLength == MesquiteDouble.unassigned)
@@ -163,32 +190,243 @@ class SLPAdjustToolExtra extends TreeDisplayExtra implements Commandable  {
 					double totalLength = thisLength+sisterLength;
 					String totalAsString = MesquiteDouble.toStringDigitsSpecified(totalLength, 5);
 					double proportionThis = thisLength/totalLength;
-					double newProportion = MesquiteDouble.queryDouble(selectModule.containerOfModule(), "Set proportion", "Branch lengths of this touched branch and its sister branch sum to " + totalAsString 
+					double newProportion = MesquiteDouble.queryDouble(slideModule.containerOfModule(), "Set proportion", "Branch lengths of this touched branch and its sister branch sum to " + totalAsString 
 							+ ". The proportion of this length currently assigned to the touched branch is currently shown below. " 
 							+ "To change this proportion, and thus slide branch length from one sister to another, please enter below a new proportion of length for the touched branch.", proportionThis);
 					if (!MesquiteDouble.isCombinable(newProportion) || newProportion<=0 || newProportion>=1) {
-						AlertDialog.notice(selectModule.containerOfModule(), "Tool needs nonzero branch lengths", "This tool can be applied only when least one of sisters has a non-zero branch length.");
+						AlertDialog.notice(slideModule.containerOfModule(), "Tool needs nonzero branch lengths", "This tool can be applied only when least one of sisters has a non-zero branch length.");
 						return null;
 					}
 					//OK, at this point, a good new proportion has been returned. Adjust lengths.
 					thisLength = totalLength*newProportion;
 					sisterLength = totalLength - thisLength;
-					selectModule.logln("Setting touched branch\'s length to " + MesquiteDouble.toStringDigitsSpecified(thisLength, 5) + " and its sister\'s length to " +  MesquiteDouble.toStringDigitsSpecified(sisterLength, 5));
-					t.setBranchLength(node, thisLength, false);
-					t.setBranchLength(sister, sisterLength, false);
+					slideModule.logln("Setting touched branch\'s length to " + MesquiteDouble.toStringDigitsSpecified(thisLength, 5) + " and its sister\'s length to " +  MesquiteDouble.toStringDigitsSpecified(sisterLength, 5));
+					t.setBranchLength(touchedNode, thisLength, false);
+					t.setBranchLength(sisterNode, sisterLength, false);
 					t.notifyListeners(this, new Notification(MesquiteListener.BRANCHLENGTHS_CHANGED));
-				
-						
+				}
+				else {
+					Point2D.Double newOnLine = treeDisplay.getTreeDrawing().projectionOnLine(touchedNode, x, y);
+					originalTouchX = newOnLine.getX();
+					originalTouchY = newOnLine.getY();
+					double tipX = treeDisplay.getTreeDrawing().lineTipX[touchedNode];
+					double tipY = treeDisplay.getTreeDrawing().lineTipY[touchedNode];
+					double baseX = treeDisplay.getTreeDrawing().lineBaseX[touchedNode];
+					double baseY = treeDisplay.getTreeDrawing().lineBaseY[touchedNode];
+					distanceOrigPtToTip = length(tipX, tipY, originalTouchX, originalTouchY);
+					distanceOrigPtToBase = length(baseX, baseY, originalTouchX, originalTouchY);
+					Point2D.Double tipOnLine = treeDisplay.getTreeDrawing().projectionOnLine(touchedNode, tipX, tipY);
+					lastX = tipOnLine.getX();
+					lastY = tipOnLine.getY();
+					lastNodeX = lastX;
+					lastNodeY = lastY;
+					lastSisterX =  treeDisplay.getTreeDrawing().lineTipX[sisterNode];
+					lastSisterY = treeDisplay.getTreeDrawing().lineTipY[sisterNode];
+					double sisterBaseX =  treeDisplay.getTreeDrawing().lineBaseX[sisterNode];
+					double sisterBaseY = treeDisplay.getTreeDrawing().lineBaseY[sisterNode];
+
+					if (thisLength == MesquiteDouble.unassigned)
+						thisLength = 0;
+					if (sisterLength == MesquiteDouble.unassigned)
+						sisterLength = 0;
+					window.setExplanation("Branch length, this: " + MesquiteDouble.toString(thisLength) + " and sister: " + MesquiteDouble.toString(sisterLength));
+
+					totalBranchLength = thisLength+sisterLength;
+					screenLengthNode = length(lastX, lastY, baseX, baseY);
+					totalScreenLength = screenLengthNode + length(lastSisterX, lastSisterY, sisterBaseX, sisterBaseY);
+					proportionThis = thisLength/totalBranchLength;
+
+					Graphics g = treeDisplay.getGraphics();
+					Shape clip=g.getClip();
+					g.setClip(0, 0, 99999, 99999);
+					g.setColor(Color.blue);
+					GraphicsUtil.fillXOROval(g,lastNodeX-ovalRadius, lastNodeY-ovalRadius, ovalRadius+ovalRadius, ovalRadius+ovalRadius);
+					g.setColor(Color.red);
+					GraphicsUtil.fillXOROval(g,lastSisterX-ovalRadius, lastSisterY-ovalRadius, ovalRadius+ovalRadius, ovalRadius+ovalRadius);
+					lineOn=true;
+					g.setClip(clip);
+					g.dispose();
+					lineOn = true;
 				}
 			}
-			else AlertDialog.notice(selectModule.containerOfModule(), "Tool applies to binary divergences only", "This tool can be applied only to a branch that has a single sister branch.");
+			else AlertDialog.notice(slideModule.containerOfModule(), "Tool applies to binary divergences only", "This tool can be applied only to a branch that has a single sister branch.");
 
 		}
+
+		else if (checker.compare(this.getClass(), "Adjust tool is being dragged", "[branch number][x coordinate][y coordinate]", commandName, "draggedLengthsAdjust")) {
+			if (t==null)
+				return null;
+			if (!lineOn)
+				return null;
+			MesquiteInteger io = new MesquiteInteger(0);
+			//The follow should be the same as from the touch!
+			int node= MesquiteInteger.fromString(arguments, io);
+
+			dragOn = true;
+			int x= MesquiteInteger.fromString(arguments, io);
+			int y= MesquiteInteger.fromString(arguments, io);
+			Point2D.Double newOnLine = treeDisplay.getTreeDrawing().projectionOnLine(node, x, y);
+			double dragX = newOnLine.getX();
+			double dragY = newOnLine.getY();
+			double tipX = treeDisplay.getTreeDrawing().lineTipX[node];
+			double tipY = treeDisplay.getTreeDrawing().lineTipY[node];
+			double baseX = treeDisplay.getTreeDrawing().lineBaseX[node];
+			double baseY = treeDisplay.getTreeDrawing().lineBaseY[node];
+			double tipSisterX = treeDisplay.getTreeDrawing().lineTipX[sisterNode];
+			double tipSisterY = treeDisplay.getTreeDrawing().lineTipY[sisterNode];
+			double baseSisterX = treeDisplay.getTreeDrawing().lineBaseX[sisterNode];
+			double baseSisterY = treeDisplay.getTreeDrawing().lineBaseY[sisterNode];
+			//drag point isn't going to be either at base or at tip. Let's calcualte distance from both.  
+			double distanceDragPtToTip = length(tipX, tipY, dragX, dragY);
+			double distanceDragPtToBase =  length(baseX, baseY, dragX, dragY); 
+
+			double gainScreenLengthByNode = 0;
+			if (Math.abs((distanceOrigPtToTip + distanceOrigPtToBase) - (distanceDragPtToTip+distanceDragPtToBase)) <0.1){ // between
+				gainScreenLengthByNode =  distanceDragPtToBase-distanceOrigPtToBase;
+
+			}
+			else if (distanceDragPtToTip < distanceDragPtToBase){ // above tip
+					gainScreenLengthByNode =  distanceDragPtToBase-distanceOrigPtToBase;
+			}
+			else {// below base
+				gainScreenLengthByNode =  -distanceOrigPtToBase;
+			}
+			double available = totalScreenLength-screenLengthNode;
+			if (tree.branchLengthUnassigned(sisterNode)){
+				available =  0; //can't gain from unassigned sister!
+				if (gainScreenLengthByNode>0 && !slideUnassignedSisterWarning){
+					slideModule.logln("You can't slide length from the sister branch, because it has unassigned length");
+					slideUnassignedSisterWarning = true;
+				}
+			}
+			
+			if (gainScreenLengthByNode>available)
+				gainScreenLengthByNode = available;
+			gainBranchLengthByNode = gainScreenLengthByNode*totalBranchLength/totalScreenLength;
+
+			double dX = 0;
+			double dY = 0;
+			double dSisterX = 0;
+			double dSisterY = 0;
+			double newX = 0;
+			double newY = 0;
+			double newSisterX = 0;
+			double newSisterY = 0;
+			if (screenLengthNode>0){
+				if (tipX == baseX)
+					dY = gainScreenLengthByNode;
+				else {
+					double slope = (tipY-baseY)/(tipX-baseX);
+					dX = Math.sqrt(gainScreenLengthByNode*gainScreenLengthByNode/(slope*slope + 1));
+					if (gainScreenLengthByNode<0)
+						dX = -dX;
+					dY = dX*slope;
+				}
+				if (tipSisterX == baseSisterX){
+					dSisterY = gainScreenLengthByNode;
+				}
+				else {
+					double slope = (tipSisterY-baseSisterY)/(tipSisterX-baseSisterX);
+					dSisterX = Math.sqrt(gainScreenLengthByNode*gainScreenLengthByNode/(slope*slope + 1));
+					if (gainScreenLengthByNode<0)
+						dSisterX = -dSisterX;
+					dSisterY = dSisterX*slope;
+				}
+			}
+			else {
+			}
+			if (tipX>baseX)
+				newX = tipX+dX;
+			else
+				newX = tipX-dX;
+			if (tipY>baseY)
+				newY = tipY+dY;
+			else
+				newY = tipY-dY;
+			if (tipSisterX>baseSisterX)
+				newSisterX = tipSisterX-dSisterX;
+			else
+				newSisterX = tipSisterX+dSisterX;
+			if (tipSisterY>baseSisterY)
+				newSisterY = tipSisterY-dSisterY;
+			else
+				newSisterY = tipSisterY+dSisterY;
+			//OK, for this node, ned to extrapolate its spot from tip further by 
+
+			Graphics g =  treeDisplay.getGraphics();
+			Shape clip = g.getClip();
+			g.setClip(0, 0, 99999, 99999);
+			g.setColor(Color.blue);
+
+			boolean showProjection = false;
+			//UNDO spot
+			if (showProjection){
+				g.setColor(Color.green);
+				GraphicsUtil.unfillXOROval(treeDisplay, g, (int)(lastX-8), (int)(lastY-8), 16, 16);
+			}
+			g.setColor(Color.blue);
+			GraphicsUtil.fillXOROval(g,lastNodeX-ovalRadius, lastNodeY-ovalRadius, ovalRadius+ovalRadius, ovalRadius+ovalRadius);
+			g.setColor(Color.red);
+			GraphicsUtil.fillXOROval(g,lastSisterX-ovalRadius, lastSisterY-ovalRadius, ovalRadius+ovalRadius, ovalRadius+ovalRadius);
+
+
+			//REDRAW spot
+			if (showProjection){
+				g.setColor(Color.green);
+				GraphicsUtil.unfillXOROval(treeDisplay, g, (int)(dragX-8), (int)(dragY-8), 16, 16);
+			}
+			g.setColor(Color.blue);
+			GraphicsUtil.fillXOROval(g,newX-ovalRadius, newY-ovalRadius, ovalRadius+ovalRadius, ovalRadius+ovalRadius);
+			g.setColor(Color.red);
+			GraphicsUtil.fillXOROval(g,newSisterX-ovalRadius, newSisterY-ovalRadius, ovalRadius+ovalRadius, ovalRadius+ovalRadius);
+			lastX = dragX;
+			lastY = dragY;
+			lastNodeX = newX;
+			lastNodeY = newY;
+			lastSisterX = newSisterX;
+			lastSisterY = newSisterY;
+			g.setClip(clip);
+
+		}
+		else if (checker.compare(this.getClass(), "Adjust tool is being dropped", "[branch number][x coordinate][y coordinate]", commandName, "droppedLengthsAdjust")) {
+			if (t==null)
+				return null;
+			lineOn = false;
+			//UNDO
+			Graphics g =  treeDisplay.getGraphics();
+			Shape clip = g.getClip();
+			g.setClip(0, 0, 99999, 99999);
+			g.setColor(Color.blue);
+			GraphicsUtil.fillXOROval(g,lastNodeX-ovalRadius, lastNodeY-ovalRadius, ovalRadius+ovalRadius, ovalRadius+ovalRadius);
+			g.setColor(Color.red);
+			GraphicsUtil.fillXOROval(g,lastSisterX-ovalRadius, lastSisterY-ovalRadius, ovalRadius+ovalRadius, ovalRadius+ovalRadius);
+			g.setClip(clip);
+			originalTouchX = originalTouchY = lastX =  lastY = lastNodeX =  lastNodeY = lastSisterX = lastSisterY = screenLengthNode = totalBranchLength = totalScreenLength = proportionThis = 0;
+			if (!dragOn) {
+				gainBranchLengthByNode = 0;
+				touchedNode = sisterNode = 0;
+				return null;
+			}
+			dragOn = false;
+			boolean sisterWasUnassigned = t.branchLengthUnassigned(sisterNode);
+			if (gainBranchLengthByNode != 0){
+				t.setBranchLength(touchedNode, t.getBranchLength(touchedNode, 0) + gainBranchLengthByNode, false);
+				
+				t.setBranchLength(sisterNode, t.getBranchLength(sisterNode, 0) - gainBranchLengthByNode, false);
+				t.notifyListeners(this, new Notification(MesquiteListener.BRANCHLENGTHS_CHANGED));
+				if (sisterWasUnassigned)
+					slideModule.logln("\nBecause the sister branch had no assigned length, it was treated as having zero length to begin with.\n");
+			}
+			gainBranchLengthByNode = 0;
+			touchedNode = sisterNode = 0;
+
+		}
+
 		return null;
 	}
 	public void turnOff() {
 
-		selectModule.extras.removeElement(this);
+		slideModule.extras.removeElement(this);
 		super.turnOff();
 	}
 }

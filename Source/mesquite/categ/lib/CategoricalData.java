@@ -13,20 +13,44 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
  */
 package mesquite.categ.lib;
 
-import java.awt.*;
-import java.util.*;
-import java.util.zip.*;
+import java.awt.Color;
+import java.util.Vector;
+import java.util.zip.CRC32;
 
-import mesquite.lib.*;
-import mesquite.lib.characters.*;
+import mesquite.lib.Bits;
+import mesquite.lib.IntegerArray;
+import mesquite.lib.Long2DArray;
+import mesquite.lib.LongArray;
+import mesquite.lib.MesquiteBoolean;
+import mesquite.lib.MesquiteInteger;
+import mesquite.lib.MesquiteListener;
+import mesquite.lib.MesquiteMessage;
+import mesquite.lib.MesquiteModule;
+import mesquite.lib.MesquiteNumber;
+import mesquite.lib.MesquiteString;
+import mesquite.lib.MesquiteStringBuffer;
+import mesquite.lib.MesquiteThread;
+import mesquite.lib.MesquiteTrunk;
+import mesquite.lib.NameReference;
+import mesquite.lib.Notification;
+import mesquite.lib.Object2DArray;
+import mesquite.lib.Parser;
+import mesquite.lib.Short2DArray;
+import mesquite.lib.ShortArray;
+import mesquite.lib.StringArray;
+import mesquite.lib.StringUtil;
 import mesquite.lib.characters.CharacterData;
-import mesquite.lib.duties.*;
+import mesquite.lib.characters.CharacterDistribution;
+import mesquite.lib.characters.CharacterModel;
+import mesquite.lib.characters.CharacterState;
+import mesquite.lib.characters.DefaultReference;
+import mesquite.lib.characters.MCharactersDistribution;
+import mesquite.lib.duties.CharMatrixManager;
 import mesquite.lib.misc.AttachedNotesVector;
 import mesquite.lib.taxa.Taxa;
 import mesquite.lib.ui.AlertDialog;
 import mesquite.lib.ui.ColorDistribution;
 import mesquite.lib.ui.MesquiteColorTable;
-import mesquite.parsimony.lib.ParsimonyModelSet;
 
 /* ======================================================================== */
 /** A subclass of CharacterData for data stored as Categorical sets (e.g, "{0, 2}").  Associated with the CharacterState subclass CategoricalState.*/

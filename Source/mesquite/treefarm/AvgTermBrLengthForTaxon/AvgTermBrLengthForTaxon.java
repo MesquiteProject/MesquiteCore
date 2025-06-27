@@ -14,13 +14,12 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
 package mesquite.treefarm.AvgTermBrLengthForTaxon;
 /*~~  */
 
-import java.util.*;
-import java.awt.*;
-import mesquite.lib.*;
-import mesquite.lib.duties.*;
+import mesquite.lib.MesquiteNumber;
+import mesquite.lib.MesquiteString;
+import mesquite.lib.NumberArray;
 import mesquite.lib.taxa.Taxa;
 import mesquite.lib.tree.Tree;
-import mesquite.treefarm.lib.*;
+import mesquite.treefarm.lib.NForTaxonWithTrees;
 
 /** ======================================================================== */
 /*

@@ -13,13 +13,20 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
 */
 package mesquite.lists.lib;
 
-import java.awt.*;
-import java.awt.event.*;
-import java.util.*;
+import java.util.Vector;
 
-import mesquite.lib.duties.*;
-import mesquite.lib.*;
-import mesquite.lib.table.*;
+import mesquite.lib.Annotatable;
+import mesquite.lib.CommandChecker;
+import mesquite.lib.FileElement;
+import mesquite.lib.FunctionExplanation;
+import mesquite.lib.Listable;
+import mesquite.lib.MesquiteFile;
+import mesquite.lib.MesquiteModule;
+import mesquite.lib.Notification;
+import mesquite.lib.StringUtil;
+import mesquite.lib.Undoer;
+import mesquite.lib.duties.ManagerAssistant;
+import mesquite.lib.table.TableWindow;
 import mesquite.lib.ui.MesquiteWindow;
 
 

@@ -15,11 +15,19 @@ modified 26 July 01: protected against NullPointerException if null images in pa
  */
 package mesquite.lib.ui;
 
-import java.awt.*;
-import java.awt.event.*;
-import java.awt.geom.Path2D;
-import java.io.UnsupportedEncodingException;
-import java.util.*;
+import java.awt.BasicStroke;
+import java.awt.Color;
+import java.awt.Cursor;
+import java.awt.Font;
+import java.awt.FontMetrics;
+import java.awt.Graphics;
+import java.awt.Graphics2D;
+import java.awt.Image;
+import java.awt.RenderingHints;
+import java.awt.Stroke;
+import java.awt.TextArea;
+import java.util.Date;
+import java.util.Vector;
 
 import mesquite.lib.CommandChecker;
 import mesquite.lib.Commandable;
@@ -36,7 +44,6 @@ import mesquite.lib.MesquiteTrunk;
 import mesquite.lib.ModuleInfoWindow;
 import mesquite.lib.StringUtil;
 import mesquite.lib.SystemWindow;
-import mesquite.lib.duties.*;
 import mesquite.lib.simplicity.InterfaceManager;
 import mesquite.lib.simplicity.SimplicityStrip;
 /* ======================================================================== */

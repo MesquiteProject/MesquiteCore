@@ -14,11 +14,11 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
 package mesquite.genesis.RateMatrixTiTvCurator;
 /*~~  */
 
-import mesquite.lib.*;
-import mesquite.lib.characters.*;
-import mesquite.lib.duties.*;
-import mesquite.categ.lib.*;
-import mesquite.genesis.lib.*;
+import mesquite.genesis.lib.RateMatrixCurator;
+import mesquite.genesis.lib.RateMatrixTiTvModel;
+import mesquite.lib.MesquiteInteger;
+import mesquite.lib.characters.CharacterModel;
+import mesquite.lib.duties.EditingCurator;
 /* ======================================================================== */
 public class RateMatrixTiTvCurator extends RateMatrixCurator implements EditingCurator {
 	RateMatrixTiTvModel modelToEdit;

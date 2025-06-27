@@ -13,16 +13,19 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
 */
 package mesquite.genesis.lib;
 
-import mesquite.lib.*;
-import java.awt.*;
-import java.awt.event.*;
-import mesquite.lib.characters.*;
-import mesquite.lib.duties.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+
+import mesquite.categ.lib.CategoricalData;
+import mesquite.lib.MesquiteDouble;
+import mesquite.lib.MesquiteInteger;
+import mesquite.lib.MesquiteListener;
+import mesquite.lib.Notification;
+import mesquite.lib.ParseUtil;
+import mesquite.lib.StringUtil;
 import mesquite.lib.ui.DoubleField;
 import mesquite.lib.ui.ExtensibleDialog;
 import mesquite.lib.ui.MQPanel;
-import mesquite.categ.lib.*;
-import mesquite.cont.lib.*;
 
 
 /** A class that provides a General Time Reversible rate matrix. */

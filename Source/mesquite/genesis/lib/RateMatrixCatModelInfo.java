@@ -13,11 +13,6 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
 */
 package mesquite.genesis.lib;
 
-import mesquite.lib.*;
-import mesquite.lib.characters.*;
-import mesquite.lib.duties.*;
-import mesquite.categ.lib.*;
-
 /** A class holding information about a RateMatrixCatModel. */
 /* ======================================================================== */
 public class RateMatrixCatModelInfo extends SubmodelInfo {

@@ -13,10 +13,7 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
 */
 package mesquite.lib;
 
-import java.awt.*;
-import java.awt.event.*;
-import mesquite.lib.duties.*;
-import mesquite.lib.table.*;
+import mesquite.lib.table.MesquiteTable;
 import mesquite.lib.ui.MesquiteWindow;
 /* ======================================================================== */
 /** This is used to list elements of a ListableVector; it is designed for quick and dirty use.  It is expected to be replaced.  */

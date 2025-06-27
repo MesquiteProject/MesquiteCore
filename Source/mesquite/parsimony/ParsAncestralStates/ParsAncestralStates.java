@@ -14,18 +14,28 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
 package mesquite.parsimony.ParsAncestralStates;
 /*~~  */
 
-import java.util.*;
-import java.awt.*;
-
-import mesquite.categ.lib.CategoricalHistory;
-import mesquite.lib.*;
-import mesquite.lib.characters.*;
-import mesquite.lib.duties.*;
+import mesquite.lib.CommandChecker;
+import mesquite.lib.EmployeeNeed;
+import mesquite.lib.MesquiteBoolean;
+import mesquite.lib.MesquiteFile;
+import mesquite.lib.MesquiteMessage;
+import mesquite.lib.MesquiteModule;
+import mesquite.lib.MesquiteNumber;
+import mesquite.lib.MesquiteString;
+import mesquite.lib.MesquiteThread;
+import mesquite.lib.Snapshot;
+import mesquite.lib.characters.CharacterDistribution;
+import mesquite.lib.characters.CharacterHistory;
+import mesquite.lib.characters.CharacterModel;
+import mesquite.lib.characters.CharacterStates;
+import mesquite.lib.duties.CharStatesForNodes;
+import mesquite.lib.duties.CharacterModelSource;
 import mesquite.lib.tree.Tree;
 import mesquite.lib.ui.MesquiteCMenuItemSpec;
 import mesquite.lib.ui.MesquiteMenuItemSpec;
 import mesquite.lib.ui.MesquiteSubmenuSpec;
-import mesquite.parsimony.lib.*;
+import mesquite.parsimony.lib.ParsAncStatesForModel;
+import mesquite.parsimony.lib.ParsModelSource;
 
 /* ======================================================================== */
 public class ParsAncestralStates extends CharStatesForNodes {

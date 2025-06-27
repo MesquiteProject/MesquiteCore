@@ -1,15 +1,15 @@
 package mesquite.parsimony.lib;
 
+import java.math.BigInteger;
+
 import mesquite.categ.lib.CategoricalHistory;
 import mesquite.categ.lib.CategoricalState;
 import mesquite.lib.Long2DArray;
 import mesquite.lib.MesquiteInteger;
 import mesquite.lib.MesquiteMessage;
 import mesquite.lib.MesquiteTrunk;
-import mesquite.lib.characters.*;
+import mesquite.lib.characters.CharacterHistory;
 import mesquite.lib.tree.Tree;
-
-import java.math.*;
 
 
 /* Note:  the switch over to using BigIntegers is only partway done. */

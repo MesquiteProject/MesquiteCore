@@ -14,8 +14,11 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
 package mesquite.molec.lib;
 
 
-import mesquite.lib.*;
-import mesquite.lib.characters.*;
+import mesquite.lib.AssociableWithSpecs;
+import mesquite.lib.SpecsSet;
+import mesquite.lib.characters.CharacterData;
+import mesquite.lib.characters.CharacterModel;
+import mesquite.lib.characters.ModelSet;
 
 /*======================================================================== */
 /** a ModelSet for genetic codes. */
@@ -46,20 +49,7 @@ public class GenCodeModelSet  extends ModelSet {
 	}
 	 
 	
-	/*.................................................................................................................*   WAYNECHECK2024
- 	/** Gets default model specified for ModelSet*
-	public Object getDefaultProperty(int ic) {
-		if (getModel(ic) != null)
-			return getModel(ic);
-		int icLeft = ic;
-		while (--icLeft>=0 && getModel(icLeft) != null)  //looking left
-			return getModel(icLeft);
-		int icRight = ic;
-		while (++icRight< getNumChars() && getModel(icRight) != null)
-			return getModel(icRight);
-		return super.getDefaultModel(ic);
-	}
-	/*.................................................................................................................*/
+	
 
 }
 

@@ -15,8 +15,19 @@ This module originally by P. Midford, based on MeanValue.
  */
 package mesquite.categ.StateFrequency;
 
-import mesquite.categ.lib.*;
-import mesquite.lib.*;
+import mesquite.categ.lib.CategoricalData;
+import mesquite.categ.lib.CategoricalDistribution;
+import mesquite.categ.lib.CategoricalState;
+import mesquite.categ.lib.RequiresAnyCategoricalData;
+import mesquite.lib.CommandChecker;
+import mesquite.lib.CompatibilityTest;
+import mesquite.lib.MesquiteCommand;
+import mesquite.lib.MesquiteFile;
+import mesquite.lib.MesquiteInteger;
+import mesquite.lib.MesquiteModule;
+import mesquite.lib.MesquiteNumber;
+import mesquite.lib.MesquiteString;
+import mesquite.lib.Snapshot;
 import mesquite.lib.characters.CharacterDistribution;
 import mesquite.lib.duties.NumberForCharacter;
 import mesquite.lib.duties.NumberForCharacterIncr;

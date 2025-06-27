@@ -14,13 +14,15 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
 package mesquite.rhetenor.CharLoadings;
 /*~~  */
 
-import java.util.*;
-import java.awt.*;
-import mesquite.lib.*;
-import mesquite.lib.characters.*;
-import mesquite.lib.duties.*;
+import mesquite.lib.MesquiteInteger;
+import mesquite.lib.MesquiteMessage;
+import mesquite.lib.MesquiteNumber;
+import mesquite.lib.MesquiteString;
+import mesquite.lib.characters.CharacterDistribution;
+import mesquite.lib.characters.CharacterStates;
 import mesquite.lib.taxa.Taxa;
-import mesquite.rhetenor.lib.*;
+import mesquite.rhetenor.lib.CharacterLoadings;
+import mesquite.rhetenor.lib.Ordination;
 
 /* ======================================================================== */
 public class CharLoadings extends CharacterLoadings {

@@ -14,17 +14,22 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
 package mesquite.treefarm.AugmentTreeRandomly;
 /*~~  */
 
-import java.util.*;
-import java.awt.*;
-import mesquite.lib.*;
-import mesquite.lib.duties.*;
+import mesquite.lib.Associable;
+import mesquite.lib.CommandChecker;
+import mesquite.lib.MesquiteFile;
+import mesquite.lib.MesquiteInteger;
+import mesquite.lib.MesquiteMessage;
+import mesquite.lib.MesquiteString;
+import mesquite.lib.MesquiteThread;
+import mesquite.lib.RandomBetween;
+import mesquite.lib.Snapshot;
+import mesquite.lib.StringArray;
 import mesquite.lib.taxa.Taxa;
 import mesquite.lib.tree.MesquiteTree;
 import mesquite.lib.tree.Tree;
-import mesquite.lib.ui.ColorDistribution;
 import mesquite.lib.ui.ListDialog;
 import mesquite.lib.ui.MesquiteSubmenuSpec;
-import mesquite.treefarm.lib.*;
+import mesquite.treefarm.lib.RndTreeModifier;
 
 /* ======================================================================== */
 public class AugmentTreeRandomly extends RndTreeModifier {

@@ -13,13 +13,6 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
 */
 package mesquite.lib;
 
-import java.awt.*;
-import java.util.*;
-import mesquite.lib.duties.*;
-import mesquite.lib.ui.MesquiteWindow;
-import mesquite.lib.ui.ProgressIndicator;
-
-
 /*====================== Mesquite command absorber.  ======================*/
 /** Absorbs the commands without fuss; returned when a script is to be ignored.
 */

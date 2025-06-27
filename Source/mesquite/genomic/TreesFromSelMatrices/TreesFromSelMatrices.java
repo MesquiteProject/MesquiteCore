@@ -14,21 +14,26 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
 package mesquite.genomic.TreesFromSelMatrices;
 /* created May 02 */
 
-import mesquite.lists.lib.*;
+import java.util.Vector;
 
-import java.util.*;
-import java.awt.*;
-
-import mesquite.lib.*;
-import mesquite.lib.characters.*;
-import mesquite.lib.duties.*;
+import mesquite.lib.ListableVector;
+import mesquite.lib.MesquiteBoolean;
+import mesquite.lib.MesquiteString;
+import mesquite.lib.MesquiteThread;
+import mesquite.lib.ResultCodes;
+import mesquite.lib.StringUtil;
+import mesquite.lib.characters.CharacterData;
+import mesquite.lib.characters.MCharactersDistribution;
 import mesquite.lib.duties.MatrixSourceCoord;
-import mesquite.lib.table.*;
+import mesquite.lib.duties.TreeInferer;
+import mesquite.lib.duties.TreeSearcherFromMatrix;
+import mesquite.lib.table.MesquiteTable;
 import mesquite.lib.taxa.Taxa;
 import mesquite.lib.tree.MesquiteTree;
 import mesquite.lib.tree.Tree;
 import mesquite.lib.tree.TreeVector;
 import mesquite.lib.ui.ProgressIndicator;
+import mesquite.lists.lib.CharMatricesListUtility;
 
 /* ======================================================================== */
 public class TreesFromSelMatrices extends CharMatricesListUtility {
@@ -49,6 +54,7 @@ public class TreesFromSelMatrices extends CharMatricesListUtility {
 	MatrixSourceCoord matrixSourceTask;
 	/*.................................................................................................................*/
 	public boolean startJob(String arguments, Object condition, boolean hiredByName) {
+		loadPreferences();
 		inferenceTask = (TreeSearcherFromMatrix)hireCompatibleEmployee(TreeSearcherFromMatrix.class, "acceptImposedMatrixSource", "Tree inference method");
 		matrixSourceTask = new MyListOfMatrices(this);
 		if (inferenceTask == null || matrixSourceTask == null)
@@ -61,7 +67,21 @@ public class TreesFromSelMatrices extends CharMatricesListUtility {
 	public boolean pleaseLeaveMeOn(){
 		return false;
 	}
-
+/*
+	boolean warnedAboutDeleting = false;
+	/*.................................................................................................................*
+	public String preparePreferencesForXML () {
+		StringBuffer buffer = new StringBuffer();
+		StringUtil.appendXMLTag(buffer, 2, "warnedAboutDeleting", warnedAboutDeleting);  
+		return buffer.toString();
+	}
+	/*.................................................................................................................*
+	public void processSingleXMLPreference (String tag, String content) {
+		if ("warnedAboutDeleting".equalsIgnoreCase(tag)) {
+			warnedAboutDeleting = MesquiteBoolean.fromTrueFalseString(content);
+		}
+	}
+*/
 	MCharactersDistribution currentMatrix = null;
 	public MCharactersDistribution getCurrentMatrix(Taxa taxa) {
 		return currentMatrix;
@@ -70,6 +90,7 @@ public class TreesFromSelMatrices extends CharMatricesListUtility {
 	boolean compatibleMatrix(CharacterData data) {
 		return data.isCompatible(inferenceTask.getCharacterClass(), getProject(), null, null);
 	}
+
 	/** Called to operate on the CharacterData blocks.  Returns true if taxa altered*/
 	public boolean operateOnDatas(ListableVector datas, MesquiteTable table){
 		if (datas.size() == 0)
@@ -88,7 +109,19 @@ public class TreesFromSelMatrices extends CharMatricesListUtility {
 				}
 			}
 		}
+	/*	if (!warnedAboutDeleting && datas.size()>=10 && !MesquiteThread.isScripting()){
+			alert("If the tree inferences will be done locally and analysis folders will be created, you may want to check the \"Delete analysis folder after completion\" check box so as not to generate many new folders.\n\nThis suggestion won't be repeated.");
+			warnedAboutDeleting = true;
+			storePreferences();
+		}
+*/
 		inferenceTask.initialize(taxa);
+		inferenceTask.setMultipleMatrixMode(true);
+		TreeInferer inferer = inferenceTask.getTreeInferer();
+		if (inferer!= null){
+			inferer.setAlwaysPrepareForAnyMatrices(true);
+			//inferer.setPlaceAllAnalysisFilesInSubdirectory(true);
+		}
 		TreeVector trees = new TreeVector(((CharacterData)datas.elementAt(0)).getTaxa());
 		Vector v = pauseAllPausables();
 		int count = 0;
@@ -104,53 +137,54 @@ public class TreesFromSelMatrices extends CharMatricesListUtility {
 			CharacterData data = (CharacterData)datas.elementAt(im);
 			if (compatibleMatrix(data)) {
 				if (data.getNumChars()==0)
-				logln("Trees not inferred from matrix " +data.getName() + " because it has no characters");
+					logln("Trees not inferred from matrix " +data.getName() + " because it has no characters");
 				else {
-				currentMatrix = data.getMCharactersDistribution();
-				int lastNumTrees = trees.size();
-				logln("Inferring trees from matrix #" +(im+1) + " (" + data.getName() + ", " + data.getNumChars() + " characters)"); 
-				progIndicator.setText("\nInferring trees from matrix " +data.getName());
-				MesquiteThread.setHintToSuppressProgressIndicatorCurrentThread(true);
-				int result = inferenceTask.fillTreeBlock(trees);
-				MesquiteThread.setHintToSuppressProgressIndicatorCurrentThread(false);
-				if (result == ResultCodes.USERCANCELONINITIALIZE) {
-					logln("User cancelled the analyses."); 
-					userCancel=true;
-					stop = true;
-				}
-				else if (result<0){ //error
-				stop = true;
-				logln("Error in tree inference! Tree inferences will be stopped."); 
-				}
-				else {
-					progIndicator.increment();
-					if (im == 0)
-						progIndicator.toFront();
-					if (trees.size() == lastNumTrees) {
-						numFailed++;
-						stringFailed += "\t" + data.getName() + "\n";
-						logln("Trees not inferred from matrix " +data.getName() + " because of some issue with the matrix or the inference program."); 
-						//if (AlertDialog.query(MesquiteTrunk.mesquiteTrunk.containerOfModule(), "Stop?", "Do you want to stop the tree inferences?", "Stop", "Continue", 0)) {
-						//	stop = true;
-						//}
-						MesquiteThread.setQuietPlease(true);
+					currentMatrix = data.getMCharactersDistribution();
+					int lastNumTrees = trees.size();
+					logln("Inferring trees from matrix #" +(im+1) + " (" + data.getName() + ", " + data.getNumChars() + " characters)"); 
+					progIndicator.setText("\nInferring trees from matrix " +data.getName());
+					MesquiteThread.setHintToSuppressProgressIndicatorCurrentThread(true);
+					TreeInferer inf2 = inferenceTask.getTreeInferer();
+					int result = inferenceTask.fillTreeBlock(trees);
+					MesquiteThread.setHintToSuppressProgressIndicatorCurrentThread(false);
+					if (result == ResultCodes.USERCANCELONINITIALIZE) {
+						logln("User cancelled the analyses."); 
+						userCancel=true;
+						stop = true;
 					}
-					boolean mult = false;
-					if (trees.size()-lastNumTrees>1)
-						mult = true;
-					for (int itr = lastNumTrees; itr<trees.size(); itr++) { //multiple trees from same matrix; number trees .#1, 2, 3
-						String num = "";
-						if (mult)
-							num = ".#" + (itr-lastNumTrees + 1);
-						Tree t = trees.getTree(itr);
-						count++;
-						if (t instanceof MesquiteTree){
-							MesquiteTree tM = (MesquiteTree)t;
-							tM.setName(data.getName() + num + ".tree");
-							tM.attach(new MesquiteString("fromMatrix", data.getName()));
+					else if (result<0){ //error
+						stop = true;
+						logln("Error in tree inference! Tree inferences will be stopped."); 
+					}
+					else {
+						progIndicator.increment();
+						if (im == 0)
+							progIndicator.toFront();
+						if (trees.size() == lastNumTrees) {
+							numFailed++;
+							stringFailed += "\t" + data.getName() + "\n";
+							logln("Trees not inferred from matrix " +data.getName() + " because of some issue with the matrix or the inference program."); 
+							//if (AlertDialog.query(MesquiteTrunk.mesquiteTrunk.containerOfModule(), "Stop?", "Do you want to stop the tree inferences?", "Stop", "Continue", 0)) {
+							//	stop = true;
+							//}
+							MesquiteThread.setQuietPlease(true);
+						}
+						boolean mult = false;
+						if (trees.size()-lastNumTrees>1)
+							mult = true;
+						for (int itr = lastNumTrees; itr<trees.size(); itr++) { //multiple trees from same matrix; number trees .#1, 2, 3
+							String num = "";
+							if (mult)
+								num = ".#" + (itr-lastNumTrees + 1);
+							Tree t = trees.getTree(itr);
+							count++;
+							if (t instanceof MesquiteTree){
+								MesquiteTree tM = (MesquiteTree)t;
+								tM.setName(data.getName() + num + ".tree");
+								tM.attach(new MesquiteString("fromMatrix", data.getName()));
+							}
 						}
 					}
-				}
 				}
 			}
 			else
@@ -186,11 +220,11 @@ public class TreesFromSelMatrices extends CharMatricesListUtility {
 	 * then the number refers to the Mesquite version.  This should be used only by modules part of the core release of Mesquite.
 	 * If a NEGATIVE integer, then the number refers to the local version of the package, e.g. a third party package*/
 	public int getVersionOfFirstRelease(){
-		return NEXTRELEASE;  
+		return 400;  
 	}
 	/*.................................................................................................................*/
 	public boolean isPrerelease(){
-		return true;  
+		return false;  
 	}
 	public void endJob() {
 		super.endJob();

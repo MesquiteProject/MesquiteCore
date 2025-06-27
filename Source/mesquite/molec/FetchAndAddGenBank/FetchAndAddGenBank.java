@@ -13,13 +13,19 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
 package mesquite.molec.FetchAndAddGenBank; 
 
 
-import java.awt.*;
-import mesquite.lib.*;
-import mesquite.lib.characters.*;
-import mesquite.lib.duties.*;
+import java.awt.TextArea;
+
+import mesquite.categ.lib.DNAData;
+import mesquite.categ.lib.RequiresAnyMolecularData;
+import mesquite.lib.CompatibilityTest;
+import mesquite.lib.MesquiteFile;
+import mesquite.lib.MesquiteInteger;
+import mesquite.lib.Snapshot;
+import mesquite.lib.StringUtil;
+import mesquite.lib.characters.CharacterData;
+import mesquite.lib.duties.DataUtility;
 import mesquite.lib.ui.ExtensibleDialog;
-import mesquite.categ.lib.*;
-import mesquite.molec.lib.*;
+import mesquite.molec.lib.NCBIUtil;
 
 /* ======================================================================== */
 public class FetchAndAddGenBank extends DataUtility { 

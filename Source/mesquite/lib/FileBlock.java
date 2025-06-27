@@ -13,8 +13,7 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
  */
 package mesquite.lib;
 
-import java.awt.*;
-import java.util.*;
+import java.util.Vector;
 
 
 
@@ -124,7 +123,6 @@ public class FileBlock {
 		while (!emptyToken(unconsumed) && !unconsumed.equals(";")) 
 			unconsumed = file.nextToken(null);
 
-		if (NEXUSFileParser.verbose) Debugg.println("======GNCNWC-FB -[" + unconsumed + "]");
 		return unconsumed;
 	}
 

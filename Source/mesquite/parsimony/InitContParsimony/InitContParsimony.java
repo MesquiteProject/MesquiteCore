@@ -14,13 +14,12 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
 package mesquite.parsimony.InitContParsimony;
 /*~~  */
 
-import java.util.*;
-import java.awt.*;
-import mesquite.lib.*;
-import mesquite.lib.characters.*;
-import mesquite.lib.duties.*;
-import mesquite.cont.lib.*;
-import mesquite.parsimony.lib.*;
+import mesquite.cont.lib.ContinuousData;
+import mesquite.cont.lib.ContinuousState;
+import mesquite.lib.duties.FileInit;
+import mesquite.parsimony.lib.ContParsimonyModel;
+import mesquite.parsimony.lib.LinearModel;
+import mesquite.parsimony.lib.SquaredModel;
 
 /**/
 public class InitContParsimony extends FileInit {

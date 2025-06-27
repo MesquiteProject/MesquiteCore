@@ -17,9 +17,6 @@ import java.awt.Component;
 import java.awt.Container;
 import java.awt.Dimension;
 import java.awt.Font;
-import java.awt.TextComponent;
-
-import javax.swing.text.JTextComponent;
 
 import mesquite.lib.MesquiteTrunk;
 
@@ -32,7 +29,7 @@ public class MQComponentHelper {
 	MQComponent component;
 	static boolean verboseTW = false;
 	static boolean linuxSendToOtherThread = false;
-	static boolean protectGraphics = true;
+	public static boolean protectGraphics = true;
 
 	public MQComponentHelper(MQComponent component){
 		this.component = component;

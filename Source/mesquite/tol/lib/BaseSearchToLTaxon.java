@@ -17,9 +17,6 @@ import java.util.Vector;
 
 import mesquite.lib.CommandChecker;
 import mesquite.lib.duties.TreeDisplayAssistantI;
-import mesquite.lib.tree.TreeDisplay;
-import mesquite.lib.tree.TreeDisplayExtra;
-import mesquite.tol.lib.*;
 
 public abstract class BaseSearchToLTaxon extends TreeDisplayAssistantI {
 		public Vector extras;

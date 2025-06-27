@@ -17,7 +17,7 @@ import mesquite.lib.FileElement;
 import mesquite.lib.MesquiteFile;
 import mesquite.lib.MesquiteModule;
 import mesquite.lib.NexusBlock;
-import mesquite.lib.duties.*;
+import mesquite.lib.duties.TaxaManager;
 
 //Moved into mesquite.lib 13 Dec 01
 /*===============================================*/

@@ -14,9 +14,17 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
 */
 package mesquite.charMatrices.NumberForMatricesFP; 
 
-import mesquite.lib.*;
-import mesquite.lib.characters.*;
-import mesquite.lib.duties.*;
+import mesquite.lib.CommandChecker;
+import mesquite.lib.CompatibilityTest;
+import mesquite.lib.EmployeeNeed;
+import mesquite.lib.MesquiteFile;
+import mesquite.lib.MesquiteNumber;
+import mesquite.lib.MesquiteProject;
+import mesquite.lib.MesquiteString;
+import mesquite.lib.Snapshot;
+import mesquite.lib.characters.CharacterData;
+import mesquite.lib.duties.FileProcessor;
+import mesquite.lib.duties.NumberForMatrix;
 import mesquite.lib.ui.MesquiteSubmenuSpec;
 
 /* ======================================================================== */

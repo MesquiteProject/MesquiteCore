@@ -13,12 +13,16 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
 */
 package mesquite.cont.lib;
 
-import java.awt.*;
-import java.util.*;
-import mesquite.lib.duties.*;
+import java.util.Vector;
+
+import mesquite.lib.Double2DArray;
+import mesquite.lib.MesquiteDouble;
+import mesquite.lib.NameReference;
+import mesquite.lib.characters.CharacterData;
+import mesquite.lib.characters.CharacterDistribution;
+import mesquite.lib.characters.CharacterState;
+import mesquite.lib.characters.MAdjustableDistribution;
 import mesquite.lib.taxa.Taxa;
-import mesquite.lib.*;
-import mesquite.lib.characters.*;
 
 
 /* ======================================================================== */

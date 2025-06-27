@@ -13,18 +13,26 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
  */
 package mesquite.lib.ui;
 
+import java.awt.Dimension;
+import java.awt.Font;
+
 import javax.swing.JEditorPane;
-
-import mesquite.lib.Debugg;
-import mesquite.lib.MesquiteTrunk;
-
-import java.awt.*;
 
 //workaround for crashes on OS X && Linux  [Search for MQLINUX]
 public class MQJEditorPane extends JEditorPane implements MQComponent{
 	public MQJEditorPane(String a, String b){
 		super(a, b);
 		helper = new MQComponentHelper(this);
+	}
+	
+	Dimension minSize = null;
+	public void setMinSize(int w, int h){
+		minSize = new Dimension(w, h);
+	}
+	public Dimension getMinimumSize(){
+		if (minSize!= null)
+			return minSize;
+		return super.getMinimumSize();
 	}
 	public boolean getScrollableTracksViewportWidth() {
 		try {
@@ -75,7 +83,15 @@ public class MQJEditorPane extends JEditorPane implements MQComponent{
 		super.setLocation(x,y);
 	}
 	public Dimension superGetPreferredSize(){
-		return super.getPreferredSize();
+		Dimension sD = super.getPreferredSize();
+		if (minSize!= null){
+			if (sD.width<minSize.width)
+				sD.width = minSize.width;
+			if (sD.height<minSize.height)
+				sD.height = minSize.height;
+			
+		}
+		return sD;
 	}
 	public void superLayout(){
 		super.layout();

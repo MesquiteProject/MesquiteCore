@@ -14,12 +14,12 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
 package mesquite.minimal.Utilities;
 /*~~  */
 
-import java.awt.*;
-import java.net.*;
-import java.util.*;
-import java.io.*;
-import mesquite.lib.*;
-import mesquite.lib.duties.*;
+import mesquite.lib.CommandChecker;
+import mesquite.lib.EmployeeNeed;
+import mesquite.lib.MesquiteTrunk;
+import mesquite.lib.Puppeteer;
+import mesquite.lib.duties.MesquiteInit;
+import mesquite.lib.duties.UtilitiesAssistant;
 
 public class Utilities extends MesquiteInit  {
 	public String getName() {

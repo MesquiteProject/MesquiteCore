@@ -14,11 +14,24 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
 package mesquite.consensus.ConsensusTree;
 /*~~  */
 
-import java.util.*;
-import java.awt.*;
-
-import mesquite.lib.*;
-import mesquite.lib.duties.*;
+import mesquite.lib.CommandChecker;
+import mesquite.lib.CommandRecord;
+import mesquite.lib.CompatibilityTest;
+import mesquite.lib.EmployerEmployee;
+import mesquite.lib.MesquiteCommand;
+import mesquite.lib.MesquiteFile;
+import mesquite.lib.MesquiteInteger;
+import mesquite.lib.MesquiteListener;
+import mesquite.lib.MesquiteModule;
+import mesquite.lib.MesquiteProject;
+import mesquite.lib.MesquiteString;
+import mesquite.lib.MesquiteThread;
+import mesquite.lib.MesquiteTrunk;
+import mesquite.lib.Notification;
+import mesquite.lib.Snapshot;
+import mesquite.lib.duties.Consenser;
+import mesquite.lib.duties.IncrementalConsenser;
+import mesquite.lib.duties.TreeSource;
 import mesquite.lib.taxa.Taxa;
 import mesquite.lib.tree.MesquiteTree;
 import mesquite.lib.tree.Tree;
@@ -122,8 +135,14 @@ public class ConsensusTree extends TreeSource {
 			parametersChanged();
 			 */
 		}
-		else
-			if (checker.compare(this.getClass(), "Sets the module doing a consensus", "[name of module]", commandName, "setConsenser")) {
+		else if (checker.compare(this.getClass(), "Suspends calculations", "[]", commandName, "suspend")) {
+			suspended = true;
+		}
+		else if (checker.compare(this.getClass(), "Desuspends calculations", "[]", commandName, "desuspend")) {
+			suspended = false;
+			parametersChanged();
+		}
+		else if (checker.compare(this.getClass(), "Sets the module doing a consensus", "[name of module]", commandName, "setConsenser")) {
 				Consenser temp = (Consenser)replaceEmployee(Consenser.class, arguments, "Consensus module", consenser);
 				if (temp!=null) {
 					consenser = temp;
@@ -139,6 +158,15 @@ public class ConsensusTree extends TreeSource {
 				return  super.doCommand(commandName, arguments, checker);
 		return null;
 	}
+	
+	boolean suspended = false;
+	
+    /**Returns whether or not the source can handle asking for the last tree, i.e. for what the source says is maxTrees - 1, even if that is unassigned or infinite, i.e., is not a combinable number. 
+     * If asked, and the source has an indefinite number, it will supply a tree (e.g. from a live file) rather than just trying forever. 
+     * Used for Pin to Last Tree in BasicTreeWindow.*/
+   	public boolean permitsRequestForLastTree(Taxa taxa){
+   		return true;
+   	}
 	/*.................................................................................................................*/
 	public void setPreferredTaxa(Taxa taxa){
 		oldTaxa = taxa;
@@ -188,6 +216,8 @@ public class ConsensusTree extends TreeSource {
 	}
 	/*.................................................................................................................*/
 	public Tree getTree(Taxa taxa, int ic, boolean verbose) {  
+		if (suspended)
+			return null;
 		oldTaxa = taxa;
 
 		int numTrees = checkNumTrees(taxa);

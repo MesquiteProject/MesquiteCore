@@ -15,11 +15,12 @@ package mesquite.trees.TerminalBranchLength;
 /*~~  */
 
 
-import mesquite.lib.*;
-import mesquite.lib.duties.*;
+import mesquite.lib.MesquiteDouble;
+import mesquite.lib.MesquiteString;
+import mesquite.lib.NumberArray;
 import mesquite.lib.taxa.Taxa;
 import mesquite.lib.tree.Tree;
-import mesquite.treefarm.lib.*;
+import mesquite.treefarm.lib.NForTaxonWithTree;
 
 /** ======================================================================== */
 public class TerminalBranchLength extends NForTaxonWithTree {

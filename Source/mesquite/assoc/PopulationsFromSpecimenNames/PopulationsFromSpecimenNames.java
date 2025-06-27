@@ -14,12 +14,19 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
 package mesquite.assoc.PopulationsFromSpecimenNames;
 /*~~  */
 
-import java.util.*;
-import java.awt.*;
-import mesquite.lib.*;
-import mesquite.lib.duties.*;
+import mesquite.assoc.lib.AssociationsManager;
+import mesquite.assoc.lib.PopulationsAndAssociationMaker;
+import mesquite.assoc.lib.TaxaAssociation;
+import mesquite.lib.Bits;
+import mesquite.lib.MesquiteListener;
+import mesquite.lib.MesquiteThread;
+import mesquite.lib.NameParser;
+import mesquite.lib.Notification;
+import mesquite.lib.ObjectContainer;
+import mesquite.lib.StringArray;
+import mesquite.lib.StringUtil;
+import mesquite.lib.duties.TaxaManager;
 import mesquite.lib.taxa.Taxa;
-import mesquite.assoc.lib.*;
 
 /* ======================================================================== */
 public class PopulationsFromSpecimenNames extends PopulationsAndAssociationMaker {
@@ -37,7 +44,7 @@ public class PopulationsFromSpecimenNames extends PopulationsAndAssociationMaker
 	}
 
 	public boolean isPrerelease(){
-		return true;
+		return false;
 	}
 	/*.................................................................................................................*/
 	public String preparePreferencesForXML () {
@@ -131,19 +138,6 @@ public class PopulationsFromSpecimenNames extends PopulationsAndAssociationMaker
 		association = manager.makeNewAssociation(populations, specimensTaxa, "Populations-Specimens");
 
 		if (association != null) {  // taxa is population, otherTaxa is contained/specimens
-			/*if (nameParser==null) {  //ZQ FYI: already done in createNewMasterTaxaBlockBasedOnNames
-				nameParser = new NameParser(this, "specimen");
-				if (!MesquiteThread.isScripting()) {
-					String helpString = "New containing taxa (i.e., populations or containing taxa) will be created based on a portion of the taxon names of the contained taxon (e.g., specimen or gene copy)." 
-							+ " In particular, the name of each specimen will be reduced "
-							+ "by removing a piece from the start and/or end; that reduced name will become the name of the population containing the specimen.  If two specimens have the same"
-							+ " reduced name, they will be assigned to the same population";
-					if (nameParser.queryOptions("Options for Creating Populations", "Population names will be derived from specimen names.", "In choosing what parts of the specimen name to use as its population name,",helpString)) {
-						storePreferences();
-					}
-				}
-			}
-			*/
 			boolean changed = false;
 			for (int it=0; it<populations.getNumTaxa(); it++)
 				for (int ito = 0; ito<specimensTaxa.getNumTaxa(); ito++){
@@ -185,7 +179,7 @@ public class PopulationsFromSpecimenNames extends PopulationsAndAssociationMaker
 	 * then the number refers to the Mesquite version.  This should be used only by modules part of the core release of Mesquite.
 	 * If a NEGATIVE integer, then the number refers to the local version of the package, e.g. a third party package*/
 	public int getVersionOfFirstRelease(){
-		return NEXTRELEASE;  
+		return 400;  
 	}
 
 }

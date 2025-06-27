@@ -14,14 +14,18 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
 package mesquite.genomic.TrimSitesByInverseFlagger;
 import java.util.Vector;
 
-
-
-import mesquite.lib.*;
-
+import mesquite.lib.Bits;
+import mesquite.lib.CommandChecker;
+import mesquite.lib.MesquiteFile;
+import mesquite.lib.MesquiteListener;
+import mesquite.lib.MesquiteThread;
+import mesquite.lib.Notification;
+import mesquite.lib.Snapshot;
+import mesquite.lib.UndoInstructions;
+import mesquite.lib.UndoReference;
 import mesquite.lib.characters.CharacterData;
 import mesquite.lib.characters.MatrixFlags;
 import mesquite.lib.duties.MatrixFlagger;
-import mesquite.lib.duties.MatrixFlaggerForTrimming;
 import mesquite.lib.duties.MatrixFlaggerForTrimmingSites;
 import mesquite.molec.lib.SequenceTrimmer;
 
@@ -109,7 +113,7 @@ public class TrimSitesByInverseFlagger extends SequenceTrimmer  {
 
 	/*.................................................................................................................*/
 	public boolean isPrerelease() {
-		return true;
+		return false;
 	}
 
 	/*.................................................................................................................*/
@@ -134,6 +138,6 @@ public class TrimSitesByInverseFlagger extends SequenceTrimmer  {
 	 * then the number refers to the Mesquite version.  This should be used only by modules part of the core release of Mesquite.
 	 * If a NEGATIVE integer, then the number refers to the local version of the package, e.g. a third party package*/
 	public int getVersionOfFirstRelease(){
-		return NEXTRELEASE;  
+		return 400;  
 	}
 }

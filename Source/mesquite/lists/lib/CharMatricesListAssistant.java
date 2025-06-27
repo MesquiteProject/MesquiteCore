@@ -13,12 +13,11 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
 */
 package mesquite.lists.lib;
 
-import java.awt.*;
-import java.util.*;
+import java.awt.Color;
+import java.awt.Graphics;
 
-import mesquite.lib.*;
-import mesquite.lib.characters.*;
-import mesquite.lib.duties.*;
+import mesquite.lib.ListableVector;
+import mesquite.lib.characters.CharacterData;
 
 
 

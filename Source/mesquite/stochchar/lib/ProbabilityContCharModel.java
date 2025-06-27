@@ -13,13 +13,10 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
 */
 package mesquite.stochchar.lib;
 
-import java.awt.*;
-import java.util.*;
-import mesquite.lib.duties.*;
+import mesquite.cont.lib.ContinuousState;
+import mesquite.lib.characters.CharacterState;
+import mesquite.lib.characters.ProbabilityModel;
 import mesquite.lib.tree.Tree;
-import mesquite.lib.*;
-import mesquite.lib.characters.*;
-import mesquite.cont.lib.*;
 /*==========================  Mesquite Basic Class Library ==========================*/
 /*===  the basic classes used by the kernel of Mesquite (i.e. the trunk object) and available to the modules
 

@@ -13,8 +13,12 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
 */
 package mesquite.lib.duties;
 
-import java.awt.*;
-import mesquite.lib.*;
+import java.awt.Color;
+
+import mesquite.lib.MesquiteDouble;
+import mesquite.lib.MesquiteModule;
+import mesquite.lib.ObjectSpecsSet;
+import mesquite.lib.Selectionable;
 import mesquite.lib.taxa.Taxa;
 import mesquite.lib.taxa.TaxaGroup;
 import mesquite.lib.taxa.TaxaPartition;

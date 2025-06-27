@@ -14,16 +14,22 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
 package mesquite.pairwise.PairsOneChar;
 /*~~  */
 
-import java.util.*;
-import java.awt.*;
-
-import mesquite.lib.*;
-import mesquite.lib.characters.*;
-import mesquite.lib.duties.*;
+import mesquite.categ.lib.CategoricalDistribution;
+import mesquite.categ.lib.CategoricalHistory;
+import mesquite.categ.lib.CategoricalState;
+import mesquite.lib.CommandRecord;
+import mesquite.lib.MesquiteMessage;
+import mesquite.lib.characters.CharacterDistribution;
+import mesquite.lib.characters.CharacterHistory;
+import mesquite.lib.characters.CharacterState;
 import mesquite.lib.tree.MesquiteTree;
 import mesquite.lib.tree.Tree;
-import mesquite.pairwise.lib.*;
-import mesquite.categ.lib.*;
+import mesquite.pairwise.lib.PairMaker;
+import mesquite.pairwise.lib.PairMakerChars;
+import mesquite.pairwise.lib.TaxaPairer;
+import mesquite.pairwise.lib.TaxaPairerChars;
+import mesquite.pairwise.lib.TaxaPairing;
+import mesquite.pairwise.lib.TaxaPath;
 
 /* ======================================================================== */
 public class PairsOneChar extends PairMakerChars {

@@ -13,14 +13,17 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
 package mesquite.io.InterpretFastaDNA;
 /*~~  */
 
-import java.util.*;
-import java.awt.*;
-import mesquite.lib.*;
-import mesquite.lib.characters.*;
-import mesquite.lib.duties.*;
+import mesquite.categ.lib.CategoricalData;
+import mesquite.categ.lib.CategoricalState;
+import mesquite.categ.lib.DNAData;
+import mesquite.categ.lib.DNAState;
+import mesquite.io.lib.InterpretFasta;
+import mesquite.lib.MesquiteFile;
+import mesquite.lib.MesquiteProject;
+import mesquite.lib.MesquiteTrunk;
+import mesquite.lib.characters.CharacterData;
+import mesquite.lib.duties.CharactersManager;
 import mesquite.lib.taxa.Taxa;
-import mesquite.categ.lib.*;
-import mesquite.io.lib.*;
 
 
 /* ============  a file interpreter for DNA/RNA  Fasta files ============*/

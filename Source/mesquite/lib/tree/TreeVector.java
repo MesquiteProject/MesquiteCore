@@ -13,14 +13,13 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
  */
 package mesquite.lib.tree;
 
-import java.awt.*;
-import java.util.*;
+import java.awt.MenuItem;
+import java.util.Vector;
 
 import mesquite.lib.CommandChecker;
 import mesquite.lib.CommandRecord;
 import mesquite.lib.Commandable;
 import mesquite.lib.CompatibilityChecker;
-import mesquite.lib.Debugg;
 import mesquite.lib.EmployerEmployee;
 import mesquite.lib.Identifiable;
 import mesquite.lib.Listable;
@@ -39,8 +38,7 @@ import mesquite.lib.MesquiteTrunk;
 import mesquite.lib.Notification;
 import mesquite.lib.ParseUtil;
 import mesquite.lib.StringUtil;
-import mesquite.lib.characters.CharacterData;
-import mesquite.lib.duties.*;
+import mesquite.lib.duties.ElementManager;
 import mesquite.lib.taxa.Taxa;
 import mesquite.lib.taxa.Taxon;
 import mesquite.lib.ui.HTMLDescribable;
@@ -398,15 +396,7 @@ public class TreeVector extends ListableVector implements Trees, Commandable, Id
 		if (taxa==null)
 			return;
 		Taxon t = taxa.getTaxon(taxonName, false, true);
-	/*	if (t == null) {  //Debugg.println If want to permit T0 at this level, need get/set method for this vector itself
-			if (MesquiteTree.permitT0Names && taxonName.startsWith("t")){  //not found in taxon names, but as permits t0, t1 style names, look for it there
-					String number = taxonName.substring(1, taxonName.length());
-					int num = MesquiteInteger.fromString(number);
-					if (MesquiteInteger.isCombinable(num) && num>=0 && num<taxa.getNumTaxa())
-						t = taxa.getTaxon(num);
-			}
-		}
-		*/
+	
 		if (t==null)
 			MesquiteMessage.warnProgrammer("Taxon name in translation table doesn't correspond to name of known taxon (\"" + taxonName + "\" [a])");
 

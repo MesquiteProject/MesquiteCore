@@ -14,12 +14,17 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
 package mesquite.charMatrices.SprinkleMissing;
 /*~~  */
 
-import java.util.*;
-import java.awt.*;
-import mesquite.lib.*;
-import mesquite.lib.characters.*;
-import mesquite.lib.duties.*;
-import mesquite.charMatrices.lib.*;
+import mesquite.charMatrices.lib.RandomMatrixModifier;
+import mesquite.lib.CommandChecker;
+import mesquite.lib.MesquiteDouble;
+import mesquite.lib.MesquiteFile;
+import mesquite.lib.MesquiteInteger;
+import mesquite.lib.MesquiteThread;
+import mesquite.lib.RandomBetween;
+import mesquite.lib.Snapshot;
+import mesquite.lib.characters.CharacterState;
+import mesquite.lib.characters.MAdjustableDistribution;
+import mesquite.lib.characters.MCharactersDistribution;
 
 /* ======================================================================== */
 public class SprinkleMissing extends RandomMatrixModifier {

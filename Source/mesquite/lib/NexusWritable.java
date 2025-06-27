@@ -13,12 +13,6 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
 */
 package mesquite.lib;
 
-import java.awt.*;
-import java.util.*;
-import mesquite.lib.duties.*;
-
-
-
 /* ======================================================================== */
 /**An object that can be written as a command or subcommand in a NEXUS file
  */

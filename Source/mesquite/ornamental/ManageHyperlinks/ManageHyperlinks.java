@@ -14,11 +14,21 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
 package mesquite.ornamental.ManageHyperlinks;
 /*~~  */
 
-import java.util.*;
-import java.awt.*;
-import mesquite.lib.*;
-import mesquite.lib.characters.*;
-import mesquite.lib.duties.*;
+import mesquite.lib.FileElement;
+import mesquite.lib.Hyperlink;
+import mesquite.lib.MesquiteFile;
+import mesquite.lib.MesquiteInteger;
+import mesquite.lib.MesquiteProject;
+import mesquite.lib.MesquiteString;
+import mesquite.lib.NameReference;
+import mesquite.lib.NexusBlock;
+import mesquite.lib.NexusCommandTest;
+import mesquite.lib.NexusWritable;
+import mesquite.lib.Object2DArray;
+import mesquite.lib.ParseUtil;
+import mesquite.lib.StringUtil;
+import mesquite.lib.characters.CharacterData;
+import mesquite.lib.duties.FileInit;
 import mesquite.lib.taxa.Taxa;
 import mesquite.lib.tree.Clade;
 import mesquite.lib.tree.Clades;

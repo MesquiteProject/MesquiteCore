@@ -14,18 +14,23 @@
 package mesquite.align.lib;
 /*~~  */
 
-import java.util.*;
+import java.awt.Rectangle;
 import java.util.zip.CRC32;
-import java.lang.*;
-import java.io.*;
-import java.awt.*;
-import java.awt.event.*;
 
-import mesquite.lib.*;
-import mesquite.lib.characters.*;
-import mesquite.lib.duties.*;
-import mesquite.categ.lib.*;
-import mesquite.lib.table.*;
+import mesquite.categ.lib.CategoricalData;
+import mesquite.categ.lib.CategoricalState;
+import mesquite.categ.lib.MCategoricalDistribution;
+import mesquite.categ.lib.MolecularData;
+import mesquite.lib.Integer2DArray;
+import mesquite.lib.IntegerField;
+import mesquite.lib.IntegerSqMatrixFields;
+import mesquite.lib.Long2DArray;
+import mesquite.lib.MesquiteInteger;
+import mesquite.lib.MesquiteMessage;
+import mesquite.lib.MesquiteModule;
+import mesquite.lib.MesquiteStringBuffer;
+import mesquite.lib.MesquiteTrunk;
+import mesquite.lib.characters.CharacterData;
 import mesquite.lib.taxa.Taxa;
 import mesquite.lib.ui.ExtensibleDialog;
 import mesquite.lib.ui.MesquiteWindow;

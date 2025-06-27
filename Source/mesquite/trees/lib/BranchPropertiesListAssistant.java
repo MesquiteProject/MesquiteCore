@@ -1,7 +1,7 @@
 package mesquite.trees.lib;
 
-import mesquite.lib.tree.MesquiteTree;
 import mesquite.lib.tree.DisplayableBranchProperty;
+import mesquite.lib.tree.MesquiteTree;
 import mesquite.lists.lib.ListAssistant;
 import mesquite.trees.BranchPropertiesList.BranchPropertiesList;
 import mesquite.trees.BranchPropertyDisplayControl.BranchPropertyDisplayControl;

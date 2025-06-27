@@ -14,17 +14,34 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
 package mesquite.diverse.CharAssocDivViewer;
 /*~~  */
 
-import java.awt.*;
-import mesquite.lib.*;
-import mesquite.lib.characters.*;
-import mesquite.lib.duties.*;
+import java.awt.Color;
+import java.awt.Font;
+import java.awt.Graphics;
+import java.awt.TextArea;
+
+import mesquite.diverse.lib.NumForCharAndTreeDivers;
+import mesquite.lib.CommandChecker;
+import mesquite.lib.CompatibilityTest;
+import mesquite.lib.EmployeeNeed;
+import mesquite.lib.MesquiteCommand;
+import mesquite.lib.MesquiteFile;
+import mesquite.lib.MesquiteInteger;
+import mesquite.lib.MesquiteModule;
+import mesquite.lib.MesquiteNumber;
+import mesquite.lib.MesquiteString;
+import mesquite.lib.MesquiteThread;
+import mesquite.lib.Notification;
+import mesquite.lib.Snapshot;
+import mesquite.lib.characters.CharacterDistribution;
+import mesquite.lib.characters.CharacterStates;
+import mesquite.lib.duties.CharSourceCoordObed;
+import mesquite.lib.duties.TreeWindowAssistantA;
 import mesquite.lib.taxa.Taxa;
 import mesquite.lib.tree.Tree;
 import mesquite.lib.ui.MQTextArea;
 import mesquite.lib.ui.MesquiteSubmenuSpec;
 import mesquite.lib.ui.MesquiteWindow;
 import mesquite.lib.ui.MousePanel;
-import mesquite.diverse.lib.*;
 
 
 public class CharAssocDivViewer extends TreeWindowAssistantA    {

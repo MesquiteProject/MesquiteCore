@@ -13,14 +13,19 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
 */
 package mesquite.lists.lib;
 
-import java.awt.*;
-import java.awt.event.*;
-import java.util.*;
-import mesquite.lib.duties.*;
-import mesquite.lib.*;
-import mesquite.lib.characters.*;
-
-import mesquite.lib.table.*;
+import mesquite.lib.AssociableWithSpecs;
+import mesquite.lib.CommandChecker;
+import mesquite.lib.MesquiteFile;
+import mesquite.lib.MesquiteInteger;
+import mesquite.lib.MesquiteListener;
+import mesquite.lib.MesquiteMessage;
+import mesquite.lib.MesquiteString;
+import mesquite.lib.Notification;
+import mesquite.lib.Snapshot;
+import mesquite.lib.SpecsSet;
+import mesquite.lib.SpecsSetVector;
+import mesquite.lib.characters.CharacterData;
+import mesquite.lib.table.MesquiteTable;
 import mesquite.lib.taxa.Taxa;
 import mesquite.lib.ui.ListDialog;
 import mesquite.lib.ui.MesquiteWindow;
@@ -161,7 +166,7 @@ public abstract class DataSpecssetList extends ListModule {
     	 	}
     	 	else if (checker.compare(this.getClass(), "Returns the current data matrix", null, commandName, "getData")) {
     	 		Object o = ((ListWindow)getModuleWindow()).getCurrentObject(); 
-    	 		if (o instanceof SpecsSetVector) {//Debugg.println -- make sure this handles all types returned
+    	 		if (o instanceof SpecsSetVector) {
     	 			SpecsSetVector ssv = (SpecsSetVector)o;
     	 			o = (CharacterData)ssv.getObjectCharacterized();
     	 		}

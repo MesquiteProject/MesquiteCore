@@ -14,10 +14,9 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
 package mesquite.molec.lib;
 /*~~  */
 
-import mesquite.lib.*;
-import mesquite.lib.duties.*;
-import mesquite.lib.characters.*;
-import mesquite.lib.table.*;
+import mesquite.lib.MesquiteInteger;
+import mesquite.lib.characters.CharacterData;
+import mesquite.lib.table.MesquiteTable;
 /* ======================================================================== *
 
 *new in 1.05*

@@ -272,6 +272,24 @@ public class FileElement extends AssociableWithSpecs implements Identifiable, Li
 		else if (checker.compare(this.getClass(), "Shows the file element", null, commandName, "showMe")) {
 			return show();
 		}
+		else if (checker.compare(this.getClass(), "Sets the name of the file element", "[name]", commandName, "setName")) {
+			if (getProject() == null)
+				return null;
+			
+			String s = new Parser().getFirstToken(arguments);
+			if (s!=null) {
+				setName(s);
+				notifyListeners(this, new Notification(MesquiteListener.NAMES_CHANGED));
+				MesquiteWindow.resetAllTitles();
+				ElementManager manager = getManager();
+
+				if (manager!=null && manager instanceof MesquiteModule)
+					((MesquiteModule)manager).resetAllMenuBars();
+				else
+					MesquiteTrunk.mesquiteTrunk.resetAllMenuBars();
+
+			}
+		}
 		else if (checker.compare(this.getClass(), "Renames the file element", null, commandName, "renameMe")) {
 			if (getProject() == null)
 				return null;

@@ -13,8 +13,8 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
 */
 package mesquite.tol.GenBankTaxonURLServer;
 
-import mesquite.lib.*;
-import mesquite.tol.lib.*;
+import mesquite.lib.StringUtil;
+import mesquite.tol.lib.TaxonOnWebServer;
 
 public class GenBankTaxonURLServer extends TaxonOnWebServer {
 

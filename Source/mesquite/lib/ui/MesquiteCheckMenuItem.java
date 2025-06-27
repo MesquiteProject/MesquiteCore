@@ -13,8 +13,14 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
  */
 package mesquite.lib.ui;
 
-import java.awt.*;
-import java.awt.event.*;
+import java.awt.AWTEvent;
+import java.awt.CheckboxMenuItem;
+import java.awt.MenuContainer;
+import java.awt.MenuShortcut;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.ItemEvent;
+import java.awt.event.ItemListener;
 
 import mesquite.lib.CommandChecker;
 import mesquite.lib.Commandable;
@@ -25,7 +31,6 @@ import mesquite.lib.MesquiteMessage;
 import mesquite.lib.MesquiteModule;
 import mesquite.lib.MesquiteString;
 import mesquite.lib.MesquiteTrunk;
-import mesquite.lib.duties.*;
 import mesquite.lib.simplicity.InterfaceManager;
 
 
@@ -52,10 +57,10 @@ public class MesquiteCheckMenuItem extends CheckboxMenuItem implements Commandab
 	//This is constructor used to make menu from specs
 	public MesquiteCheckMenuItem(MesquiteCMenuItemSpec specification) {
 		super();
-	//	resetCommand = new MesquiteCommand("reset", this);
+		//	resetCommand = new MesquiteCommand("reset", this);
 		MesquiteMenuItem.totalCreated++;
 		addActionListener(this);
-		addItemListener(this);
+	addItemListener(this);
 		if (specification.itemName == null) {
 			MesquiteMessage.println("Menu item with null name: specification " + specification);
 			MesquiteCommand c = specification.getCommand();
@@ -85,10 +90,10 @@ public class MesquiteCheckMenuItem extends CheckboxMenuItem implements Commandab
 	}
 	public MesquiteCheckMenuItem(String itemName, MesquiteModule ownerModule, MesquiteCommand command, String argument, MesquiteString selected) {
 		super();
-	//	resetCommand = new MesquiteCommand("reset", this);
+		//	resetCommand = new MesquiteCommand("reset", this);
 		MesquiteMenuItem.totalCreated++;
 		addActionListener(this);
-		addItemListener(this);
+	addItemListener(this);
 		this.itemName = itemName;
 		if (itemName == null) {
 			MesquiteMessage.printStackTrace("Check Menu item with null name: ownerModule " + ownerModule);
@@ -183,7 +188,7 @@ public class MesquiteCheckMenuItem extends CheckboxMenuItem implements Commandab
 	public Object getReferent(){
 		return referent;
 	}
-	
+
 	public void setReferentID(String id){
 		itemID = id;
 	}
@@ -242,7 +247,7 @@ public class MesquiteCheckMenuItem extends CheckboxMenuItem implements Commandab
 	public void itemStateChanged(ItemEvent e) {
 		//Event queue
 		if (previousState != getState()) {   
-			
+
 			if (disposed)
 				MesquiteMessage.notifyUser("Warning: attempt to use disposed checked menu item");
 			if (command==null)
@@ -262,22 +267,24 @@ public class MesquiteCheckMenuItem extends CheckboxMenuItem implements Commandab
 			}
 			else {
 				previousState = getState();
-				/*if ((e.modifiers & ActionEvent.ALT_MASK)!=0)
-				MesquiteWindow.respondToQueryMode("Menu item \"" + getLabel() + "\"", command, this);
-			else*/
-				chooseItem(argument);
-				MenuContainer containing = getParent();
-				if (containing instanceof MesquiteSubmenu){  
-					MesquiteSubmenu msc = ((MesquiteSubmenu)containing);
-					if (msc.getAutoCheckChecks()){
-						msc.checkName(argument);
+			/*	if ((e.getModifiers() & ActionEvent.ALT_MASK)!=0)
+					MesquiteWindow.respondToQueryMode("Menu item \"" + getLabel() + "\"", command, this);
+				else{*/
+					chooseItem(argument);
+					MenuContainer containing = getParent();
+					if (containing instanceof MesquiteSubmenu){  
+						MesquiteSubmenu msc = ((MesquiteSubmenu)containing);
+						if (msc.getAutoCheckChecks()){
+							msc.checkName(argument);
+						}
 					}
-				}
+			//	}
 			}
 
 		}
 
 	}
+
 	
 	//MesquiteCommand resetCommand = new MesquiteCommand("reset", this);
 	public void chooseItem(String arg) {
@@ -300,7 +307,7 @@ public class MesquiteCheckMenuItem extends CheckboxMenuItem implements Commandab
 
 			MesquiteTrunk.resetCheckMenuItems();
 			MesquiteTrunk.checkForResetCheckMenuItems();   
-			
+
 		}
 		return null;
 	}

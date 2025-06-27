@@ -13,23 +13,153 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
  */
 package mesquite.trees.BasicTreeWindowMaker;
 
-/*~~  */
-
-import java.util.*;
-
-
-import java.awt.*;
-import java.awt.event.*;
+import java.awt.Adjustable;
+import java.awt.BorderLayout;
+import java.awt.Color;
+import java.awt.Component;
+import java.awt.Container;
+import java.awt.Cursor;
+import java.awt.Dimension;
+import java.awt.FileDialog;
+import java.awt.Font;
+import java.awt.FontMetrics;
+import java.awt.Graphics;
+import java.awt.Graphics2D;
+import java.awt.Image;
+import java.awt.KeyboardFocusManager;
+import java.awt.MenuItem;
+import java.awt.Panel;
+import java.awt.Point;
+import java.awt.Polygon;
+import java.awt.Rectangle;
+import java.awt.Scrollbar;
+import java.awt.Shape;
+import java.awt.Toolkit;
+import java.awt.datatransfer.Clipboard;
+import java.awt.datatransfer.DataFlavor;
+import java.awt.datatransfer.StringSelection;
+import java.awt.datatransfer.Transferable;
+import java.awt.event.AdjustmentEvent;
+import java.awt.event.AdjustmentListener;
+import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
+import java.awt.event.MouseWheelEvent;
+import java.awt.event.MouseWheelListener;
 import java.awt.geom.Area;
-import mesquite.lib.*;
-import mesquite.lib.duties.*;
+
+/*~~  */
+import java.util.Enumeration;
+import java.util.Vector;
+
+import mesquite.lib.Annotatable;
+import mesquite.lib.CommandChecker;
+import mesquite.lib.Commandable;
+import mesquite.lib.CommandableOwner;
+import mesquite.lib.DoubleArray;
+import mesquite.lib.EmployeeNeed;
+import mesquite.lib.EmployeeVector;
+import mesquite.lib.Fittable;
+import mesquite.lib.FunctionExplanation;
+import mesquite.lib.Listable;
+import mesquite.lib.ListableVector;
+import mesquite.lib.LongArray;
+import mesquite.lib.MesquiteBoolean;
+import mesquite.lib.MesquiteCommand;
+import mesquite.lib.MesquiteDouble;
+import mesquite.lib.MesquiteEvent;
+import mesquite.lib.MesquiteFile;
+import mesquite.lib.MesquiteFileDialog;
+import mesquite.lib.MesquiteInteger;
+import mesquite.lib.MesquiteListener;
+import mesquite.lib.MesquiteLong;
+import mesquite.lib.MesquiteMacro;
+import mesquite.lib.MesquiteMessage;
+import mesquite.lib.MesquiteModule;
+import mesquite.lib.MesquiteNumber;
+import mesquite.lib.MesquitePath2DFloat;
+import mesquite.lib.MesquiteString;
+import mesquite.lib.MesquiteThread;
+import mesquite.lib.MesquiteTrunk;
+import mesquite.lib.NameReference;
+import mesquite.lib.Notification;
+import mesquite.lib.ObjectArray;
+import mesquite.lib.ObjectContainer;
+import mesquite.lib.ParseUtil;
+import mesquite.lib.Parser;
+import mesquite.lib.Selectionable;
+import mesquite.lib.Snapshot;
+import mesquite.lib.StringArray;
+import mesquite.lib.StringUtil;
+import mesquite.lib.XMLPreferencesProcessor;
+import mesquite.lib.XMLUtil;
+import mesquite.lib.duties.AnalyticalDrawTree;
+import mesquite.lib.duties.BranchLengthsAlterer;
+import mesquite.lib.duties.DrawNamesTreeDisplay;
+import mesquite.lib.duties.DrawTreeCoordinator;
+import mesquite.lib.duties.TreeAlterer;
+import mesquite.lib.duties.TreeDisplayAssistant;
+import mesquite.lib.duties.TreeDisplayAssistantA;
+import mesquite.lib.duties.TreeDisplayAssistantAD;
+import mesquite.lib.duties.TreeDisplayAssistantAO;
+import mesquite.lib.duties.TreeDisplayAssistantD;
+import mesquite.lib.duties.TreeDisplayAssistantDI;
+import mesquite.lib.duties.TreeDisplayAssistantI;
+import mesquite.lib.duties.TreeInfoPanelAssistant;
+import mesquite.lib.duties.TreeSource;
+import mesquite.lib.duties.TreeWDIAssistant;
+import mesquite.lib.duties.TreeWindowAssistant;
+import mesquite.lib.duties.TreeWindowAssistantA;
+import mesquite.lib.duties.TreeWindowAssistantC;
+import mesquite.lib.duties.TreeWindowAssistantI;
+import mesquite.lib.duties.TreeWindowAssistantN;
+import mesquite.lib.duties.TreeWindowAssistantOA;
+import mesquite.lib.duties.TreeWindowAssistantSGA;
+import mesquite.lib.duties.TreeWindowMaker;
+import mesquite.lib.duties.TreesManager;
 import mesquite.lib.taxa.Taxa;
 import mesquite.lib.taxa.Taxon;
-import mesquite.lib.tree.*;
-import mesquite.lib.ui.*;
-
-import java.awt.datatransfer.*;
-
+import mesquite.lib.tree.MesquiteTree;
+import mesquite.lib.tree.Tree;
+import mesquite.lib.tree.TreeContext;
+import mesquite.lib.tree.TreeContextListener;
+import mesquite.lib.tree.TreeDisplay;
+import mesquite.lib.tree.TreeDisplayActive;
+import mesquite.lib.tree.TreeDisplayDrawnExtra;
+import mesquite.lib.tree.TreeDisplayExtra;
+import mesquite.lib.tree.TreeDisplayHolder;
+import mesquite.lib.tree.TreeDisplayRequests;
+import mesquite.lib.tree.TreeDrawing;
+import mesquite.lib.tree.TreeReference;
+import mesquite.lib.tree.TreeTool;
+import mesquite.lib.tree.TreeVector;
+import mesquite.lib.ui.ClosablePanel;
+import mesquite.lib.ui.ClosablePanelContainer;
+import mesquite.lib.ui.ColorDistribution;
+import mesquite.lib.ui.ColorTheme;
+import mesquite.lib.ui.GraphicsUtil;
+import mesquite.lib.ui.Legend;
+import mesquite.lib.ui.ListDialog;
+import mesquite.lib.ui.MQPanel;
+import mesquite.lib.ui.MesquiteButton;
+import mesquite.lib.ui.MesquiteCMenuItemSpec;
+import mesquite.lib.ui.MesquiteCheckMenuItem;
+import mesquite.lib.ui.MesquiteImage;
+import mesquite.lib.ui.MesquiteMenuItem;
+import mesquite.lib.ui.MesquiteMenuItemSpec;
+import mesquite.lib.ui.MesquiteMenuSpec;
+import mesquite.lib.ui.MesquitePDFFile;
+import mesquite.lib.ui.MesquitePanel;
+import mesquite.lib.ui.MesquitePopup;
+import mesquite.lib.ui.MesquitePrintJob;
+import mesquite.lib.ui.MesquiteScrollbar;
+import mesquite.lib.ui.MesquiteSubmenuSpec;
+import mesquite.lib.ui.MesquiteTool;
+import mesquite.lib.ui.MesquiteWindow;
+import mesquite.lib.ui.MiniScroll;
+import mesquite.lib.ui.MousePanel;
+import mesquite.lib.ui.Priority0;
+import mesquite.lib.ui.StringInABox;
+import mesquite.lib.ui.ToolPalette;
 import mesquite.trees.BasicTreeWindowCoord.BasicTreeWindowCoord;
 import mesquite.trees.BranchPropertiesList.BranchPropertiesList;
 import mesquite.trees.lib.TreeInfoExtraPanel;
@@ -102,6 +232,7 @@ public class BasicTreeWindowMaker extends TreeWindowMaker implements Commandable
 	static boolean warnUnsaved;
 	boolean editMode = false;
 	MesquiteBoolean printNameOnTree;
+	MesquiteBoolean pinToLastTree = new MesquiteBoolean(false);
 	BasicTreeWindow basicTreeWindow;
 	MesquiteString treeSourceName;
 	MagnifyExtra magnifyExtra;
@@ -666,6 +797,7 @@ public class BasicTreeWindowMaker extends TreeWindowMaker implements Commandable
 		else if (employee instanceof TreeSource) {
 			if (suppressEPCResponse)
 				return;
+			
 			int code = Notification.getCode(notification);
 			if (code == MesquiteListener.BLOCK_DELETED && (employee.nameMatches("StoredTrees") || (employee.nameMatches("ConsensusTree")))) {
 				disconnectFromTreeBlock(true);
@@ -1050,6 +1182,7 @@ class BasicTreeWindow extends MesquiteWindow implements Fittable, MesquiteListen
 	TreeInfoPanel treeInfoPanel;
 	boolean treeInfoPanelEverShown = false;
 	MesquiteSubmenuSpec drawSizeSubmenu;
+	MesquiteMenuItemSpec pTLTmis;
 	/*
 	 * When lockStoredTrees is true (MacClade mode), editing a stored tree causes the tree to be treated as unsaved, and for the new tree to be saved, Store Tree or Replace Stored Tree must be called. When false, editing a stored tree changes the original in storage.
 	 */
@@ -1079,6 +1212,11 @@ class BasicTreeWindow extends MesquiteWindow implements Fittable, MesquiteListen
 
 		ownerModule.addMenuSeparator();
 		saveTreeAsPDFMenuItem = ownerModule.addMenuItem("Save Tree as PDF...", ownerModule.makeCommand("saveTreeAsPDF", this));
+		copyCommand = MesquiteModule.makeCommand("copyTree", this);
+		pasteCommand = MesquiteModule.makeCommand("paste", this);
+		ownerModule.addMenuItem("Copy Tree", copyCommand);
+		ownerModule.addMenuItem("Copy Tree (Simple Newick)", ownerModule.makeCommand("copyTreeSimple", this));
+		ownerModule.addMenuItem("Paste Tree", pasteCommand);
 		//ownerModule.addMenuSeparator();				
 		//ownerModule.addMenuItem("Edited Tree Handling Options...", ownerModule.makeCommand("queryEditedTreeMode", this));
 		ownerModule.addMenuSeparator();
@@ -1089,6 +1227,10 @@ class BasicTreeWindow extends MesquiteWindow implements Fittable, MesquiteListen
 		mm.setShortcut(KeyEvent.VK_UP); // right
 		mm = ownerModule.addMenuItem("Previous Tree", ownerModule.makeCommand("previousTree", this));
 		mm.setShortcut(KeyEvent.VK_DOWN); // right
+		mm = ownerModule.addMenuItem("Last Tree", ownerModule.makeCommand("lastTree", this)); 
+		mm.setShortcut(KeyEvent.VK_PERIOD); // right
+		pTLTmis = ownerModule.addCheckMenuItem( null, "Pin to Last Tree", ownerModule.makeCommand("pinToLastTree",  this), ownerModule.pinToLastTree);
+		pTLTmis.setEnabled(tsT.permitsRequestForLastTree(taxa));
 		ownerModule.addMenuItem("Step Through Trees...", ownerModule.makeCommand("stepThroughTrees", this));
 		ownerModule.addMenuSeparator();
 
@@ -1274,8 +1416,6 @@ class BasicTreeWindow extends MesquiteWindow implements Fittable, MesquiteListen
 
 		treeDrawCoordTask.addMenuItem(treeDrawCoordTask.findMenu("Text"), "-", null);
 		undoCommand = MesquiteModule.makeCommand("undo", this);
-		copyCommand = MesquiteModule.makeCommand("copyTree", this);
-		pasteCommand = MesquiteModule.makeCommand("paste", this);
 
 		treeDisplay.setTaxonNameBuffer(20); 
 
@@ -1947,7 +2087,7 @@ class BasicTreeWindow extends MesquiteWindow implements Fittable, MesquiteListen
 						borderWidth = wUsed;
 						borderHeight =  hUsed;
 					}
-					int basicMinSpacing = 12;
+					double basicMinSpacing = 12;
 					if (treeDisplay.getFixedTaxonSpacing() >0){
 						basicMinSpacing = treeDisplay.getFixedTaxonSpacing();
 					}
@@ -1988,12 +2128,12 @@ class BasicTreeWindow extends MesquiteWindow implements Fittable, MesquiteListen
 					else { //CAN'T FIT there will have to say how much is needed, and turn on the scroll pane
 						treeDisplay.autoStretchIfNeeded = true;
 						if (treeDisplay.getOrientation() == TreeDisplay.UP || treeDisplay.getOrientation() == TreeDisplay.DOWN) {
-							totalTreeFieldWidth = numTaxa * basicMinSpacing + borderWidth+treeDisplay.bufferForScaleEtc + scrollWidth + 4;
+							totalTreeFieldWidth = (int)(numTaxa * basicMinSpacing + borderWidth+treeDisplay.bufferForScaleEtc + scrollWidth + 4);
 							totalTreeFieldHeight = height - scrollWidth - 4;
 						}
 						else if (treeDisplay.getOrientation() == TreeDisplay.RIGHT || treeDisplay.getOrientation() == TreeDisplay.LEFT) {
 							totalTreeFieldWidth = width - scrollWidth - 4;
-							totalTreeFieldHeight = numTaxa * basicMinSpacing + borderHeight+treeDisplay.bufferForScaleEtc + scrollWidth + 4;
+							totalTreeFieldHeight = (int)( numTaxa * basicMinSpacing + borderHeight+treeDisplay.bufferForScaleEtc + scrollWidth + 4);
 						}
 						else {
 							totalTreeFieldWidth = numTaxa * 8;
@@ -2017,7 +2157,6 @@ class BasicTreeWindow extends MesquiteWindow implements Fittable, MesquiteListen
 						treePane.setSize(width, height);
 						adjustTreePane(true, false);
 						treePane.doLayout();
-						//treeDisplay.redoCalculations(881153);  //Debugg.println
 					}
 				}
 			}
@@ -2247,6 +2386,11 @@ class BasicTreeWindow extends MesquiteWindow implements Fittable, MesquiteListen
 		treeVersion = 0;
 		//treeDisplay.setTree(null); // done to catch spurious redraws
 		int numTrees = treeSourceTask.getNumberOfTrees(taxa);
+		if (!treeSourceTask.permitsRequestForLastTree(taxa) && windowModule.pinToLastTree.getValue()){
+			windowModule.pinToLastTree.setValue(false);
+			setScrollEnabled(true);
+		}
+		pTLTmis.setEnabled(treeSourceTask.permitsRequestForLastTree(taxa));
 		if (numTrees == 0) {
 			currentTreeNumber = 0;
 			palette.paletteScroll.setCurrentValue(0);
@@ -2260,13 +2404,17 @@ class BasicTreeWindow extends MesquiteWindow implements Fittable, MesquiteListen
 			palette.paletteScroll.setEnableEnter(true);
 			palette.paletteScroll.setMinimumValue(MesquiteTree.toExternal(0));
 			palette.paletteScroll.setMaximumValue(MesquiteTree.toExternal(numTrees - 1));
-			if (setToZero || currentTreeNumber >= numTrees)
+			if (windowModule.pinToLastTree.getValue()){
+				currentTreeNumber = numTrees-1;
+				goToTreeNumber(currentTreeNumber, false);
+			}
+			else if (setToZero || currentTreeNumber >= numTrees)
 				goToTreeNumber(0, false);
 			else
 				goToTreeNumber(currentTreeNumber, false);
 		}
 
-		if (editedTree != null) {
+		if (editedTree != null && !windowModule.pinToLastTree.getValue()) {  //if pinned to last tree, you lose edit
 			// originalTree = null;
 			setTree(editedTree);
 			setTreeName(editedTree);
@@ -2293,7 +2441,8 @@ class BasicTreeWindow extends MesquiteWindow implements Fittable, MesquiteListen
 		palette.paletteScroll.setMinimumValue(MesquiteTree.toExternal(0));
 		int numTrees = treeSourceTask.getNumberOfTrees(taxa);
 		palette.paletteScroll.setMaximumValue(MesquiteTree.toExternal(numTrees - 1));
-		if (currentTreeNumber >= numTrees && MesquiteInteger.isCombinable(numTrees)) {
+		
+		if (windowModule.pinToLastTree.getValue() || (currentTreeNumber >= numTrees && MesquiteInteger.isCombinable(numTrees))) {
 			currentTreeNumber = numTrees - 1;
 			goToTreeNumber(currentTreeNumber, true);
 		}
@@ -2354,6 +2503,7 @@ class BasicTreeWindow extends MesquiteWindow implements Fittable, MesquiteListen
 		if (MesquiteTrunk.snapshotMode != Snapshot.SNAPDISPLAYONLY) {
 			temp.addLine("getTreeDrawCoordinator", treeDrawCoordTask);
 			temp.addLine("setTreeNumber " + (MesquiteTree.toExternal(currentTreeNumber)));
+			temp.addLine("pinToLastTree " + windowModule.pinToLastTree.toOffOnString());
 			if ((treeEdited || windowModule.editMode) && tree != null) {
 				if (!StringUtil.blank(tree.getAnnotation()))
 					temp.addLine("setTreeAnnotation " + StringUtil.tokenize(tree.getAnnotation()));
@@ -2438,7 +2588,7 @@ class BasicTreeWindow extends MesquiteWindow implements Fittable, MesquiteListen
 				treeDisplay.setVisRect(r);
 				treeDisplay.setPrintingInProcess(false);
 				treeDisplay.repaintAll();
-				pdfFile.end();
+				pdfFile.endDocument();
 			}
 		}
 	}
@@ -2829,16 +2979,35 @@ class BasicTreeWindow extends MesquiteWindow implements Fittable, MesquiteListen
 
 		}
 		else if (checker.compare(this.getClass(), "Goes to the next tree in the tree source.  THIS RUNS ON GUI THREAD.", null, commandName, "nextTree")) {
+			if (windowModule.pinToLastTree.getValue())
+				windowModule.logln("Tree window is pinned to the last tree. Unpin via the menu item Tree>Pin to Last Tree");
 			palette.paletteScroll.increment(0);
 		}
 		else if (checker.compare(this.getClass(), "Resets the title (needed for Zephyr).", null, commandName, "resetTitle")) {
 			resetTitle();
 		}
 		else if (checker.compare(this.getClass(), "Goes to the previous tree in the tree source.  THIS RUNS ON GUI THREAD.", null, commandName, "previousTree")) {
+		if (windowModule.pinToLastTree.getValue())
+			windowModule.logln("Tree window is pinned to the last tree. Unpin via the menu item Tree>Pin to Last Tree");
 			palette.paletteScroll.decrement(0);
+		}
+		else if (checker.compare(this.getClass(), "Goes to the last tree in the tree source.  THIS RUNS ON GUI THREAD.", null, commandName, "lastTree")) {
+			if (windowModule.pinToLastTree.getValue())
+				windowModule.logln("Tree window is pinned to the last tree. Unpin via the menu item Tree>Pin to Last Tree");
+			palette.paletteScroll.ultcrement();   
 		}
 		else if (checker.compare(this.getClass(), "Steps through the trees.", null, commandName, "stepThroughTrees")) {
 			stepThroughTrees();
+		}
+		else if (checker.compare(this.getClass(), "Pins the tree window to the last tree.", null, commandName, "pinToLastTree")) {
+			
+			boolean current = windowModule.pinToLastTree.getValue();
+			windowModule.pinToLastTree.toggleValue(new Parser().getFirstToken(arguments));
+			if (current!=windowModule.pinToLastTree.getValue() && windowModule.pinToLastTree.getValue()){
+				int numTrees = treeSourceTask.getNumberOfTrees(taxa);
+				goToTreeNumber(numTrees-1, true);
+			}
+			setScrollEnabled(!windowModule.pinToLastTree.getValue());
 		}
 		else if (checker.compare(this.getClass(), "Goes to the next tree in the tree source.", null, commandName, "goToNextTree")) {
 			incrementTreeNumber();
@@ -2858,12 +3027,24 @@ class BasicTreeWindow extends MesquiteWindow implements Fittable, MesquiteListen
 				clip.setContents(ss, ss);
 			}
 		}
+		else if (checker.compare(this.getClass(), "Copies a description of the tree", null, commandName, "copyTreeSimple")) {
+			if (tree != null) {
+				Clipboard clip = Toolkit.getDefaultToolkit().getSystemClipboard();
+				StringSelection ss = new StringSelection(tree.writeTreeSimpleNewick());  
+				clip.setContents(ss, ss);
+			}
+		}
 		else if (checker.compare(this.getClass(), "Pastes a description of the tree", null, commandName, "Paste")) {
 			if (tree != null) {
 				Clipboard clip = Toolkit.getDefaultToolkit().getSystemClipboard();
 				Transferable t = clip.getContents(this);
 				try {
 					String s = (String) t.getTransferData(DataFlavor.stringFlavor);
+					s = StringUtil.stripTrailingWhitespace(s);
+					if (StringUtil.blank(s))
+						return null;
+					if (!s.endsWith(";"))
+						s += ";";
 					Tree tr = setTree(s);
 
 					if (tr != null) {
@@ -3529,6 +3710,9 @@ class BasicTreeWindow extends MesquiteWindow implements Fittable, MesquiteListen
 			return null;
 		return goToTreeNumber(currentTreeNumber + 1, true);
 	}
+	void setScrollEnabled(boolean enable){
+		palette.paletteScroll.setEnabled(enable);
+	}
 
 	/* ................................................................................................................. */
 	public Tree goToTreeNumber(int index, boolean rememberEdited) {
@@ -3562,7 +3746,7 @@ class BasicTreeWindow extends MesquiteWindow implements Fittable, MesquiteListen
 		if (treeT == null) { // source may have not known how many trees; ask if it would revise its current number of trees
 			int numTrees = treeSourceTask.getNumberOfTrees(taxa);
 			if (currentTreeNumber >= numTrees && MesquiteInteger.isCombinable(numTrees)) {
-				currentTreeNumber = numTrees - 1;
+				currentTreeNumber = numTrees - 1;  // note, if numTrees is 0, this will be -1, but maybe OK as it will provoke errors. It should have already caught there were no trees available.
 				treeT = treeSourceTask.getTree(taxa, currentTreeNumber);
 				palette.paletteScroll.setMaximumValue(MesquiteTree.toExternal(numTrees - 1));
 
@@ -4004,8 +4188,8 @@ class BasicTreeWindow extends MesquiteWindow implements Fittable, MesquiteListen
 			addToPopup(bLS);
 		}
 		notifyExtrasOfRightClickPopup(popup, tree, branchFound);
-		//show only if something in there! Debugg.println
-		popup.showPopup(x, y);
+		if (popup.getItemCount()>0)
+			popup.showPopup(x, y);
 	}
 
 	/* _________________________________________________ */
@@ -5187,7 +5371,7 @@ class TreeScrollPane extends MQPanel implements MouseWheelListener, KeyListener 
 		touch = hScroll.setMaximumWithResetWarning(max) || touch;
 		if (touch)
 			scrollTouched(null, 0);
-		hScroll.setVisible(min != max);
+		hScroll.setVisible(min != max || MesquiteTrunk.isLinux()); //Linux was leaving the scroll visible in a bad place when setVisible(false)!
 
 		if (min == max)
 			treeDisplay.setLocation(0, treeDisplay.getLocation().y);

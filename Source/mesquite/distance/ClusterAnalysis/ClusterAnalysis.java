@@ -14,13 +14,19 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
 package mesquite.distance.ClusterAnalysis;
 /*~~  */
 
-import java.util.*;
-import java.awt.*;
-import mesquite.lib.*;
-import mesquite.lib.duties.*;
+import mesquite.distance.lib.TaxaDistance;
+import mesquite.distance.lib.TaxaDistanceSource;
+import mesquite.distance.lib.TreeClusterer;
+import mesquite.lib.CommandChecker;
+import mesquite.lib.EmployeeNeed;
+import mesquite.lib.Incrementable;
+import mesquite.lib.MesquiteFile;
+import mesquite.lib.MesquiteModule;
+import mesquite.lib.ResultCodes;
+import mesquite.lib.Snapshot;
+import mesquite.lib.duties.TreeInferer;
 import mesquite.lib.taxa.Taxa;
 import mesquite.lib.tree.TreeVector;
-import mesquite.distance.lib.*;
 
 /* ======================================================================== */
 //eventually have DistanceTree as treeblock filler, which hires TreeClusterer and TaxaDistanceSource

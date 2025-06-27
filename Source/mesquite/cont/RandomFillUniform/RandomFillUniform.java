@@ -14,14 +14,19 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
 package mesquite.cont.RandomFillUniform;
 /*~~  */
 
-import java.util.*;
-import java.awt.*;
+import java.util.Random;
 
-import mesquite.lib.table.*;
-import mesquite.lib.*;
-import mesquite.lib.characters.*;
 //import mesquite.lib.duties.*;
-import mesquite.cont.lib.*;
+import mesquite.cont.lib.ContDataAlterer;
+import mesquite.cont.lib.ContinuousData;
+import mesquite.lib.MesquiteBoolean;
+import mesquite.lib.MesquiteDouble;
+import mesquite.lib.ResultCodes;
+import mesquite.lib.UndoReference;
+import mesquite.lib.characters.AltererRandomizations;
+import mesquite.lib.characters.CharacterData;
+import mesquite.lib.characters.CharacterState;
+import mesquite.lib.table.MesquiteTable;
 
 /* ======================================================================== */
 public class RandomFillUniform extends ContDataAlterer implements AltererRandomizations {

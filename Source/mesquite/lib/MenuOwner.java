@@ -13,15 +13,19 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
  */
 package mesquite.lib;
 
-import java.awt.*;
-import java.applet.Applet;
-import java.io.UnsupportedEncodingException;
-import java.net.*;
-import java.util.*;
-import java.awt.event.*;
+import java.awt.Container;
+import java.awt.Font;
+import java.awt.Menu;
+import java.awt.MenuBar;
+import java.awt.MenuComponent;
+import java.awt.MenuContainer;
+import java.awt.MenuItem;
+import java.awt.MenuShortcut;
+import java.awt.event.KeyEvent;
+import java.util.Enumeration;
+import java.util.Vector;
 
-import mesquite.distance.lib.TaxaDistFromMatrix;
-import mesquite.lib.duties.*;
+import mesquite.lib.duties.FileCoordinator;
 import mesquite.lib.simplicity.InterfaceManager;
 import mesquite.lib.ui.MRPopup;
 import mesquite.lib.ui.MenuItemsSpecsVector;
@@ -1363,6 +1367,8 @@ public abstract class MenuOwner implements Doomable { // EMBEDDED: extends Apple
 			scriptingSubmenu.add(whichWindow.sendScriptMenuItem); // ��� scripting
 			wMenu.add(scriptingSubmenu);
 			wMenu.add("-");
+			wMenu.add(whichWindow.fitWindowMenuItem);
+
 			whichWindow.setPopTileMenuItemNames();
 			if (!whichWindow.isPoppedOut()) {
 				wMenu.add(whichWindow.popOutWindowMenuItem);
@@ -1413,7 +1419,9 @@ public abstract class MenuOwner implements Doomable { // EMBEDDED: extends Apple
 			scriptingSubmenu.add(whichWindow.sendScriptMenuItem); // ��� scripting
 			wMenu.add(scriptingSubmenu);
 			wMenu.add("-");
+			wMenu.add(whichWindow.fitWindowMenuItem);
 			whichWindow.setPopTileMenuItemNames();
+			
 			if (!whichWindow.isPoppedOut()) {
 				wMenu.add(whichWindow.popOutWindowMenuItem);
 				wMenu.add(whichWindow.tileOutWindowMenuItem);

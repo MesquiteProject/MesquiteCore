@@ -14,12 +14,12 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
 package mesquite.treefarm.Correlation2Trees;
 /*~~  */
 
-import java.util.*;
-import java.awt.*;
-import mesquite.lib.*;
-import mesquite.lib.duties.*;
+import mesquite.lib.MesquiteDouble;
+import mesquite.lib.MesquiteNumber;
+import mesquite.lib.MesquiteString;
+import mesquite.lib.duties.DistanceBetween2Trees;
 import mesquite.lib.tree.Tree;
-import mesquite.treefarm.lib.*;
+import mesquite.treefarm.lib.PatristicDistances;
 
 
 public class Correlation2Trees extends DistanceBetween2Trees {

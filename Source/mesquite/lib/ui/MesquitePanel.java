@@ -13,8 +13,11 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
 */
 package mesquite.lib.ui;
 
-import java.awt.*;
-import java.awt.event.KeyEvent;
+import java.awt.Component;
+import java.awt.Container;
+import java.awt.Font;
+import java.awt.Frame;
+import java.awt.Rectangle;
 
 import mesquite.lib.CommandChecker;
 import mesquite.lib.LeakFinder;

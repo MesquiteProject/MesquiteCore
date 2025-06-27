@@ -13,14 +13,17 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
 package mesquite.coalesce.CoalescentTrees;
 /*~~  */
 
-import java.util.*;
-import java.awt.*;
-import mesquite.lib.*;
-import mesquite.lib.duties.*;
+import mesquite.coalesce.lib.CoalescedNode;
+import mesquite.coalesce.lib.Coalescer;
+import mesquite.lib.EmployeeNeed;
+import mesquite.lib.MesquiteInteger;
+import mesquite.lib.MesquiteLong;
+import mesquite.lib.MesquiteModule;
+import mesquite.lib.ObjectContainer;
+import mesquite.lib.duties.TreeSimulate;
 import mesquite.lib.taxa.Taxa;
 import mesquite.lib.tree.MesquiteTree;
 import mesquite.lib.tree.Tree;
-import mesquite.coalesce.lib.*;
 
 /* ======================================================================== */
 public class CoalescentTrees extends TreeSimulate {

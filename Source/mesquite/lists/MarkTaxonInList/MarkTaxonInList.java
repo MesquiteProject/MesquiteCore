@@ -18,18 +18,22 @@ package mesquite.lists.MarkTaxonInList;
 /*~~  */
 
 import java.awt.Color;
-import java.awt.Container;
 import java.awt.Graphics;
 
-import mesquite.lists.lib.*;
-import mesquite.lib.characters.*;
-import mesquite.lib.duties.ManagerAssistant;
-import mesquite.lib.*;
-import mesquite.lib.table.*;
+import mesquite.lib.Bits;
+import mesquite.lib.CommandChecker;
+import mesquite.lib.MesquiteFile;
+import mesquite.lib.MesquiteString;
+import mesquite.lib.MesquiteThread;
+import mesquite.lib.NameReference;
+import mesquite.lib.ParseUtil;
+import mesquite.lib.Snapshot;
+import mesquite.lib.table.MesquiteTable;
 import mesquite.lib.taxa.Taxa;
 import mesquite.lib.ui.AlertDialog;
 import mesquite.lib.ui.ColorDistribution;
 import mesquite.lib.ui.ListDialog;
+import mesquite.lists.lib.TaxonListAssistant;
 
 /* ======================================================================== */
 public class MarkTaxonInList extends TaxonListAssistant {

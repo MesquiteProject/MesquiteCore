@@ -13,8 +13,9 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
 */
 package mesquite.lib;
 
-import java.awt.*;
-import java.util.*;
+import java.awt.Image;
+import java.util.Date;
+import java.util.Vector;
 
 import mesquite.lib.misc.AttachedNotesVector;
 import mesquite.lib.ui.ImageLabel;

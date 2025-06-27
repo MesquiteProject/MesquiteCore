@@ -14,14 +14,15 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
 package mesquite.molec.ToLowerCase;
 /*~~  */
 
-import java.util.*;
-import java.awt.*;
-import java.awt.image.*;
-import mesquite.lib.*;
-import mesquite.lib.characters.*;
-import mesquite.lib.duties.*;
-import mesquite.categ.lib.*;
-import mesquite.lib.table.*;
+import mesquite.categ.lib.CategoricalState;
+import mesquite.categ.lib.DNAData;
+import mesquite.categ.lib.DNADataAlterer;
+import mesquite.lib.MesquiteMessage;
+import mesquite.lib.ResultCodes;
+import mesquite.lib.UndoReference;
+import mesquite.lib.characters.AltererDNACell;
+import mesquite.lib.characters.CharacterData;
+import mesquite.lib.table.MesquiteTable;
 
 /* ======================================================================== */
 public class ToLowerCase extends DNADataAlterer implements AltererDNACell {

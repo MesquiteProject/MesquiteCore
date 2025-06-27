@@ -14,11 +14,8 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
 package mesquite.distance.SingleLinkage;
 /*~~  */
 
-import java.util.*;
-import java.awt.*;
-import mesquite.lib.*;
-import mesquite.lib.duties.*;
-import mesquite.distance.lib.*;
+import mesquite.distance.lib.TreeClusterer;
+import mesquite.lib.MesquiteDouble;
 
 /* ======================================================================== */
 //eventually have DistanceTree as treeblock filler, which hires TreeClusterer and TaxaDistanceSource

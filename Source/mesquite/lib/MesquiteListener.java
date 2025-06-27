@@ -13,11 +13,6 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
 */
 package mesquite.lib;
 
-import java.awt.*;
-import java.text.*;
-
-
-
 /* ======================================================================== */
 /** An interface so that objects know some other object has changed (see Taxa)*/
 public interface MesquiteListener {

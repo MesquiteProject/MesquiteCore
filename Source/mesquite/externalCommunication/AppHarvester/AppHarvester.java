@@ -1,22 +1,17 @@
 package mesquite.externalCommunication.AppHarvester;
 
+import java.io.File;
+import java.util.Vector;
+
+import mesquite.externalCommunication.lib.AppInformationFile;
+import mesquite.externalCommunication.lib.AppUser;
 import mesquite.lib.CommandChecker;
-import mesquite.lib.Debugg;
 import mesquite.lib.ListableVector;
-import mesquite.lib.MesquiteBoolean;
-import mesquite.lib.MesquiteDouble;
 import mesquite.lib.MesquiteFile;
-import mesquite.lib.MesquiteInteger;
-import mesquite.lib.MesquiteMessage;
 import mesquite.lib.MesquiteString;
 import mesquite.lib.MesquiteTrunk;
 import mesquite.lib.StringUtil;
 import mesquite.lib.duties.MesquiteInit;
-
-import java.io.File;
-import java.util.Vector;
-
-import mesquite.externalCommunication.lib.*;
 
 public class AppHarvester extends MesquiteInit {
 	static public Vector appInformationFileVector;

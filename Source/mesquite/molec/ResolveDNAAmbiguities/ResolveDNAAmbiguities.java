@@ -14,15 +14,24 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
 package mesquite.molec.ResolveDNAAmbiguities;
 /*~~  */
 
-import mesquite.lib.*;
-import mesquite.lib.characters.*;
-
 import java.awt.Checkbox;
 
-import mesquite.categ.lib.*;
-import mesquite.lib.table.*;
+import mesquite.categ.lib.DNAData;
+import mesquite.categ.lib.DNADataAlterer;
+import mesquite.categ.lib.DNAState;
+import mesquite.lib.MesquiteBoolean;
+import mesquite.lib.MesquiteInteger;
+import mesquite.lib.MesquiteLong;
+import mesquite.lib.MesquiteMessage;
+import mesquite.lib.MesquiteThread;
+import mesquite.lib.ResultCodes;
+import mesquite.lib.StringUtil;
+import mesquite.lib.UndoReference;
+import mesquite.lib.characters.AltererDNACell;
+import mesquite.lib.characters.CharacterData;
+import mesquite.lib.table.MesquiteTable;
 import mesquite.lib.ui.ExtensibleDialog;
-import mesquite.molec.lib.*;
+import mesquite.molec.lib.MolecUtil;
 
 /* ======================================================================== */
 public class ResolveDNAAmbiguities extends DNADataAlterer implements AltererDNACell {

@@ -13,14 +13,13 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
  */
 package mesquite.lib.ui;
 
-import java.awt.*;
-import java.util.*;
+import java.awt.Component;
+import java.util.Vector;
 
-import mesquite.lib.Debugg;
 import mesquite.lib.Listable;
 import mesquite.lib.MesquiteTrunk;
 
-//** TEMPORARY Debugg.println(
+//** NOT USED CURRENTLY. 
 
 /**  [Search for MQLINUX] -- A thread attempting to sidestep bug in Linux JDKs 11 to 23. See MQ graphics components and ExplTextArea in ExplanationArea */
 public class LinuxGWAThread extends Thread {
@@ -75,7 +74,7 @@ public class LinuxGWAThread extends Thread {
 
 
 	public void run(){
-		if (!MesquiteTrunk.isLinux())  //Debugg.println don't do if not Linux
+		if (!MesquiteTrunk.isLinux()) 
 			return;
 		while (!MesquiteTrunk.mesquiteTrunk.mesquiteExiting) { 
 			try {

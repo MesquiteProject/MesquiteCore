@@ -14,16 +14,30 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
 package mesquite.diverse.CharIndepDivViewer;
 /*~~  */
 
-import java.awt.*;
-import mesquite.lib.*;
-import mesquite.lib.duties.*;
+import java.awt.Color;
+import java.awt.Font;
+import java.awt.Graphics;
+import java.awt.TextArea;
+
+import mesquite.diverse.lib.NumberForTreeDivers;
+import mesquite.lib.CommandChecker;
+import mesquite.lib.EmployeeNeed;
+import mesquite.lib.MesquiteCommand;
+import mesquite.lib.MesquiteFile;
+import mesquite.lib.MesquiteInteger;
+import mesquite.lib.MesquiteModule;
+import mesquite.lib.MesquiteNumber;
+import mesquite.lib.MesquiteString;
+import mesquite.lib.MesquiteThread;
+import mesquite.lib.Notification;
+import mesquite.lib.Snapshot;
+import mesquite.lib.duties.TreeWindowAssistantA;
 import mesquite.lib.taxa.Taxa;
 import mesquite.lib.tree.Tree;
 import mesquite.lib.ui.MQTextArea;
 import mesquite.lib.ui.MesquiteSubmenuSpec;
 import mesquite.lib.ui.MesquiteWindow;
 import mesquite.lib.ui.MousePanel;
-import mesquite.diverse.lib.*;
 
 
 public class CharIndepDivViewer extends TreeWindowAssistantA    {

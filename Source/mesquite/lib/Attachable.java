@@ -13,8 +13,7 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
  */
 package mesquite.lib;
 
-import java.awt.*;
-import java.util.*;
+import java.util.Vector;
 
 import mesquite.lib.ui.HTMLDescribable;
 
@@ -231,7 +230,7 @@ public abstract class Attachable extends Listened implements HTMLDescribable {
 		String value = ParseUtil.getToken(assocString, pos); //finding value
 		if (StringUtil.blank(value))
 			return false;
-		if (reportReading) Debugg.println("!!!~~KEY " + key + " VALUE " + value + " pos " + pos.getValue());
+		if (reportReading) MesquiteMessage.println("!!!~~KEY " + key + " VALUE " + value + " pos " + pos.getValue());
 		if (value.equalsIgnoreCase("on")) {
 			MesquiteBoolean mb = new MesquiteBoolean(true);
 			mb.setName(key);
@@ -252,10 +251,10 @@ public abstract class Attachable extends Listened implements HTMLDescribable {
 			
 			pos.setValue(posBeforeValue);
 			double d = MesquiteDouble.fromString(assocString, pos);
-			if (reportReading) Debugg.println("  d " +  MesquiteDouble.toString(d) + " pos " + pos.getValue());
+			if (reportReading) MesquiteMessage.println("  d " +  MesquiteDouble.toString(d) + " pos " + pos.getValue());
 
 			if (!MesquiteDouble.isCombinable(d)){ //not a number; treat as string
-				if (reportReading) Debugg.println("     -> string ");
+				if (reportReading) MesquiteMessage.println("     -> string ");
 				pos.setValue(posBeforeValue);
 				ParseUtil.getToken(assocString, pos); //eating up value again
 				MesquiteString mb = new MesquiteString();
@@ -266,7 +265,7 @@ public abstract class Attachable extends Listened implements HTMLDescribable {
 			else {
 				if (value.indexOf(".")>=0) { //treat as double 
 					//TODO:  there is a problem here; if some cases use ., others not, should be double; but will be treated as mixed
-					if (reportReading) Debugg.println("     -> double ");
+					if (reportReading) MesquiteMessage.println("     -> double ");
 					MesquiteDouble mb = new MesquiteDouble();
 					pos.setValue(posBeforeValue);
 					mb.setValue(MesquiteDouble.fromString(assocString, pos));
@@ -274,7 +273,7 @@ public abstract class Attachable extends Listened implements HTMLDescribable {
 					attachIfUniqueName(mb);
 				}
 				else {  //treat as long
-					if (reportReading) Debugg.println("     -> long ");
+					if (reportReading) MesquiteMessage.println("     -> long ");
 					MesquiteLong mb = new MesquiteLong();
 					pos.setValue(posBeforeValue);
 					mb.setValue(MesquiteLong.fromString(assocString, pos));
@@ -296,7 +295,7 @@ public abstract class Attachable extends Listened implements HTMLDescribable {
 			int oldPos = pos.getValue();
 			boolean success = readAttachment(assocString, pos);
 			s=ParseUtil.getToken(assocString, pos);  //eating up "," separating subcommands, or hit the end
-			if (reportReading) Debugg.println("  s " +  s + " pos " + pos.getValue());
+			if (reportReading) MesquiteMessage.println("  s " +  s + " pos " + pos.getValue());
 		}
 		if (StringUtil.blank(s))
 			pos.setValue(assocString.length()-1);

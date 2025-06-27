@@ -14,15 +14,28 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
 package mesquite.molec.TaxonGCBias;
 /*~~  */
 
-import java.util.*;
-import java.awt.*;
-import mesquite.lib.*;
-import mesquite.lib.characters.*;
-import mesquite.lib.duties.*;
+import mesquite.categ.lib.CategoricalState;
+import mesquite.categ.lib.DNAState;
+import mesquite.categ.lib.MCategoricalDistribution;
+import mesquite.cont.lib.ContinuousAdjustable;
+import mesquite.cont.lib.ContinuousData;
+import mesquite.cont.lib.ContinuousState;
+import mesquite.cont.lib.ContinuousStateTest;
+import mesquite.lib.CompatibilityTest;
+import mesquite.lib.EmployeeNeed;
+import mesquite.lib.MesquiteDouble;
+import mesquite.lib.MesquiteModule;
+import mesquite.lib.MesquiteProject;
+import mesquite.lib.Notification;
+import mesquite.lib.characters.AdjustableDistribution;
+import mesquite.lib.characters.CharInclusionSet;
+import mesquite.lib.characters.CharacterData;
+import mesquite.lib.characters.CharacterDistribution;
+import mesquite.lib.characters.CharacterModel;
+import mesquite.lib.duties.CharacterSource;
+import mesquite.lib.duties.MatrixSourceCoord;
 import mesquite.lib.taxa.Taxa;
 import mesquite.lib.tree.Tree;
-import mesquite.cont.lib.*;
-import mesquite.categ.lib.*;
 
 /* Modified  9 July 07 to add GC Skew -  DRM */
 /* ======================================================================== */

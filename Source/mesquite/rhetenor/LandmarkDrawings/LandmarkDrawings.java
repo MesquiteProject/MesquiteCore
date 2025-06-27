@@ -14,11 +14,38 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
 package mesquite.rhetenor.LandmarkDrawings;
 /*~~  */
 
-import java.util.*;
-import java.awt.*;
-import mesquite.lib.*;
-import mesquite.lib.characters.*;
-import mesquite.lib.duties.*;
+import java.awt.Color;
+import java.awt.Graphics;
+import java.awt.Panel;
+import java.awt.Point;
+import java.awt.Rectangle;
+import java.awt.TextArea;
+import java.util.Enumeration;
+import java.util.Vector;
+
+import mesquite.cont.lib.ContColorTable;
+import mesquite.cont.lib.ContinuousState;
+import mesquite.cont.lib.MContinuousHistory;
+import mesquite.lib.CommandChecker;
+import mesquite.lib.Commandable;
+import mesquite.lib.Double2DArray;
+import mesquite.lib.EmployeeNeed;
+import mesquite.lib.FunctionExplanation;
+import mesquite.lib.LegendHolder;
+import mesquite.lib.MesquiteBoolean;
+import mesquite.lib.MesquiteDouble;
+import mesquite.lib.MesquiteFile;
+import mesquite.lib.MesquiteInteger;
+import mesquite.lib.MesquiteMessage;
+import mesquite.lib.MesquiteModule;
+import mesquite.lib.MesquiteNumber;
+import mesquite.lib.MesquiteString;
+import mesquite.lib.Notification;
+import mesquite.lib.Snapshot;
+import mesquite.lib.characters.CharacterStates;
+import mesquite.lib.duties.CharsStatesForNodes;
+import mesquite.lib.duties.MatrixSourceCoord;
+import mesquite.lib.duties.TreeDisplayAssistantMA;
 import mesquite.lib.tree.Tree;
 import mesquite.lib.tree.TreeDisplay;
 import mesquite.lib.tree.TreeDisplayDrawnExtra;
@@ -34,8 +61,7 @@ import mesquite.lib.ui.MesquiteTool;
 import mesquite.lib.ui.MesquiteWindow;
 import mesquite.lib.ui.PanelsAtNodes;
 import mesquite.lib.ui.StringInABox;
-import mesquite.cont.lib.*;
-import mesquite.rhetenor.lib.*;
+import mesquite.rhetenor.lib.MatrixUtil;
 
 /* ======================================================================== */
 //todo: move plots via offset

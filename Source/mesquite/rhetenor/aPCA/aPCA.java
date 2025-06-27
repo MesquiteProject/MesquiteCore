@@ -14,15 +14,14 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
 package mesquite.rhetenor.aPCA;
 /*~~  */
 
-import java.util.*;
-import java.awt.*;
-import mesquite.lib.*;
-import mesquite.lib.characters.*;
-import mesquite.lib.duties.*;
+import mesquite.cont.lib.MContinuousDistribution;
+import mesquite.lib.EmployeeNeed;
+import mesquite.lib.duties.TaxaPartitionSource;
 import mesquite.lib.taxa.Taxa;
 import mesquite.lib.taxa.TaxaPartition;
-import mesquite.cont.lib.*;
-import mesquite.rhetenor.lib.*;
+import mesquite.rhetenor.lib.Ordination;
+import mesquite.rhetenor.lib.Ordinator;
+import mesquite.rhetenor.lib.aPCAOrdination;
 
 /* ======================================================================== */
 public class aPCA extends Ordinator {

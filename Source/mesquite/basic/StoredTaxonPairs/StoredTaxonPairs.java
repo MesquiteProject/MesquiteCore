@@ -15,8 +15,14 @@ package mesquite.basic.StoredTaxonPairs;
 /*~~  */
 
 
-import mesquite.lib.*;
-import mesquite.lib.duties.*;
+import mesquite.lib.CommandChecker;
+import mesquite.lib.MesquiteFile;
+import mesquite.lib.MesquiteListener;
+import mesquite.lib.Notification;
+import mesquite.lib.Selectionable;
+import mesquite.lib.Snapshot;
+import mesquite.lib.duties.TaxonPairSource;
+import mesquite.lib.duties.TreesManager;
 import mesquite.lib.taxa.Taxa;
 import mesquite.lib.taxa.TaxonPair;
 import mesquite.lib.ui.MesquiteSubmenuSpec;

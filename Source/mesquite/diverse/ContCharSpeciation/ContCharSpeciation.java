@@ -14,12 +14,22 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
 package mesquite.diverse.ContCharSpeciation;
 
 
-import mesquite.lib.*;
+import mesquite.categ.lib.CategoricalHistory;
+import mesquite.cont.lib.ContinuousData;
+import mesquite.cont.lib.ContinuousHistory;
+import mesquite.diverse.lib.TreeCharSimulate;
+import mesquite.lib.CommandChecker;
+import mesquite.lib.Commandable;
+import mesquite.lib.MesquiteDouble;
+import mesquite.lib.MesquiteFile;
+import mesquite.lib.MesquiteInteger;
+import mesquite.lib.MesquiteLong;
+import mesquite.lib.MesquiteThread;
+import mesquite.lib.ObjectContainer;
+import mesquite.lib.RandomBetween;
+import mesquite.lib.Snapshot;
 import mesquite.lib.taxa.Taxa;
 import mesquite.lib.tree.MesquiteTree;
-import mesquite.diverse.lib.*;
-import mesquite.categ.lib.CategoricalHistory;
-import mesquite.cont.lib.*;
 
 /** ======================================================================== */
 public class ContCharSpeciation extends TreeCharSimulate {

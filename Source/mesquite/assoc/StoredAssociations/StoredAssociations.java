@@ -14,14 +14,21 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
 package mesquite.assoc.StoredAssociations;
 /*~~  */
 
-import java.util.*;
-import java.awt.*;
-import mesquite.lib.*;
-import mesquite.lib.duties.*;
+import mesquite.assoc.lib.AssociationSource;
+import mesquite.assoc.lib.AssociationsManager;
+import mesquite.assoc.lib.TaxaAssociation;
+import mesquite.lib.CommandChecker;
+import mesquite.lib.ListableVector;
+import mesquite.lib.MesquiteFile;
+import mesquite.lib.MesquiteInteger;
+import mesquite.lib.MesquiteListener;
+import mesquite.lib.MesquiteString;
+import mesquite.lib.MesquiteThread;
+import mesquite.lib.Notification;
+import mesquite.lib.Snapshot;
 import mesquite.lib.taxa.Taxa;
 import mesquite.lib.ui.ListDialog;
 import mesquite.lib.ui.MesquiteWindow;
-import mesquite.assoc.lib.*;
 
 /* ======================================================================== */
 public class StoredAssociations extends AssociationSource implements MesquiteListener {
@@ -37,9 +44,7 @@ public class StoredAssociations extends AssociationSource implements MesquiteLis
 		if (manager==null) {
 			return sorry(getName() + " couldn't start because no associations manager was found.");
 		}
-		if (manager.getNumberOfAssociations()==0) {
-			return sorry("No stored associations between taxa are available. If you want to use this, please first establish an association, e.g. by the menu item Taxa&Trees > New Association...");
-		} 
+
 		addMenuItem("Choose Taxa Association...", makeCommand("chooseAssociation", this));
 		associationsVector = manager.getAssociationsVector();
 		associationsVector.addListener(this);

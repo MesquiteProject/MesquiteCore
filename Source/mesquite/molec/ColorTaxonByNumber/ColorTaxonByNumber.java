@@ -13,11 +13,17 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
  */
 package mesquite.molec.ColorTaxonByNumber;
 
-import java.util.*;
-import java.awt.*;
-import mesquite.lib.*;
+import java.awt.Color;
+
+import mesquite.lib.CommandChecker;
+import mesquite.lib.MesquiteCommand;
+import mesquite.lib.MesquiteFile;
+import mesquite.lib.MesquiteNumber;
+import mesquite.lib.MesquiteString;
+import mesquite.lib.Snapshot;
 import mesquite.lib.characters.CharacterData;
-import mesquite.lib.duties.*;
+import mesquite.lib.duties.NumberForTaxon;
+import mesquite.lib.duties.TaxonNameStyler;
 import mesquite.lib.taxa.Taxa;
 import mesquite.lib.taxa.Taxon;
 import mesquite.lib.ui.MesquiteColorTable;

@@ -1,0 +1,11 @@
+
+INSTRUCTIONS
+If you put text on the first line, above, it will be used by Mesquite-Starter.app as additional command-line program arguments in starting Mesquite. 
+
+The program arguments are not the same as VM arguments, which are controlled by Mesquite-FlagsToUse.txt. The program arguments are received by Mesquite. Options include:
+
+-development [puts Mesquite into development mode, which means it reports errors a bit more]
+
+-debug [puts Mesquite into debug mode, which meants it will output what it is doing and give diagnostic information
+
+-w [suppresses all windows, e.g. for command-line execution]

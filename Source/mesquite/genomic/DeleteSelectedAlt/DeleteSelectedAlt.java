@@ -10,20 +10,16 @@ Mesquite's web site is http://mesquiteproject.org
 
 This source code and its compiled class files are free and modifiable under the terms of 
 GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
-*/
+ */
 package mesquite.genomic.DeleteSelectedAlt;
 /*~~  */
 
-import java.util.*;
-import java.lang.*;
-import java.awt.*;
-import java.awt.event.*;
-
-import mesquite.lib.*;
-import mesquite.lib.characters.*;
-import mesquite.lib.duties.*;
-import mesquite.categ.lib.*;
-import mesquite.lib.table.*;
+import mesquite.lib.Bits;
+import mesquite.lib.ResultCodes;
+import mesquite.lib.UndoReference;
+import mesquite.lib.characters.CharacterData;
+import mesquite.lib.duties.DataAlterer;
+import mesquite.lib.table.MesquiteTable;
 
 /* ======================================================================== */
 public class DeleteSelectedAlt extends DataAlterer   {
@@ -33,63 +29,63 @@ public class DeleteSelectedAlt extends DataAlterer   {
 	}
 	/*.................................................................................................................*/
 	/** returns whether this module is requesting to appear as a primary choice */
-   	public boolean requestPrimaryChoice(){
-   		return false;  
-   	}
-   	
+	public boolean requestPrimaryChoice(){
+		return false;  
+	}
+
 	/*.................................................................................................................*/
-   	/** Called to alter data in those cells selected in table*/
-   	public int alterData(CharacterData data, MesquiteTable table,  UndoReference undoReference){
+	/** Called to alter data in those cells selected in table*/
+	public int alterData(CharacterData data, MesquiteTable table,  UndoReference undoReference){
 		int oldNumChars = data.getNumChars();
 		Bits toBeDeleted = new Bits(data.getNumChars());
 
-				for (int ic = 0; ic <= data.getNumChars(); ic++) {
-					if (data.getSelected(ic))
-						toBeDeleted.setBit(ic, true);
-				}
-			
+		for (int ic = 0; ic <= data.getNumChars(); ic++) {
+			if (data.getSelected(ic))
+				toBeDeleted.setBit(ic, true);
+		}
+
 		data.deletePartsFlagged(toBeDeleted, false);
 		data.deleteInLinkedFlagged(toBeDeleted, false);
 		logln("" + (oldNumChars-data.getNumChars()) +  " characters removed");
 
 		if ( oldNumChars!=data.getNumChars())
-		return ResultCodes.SUCCEEDED;
+			return ResultCodes.SUCCEEDED;
 		return ResultCodes.MEH;
 
-   	}
+	}
 	/*.................................................................................................................*/
-  	 public boolean showCitation() {
+	public boolean showCitation() {
 		return false;
-   	 }
- 	/*.................................................................................................................*/
-   	 public boolean isSubstantive(){
-   	 	return true;
-   	 }
+	}
 	/*.................................................................................................................*/
-   	 public boolean isPrerelease(){
-   	 	return true;
-   	 }
- 	/*.................................................................................................................*/
-  	/** returns the version number at which this module was first released.  If 0, then no version number is claimed.  If a POSITIVE integer
-  	 * then the number refers to the Mesquite version.  This should be used only by modules part of the core release of Mesquite.
-  	 * If a NEGATIVE integer, then the number refers to the local version of the package, e.g. a third party package*/
-     	public int getVersionOfFirstRelease(){
-     		return NEXTRELEASE;  
-     	}
-  	/*.................................................................................................................*/
-    	 public String getNameForMenuItem() {
+	public boolean isSubstantive(){
+		return true;
+	}
+	/*.................................................................................................................*/
+	public boolean isPrerelease(){
+		return false;
+	}
+	/*.................................................................................................................*/
+	/** returns the version number at which this module was first released.  If 0, then no version number is claimed.  If a POSITIVE integer
+	 * then the number refers to the Mesquite version.  This should be used only by modules part of the core release of Mesquite.
+	 * If a NEGATIVE integer, then the number refers to the local version of the package, e.g. a third party package*/
+	public int getVersionOfFirstRelease(){
+		return 400;  
+	}
+	/*.................................................................................................................*/
+	public String getNameForMenuItem() {
 		return "Delete Selected Characters";
-   	 }
+	}
 	/*.................................................................................................................*/
-    	 public String getName() {
-    			return "Delete Selected Characters";
-   	 }
+	public String getName() {
+		return "Delete Selected Characters";
+	}
 	/*.................................................................................................................*/
- 	/** returns an explanation of what the module does.*/
- 	public String getExplanation() {
- 		return "Deletes all characters that are selected." ;
-   	 }
-   	 
+	/** returns an explanation of what the module does.*/
+	public String getExplanation() {
+		return "Deletes all characters that are selected." ;
+	}
+
 }
 
 

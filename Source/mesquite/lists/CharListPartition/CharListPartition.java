@@ -14,22 +14,20 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
 package mesquite.lists.CharListPartition;
 /*~~  */
 
-import mesquite.lists.lib.*;
+import java.awt.Color;
+import java.awt.FontMetrics;
+import java.awt.Graphics;
 
-import java.util.*;
-import java.awt.*;
-
-import mesquite.basic.ManageTaxaPartitions.ManageTaxaPartitions;
-import mesquite.categ.lib.DNAData;
-import mesquite.charMatrices.ManageCharPartitions.ManageCharPartitions;
-import mesquite.lib.*;
-import mesquite.lib.characters.*;
-import mesquite.lib.duties.*;
-import mesquite.lib.table.*;
-import mesquite.lib.taxa.TaxaPartition;
-import mesquite.lib.ui.ListDialog;
-import mesquite.lib.ui.MesquiteMenuItemSpec;
-import mesquite.lib.ui.MesquiteSubmenuSpec;
+import mesquite.lib.Notification;
+import mesquite.lib.SelectionInformer;
+import mesquite.lib.characters.CharacterData;
+import mesquite.lib.characters.CharacterPartition;
+import mesquite.lib.characters.CharactersGroup;
+import mesquite.lib.characters.CharactersGroupVector;
+import mesquite.lib.duties.CharactersSelectedUtility;
+import mesquite.lib.table.MesquiteTable;
+import mesquite.lists.lib.CharListAssistant;
+import mesquite.lists.lib.ListModule;
 
 /* ======================================================================== */
 public class CharListPartition extends CharListAssistant implements SelectionInformer{

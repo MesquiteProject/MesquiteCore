@@ -13,20 +13,39 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
 package mesquite.molec.lib; 
 
 
-import java.net.*;
+import java.io.InputStream;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.net.URLConnection;
 import java.util.Iterator;
 import java.util.List;
-import java.io.*;
 
 import org.dom4j.Element;
 
-import mesquite.lib.*;
-import mesquite.lib.characters.*;
-import mesquite.lib.taxa.Taxa;
-import mesquite.categ.lib.*;
+import mesquite.categ.lib.DNAData;
+import mesquite.categ.lib.MolecularData;
+import mesquite.categ.lib.MolecularDataUtil;
+import mesquite.categ.lib.ProteinData;
 import mesquite.io.InterpretFastaDNA.InterpretFastaDNA;   //is this guaranteed to be an installed package?
 import mesquite.io.InterpretFastaProtein.InterpretFastaProtein;   //is this guaranteed to be an installed package?
-import mesquite.io.lib.*;
+import mesquite.lib.Bits;
+import mesquite.lib.CommandRecord;
+import mesquite.lib.MesquiteInteger;
+import mesquite.lib.MesquiteListener;
+import mesquite.lib.MesquiteMessage;
+import mesquite.lib.MesquiteModule;
+import mesquite.lib.MesquiteString;
+import mesquite.lib.MesquiteStringBuffer;
+import mesquite.lib.MesquiteThread;
+import mesquite.lib.MesquiteTimer;
+import mesquite.lib.MesquiteTrunk;
+import mesquite.lib.NameReference;
+import mesquite.lib.Notification;
+import mesquite.lib.Parser;
+import mesquite.lib.StringUtil;
+import mesquite.lib.XMLUtil;
+import mesquite.lib.characters.CharacterData;
+import mesquite.lib.taxa.Taxa;
 
 
 /* ======================================================================== */

@@ -13,8 +13,12 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
 */
 package mesquite.trees.SampleManyTreesFromFile;
 
-import mesquite.lib.*;
-import mesquite.trees.lib.*;
+import mesquite.lib.CommandChecker;
+import mesquite.lib.MesquiteInteger;
+import mesquite.lib.MesquiteThread;
+import mesquite.lib.Snapshot;
+import mesquite.lib.taxa.Taxa;
+import mesquite.trees.lib.ManyTreesFromFileLib;
 
 public class SampleManyTreesFromFile extends ManyTreesFromFileLib {
 
@@ -51,6 +55,10 @@ public class SampleManyTreesFromFile extends ManyTreesFromFileLib {
 				setTreesToSample(numTreesToSample);
 		}
 		return true;
+	}
+	 /**Returns name to show in windows etc. for tree block or source of trees.*/
+	public String getTreesDescriptiveString(Taxa taxa){
+		return "Live Trees Sampled from File";
 	}
 	/*.................................................................................................................*/
  	 public void additionalSnapshot(Snapshot snapshot) {
@@ -115,7 +123,7 @@ public class SampleManyTreesFromFile extends ManyTreesFromFileLib {
 	}
 	/*.................................................................................................................*/
 	 public String getName() {
-	return "Sample Trees from Separate NEXUS File";
+	return "Sample Trees from Separate Live File";
 	 }
 		/*.................................................................................................................*/
 		/** returns the version number at which this module was first released.  If 0, then no version number is claimed.  If a POSITIVE integer
@@ -126,7 +134,7 @@ public class SampleManyTreesFromFile extends ManyTreesFromFileLib {
 		}
 /*.................................................................................................................*/
 	 public String getNameForMenuItem() {
-	return "Sample Trees from Separate NEXUS File...";
+	return "Sample Trees from Separate Live File...";
 	 }
 	 
 /*.................................................................................................................*/

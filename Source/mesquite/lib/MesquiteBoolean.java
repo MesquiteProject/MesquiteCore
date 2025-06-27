@@ -13,7 +13,7 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
 */
 package mesquite.lib;
 
-import java.awt.*;
+import java.awt.Checkbox;
 
 import mesquite.lib.ui.AlertDialog;
 import mesquite.lib.ui.ExtensibleDialog;

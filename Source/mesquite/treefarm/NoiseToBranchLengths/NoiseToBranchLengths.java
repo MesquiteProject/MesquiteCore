@@ -14,13 +14,16 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
 package mesquite.treefarm.NoiseToBranchLengths;
 /*~~  */
 
-import java.util.*;
-import java.awt.*;
-import mesquite.lib.*;
-import mesquite.lib.duties.*;
+import mesquite.lib.CommandChecker;
+import mesquite.lib.MesquiteBoolean;
+import mesquite.lib.MesquiteDouble;
+import mesquite.lib.MesquiteFile;
+import mesquite.lib.MesquiteThread;
+import mesquite.lib.RandomBetween;
+import mesquite.lib.Snapshot;
 import mesquite.lib.tree.MesquiteTree;
 import mesquite.lib.tree.Tree;
-import mesquite.treefarm.lib.*;
+import mesquite.treefarm.lib.RndTreeModifier;
 
 /* TODO: put in options beyond simple Normal noise (e.g., binary?)  */
 public class NoiseToBranchLengths extends RndTreeModifier {

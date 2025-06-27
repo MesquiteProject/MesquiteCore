@@ -14,13 +14,28 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
 package mesquite.bayesian.ExportForBPP;
 
 
-import java.util.*;
-import java.awt.*;
+import java.awt.Checkbox;
+import java.awt.TextArea;
+import java.util.Random;
 
-import mesquite.lib.*;
-import mesquite.lib.characters.*;
+import mesquite.assoc.lib.AssociationSource;
+import mesquite.assoc.lib.TaxaAssociation;
+import mesquite.categ.lib.MolecularState;
+import mesquite.lib.Arguments;
+import mesquite.lib.Bits;
+import mesquite.lib.IntegerField;
+import mesquite.lib.MesquiteBoolean;
+import mesquite.lib.MesquiteFile;
+import mesquite.lib.MesquiteInteger;
+import mesquite.lib.MesquiteProject;
+import mesquite.lib.MesquiteStringBuffer;
+import mesquite.lib.MesquiteThread;
+import mesquite.lib.Parser;
+import mesquite.lib.StringUtil;
 import mesquite.lib.characters.CharacterData;
-import mesquite.lib.duties.*;
+import mesquite.lib.characters.CharacterStates;
+import mesquite.lib.duties.FileInterpreterI;
+import mesquite.lib.duties.OneTreeSource;
 import mesquite.lib.taxa.Taxa;
 import mesquite.lib.taxa.Taxon;
 import mesquite.lib.tree.MesquiteTree;
@@ -28,8 +43,6 @@ import mesquite.lib.tree.Tree;
 import mesquite.lib.tree.TreeVector;
 import mesquite.lib.ui.ExtensibleDialog;
 import mesquite.lib.ui.SingleLineTextField;
-import mesquite.assoc.lib.*;
-import mesquite.categ.lib.*;
 
 
 
@@ -61,7 +74,7 @@ public class ExportForBPP extends FileInterpreterI {
 	}
 
 	public boolean isPrerelease(){
-		return true;
+		return false;
 	}
 	public boolean isSubstantive(){
 		return true;
@@ -446,9 +459,9 @@ public class ExportForBPP extends FileInterpreterI {
 				}
 			}
 			if (allPopulationTerminals.anyBitsOn()) { // then some terminals aren't included in the selected clades.
-				Debugg.println("\nWARNING:  Some terminals not included");
+				logln("\nNOTE:  Some terminals not included");
 			} else if (nested) {  // all population terminals are included, but there is a nesting of selected clades
-				Debugg.println("\nWARNING:  Selected clades are nested");
+				logln("\nNOTE:  Selected clades are nested");
 			} else {
 				boolean exportAll = true;
 				int counter = 0;
@@ -509,7 +522,7 @@ public class ExportForBPP extends FileInterpreterI {
 	 * then the number refers to the Mesquite version.  This should be used only by modules part of the core release of Mesquite.
 	 * If a NEGATIVE integer, then the number refers to the local version of the package, e.g. a third party package*/
 	public int getVersionOfFirstRelease(){
-		return NEXTRELEASE;  
+		return 400;  
 	}
 
 }

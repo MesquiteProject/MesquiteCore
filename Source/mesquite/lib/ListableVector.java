@@ -13,11 +13,11 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
 */
 package mesquite.lib;
 
-import java.text.*;
-import java.util.*;
+import java.text.Collator;
+import java.util.Enumeration;
+import java.util.Vector;
 
 import mesquite.lib.characters.CharacterStates;
-import mesquite.lib.characters.CodonPositionsSet;
 import mesquite.lib.taxa.TaxaGroupVector;
 import mesquite.lib.tree.TreeVector;
 import mesquite.lib.ui.HTMLDescribable;
@@ -394,8 +394,7 @@ public class ListableVector extends FileElement implements StringLister, Command
 		vec.removeElement(obj);
 		numElements = vec.size();
 		if (vec.indexOf(obj)>=0){
-		Debugg.printStackTrace();
-			MesquiteMessage.warnProgrammer("object removed from listableVector but other copy remains " + this.getClass().toString() + "  " + obj);
+			MesquiteMessage.printStackTrace("object removed from listableVector but other copy remains " + this.getClass().toString() + "  " + obj);
 		}
 		if (notify)
 			notifyListeners(this, new Notification(MesquiteListener.PARTS_DELETED));

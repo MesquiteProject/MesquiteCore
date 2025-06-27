@@ -13,16 +13,6 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
 */
 package mesquite.trunk;
 
-import java.util.*;
-
-import com.apple.eawt.*;
-
-import java.io.*;
-import mesquite.lib.*;
-import mesquite.*;
-
-
-
 /* ======================================================================== *
 /* Old macOS (pre Java 9) handling of file opening. Disabling until someone complains
  * public class EAWTHandler  implements FileOpener {

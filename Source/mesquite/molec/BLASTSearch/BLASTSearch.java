@@ -13,14 +13,18 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
 */
 package mesquite.molec.BLASTSearch; 
 
-import java.util.*;
-import java.awt.*;
-import mesquite.lib.*;
-import mesquite.lib.characters.*;
-import mesquite.lib.duties.*;
-import mesquite.lib.table.*;
-import mesquite.categ.lib.*;
-import mesquite.molec.lib.*;
+import mesquite.categ.lib.CategDataSearcher;
+import mesquite.categ.lib.DNAData;
+import mesquite.categ.lib.ProteinData;
+import mesquite.categ.lib.RequiresAnyMolecularData;
+import mesquite.lib.CompatibilityTest;
+import mesquite.lib.MesquiteModule;
+import mesquite.lib.MesquiteStringBuffer;
+import mesquite.lib.MesquiteTrunk;
+import mesquite.lib.StringUtil;
+import mesquite.lib.characters.CharacterData;
+import mesquite.lib.table.MesquiteTable;
+import mesquite.molec.lib.NCBIUtil;
 
 /* ======================================================================== */
 public class BLASTSearch extends CategDataSearcher { 

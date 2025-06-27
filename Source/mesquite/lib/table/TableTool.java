@@ -13,11 +13,11 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
 */
 package mesquite.lib.table;
 
-import java.awt.*;
-import mesquite.lib.duties.*;
+import mesquite.lib.CommandChecker;
+import mesquite.lib.MesquiteCommand;
+import mesquite.lib.MesquiteEvent;
 import mesquite.lib.ui.MesquiteTool;
 import mesquite.lib.ui.MousePanel;
-import mesquite.lib.*;
 
 /* ��������������������������� commands ������������������������������� */
 /* includes commands,  buttons, miniscrolls

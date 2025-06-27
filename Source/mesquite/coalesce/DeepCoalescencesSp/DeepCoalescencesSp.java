@@ -13,15 +13,14 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
 package mesquite.coalesce.DeepCoalescencesSp;
 /*~~  */
 
-import java.util.*;
-import java.awt.*;
-import mesquite.lib.*;
-import mesquite.lib.characters.*;
-import mesquite.lib.duties.*;
+import mesquite.assoc.lib.AssociationHistory;
+import mesquite.assoc.lib.ReconstructAssociation;
+import mesquite.assoc.lib.TaxaAssociation;
+import mesquite.coalesce.lib.SpeciesTreeFit;
+import mesquite.lib.MesquiteNumber;
+import mesquite.lib.MesquiteString;
 import mesquite.lib.tree.MesquiteTree;
 import mesquite.lib.tree.Tree;
-import mesquite.coalesce.lib.*;
-import mesquite.assoc.lib.*;
 
 
 /* ======================================================================== */

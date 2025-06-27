@@ -14,14 +14,15 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
 package mesquite.search.OldStyleTreeSearch;
 /*~~  */
 
-import mesquite.lib.*;
+import mesquite.lib.CompatibilityTest;
+import mesquite.lib.EmployerEmployee;
+import mesquite.lib.MesquiteProject;
 import mesquite.lib.analysis.BayesianAnalysis;
 import mesquite.lib.analysis.DistanceAnalysis;
 import mesquite.lib.analysis.LikelihoodAnalysis;
 import mesquite.lib.analysis.ParsimonyAnalysis;
-import mesquite.lib.duties.CharStatesForNodes;
 import mesquite.lib.duties.TreeSearcher;
-import mesquite.search.lib.*;
+import mesquite.search.lib.TreeSearch;
 
 /* ======================================================================== */
 public class OldStyleTreeSearch extends TreeSearch  {

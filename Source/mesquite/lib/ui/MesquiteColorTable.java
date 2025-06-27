@@ -13,8 +13,7 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
 */
 package mesquite.lib.ui;
 
-import java.awt.*;
-import mesquite.lib.duties.*;
+import java.awt.Color;
 
 /* ======================================================================== */
 /** This establishes and curates color tables for character states for use in shading etc.

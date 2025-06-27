@@ -13,16 +13,11 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
 package mesquite.lib.duties;
 /*~~  */
 
-import java.util.*;
-import java.awt.*;
-import mesquite.lib.*;
-import mesquite.lib.characters.*;
-import mesquite.lib.duties.*;
+import mesquite.lib.MesquiteModule;
+import mesquite.lib.MesquiteString;
+import mesquite.lib.characters.CharacterDistribution;
+import mesquite.lib.characters.CharacterHistory;
 import mesquite.lib.tree.Tree;
-import mesquite.categ.lib.*;
-import mesquite.cont.lib.*;
-import mesquite.stochchar.CurrentProbModelsSim.*;
-import mesquite.stochchar.lib.*;
 
 /* ======================================================================== */
 public abstract class CharMapper extends MesquiteModule {

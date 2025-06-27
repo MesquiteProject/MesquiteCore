@@ -14,10 +14,11 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
 package mesquite.molec.GBLOCKSSelector;
 /*~~  */
 
-import mesquite.lib.*;
-import mesquite.lib.characters.*;
-import mesquite.lib.duties.*;
-import mesquite.molec.lib.*;
+import mesquite.lib.MesquiteBoolean;
+import mesquite.lib.MesquiteDouble;
+import mesquite.lib.MesquiteInteger;
+import mesquite.lib.StringUtil;
+import mesquite.lib.duties.MesquiteInit;
 
 /* ======================================================================== */
 public class GBLOCKSSelector extends MesquiteInit {

@@ -13,17 +13,49 @@
  */
 package mesquite.lib.table;
 
-import java.awt.*;
-import java.util.*;
-import java.awt.event.*;
-import java.awt.datatransfer.*;
+import java.awt.Color;
+import java.awt.Component;
+import java.awt.Cursor;
+import java.awt.Dimension;
+import java.awt.Font;
+import java.awt.FontMetrics;
+import java.awt.Graphics;
+import java.awt.Panel;
+import java.awt.Point;
+import java.awt.Rectangle;
+import java.awt.Scrollbar;
+import java.awt.Shape;
+import java.awt.TextComponent;
+import java.awt.TextField;
+import java.awt.Toolkit;
+import java.awt.datatransfer.Clipboard;
+import java.awt.datatransfer.DataFlavor;
+import java.awt.datatransfer.StringSelection;
+import java.awt.datatransfer.Transferable;
+import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
+import java.awt.event.MouseWheelEvent;
+import java.awt.event.MouseWheelListener;
+import java.util.Vector;
 
 import javax.swing.text.JTextComponent;
 
-import pal.math.MathUtils;
-import mesquite.lib.*;
-import mesquite.lib.duties.FileInterpreter;
-import mesquite.lib.tree.MesquiteTree;
+import mesquite.lib.Associable;
+import mesquite.lib.Bits;
+import mesquite.lib.CommandChecker;
+import mesquite.lib.MesquiteBoolean;
+import mesquite.lib.MesquiteCommand;
+import mesquite.lib.MesquiteEvent;
+import mesquite.lib.MesquiteFile;
+import mesquite.lib.MesquiteInteger;
+import mesquite.lib.MesquiteListener;
+import mesquite.lib.MesquiteMessage;
+import mesquite.lib.MesquiteModule;
+import mesquite.lib.MesquiteTimer;
+import mesquite.lib.MesquiteTrunk;
+import mesquite.lib.Notification;
+import mesquite.lib.Snapshot;
+import mesquite.lib.StringUtil;
 import mesquite.lib.ui.AlertDialog;
 import mesquite.lib.ui.ColorDistribution;
 import mesquite.lib.ui.ColorTheme;
@@ -31,7 +63,6 @@ import mesquite.lib.ui.GraphicsUtil;
 import mesquite.lib.ui.MesquiteButton;
 import mesquite.lib.ui.MesquitePDFFile;
 import mesquite.lib.ui.MesquitePanel;
-import mesquite.lib.ui.MesquitePopup;
 import mesquite.lib.ui.MesquitePrintJob;
 import mesquite.lib.ui.MesquiteScrollbar;
 import mesquite.lib.ui.MesquiteTool;
@@ -65,6 +96,7 @@ public class MesquiteTable extends MesquitePanel implements KeyListener, MouseWh
 
 	protected boolean columnNamesCopyPaste = true;
 	protected boolean rowNamesCopyPaste = true;
+	protected boolean rowNamesCopyPasteWithRowSelection = true;
 	int baseRowHeight = 16;
 	//	int thinRowHeight=22;
 	int baseColumnWidth = 16;
@@ -708,6 +740,10 @@ public class MesquiteTable extends MesquitePanel implements KeyListener, MouseWh
 	public void setRowNamesCopyPaste(boolean copyPastable) {
 		this.rowNamesCopyPaste = copyPastable;
 	}
+	/* ................................................................................................................. */
+	public void setRowNamesCopyPasteWithRowSelection(boolean copyPastable) {
+		this.rowNamesCopyPasteWithRowSelection = copyPastable;
+	}
 
 	/* ................................................................................................................. */
 	public int getColumnGrabberWidth() {
@@ -819,7 +855,7 @@ public class MesquiteTable extends MesquitePanel implements KeyListener, MouseWh
 		for (int j = 0; j < numRowsTotal; j++) {
 			if (isRowNameSelected(j) || isRowSelected(j)) {
 				String t = StringUtil.getNextTabbedToken(s, pos);
-				if (t != null && rowNamesEditable && rowNamesCopyPaste){
+				if (t != null && rowNamesEditable && rowNamesCopyPaste && (rowNamesCopyPasteWithRowSelection || isRowNameSelected(j))){
 					returnedRowNameText(j, t, false);
 					if ((count+1) % 10 == 0)
 						System.err.print(".");
@@ -1987,7 +2023,7 @@ public class MesquiteTable extends MesquitePanel implements KeyListener, MouseWh
 	public synchronized void tableToPDF(MesquitePDFFile pdfFile, MesquiteWindow window, int fitToPage) {
 		if (pdfFile != null) {
 			printAll(pdfFile.getPDFGraphicsForComponent(this, totalDimension()));
-			pdfFile.end();
+			pdfFile.endDocument();
 		}
 	}
 
@@ -3041,14 +3077,14 @@ public class MesquiteTable extends MesquitePanel implements KeyListener, MouseWh
 	/* ............................................................................................................... */
 	/** Redraw (directly, without repaint()) all column names */
 	public void redrawColumnNames() {
-		for (int c = firstColumnVisible; c < getNumColumns(); c++)
+		for (int c = firstColumnVisible; c < getNumColumns() && c<= lastColumnVisible; c++)
 			redrawColumnName(c);
 	}
 
 	/* ............................................................................................................... */
 	/** Redraw (directly, without repaint()) all row names */
 	public void redrawRowNames() {
-		for (int c = firstRowVisible; c < getNumRows(); c++)
+		for (int c = firstRowVisible; c < getNumRows() && c<=lastRowVisible; c++)
 			redrawRowName(c);
 	}
 
@@ -3300,7 +3336,7 @@ public class MesquiteTable extends MesquitePanel implements KeyListener, MouseWh
 			s += " " + i + " " + timers[i].getID() + "=" + timers[i].getAccumulatedTime() + " /";
 			total += timers[i].getAccumulatedTime();
 		}
-		System.err.println("MesquiteTable/bdw.MatrixTable " + s + " TOTAL= " + total);
+		MesquiteMessage.println("MesquiteTable/bdw.MatrixTable " + s + " TOTAL= " + total);
 	}
 
 	/* ............................................................................................................... */

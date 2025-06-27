@@ -13,10 +13,6 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
 */
 package mesquite.lib;
 
-import java.awt.*;
-import java.awt.event.*;
-
-
 public class ResultCodes {
 	public final static int SPECIFICATION_MISSING = -10;
 	public final static int NOTHING_RETURNED = -9;

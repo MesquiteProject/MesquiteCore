@@ -14,24 +14,23 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
 package mesquite.lists.TaxonListCurrPartition;
 /*~~  */
 
-import mesquite.lists.lib.*;
+import java.awt.Color;
+import java.awt.FontMetrics;
+import java.awt.Graphics;
 
-import java.util.*;
-import java.awt.*;
-
-import mesquite.basic.ManageTaxaPartitions.ManageTaxaPartitions;
-import mesquite.lib.*;
-import mesquite.lib.duties.*;
-import mesquite.lib.table.*;
+import mesquite.lib.Notification;
+import mesquite.lib.SelectionInformer;
+import mesquite.lib.StringUtil;
+import mesquite.lib.duties.TaxaSelectedUtility;
+import mesquite.lib.table.MesquiteTable;
 import mesquite.lib.taxa.Taxa;
 import mesquite.lib.taxa.TaxaGroup;
 import mesquite.lib.taxa.TaxaGroupVector;
 import mesquite.lib.taxa.TaxaPartition;
 import mesquite.lib.ui.ColorDistribution;
-import mesquite.lib.ui.ListDialog;
-import mesquite.lib.ui.MesquiteMenuItemSpec;
-import mesquite.lib.ui.MesquiteSubmenuSpec;
 import mesquite.lib.ui.MesquiteSymbol;
+import mesquite.lists.lib.ListModule;
+import mesquite.lists.lib.TaxonListAssistant;
 
 /* ======================================================================== */
 public class TaxonListCurrPartition extends TaxonListAssistant implements SelectionInformer {

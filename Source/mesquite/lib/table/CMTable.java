@@ -14,8 +14,8 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
 package mesquite.lib.table;
 /*~~  */
 
-import mesquite.lib.*;
-import mesquite.lib.duties.*;
+import mesquite.lib.duties.CellColorer;
+import mesquite.lib.duties.DataColumnNamesAssistant;
 
 /**  An interface used to expose extra methods of character matrix editor table to assistants. */
 public abstract class CMTable extends MesquiteTable {

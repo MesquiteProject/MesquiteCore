@@ -13,11 +13,21 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
  */
 package mesquite.treefarm.GraftTree;
 
-import java.util.*;
-import java.awt.*;
+import java.awt.Checkbox;
 
-import mesquite.lib.*;
-import mesquite.lib.duties.*;
+import mesquite.lib.CommandChecker;
+import mesquite.lib.Listened;
+import mesquite.lib.MesquiteBoolean;
+import mesquite.lib.MesquiteFile;
+import mesquite.lib.MesquiteInteger;
+import mesquite.lib.MesquiteListener;
+import mesquite.lib.MesquiteMessage;
+import mesquite.lib.MesquiteModule;
+import mesquite.lib.MesquiteString;
+import mesquite.lib.Notification;
+import mesquite.lib.Snapshot;
+import mesquite.lib.duties.OneTreeSource;
+import mesquite.lib.duties.TreeAltererMult;
 import mesquite.lib.taxa.Taxa;
 import mesquite.lib.tree.AdjustableTree;
 import mesquite.lib.tree.Tree;

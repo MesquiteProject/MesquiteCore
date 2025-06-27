@@ -13,10 +13,7 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
 */
 package mesquite.parsimony.lib;
 
-import java.awt.*;
-import java.util.*;
-import mesquite.lib.*;
-import mesquite.lib.characters.*;
+import mesquite.lib.MesquiteNumber;
 
 /* ======================================================================== */
 /** A character model for Categorical characters to be used in parsimony calculations*/

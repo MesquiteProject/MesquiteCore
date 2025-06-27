@@ -14,16 +14,20 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
 package mesquite.pairwise.PairsTwoChars;
 /*~~  */
 
-import java.util.*;
-import java.awt.*;
-
-import mesquite.lib.*;
-import mesquite.lib.characters.*;
-import mesquite.lib.duties.*;
+import mesquite.categ.lib.CategoricalDistribution;
+import mesquite.categ.lib.CategoricalState;
+import mesquite.lib.CommandRecord;
+import mesquite.lib.MesquiteInteger;
+import mesquite.lib.MesquiteMessage;
+import mesquite.lib.characters.CharacterDistribution;
 import mesquite.lib.tree.MesquiteTree;
 import mesquite.lib.tree.Tree;
-import mesquite.pairwise.lib.*;
-import mesquite.categ.lib.*;
+import mesquite.pairwise.lib.PairMaker;
+import mesquite.pairwise.lib.PairMakerChars;
+import mesquite.pairwise.lib.TaxaPairer;
+import mesquite.pairwise.lib.TaxaPairerChars;
+import mesquite.pairwise.lib.TaxaPairing;
+import mesquite.pairwise.lib.TaxaPath;
 
 /* ======================================================================== */
 public class PairsTwoChars extends PairMakerChars {

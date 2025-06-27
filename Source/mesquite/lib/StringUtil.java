@@ -13,17 +13,22 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
  */
 package mesquite.lib;
 
-import org.apache.commons.text.*;
-
-import mesquite.lib.ui.GraphicsUtil;
-
-import java.awt.*;
+import java.awt.Color;
+import java.awt.Component;
+import java.awt.FontMetrics;
+import java.awt.Graphics;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
-import java.text.*;
+import java.text.Collator;
+import java.text.Normalizer;
+import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.NoSuchElementException;
 import java.util.StringTokenizer;
+
+import org.apache.commons.text.StringEscapeUtils;
+
+import mesquite.lib.ui.GraphicsUtil;
 
 
 /* ======================================================================== */

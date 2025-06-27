@@ -14,27 +14,24 @@
 package mesquite.genomic.AppendTaxaAndSequences;
 /*~~  */
 
-import java.util.*;
-import java.awt.*;
-import java.awt.image.*;
-
 import mesquite.basic.ManageTaxaPartitions.ManageTaxaPartitions;
-import mesquite.categ.lib.CategoricalState;
-import mesquite.categ.lib.DNAData;
-import mesquite.categ.lib.DNAState;
-import mesquite.lib.*;
-import mesquite.lib.characters.*;
+import mesquite.lib.CommandChecker;
+import mesquite.lib.Listable;
+import mesquite.lib.MesquiteFile;
+import mesquite.lib.MesquiteListener;
+import mesquite.lib.MesquiteProject;
+import mesquite.lib.MesquiteString;
+import mesquite.lib.Notification;
 import mesquite.lib.characters.CharacterData;
-import mesquite.lib.duties.*;
+import mesquite.lib.characters.CharacterState;
+import mesquite.lib.duties.CharactersManager;
+import mesquite.lib.duties.FileAssistantFM;
+import mesquite.lib.duties.NexusFileInterpreter;
 import mesquite.lib.taxa.Taxa;
-import mesquite.lib.taxa.TaxaGroup;
 import mesquite.lib.taxa.TaxaGroupVector;
 import mesquite.lib.taxa.TaxaPartition;
 import mesquite.lib.taxa.Taxon;
 import mesquite.lib.ui.AlertDialog;
-import mesquite.lib.ui.ListDialog;
-import mesquite.lib.ui.MesquiteFrame;
-import mesquite.lib.ui.MesquiteWindow;
 
 /* ======================================================================== */
 public class AppendTaxaAndSequences extends FileAssistantFM {
@@ -62,7 +59,7 @@ public class AppendTaxaAndSequences extends FileAssistantFM {
 		MesquiteProject proj = getProject();
 		MesquiteString directoryName = new MesquiteString();
 		MesquiteString fileName = new MesquiteString();
-		Taxa useTaxa = null;
+
 		Taxa receivingTaxa = null;
 		if (proj.getNumberTaxas()==0){
 			alert("You can append only to a file that already has a taxa block");
@@ -83,8 +80,6 @@ public class AppendTaxaAndSequences extends FileAssistantFM {
 			NexusFileInterpreter mb = (NexusFileInterpreter)findNearestColleagueWithDuty(NexusFileInterpreter.class);
 			mb.readFile(getProject(), fileToRead, " @noWarnMissingReferent  @noWarnUnrecognized @noWarnDupTaxaBlock @readOneTaxaBlockOnly @justTheseBlocks.TAXA.CHARACTERS.DATA.SETS.LABELS");
 
-			//CharacterState state = new CategoricalState();
-
 			CharactersManager charactersManager = (CharactersManager)proj.getCoordinatorModule().findElementManager(CharacterData.class);
 			Taxa incomingTaxa = proj.getTaxa(fileToRead, 0);
 			Listable[] currentTaxas = new Listable[]{incomingTaxa};
@@ -104,7 +99,7 @@ public class AppendTaxaAndSequences extends FileAssistantFM {
 						newTaxon.setName(incomingTaxonName);
 						existingTaxon = false;
 					}
-					//	progIndicator.setSecondaryMessage("Taxon: " + incomingName);
+
 					// OK, the taxon is read (new or not)
 					for (int iM = 0; iM<proj.getNumberCharMatrices(fileToRead); iM++){
 
@@ -176,7 +171,7 @@ public class AppendTaxaAndSequences extends FileAssistantFM {
 	}
 	/*.................................................................................................................*/
 	public boolean isPrerelease() { 
-		return true;
+		return false;
 	}
 	/*.................................................................................................................*/
 	public String getNameForMenuItem() {
@@ -191,7 +186,7 @@ public class AppendTaxaAndSequences extends FileAssistantFM {
 	 * then the number refers to the Mesquite version.  This should be used only by modules part of the core release of Mesquite.
 	 * If a NEGATIVE integer, then the number refers to the local version of the package, e.g. a third party package*/
 	public int getVersionOfFirstRelease(){
-		return NEXTRELEASE;  
+		return 400;  
 	}
 	/*.................................................................................................................*/
 	/** returns an explanation of what the module does.*/

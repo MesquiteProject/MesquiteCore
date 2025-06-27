@@ -13,8 +13,6 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
  */
 package mesquite.lib.tree;
 
-import java.awt.*;
-import mesquite.lib.duties.*;
 import mesquite.lib.ui.MesquiteWindow;
 import mesquite.lib.ui.ResizableLegend;
 

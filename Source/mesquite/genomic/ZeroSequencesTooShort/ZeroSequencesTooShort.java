@@ -14,16 +14,22 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
 package mesquite.genomic.ZeroSequencesTooShort;
 /*~~  */
 
-import java.util.*;
-import java.lang.*;
-import java.awt.*;
-import java.awt.event.*;
+import java.awt.Checkbox;
 
-import mesquite.lib.*;
-import mesquite.lib.characters.*;
-import mesquite.lib.duties.*;
-import mesquite.categ.lib.*;
-import mesquite.lib.table.*;
+import mesquite.categ.lib.MolecularData;
+import mesquite.categ.lib.MolecularDataAlterer;
+import mesquite.lib.IntegerField;
+import mesquite.lib.MesquiteBoolean;
+import mesquite.lib.MesquiteInteger;
+import mesquite.lib.MesquiteListener;
+import mesquite.lib.Notification;
+import mesquite.lib.ResultCodes;
+import mesquite.lib.StringUtil;
+import mesquite.lib.UndoReference;
+import mesquite.lib.characters.AltererAlignShift;
+import mesquite.lib.characters.CharacterData;
+import mesquite.lib.characters.CharacterState;
+import mesquite.lib.table.MesquiteTable;
 import mesquite.lib.ui.ExtensibleDialog;
 
 
@@ -44,16 +50,19 @@ public class ZeroSequencesTooShort extends MolecularDataAlterer  implements Alte
 	public void processSingleXMLPreference (String tag, String content) {
 		if ("longEnough".equalsIgnoreCase(tag))
 			longEnough= MesquiteInteger.fromString(content);
+		else if ("removeGapsOnly".equalsIgnoreCase(tag))
+			removeGapsOnly= MesquiteBoolean.fromOffOnString(content);
 	}
 	/*.................................................................................................................*/
 	public String preparePreferencesForXML () {
 		StringBuffer buffer = new StringBuffer(60);	
 		StringUtil.appendXMLTag(buffer, 2, "longEnough",longEnough);
+		StringUtil.appendXMLTag(buffer, 2, "removeGapsOnly",MesquiteBoolean.toOffOnString(removeGapsOnly));
 
 		return buffer.toString();
 	}
 
-	boolean enoughLength(MolecularData data, int it, int enough, CharacterState cs){
+	boolean lengthButNotEnough(MolecularData data, int it, int enough, CharacterState cs){
 		int seqLen = 0;
 		for (int ic=0; ic<data.getNumChars(); ic++) {
 			cs = data.getCharacterState(cs, ic, it);
@@ -62,20 +71,23 @@ public class ZeroSequencesTooShort extends MolecularDataAlterer  implements Alte
 			if (seqLen>=enough)
 				return true;
 		}
-		return false;
+		return seqLen == 0;  // if all inapplicable, treat it as enough!
 	}  	
 	
 	int longEnough = 100;
+	boolean removeGapsOnly = true;
 	/*.................................................................................................................*/
 	public boolean queryOptions() {
 		MesquiteInteger buttonPressed = new MesquiteInteger(1);
 		ExtensibleDialog dialog = new ExtensibleDialog(containerOfModule(), "Remove Very Short Sequences",buttonPressed);  //MesquiteTrunk.mesquiteTrunk.containerOfModule()
 		dialog.addLabel("Delete data for taxon from matrix if its sequence length is less than the threshold");
 		IntegerField numField = dialog.addIntegerField("Threshold", longEnough, 8, 0, MesquiteInteger.unassigned);
-
+		Checkbox cb = dialog.addCheckBox("Remove gaps-only characters also", removeGapsOnly);
+		
 		dialog.completeAndShowDialog(true);
 		if (buttonPressed.getValue()==0)  {
 			longEnough = numField.getValue();
+			removeGapsOnly = cb.getState();
 			storePreferences();
 		}
 		dialog.dispose();
@@ -95,10 +107,16 @@ public class ZeroSequencesTooShort extends MolecularDataAlterer  implements Alte
 		CharacterState cs = null;
 		boolean changed = false;
 		for (int it = 0; it<data.getNumTaxa(); it++) {
-			if (!enoughLength(data, it, 100, cs)){
+			if (!lengthButNotEnough(data, it, 100, cs)){
 				data.setToInapplicable(it);
+				logln("Sequence too short in " + data.getTaxa().getTaxonName(it) + " for matrix " + data.getName());
 				changed = true;
 			}
+		}
+		if (removeGapsOnly) {
+			int oldNum = data.getNumChars();
+			data.removeCharactersThatAreEntirelyGaps(false);
+			changed = changed || oldNum!=data.getNumChars();
 		}
 
 		if (changed){
@@ -124,7 +142,7 @@ public class ZeroSequencesTooShort extends MolecularDataAlterer  implements Alte
 	 * then the number refers to the Mesquite version.  This should be used only by modules part of the core release of Mesquite.
 	 * If a NEGATIVE integer, then the number refers to the local version of the package, e.g. a third party package*/
 	public int getVersionOfFirstRelease(){
-		return NEXTRELEASE;  
+		return 400;  
 	}
 	/*.................................................................................................................*/
 	public String getNameForMenuItem() {

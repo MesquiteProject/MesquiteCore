@@ -13,11 +13,7 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
 */
 package mesquite.lib.ui;
 
-import java.awt.*;
-import java.awt.event.*;
-
 import mesquite.lib.StringUtil;
-import mesquite.lib.table.EditorTextField;
 
 /*===============================================*/
 /** a field for text that cannot have line feeds/carriage returns in it.  */

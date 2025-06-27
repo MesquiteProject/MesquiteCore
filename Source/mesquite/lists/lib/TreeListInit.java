@@ -13,19 +13,14 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
 */
 package mesquite.lists.lib;
 
-import java.awt.*;
-import java.util.*;
-import mesquite.lib.*;
-import mesquite.lib.duties.*;
-import mesquite.lib.table.*;
+import mesquite.lib.MesquiteModule;
+import mesquite.lib.table.MesquiteTable;
 import mesquite.lib.tree.TreeVector;
 
 
 /* ======================================================================== */
 public abstract class TreeListInit extends MesquiteModule  {
-	public boolean loadModule(){ //Debugg.println replaced by eye show tool
-		return false;
-	}
+	//Not yet used? 4.0
 
    	 public Class getDutyClass() {
    	 	return TreeListInit.class;

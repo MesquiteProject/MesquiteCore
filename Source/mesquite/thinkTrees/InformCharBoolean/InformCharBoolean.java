@@ -1,11 +1,10 @@
 package mesquite.thinkTrees.InformCharBoolean;
 
-import mesquite.categ.lib.CategoricalState;
-import mesquite.lib.*;
-import mesquite.lib.characters.*;
-import mesquite.lib.duties.*;
-import mesquite.parsimony.lib.ParsimonyModelSet;
-import mesquite.categ.lib.*;
+import mesquite.categ.lib.CategoricalData;
+import mesquite.lib.MesquiteBoolean;
+import mesquite.lib.MesquiteString;
+import mesquite.lib.characters.CharacterData;
+import mesquite.lib.duties.BooleanForCharacter;
 
 public class InformCharBoolean extends BooleanForCharacter {
 
@@ -41,7 +40,7 @@ public class InformCharBoolean extends BooleanForCharacter {
 	}
 
 	public boolean isPrerelease() {
-		return true; //because unformative teset changed
+		return false; 
 	}
  	/*.................................................................................................................*/
  	/** returns the version number at which this module was first released.  If 0, then no version number is claimed.  If a POSITIVE integer

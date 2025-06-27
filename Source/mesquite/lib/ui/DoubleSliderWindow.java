@@ -13,12 +13,19 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
 */
 package mesquite.lib.ui;
 
-import java.awt.*;
+import java.awt.Button;
+import java.awt.Color;
+import java.awt.Dimension;
+import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
+import java.awt.Insets;
+import java.awt.Label;
+import java.awt.Panel;
+import java.awt.TextField;
 
 import mesquite.lib.MesquiteCommand;
 import mesquite.lib.MesquiteModule;
 import mesquite.lib.StringUtil;
-import mesquite.lib.duties.*;
 /* ======================================================================== */
 public class DoubleSliderWindow extends MesquiteWindow {
 	TextField tF1,tF2;

@@ -13,11 +13,19 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
  */
 package mesquite.treefarm.ReinterpretBranchLabels;
 
-import java.util.*;
-import java.awt.*;
+import java.awt.Checkbox;
+import java.awt.Label;
+import java.awt.TextField;
 
-import mesquite.lib.*;
-import mesquite.lib.duties.*;
+import mesquite.lib.Listened;
+import mesquite.lib.MesquiteDouble;
+import mesquite.lib.MesquiteInteger;
+import mesquite.lib.MesquiteListener;
+import mesquite.lib.MesquiteString;
+import mesquite.lib.NameReference;
+import mesquite.lib.Notification;
+import mesquite.lib.StringUtil;
+import mesquite.lib.duties.TreeAltererMult;
 import mesquite.lib.tree.AdjustableTree;
 import mesquite.lib.tree.MesquiteTree;
 import mesquite.lib.ui.ExtensibleDialog;

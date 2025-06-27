@@ -13,7 +13,13 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
  */
 package mesquite.treefarm.NumTopologyCongruent;
 
-import mesquite.lib.*;
+import mesquite.lib.CommandChecker;
+import mesquite.lib.EmployeeNeed;
+import mesquite.lib.MesquiteCommand;
+import mesquite.lib.MesquiteFile;
+import mesquite.lib.MesquiteNumber;
+import mesquite.lib.MesquiteString;
+import mesquite.lib.Snapshot;
 import mesquite.lib.duties.NumberForTree;
 import mesquite.lib.duties.TreeSourceDefinite;
 import mesquite.lib.taxa.Taxa;

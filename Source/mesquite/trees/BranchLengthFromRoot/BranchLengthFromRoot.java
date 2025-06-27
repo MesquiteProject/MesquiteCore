@@ -15,11 +15,11 @@ package mesquite.trees.BranchLengthFromRoot;
 /*~~  */
 
 
-import mesquite.lib.*;
-import mesquite.lib.duties.*;
+import mesquite.lib.MesquiteString;
+import mesquite.lib.NumberArray;
 import mesquite.lib.taxa.Taxa;
 import mesquite.lib.tree.Tree;
-import mesquite.treefarm.lib.*;
+import mesquite.treefarm.lib.NForTaxonWithTree;
 
 /** ======================================================================== */
 public class BranchLengthFromRoot extends NForTaxonWithTree {

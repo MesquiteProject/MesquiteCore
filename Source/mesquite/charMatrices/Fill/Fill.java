@@ -13,16 +13,15 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
 */
 package mesquite.charMatrices.Fill; 
 
-import java.util.*;
-import java.awt.*;
-import java.awt.image.*;
-import mesquite.lib.*;
-import mesquite.lib.characters.*;
+import mesquite.lib.MesquiteString;
+import mesquite.lib.ResultCodes;
+import mesquite.lib.StringUtil;
+import mesquite.lib.UndoReference;
+import mesquite.lib.characters.AltererSimpleCell;
 import mesquite.lib.characters.CharacterData;
-import mesquite.lib.duties.*;
-import mesquite.lib.table.*;
-import mesquite.lib.*;
-import mesquite.charMatrices.lib.*;
+import mesquite.lib.characters.CharacterState;
+import mesquite.lib.duties.DataAlterer;
+import mesquite.lib.table.MesquiteTable;
 
 /* ======================================================================== */
 public class Fill extends DataAlterer implements AltererSimpleCell {

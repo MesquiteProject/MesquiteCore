@@ -17,14 +17,31 @@ package mesquite.diverse.BiSSETreeCharSim;
 
 import java.util.Vector;
 
-import mesquite.lib.*;
+import mesquite.categ.lib.CategoricalData;
+import mesquite.categ.lib.CategoricalHistory;
+import mesquite.categ.lib.CategoricalState;
+import mesquite.diverse.lib.TreeCharSimulate;
+import mesquite.lib.CommandChecker;
+import mesquite.lib.CommandRecord;
+import mesquite.lib.IntegerArray;
+import mesquite.lib.IntegerField;
+import mesquite.lib.MesquiteBoolean;
+import mesquite.lib.MesquiteDouble;
+import mesquite.lib.MesquiteFile;
+import mesquite.lib.MesquiteInteger;
+import mesquite.lib.MesquiteLong;
+import mesquite.lib.MesquiteMessage;
+import mesquite.lib.MesquiteThread;
+import mesquite.lib.ObjectContainer;
+import mesquite.lib.ParseUtil;
+import mesquite.lib.RandomBetween;
+import mesquite.lib.Snapshot;
+import mesquite.lib.StringUtil;
 import mesquite.lib.taxa.Taxa;
 import mesquite.lib.tree.MesquiteTree;
 import mesquite.lib.tree.Tree;
 import mesquite.lib.ui.DoubleField;
 import mesquite.lib.ui.ExtensibleDialog;
-import mesquite.categ.lib.*;
-import mesquite.diverse.lib.*;
 
 /** ======================================================================== */
 public class BiSSETreeCharSim extends TreeCharSimulate {

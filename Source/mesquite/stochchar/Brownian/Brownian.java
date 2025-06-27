@@ -14,15 +14,22 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
 package mesquite.stochchar.Brownian;
 /*~~  */
 
-import java.util.*;
-import java.awt.*;
-import mesquite.lib.*;
-import mesquite.lib.characters.*;
-import mesquite.lib.duties.*;
+import mesquite.cont.lib.ContinuousData;
+import mesquite.cont.lib.ContinuousState;
+import mesquite.lib.EmployeeNeed;
+import mesquite.lib.MesquiteDouble;
+import mesquite.lib.MesquiteInteger;
+import mesquite.lib.MesquiteModule;
+import mesquite.lib.ObjectContainer;
+import mesquite.lib.ParseUtil;
+import mesquite.lib.characters.CModelEstimator;
+import mesquite.lib.characters.CharacterModel;
+import mesquite.lib.duties.EditingCurator;
+import mesquite.lib.duties.WholeCharModelCurator;
+import mesquite.lib.duties.WindowHolder;
 import mesquite.lib.ui.MesquiteWindow;
 import mesquite.lib.ui.SliderWindow;
-import mesquite.cont.lib.*;
-import mesquite.stochchar.lib.*;
+import mesquite.stochchar.lib.BrownianMotionModel;
 
 /* ======================================================================== */
 public class Brownian extends WholeCharModelCurator implements EditingCurator  {

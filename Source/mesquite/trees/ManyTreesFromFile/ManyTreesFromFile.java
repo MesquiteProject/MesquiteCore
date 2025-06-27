@@ -14,11 +14,7 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
 package mesquite.trees.ManyTreesFromFile;
 /*~~  */
 
-import java.io.*;
-import java.util.*;
-import java.awt.*;
-import mesquite.lib.*;
-import mesquite.lib.duties.*;
+import mesquite.lib.taxa.Taxa;
 import mesquite.trees.lib.ManyTreesFromFileLib;
 
 
@@ -27,13 +23,21 @@ public class ManyTreesFromFile extends ManyTreesFromFileLib {
 	
 	/*.................................................................................................................*/
 	 public String getName() {
-	return "Use Trees from Separate NEXUS File";
+	return "Trees from Separate Live File";
 	 }
 /*.................................................................................................................*/
 	 public String getNameForMenuItem() {
-	return "Use Trees from Separate NEXUS File...";
+	return "Trees from Separate Live File...";
 	 }
-	 
+	 	/*.................................................................................................................*/
+	 	public boolean isPrerelease(){
+	 		return false;  
+	 	}
+	 	 /**Returns name to show in windows etc. for tree block or source of trees.*/
+	 	public String getTreesDescriptiveString(Taxa taxa){
+	 		return "Live Trees from File";
+	 	}
+
 		/*.................................................................................................................*/
   	 public String getExplanation() {
 		return "Supplies trees directly from a file, without bringing the contained tree block entirely into memory.  " + 

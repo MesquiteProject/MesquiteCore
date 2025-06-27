@@ -13,11 +13,9 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
 */
 package mesquite.lists.lib;
 
-import java.awt.*;
-import java.awt.event.*;
-import java.util.*;
-import mesquite.lib.duties.*;
-import mesquite.lib.*;
+import mesquite.lib.Annotatable;
+import mesquite.lib.Explainable;
+import mesquite.lib.ListableVector;
 
 
 /* ======================================================================== */

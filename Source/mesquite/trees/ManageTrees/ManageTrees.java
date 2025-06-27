@@ -14,17 +14,59 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
 package mesquite.trees.ManageTrees;
 /*~~  */
 
-import java.util.*;
+import java.awt.Checkbox;
+import java.awt.FileDialog;
+import java.awt.Label;
+import java.awt.TextField;
+import java.awt.event.ItemEvent;
+import java.awt.event.ItemListener;
+import java.util.Date;
+import java.util.Enumeration;
+import java.util.Vector;
 
 import javax.swing.JLabel;
 
-import java.awt.*;
-import java.awt.event.ItemEvent;
-import java.awt.event.ItemListener;
-import java.io.*;
-
-import mesquite.lib.*;
-import mesquite.lib.duties.*;
+import mesquite.lib.Attachable;
+import mesquite.lib.CommandChecker;
+import mesquite.lib.CommandRecord;
+import mesquite.lib.EmployeeNeed;
+import mesquite.lib.FileBlock;
+import mesquite.lib.FileElement;
+import mesquite.lib.Listable;
+import mesquite.lib.ListableVector;
+import mesquite.lib.MainThread;
+import mesquite.lib.MesquiteBoolean;
+import mesquite.lib.MesquiteCommand;
+import mesquite.lib.MesquiteDouble;
+import mesquite.lib.MesquiteFile;
+import mesquite.lib.MesquiteFileDialog;
+import mesquite.lib.MesquiteInteger;
+import mesquite.lib.MesquiteListener;
+import mesquite.lib.MesquiteMessage;
+import mesquite.lib.MesquiteModule;
+import mesquite.lib.MesquiteProject;
+import mesquite.lib.MesquiteString;
+import mesquite.lib.MesquiteThread;
+import mesquite.lib.MesquiteTrunk;
+import mesquite.lib.NexusBlock;
+import mesquite.lib.NexusBlockTest;
+import mesquite.lib.Notification;
+import mesquite.lib.ParseUtil;
+import mesquite.lib.Parser;
+import mesquite.lib.Puppeteer;
+import mesquite.lib.Reconnectable;
+import mesquite.lib.Snapshot;
+import mesquite.lib.StringUtil;
+import mesquite.lib.duties.FileAssistantT;
+import mesquite.lib.duties.FileCoordinator;
+import mesquite.lib.duties.ManagerAssistant;
+import mesquite.lib.duties.TaxaManager;
+import mesquite.lib.duties.TreeBlockFiller;
+import mesquite.lib.duties.TreeBlockSource;
+import mesquite.lib.duties.TreeInferer;
+import mesquite.lib.duties.TreeSource;
+import mesquite.lib.duties.TreeWindowMaker;
+import mesquite.lib.duties.TreesManager;
 import mesquite.lib.taxa.Taxa;
 import mesquite.lib.taxa.TaxaBlock;
 import mesquite.lib.taxa.Taxon;
@@ -1116,7 +1158,7 @@ public class ManageTrees extends TreesManager implements ItemListener {
 		}
 		else if (separateThread == 0) {// same thread
 			if (!saveDirectTreeFile(treeSourceTask, taxa, howManyTrees, file)){
-				alert("Sorry, no trees were returned by " + treeFillerTask.getName() + " [error code Debugg.println(!!! " + 0 + "]");
+				alert("Sorry, no trees were returned by " + treeFillerTask.getName());
 
 			}
 			return null;

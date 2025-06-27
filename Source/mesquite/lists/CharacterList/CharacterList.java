@@ -14,18 +14,46 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
 package mesquite.lists.CharacterList;
 /*~~  */
 
-import mesquite.lists.lib.*;
-import java.util.*;
-import java.awt.*;
-import mesquite.lib.*;
-import mesquite.lib.characters.*;
-import mesquite.lib.duties.*;
-import mesquite.lib.table.*;
+import java.awt.Color;
+import java.awt.Container;
+import java.awt.Graphics;
+import java.util.Enumeration;
+import java.util.Vector;
+
+import mesquite.categ.lib.DNAData;
+import mesquite.categ.lib.MolecularData;
+import mesquite.lib.AssociableWithSpecs;
+import mesquite.lib.Bits;
+import mesquite.lib.CommandChecker;
+import mesquite.lib.EmployeeNeed;
+import mesquite.lib.Listenable;
+import mesquite.lib.Listened;
+import mesquite.lib.MenuOwner;
+import mesquite.lib.MesquiteFile;
+import mesquite.lib.MesquiteInteger;
+import mesquite.lib.MesquiteListener;
+import mesquite.lib.MesquiteModule;
+import mesquite.lib.MesquiteString;
+import mesquite.lib.MesquiteThread;
+import mesquite.lib.Notification;
+import mesquite.lib.ParseUtil;
+import mesquite.lib.Snapshot;
+import mesquite.lib.StringUtil;
+import mesquite.lib.UndoInstructions;
+import mesquite.lib.UndoReference;
+import mesquite.lib.Undoer;
+import mesquite.lib.characters.CharSelectionSet;
+import mesquite.lib.characters.CharacterData;
+import mesquite.lib.duties.CharSelectCoordinator;
+import mesquite.lib.duties.CharTableAssistantI;
 import mesquite.lib.taxa.Taxa;
 import mesquite.lib.ui.AlertDialog;
 import mesquite.lib.ui.MesquiteButton;
 import mesquite.lib.ui.MesquiteWindow;
-import mesquite.categ.lib.*;
+import mesquite.lists.lib.CharListAssistant;
+import mesquite.lists.lib.CharListAssistantI;
+import mesquite.lists.lib.ListModule;
+import mesquite.lists.lib.ListWindow;
 
 /* ======================================================================== */
 public class CharacterList extends ListModule {

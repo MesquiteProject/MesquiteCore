@@ -16,15 +16,19 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
 package mesquite.externalCommunication.lib;
 
 import java.awt.Button;
-import java.awt.ItemSelectable;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.event.ItemListener;
 
 import javax.swing.JLabel;
 
 import mesquite.externalCommunication.AppHarvester.AppHarvester;
-import mesquite.lib.*;
+import mesquite.lib.MesquiteBoolean;
+import mesquite.lib.MesquiteFile;
+import mesquite.lib.MesquiteInteger;
+import mesquite.lib.MesquiteMessage;
+import mesquite.lib.MesquiteModule;
+import mesquite.lib.MesquiteString;
+import mesquite.lib.StringUtil;
 import mesquite.lib.ui.ExtensibleDialog;
 import mesquite.lib.ui.SingleLineTextField;
 
@@ -202,6 +206,10 @@ public class AppChooser implements ActionListener {
 
 	public String getVersion() {
 		return versionOfBuiltIn; //return string only for Built In
+	}
+	
+	public boolean builtInAppAvailableForUse() {
+		return builtInExecutableAllowed;
 	}
 }
 

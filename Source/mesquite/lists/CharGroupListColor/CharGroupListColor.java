@@ -13,19 +13,20 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
 package mesquite.lists.CharGroupListColor;
 
 import java.awt.Color;
-import java.awt.Container;
 import java.awt.Graphics;
-import java.awt.Shape;
 
 import javax.swing.JColorChooser;
 import javax.swing.JFrame;
 
-import mesquite.lib.*;
-import mesquite.lib.characters.*;
+import mesquite.lib.CommandChecker;
+import mesquite.lib.StringUtil;
+import mesquite.lib.characters.CharacterData;
+import mesquite.lib.characters.CharactersGroup;
+import mesquite.lib.characters.CharactersGroupVector;
 import mesquite.lib.table.MesquiteTable;
 import mesquite.lib.ui.ColorDistribution;
 import mesquite.lib.ui.MesquiteSymbol;
-import mesquite.lists.lib.*;
+import mesquite.lists.lib.CharGroupListAssistant;
 
 /* ======================================================================== */
 public class CharGroupListColor extends CharGroupListAssistant  {

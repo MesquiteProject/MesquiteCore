@@ -13,10 +13,12 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
  */
 package mesquite.charts.ShowYEqualsX;
 
-import java.awt.*;
-import java.util.*;
-import mesquite.lib.*;
-import mesquite.lib.duties.*;
+import java.awt.Color;
+import java.awt.Graphics;
+
+import mesquite.lib.MesquiteModule;
+import mesquite.lib.MesquiteNumber;
+import mesquite.lib.duties.ScattergramAssistantA;
 import mesquite.lib.ui.ChartExtra;
 import mesquite.lib.ui.Charter;
 import mesquite.lib.ui.MesquiteChart;

@@ -13,9 +13,6 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
 */
 package mesquite.lib;
 
-import java.awt.*;
-import mesquite.lib.duties.*;
-
 /** An object of this kind can be returned by getNexusCommandTest that will be stored in the modulesinfo vector and used
 to search for modules that can read a particular command in a particular block.  (Much as the NexusBlockObject.)*/
 public abstract class NexusCommandTest  {

@@ -14,13 +14,19 @@ package mesquite.molec.PercentLowerCase;
 /*~~  */
 
 
-import mesquite.lib.*;
-import mesquite.lib.characters.*;
+import mesquite.categ.lib.CategoricalData;
+import mesquite.categ.lib.CategoricalState;
+import mesquite.categ.lib.RequiresAnyMolecularData;
+import mesquite.lib.CompatibilityTest;
+import mesquite.lib.MesquiteNumber;
+import mesquite.lib.MesquiteString;
+import mesquite.lib.characters.CharInclusionSet;
 import mesquite.lib.characters.CharacterData;
-import mesquite.lib.duties.*;
+import mesquite.lib.characters.CharacterState;
+import mesquite.lib.characters.MCharactersDistribution;
+import mesquite.lib.duties.NumberForTaxonAndMatrix;
 import mesquite.lib.taxa.Taxa;
 import mesquite.lib.taxa.Taxon;
-import mesquite.categ.lib.*;
 
 /* ======================================================================== */
 public class PercentLowerCase extends NumberForTaxonAndMatrix {

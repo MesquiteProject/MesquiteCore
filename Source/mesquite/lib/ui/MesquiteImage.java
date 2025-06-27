@@ -13,11 +13,15 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
  */
 package mesquite.lib.ui;
 
-import java.awt.*;
-import java.awt.event.*;
-import java.awt.image.*;
-import java.net.*;
-import java.util.*;
+import java.awt.Component;
+import java.awt.Graphics;
+import java.awt.Image;
+import java.awt.MediaTracker;
+import java.awt.Rectangle;
+import java.awt.Toolkit;
+import java.awt.image.ImageObserver;
+import java.net.MalformedURLException;
+import java.net.URL;
 
 import mesquite.lib.Bits;
 import mesquite.lib.MesquiteFile;

@@ -13,10 +13,21 @@
  */
 package mesquite.lib.ui;
 
-import java.awt.*;
-import java.util.*;
+import java.awt.BorderLayout;
+import java.awt.CardLayout;
+import java.awt.Color;
+import java.awt.Component;
+import java.awt.Container;
+import java.awt.Dimension;
+import java.awt.Font;
+import java.awt.Frame;
+import java.awt.Graphics;
+import java.awt.Insets;
+import java.awt.LayoutManager;
+import java.util.Vector;
 
-import javax.swing.*;
+import javax.swing.JDialog;
+import javax.swing.JEditorPane;
 
 import mesquite.lib.Identifiable;
 import mesquite.lib.MesquiteFile;
@@ -47,7 +58,6 @@ public class MesquiteDialogParent extends JDialog implements Identifiable, MQCom
 		super(f, title, b);
 		//setLocation(0, 0);
 		id = totalCreated++;
-		
 		getContentPane().setLayout(layout = new CardLayout());
 		setResizable(false);
 		setDefaultCloseOperation(JDialog.DO_NOTHING_ON_CLOSE);

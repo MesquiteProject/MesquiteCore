@@ -13,19 +13,20 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
 package mesquite.io.ExportPartitionsFASTA;
 /*~~  */
 
-import java.util.*;
-import java.awt.*;
-
-import mesquite.lib.*;
-import mesquite.lib.characters.*;
-import mesquite.lib.characters.CharacterData;
-import mesquite.lib.duties.*;
+import mesquite.categ.lib.CategoricalData;
+import mesquite.categ.lib.MolecularData;
+import mesquite.categ.lib.MolecularState;
+import mesquite.lib.MesquiteFile;
+import mesquite.lib.MesquiteProject;
+import mesquite.lib.MesquiteStringBuffer;
+import mesquite.lib.characters.CharacterPartition;
+import mesquite.lib.characters.CharacterStates;
+import mesquite.lib.characters.CharactersGroup;
+import mesquite.lib.characters.CharactersGroupVector;
+import mesquite.lib.duties.FileInterpreterI;
 import mesquite.lib.taxa.Taxa;
 import mesquite.lib.taxa.Taxon;
 import mesquite.lib.ui.ProgressIndicator;
-import mesquite.assoc.lib.*;
-import mesquite.categ.lib.*;
-import mesquite.cont.lib.*;
 
 
 
@@ -197,7 +198,7 @@ public class ExportPartitionsFASTA extends FileInterpreterI {
 	 * then the number refers to the Mesquite version.  This should be used only by modules part of the core release of Mesquite.
 	 * If a NEGATIVE integer, then the number refers to the local version of the package, e.g. a third party package*/
 	public int getVersionOfFirstRelease(){
-		return NEXTRELEASE;  
+		return 400;  
 	}
 	/*.................................................................................................................*/
 	public String getName() {

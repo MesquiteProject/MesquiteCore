@@ -13,11 +13,6 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
 */
 package mesquite.lib.ui;
 
-import java.awt.*;
-import java.awt.event.*;
-
-import mesquite.lib.duties.*;
-
 /* ======================================================================== */
 /** A container placed in a window to help ensure that insets don't cause problems on non-MacOS systems.
 In turn it contains the infoBar and the InterContentArea.  When the window is resized, this container is in

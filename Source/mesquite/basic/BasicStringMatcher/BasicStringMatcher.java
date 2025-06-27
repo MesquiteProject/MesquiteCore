@@ -13,8 +13,8 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
 */
 package mesquite.basic.BasicStringMatcher;
 
-import mesquite.lib.*;
-import mesquite.lib.duties.*;
+import mesquite.lib.MesquiteMessage;
+import mesquite.lib.duties.StringMatcher;
 
 public class BasicStringMatcher extends StringMatcher {
 	 

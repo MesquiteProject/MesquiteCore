@@ -18,10 +18,11 @@ created:
 package mesquite.coalesce.AverageTreeDepth;
 
 
-import java.util.*;
-import java.awt.*;
-import mesquite.lib.*;
-import mesquite.lib.duties.*;
+import mesquite.lib.DoubleArray;
+import mesquite.lib.MesquiteDouble;
+import mesquite.lib.MesquiteNumber;
+import mesquite.lib.MesquiteString;
+import mesquite.lib.duties.NumberForTree;
 import mesquite.lib.tree.Tree;
 
 /* ======================================================================== */

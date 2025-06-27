@@ -13,9 +13,10 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
 */
 package mesquite.stochchar.lib; 
 
-import java.awt.*;
-import mesquite.lib.characters.*;
-import mesquite.lib.*;
+import mesquite.lib.EmployerEmployee;
+import mesquite.lib.MesquiteProject;
+import mesquite.lib.characters.ModelCompatibilityInfo;
+import mesquite.lib.characters.ProbabilityModel;
 
 /* ======================================================================== */
 public class SimModelCompatInfo extends ModelCompatibilityInfo {

@@ -14,13 +14,17 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
 package mesquite.stochchar.lib;
 /*~~  */
 
-import java.util.*;
-import java.awt.*;
-import mesquite.lib.*;
-import mesquite.lib.characters.*;
-import mesquite.lib.duties.*;
+import java.util.Random;
+
+import mesquite.lib.CommandChecker;
+import mesquite.lib.MesquiteDouble;
+import mesquite.lib.MesquiteInteger;
+import mesquite.lib.MesquiteListener;
+import mesquite.lib.MesquiteTrunk;
+import mesquite.lib.Notification;
+import mesquite.lib.ParseUtil;
+import mesquite.lib.characters.CharacterModel;
 import mesquite.lib.tree.Tree;
-import mesquite.cont.lib.*;
 
 /* ======================================================================== */
 public class BrownianMotionModel  extends ProbabilityContCharModel {

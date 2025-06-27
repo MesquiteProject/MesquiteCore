@@ -14,15 +14,19 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
 package mesquite.treefarm.RearrangedTree;
 /*~~  */
 
-import java.util.*;
-import java.awt.*;
-import mesquite.lib.*;
-import mesquite.lib.duties.*;
+import mesquite.lib.CommandChecker;
+import mesquite.lib.EmployeeNeed;
+import mesquite.lib.MesquiteCommand;
+import mesquite.lib.MesquiteFile;
+import mesquite.lib.MesquiteModule;
+import mesquite.lib.MesquiteString;
+import mesquite.lib.Snapshot;
+import mesquite.lib.duties.TreeSwapper;
 import mesquite.lib.tree.AdjustableTree;
 import mesquite.lib.tree.MesquiteTree;
 import mesquite.lib.tree.Tree;
 import mesquite.lib.ui.MesquiteSubmenuSpec;
-import mesquite.treefarm.lib.*;
+import mesquite.treefarm.lib.DetTreeModifier;
 
 /* TODO: dichotomize tree before giving to swapper, in case swapper can't handle polytomies?  */
 public class RearrangedTree extends DetTreeModifier {

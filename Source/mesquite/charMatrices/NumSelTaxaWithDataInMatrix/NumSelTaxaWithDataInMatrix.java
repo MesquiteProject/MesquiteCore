@@ -16,9 +16,12 @@ package mesquite.charMatrices.NumSelTaxaWithDataInMatrix;
 
 
 
-import mesquite.lib.*;
-import mesquite.lib.characters.*;
-import mesquite.lib.duties.*;
+import mesquite.lib.MesquiteNumber;
+import mesquite.lib.MesquiteString;
+import mesquite.lib.Notification;
+import mesquite.lib.characters.CharacterState;
+import mesquite.lib.characters.MCharactersDistribution;
+import mesquite.lib.duties.NumberForMatrix;
 import mesquite.lib.taxa.Taxa;
 
 public class NumSelTaxaWithDataInMatrix extends NumberForMatrix {

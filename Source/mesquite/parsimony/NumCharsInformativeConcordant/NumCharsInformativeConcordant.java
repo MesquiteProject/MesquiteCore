@@ -14,17 +14,18 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
 package mesquite.parsimony.NumCharsInformativeConcordant;
 /*~~  */
 
-import java.util.*;
-import java.awt.*;
-
 import mesquite.categ.lib.CategoricalData;
 import mesquite.categ.lib.MCategoricalDistribution;
-import mesquite.lib.*;
-import mesquite.lib.characters.*;
-import mesquite.lib.duties.*;
+import mesquite.lib.EmployeeNeed;
+import mesquite.lib.MesquiteModule;
+import mesquite.lib.MesquiteNumber;
+import mesquite.lib.MesquiteString;
+import mesquite.lib.characters.CharacterDistribution;
+import mesquite.lib.characters.MCharactersDistribution;
+import mesquite.lib.duties.NumberForMatrixAndTree;
 import mesquite.lib.tree.MesquiteTree;
 import mesquite.lib.tree.Tree;
-import mesquite.parsimony.lib.*;
+import mesquite.parsimony.lib.CharacterSteps;
 
 
 /* ======================================================================== */
@@ -41,7 +42,6 @@ public class NumCharsInformativeConcordant extends NumberForMatrixAndTree {
 	public void getEmployeeNeeds(){  //This gets called on startup to harvest information; override this and inside, call registerEmployeeNeed
 		EmployeeNeed e2 = registerEmployeeNeed(CharacterSteps.class, getName() + " uses a module to calculate parsimony steps.",
 		"The parsimony steps module is employed automatically; you don't have to do anything to choose it.");
-		//e.setAsEntryPoint(true);
 	}
 	/*.................................................................................................................*/
 	MesquiteNumber numInformativeConcordant;
@@ -123,7 +123,7 @@ public class NumCharsInformativeConcordant extends NumberForMatrixAndTree {
 	}
 	/*.................................................................................................................*/
 	public boolean isPrerelease() {
-		return true;
+		return false;
 	}
 	public boolean showCitation(){
 		return false;
@@ -133,7 +133,7 @@ public class NumCharsInformativeConcordant extends NumberForMatrixAndTree {
  	 * then the number refers to the Mesquite version.  This should be used only by modules part of the core release of Mesquite.
  	 * If a NEGATIVE integer, then the number refers to the local version of the package, e.g. a third party package*/
  	public int getVersionOfFirstRelease(){
- 		return NEXTRELEASE;  
+ 		return 400;  
  	}
 }
 

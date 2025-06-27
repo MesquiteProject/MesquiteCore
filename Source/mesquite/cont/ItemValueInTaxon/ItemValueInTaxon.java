@@ -12,19 +12,24 @@ This source code and its compiled class files are free and modifiable under the 
 GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
 */
 package mesquite.cont.ItemValueInTaxon; 
-/*~~  */
-import java.util.*;
-import java.awt.*;
 import java.awt.event.KeyEvent;
 
-import mesquite.lib.*;
-import mesquite.lib.characters.*;
-import mesquite.lib.duties.*;
+import mesquite.cont.lib.ContinuousData;
+import mesquite.cont.lib.ContinuousDistribution;
+import mesquite.lib.CommandChecker;
+import mesquite.lib.MesquiteFile;
+import mesquite.lib.MesquiteInteger;
+import mesquite.lib.MesquiteNumber;
+import mesquite.lib.MesquiteString;
+import mesquite.lib.Snapshot;
+import mesquite.lib.characters.CharacterDistribution;
+import mesquite.lib.characters.CharacterStates;
+import mesquite.lib.duties.NumForCharTreeIndep;
+import mesquite.lib.duties.NumberForCharacter;
+import mesquite.lib.duties.NumberForCharacterIncr;
 import mesquite.lib.taxa.Taxa;
 import mesquite.lib.taxa.Taxon;
 import mesquite.lib.ui.MesquiteMenuItemSpec;
-import mesquite.ancstates.TraceCharacterHistory.TraceCharacterOperator;
-import mesquite.cont.lib.*;
 
 
 public class ItemValueInTaxon extends NumberForCharacter implements NumberForCharacterIncr, NumForCharTreeIndep {   //CHANGE CLASS NAME TO WHAT YOU WANT and use same name for package (see above)

@@ -1,11 +1,15 @@
 package mesquite.genomic.TrimTerminalByLength;
 
-import java.awt.Checkbox;
-import java.awt.TextArea;
-
-import mesquite.categ.lib.*;
-import mesquite.lib.*;
-import mesquite.lib.characters.*;
+import mesquite.categ.lib.CategoricalData;
+import mesquite.categ.lib.CategoricalState;
+import mesquite.lib.IntegerField;
+import mesquite.lib.MesquiteInteger;
+import mesquite.lib.ResultCodes;
+import mesquite.lib.StringUtil;
+import mesquite.lib.UndoInstructions;
+import mesquite.lib.UndoReference;
+import mesquite.lib.characters.AltererSimpleCell;
+import mesquite.lib.characters.CharacterData;
 import mesquite.lib.duties.DataAlterer;
 import mesquite.lib.table.MesquiteTable;
 import mesquite.lib.ui.ExtensibleDialog;
@@ -102,7 +106,7 @@ public class TrimTerminalByLength extends DataAlterer implements AltererSimpleCe
 		return ResultCodes.MEH;
 	}	/*.................................................................................................................*/
 	public boolean isPrerelease() {
-		return true;
+		return false;
 	}
 	/*.................................................................................................................*/
 	public boolean isSubstantive() {

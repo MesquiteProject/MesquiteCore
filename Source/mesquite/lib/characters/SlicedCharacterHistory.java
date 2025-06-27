@@ -11,10 +11,7 @@ Mesquite's web site is http://mesquiteproject.org
 This source code and its compiled class files are free and modifiable under the terms of 
 GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
 */
-package mesquite.lib.characters; 
-
-import mesquite.lib.*;
-
+package mesquite.lib.characters;
 
 /* ======================================================================== */
 /**A CharacterHistory that can indicate changes within branches, e.g.for stochastic character mapping*/

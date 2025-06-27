@@ -15,11 +15,15 @@ package mesquite.distance.F81Distance;
 /*~~  */
 
 
-import mesquite.lib.*;
-import mesquite.lib.characters.*;
+import mesquite.categ.lib.DNAData;
+import mesquite.distance.lib.DNATaxaDistFromMatrixFreq;
+import mesquite.distance.lib.DNATaxaDistance;
+import mesquite.distance.lib.TaxaDistance;
+import mesquite.lib.MesquiteDouble;
+import mesquite.lib.MesquiteMessage;
+import mesquite.lib.MesquiteModule;
+import mesquite.lib.characters.MCharactersDistribution;
 import mesquite.lib.taxa.Taxa;
-import mesquite.categ.lib.*;
-import mesquite.distance.lib.*;
 
 /* ======================================================================== */
 /* incrementable, with each being based on a different matrix */

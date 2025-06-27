@@ -13,10 +13,21 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
  */
 package mesquite.trees.lib;
 
-import java.util.*;
-import java.awt.*;
-import mesquite.lib.*;
-import mesquite.lib.duties.*;
+import java.awt.Graphics;
+import java.util.Enumeration;
+import java.util.Vector;
+
+import mesquite.lib.CommandChecker;
+import mesquite.lib.EmployeeNeed;
+import mesquite.lib.MesquiteBoolean;
+import mesquite.lib.MesquiteFile;
+import mesquite.lib.MesquiteModule;
+import mesquite.lib.Notification;
+import mesquite.lib.Snapshot;
+import mesquite.lib.duties.DrawTreeCoordinator;
+import mesquite.lib.duties.TWindowMaker;
+import mesquite.lib.duties.TreeDisplayAssistant;
+import mesquite.lib.duties.TreeDisplayAssistantDI;
 import mesquite.lib.tree.Tree;
 import mesquite.lib.tree.TreeContext;
 import mesquite.lib.tree.TreeContextListener;
@@ -24,7 +35,6 @@ import mesquite.lib.tree.TreeDisplay;
 import mesquite.lib.tree.TreeDisplayActive;
 import mesquite.lib.tree.TreeDisplayHolder;
 import mesquite.lib.ui.MesquiteWindow;
-import mesquite.assoc.lib.*;
 
 /* ======================================================================== */
 public abstract class SimpleTreeWindowMaker extends TWindowMaker implements TreeContext, TreeDisplayActive, TreeDisplayHolder {

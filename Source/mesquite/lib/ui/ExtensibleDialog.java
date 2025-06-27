@@ -13,12 +13,47 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
  */
 package mesquite.lib.ui;
 
-import java.awt.*;
+import java.awt.BorderLayout;
+import java.awt.Button;
+import java.awt.Checkbox;
+import java.awt.Choice;
+import java.awt.Color;
+import java.awt.Component;
+import java.awt.Container;
+import java.awt.Dimension;
+import java.awt.Font;
+import java.awt.FontMetrics;
+import java.awt.Graphics;
+import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
+import java.awt.GridLayout;
+import java.awt.Image;
+import java.awt.Label;
+import java.awt.LayoutManager;
+import java.awt.List;
+import java.awt.Panel;
+import java.awt.TextArea;
+import java.awt.TextComponent;
+import java.awt.TextField;
+import java.awt.Toolkit;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.ComponentEvent;
+import java.awt.event.ComponentListener;
+import java.awt.event.ItemListener;
+import java.awt.event.MouseEvent;
+import java.awt.event.WindowEvent;
+import java.awt.event.WindowListener;
+import java.lang.reflect.InvocationTargetException;
+import java.util.Vector;
 
-import javax.swing.*;
-import javax.swing.text.*;
+import javax.swing.JEditorPane;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.JTabbedPane;
+import javax.swing.SwingUtilities;
+import javax.swing.text.JTextComponent;
 
-import mesquite.lib.Debugg;
 import mesquite.lib.IntegerField;
 import mesquite.lib.Listable;
 import mesquite.lib.ListableVector;
@@ -37,12 +72,6 @@ import mesquite.lib.Priority;
 import mesquite.lib.SpecialListName;
 import mesquite.lib.StringArray;
 import mesquite.lib.StringUtil;
-import mesquite.lib.simplicity.InterfaceManager;
-import mesquite.lib.table.EditorTextField;
-
-import java.awt.event.*;
-import java.lang.reflect.InvocationTargetException;
-import java.util.Vector;
 
 /*
 	To do:
@@ -97,8 +126,8 @@ public class ExtensibleDialog extends MesquiteDialog implements ActionListener, 
 	int minDialogHeight=120;
 	Dimension d;
 
-	static final int maxDialogWidthWithCanvas=840;
-	int maxDialogWidth=820;
+	static final int maxDialogWidthWithCanvas=1160;
+	int maxDialogWidth=1140;
 	boolean samePanelAsLast = false;
 	boolean wasSamePanelAsLast = false;
 	GridBagLayout gridBag;
@@ -1710,7 +1739,15 @@ public class ExtensibleDialog extends MesquiteDialog implements ActionListener, 
 		if (initialString == null)
 			initialString = "";
 		if (fieldLength>=1) {
+			if (MesquiteTrunk.isLinux())
+				newPanel.setLayout(new GridLayout(1,1));
+				
 			textField =new MesquitePasswordField(initialString,fieldLength);
+			if (MesquiteTrunk.isLinux()) {
+				textField.setSize(new Dimension(dialogWidth-sideBuffer*2, textField.getSize().height));
+				newPanel.setSize(textField.getSize());
+			}
+			
 		}
 		else {
 			newPanel.setLayout(new GridLayout(1,1));
@@ -2108,7 +2145,7 @@ public class ExtensibleDialog extends MesquiteDialog implements ActionListener, 
 		return new DoubleField(this,message, fieldLength);
 	}
 	public JEditorPane addHTMLPanel(String message, int w, int h, MesquiteCommand linkTouchedCommand){
-		JEditorPane tA= new MQJEditorPane("text/html","<html></html>");
+		MQJEditorPane tA= new MQJEditorPane("text/html","<html></html>");
 		tA.setBackground(Color.white);
 		tA.setForeground(Color.black);
 		if (message == null)
@@ -2122,6 +2159,7 @@ public class ExtensibleDialog extends MesquiteDialog implements ActionListener, 
 		scrollPane.setSize(w, h);
 		addToDialog(scrollPane);
 		tA.setVisible(true);
+		tA.setMinSize(w, h);
 		scrollPane.setVisible(true);
 		return tA;
 	}
@@ -2211,8 +2249,9 @@ public class ExtensibleDialog extends MesquiteDialog implements ActionListener, 
 							dispose();
 					}
 				}
-				else 
+				else {
 					buttonHit(label, (Button)e.getComponent());  //this added 1. 12 because buttons other than primary ones were being ignored
+				}
 			} 
 		}
 	}
@@ -2282,17 +2321,23 @@ public class ExtensibleDialog extends MesquiteDialog implements ActionListener, 
 	/** This displays the help note.  If you override this, make sure you call super.actionPerformed(e) at the end of your method so that the help system still works */
 	public  void actionPerformed(ActionEvent e) {
 		if   ("?".equals(e.getActionCommand())) {
-			MesquiteTrunk.mesquiteTrunk.alertHTML(getParentDialog(), getHelpString(),"Mesquite Help", null);
+			
+			MesquiteTrunk.mesquiteTrunk.alertHTML(getParentDialog(), getHelpString(),"Mesquite Help", null, helpWidth, helpHeight);
 			toFront();
 		}
 
 		//		else
 		//		super.actionPerformed(e);
 	}
+	int helpWidth = 400; int helpHeight = 400;
+	public void setHelpSize(int w, int h){
+		helpWidth = w;
+		helpHeight = h;
+	}
 	/*.................................................................................................................*/
 	public void mouseOnImage(String imageName) {
 		if   ("?".equals(imageName)) {
-			MesquiteTrunk.mesquiteTrunk.alertHTML(getParentDialog(), getHelpString(),"Mesquite Help", null);
+			MesquiteTrunk.mesquiteTrunk.alertHTML(getParentDialog(), getHelpString(),"Mesquite Help", null, helpWidth, helpHeight);
 			toFront();
 		}
 		else if (imageName =="manual")

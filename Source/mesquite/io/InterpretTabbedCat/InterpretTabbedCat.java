@@ -13,15 +13,21 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
 package mesquite.io.InterpretTabbedCat;
 /*~~  */
 
-import java.util.*;
-import mesquite.lib.*;
-import mesquite.lib.characters.*;
-import mesquite.lib.duties.*;
+import java.util.StringTokenizer;
+
+import mesquite.categ.lib.CategoricalData;
+import mesquite.lib.MesquiteFile;
+import mesquite.lib.MesquiteProject;
+import mesquite.lib.MesquiteStringBuffer;
+import mesquite.lib.StringUtil;
+import mesquite.lib.characters.CharacterData;
+import mesquite.lib.duties.CharactersManager;
+import mesquite.lib.duties.FileInterpreterI;
+import mesquite.lib.duties.TaxaManager;
 import mesquite.lib.taxa.Taxa;
 import mesquite.lib.taxa.Taxon;
 import mesquite.lib.ui.AlertDialog;
 import mesquite.lib.ui.ProgressIndicator;
-import mesquite.categ.lib.*;
 
 /* ============  a file interpreter for tabbed continuous files ============*/
 

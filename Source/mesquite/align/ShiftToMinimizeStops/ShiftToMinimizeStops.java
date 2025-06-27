@@ -13,13 +13,21 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
  */
 package mesquite.align.ShiftToMinimizeStops;
 
-/*~~  */
+import mesquite.categ.lib.DNAData;
+import mesquite.categ.lib.DNADataAlterer;
+import mesquite.categ.lib.ProteinData;
 
-import mesquite.lib.*;
-import mesquite.lib.characters.*;
-import mesquite.lib.duties.*;
-import mesquite.categ.lib.*;
-import mesquite.lib.table.*;
+/*~~  */
+import mesquite.lib.MesquiteBoolean;
+import mesquite.lib.MesquiteInteger;
+import mesquite.lib.MesquiteListener;
+import mesquite.lib.ResultCodes;
+import mesquite.lib.UndoInstructions;
+import mesquite.lib.UndoReference;
+import mesquite.lib.characters.AlteredDataParameters;
+import mesquite.lib.characters.AltererAlignShift;
+import mesquite.lib.characters.CharacterData;
+import mesquite.lib.table.MesquiteTable;
 
 
 

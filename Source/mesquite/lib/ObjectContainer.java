@@ -13,10 +13,6 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
 */
 package mesquite.lib;
 
-import java.awt.*;
-import java.text.*;
-
-
 /* ======================================================================== */
 /**An object that holds a reference to another object; to pass as argument into method and have filled in response*/
 public class ObjectContainer implements Listable, Nameable {

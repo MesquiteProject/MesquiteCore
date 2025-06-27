@@ -15,10 +15,15 @@ package mesquite.genomic.IncludeAllAlt;
 /*~~  */
 
 
-import mesquite.lib.*;
-import mesquite.lib.characters.*;
-import mesquite.lib.duties.*;
-import mesquite.lib.table.*;
+import mesquite.lib.AssociableWithSpecs;
+import mesquite.lib.Notification;
+import mesquite.lib.ResultCodes;
+import mesquite.lib.UndoReference;
+import mesquite.lib.characters.AltererMetadata;
+import mesquite.lib.characters.CharInclusionSet;
+import mesquite.lib.characters.CharacterData;
+import mesquite.lib.duties.DataAlterer;
+import mesquite.lib.table.MesquiteTable;
 
 /* ======================================================================== */
 public class IncludeAllAlt extends DataAlterer implements AltererMetadata {
@@ -43,7 +48,7 @@ public class IncludeAllAlt extends DataAlterer implements AltererMetadata {
 		}
 		if (inclusionSet != null) {
 			for (int i=0; i<data.getNumChars(); i++) {
-				if (!data.getSelected(i)) {
+				if (!inclusionSet.getSelected(i)) {
 						inclusionSet.setSelected(i, true);
 					changed = true;
 				}
@@ -66,14 +71,14 @@ public class IncludeAllAlt extends DataAlterer implements AltererMetadata {
    	 }
 	/*.................................................................................................................*/
    	 public boolean isPrerelease(){
-   	 	return true;
+   	 	return false;
    	 }
  	/*.................................................................................................................*/
   	/** returns the version number at which this module was first released.  If 0, then no version number is claimed.  If a POSITIVE integer
   	 * then the number refers to the Mesquite version.  This should be used only by modules part of the core release of Mesquite.
   	 * If a NEGATIVE integer, then the number refers to the local version of the package, e.g. a third party package*/
      	public int getVersionOfFirstRelease(){
-     		return NEXTRELEASE;  
+     		return 400;  
      	}
   	/*.................................................................................................................*/
     	 public String getNameForMenuItem() {
@@ -86,7 +91,7 @@ public class IncludeAllAlt extends DataAlterer implements AltererMetadata {
 	/*.................................................................................................................*/
  	/** returns an explanation of what the module does.*/
  	public String getExplanation() {
- 		return "Exclude all characters that are selected." ;
+ 		return "Include all characters, if any are excluded." ;
    	 }
    	 
 }

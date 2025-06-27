@@ -13,22 +13,40 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
 */
 package mesquite.batchArch.ExportMatricesBatch; 
 
-import java.util.*;
-import java.awt.*;
-import java.awt.event.*;
-import java.io.*;
+import java.awt.Checkbox;
+import java.awt.Label;
+import java.util.Enumeration;
 
-import mesquite.lib.*;
-import mesquite.lib.characters.*;
-import mesquite.lib.duties.*;
+import mesquite.batchArch.lib.TemplateManager;
+import mesquite.batchArch.lib.TemplateRecord;
+import mesquite.lib.CommandChecker;
+import mesquite.lib.EmployeeNeed;
+import mesquite.lib.MainThread;
+import mesquite.lib.MesquiteFile;
+import mesquite.lib.MesquiteInteger;
+import mesquite.lib.MesquiteMessage;
+import mesquite.lib.MesquiteModule;
+import mesquite.lib.MesquiteThread;
+import mesquite.lib.MesquiteTimer;
+import mesquite.lib.MesquiteTrunk;
+import mesquite.lib.ObjectContainer;
+import mesquite.lib.Snapshot;
+import mesquite.lib.StringUtil;
+import mesquite.lib.characters.CharacterData;
+import mesquite.lib.characters.MCharactersDistribution;
+import mesquite.lib.duties.CharMatrixManager;
+import mesquite.lib.duties.CharMatrixSource;
+import mesquite.lib.duties.CharactersManager;
+import mesquite.lib.duties.FileCoordinator;
+import mesquite.lib.duties.FileInit;
+import mesquite.lib.duties.FileInterpreterI;
+import mesquite.lib.duties.TaxaManager;
 import mesquite.lib.taxa.Taxa;
 import mesquite.lib.tree.TreeVector;
 import mesquite.lib.ui.ExtensibleDialog;
 import mesquite.lib.ui.MesquiteSubmenuSpec;
 import mesquite.lib.ui.ProgressIndicator;
 import mesquite.lib.ui.SingleLineTextField;
-import mesquite.batchArch.BatchTemplateManager.BatchTemplateManager;
-import mesquite.batchArch.lib.*;
 
 public class ExportMatricesBatch extends FileInit  {
 	public void getEmployeeNeeds(){  //This gets called on startup to harvest information; override this and inside, call registerEmployeeNeed

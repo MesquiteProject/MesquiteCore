@@ -13,11 +13,11 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
  */
 package mesquite.genomic.ShowMatrixWithTreeController;
 
-import java.awt.*;
-
 import mesquite.genomic.ShowMatrixInTreeWindow.ShowMatrixInTreeWindow;
-import mesquite.lib.*;
-import mesquite.lib.duties.*;
+import mesquite.lib.CommandChecker;
+import mesquite.lib.MesquiteModule;
+import mesquite.lib.MesquiteThread;
+import mesquite.lib.duties.TreeWindowAssistantN;
 import mesquite.lib.tree.Tree;
 
 /* ======================================================================== */
@@ -37,6 +37,10 @@ public class ShowMatrixWithTreeController extends TreeWindowAssistantN  {
 	public String getName() {
 		return "Show Matrix in Tree Window...";
 	}
+	
+	public boolean isPrerelease(){
+		return false;
+	}
 
 	/*.................................................................................................................*/
 	/** returns an explanation of what the module does.*/
@@ -48,7 +52,7 @@ public class ShowMatrixWithTreeController extends TreeWindowAssistantN  {
 	 * then the number refers to the Mesquite version.  This should be used only by modules part of the core release of Mesquite.
 	 * If a NEGATIVE integer, then the number refers to the local version of the package, e.g. a third party package*/
 	public int getVersionOfFirstRelease(){
-		return MesquiteModule.NEXTRELEASE;  
+		return 400;  
 	}
 
 	public void setTree(Tree tree) {

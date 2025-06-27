@@ -15,17 +15,7 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
 package mesquite.io.InterpretNonaHennig;
 /*~~  */
 
-import java.util.*;
-import java.awt.*;
-import mesquite.lib.*;
-import mesquite.lib.characters.*;
-import mesquite.lib.characters.CharacterData;
-import mesquite.lib.duties.*;
-import mesquite.lib.*;
-import mesquite.lib.characters.*;
-import mesquite.io.lib.*;
-import mesquite.categ.lib.*;
-import mesquite.parsimony.lib.*;
+import mesquite.io.lib.InterpretHennig86Base;
 
 
 public class InterpretNonaHennig extends InterpretHennig86Base {

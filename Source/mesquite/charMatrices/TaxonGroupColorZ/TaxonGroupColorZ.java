@@ -13,12 +13,14 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
  */
 package mesquite.charMatrices.TaxonGroupColorZ; 
 
-import java.util.*;
-import java.awt.*;
-import mesquite.lib.*;
-import mesquite.lib.characters.*;
-import mesquite.lib.duties.*;
-import mesquite.lib.table.*;
+import java.awt.Color;
+
+import mesquite.lib.characters.CharacterData;
+import mesquite.lib.duties.CellColorer;
+import mesquite.lib.duties.CellColorerMatrix;
+import mesquite.lib.duties.CellColorerTaxa;
+import mesquite.lib.duties.DataWindowAssistantI;
+import mesquite.lib.table.MesquiteTable;
 import mesquite.lib.taxa.Taxa;
 import mesquite.lib.taxa.TaxaGroup;
 import mesquite.lib.taxa.TaxaPartition;

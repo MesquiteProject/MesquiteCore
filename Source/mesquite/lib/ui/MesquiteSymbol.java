@@ -13,7 +13,8 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
 */
 package mesquite.lib.ui;
 
-import java.awt.*;
+import java.awt.Color;
+import java.awt.Graphics;
 
 import mesquite.lib.IntegerField;
 import mesquite.lib.Listable;
@@ -21,7 +22,6 @@ import mesquite.lib.Listened;
 import mesquite.lib.MesquiteInteger;
 import mesquite.lib.MesquiteProject;
 import mesquite.lib.Parser;
-import mesquite.lib.duties.*;
 
 /* ======================================================================== */
 public abstract class MesquiteSymbol extends Listened implements Listable  {

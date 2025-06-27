@@ -14,17 +14,20 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
 package mesquite.lists.TaxonSetList;
 /*~~  */
 
-import mesquite.lists.lib.*;
-
-import java.util.*;
-import java.awt.*;
-import mesquite.lib.*;
-import mesquite.lib.duties.*;
-import mesquite.lib.table.*;
+import mesquite.lib.CommandChecker;
+import mesquite.lib.EmployeeNeed;
+import mesquite.lib.MesquiteModule;
+import mesquite.lib.SpecsSet;
+import mesquite.lib.table.MesquiteTable;
 import mesquite.lib.taxa.Taxa;
 import mesquite.lib.taxa.TaxaSelectionSet;
 import mesquite.lib.ui.AlertDialog;
 import mesquite.lib.ui.MesquiteSubmenuSpec;
+import mesquite.lists.lib.ListWindow;
+import mesquite.lists.lib.TaxaSetListAssistant;
+import mesquite.lists.lib.TaxaSpecsListWindow;
+import mesquite.lists.lib.TaxaSpecssetList;
+import mesquite.lists.lib.TaxonsetsListUtility;
 
 /* ======================================================================== */
 public class TaxonSetList extends TaxaSpecssetList {

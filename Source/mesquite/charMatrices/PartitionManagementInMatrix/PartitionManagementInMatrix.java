@@ -13,14 +13,15 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
  */
 package mesquite.charMatrices.PartitionManagementInMatrix; 
 
-import java.awt.event.InputEvent;
-
-import mesquite.lib.*;
-import mesquite.lib.characters.*;
-import mesquite.lib.duties.*;
-import mesquite.lib.table.*;
+import mesquite.lib.MesquiteEvent;
+import mesquite.lib.SelectionInformer;
+import mesquite.lib.characters.CharacterData;
+import mesquite.lib.duties.CharactersSelectedUtility;
+import mesquite.lib.duties.DataWindowAssistantI;
+import mesquite.lib.duties.TaxaSelectedUtility;
+import mesquite.lib.table.EditorPanel;
+import mesquite.lib.table.MesquiteTable;
 import mesquite.lib.taxa.Taxa;
-import mesquite.lib.ui.MesquitePopup;
 
 
 /* ======================================================================== */
@@ -97,7 +98,7 @@ public class PartitionManagementInMatrix extends DataWindowAssistantI implements
 	 * then the number refers to the Mesquite version.  This should be used only by modules part of the core release of Mesquite.
 	 * If a NEGATIVE integer, then the number refers to the local version of the package, e.g. a third party package*/
 	public int getVersionOfFirstRelease(){
-		return NEXTRELEASE;  
+		return 400;  
 	}
 	/*.................................................................................................................*/
 	/** returns an explanation of what the module does.*/

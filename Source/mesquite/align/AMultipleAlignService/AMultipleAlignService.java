@@ -1,17 +1,28 @@
 package mesquite.align.AMultipleAlignService;
 
 
-import mesquite.lib.*;
-import mesquite.lib.characters.*;
-import mesquite.categ.lib.*;
-import mesquite.lib.table.*;
-import mesquite.align.lib.*;
+import mesquite.align.lib.AlignMultipleSequencesMachine;
+import mesquite.align.lib.MultipleSequenceAligner;
+import mesquite.categ.lib.MolecularData;
+import mesquite.categ.lib.MolecularDataAlterer;
+import mesquite.lib.CommandChecker;
+import mesquite.lib.EmployeeNeed;
+import mesquite.lib.MesquiteFile;
+import mesquite.lib.MesquiteInteger;
+import mesquite.lib.MesquiteListener;
+import mesquite.lib.Notification;
+import mesquite.lib.ResultCodes;
+import mesquite.lib.Snapshot;
+import mesquite.lib.UndoReference;
+import mesquite.lib.characters.AltererAlignShift;
+import mesquite.lib.characters.CharacterData;
+import mesquite.lib.table.MesquiteTable;
 
 /* ======================================================================== */
 public class AMultipleAlignService extends MolecularDataAlterer  implements AltererAlignShift{
 	public void getEmployeeNeeds(){  //This gets called on startup to harvest information; override this and inside, call registerEmployeeNeed
 		EmployeeNeed e2 = registerEmployeeNeed(MultipleSequenceAligner.class, getName() + " needs a module to calculate alignments.",
-		"The sequence aligner is chosen in dialogs or in the Align Sequences or Selected Block submenu");
+		"The sequence aligner is chosen in dialogs or in the Align Sequences or Selected Cell Block submenu");
 	}
 	MultipleSequenceAligner aligner;
 	/*.................................................................................................................*/
@@ -125,7 +136,7 @@ public class AMultipleAlignService extends MolecularDataAlterer  implements Alte
 	 }
 	/*.................................................................................................................*/
 	 public String getNameForMenuItem() {
-	return "Align Sequences or Selected Block";
+	return "Align Sequences or Selected Cell Block";
 	 }
 	/*.................................................................................................................*/
  	/** returns an explanation of what the module does.*/

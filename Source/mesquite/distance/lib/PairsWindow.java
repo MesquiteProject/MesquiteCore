@@ -13,15 +13,19 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
 */
 package mesquite.distance.lib;
 
-import java.awt.*;
-import java.util.*;
-import mesquite.lib.duties.*;
+import java.awt.Color;
+import java.awt.Graphics;
+
+import mesquite.lib.MesquiteInteger;
+import mesquite.lib.MesquiteModule;
+import mesquite.lib.MesquiteNumber;
+import mesquite.lib.Number2DArray;
+import mesquite.lib.duties.DrawChart;
 import mesquite.lib.taxa.Taxa;
 import mesquite.lib.ui.ChartWindow;
 import mesquite.lib.ui.Charter;
 import mesquite.lib.ui.MesquiteChart;
 import mesquite.lib.ui.MesquitePanel;
-import mesquite.lib.*;
 
 
 /* ======================================================================== */

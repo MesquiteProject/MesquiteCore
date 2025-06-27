@@ -13,11 +13,10 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
 */
 package mesquite.categ.lib;
 
-import java.awt.*;
-import java.util.*;
-import mesquite.lib.*;
-import mesquite.lib.characters.*;
-import mesquite.lib.duties.*;
+import mesquite.lib.MesquiteDouble;
+import mesquite.lib.characters.CharacterHistory;
+import mesquite.lib.characters.CharacterState;
+import mesquite.lib.characters.CharacterStates;
 import mesquite.lib.taxa.Taxa;
 import mesquite.lib.tree.Tree;
 

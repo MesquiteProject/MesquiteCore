@@ -13,13 +13,11 @@
  */
 package mesquite.align.lib;
 
-/* ~~ */
-
-import java.util.*;
-import mesquite.lib.*;
-import mesquite.lib.characters.*;
-import mesquite.lib.duties.*;
-import mesquite.categ.lib.*;
+import mesquite.categ.lib.CategoricalState;
+import mesquite.categ.lib.MCategoricalDistribution;
+import mesquite.lib.MesquiteInteger;
+import mesquite.lib.MesquiteModule;
+import mesquite.lib.MesquiteNumber;
 
 /* ======================================================================== */
 public abstract class TwoSequenceAligner extends MesquiteModule {

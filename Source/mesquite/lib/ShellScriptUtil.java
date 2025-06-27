@@ -13,8 +13,13 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
  */
 package mesquite.lib;
 
-import java.util.*;
-import java.io.*;
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.IOException;
+import java.io.OutputStream;
+import java.io.OutputStreamWriter;
+import java.util.Optional;
+import java.util.Random;
 
 
 /* TODO: 
@@ -85,7 +90,7 @@ public class ShellScriptUtil  {
 	}
 	/*.................................................................................................................*/
 	public static String getChangeDirectoryCommand(String directory){
-		return getChangeDirectoryCommand(MesquiteTrunk.isWindows(), directory); //Debugg.println why was this false?
+		return getChangeDirectoryCommand(MesquiteTrunk.isWindows(), directory); 
 	}
 	/*.................................................................................................................*/
 	public static String getRemoveCommand(boolean isWindows, String filePath){
@@ -108,7 +113,7 @@ public class ShellScriptUtil  {
 	}
 	/*.................................................................................................................*/
 	public static String getRemoveCommand(String filePath){
-		return getRemoveCommand(MesquiteTrunk.isWindows(), filePath); //Debugg.println why was this false?
+		return getRemoveCommand(MesquiteTrunk.isWindows(), filePath); 
 	}
 	
 	/** This returns whether or not an exit command for shell scripts is available

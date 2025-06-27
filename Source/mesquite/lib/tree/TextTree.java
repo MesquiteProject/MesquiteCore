@@ -13,10 +13,6 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
 */
 package mesquite.lib.tree;
 
-import java.awt.*;
-import java.math.*;
-
-
 /* ======================================================================== */
 /**This class fills a StringBuffer with text that displays a tree.  For example:
 

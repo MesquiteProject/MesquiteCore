@@ -14,14 +14,23 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
 package mesquite.assoc.ManageDistributionBlock;
 /*~~  */
 
-import java.util.*;
-import java.awt.*;
-import mesquite.lib.*;
-import mesquite.lib.duties.*;
+import mesquite.assoc.lib.AssociationsManager;
+import mesquite.assoc.lib.TaxaAssociation;
+import mesquite.lib.FileBlock;
+import mesquite.lib.MesquiteFile;
+import mesquite.lib.MesquiteInteger;
+import mesquite.lib.MesquiteLong;
+import mesquite.lib.MesquiteMessage;
+import mesquite.lib.MesquiteModule;
+import mesquite.lib.NexusBlock;
+import mesquite.lib.NexusBlockTest;
+import mesquite.lib.Parser;
+import mesquite.lib.StringUtil;
+import mesquite.lib.duties.TaxaManager;
+import mesquite.lib.duties.TreesManager;
 import mesquite.lib.taxa.Taxa;
 import mesquite.lib.tree.MesquiteTree;
 import mesquite.lib.tree.TreeVector;
-import mesquite.assoc.lib.*;
 
 /* ======================================================================== 
 Manage's Distribution blocks in NEXUS files  */

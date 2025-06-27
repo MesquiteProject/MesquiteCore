@@ -14,12 +14,15 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
 package mesquite.molec.PercentPolymorphic;
 /*~~  */
 
-import java.util.*;
-import java.awt.*;
-import mesquite.lib.*;
-import mesquite.lib.characters.*;
-import mesquite.lib.duties.*;
-import mesquite.categ.lib.*;
+import mesquite.categ.lib.CategoricalDistribution;
+import mesquite.categ.lib.CategoricalState;
+import mesquite.categ.lib.RequiresAnyCategoricalData;
+import mesquite.lib.CompatibilityTest;
+import mesquite.lib.MesquiteNumber;
+import mesquite.lib.MesquiteString;
+import mesquite.lib.characters.CharacterDistribution;
+import mesquite.lib.duties.NumForCharTreeIndep;
+import mesquite.lib.duties.NumberForCharacter;
 
 /* ======================================================================== */
 public class PercentPolymorphic extends NumberForCharacter  implements NumForCharTreeIndep { 

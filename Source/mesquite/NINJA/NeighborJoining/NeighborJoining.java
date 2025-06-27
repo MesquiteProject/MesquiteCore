@@ -14,14 +14,23 @@ import java.io.FileNotFoundException;
 
 import com.traviswheeler.ninja.TreeBuilder;
 import com.traviswheeler.ninja.TreeBuilderManager;
-import com.traviswheeler.libs.DefaultLogger;
-import com.traviswheeler.libs.Logger; 
 
-import mesquite.lib.*;
-import mesquite.lib.duties.*;
-import mesquite.lib.tree.*;
-import mesquite.lib.taxa.*;
-import mesquite.distance.lib.*;
+import mesquite.distance.lib.TaxaDistance;
+import mesquite.distance.lib.TaxaDistanceSource;
+import mesquite.lib.CommandChecker;
+import mesquite.lib.EmployeeNeed;
+import mesquite.lib.Incrementable;
+import mesquite.lib.MesquiteBoolean;
+import mesquite.lib.MesquiteFile;
+import mesquite.lib.MesquiteMessage;
+import mesquite.lib.MesquiteModule;
+import mesquite.lib.MesquiteTimer;
+import mesquite.lib.ResultCodes;
+import mesquite.lib.Snapshot;
+import mesquite.lib.duties.TreeInferer;
+import mesquite.lib.taxa.Taxa;
+import mesquite.lib.tree.MesquiteTree;
+import mesquite.lib.tree.TreeVector;
 
 /* ======================================================================== */
 
@@ -224,9 +233,13 @@ public class NeighborJoining extends TreeInferer implements Incrementable, com.t
    	 }
    	 
    	 public boolean isPrerelease(){
-   	 	return true;
+   	 	return false;
    	 }
-	/*.................................................................................................................*/
+ 	/*.................................................................................................................*/
+   	 public boolean loadModule(){
+   	 	return false;
+   	 }
+ 	/*.................................................................................................................*/
    	 public boolean showCitation(){
    	 	return true;
    	 }

@@ -13,16 +13,37 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
 package mesquite.io.lib;
 /*~~  */
 
-import java.util.*;
-import java.awt.*;
-import mesquite.lib.*;
-import mesquite.lib.characters.*;
-import mesquite.lib.duties.*;
+import java.awt.Checkbox;
+
+import mesquite.categ.lib.CategoricalData;
+import mesquite.categ.lib.CategoricalState;
+import mesquite.categ.lib.DNAData;
+import mesquite.categ.lib.DNAState;
+import mesquite.categ.lib.ProteinState;
+import mesquite.cont.lib.ContinuousData;
+import mesquite.cont.lib.ContinuousState;
+import mesquite.cont.lib.GeographicState;
+import mesquite.lib.Arguments;
+import mesquite.lib.ExporterDialog;
+import mesquite.lib.MesquiteDouble;
+import mesquite.lib.MesquiteFile;
+import mesquite.lib.MesquiteInteger;
+import mesquite.lib.MesquiteProject;
+import mesquite.lib.MesquiteString;
+import mesquite.lib.MesquiteStringBuffer;
+import mesquite.lib.MesquiteThread;
+import mesquite.lib.MesquiteTrunk;
+import mesquite.lib.ParseUtil;
+import mesquite.lib.Parser;
+import mesquite.lib.StringUtil;
+import mesquite.lib.characters.CharacterData;
+import mesquite.lib.characters.CharacterStates;
+import mesquite.lib.duties.CharactersManager;
+import mesquite.lib.duties.FileInterpreterI;
+import mesquite.lib.duties.TaxaManager;
 import mesquite.lib.taxa.Taxa;
 import mesquite.lib.taxa.Taxon;
 import mesquite.lib.ui.ProgressIndicator;
-import mesquite.categ.lib.*;
-import mesquite.cont.lib.*;
 
 /* ============  a file interpreter for Simple Text files ============*/
 

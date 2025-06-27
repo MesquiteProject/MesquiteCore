@@ -13,10 +13,24 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
 package mesquite.coalesce.RecCoalescenceHistory;
 /*~~  */
 
-import java.util.*;
-import java.awt.*;
-import mesquite.lib.*;
-import mesquite.lib.duties.*;
+import java.awt.Checkbox;
+import java.util.Vector;
+
+import mesquite.assoc.lib.AssociationHistory;
+import mesquite.assoc.lib.ReconstructAssociation;
+import mesquite.assoc.lib.TaxaAssociation;
+import mesquite.lib.CommandChecker;
+import mesquite.lib.LongArray;
+import mesquite.lib.MesquiteBoolean;
+import mesquite.lib.MesquiteDouble;
+import mesquite.lib.MesquiteFile;
+import mesquite.lib.MesquiteInteger;
+import mesquite.lib.MesquiteNumber;
+import mesquite.lib.MesquiteString;
+import mesquite.lib.MesquiteThread;
+import mesquite.lib.NameReference;
+import mesquite.lib.Snapshot;
+import mesquite.lib.StringUtil;
 import mesquite.lib.taxa.Taxa;
 import mesquite.lib.taxa.Taxon;
 import mesquite.lib.tree.AdjustableTree;
@@ -25,7 +39,6 @@ import mesquite.lib.tree.Tree;
 import mesquite.lib.tree.TreeVector;
 import mesquite.lib.ui.ExtensibleDialog;
 import mesquite.lib.ui.MesquiteSubmenuSpec;
-import mesquite.assoc.lib.*;
 /* ======================================================================== */
 public class RecCoalescenceHistory extends ReconstructAssociation {
 	MesquiteBoolean reconstruct = new MesquiteBoolean(true); //currently cannot be set false; option buggy and not available

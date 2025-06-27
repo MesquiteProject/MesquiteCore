@@ -14,11 +14,37 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
 package mesquite.charMatrices.ManageCharModels;
 /*~~  */
 
-import java.util.*;
-import java.awt.*;
-import mesquite.lib.*;
-import mesquite.lib.characters.*;
-import mesquite.lib.duties.*;
+import java.util.Enumeration;
+
+import mesquite.lib.CommandChecker;
+import mesquite.lib.EmployeeNeed;
+import mesquite.lib.FileElement;
+import mesquite.lib.ListableVector;
+import mesquite.lib.MesquiteFile;
+import mesquite.lib.MesquiteInteger;
+import mesquite.lib.MesquiteModule;
+import mesquite.lib.MesquiteProject;
+import mesquite.lib.MesquiteString;
+import mesquite.lib.MesquiteThread;
+import mesquite.lib.MesquiteTrunk;
+import mesquite.lib.NexusBlock;
+import mesquite.lib.NexusCommandTest;
+import mesquite.lib.ParseUtil;
+import mesquite.lib.Snapshot;
+import mesquite.lib.StringLister;
+import mesquite.lib.StringUtil;
+import mesquite.lib.characters.CharacterModel;
+import mesquite.lib.characters.CharacterState;
+import mesquite.lib.characters.CharacterSubmodel;
+import mesquite.lib.characters.WholeCharacterModel;
+import mesquite.lib.duties.CharModelCurator;
+import mesquite.lib.duties.CharSubmodelCurator;
+import mesquite.lib.duties.CuratorWithSettings;
+import mesquite.lib.duties.EditingCurator;
+import mesquite.lib.duties.ElementManager;
+import mesquite.lib.duties.FileInit;
+import mesquite.lib.duties.ManagerAssistant;
+import mesquite.lib.duties.WholeCharModelCurator;
 import mesquite.lib.ui.MesquiteSubmenuSpec;
 
 /** Manages models of character evolution, including coordinating file reading and writing*/

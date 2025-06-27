@@ -13,9 +13,16 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
 */
 package mesquite.lib.duties;
 
-import java.awt.*;
+import java.awt.Color;
 
-import mesquite.lib.*;
+import mesquite.lib.CommandChecker;
+import mesquite.lib.CompatibilityTest;
+import mesquite.lib.EmployerEmployee;
+import mesquite.lib.MesquiteDouble;
+import mesquite.lib.MesquiteInteger;
+import mesquite.lib.MesquiteProject;
+import mesquite.lib.MesquiteString;
+import mesquite.lib.Selectionable;
 import mesquite.lib.taxa.Taxa;
 import mesquite.lib.tree.MesquiteTree;
 import mesquite.lib.tree.Tree;
@@ -35,7 +42,7 @@ public abstract class TreeSource extends TreeBlockFiller implements ItemsSource 
    	 }
    	 
    	 public String[] getDefaultModule() {
-   	 	return new String[] {"#StoredTrees", "#DefaultTrees", "#SimulateTree"};
+   	 	return new String[] {"#StoredTrees", "#DefaultTrees", "#ManyTreesFromFile", "#SampleManyTreesFromFile", "#ConsensusTree", "#SimulateTree"};
    	 }
    	/** Called to provoke any necessary initialization.  This helps prevent the module's intialization queries to the user from
    	happening at inopportune times (e.g., while a long chart calculation is in mid-progress)*/
@@ -48,6 +55,12 @@ public abstract class TreeSource extends TreeBlockFiller implements ItemsSource 
    	 /**Returns tree number itree, and sets current tree number to itree*/
    	public abstract Tree getTree(Taxa taxa, int itree);
    	
+    /**Returns whether or not the source can handle asking for the last tree, i.e. for what the source says is maxTrees - 1, even if that is unassigned or infinite, i.e., is not a combinable number. 
+     * If asked, and the source has an indefinite number, it will supply a tree (e.g. from a live file) rather than just trying forever. 
+     * Used for Pin to Last Tree in BasicTreeWindow.*/
+   	public boolean permitsRequestForLastTree(Taxa taxa){
+   		return false;
+   	}
     /**Returns number of trees available.  If trees can be supplied indefinitely, returns MesquiteInteger.infinite.  If number of trees is finite but unknown, returns MesquiteInteger.finite*/
    	public abstract int getNumberOfTrees(Taxa taxa);
 

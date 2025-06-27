@@ -13,15 +13,15 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
  */
 package mesquite.basic.NameParserOnTaxonName;
 
-import java.util.*;
-import java.awt.*;
-
-import mesquite.lib.*;
-import mesquite.lib.duties.*;
-import mesquite.lib.table.*;
+import mesquite.lib.CommandChecker;
+import mesquite.lib.MesquiteFile;
+import mesquite.lib.MesquiteModule;
+import mesquite.lib.MesquiteThread;
+import mesquite.lib.NameParser;
+import mesquite.lib.Snapshot;
+import mesquite.lib.StringUtil;
+import mesquite.lib.duties.TaxonNameAlterer;
 import mesquite.lib.taxa.Taxa;
-import mesquite.lib.ui.ExtensibleDialog;
-import mesquite.lib.ui.SingleLineTextField;
 
 /* ======================================================================== */
 public class NameParserOnTaxonName extends TaxonNameAlterer {
@@ -88,24 +88,22 @@ public class NameParserOnTaxonName extends TaxonNameAlterer {
 		}
 		return nameChanged;
 	}
-	/*.................................................................................................................*
+	/*.................................................................................................................*/
+	public Snapshot getSnapshot(MesquiteFile file) {
+		Snapshot temp = new Snapshot();
+		temp.addLine("getNameParser");
+		temp.addLine("tell It");
+		temp.incorporate(nameParser.getSnapshot(file), true);
+		temp.addLine("endTell");
+		return temp;
+	}
+	/*.................................................................................................................*/
     	 public Object doCommand(String commandName, String arguments, CommandChecker checker) {
-     	 	if (checker.compare(this.getClass(), "Adds prefix/suffix to taxon names", "[text]", commandName, "addText")) {
-	   	 		if (taxa !=null){
-	   	 			String textToAdd = parser.getFirstToken(arguments);
-    	 			boolean toEnd = MesquiteBoolean.fromOffOnString(parser.getNextToken());
-    	 			prefixToAdd="";
-    	 			suffixToAdd="";
-	   	 			if (toEnd)
-	   	 				suffixToAdd=textToAdd;
-	   	 			else
-	   	 				prefixToAdd = textToAdd;
-	   	 			alterTaxonNames(taxa,table);
-	   	 		}
+     	 	if (checker.compare(this.getClass(), "Returns the name parser object", "[]", commandName, "getNameParser")) {
+	   	 		return nameParser;
      	 	}
     	 	else
     	 		return  super.doCommand(commandName, arguments, checker);
-		return null;
    	 }
 	/*.................................................................................................................*/
 	public boolean requestPrimaryChoice(){
@@ -130,7 +128,7 @@ public class NameParserOnTaxonName extends TaxonNameAlterer {
 	 * then the number refers to the Mesquite version.  This should be used only by modules part of the core release of Mesquite.
 	 * If a NEGATIVE integer, then the number refers to the local version of the package, e.g. a third party package*/
 	public int getVersionOfFirstRelease(){
-		return MesquiteModule.NEXTRELEASE;  
+		return 400;  
 	}
 
 }

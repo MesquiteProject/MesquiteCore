@@ -13,15 +13,42 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
  */
 package mesquite.categ.StateNamesEditor;
 
-import java.util.*;
-import java.awt.*;
-import java.awt.event.*;
-import java.awt.image.*;
-import mesquite.lib.*;
-import mesquite.lib.characters.*;
-import mesquite.lib.duties.*;
+import java.awt.Color;
+import java.awt.Graphics;
+import java.awt.Image;
+import java.awt.Panel;
+import java.awt.TextField;
+import java.awt.event.KeyEvent;
+
+import mesquite.categ.lib.CategDataEditorInit;
+import mesquite.categ.lib.CategoricalData;
+import mesquite.categ.lib.CategoricalState;
+import mesquite.categ.lib.RequiresExactlyCategoricalData;
+import mesquite.lib.Annotatable;
+import mesquite.lib.AttachedNote;
+import mesquite.lib.CommandChecker;
+import mesquite.lib.Commandable;
+import mesquite.lib.CompatibilityTest;
+import mesquite.lib.MesquiteBoolean;
+import mesquite.lib.MesquiteFile;
+import mesquite.lib.MesquiteInteger;
+import mesquite.lib.MesquiteListener;
+import mesquite.lib.MesquiteModule;
+import mesquite.lib.MesquiteString;
+import mesquite.lib.MesquiteThread;
+import mesquite.lib.NameReference;
+import mesquite.lib.Notification;
+import mesquite.lib.Parser;
+import mesquite.lib.Snapshot;
+import mesquite.lib.StringUtil;
+import mesquite.lib.characters.CharacterData;
+import mesquite.lib.characters.CharacterPartition;
+import mesquite.lib.characters.CharactersGroup;
 import mesquite.lib.misc.AttachedNotesVector;
-import mesquite.lib.table.*;
+import mesquite.lib.table.EditorPanel;
+import mesquite.lib.table.MesquiteTable;
+import mesquite.lib.table.TableTool;
+import mesquite.lib.table.TableWindow;
 import mesquite.lib.ui.AnnotPanelOwner;
 import mesquite.lib.ui.AnnotationsPanel;
 import mesquite.lib.ui.HTMLSidePanel;
@@ -33,7 +60,6 @@ import mesquite.lib.ui.MesquiteSubmenuSpec;
 import mesquite.lib.ui.MesquiteTool;
 import mesquite.lib.ui.MesquiteWindow;
 import mesquite.lib.ui.ToolPalette;
-import mesquite.categ.lib.*;
 
 
 /* ======================================================================== */

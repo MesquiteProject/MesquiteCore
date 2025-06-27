@@ -13,15 +13,12 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
 */
 package mesquite.rhetenor.lib; 
 
-import java.awt.*;
-import java.util.*;
-import mesquite.lib.*;
-import mesquite.lib.characters.*;
-import mesquite.cont.lib.*;
 /* ======================================================================== 
 This contains the Ordination class, whose subclasses (PCAOrdination, CVAOrdination) 
 perform analyses such as Principal Components and Canonical Variates analyses.
 /* ======================================================================== */
+import mesquite.cont.lib.EigenAnalysis;
+import mesquite.lib.StringLister;
 
 	public abstract class Ordination implements StringLister{
 		protected double[][] eigenVectors;

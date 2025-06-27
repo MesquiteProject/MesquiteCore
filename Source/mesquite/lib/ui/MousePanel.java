@@ -15,23 +15,41 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
 package mesquite.lib.ui;
 
 
-import java.awt.*;
-import java.awt.datatransfer.*;
-import java.awt.dnd.*;
-import java.awt.event.*;
-import java.awt.image.*;
-import java.io.File;
+import java.awt.Color;
+import java.awt.Container;
+import java.awt.Cursor;
+import java.awt.Dimension;
+import java.awt.Font;
+import java.awt.Graphics;
+import java.awt.Graphics2D;
+import java.awt.Image;
+import java.awt.Point;
+import java.awt.RenderingHints;
+import java.awt.Toolkit;
+import java.awt.datatransfer.DataFlavor;
+import java.awt.datatransfer.Transferable;
+import java.awt.dnd.DnDConstants;
+import java.awt.dnd.DragGestureListener;
+import java.awt.dnd.DragSource;
+import java.awt.dnd.DragSourceListener;
+import java.awt.dnd.DropTarget;
+import java.awt.dnd.DropTargetDragEvent;
+import java.awt.dnd.DropTargetDropEvent;
+import java.awt.dnd.DropTargetEvent;
+import java.awt.dnd.DropTargetListener;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
+import java.awt.event.MouseMotionListener;
 import java.io.IOException;
 import java.io.StringReader;
 import java.io.UnsupportedEncodingException;
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Vector;
 
 import mesquite.lib.CommandChecker;
 import mesquite.lib.Commandable;
-import mesquite.lib.Debugg;
 import mesquite.lib.FileDirtier;
 import mesquite.lib.MesquiteCommand;
 import mesquite.lib.MesquiteDropListener;
@@ -46,10 +64,8 @@ import mesquite.lib.MesquiteMessage;
 import mesquite.lib.MesquiteModule;
 import mesquite.lib.ObjectContainer;
 import mesquite.lib.ParseUtil;
-import mesquite.lib.duties.*;
+import mesquite.lib.duties.FileInterpreter;
 import mesquite.lib.table.AutoScrollThread;
-import mesquite.lib.table.MatrixPanel;
-import mesquite.lib.table.RowNamesPanel;
 
 
 /* ======================================================================== */
@@ -77,7 +93,7 @@ public class MousePanel extends MQPanel implements Commandable, FileDirtier, Mou
 	private DragSource dragSource;
 	private DragGestureListener dgListener; 
 	private DragSourceListener dsListener;
-	
+
 	int autoscrollDirection = AUTOSCROLLBOTH;
 
 	static long exited, clicked, entered,pressed, released, dragged, moved;
@@ -127,10 +143,10 @@ public class MousePanel extends MQPanel implements Commandable, FileDirtier, Mou
 		disabledCursor = setupDisabledCursor("disabled.gif", "disabled", 4,2);
 		if (disabledCursor ==null)
 			disabledCursor = Cursor.getDefaultCursor();
-		
+
 		this.dragSource = DragSource.getDefaultDragSource();
-//		this.dgListener = new DragGestureListener();
-//		this.dsListener = new DragSourceAdapter();
+		//		this.dgListener = new DragGestureListener();
+		//		this.dsListener = new DragSourceAdapter();
 	}
 	public void dispose(){
 		if (downCommand!=null)
@@ -187,8 +203,11 @@ public class MousePanel extends MQPanel implements Commandable, FileDirtier, Mou
 	}
 	public Graphics getGraphics(){
 		if (GraphicsUtil.ignoreComponent(this, 0)) 
-				return null;
-			
+			return null;
+		if (!MesquiteWindow.itemIsShown(this))  //for some reason there are requests to get graphics to not shown components, and it is causing crashes after ParallelAlterMatrixAsUtility --???
+			return null;
+
+
 		Graphics gg = super.getGraphics();
 		if (gg instanceof Graphics2D){
 
@@ -384,7 +403,7 @@ public class MousePanel extends MQPanel implements Commandable, FileDirtier, Mou
 			MesquiteException.lastLocation = 0;
 		}
 		else if (checker.compare(this.getClass(), "Mouse moved", "[modifiers as integer][x][y]", commandName, "mouseMoved")) {
-int modifiers = MesquiteInteger.fromString(ParseUtil.getFirstToken(arguments, pos));
+			int modifiers = MesquiteInteger.fromString(ParseUtil.getFirstToken(arguments, pos));
 			int x = MesquiteInteger.fromString(arguments, pos);
 			int y = MesquiteInteger.fromString(arguments, pos);
 			MesquiteTool t = getT();
@@ -482,8 +501,8 @@ int modifiers = MesquiteInteger.fromString(ParseUtil.getFirstToken(arguments, po
 	}
 	public void mouseExited(int modifiers, int x, int y, MesquiteTool tool) {
 	}
-	
-	
+
+
 	/*...............................................................................................................*/
 	public void mouseClicked(MouseEvent e)   {
 		if (MesquiteDialog.currentWizard != null){
@@ -497,7 +516,7 @@ int modifiers = MesquiteInteger.fromString(ParseUtil.getFirstToken(arguments, po
 		currentX = e.getX();
 		currentY = e.getY();
 		MesquiteException.lastLocation = 108;
-		
+
 		clickedCommand.doItMainThread(Integer.toString(MesquiteEvent.getModifiers(e)) + " " +  e.getX() + " " + e.getY(), null, false, false);
 		MesquiteException.lastLocation = 0;
 	}

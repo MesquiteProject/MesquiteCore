@@ -14,16 +14,28 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
 package mesquite.search.AddAndRearrange;
 /*~~  */
 
-import java.util.*;
-import java.awt.*;
-import mesquite.lib.*;
-import mesquite.lib.duties.*;
+import mesquite.lib.CommandChecker;
+import mesquite.lib.CommandRecord;
+import mesquite.lib.EmployeeNeed;
+import mesquite.lib.Incrementable;
+import mesquite.lib.MesquiteFile;
+import mesquite.lib.MesquiteInteger;
+import mesquite.lib.MesquiteNumber;
+import mesquite.lib.MesquiteString;
+import mesquite.lib.MesquiteThread;
+import mesquite.lib.ParseUtil;
+import mesquite.lib.ResultCodes;
+import mesquite.lib.Snapshot;
+import mesquite.lib.StringUtil;
+import mesquite.lib.duties.NumberForTree;
+import mesquite.lib.duties.TreeSearcher;
+import mesquite.lib.duties.TreeSwapper;
 import mesquite.lib.taxa.Taxa;
 import mesquite.lib.tree.MesquiteTree;
 import mesquite.lib.tree.TreeVector;
 import mesquite.lib.ui.AlertDialog;
 import mesquite.lib.ui.ProgressIndicator;
-import mesquite.trees.lib.*;
+import mesquite.trees.lib.TreeOptimizer;
 
 /* ======================================================================== */
 public class AddAndRearrange extends TreeSearcher implements Incrementable {

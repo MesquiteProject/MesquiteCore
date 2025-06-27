@@ -13,17 +13,20 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
 package mesquite.coalesce.SlatkinMaddisonS;
 /*~~  */
 
-import java.util.*;
-import java.awt.*;
-import mesquite.lib.*;
-import mesquite.lib.characters.*;
-import mesquite.lib.duties.*;
+import mesquite.assoc.lib.AssociationSource;
+import mesquite.assoc.lib.TaxaAssociation;
+import mesquite.categ.lib.CategoricalAdjustable;
+import mesquite.categ.lib.CategoricalState;
+import mesquite.lib.EmployeeNeed;
+import mesquite.lib.MesquiteModule;
+import mesquite.lib.MesquiteNumber;
+import mesquite.lib.MesquiteString;
+import mesquite.lib.StringUtil;
+import mesquite.lib.duties.NumberForTree;
 import mesquite.lib.taxa.Taxa;
 import mesquite.lib.taxa.Taxon;
 import mesquite.lib.tree.Tree;
-import mesquite.categ.lib.*;
-import mesquite.assoc.lib.*;
-import mesquite.parsimony.lib.*;
+import mesquite.parsimony.lib.ParsAncStatesForModel;
 
 
 /* ======================================================================== */

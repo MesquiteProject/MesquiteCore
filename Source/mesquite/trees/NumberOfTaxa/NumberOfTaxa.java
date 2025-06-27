@@ -13,8 +13,9 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
 */
 package mesquite.trees.NumberOfTaxa;
 
-import mesquite.lib.*;
-import mesquite.lib.duties.*;
+import mesquite.lib.MesquiteNumber;
+import mesquite.lib.MesquiteString;
+import mesquite.lib.duties.NumberForTree;
 import mesquite.lib.tree.Tree;
 
 /** this is a silly little module that can be used as a demonstration for NumberForTree modules */

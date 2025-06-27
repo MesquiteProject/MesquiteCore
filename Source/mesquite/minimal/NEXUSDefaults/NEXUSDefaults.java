@@ -13,10 +13,12 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
  */
 package mesquite.minimal.NEXUSDefaults;
 
-import java.util.*;
-import java.awt.*;
-import mesquite.lib.*;
-import mesquite.lib.duties.*;
+import mesquite.lib.CommandChecker;
+import mesquite.lib.MesquiteBoolean;
+import mesquite.lib.MesquiteInteger;
+import mesquite.lib.NexusBlock;
+import mesquite.lib.StringUtil;
+import mesquite.lib.duties.DefaultsAssistant;
 
 /* ======================================================================== */
 public class NEXUSDefaults extends DefaultsAssistant {

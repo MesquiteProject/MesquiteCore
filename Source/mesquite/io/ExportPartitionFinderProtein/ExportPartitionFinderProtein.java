@@ -13,22 +13,12 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
 */
 package mesquite.io.ExportPartitionFinderProtein;
 
-import java.awt.Checkbox;
-
-import mesquite.assoc.lib.AssociationSource;
-import mesquite.categ.lib.*;
-import mesquite.lib.Arguments;
-import mesquite.lib.EmployeeNeed;
+import mesquite.categ.lib.ProteinData;
+import mesquite.categ.lib.ProteinState;
+import mesquite.io.lib.ExportPartitionFinder;
 import mesquite.lib.MesquiteFile;
-import mesquite.lib.MesquiteInteger;
 import mesquite.lib.MesquiteProject;
-import mesquite.lib.MesquiteThread;
-import mesquite.lib.Parser;
 import mesquite.lib.characters.CharacterData;
-import mesquite.lib.duties.FileInterpreterI;
-import mesquite.lib.taxa.Taxa;
-import mesquite.lib.tree.TreeVector;
-import mesquite.io.lib.*;
 
 
 

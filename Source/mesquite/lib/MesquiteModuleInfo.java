@@ -14,13 +14,10 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
 
 package mesquite.lib;
 
-import java.awt.*;
-import java.awt.image.*;
-import mesquite.lib.duties.*;
-import mesquite.lib.ui.AlertDialog;
+import java.util.Vector;
 
-import java.util.*;
-import java.net.*;
+import mesquite.lib.duties.PackageIntroInterface;
+import mesquite.lib.ui.AlertDialog;
 
 /* ======================================================================== */
 /** Holds information re a Mesquite module. Since modules are not instantiated until

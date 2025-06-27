@@ -13,13 +13,8 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
  */
 package mesquite.lib;
 
-import java.awt.*;
-import java.net.*;
-import java.util.*;
-import java.io.*;
-import mesquite.lib.*;
-import mesquite.*;
-import mesquite.lib.duties.*;
+import java.io.IOException;
+import java.util.Vector;
 
 /* ======================================================================== */
 public class ConsoleThread extends Thread {

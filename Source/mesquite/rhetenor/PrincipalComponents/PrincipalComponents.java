@@ -14,13 +14,11 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
 package mesquite.rhetenor.PrincipalComponents;
 /*~~  */
 
-import java.util.*;
-import java.awt.*;
-import mesquite.lib.*;
-import mesquite.lib.characters.*;
+import mesquite.cont.lib.MContinuousDistribution;
 import mesquite.lib.taxa.Taxa;
-import mesquite.cont.lib.*;
-import mesquite.rhetenor.lib.*;
+import mesquite.rhetenor.lib.Ordination;
+import mesquite.rhetenor.lib.Ordinator;
+import mesquite.rhetenor.lib.PCAOrdination;
 
 /* ======================================================================== */
 

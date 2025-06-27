@@ -14,22 +14,85 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
  */
 package mesquite;
 
-import java.awt.*;
-
+import java.awt.Checkbox;
+import java.awt.Frame;
+import java.awt.Image;
+import java.awt.MediaTracker;
+import java.awt.Rectangle;
+import java.awt.Taskbar;
+import java.awt.TextArea;
+import java.awt.TexturePaint;
+import java.awt.Toolkit;
 import java.awt.image.BufferedImage;
-import java.util.*;
-import java.io.*;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.OutputStreamWriter;
+import java.io.Writer;
 import java.lang.reflect.Method;
-import java.net.*;
+import java.net.MalformedURLException;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.net.URL;
+import java.net.URLClassLoader;
+import java.util.Collections;
+import java.util.Date;
+import java.util.Enumeration;
+import java.util.Random;
+import java.util.StringTokenizer;
+import java.util.Vector;
 
 import javax.imageio.ImageIO;
-import javax.swing.UIManager;
 
-import mesquite.lib.*;
-import mesquite.lib.duties.*;
+import mesquite.lib.Associable;
+import mesquite.lib.CommandChecker;
+import mesquite.lib.CommandRecord;
+import mesquite.lib.CommandThread;
+import mesquite.lib.ConsoleThread;
+import mesquite.lib.EmployeeNeed;
+import mesquite.lib.EmployerEmployee;
+import mesquite.lib.FileElement;
+import mesquite.lib.Listable;
+import mesquite.lib.ListableVector;
+import mesquite.lib.Listened;
+import mesquite.lib.LogWindow;
+import mesquite.lib.MainThread;
+import mesquite.lib.MesquiteBoolean;
+import mesquite.lib.MesquiteCommand;
+import mesquite.lib.MesquiteFile;
+import mesquite.lib.MesquiteInteger;
+import mesquite.lib.MesquiteMacro;
+import mesquite.lib.MesquiteMessage;
+import mesquite.lib.MesquiteModule;
+import mesquite.lib.MesquiteModuleInfo;
+import mesquite.lib.MesquitePackageRecord;
+import mesquite.lib.MesquiteProject;
+import mesquite.lib.MesquiteString;
+import mesquite.lib.MesquiteThread;
+import mesquite.lib.MesquiteTrunk;
+import mesquite.lib.NexusBlock;
+import mesquite.lib.ObjectContainer;
+import mesquite.lib.ParseUtil;
+import mesquite.lib.PendingCommand;
+import mesquite.lib.PhoneHomeUtil;
+import mesquite.lib.ProjectRead;
+import mesquite.lib.ProjectReadThread;
+import mesquite.lib.Projects;
+import mesquite.lib.ShellScriptUtil;
+import mesquite.lib.SpecsSet;
+import mesquite.lib.StringArray;
+import mesquite.lib.StringUtil;
+import mesquite.lib.characters.CharacterData;
+import mesquite.lib.duties.BrowseHierarchy;
+import mesquite.lib.duties.FileCoordinator;
+import mesquite.lib.duties.GeneralFileMakerMultiple;
+import mesquite.lib.duties.GeneralFileMakerSingle;
+import mesquite.lib.duties.MesquiteInit;
+import mesquite.lib.duties.TextDisplayer;
+import mesquite.lib.duties.WindowHolder;
 import mesquite.lib.misc.ClassVector;
 import mesquite.lib.misc.HPanel;
-import mesquite.lib.simplicity.*;
+import mesquite.lib.simplicity.InterfaceManager;
 import mesquite.lib.taxa.Taxon;
 import mesquite.lib.tree.MesquiteTree;
 import mesquite.lib.tree.TreeVector;
@@ -42,7 +105,6 @@ import mesquite.lib.ui.GraphicsUtil;
 import mesquite.lib.ui.HelpSearchManager;
 import mesquite.lib.ui.HelpSearchStrip;
 import mesquite.lib.ui.InfoBar;
-import mesquite.lib.ui.LinuxGWAThread;
 import mesquite.lib.ui.ListDialog;
 import mesquite.lib.ui.MesquiteColorTable;
 import mesquite.lib.ui.MesquiteDialogParent;
@@ -56,8 +118,17 @@ import mesquite.lib.ui.MesquitePanel;
 import mesquite.lib.ui.MesquiteSubmenuSpec;
 import mesquite.lib.ui.MesquiteWindow;
 import mesquite.lib.ui.ProgressIndicator;
-import mesquite.lib.characters.*;
-import mesquite.trunk.*;
+import mesquite.trunk.AboutWindow;
+import mesquite.trunk.ApplicationHandler9;
+import mesquite.trunk.ClockWatcherThread;
+import mesquite.trunk.ConfigFileRecord;
+import mesquite.trunk.FileOpener;
+import mesquite.trunk.JarLoader;
+import mesquite.trunk.ModuleLoader;
+import mesquite.trunk.PhoneHomeThread;
+import mesquite.trunk.ProjectTreeWindow;
+import mesquite.trunk.StartupThread;
+import mesquite.trunk.WelcomeDialog;
 
 /* The root module of the tree of modules.  This contains the main method which uses MesquiteModuleLoader to compile information
 about available modules.  Also hires FileCoordinator modules (which in turn hire others to do analyses).   */
@@ -70,16 +141,16 @@ public class Mesquite extends MesquiteTrunk
 	}
 	/*.................................................................................................................*/
 	public String getVersion() {
-		return "4.beta";
+		return "4.0";
 	}
 
 	/*.................................................................................................................*/
 	public int getVersionInt() {
-		return 399;
+		return 400;
 	}
 	/*.................................................................................................................*/
 	public double getMesquiteVersionNumber(){
-		return 3.99;
+		return 4.00;
 	}
 	/*.................................................................................................................*/
 	public String getDateReleased() {
@@ -87,7 +158,7 @@ public class Mesquite extends MesquiteTrunk
 	}
 	/*.................................................................................................................*/
 	public boolean isPrerelease(){
-		return true;
+		return false;
 	}
 
 	/*.................................................................................................................*/
@@ -96,7 +167,11 @@ public class Mesquite extends MesquiteTrunk
 		//See MesquiteModule for version reporter and error reporter URLs
 		//See Installer for updates.xml URLs
 
-		if (!isPrerelease() && !debugMode)
+		/*if (true)
+			return "https://raw.githubusercontent.com/wmaddisn/Tuatara/refs/heads/master/docs/notices.xml";   
+
+		else */
+			if (!isPrerelease() && !debugMode)
 			return "http://www.mesquiteproject.org/noticesAndUpdates/notices.xml";   
 		else
 			return "https://raw.githubusercontent.com/MesquiteProject/MesquiteCore/development/noticesAndUpdates/noticesPrerelease.xml";   
@@ -214,11 +289,11 @@ public class Mesquite extends MesquiteTrunk
 		if (verboseStartup) System.out.println("main init 2");
 
 		// [Search for MQLINUX]
-		if (isLinux()) {
+		/*if (isLinux()) {
 			linuxGWAThread = new LinuxGWAThread();
 			linuxGWAThread.start();
 		}
-
+*/
 
 		String sep = MesquiteFile.fileSeparator;
 
@@ -613,11 +688,12 @@ public class Mesquite extends MesquiteTrunk
 		if (minimalStartup)
 			logln("File called \"minimalStartup\" detected at " + MesquiteModule.getRootPath()+ ".  Mesquite will start with a minimal configuration of modules.");
 
-
+		//==============  LOADING MODULES   ===============
 		if (verboseStartup) System.out.println("main init 26");
 		mBL.init(configFile, configurations, minimalStartup);
 		if (verboseStartup) System.out.println("main init 27");
-
+		//==============================================
+		
 		int count = 0;
 		if (isPrerelease())
 			count++;
@@ -637,7 +713,7 @@ public class Mesquite extends MesquiteTrunk
 				if (!StringUtil.blank(mmi.getPackageVersion()))
 					citationsString += " version " + mmi.getPackageVersion();
 				if (mmi.getPackageBuildNumber() > 0)
-					citationsString += " build " + mmi.getPackageBuildNumber();
+					citationsString += " (build " + mmi.getPackageBuildNumber() + ")";
 				if (StringUtil.notEmpty(mmi.getPackageDateReleased()))
 					citationsString += ", " + mmi.getPackageDateReleased();
 				if (!StringUtil.blank(mmi.getPackageAuthors()))
@@ -668,7 +744,7 @@ public class Mesquite extends MesquiteTrunk
 		}
 		logln(" ");
 
-		String ackn = "Mesquite uses BrowserLauncher by Eric Albert,  corejava.Format by Horstmann & Cornell, ByteBuddy (http://bytebuddy.net), and iText by Lowagie & Soares  .";
+		String ackn = "Mesquite uses BrowserLauncher by Eric Albert, corejava.Format by Horstmann & Cornell, ByteBuddy (http://bytebuddy.net), and OpenPDF (https://github.com/LibrePDF/OpenPDF)  .";
 		ackn += "  Some modules make use of JAMA by The MathWorks and NIST, and JSci by Mark Hale, Jaco van Kooten and others (see Mesquite source code for details).";
 		ackn += "  The PAL library by Drummond and Strimmer is used by the GTR substitution model for DNA sequence simulations.";
 		if (MesquiteTrunk.isWindows())
@@ -839,6 +915,8 @@ public class Mesquite extends MesquiteTrunk
 		if (debugMode) MesquiteMessage.println("startup time: " + (System.currentTimeMillis()-startingTime));
 		if (MesquiteTrunk.debugMode)
 			addMenuItem(helpMenu, "Test Error Reporting", makeCommand("testError", this));
+		
+		postExtraPackagesReport();
 
 	} 
 
@@ -1501,7 +1579,7 @@ public class Mesquite extends MesquiteTrunk
 		else {
 			ProjectRead pr = new ProjectRead(arguments,  code, mesquiteTrunk, null);
 			ProjectReadThread pt = new ProjectReadThread(pr);
-			pt.indicatorSuppressed = MesquiteThread.pleaseSuppressProgressIndicatorsCurrentThread();
+			pt.indicatorSuppressed = MesquiteThread.getHintToSuppressProgressIndicatorsCurrentThread();
 			if (originalArguments != null)
 				pr.setOriginalArguments(originalArguments);
 
@@ -2094,6 +2172,7 @@ public class Mesquite extends MesquiteTrunk
 				logln("Mesquite is being used by another program.  You should avoid asking Mesquite to quit, and instead let the other program ask Mesquite to quit");
 				return null;
 			}
+			MesquiteThread.acceptNonMesquiteThreads = true;
 			PendingCommand pc = MainThread.getCurrentlyExecuting();
 
 			if (pc!=null && pc.getCommandRecord() != MesquiteThread.getCurrentCommandRecord() && !pc.permitQuitUnqueried()) {
@@ -2520,14 +2599,19 @@ public class Mesquite extends MesquiteTrunk
 		}
 		else if (checker.compare(this.getClass(), "Causes intentional crash", null, commandName, "pleaseCrash")) {
 			String s = null;
+			fakeCrashCount++;
+			System.err.println("###PleaseCrash### " + fakeCrashCount);
 			s.substring(0, 2);
+		}
+		else if (checker.compare(this.getClass(), "Shows useless dialog", null, commandName, "fakeDialog")) {
+			AlertDialog.query(containerOfModule(), "Hello", "Hi!", "OK", "OK");
 		}
 
 		else
 			return  super.doCommand(commandName, arguments, checker);
 		return null;
 	}
-
+int fakeCrashCount = 0;
 	/*.................................................................................................................*/
 	private void dumpFileList(String path, String name, String spacer){
 		File f = new File(path);  //

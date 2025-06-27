@@ -13,13 +13,13 @@
  */
 package mesquite.categ.lib;
 
-import java.awt.*;
-import java.net.*;
-import java.util.*;
-import java.io.*;
-import mesquite.lib.*;
-import mesquite.lib.characters.*;
-import mesquite.lib.duties.*;
+import mesquite.lib.MesquiteFile;
+import mesquite.lib.MesquiteStringBuffer;
+import mesquite.lib.MesquiteTimer;
+import mesquite.lib.StringUtil;
+import mesquite.lib.characters.CharacterData;
+import mesquite.lib.characters.CharactersBlock;
+import mesquite.lib.duties.CharMatrixManager;
 import mesquite.lib.ui.ProgressIndicator;
 
 

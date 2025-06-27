@@ -15,21 +15,29 @@ package mesquite.align.AlignSequences;
 /*~~  */
 
 
-import mesquite.lib.*;
-import mesquite.lib.characters.*;
-import mesquite.lib.duties.*;
-import mesquite.categ.lib.*;
-import mesquite.lib.table.*;
+import mesquite.align.lib.MultipleSequenceAligner;
+import mesquite.categ.lib.MolecDataEditorInit;
+import mesquite.categ.lib.MolecularData;
+import mesquite.lib.CommandChecker;
+import mesquite.lib.EmployeeNeed;
+import mesquite.lib.MesquiteListener;
+import mesquite.lib.MesquiteTrunk;
+import mesquite.lib.Notification;
+import mesquite.lib.ResultCodes;
+import mesquite.lib.UndoReference;
+import mesquite.lib.characters.AlteredDataParameters;
+import mesquite.lib.characters.CharacterData;
+import mesquite.lib.duties.DataAlterer;
+import mesquite.lib.table.MesquiteTable;
 import mesquite.lib.ui.MesquiteMenuItemSpec;
 import mesquite.lib.ui.MesquiteWindow;
-import mesquite.align.lib.*;
 
 /* ======================================================================== */
 /** This class duplicates part of the function of MultipleAlignService in the Alter menu, but appears in the Matrix menu */
 public class AlignSequences extends MolecDataEditorInit { //implements CalculationMonitor, SeparateThreadStorage {
 	public void getEmployeeNeeds(){  //This gets called on startup to harvest information; override this and inside, call registerEmployeeNeed
 		EmployeeNeed e2 = registerEmployeeNeed(MultipleSequenceAligner.class, getName() + " needs a module to calculate alignments.",
-		"The sequence aligner is chosen in the Align Sequences or Selected Block submenu");
+		"The sequence aligner is chosen in the Align Sequences or Selected Cell Block submenu");
 	}
 
 	MolecularData data ;

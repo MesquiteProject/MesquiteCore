@@ -13,10 +13,6 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
 */
 package mesquite.lib;
 
-import java.awt.*;
-
-
-
 /* ======================================================================== */
 public interface StringLister {
 	public String[] getStrings();

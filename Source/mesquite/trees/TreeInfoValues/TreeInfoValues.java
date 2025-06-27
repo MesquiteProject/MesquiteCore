@@ -15,12 +15,20 @@ Modified 27 July 01: name reverted to "Tree Legend"; added getNameForMenuItem "T
  */
 package mesquite.trees.TreeInfoValues;
 
-import java.awt.*;
-import java.net.*;
-import java.util.*;
-import java.io.*;
-import mesquite.lib.*;
-import mesquite.lib.duties.*;
+import java.awt.Color;
+import java.awt.Graphics;
+import java.awt.Image;
+
+import mesquite.lib.CommandChecker;
+import mesquite.lib.EmployeeNeed;
+import mesquite.lib.MesquiteFile;
+import mesquite.lib.MesquiteModule;
+import mesquite.lib.MesquiteNumber;
+import mesquite.lib.MesquiteString;
+import mesquite.lib.Notification;
+import mesquite.lib.Snapshot;
+import mesquite.lib.duties.NumberForTree;
+import mesquite.lib.duties.TreeInfoPanelAssistant;
 import mesquite.lib.tree.Tree;
 import mesquite.lib.ui.ClosablePanelContainer;
 import mesquite.lib.ui.MesquiteImage;

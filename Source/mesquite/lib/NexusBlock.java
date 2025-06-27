@@ -13,14 +13,20 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
  */
 package mesquite.lib;
 
-import java.awt.*;
-import java.util.*;
-import java.text.*;
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.Enumeration;
+import java.util.GregorianCalendar;
+import java.util.StringTokenizer;
+import java.util.TimeZone;
+import java.util.Vector;
 
-import mesquite.lib.duties.*;
+import mesquite.lib.characters.CharacterData;
 import mesquite.lib.taxa.Taxa;
 import mesquite.lib.ui.ProgressIndicator;
-import mesquite.lib.characters.*;
 
 
 

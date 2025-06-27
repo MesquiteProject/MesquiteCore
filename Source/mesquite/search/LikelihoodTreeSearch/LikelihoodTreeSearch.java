@@ -14,9 +14,8 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
 package mesquite.search.LikelihoodTreeSearch;
 /*~~  */
 
-import mesquite.lib.*;
 import mesquite.lib.analysis.LikelihoodAnalysis;
-import mesquite.search.lib.*;
+import mesquite.search.lib.TreeSearch;
 
 /* ======================================================================== */
 public class LikelihoodTreeSearch extends TreeSearch  {

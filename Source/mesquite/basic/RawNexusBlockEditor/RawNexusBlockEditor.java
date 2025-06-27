@@ -13,11 +13,10 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
 */
 package mesquite.basic.RawNexusBlockEditor;
 
-import java.util.*;
-import java.io.*;
-import java.awt.*;
-import mesquite.lib.*;
-import mesquite.lib.duties.*;
+import mesquite.lib.MesquiteFile;
+import mesquite.lib.NexusBlockEditableRaw;
+import mesquite.lib.Snapshot;
+import mesquite.lib.duties.EditRawNexusBlock;
 import mesquite.lib.ui.MesquiteTextWindow;
 import mesquite.lib.ui.MesquiteWindow;
 

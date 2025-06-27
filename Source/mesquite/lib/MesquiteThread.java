@@ -13,10 +13,12 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
  */
 package mesquite.lib;
 
-import java.awt.*;
-import java.util.*;
+import java.awt.Component;
+import java.awt.Frame;
+import java.awt.Toolkit;
+import java.util.Enumeration;
+import java.util.Vector;
 
-import mesquite.lib.duties.*;
 import mesquite.lib.misc.CleanUpJob;
 import mesquite.lib.ui.ExtensibleDialog;
 import mesquite.lib.ui.MesquiteDialog;
@@ -25,8 +27,6 @@ import mesquite.lib.ui.MesquiteWindow;
 import mesquite.lib.ui.ProgressIndicator;
 import mesquite.lib.ui.ProgressWindow;
 import mesquite.trunk.ClockWatcherThread;
-
-import java.io.*;
 
 /** A thread for executing commands */
 public class MesquiteThread extends Thread implements CommandRecordHolder {
@@ -166,9 +166,14 @@ public class MesquiteThread extends Thread implements CommandRecordHolder {
 			mt.loggingSuspended = false;
 		}
 	}
+	
+	public void start(){ //a thread inherits its parent threads indicator conditions
+		indicatorSuppressed = MesquiteThread.getHintToSuppressProgressIndicatorsCurrentThread();
+		super.start();
+	}
 
 	public boolean indicatorSuppressed = false;
-	public static boolean pleaseSuppressProgressIndicatorsCurrentThread(){
+	public static boolean getHintToSuppressProgressIndicatorsCurrentThread(){
 		Thread t = Thread.currentThread();
 		if (t instanceof MesquiteThread){
 			MesquiteThread mt = ((MesquiteThread)t);

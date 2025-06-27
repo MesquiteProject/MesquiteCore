@@ -13,13 +13,13 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
 */
 package mesquite.treefarm.SelectTaxaInSameClade;
 
-import mesquite.lib.*;
-import mesquite.lib.duties.*;
+import mesquite.lib.Bits;
+import mesquite.lib.MesquiteListener;
+import mesquite.lib.Notification;
+import mesquite.lib.duties.TreeUtility;
 import mesquite.lib.taxa.Taxa;
 import mesquite.lib.tree.MesquiteTree;
 import mesquite.lib.tree.Tree;
-
-import java.net.*;
 
 /** ======================================================================== */
 

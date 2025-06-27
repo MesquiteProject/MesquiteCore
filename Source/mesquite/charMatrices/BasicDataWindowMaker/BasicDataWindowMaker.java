@@ -13,32 +13,124 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
  */
 package mesquite.charMatrices.BasicDataWindowMaker;
 
-/*~~  */
-
-import java.util.*;
-import java.util.List;
-import java.awt.*;
-import java.awt.event.*;
-import java.awt.font.FontRenderContext;
-
-import javax.swing.text.*;
-
-import mesquite.lib.*;
-import mesquite.lib.characters.*;
-import mesquite.lib.characters.CharacterData;
-import mesquite.lib.duties.*;
-import mesquite.lib.misc.AttachedNotesVector;
-
-import java.awt.datatransfer.*;
+import java.awt.Color;
+import java.awt.Component;
+import java.awt.Dimension;
+import java.awt.Font;
+import java.awt.FontMetrics;
+import java.awt.Graphics;
+import java.awt.Image;
+import java.awt.Point;
+import java.awt.Shape;
+import java.awt.TextArea;
+import java.awt.TextComponent;
+import java.awt.TextField;
+import java.awt.Toolkit;
+import java.awt.datatransfer.Clipboard;
+import java.awt.datatransfer.DataFlavor;
+import java.awt.datatransfer.Transferable;
 import java.awt.dnd.DnDConstants;
 import java.awt.dnd.DropTarget;
-import java.io.BufferedOutputStream;
+import java.awt.event.FocusEvent;
+import java.awt.event.FocusListener;
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
 import java.io.File;
-import java.io.IOException;
-import java.io.OutputStreamWriter;
-import java.io.Writer;
 
-import mesquite.lib.table.*;
+/*~~  */
+import java.util.Enumeration;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Vector;
+
+import javax.swing.text.JTextComponent;
+
+import mesquite.categ.lib.CategDataEditorInitD;
+import mesquite.categ.lib.CategoricalData;
+import mesquite.categ.lib.CategoricalState;
+import mesquite.categ.lib.DNAData;
+import mesquite.categ.lib.MolecularData;
+import mesquite.categ.lib.MolecularDataUtil;
+import mesquite.categ.lib.ProteinData;
+import mesquite.charMatrices.lib.MatrixInfoExtraPanel;
+import mesquite.cont.lib.ContinuousData;
+import mesquite.lib.Annotatable;
+import mesquite.lib.Associable;
+import mesquite.lib.AttachedNote;
+import mesquite.lib.Bits;
+import mesquite.lib.CommandChecker;
+import mesquite.lib.CommandRecord;
+import mesquite.lib.Commandable;
+import mesquite.lib.CommandableOwner;
+import mesquite.lib.DoubleArray;
+import mesquite.lib.EmployeeNeed;
+import mesquite.lib.IntegerArray;
+import mesquite.lib.IntegerField;
+import mesquite.lib.Listable;
+import mesquite.lib.ListableVector;
+import mesquite.lib.LongArray;
+import mesquite.lib.MesquiteBoolean;
+import mesquite.lib.MesquiteCommand;
+import mesquite.lib.MesquiteDouble;
+import mesquite.lib.MesquiteDroppedFileHandler;
+import mesquite.lib.MesquiteEvent;
+import mesquite.lib.MesquiteFile;
+import mesquite.lib.MesquiteInteger;
+import mesquite.lib.MesquiteListener;
+import mesquite.lib.MesquiteLong;
+import mesquite.lib.MesquiteMessage;
+import mesquite.lib.MesquiteModule;
+import mesquite.lib.MesquiteProject;
+import mesquite.lib.MesquiteString;
+import mesquite.lib.MesquiteStringBuffer;
+import mesquite.lib.MesquiteThread;
+import mesquite.lib.MesquiteTimer;
+import mesquite.lib.MesquiteTrunk;
+import mesquite.lib.NameReference;
+import mesquite.lib.Notification;
+import mesquite.lib.ObjectArray;
+import mesquite.lib.ParseUtil;
+import mesquite.lib.Parser;
+import mesquite.lib.Puppeteer;
+import mesquite.lib.Snapshot;
+import mesquite.lib.StringArray;
+import mesquite.lib.StringUtil;
+import mesquite.lib.UndoInstructions;
+import mesquite.lib.UndoReference;
+import mesquite.lib.characters.CharInclusionSet;
+import mesquite.lib.characters.CharacterData;
+import mesquite.lib.characters.CharacterState;
+import mesquite.lib.characters.CharacterStates;
+import mesquite.lib.characters.CharactersGroup;
+import mesquite.lib.characters.MatrixFlags;
+import mesquite.lib.duties.CellColorer;
+import mesquite.lib.duties.CellColorerCharacters;
+import mesquite.lib.duties.CellColorerMatrix;
+import mesquite.lib.duties.CellColorerMatrixHighPriority;
+import mesquite.lib.duties.CellColorerTaxa;
+import mesquite.lib.duties.CharTableAssistantI;
+import mesquite.lib.duties.DataColumnNamesAssistant;
+import mesquite.lib.duties.DataUtility;
+import mesquite.lib.duties.DataUtilityNoAlterer;
+import mesquite.lib.duties.DataWindowAssistant;
+import mesquite.lib.duties.DataWindowAssistantA;
+import mesquite.lib.duties.DataWindowAssistantI;
+import mesquite.lib.duties.DataWindowAssistantID;
+import mesquite.lib.duties.DataWindowMaker;
+import mesquite.lib.duties.FileCoordinator;
+import mesquite.lib.duties.FileInterpreter;
+import mesquite.lib.duties.MatrixFlagger;
+import mesquite.lib.duties.MatrixInfoPanelAssistantI;
+import mesquite.lib.duties.ReadFileFromString;
+import mesquite.lib.duties.TaxaTableAssistantI;
+import mesquite.lib.duties.TaxonNameAlterer;
+import mesquite.lib.duties.TaxonUtility;
+import mesquite.lib.misc.AttachedNotesVector;
+import mesquite.lib.table.ColumnNamesPanel;
+import mesquite.lib.table.EditorPanel;
+import mesquite.lib.table.MesquiteTable;
+import mesquite.lib.table.TableTool;
+import mesquite.lib.table.TableWindow;
 import mesquite.lib.taxa.Taxa;
 import mesquite.lib.taxa.Taxon;
 import mesquite.lib.ui.AlertDialog;
@@ -64,9 +156,6 @@ import mesquite.lib.ui.MousePanel;
 import mesquite.lib.ui.QueryDialogs;
 import mesquite.lib.ui.StringInABox;
 import mesquite.lib.ui.ToolPalette;
-import mesquite.charMatrices.lib.MatrixInfoExtraPanel;
-import mesquite.categ.lib.*;
-import mesquite.cont.lib.ContinuousData;
 
 /** Makes and manages the spreadsheet editor for character matrices. */
 public class BasicDataWindowMaker extends DataWindowMaker implements CommandableOwner {
@@ -545,6 +634,9 @@ class BasicDataWindow extends TableWindow implements MesquiteListener {
 		ownerModule.hireNamedEmployee(DataWindowAssistantI.class, "#NoColor");
 		ownerModule.hireNamedEmployee(DataWindowAssistantI.class, "#ColorByState");
 		ownerModule.hireNamedEmployee(DataWindowAssistantI.class, "#ColorCells");
+		
+		
+		ownerModule.hireAllOtherCompatibleEmployees(CellColorerMatrixHighPriority.class, data.getStateClass());
 		ownerModule.hireNamedEmployee(DataWindowAssistantI.class, "#CharGroupColor");
 		ownerModule.hireNamedEmployee(DataWindowAssistantI.class, "#TaxonGroupColor");
 
@@ -677,7 +769,7 @@ class BasicDataWindow extends TableWindow implements MesquiteListener {
 			if (data.uniquelyNamed())
 				t = data.getName();
 			else
-				t = data.getName() + " [" + data.getID() + "]";
+				t = data.getName() + " [#" + data.getID() + "]";
 		}
 		else {
 			t = "Character Matrix";
@@ -2435,6 +2527,7 @@ class BasicDataWindow extends TableWindow implements MesquiteListener {
 	}
 
 	private void setCellColorer(MesquiteModule mb) {
+		CellColorer oldColorer =  table.cellColorer;
 		if (table.cellColorer != null) {
 			table.cellColorer.setActiveColors(false);
 			if (table.cellColorer instanceof DataWindowAssistant)
@@ -2449,6 +2542,10 @@ class BasicDataWindow extends TableWindow implements MesquiteListener {
 					((DataWindowAssistant) mb).setActive(true);
 				table.addControlButton(colorLegendButton);
 				setColorLegend(((CellColorer) mb).getLegendColors(), ((CellColorer) mb).getColorsExplanation(), showColorLegend.getValue());
+			}
+			else if (oldColorer != null) {
+				table.cellColorer = oldColorer;
+				oldColorer.setActiveColors(true);
 			}
 		}
 		else {
@@ -3153,79 +3250,45 @@ class ColorLegend extends MousePanel {
 /* ======================================================================== */
 class MatrixTable extends mesquite.lib.table.CMTable implements MesquiteDroppedFileHandler {
 	BasicDataWindowMaker editorModule;
-
 	Taxa taxa;
-
 	MesquiteBoolean showStates;
-
 	MesquiteBoolean reduceCellBorders;
-
 	MesquiteBoolean showDefaultCharNames;
 	MesquiteBoolean colorOnlyTaxonNames;
-
 	MesquiteBoolean autoWithCharNames;
-
 	MesquiteBoolean showNames;
-
 	MesquiteBoolean showBirdsEyeView;
-
 	MesquiteBoolean showChanges;
-
 	MesquiteBoolean statesSeparateLines;
-
 	MesquiteBoolean allowAutosize;
-
 	MesquiteBoolean showPaleGrid;
-
 	MesquiteBoolean showBoldCellText;
 	MesquiteBoolean showPaleCellColors;
 	MesquiteBoolean showPaleExcluded;
 	MesquiteBoolean showEmptyDataAsClear;
 	MesquiteBoolean paleInapplicable;
 	MesquiteBoolean paleMissing;
-
 	int birdsEyeWidth = 2;
-
 	static double showPaleExcludedValueText = 0.40;
-
 	static double showPaleExcludedValueBackground = 0.40;
-
 	boolean notifySuppressed = false;
-
 	CellAnnotation cellAnnotated;
-
 	CharacterData data;
-
 	Font oldFont = null;
-
 	Font boldFont;
-
 	Parser parser = new Parser();
-
 	BasicDataWindow window;
-
 	CellColorer rowNamesColorer = null;
-
 	CellColorer columnNamesColorer = null;
-
 	CellColorer cellColorer = null;
-
 	CellColorer textColorer = null;
-
 	Color bgColor = Color.white;
-
 	Vector linkedTables;
-
 	static int totTables = 0;
-
 	int oldFirstColumn = 0;
-
 	int oldFirstRow = 0;
-
 	int oldLastColumn = 0;
-
 	int oldLastRow = 0;
-
 	int id = 0;
 
 	// DataColumnNamesAssistant assistant1;
@@ -3238,6 +3301,7 @@ class MatrixTable extends mesquite.lib.table.CMTable implements MesquiteDroppedF
 		setUserMove(true, true);
 		linkedTables = new Vector();
 		this.data = data;
+		 setRowNamesCopyPasteWithRowSelection(false);
 		cellAnnotated = new CellAnnotation(data);
 		showStates = new MesquiteBoolean(true);
 		reduceCellBorders = new MesquiteBoolean(false);
@@ -3608,7 +3672,7 @@ class MatrixTable extends mesquite.lib.table.CMTable implements MesquiteDroppedF
 			sbUsed = false;
 			if (atLeastOneFullRowSelected) {  // need to remove part before tab if a tab is there
 				removeTaxonNameIfPresent(sb);
-			} else if (rowNamesCopyPaste && (isRowNameSelected(j))) { // for name of taxon
+			} else if (rowNamesCopyPaste && (isRowNameSelected(j))) { // for name of taxon, only if the row name is directly selected
 				returnedRowNameText(j, molecToken(sb, true), true);
 				taxNamesChanged = true;
 				sbUsed = true;

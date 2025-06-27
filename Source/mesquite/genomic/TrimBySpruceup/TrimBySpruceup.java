@@ -14,7 +14,6 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
 package mesquite.genomic.TrimBySpruceup;
 /*~~  */
 
-import mesquite.lib.Debugg;
 import mesquite.lib.duties.MatrixFlagger;
 import mesquite.lib.duties.MatrixFlaggerForTrimming;
 import mesquite.molec.lib.TrimSitesByFlagger;
@@ -32,7 +31,7 @@ public class TrimBySpruceup extends TrimSitesByFlagger {
 	
 	/*.................................................................................................................*/
 	public boolean isPrerelease() {
-		return true;
+		return false;
 	}
 
 	/*.................................................................................................................*/
@@ -58,7 +57,7 @@ public class TrimBySpruceup extends TrimSitesByFlagger {
 	 * then the number refers to the Mesquite version.  This should be used only by modules part of the core release of Mesquite.
 	 * If a NEGATIVE integer, then the number refers to the local version of the package, e.g. a third party package*/
 	public int getVersionOfFirstRelease(){
-		return NEXTRELEASE;  
+		return 400;  
 	}
 
 }

@@ -13,12 +13,13 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
 */
 package mesquite.cont.lib;
 
-import java.awt.*;
-import java.util.*;
-import mesquite.lib.duties.*;
+import mesquite.lib.Double2DArray;
+import mesquite.lib.DoubleArray;
+import mesquite.lib.MesquiteDouble;
+import mesquite.lib.MesquiteMessage;
+import mesquite.lib.MesquiteThread;
+import mesquite.lib.MesquiteTrunk;
 import mesquite.lib.tree.Tree;
-import mesquite.lib.*;
-import mesquite.lib.characters.*;
 /*=========================================================================*/
 /** This class reconstructs ancestral states by squared change parsimony for a matrix of observed data and a tree.
 This operates on a simple double[][] instead of a MContinuousDistribution.*/

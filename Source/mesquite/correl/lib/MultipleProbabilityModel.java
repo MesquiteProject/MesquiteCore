@@ -13,8 +13,6 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
 */
 package mesquite.correl.lib;
 
-import mesquite.lib.CommandRecord;
-import mesquite.lib.MesquiteInteger;
 import mesquite.lib.characters.CharacterModel;
 import mesquite.lib.characters.CharacterState;
 import mesquite.lib.characters.CharacterStatesHolder;

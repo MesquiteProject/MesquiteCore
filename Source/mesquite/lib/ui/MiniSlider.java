@@ -13,7 +13,11 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
 */
 package mesquite.lib.ui;
 
-import java.awt.*;
+import java.awt.Color;
+import java.awt.Cursor;
+import java.awt.Graphics;
+import java.awt.Image;
+import java.awt.PrintGraphics;
 
 import mesquite.lib.CommandChecker;
 import mesquite.lib.Explainable;
@@ -22,7 +26,6 @@ import mesquite.lib.MesquiteDouble;
 import mesquite.lib.MesquiteModule;
 import mesquite.lib.MesquiteNumber;
 import mesquite.lib.MesquiteTimer;
-import mesquite.lib.duties.*;
 
 /* ��������������������������� commands ������������������������������� */
 /* includes commands,  buttons, miniscrolls

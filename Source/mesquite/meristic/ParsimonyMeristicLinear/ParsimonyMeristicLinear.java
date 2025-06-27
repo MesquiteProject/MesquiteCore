@@ -14,14 +14,17 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
 package mesquite.meristic.ParsimonyMeristicLinear;
 /*~~  */
 
-import java.util.*;
-import java.awt.*;
-import mesquite.lib.*;
-import mesquite.lib.characters.*;
-import mesquite.lib.duties.*;
+import mesquite.lib.MesquiteInteger;
+import mesquite.lib.MesquiteNumber;
+import mesquite.lib.MesquiteString;
+import mesquite.lib.StringUtil;
+import mesquite.lib.characters.CharacterDistribution;
+import mesquite.lib.characters.CharacterHistory;
+import mesquite.lib.characters.CharacterModel;
 import mesquite.lib.tree.Tree;
-import mesquite.meristic.lib.*;
-import mesquite.parsimony.lib.*;
+import mesquite.meristic.lib.MeristicDistribution;
+import mesquite.meristic.lib.MeristicHistory;
+import mesquite.parsimony.lib.ParsAncStatesForModel;
 
 /* ======================================================================== */
 /** Based largely on, and tested against, MacClade's code for ordered categorical characters*/

@@ -13,9 +13,12 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
 
 package mesquite.io.lib;
 
-import java.awt.*;
+import java.awt.Checkbox;
+import java.awt.Choice;
 
-import mesquite.lib.*;
+import mesquite.lib.ExporterDialog;
+import mesquite.lib.MesquiteInteger;
+import mesquite.lib.StringUtil;
 import mesquite.lib.ui.MesquiteWindow;
 import mesquite.lib.ui.SingleLineTextField;
 	

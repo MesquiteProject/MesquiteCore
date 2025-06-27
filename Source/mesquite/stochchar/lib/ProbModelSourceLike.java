@@ -13,11 +13,6 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
 */
 package mesquite.stochchar.lib;
 
-import java.awt.*;
-import mesquite.lib.*;
-import mesquite.lib.duties.*;
-
-
 /* ======================================================================== */
 /**
 Subclass of ProbModelSource to indicate used for likelihood*/

@@ -13,14 +13,8 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
 package mesquite.io.InterpretPhylipTreesBasic;
 /*~~  */
 
-import java.util.*;
-import java.awt.*;
-import mesquite.lib.*;
-import mesquite.lib.characters.*;
-import mesquite.lib.characters.CharacterData;
-import mesquite.lib.duties.*;
-import mesquite.categ.lib.*;
-import mesquite.io.lib.*;
+import mesquite.io.lib.InterpretPhylipTrees;
+import mesquite.io.lib.TryNexusFirstTreeFileInterpreter;
 
 
 /* ============  a file interpreter for Phylip trees ============*/

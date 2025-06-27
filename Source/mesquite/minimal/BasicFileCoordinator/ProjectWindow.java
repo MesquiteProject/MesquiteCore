@@ -14,40 +14,66 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
 package mesquite.minimal.BasicFileCoordinator;
 /*~~  */
 
+import java.awt.Color;
+import java.awt.Component;
+import java.awt.Container;
+import java.awt.Font;
+import java.awt.Graphics;
+import java.awt.Image;
+import java.awt.Insets;
 import java.io.File;
-import java.util.*;
+import java.util.Enumeration;
+import java.util.Iterator;
 import java.util.List;
-import java.awt.*;
-import java.awt.dnd.DnDConstants;
-import java.awt.dnd.DropTarget;
-import java.awt.event.*;
+import java.util.Vector;
 
-import mesquite.lib.*;
-import mesquite.lib.characters.*;
-import mesquite.lib.duties.*;
+import mesquite.assoc.lib.TaxaAssociation;
+import mesquite.categ.lib.DNAState;
+import mesquite.categ.lib.MolecularData;
+import mesquite.cont.lib.ContinuousData;
+import mesquite.lib.CommandChecker;
+import mesquite.lib.CommandRecord;
+import mesquite.lib.Commandable;
+import mesquite.lib.FileElement;
+import mesquite.lib.Listable;
+import mesquite.lib.ListableVector;
+import mesquite.lib.MesquiteCommand;
+import mesquite.lib.MesquiteFile;
+import mesquite.lib.MesquiteInteger;
+import mesquite.lib.MesquiteListener;
+import mesquite.lib.MesquiteMessage;
+import mesquite.lib.MesquiteModule;
+import mesquite.lib.MesquiteProject;
+import mesquite.lib.MesquiteString;
+import mesquite.lib.MesquiteThread;
+import mesquite.lib.MesquiteTrunk;
+import mesquite.lib.Notification;
+import mesquite.lib.Parser;
+import mesquite.lib.ProjPanelPanel;
+import mesquite.lib.Snapshot;
+import mesquite.lib.StringUtil;
+import mesquite.lib.characters.CharacterData;
+import mesquite.lib.duties.ElementManager;
+import mesquite.lib.duties.FileCoordinator;
+import mesquite.lib.duties.FileInit;
+import mesquite.lib.duties.FileInterpreter;
+import mesquite.lib.duties.ReadFileFromString;
 import mesquite.lib.taxa.Taxa;
 import mesquite.lib.tree.MesquiteTree;
-import mesquite.lib.tree.Tree;
 import mesquite.lib.tree.TreeVector;
 import mesquite.lib.ui.ClosablePanel;
 import mesquite.lib.ui.ClosablePanelContainer;
 import mesquite.lib.ui.ColorTheme;
 import mesquite.lib.ui.HelpSearchStrip;
 import mesquite.lib.ui.ListDialog;
-import mesquite.lib.ui.MQComponent;
-import mesquite.lib.ui.MQComponentHelper;
 import mesquite.lib.ui.MesquiteDialog;
 import mesquite.lib.ui.MesquiteFrame;
 import mesquite.lib.ui.MesquiteImage;
-import mesquite.lib.ui.MesquiteMenuItem;
 import mesquite.lib.ui.MesquiteTool;
 import mesquite.lib.ui.MesquiteWindow;
 import mesquite.lib.ui.MousePanel;
 import mesquite.lib.ui.StringInABox;
-import mesquite.categ.lib.*;
-import mesquite.cont.lib.*;
-import mesquite.meristic.lib.*;
-import mesquite.assoc.lib.*;
+import mesquite.meristic.lib.MeristicData;
 
 public class ProjectWindow extends MesquiteWindow implements MesquiteListener {
 	MesquiteProject proj;
@@ -62,12 +88,14 @@ public class ProjectWindow extends MesquiteWindow implements MesquiteListener {
 		super(ownerModule, false);
 		bfc = (BasicFileCoordinator)ownerModule;
 		proj = ownerModule.getProject();
-		projPanel = new ProjectPanel(this, proj, bfc);
+		if (proj != null){
+			projPanel = new ProjectPanel(this, proj, bfc);
 		scrollPanel = new ScrollPanel(projPanel);
 		addToWindow(scrollPanel);
 		addToWindow(projPanel);
 		setBackground(ColorTheme.getExtInterfaceBackground());
 		proj.addListener(this);
+		}
 
 	}
 	public int getDefaultTileLocation(){
@@ -226,8 +254,8 @@ public class ProjectWindow extends MesquiteWindow implements MesquiteListener {
 		html += "<ol>";
 		html += "<li>Do you want to incorporate the trees only temporarily in a calculation, and so as to save memory?";
 		html += " If so then you can request one of the following two options as your Tree Source in the tree window or in various calculations:<ol>";
-		html += "<li><b>Use Trees from Separate File</b>: this reads in the trees from the file one at a time, as needed, and therefore saves memory with large tree files.</li>";
-		html += "<li><b>MrBayes Trees</b>: this is a special version of Use Trees from Separate File that can also read the associated .p file to recover tree scores.</li>";
+		html += "<li><b>Trees from Separate File</b>: this reads in the trees from the file one at a time, as needed, and therefore saves memory with large tree files.</li>";
+		html += "<li><b>MrBayes Trees</b>: this is a special version of Trees from Separate File that can also read the associated .p file to recover tree scores.</li>";
 		html += "</ol>To use either of these, choose it as your <b>Tree Source</b> whenever you are using a Tree Window, Chart or other calculation that uses trees.  These do not bring the trees into the project, and therefore the trees are available only for the tree window or calculation requested.";
 		html +="</li><br>";
 		html += "<li><img src=\"" + MesquiteFile.massageFilePathToURL(bfc.getPath()+"projectHTML" + MesquiteFile.fileSeparator + "fileLinkTrees.gif") + "\">&nbsp;&nbsp;Do you want the trees incorporated to remain in the other file?";
@@ -302,19 +330,19 @@ public class ProjectWindow extends MesquiteWindow implements MesquiteListener {
 		projPanel.setFootnote(heading, text);
 	}
 	public void refresh(FileElement element){
-		if (bfc.isDoomed() || bfc.getProject().refreshSuppression>0)
+		if (bfc.isDoomed() || bfc.getProject().refreshSuppression>0 || projPanel == null)
 			return;
 		BasicFileCoordinator.totalProjectPanelRefreshes++;
 		projPanel.refresh(element);
 	}
 	public void refresh(){
-		if (bfc.isDoomed() || bfc.getProject().refreshSuppression>0)
+		if (bfc.isDoomed() || bfc.getProject().refreshSuppression>0 || projPanel == null)
 			return;
 		BasicFileCoordinator.totalProjectPanelRefreshes++;
 		projPanel.refresh();
 	}
 	public void refreshGraphics(){
-		if (bfc.isDoomed())
+		if (bfc.isDoomed() || projPanel == null)
 			return;
 		BasicFileCoordinator.totalProjectPanelRefreshes++;
 		projPanel.refreshGraphics();
@@ -720,7 +748,7 @@ class ProjectPanel extends MousePanel implements ClosablePanelContainer{
 							}
 						}
 				}
-				if (proj.getTreeVectors().size()>0){
+				if (proj.getTreeVectors().size()>0 && proj.getNumberTreeVectors(t)>0){
 					addExtraPanel(panel = new AbundanceTPanel(bfc, this, w, proj, t));
 					if (proj.getTreeVectors().size()<=FileCoordinator.maxLinesOfMatricesTreeBlocksSeparateInPanel)
 						for (int k = 0; k<proj.getNumberOfFileElements(TreeVector.class) && elementInBounds(k, "tree blocks"); k++){
@@ -769,7 +797,7 @@ class ProjectPanel extends MousePanel implements ClosablePanelContainer{
 	}
 
 	void resetSizes(int w, int h){
-		if (bfc!=null && (bfc.isDoomed() ||  bfc.getProject().refreshSuppression>0))
+		if (bfc!=null && (bfc.isDoomed() ||  bfc.getProject() == null || bfc.getProject().refreshSuppression>0))
 			return;
 		int max = getHeight();
 		int vertical = 2;

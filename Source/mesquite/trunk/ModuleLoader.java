@@ -13,16 +13,31 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
  */
 package mesquite.trunk;
 
-import java.io.*;
-import java.util.*;
-import java.lang.reflect.*;
-import java.net.MalformedURLException;
+import java.io.File;
+import java.lang.reflect.Method;
+import java.lang.reflect.Modifier;
 import java.net.URL;
 import java.net.URLClassLoader;
+import java.util.Arrays;
 
-import mesquite.*;
-import mesquite.lib.*;
-import mesquite.lib.duties.*;
+import mesquite.Mesquite;
+import mesquite.lib.CommandChecker;
+import mesquite.lib.EmployerEmployee;
+import mesquite.lib.ListableVector;
+import mesquite.lib.MesquiteFile;
+import mesquite.lib.MesquiteInteger;
+import mesquite.lib.MesquiteLong;
+import mesquite.lib.MesquiteMacro;
+import mesquite.lib.MesquiteMessage;
+import mesquite.lib.MesquiteModule;
+import mesquite.lib.MesquiteModuleInfo;
+import mesquite.lib.MesquitePackageRecord;
+import mesquite.lib.MesquiteTimer;
+import mesquite.lib.MesquiteTrunk;
+import mesquite.lib.ModulesInfoVector;
+import mesquite.lib.Parser;
+import mesquite.lib.StringArray;
+import mesquite.lib.StringUtil;
 import mesquite.lib.ui.ThermoPanel;
 /*======================================================================== */
 public class ModuleLoader {
@@ -216,6 +231,16 @@ public class ModuleLoader {
 		}
 	}
 
+	String[] builtIns= new String[]{"trunk", "align", "ancstates", "assoc", "basic", "batchArch", "bayesian", "categ", "charMatrices", "charts", 
+			"coalesce", "consensus", "cont", "correl", "distance", "diverse", "dmanager", "externalCommunication", "genesis", 
+			"genomic", "io", "iText", "jama", "jsci", "lib", "lists", "meristic", "minimal", "molec", "NINJA", "opentree", 
+			"ornamental", "pairwise", "pal", "parsimony", "rhetenor", "search", "stochchar", "thinkTrees", "tol", 
+			"treefarm", "trees", "zephyr", "chromaseq", "cartographer"};
+	boolean isBuiltInPackage(String folder){
+		if (folder == null || folder.length() == 0 || folder.charAt(0) == '.' || folder.endsWith(".class"))
+			return true;
+		return StringArray.indexOf(builtIns, folder)>=0;
+	}
 	
 	void addModulesAtPaths(String relativeTo, String[] pathsFileContents){
 		if (pathsFileContents == null)return;
@@ -369,6 +394,10 @@ public class ModuleLoader {
 	String[] indent = {" ", "    ", "        ", "            ", "                ", "                   ", "                        "};
 	void getModules(ClassLoader loader, String packageName, String path, String fileName, int level, StringArray targetDirectories, boolean targetOn, boolean loadingAll){ //path has no slash at the end of it
 		String filePathName;
+		if (level == 1){
+			if (!isBuiltInPackage(fileName))
+				MesquiteTrunk.mesquiteTrunk.noteExtraPackage(fileName);
+		}
 		if (StringUtil.blank(fileName))
 			filePathName = path;  //
 		else
@@ -415,9 +444,7 @@ public class ModuleLoader {
 					showMessage(true, "Loading from directory: " + fileName, directoryTotal, ++directoryNumber);
 					mesquite.log(" " + fileName);
 					if (MesquiteFile.fileOrDirectoryExists(filePathName + MesquiteFile.fileSeparator + "jars")){
-						//StringBuffer buffer =new StringBuffer();
-						//buffer.append("\n");  //ZQ do you remember what this was for? why not just  logln? Debugg.println
-						//mesquite.logln(buffer.toString());
+						
 					}
 				}
 				else
@@ -425,7 +452,7 @@ public class ModuleLoader {
 				boolean macrosFound = false;
 				for (int i=0; i<modulesList.length; i++) {
 					if (modulesList[i]==null )
-						;
+						; 
 					else if (!avoidedDirectory(modulesList[i])){
 						String pathFM = packageName + fileName + "."+modulesList[i];
 						if (targetDirectories !=null){

@@ -16,13 +16,11 @@ Modified:
  */
 package mesquite.lib.tree;
 
-import java.awt.*;
-
-import java.math.*;
-import java.util.*;
+import java.math.BigInteger;
+import java.util.Random;
+import java.util.Vector;
 
 import mesquite.lib.Associable;
-import mesquite.lib.Attachable;
 import mesquite.lib.Bits;
 import mesquite.lib.CommandChecker;
 import mesquite.lib.Commandable;
@@ -55,21 +53,17 @@ import mesquite.lib.ObjectArray;
 import mesquite.lib.ObjectContainer;
 import mesquite.lib.ParseUtil;
 import mesquite.lib.Parser;
-import mesquite.lib.PropertyRecord;
 import mesquite.lib.RandomBetween;
 import mesquite.lib.StringArray;
 import mesquite.lib.StringUtil;
 import mesquite.lib.characters.CharacterData;
-import mesquite.lib.duties.ElementManager;
 import mesquite.lib.duties.FileCoordinator;
-import mesquite.lib.duties.NumberForTree;
 import mesquite.lib.duties.TreesManager;
 import mesquite.lib.taxa.Taxa;
 import mesquite.lib.taxa.TaxaSelectionSet;
 import mesquite.lib.taxa.Taxon;
 import mesquite.lib.taxa.TaxonNamer;
 import mesquite.lib.ui.AlertDialog;
-import mesquite.lib.ui.ColorDistribution;
 
 /* ======================================================================== */
 /** The basic Tree class of Mesquite.  Nodes are represented by integers (Object representation of nodes is too
@@ -3102,12 +3096,7 @@ public class MesquiteTree extends Associable implements AdjustableTree, Listable
 			if (taxon>=0){
 				System.out.println("Observed taxon " + c + " in ancestral position; not yet allowed by Mesquite.  Tree will not be read in properly");
 			}
-			//if (cosmeticInternalNames){
-			/* Debugg.println delete this? if (MesquiteNumber.isNumber(c) && checkNumericalLabelInterpretation(c)){
-				double d = MesquiteDouble.fromString(c);
-				setAssociatedDouble(defaultValueCodeRef, sN, d, interpretNumericalLabelsAsOnBranches);
-			}
-			else */
+			
 			setNodeLabel(c, sN); 
 
 			if (!MesquiteNumber.isNumber(c) && taxa!=null && taxa.getClades()!=null && taxa.getClades().findClade(c) == null){
@@ -3606,13 +3595,15 @@ and the tree has been rerooted. Properties that belong to nodes implicitly have 
 	private String preprocessForDialect(String tD, ObjectContainer correspondenceContainer, String dialectName){
 		if (dialects.indexOfByNameIgnoreCase(dialectName)>=0){
 			NewickDialect dialect = (NewickDialect)dialects.elementAt(dialects.indexOfByNameIgnoreCase(dialectName));
-			punctuationInNewickComments = dialect.getPunctuation();
+		punctuationInNewickComments = dialect.getPunctuation();
 			whitespaceInNewickComments = dialect.getWhitespace();
 			if (punctuationInNewickComments == null)
 				punctuationInNewickComments = wellTokenizedNewickCommentPunctuation;  
 			if (whitespaceInNewickComments == null)
 				whitespaceInNewickComments = wellTokenizedNewickCommentWhitespace;
 			tD = dialect.translate(tD, correspondenceContainer);
+			if (dialect.getT0NamesPermission())
+				permitT0Names = true;
 			return tD;
 		}
 		return tD;
@@ -3660,33 +3651,33 @@ and the tree has been rerooted. Properties that belong to nodes implicitly have 
 	/** Reads the tree description string and sets the tree object to store the tree described.*/
 	public boolean readTree(String TreeDescription, MesquiteInteger startingPos, TaxonNamer namer, String whitespaceString, String punctuationString, boolean readAssociated) {
 		deassignAssociated();
-		/**
-		Debugg.printStackTrace("###################################################");
+		/**  //here to debug new dialects
+		MesquiteMessage.printStackTrace("###################################################");
 		if (startingPos != null) {
-			Debugg.println("DESCRIPTION AS RECEIVED BY TREE (stringLoc " + startingPos.getValue() + ") =\n" + TreeDescription +"\n");
-			Debugg.println("   substring " + justAfter(TreeDescription, startingPos.getValue()));
+			MesquiteMessage.println("DESCRIPTION AS RECEIVED BY TREE (stringLoc " + startingPos.getValue() + ") =\n" + TreeDescription +"\n");
+			MesquiteMessage.println("   substring " + justAfter(TreeDescription, startingPos.getValue()));
 		}
 		else
-			Debugg.println("DESCRIPTION AS RECEIVED BY TREE=\n" + TreeDescription +"\n");
+			MesquiteMessage.println("DESCRIPTION AS RECEIVED BY TREE=\n" + TreeDescription +"\n");
 		/**/
 		ObjectContainer correspondenceContainer = null;
 		if (startingPos != null)
 			correspondenceContainer = new ObjectContainer();
+
 		TreeDescription = preprocessForDialect(TreeDescription, correspondenceContainer, getDialect());
 		/**
 		if (startingPos !=null) 
 			startingPos.setValue(getTranslatedLoc(correspondenceContainer, startingPos.getValue()));//this needs to be reset to the translated position!
 		if (startingPos != null){
-			Debugg.println("#####################DESCRIPTION AS PROCESSED (stringLoc " + startingPos.getValue() + ") =\n" + TreeDescription +"\n");
-			Debugg.println("   substring " + justAfter(TreeDescription, startingPos.getValue()));
+			MesquiteMessage.println("#####################DESCRIPTION AS PROCESSED (stringLoc " + startingPos.getValue() + ") =\n" + TreeDescription +"\n");
+			MesquiteMessage.println("   substring " + justAfter(TreeDescription, startingPos.getValue()));
 		}
 		else 
-			Debugg.println("#####################DESCRIPTION AS PROCESSED=\n" + TreeDescription +"\n");
+			MesquiteMessage.println("#####################DESCRIPTION AS PROCESSED=\n" + TreeDescription +"\n");
 		if (correspondenceContainer != null)
-			Debugg.println("!!! " + IntegerArray.toString((int[])correspondenceContainer.getObject()));
+			MesquiteMessage.println("!!! " + IntegerArray.toString((int[])correspondenceContainer.getObject()));
 
 		/**/
-		//QZ: if whitespace or punc passed in, don't override?
 		MesquiteInteger stringLoc = new MesquiteInteger(0);
 		if (startingPos !=null) 
 			stringLoc.setValue(startingPos.getValue());
@@ -4081,6 +4072,13 @@ and the tree has been rerooted. Properties that belong to nodes implicitly have 
 		writeTreeByT0Names(getRoot(), tD, includeBranchLengths);
 		return tD.toString();
 
+	}
+	/*-----------------------------------------*/
+	/** Writes a tree description into the StringBuffer using taxon names without associated but with branch lengths*/
+	public String writeTreeSimpleNewick() {
+		StringBuffer treeDescription = new StringBuffer(100);
+		writeTreeByNames( getRoot(),  treeDescription, true, false, true);
+		return treeDescription.toString() +";";
 	}
 	/*-----------------------------------------*/
 	/** Writes a tree description into the StringBuffer using taxon names */
@@ -5748,7 +5746,7 @@ public DisplayableBranchProperty[] getPropertyRecords(){
 	return names;
 }
 /* NOTE: if you add a name to one of these lists, you should consider if it should be added to the 
-	values in ManageTrees.queryAboutNumericalLabelIntepretation() */ //Debugg.println
+	values in ManageTrees.queryAboutNumericalLabelIntepretation() */ 
 
 
 

@@ -14,16 +14,29 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
 
 package mesquite.lib;
 
-import java.awt.*;
-import java.awt.event.KeyEvent;
-import java.util.*;
-import java.util.List;
-import java.io.*;
+import java.awt.Checkbox;
+import java.awt.Desktop;
+import java.awt.Panel;
+import java.awt.Window;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.Date;
+import java.util.Enumeration;
+import java.util.Random;
+import java.util.Vector;
 
 import org.apache.commons.httpclient.NameValuePair;
-import mesquite.lib.duties.*;
+
+//for Browserlauncher
+import edu.stanford.ejalbert.BrowserLauncher;
+import mesquite.lib.duties.EmployeeTree;
+import mesquite.lib.duties.FileCoordinator;
+import mesquite.lib.duties.NexusFileInterpreter;
+import mesquite.lib.duties.PackageIntro;
+import mesquite.lib.duties.PackageIntroInterface;
 import mesquite.lib.misc.HPanel;
 import mesquite.lib.ui.AlertDialog;
 import mesquite.lib.ui.ExtensibleDialog;
@@ -32,7 +45,6 @@ import mesquite.lib.ui.MesquiteDialog;
 import mesquite.lib.ui.MesquiteWindow;
 import mesquite.lib.ui.ToolPalette;
 import mesquite.tol.lib.BaseHttpRequestMaker;
-import edu.stanford.ejalbert.*;  //for Browserlauncher
 
 
 
@@ -74,12 +86,12 @@ public abstract class MesquiteModule extends EmployerEmployee implements Command
 	/*.................................................................................................................*/
 	/** returns build date of the Mesquite system (e.g., "22 September 2003") */
 	public final static String getBuildDate() {
-		return "8 June 2025";
+		return "27 June 2025";
 	}
 	/*.................................................................................................................*/
 	/** returns version of the Mesquite system */
 	public final static String getMesquiteVersion() {
-		return "4.beta2";
+		return "4.0";
 	}
 	/*.................................................................................................................*/
 	/** returns letter in the build number of the Mesquite system (e.g., "e" of "e58") */
@@ -92,7 +104,7 @@ public abstract class MesquiteModule extends EmployerEmployee implements Command
 	public final static int getBuildNumber() {
 		//as of 26 Dec 08, build naming changed from letter + number to just number.  Accordingly j105 became 473, based on
 		// highest build numbers of d51+e81+g97+h66+i69+j105 + 3 for a, b, c
-		return 1076;  
+		return 1086;  
 	}
 	//0.95.80    14 Mar 01 - first beta release 
 	//0.96  2 April 01 beta  - second beta release
@@ -148,6 +160,7 @@ public abstract class MesquiteModule extends EmployerEmployee implements Command
 	//3.70  = 940 released 21 Aug 2021
 	//3.80  = 950 released 10 Apr 2023
 	//3.81  = 955 released 20 Apr 2023
+	//4.0  = 1086 released 27 June 2025
 	// build 1000 1 October 2024
 
 	/*.................................................................................................................*/
@@ -168,13 +181,13 @@ public abstract class MesquiteModule extends EmployerEmployee implements Command
 	public static String errorReportURL =  "http://error.mesquiteproject.org/mesquite/mesquiteError.php"; //see exceptionAlert in MesquiteModule
 	public static String prereleaseErrorReportURL =  "http://error.mesquiteproject.org/mesquite/mesquitePrereleaseError.php"; //see exceptionAlert in MesquiteModule
 	public static String beansReportURL = "http://beans.mesquiteproject.org/mesquite/mesquiteBeans.php";
-	
+	//See Mesquite.java for notices.xml URLs (getHomePhoneNumber)
+	//See Installer for updates.xml URLs
+
 	/* 3.x URLs
 	public static String errorReportURL =  "http://mesquiteproject.org/pyMesquiteFeedback";
 	public static String versionReportURL =  "http://mesquiteproject.org/pyMesquiteStartup";
 	public static String beansReportURL = "http://mesquiteproject.org/pyMesquiteBeans";
-	//See Mesquite.java for notices.xml URLs
-	//See Installer for updates.xml URLs
 	/*.................................................................................................................*/
 
 
@@ -327,7 +340,11 @@ public abstract class MesquiteModule extends EmployerEmployee implements Command
 	/** endJob is called as a module is quitting; modules should put their clean up code here.*/
 	public void endJob() {
 		if (menuItemsSpecs != null) {
+			try {
 			menuItemsSpecs.dispose(true);
+			} catch (Exception e) {
+				System.err.println("exception in endJob");
+			}
 		}
 		menuItemsSpecs = null;
 	}
@@ -416,8 +433,8 @@ public abstract class MesquiteModule extends EmployerEmployee implements Command
 	public final void iQuit(){
 		iQuit(true);
 	}
-	
-	
+
+
 	public final void iQuit(boolean giveMessage){
 		incrementMenuResetSuppression();
 		MesquiteCommand command = getHiringCommand();
@@ -430,6 +447,20 @@ public abstract class MesquiteModule extends EmployerEmployee implements Command
 			localRefEmployer.refreshBrowser(MesquiteModule.class);
 		}
 		endJob();
+
+		/* In 4.beta quit would hang after a big ParallelAlterMatrixAsUtility run becuase of a thread lock on the AWT thread. 
+		 * For users, this is bad, so we just bail here --  no point in waiting around! However, for developers we stick with it in hopes of finding what went wrong.
+		 */
+		if (this == MesquiteTrunk.mesquiteTrunk && !MesquiteTrunk.startedAsLibrary) {
+			MesquiteTrunk.quitting = true;
+			if (!MesquiteTrunk.developmentMode){
+				System.out.println("Stopping Java");
+				System.exit(0);
+			}
+			System.out.println("Development mode; attempting formal exit as a stress test.");
+		}
+
+
 		dispose();
 		resetAllWindowsMenus();
 		/* if hiringCommand isn't null, then look among the module info's for possible replacements
@@ -541,7 +572,7 @@ public abstract class MesquiteModule extends EmployerEmployee implements Command
 		if (!employerDoomed) localRefEmployer.decrementEmployeeBrowserRefreshSuppression(MesquiteModule.class);
 
 	}
-	
+
 	/*.................................................................................................................*/
 	MesquiteCommand iQuitCommand = new MesquiteCommand("resign", this);
 	public final void iQuitMainThread(){
@@ -657,8 +688,8 @@ public abstract class MesquiteModule extends EmployerEmployee implements Command
 	}
 	/*.................................................................................................................*/
 	/* This is the system to pause and restart calculations to avoid too many calculations with repeated notifications, e.g. in list windows */
-	
-	
+
+
 	public Vector pauseAllPausables() {
 		mesquiteTrunk.pausableLevel++;	 //  if already paused, then don't pause or unpause again, so have increment
 		if (mesquiteTrunk.pausableLevel>1)
@@ -1167,9 +1198,9 @@ public abstract class MesquiteModule extends EmployerEmployee implements Command
 			return;
 		if (logTitle != null){
 			if (showModuleInAlert)
-			logln(logTitle+": (" + getName() + "): " + s);
-		else
-			logln(logTitle+": " + s);
+				logln(logTitle+": (" + getName() + "): " + s);
+			else
+				logln(logTitle+": " + s);
 		}
 		if (alertUseDialog) {
 			AlertDialog.notice(containerOfModule(),windowTitle, s);
@@ -1190,9 +1221,9 @@ public abstract class MesquiteModule extends EmployerEmployee implements Command
 			return;
 		if (logTitle != null){
 			if (showModuleInAlert)
-			logln(logTitle+": (" + getName() + "): " + s);
-		else
-			logln(logTitle+": " + s);
+				logln(logTitle+": (" + getName() + "): " + s);
+			else
+				logln(logTitle+": " + s);
 		}
 		if (alertUseDialog) { //NOTE: This seems to work much better if on AWTEvent thread, so perhaps do these by bypassing PendingCommand queue?
 			AlertDialog.noticeHTML(parent,windowTitle, s, width, height, null);
@@ -1232,25 +1263,26 @@ public abstract class MesquiteModule extends EmployerEmployee implements Command
 		String addendum = "";
 
 		if (MainThread.emergencyCancelled || MesquiteTrunk.errorReportedToHome>0){// if emergency cancelled, reporting suppressed because silly user didn't restart!  Also, only one report per run.
-		if (MesquiteTrunk.errorReportedToHome==1)
-			discreetAlert(s);
-		else
-			logln(s);
+			if (MesquiteTrunk.errorReportedToHome==1)
+				discreetAlert(s);
+			else
+				logln(s);
 		}
 		else if (AlertDialog.query(containerOfModule(), "Problem", s + "\n\nPlease send a report of this problem to the Mesquite server, to help us debug it and improve Mesquite.  None of your data will be sent, but your log file up to this point will be sent." + addendum, "OK, Send Report and Continue", "Close without sending"))
 			reportCrashToHome(e, s);
 		MesquiteTrunk.errorReportedToHome++;
 	}
 	boolean okToReportErrors(){
-		return PhoneHomeUtil.phoneHomeSuccessful  && !MesquiteTrunk.suppressErrorReporting && !MesquiteTrunk.developmentMode;
+		return PhoneHomeUtil.phoneHomeSuccessful  && !MesquiteTrunk.suppressErrorReporting && !MesquiteTrunk.developmentMode;  
 	}
 	boolean reportErrorsAutomatically(){
-		return MesquiteException.reportErrorsAutomatically.getValue() || mesquiteTrunk.isPrerelease();
+		return (MesquiteException.reportErrorsAutomatically.getValue() || mesquiteTrunk.isPrerelease());
 	}
 	/*.................................................................................................................*/
 	/** Displays an alert in connection to an exception*/
 	public void exceptionAlert(Throwable e, String s) {
 		String incompatibilityMessage = null;
+		String origS = s;
 		if (e instanceof NoSuchMethodError){
 			incompatibilityMessage = "An error indicates that you may have a package installed that is incompatible "
 					+ "with this version of Mesquite. Please check your add-on packages like Zephyr, Chromaseq, etc. to ensure they are up to date,"
@@ -1281,6 +1313,7 @@ public abstract class MesquiteModule extends EmployerEmployee implements Command
 		if (!okToReportErrors()){
 			if (StringUtil.notEmpty(incompatibilityMessage))
 				discreetAlert(incompatibilityMessage + "\n" + rep);
+			System.err.println(origS);
 			if (!MesquiteThread.isScripting() && !AlertDialog.query(containerOfModule(), "Crash", s, "OK", "Force Quit"))
 				MesquiteTrunk.mesquiteTrunk.exit(true, 0);
 			return;
@@ -1302,13 +1335,15 @@ public abstract class MesquiteModule extends EmployerEmployee implements Command
 			if (reportErrorsAutomatically()) {
 				reportCrashToHome(e, s);
 			}
+			System.err.println(origS);
+
 			if (!MesquiteThread.isScripting() && !AlertDialog.query(containerOfModule(), "Crash", s, "OK", "Force Quit"))
 				MesquiteTrunk.mesquiteTrunk.exit(true, 0);
 		}
 		else {
 			if (incompatibilityMessage != null)
 				discreetAlert(incompatibilityMessage);
-			
+
 			int resp = crashQuery(s + "\n\nPlease send a report of this crash to the Mesquite server, to help us debug it and improve Mesquite.  None of your data will be sent, but your log file up to this point will be sent." + addendum);
 			if (resp < 2)
 				reportCrashToHome(e, s);
@@ -1317,7 +1352,7 @@ public abstract class MesquiteModule extends EmployerEmployee implements Command
 		}
 		MesquiteTrunk.errorReportedToHome++;
 	}
-//	(s + "\n\nPlease send a report of this crash to the Mesquite server, to help us debug it and improve Mesquite.  None of your data will be sent, but your log file up to this point will be sent." + addendum, "OK, Send Report and Continue", "OK, Send and Force Quit", "Close without sending");
+	//	(s + "\n\nPlease send a report of this crash to the Mesquite server, to help us debug it and improve Mesquite.  None of your data will be sent, but your log file up to this point will be sent." + addendum, "OK, Send Report and Continue", "OK, Send and Force Quit", "Close without sending");
 	public int crashQuery(String message) {
 		MesquiteInteger buttonPressed = new MesquiteInteger(1);
 		ExtensibleDialog id = new ExtensibleDialog(containerOfModule(), "Crash",buttonPressed);
@@ -1378,7 +1413,20 @@ public abstract class MesquiteModule extends EmployerEmployee implements Command
 		return moduleInfo.getClassName();
 	}
 	/*.................................................................................................................*/
+	//extra package posting is from  MesquiteTrunk (postExtraPackagesReport)
+	/*.................................................................................................................*/
+	/** posts a Bean to the bean log on the MesquiteServer*/
+	public void postMicroBean(String value) {
+		if (!MesquiteTrunk.reportUse || MesquiteTrunk.phoneHomeThread == null || MesquiteTrunk.noBeans) 
+			return;
+		NameValuePair[] pairs = new NameValuePair[2];
+		pairs[0] = new NameValuePair("mesquiteBuild", StringUtil.tokenize(" " + getBuildNumber()));
+		pairs[1] = new NameValuePair("value", StringUtil.tokenize(value));
+		MesquiteTrunk.phoneHomeThread.postBean(pairs);
+	}
+	/*.................................................................................................................*/
 
+	
 	/** posts a Bean to the bean log on the MesquiteServer*/
 	public void postBean(String notes, boolean notifyUser) {
 		if (!MesquiteTrunk.reportUse){
@@ -1425,12 +1473,12 @@ public abstract class MesquiteModule extends EmployerEmployee implements Command
 	/*.................................................................................................................*/
 	/** Displays an alert in connection to an exception*/
 	void reportProblemToHome(String s) {
-/*		String email = MesquiteString.queryString(containerOfModule(), "E-mail for follow up?", "[Optional] Thank you for reporting this problem.  " + 
+		/*		String email = MesquiteString.queryString(containerOfModule(), "E-mail for follow up?", "[Optional] Thank you for reporting this problem.  " + 
 				"In order to fix this bug, we may need to contact you for more details.  " + 
 				"If you don't mind our contacting you, please indicate your email address here.  Thanks. " + 
 				"(If you want a response urgently, please send an email directly to info@mesquiteproject.org.)", "");
-*/
-	/*	s = StringUtil.replace(s,  "\r\n", "mqnl");
+		 */
+		/*	s = StringUtil.replace(s,  "\r\n", "mqnl");
 		s = StringUtil.replace(s,  "\n", "mqnl");
 		s = StringUtil.replace(s,  "\r", "mqnl");*/
 		MesquiteTrunk.phoneHomeThread.recordError(s);
@@ -1469,10 +1517,10 @@ public abstract class MesquiteModule extends EmployerEmployee implements Command
 	public boolean sorry(String s) {
 		CommandRecord.tick("Sorry, module couldn't be started");
 		if (!startupBailOut){
-		//	if (!MesquiteThread.isScripting()) //as of v.4, made silent only
-				//alert(s);  //
-		//	else
-				logln("Message from " + getNameForMenuItem() + ": " + s);
+			//	if (!MesquiteThread.isScripting()) //as of v.4, made silent only
+			//alert(s);  //
+			//	else
+			logln("Message from " + getNameForMenuItem() + ": " + s);
 		}
 		return false;
 	}
@@ -2030,7 +2078,7 @@ public abstract class MesquiteModule extends EmployerEmployee implements Command
 			fi.addBlock(nb);
 		}
 	}
-	
+
 	/*............................................................................. */
 	/*............................................................................. */
 	/** Increments  & decrements suppression of nexus block sorting (see addBlock of InterpretNEXUS). */

@@ -14,7 +14,6 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
 package mesquite.tol.lib;
 
 import java.io.ByteArrayInputStream;
-
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -23,7 +22,14 @@ import java.net.URLEncoder;
 import java.util.Iterator;
 import java.util.Map;
 
-import org.apache.commons.httpclient.*;
+import org.apache.commons.httpclient.Credentials;
+import org.apache.commons.httpclient.DefaultHttpMethodRetryHandler;
+import org.apache.commons.httpclient.HttpClient;
+import org.apache.commons.httpclient.HttpException;
+import org.apache.commons.httpclient.HttpMethod;
+import org.apache.commons.httpclient.HttpRecoverableException;
+import org.apache.commons.httpclient.HttpStatus;
+import org.apache.commons.httpclient.NameValuePair; //# core
 import org.apache.commons.httpclient.auth.AuthScope; //org.apache.http.auth.AuthScope  in httpclient
 import org.apache.commons.httpclient.methods.GetMethod;
 import org.apache.commons.httpclient.methods.PostMethod;
@@ -31,16 +37,13 @@ import org.apache.commons.httpclient.methods.multipart.FilePart;
 import org.apache.commons.httpclient.methods.multipart.MultipartRequestEntity;
 import org.apache.commons.httpclient.methods.multipart.Part;
 import org.apache.commons.httpclient.methods.multipart.StringPart;
-import org.apache.commons.httpclient.DefaultHttpMethodRetryHandler;
-import org.apache.commons.httpclient.HttpClient;
-import org.apache.commons.httpclient.NameValuePair; //# core
 import org.apache.commons.httpclient.params.HttpMethodParams;
-
 import org.apache.commons.lang3.StringEscapeUtils;
-import org.dom4j.*;
-import org.dom4j.io.*;
+import org.dom4j.Document;
+import org.dom4j.io.SAXReader;
 
-import mesquite.lib.*;
+import mesquite.lib.MesquiteTrunk;
+import mesquite.lib.StringUtil;
 
 
 

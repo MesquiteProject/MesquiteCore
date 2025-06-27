@@ -10,20 +10,28 @@ Mesquite's web site is http://mesquiteproject.org
 
 This source code and its compiled class files are free and modifiable under the terms of 
 GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
-*/
+ */
 package mesquite.lib.ui;
 
-import java.awt.*;
-import java.awt.event.*;
+import java.awt.Color;
+import java.awt.Font;
+import java.awt.FontMetrics;
+import java.awt.Graphics;
+import java.awt.PrintGraphics;
+import java.awt.TextField;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.TextEvent;
+import java.awt.event.TextListener;
 
 import mesquite.lib.CommandChecker;
 import mesquite.lib.Explainable;
 import mesquite.lib.MesquiteCommand;
 import mesquite.lib.MesquiteFile;
 import mesquite.lib.MesquiteInteger;
+import mesquite.lib.MesquiteLong;
 import mesquite.lib.MesquiteModule;
 import mesquite.lib.StringUtil;
-import mesquite.lib.duties.*;
 
 /* ��������������������������� commands ������������������������������� */
 /* includes commands,  buttons, miniscrolls
@@ -52,7 +60,7 @@ public class MiniScroll extends MousePanel implements MiniControl, Explainable, 
 	MesquiteCommand command;
 	//int enterWidth = 8;
 	// be passed max and min values  
-	
+
 	public MiniScroll (MesquiteCommand command, boolean stacked, int currentValue, int minValue, int maxValue, String itemName) {
 		this(command, stacked, true, (long)currentValue,  (long)minValue,  (long)maxValue, itemName);
 	}
@@ -62,7 +70,7 @@ public class MiniScroll extends MousePanel implements MiniControl, Explainable, 
 	public MiniScroll (MesquiteCommand command, boolean stacked, long currentValue, long minValue, long maxValue, String itemName) {
 		this(command, stacked, true, currentValue, minValue, maxValue, itemName);
 	}
-	
+
 	public MiniScroll (MesquiteCommand command, boolean stacked, boolean horizontal,long currentValue, long minValue, long maxValue, String itemName) {
 		this.currentValue = currentValue;
 		this.itemName = itemName;
@@ -76,7 +84,8 @@ public class MiniScroll extends MousePanel implements MiniControl, Explainable, 
 			totalHeight = textBoxHeight + 40 + EnterButton.MIN_DIMENSION+2;
 		}
 		else if (stacked) {
-			totalWidth = textBoxWidth  + EnterButton.MIN_DIMENSION+2;
+			textBoxWidth +=  EnterButton.MIN_DIMENSION+2;  //strange convention because adapting from previous in which enter button was to right of text box instead of underneath
+			totalWidth = textBoxWidth; //  + EnterButton.MIN_DIMENSION+2;
 			totalHeight = textBoxHeight + 28;
 		}
 		else  {
@@ -161,14 +170,14 @@ public class MiniScroll extends MousePanel implements MiniControl, Explainable, 
 	String oldText=null;
 	int sw = 0;
 	int sh = 0;
-	
+
 	private boolean recalcPositions(Graphics g){
 		Font f =  g.getFont();
 		if (f != oldFont || !(StringUtil.stringsEqual(oldText, text))){
 			FontMetrics fm = g.getFontMetrics(f);
 			sw = MesquiteInteger.maximum(fm.stringWidth("888"), fm.stringWidth(tf.getText()));
 			sh = fm.getMaxAscent()+fm.getMaxDescent();
-			
+
 		}
 		oldText = text;
 		oldFont = f;
@@ -179,13 +188,15 @@ public class MiniScroll extends MousePanel implements MiniControl, Explainable, 
 			oldTextBoxHeight = textBoxHeight;
 			if (horizontal){
 				if (stacked) {
-					totalWidth = textBoxWidth +  EnterButton.MIN_DIMENSION+2;
+					textBoxWidth += EnterButton.MIN_DIMENSION+2; 
+					totalWidth = textBoxWidth;
 					totalHeight = textBoxHeight + 20;
 					setSize(totalWidth, totalHeight);
 					tf.setSize(textBoxWidth, textBoxHeight);
 					tf.setLocation(0, 0);
-					decrementButton.setLocation(2,textBoxHeight+4);
-					incrementButton.setLocation(totalWidth-20,textBoxHeight+4);
+					enterButton.setLocation(0, textBoxHeight+4);
+					decrementButton.setLocation(EnterButton.MIN_DIMENSION+2,textBoxHeight+4);
+					incrementButton.setLocation(totalWidth-18,textBoxHeight+4);
 				}
 				else  {
 					totalWidth = textBoxWidth +36  +  EnterButton.MIN_DIMENSION+2;
@@ -195,8 +206,8 @@ public class MiniScroll extends MousePanel implements MiniControl, Explainable, 
 					decrementButton.setLocation(0,2);
 					tf.setLocation(decrementButton.getBounds().x + decrementButton.getBounds().width + 1, 1);  // 1 added to x
 					incrementButton.setLocation(tf.getBounds().x + tf.getBounds().width + EnterButton.MIN_DIMENSION+2,2);  //1 added to x
+					enterButton.setLocation(tf.getBounds().x + tf.getBounds().width+1, 2);
 				}
-				enterButton.setLocation(tf.getBounds().x + tf.getBounds().width+1, 2);
 			}
 			else {
 				if (stacked) {
@@ -232,7 +243,7 @@ public class MiniScroll extends MousePanel implements MiniControl, Explainable, 
 			repaint();
 			return true;
 		}
-	/*	if (!getBackground().equals(getParent().getBackground())) {
+		/*	if (!getBackground().equals(getParent().getBackground())) {
 			bg =getParent().getBackground();
 			setBackground(bg);
 			//setBackground(Color.green);
@@ -245,8 +256,8 @@ public class MiniScroll extends MousePanel implements MiniControl, Explainable, 
 		}*/
 		return false;
 	}
-	
-	
+
+
 	public void repaint(){
 		text = tf.getText();
 		Graphics g = getGraphics();
@@ -260,8 +271,8 @@ public class MiniScroll extends MousePanel implements MiniControl, Explainable, 
 	public void paint(Graphics g) { //^^^
 		if (g instanceof PrintGraphics)
 			return;
-	   	if (MesquiteWindow.checkDoomed(this))
-	   		return;
+		if (MesquiteWindow.checkDoomed(this))
+			return;
 		/**/
 		if (getParent()==null ) {
 			MesquiteWindow.uncheckDoomed(this);
@@ -324,9 +335,12 @@ public class MiniScroll extends MousePanel implements MiniControl, Explainable, 
 	public void setColor(Color c) {
 		tf.setForeground(c);
 	}
+	boolean lockedDisabled = false;
 	boolean enterLock = false;
 	public void setEnterLock(boolean lock){
 		enterLock = lock;
+		if (lockedDisabled)
+			return;
 		if (!lock){
 			boolean b = (currentValue<=maxValue && currentValue>=minValue);
 			enterButton.setEnabled(b);
@@ -337,37 +351,49 @@ public class MiniScroll extends MousePanel implements MiniControl, Explainable, 
 	public void setEnableEnter(boolean en){
 		if (enterLock)
 			return;
+		if (lockedDisabled)
+			return;
 		enterButton.setEnabled(en);
 	}
 	public void setMaximumValue (int i) { 
 		if (i!=maxValue) {
-			maxValue=i;
-			incrementButton.setEnabled(currentValue<maxValue);
+			maxValue=MesquiteInteger.toLong(i);
+			if (lockedDisabled)
+				return;
+			incrementButton.setEnabled(currentValue<maxValue || !MesquiteLong.isCombinable(maxValue));
 		}
 	}
 	public void setMinimumValue (int i) { 
 		if (i!=minValue) {
-			minValue=i;
+			minValue=MesquiteInteger.toLong(i);
+			if (lockedDisabled)
+				return;
 			decrementButton.setEnabled(currentValue>minValue);
 		}
 	}
 	public void setMaximumValueLong (long i) { 
 		if (i!=maxValue) {
 			maxValue=i;
-			incrementButton.setEnabled(currentValue<maxValue);
+			if (lockedDisabled)
+				return;
+			incrementButton.setEnabled(currentValue<maxValue || !MesquiteLong.isCombinable(maxValue));
 		}
 	}
 	public void setMinimumValueLong (long i) { 
 		if (i!=minValue) {
 			minValue=i;
+			if (lockedDisabled)
+				return;
 			decrementButton.setEnabled(currentValue>minValue);
 		}
 	}
 
 	public void setCurrentValue (int i) {  
 		if (i<=maxValue && (i>=minValue)) {
-			currentValue=i;
+			currentValue=MesquiteInteger.toLong(i);
 			tf.setText(Integer.toString((int)currentValue));
+			if (lockedDisabled)
+				return;
 			decrementButton.setEnabled(currentValue>minValue);
 			incrementButton.setEnabled(currentValue<maxValue);
 		}
@@ -379,6 +405,8 @@ public class MiniScroll extends MousePanel implements MiniControl, Explainable, 
 		if (i<=maxValue && (i>=minValue)) {
 			currentValue=i;
 			tf.setText(Long.toString(currentValue));
+			if (lockedDisabled)
+				return;
 			decrementButton.setEnabled(currentValue>minValue);
 			incrementButton.setEnabled(currentValue<maxValue);
 		}
@@ -387,6 +415,24 @@ public class MiniScroll extends MousePanel implements MiniControl, Explainable, 
 		return currentValue;
 	}
 
+	public void setEnabled (boolean enable) {  
+		lockedDisabled = !enable;
+		if (enable){
+			decrementButton.setEnabled(currentValue>minValue);
+			incrementButton.setEnabled(currentValue<maxValue);
+			if (!enterLock){
+				boolean b = (currentValue<=maxValue && currentValue>=minValue);
+				enterButton.setEnabled(b);
+			}
+			else
+				enterButton.setEnabled(false);
+		}
+		else {
+			decrementButton.setEnabled(false);
+			incrementButton.setEnabled(false);
+			enterButton.setEnabled(false);
+		}
+	}
 	public void acceptText(){
 		String s = tf.getText();
 		oldText = null;
@@ -399,11 +445,11 @@ public class MiniScroll extends MousePanel implements MiniControl, Explainable, 
 	}
 	public void actionPerformed(ActionEvent e){
 		//Event queue
-			acceptText();
+		acceptText();
 	}
-	
-	 public boolean isTextValid() {
-	 	boolean b = false;
+
+	public boolean isTextValid() {
+		boolean b = false;
 		String s = tf.getText();
 		try {
 			int value = MesquiteInteger.fromString(s);
@@ -412,7 +458,7 @@ public class MiniScroll extends MousePanel implements MiniControl, Explainable, 
 		catch (NumberFormatException e){}
 		return b;
 	}
-	 public void textValueChanged(TextEvent e) {
+	public void textValueChanged(TextEvent e) {
 		boolean b = false;
 		String s = tf.getText();
 		try {
@@ -420,7 +466,9 @@ public class MiniScroll extends MousePanel implements MiniControl, Explainable, 
 			b = (value<=maxValue && value>=minValue && value!=currentValue);
 		}
 		catch (NumberFormatException ex){}
-	 	enterButton.setEnabled(b && !enterLock);
+		if (lockedDisabled)
+			return;
+		enterButton.setEnabled(b && !enterLock);
 	}
 
 
@@ -429,23 +477,46 @@ public class MiniScroll extends MousePanel implements MiniControl, Explainable, 
 			MesquiteWindow.respondToQueryMode("Mini scroll", command, this);
 			return;
 		}
+		if (!MesquiteInteger.isCombinable(i))
+			return;
 		if (i<=maxValue && (i>=minValue) && command!=null) {
 			currentValue=i;
 			command.doItMainThread(Long.toString(currentValue), CommandChecker.getQueryModeString("Mini scroll", command, this), this);
 			tf.setText(Long.toString(currentValue));
+			if (lockedDisabled)
+				return;
 			decrementButton.setEnabled(i>minValue);
 			incrementButton.setEnabled(i<maxValue);
 		}
 	}
-	public void increment (int modifiers) {  // have interface incrementable and pass object to this miniscroll so it can notify object
- 		if (MesquiteWindow.getQueryMode(this)) {
+	public void ultcrement () {  
+		if (MesquiteWindow.getQueryMode(this)) {
 			MesquiteWindow.respondToQueryMode("Mini scroll", command, this);
 			return;
 		}
+		if (command!=null) {
+			currentValue=maxValue;
+			command.doItMainThread(Long.toString(currentValue), CommandChecker.getQueryModeString("Mini scroll", command, this), this);
+			tf.setText(Long.toString(currentValue));
+			if (lockedDisabled)
+				return;
+			decrementButton.setEnabled(currentValue>minValue);
+			incrementButton.setEnabled(currentValue<maxValue);
+		}
+	}
+	public void increment (int modifiers) {  // have interface incrementable and pass object to this miniscroll so it can notify object
+		if (MesquiteWindow.getQueryMode(this)) {
+			MesquiteWindow.respondToQueryMode("Mini scroll", command, this);
+			return;
+		}
+		if (!MesquiteLong.isCombinable(currentValue))
+			return;
 		if (currentValue<maxValue && command!=null) {
 			currentValue++;
 			command.doItMainThread(Long.toString(currentValue) + " " + modifiers + " increment", CommandChecker.getQueryModeString("Mini scroll", command, this), this);
 			tf.setText(Long.toString(currentValue));
+			if (lockedDisabled)
+				return;
 			enterButton.setEnabled(false);
 			decrementButton.setEnabled(currentValue>minValue);
 			incrementButton.setEnabled(currentValue<maxValue);
@@ -456,10 +527,14 @@ public class MiniScroll extends MousePanel implements MiniControl, Explainable, 
 			MesquiteWindow.respondToQueryMode("Mini scroll", command, this);
 			return;
 		}
+		if (!MesquiteLong.isCombinable(currentValue))
+			return;
 		if (currentValue>minValue && command!=null) {
 			currentValue--;
 			tf.setText(Long.toString(currentValue));
 			command.doItMainThread(Long.toString(currentValue) + " " + modifiers + " decrement", CommandChecker.getQueryModeString("Mini scroll", command, this), this);
+			if (lockedDisabled)
+				return;
 			enterButton.setEnabled(false);
 			decrementButton.setEnabled(currentValue>minValue);
 			incrementButton.setEnabled(currentValue<maxValue);
@@ -474,7 +549,7 @@ public class MiniScroll extends MousePanel implements MiniControl, Explainable, 
 		else
 			return MesquiteModule.getRootPath() + "images" + MesquiteFile.fileSeparator + "miniscrollHoriz.gif"; 
 	}
-	
+
 }
 
 

@@ -1,11 +1,11 @@
 package mesquite.molec.DifferencesCharBoolean;
 
+import mesquite.categ.lib.CategoricalData;
 import mesquite.categ.lib.CategoricalState;
-import mesquite.lib.*;
-import mesquite.lib.characters.*;
-import mesquite.lib.duties.*;
-import mesquite.parsimony.lib.ParsimonyModelSet;
-import mesquite.categ.lib.*;
+import mesquite.lib.MesquiteBoolean;
+import mesquite.lib.MesquiteString;
+import mesquite.lib.characters.CharacterData;
+import mesquite.lib.duties.BooleanForCharacter;
 
 public class DifferencesCharBoolean extends BooleanForCharacter {
 
@@ -76,18 +76,18 @@ public class DifferencesCharBoolean extends BooleanForCharacter {
 	}
 
 	public String getExplanation() {
-		return "A boolean that is true if a character has variation in states, or some with states and some with gaps/missing data.";
+		return "A boolean that is true if a character has variation in states, or some with states and some with gaps/missing data; taxa without any data are not considered.";
 	}
 
 	public boolean isPrerelease() {
-		return true;
+		return false;
 	}
  	/*.................................................................................................................*/
  	/** returns the version number at which this module was first released.  If 0, then no version number is claimed.  If a POSITIVE integer
  	 * then the number refers to the Mesquite version.  This should be used only by modules part of the core release of Mesquite.
  	 * If a NEGATIVE integer, then the number refers to the local version of the package, e.g. a third party package*/
  	public int getVersionOfFirstRelease(){
- 		return NEXTRELEASE;  
+ 		return 400;  
  	}
 
 

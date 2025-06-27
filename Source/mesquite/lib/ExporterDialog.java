@@ -13,8 +13,12 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
 */
 package mesquite.lib;
 
-import java.awt.*;
-import mesquite.lib.duties.*;
+import java.awt.Button;
+import java.awt.Checkbox;
+import java.awt.Choice;
+
+import mesquite.lib.duties.FileInterpreter;
+import mesquite.lib.duties.FileInterpreterI;
 import mesquite.lib.ui.ExtensibleDialog;
 import mesquite.lib.ui.MesquiteWindow;
 

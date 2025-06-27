@@ -13,10 +13,6 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
 */
 package mesquite.lib.duties;
 
-import java.awt.*;
-import mesquite.lib.*;
-
-
 /* ======================================================================== */
 /** Manages scripting.  Also reads and writes MESQUITE block.  Example module:
 "Manage MESQUITE block" (class ManageTaxa)*/

@@ -14,15 +14,21 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
 package mesquite.align.AlignToDropped; 
 
 
-import java.awt.*;
+import java.awt.Rectangle;
 
-import mesquite.align.lib.*;
-import mesquite.categ.lib.*;
-import mesquite.lib.*;
-import mesquite.lib.characters.*;
-import mesquite.lib.characters.CharacterData;
-import mesquite.lib.table.*;
-import mesquite.lib.duties.*;
+import mesquite.align.lib.AlignShiftToDroppedBase;
+import mesquite.align.lib.AlignUtil;
+import mesquite.categ.lib.MolecularData;
+import mesquite.lib.CommandChecker;
+import mesquite.lib.FunctionExplanation;
+import mesquite.lib.Integer2DArray;
+import mesquite.lib.MesquiteCommand;
+import mesquite.lib.MesquiteInteger;
+import mesquite.lib.MesquiteModule;
+import mesquite.lib.MesquiteThread;
+import mesquite.lib.Snapshot;
+import mesquite.lib.StringUtil;
+import mesquite.lib.table.TableTool;
 
 
 /* ======================================================================== */

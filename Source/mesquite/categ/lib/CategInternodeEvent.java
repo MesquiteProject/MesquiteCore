@@ -14,7 +14,7 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
 package mesquite.categ.lib;
 
 
-import mesquite.lib.*;
+import mesquite.lib.MesquiteDouble;
 
 
 /* ======================================================================== */

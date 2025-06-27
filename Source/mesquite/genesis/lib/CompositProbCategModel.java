@@ -13,15 +13,22 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
 */
 package mesquite.genesis.lib;
 
-import mesquite.lib.*;
-import mesquite.lib.characters.*;
-import mesquite.lib.duties.*;
+import java.util.Random;
+
+import mesquite.categ.lib.CategoricalState;
+import mesquite.lib.DoubleArray;
+import mesquite.lib.MesquiteInteger;
+import mesquite.lib.MesquiteListener;
+import mesquite.lib.MesquiteTrunk;
+import mesquite.lib.Notification;
+import mesquite.lib.StringUtil;
+import mesquite.lib.characters.CharacterModel;
+import mesquite.lib.characters.CharacterState;
 import mesquite.lib.taxa.Taxa;
 import mesquite.lib.tree.Tree;
 import mesquite.lib.ui.ExtensibleDialog;
-import mesquite.categ.lib.*;
-import mesquite.stochchar.lib.*;
-import java.util.*;
+import mesquite.stochchar.lib.CategProbModelCurator;
+import mesquite.stochchar.lib.ProbabilityCategCharModel;
 
 /* ======================================================================== */
 /** A character model for Categorical characters to be used in stochastic simulations and in likelihood calculations.

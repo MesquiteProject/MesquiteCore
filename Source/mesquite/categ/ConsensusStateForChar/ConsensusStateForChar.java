@@ -14,9 +14,18 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
 package mesquite.categ.ConsensusStateForChar;
 
 
-import mesquite.categ.lib.*;
-import mesquite.lib.*;
-import mesquite.lib.table.*;
+import mesquite.categ.lib.CategStateForCharacter;
+import mesquite.categ.lib.CategoricalData;
+import mesquite.categ.lib.CategoricalState;
+import mesquite.lib.CommandChecker;
+import mesquite.lib.MesquiteBoolean;
+import mesquite.lib.MesquiteDouble;
+import mesquite.lib.MesquiteFile;
+import mesquite.lib.MesquiteInteger;
+import mesquite.lib.MesquiteString;
+import mesquite.lib.MesquiteThread;
+import mesquite.lib.Snapshot;
+import mesquite.lib.table.MesquiteTable;
 import mesquite.lib.ui.MesquiteMenuItemSpec;
 
 public class ConsensusStateForChar extends CategStateForCharacter {

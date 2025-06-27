@@ -13,11 +13,16 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
 */
 package mesquite.diverse.SisterDiversification;
 
-import mesquite.lib.*;
-import mesquite.lib.characters.*;
+import mesquite.categ.lib.CategoricalDistribution;
+import mesquite.categ.lib.CategoricalState;
+import mesquite.categ.lib.RequiresExactlyCategoricalData;
+import mesquite.diverse.lib.NumForCharAndTreeDivers;
+import mesquite.lib.Binomial;
+import mesquite.lib.CompatibilityTest;
+import mesquite.lib.MesquiteNumber;
+import mesquite.lib.MesquiteString;
+import mesquite.lib.characters.CharacterDistribution;
 import mesquite.lib.tree.Tree;
-import mesquite.categ.lib.*;
-import mesquite.diverse.lib.*;
 
 
 /* ======================================================================== */

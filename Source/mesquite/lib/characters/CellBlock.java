@@ -1,5 +1,7 @@
 package mesquite.lib.characters;
 
+import mesquite.categ.lib.CategoricalData;
+
 /* Mesquite source code.  Copyright 1997 and onward, W. Maddison and D. Maddison. 
 
 
@@ -13,10 +15,10 @@ Mesquite's web site is http://mesquiteproject.org
 This source code and its compiled class files are free and modifiable under the terms of 
 GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
  */
-
-import mesquite.lib.*;
-import mesquite.lib.table.*;
-import mesquite.categ.lib.*;
+import mesquite.lib.Bits;
+import mesquite.lib.MesquiteBoolean;
+import mesquite.lib.MesquiteInteger;
+import mesquite.lib.table.MesquiteTable;
 
 /* ======================================================================== */
 public class CellBlock {

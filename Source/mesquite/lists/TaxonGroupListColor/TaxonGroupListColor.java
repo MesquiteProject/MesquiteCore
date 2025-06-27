@@ -14,21 +14,20 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
 package mesquite.lists.TaxonGroupListColor;
 
 import java.awt.Color;
-import java.awt.Container;
 import java.awt.Graphics;
-import java.awt.Shape;
 
-import javax.swing.*;
+import javax.swing.JColorChooser;
+import javax.swing.JFrame;
 
-import mesquite.lib.*;
-import mesquite.lib.characters.CharInclusionSet;
+import mesquite.lib.CommandChecker;
+import mesquite.lib.StringUtil;
 import mesquite.lib.characters.CharacterData;
 import mesquite.lib.table.MesquiteTable;
 import mesquite.lib.taxa.TaxaGroup;
 import mesquite.lib.taxa.TaxaGroupVector;
 import mesquite.lib.ui.ColorDistribution;
 import mesquite.lib.ui.MesquiteSymbol;
-import mesquite.lists.lib.*;
+import mesquite.lists.lib.TaxonGroupListAssistant;
 
 /* ======================================================================== */
 public class TaxonGroupListColor extends TaxonGroupListAssistant  {

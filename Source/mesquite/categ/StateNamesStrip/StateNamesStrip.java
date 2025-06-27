@@ -13,19 +13,24 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
 */
 package mesquite.categ.StateNamesStrip;
 
-import java.util.*;
-import java.awt.*;
-import java.awt.event.*;
-import java.awt.image.*;
-import mesquite.lib.*;
-import mesquite.lib.characters.*;
-import mesquite.lib.duties.*;
-import mesquite.lib.table.*;
+import java.awt.Font;
+import java.awt.TextArea;
+
+import mesquite.categ.lib.CategDataEditorInitD;
+import mesquite.categ.lib.CategoricalData;
+import mesquite.categ.lib.CategoricalState;
+import mesquite.categ.lib.DNAData;
+import mesquite.lib.CommandChecker;
+import mesquite.lib.MesquiteBoolean;
+import mesquite.lib.MesquiteFile;
+import mesquite.lib.Snapshot;
+import mesquite.lib.StringUtil;
+import mesquite.lib.characters.CharacterData;
+import mesquite.lib.table.MesquiteTable;
 import mesquite.lib.ui.ColorTheme;
 import mesquite.lib.ui.MQTextArea;
 import mesquite.lib.ui.MesquiteWindow;
 import mesquite.lib.ui.MousePanel;
-import mesquite.categ.lib.*;
 
 
 /* ======================================================================== */
@@ -38,6 +43,7 @@ public class StateNamesStrip extends CategDataEditorInitD {
 	public boolean startJob(String arguments, Object condition, boolean hiredByName) {
 		showStrip = new MesquiteBoolean(false);
 		shown = false;
+		addMenuSeparator();
 		addCheckMenuItem(null, "Show State Names Strip", makeCommand("showStrip", this), showStrip);
 		return true;
 	}

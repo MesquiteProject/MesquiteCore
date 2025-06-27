@@ -13,9 +13,9 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
 */
 package mesquite.lib.tree;
 
-import java.awt.*;
-import java.math.*;
-import java.util.*;
+import java.awt.Image;
+import java.util.Enumeration;
+import java.util.Vector;
 
 import mesquite.lib.StringUtil;
 

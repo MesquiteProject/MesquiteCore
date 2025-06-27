@@ -14,12 +14,21 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
 package mesquite.minimal.DrawHierarchy;
 /*~~  */
 
-import java.awt.*;
-import java.net.*;
-import java.util.*;
-import java.io.*;
-import mesquite.lib.*;
-import mesquite.lib.duties.*;
+import java.awt.Color;
+import java.awt.Container;
+import java.awt.FontMetrics;
+import java.awt.Graphics;
+import java.awt.Image;
+import java.awt.Point;
+import java.awt.TextArea;
+import java.util.Vector;
+
+import mesquite.lib.MesquiteInteger;
+import mesquite.lib.MesquiteMessage;
+import mesquite.lib.MesquiteModule;
+import mesquite.lib.MesquiteTrunk;
+import mesquite.lib.StringUtil;
+import mesquite.lib.duties.BrowseHierarchy;
 import mesquite.lib.misc.HNode;
 import mesquite.lib.misc.HPanel;
 import mesquite.lib.ui.MQPanel;
@@ -538,6 +547,7 @@ class NodeLabel extends MesquiteLabel implements HNode {
 		daughterVector = null;
 		super.dispose();
 	}
+	
 	/*.................................................................................................................*/
 	public HNode getHNode(){
 		return node;

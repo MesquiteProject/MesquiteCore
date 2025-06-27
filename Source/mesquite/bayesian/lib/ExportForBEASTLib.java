@@ -13,19 +13,33 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
 package mesquite.bayesian.lib;
 /*~~  */
 
-import java.util.*;
-import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
+import java.awt.Checkbox;
 
+import mesquite.categ.lib.CategoricalData;
+import mesquite.categ.lib.CategoricalState;
+import mesquite.categ.lib.DNAData;
+import mesquite.lib.Arguments;
+import mesquite.lib.Bits;
 import mesquite.lib.*;
-import mesquite.lib.characters.*;
+import mesquite.lib.Listable;
+import mesquite.lib.ListableVector;
+import mesquite.lib.MesquiteFile;
+import mesquite.lib.MesquiteInteger;
+import mesquite.lib.MesquiteMessage;
+import mesquite.lib.MesquiteProject;
+import mesquite.lib.MesquiteString;
+import mesquite.lib.Parser;
+import mesquite.lib.SpecsSetVector;
+import mesquite.lib.StringUtil;
 import mesquite.lib.characters.CharacterData;
-import mesquite.lib.duties.*;
+import mesquite.lib.characters.CharacterPartition;
+import mesquite.lib.characters.CharacterStates;
+import mesquite.lib.characters.CharactersGroup;
+import mesquite.lib.characters.CodonPositionsSet;
+import mesquite.lib.duties.FileInterpreterI;
+import mesquite.lib.duties.TaxaManager;
 import mesquite.lib.taxa.Taxa;
 import mesquite.lib.taxa.TaxaSelectionSet;
-import mesquite.basic.ManageSetsBlock.ManageSetsBlock;
-import mesquite.categ.lib.*;
 
 
 
@@ -58,18 +72,18 @@ public abstract class ExportForBEASTLib extends FileInterpreterI  {
 	public void readFile(MesquiteProject mf, MesquiteFile file, String arguments) {
 	}
 
-	/*.................................................................................................................*
+	/*.................................................................................................................*/
 	public void processSingleXMLPreference (String tag, String content) {
-		if ("duplicateTaxonNames".equalsIgnoreCase(tag))
-			duplicateTaxonSets = MesquiteBoolean.fromTrueFalseString(content);
+		if ("exportCharPartition".equalsIgnoreCase(tag))
+			exportCharPartition = MesquiteBoolean.fromTrueFalseString(content);
 		super.processSingleXMLPreference(tag, content);
 		preferencesSet = true;
 	}
 
-	/*.................................................................................................................*
+	/*.................................................................................................................*/
 	public String preparePreferencesForXML () {
 		StringBuffer buffer = new StringBuffer(200);
-		StringUtil.appendXMLTag(buffer, 2, "duplicateTaxonNames", duplicateTaxonSets);  
+		StringUtil.appendXMLTag(buffer, 2, "exportCharPartition", exportCharPartition);  
 		buffer.append(super.preparePreferencesForXML());
 		preferencesSet = true;
 		return buffer.toString();
@@ -83,26 +97,27 @@ public abstract class ExportForBEASTLib extends FileInterpreterI  {
 	protected boolean useData = true;
 	protected String addendum = "";
 	protected String fileName = "untitled.nex";
+	protected boolean exportCharPartition = true;
 	/*.................................................................................................................*/
 	public abstract String getProgramName();
-	/*.................................................................................................................*
+	/*.................................................................................................................*/
 
 	public boolean getExportOptions(CharacterData data, boolean dataSelected, boolean taxaSelected){
+		//THIS IS ONLY CALLED if character groups present!  (see below)
 		MesquiteInteger buttonPressed = new MesquiteInteger(1);
 		ExporterDialog exportDialog = new ExporterDialog(this,containerOfModule(), getName(), buttonPressed);
 		exportDialog.setSuppressLineEndQuery(true);
 		exportDialog.setDefaultButton(null);
-		String helpString = "If you check \"duplicate taxon sets\", Mesquite will produce two copies of each taxon set.  This will allow you to easily create BEAUTi both a MRCA Prior and a "
-				+ "Sampled Ancestors MRCA Prior for each taxon set.  As of 25 March 2023 BEAUTi required manual creation of a second taxon set to create the second prior.";
-		exportDialog.appendToHelpString(helpString);
-		Checkbox duplicateTaxonSetsCheckBox = exportDialog.addCheckBox("duplicate taxon sets", duplicateTaxonSets);
+//		String helpString = "";
+//		exportDialog.appendToHelpString(helpString);
+		Checkbox exportCharPartitionCheckBox = exportDialog.addCheckBox("include character partition in file as CHARSETs", exportCharPartition);
 
 		exportDialog.completeAndShowDialog(dataSelected, taxaSelected);
 
 		boolean ok = (exportDialog.query(dataSelected, taxaSelected)==0);
 
 		if (ok) {
-			duplicateTaxonSets = duplicateTaxonSetsCheckBox.getState();
+			exportCharPartition = exportCharPartitionCheckBox.getState();
 			storePreferences();
 		}
 
@@ -189,6 +204,8 @@ public abstract class ExportForBEASTLib extends FileInterpreterI  {
 
 
 	/*.................................................................................................................*/
+	
+	/*.................................................................................................................*/
 
 	private String getCHARSETS(CharacterData data){
 		boolean writeStandardPartition = false;
@@ -204,7 +221,7 @@ public abstract class ExportForBEASTLib extends FileInterpreterI  {
 			writeCodPosPartition = ((DNAData)data).someCoding();
 
 		String charSetList = "";
-		if (writeStandardPartition) {
+		if (writeStandardPartition && exportCharPartition) {
 			int numCharSets = 0;
 			for (int i=0; i<parts.length; i++) {
 				String q = ListableVector.getListOfMatches((Listable[])characterPartition.getProperties(), parts[i], CharacterStates.toExternal(0));
@@ -282,7 +299,8 @@ public abstract class ExportForBEASTLib extends FileInterpreterI  {
 			logln("WARNING: No suitable data available for export to a file of format \"" + getName() + "\".  The file will not be written.\n");
 			return false;
 		}
-
+		
+		
 		StringBuffer conflictingTaxSets = conflictingTaxsets(file);
 		if (conflictingTaxSets!=null) {
 			logln("\nConflicting taxon sets:");
@@ -292,6 +310,14 @@ public abstract class ExportForBEASTLib extends FileInterpreterI  {
 			MesquiteMessage.discreetNotifyUser("WARNING: Incompatible (partly overlapping) taxon sets (see log window). All taxon sets must be subsets of others or contain no taxa in common. The resulting file will not be importable into BEAUTi.");
 			return false;
 		}
+		
+/*		Taxa taxa = data.getTaxa();
+		if (taxa.taxonNamesTooComplexForExternalProgam(ExternalProgramUtil.externalBEAST)) {
+			MesquiteMessage.discreetNotifyUser("WARNING: Taxon names have characters that may prevent BEAST from running. "
+					+ "It is strongly recommended that you select all of the taxon names and choose Matrix > Taxon Names > Simplify Taxon Names");
+		}
+		*/
+		
 		MesquiteString dir = new MesquiteString();
 		MesquiteString fn = new MesquiteString();
 		String suggested = fileName;
@@ -299,11 +325,10 @@ public abstract class ExportForBEASTLib extends FileInterpreterI  {
 			suggested = file.getFileName();
 		MesquiteFile f;
 		loadPreferences();
-		/*	if (!usePrevious){
+		if (!usePrevious && data.hasCharacterGroups()){   
 			if (!getExportOptions(data, data.anySelected(), data.getTaxa().anySelected()))
 				return false;
 		}
-		 */
 		addendum = getSetsBlock(file, data );
 
 

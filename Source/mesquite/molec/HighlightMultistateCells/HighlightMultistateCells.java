@@ -13,16 +13,18 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
  */
 package mesquite.molec.HighlightMultistateCells; 
 
-import java.util.*;
-import java.awt.*;
+import java.awt.Color;
 
-import mesquite.lib.*;
-import mesquite.lib.characters.*;
-import mesquite.lib.duties.*;
-import mesquite.lib.table.*;
+import mesquite.categ.lib.DNAData;
+import mesquite.categ.lib.RequiresAnyDNAData;
+import mesquite.lib.CompatibilityTest;
+import mesquite.lib.characters.CharacterData;
+import mesquite.lib.duties.CellColorer;
+import mesquite.lib.duties.CellColorerMatrix;
+import mesquite.lib.duties.DataWindowAssistantID;
+import mesquite.lib.table.MesquiteTable;
 import mesquite.lib.ui.ColorDistribution;
 import mesquite.lib.ui.ColorRecord;
-import mesquite.categ.lib.*;
 
 
 /* ======================================================================== */
@@ -47,7 +49,7 @@ public class HighlightMultistateCells extends DataWindowAssistantID implements C
 	 * then the number refers to the Mesquite version.  This should be used only by modules part of the core release of Mesquite.
 	 * If a NEGATIVE integer, then the number refers to the local version of the package, e.g. a third party package*/
 	public int getVersionOfFirstRelease(){
-		return NEXTRELEASE;  
+		return 400;  
 	}
 	/*.................................................................................................................*/
 	public boolean isPrerelease(){

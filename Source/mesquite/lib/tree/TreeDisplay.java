@@ -13,23 +13,26 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
  */
 package mesquite.lib.tree;
 
-import java.awt.*;
-import java.util.*;
+import java.awt.Color;
+import java.awt.Composite;
+import java.awt.Font;
+import java.awt.Graphics;
+import java.awt.Panel;
+import java.awt.Shape;
+import java.util.Enumeration;
+import java.util.Vector;
 
 import mesquite.lib.CommandChecker;
-import mesquite.lib.Debugg;
-import mesquite.lib.MesquiteBoolean;
 import mesquite.lib.MesquiteCommand;
 import mesquite.lib.MesquiteDouble;
 import mesquite.lib.MesquiteInteger;
 import mesquite.lib.MesquiteLong;
 import mesquite.lib.MesquiteModule;
-import mesquite.lib.MesquiteThread;
 import mesquite.lib.MesquiteTrunk;
 import mesquite.lib.NameReference;
 import mesquite.lib.ProjectReadThread;
 import mesquite.lib.StringUtil;
-import mesquite.lib.duties.*;
+import mesquite.lib.duties.DrawNamesTreeDisplay;
 import mesquite.lib.taxa.Taxa;
 import mesquite.lib.taxa.TaxaTreeDisplay;
 import mesquite.lib.ui.ColorDistribution;
@@ -115,7 +118,11 @@ public class TreeDisplay extends TaxaTreeDisplay  {
 
 	protected boolean showBranchColors = true;
 	public static boolean printTreeNameByDefault = false;
-
+	
+	/** If in tracemode, the tree drawing should have a good visible place to fill the branch with colours.
+	 * An integer because it gets incremented and decremented by different requesters. Introduced late (4.0), so not widely used. See SquareLineTree*/
+	private int traceMode = 0;
+	
 	/**  The color of the branches*/
 	public Color branchColor;
 	/**  The color of a dimmed branch*/
@@ -129,10 +136,10 @@ public class TreeDisplay extends TaxaTreeDisplay  {
 	public boolean collapsedCladeNameAtLeftmostAncestor = false;
 
 	/**  Spacing in pixels between taxa*/
-	private int taxonSpacing;
+	private double taxonSpacing;
 
 	/**  Spacing in pixels between taxa as set by user*/
-	private int fixedTaxonSpacing = 0;
+	private double fixedTaxonSpacing = 0;
 	/**  Orientaton of the tree*/
 	private int treeOrientation = NOTYETSET;
 	/**  For vert/horizontal trees, is default to permit stretching by default of the tree.  Set by tree drawer*/
@@ -471,19 +478,35 @@ public class TreeDisplay extends TaxaTreeDisplay  {
 	public int getEdgeWidth() {
 		return edgewidth;
 	}
-	public void setTaxonSpacing(int sp) {
+	public void setTaxonSpacing(double sp) {
 		this.taxonSpacing = sp;
 	}
-	public int getTaxonSpacing() {
+	public double getTaxonSpacing() {
 		return taxonSpacing;
 	}
-	public void setFixedTaxonSpacing(int sp) {
+	public void setFixedTaxonSpacing(double sp) {
 		this.fixedTaxonSpacing = sp;
 	}
-	public int getFixedTaxonSpacing() {
+	public double getFixedTaxonSpacing() {
 		return fixedTaxonSpacing;
 	}
 	
+	public boolean getTraceMode() {
+		if (extras != null) {
+			Enumeration e = extras.elements();
+			while (e.hasMoreElements()) {
+				Object obj = e.nextElement();
+				TreeDisplayExtra ex = (TreeDisplayExtra)obj;
+				if (ex.requestTraceMode())
+					return true;
+
+			}
+		}
+		return false;
+	}	/*^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^*/
+
+	
+
 	boolean rectsEqual(int[] r1, int[] r2){
 		if (r1 == null){
 			if (r2 != null)

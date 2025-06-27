@@ -14,12 +14,19 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
 package mesquite.charMatrices.ManageCodonPositions;
 /*~~  */
 
-import java.util.*;
-import java.awt.*;
-
-import mesquite.lib.*;
-import mesquite.lib.characters.*;
-import mesquite.lib.duties.*;
+import mesquite.lib.EmployeeNeed;
+import mesquite.lib.ListableVector;
+import mesquite.lib.MesquiteFile;
+import mesquite.lib.MesquiteInteger;
+import mesquite.lib.MesquiteNumber;
+import mesquite.lib.NexusCommandTest;
+import mesquite.lib.SpecsSet;
+import mesquite.lib.StringUtil;
+import mesquite.lib.characters.CharSpecsSet;
+import mesquite.lib.characters.CharacterData;
+import mesquite.lib.characters.CharacterStates;
+import mesquite.lib.characters.CodonPositionsSet;
+import mesquite.lib.duties.CharSpecsSetManager;
 
 /** Manages specifications of codon positions, including reading the NEXUS command for CODONPOSSET */
 public class ManageCodonPositions extends CharSpecsSetManager {

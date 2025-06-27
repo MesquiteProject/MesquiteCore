@@ -13,8 +13,6 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
  */
 package mesquite.lib;
 
-import java.awt.*;
-
 import mesquite.lib.ui.MesquiteWindow;
 import mesquite.lib.ui.QueryDialogs;
 
@@ -76,6 +74,7 @@ public class MesquiteNumber implements Listable, Nameable, WithStringDetails{
 		copyAuxiliaries(toCopy.getAuxiliaries());
 		totalCreated++;
 	}
+	
 	public void setWatchpoint(boolean w){
 		watchpoint = w;
 	}

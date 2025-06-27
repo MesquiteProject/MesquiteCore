@@ -13,9 +13,6 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
  */
 package mesquite.lib.ui;
 
-import java.awt.*;
-import java.awt.event.*;
-
 import mesquite.lib.CommandChecker;
 import mesquite.lib.Disposable;
 import mesquite.lib.Listable;
@@ -26,7 +23,6 @@ import mesquite.lib.MesquiteModule;
 import mesquite.lib.NameHolder;
 import mesquite.lib.QualificationsTest;
 import mesquite.lib.StringLister;
-import mesquite.lib.duties.*;
 
 /* ======================================================================== */
 /** Specifications to later make menu items.*/

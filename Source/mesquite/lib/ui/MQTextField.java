@@ -13,9 +13,9 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
  */
 package mesquite.lib.ui;
 
-import java.awt.*;
-
-import mesquite.lib.MesquiteTrunk;
+import java.awt.Dimension;
+import java.awt.Font;
+import java.awt.TextField;
 
 /* �������������������� */
 /* [Search for MQLINUX] -- Intermediary class for workaround of StackOverflowError in Linux JDK 11 - 23 (at least!). 

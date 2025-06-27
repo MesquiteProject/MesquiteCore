@@ -1,14 +1,8 @@
 package mesquite.io.lib;
 
-import java.awt.Checkbox;
-
-import mesquite.assoc.lib.AssociationSource;
 import mesquite.categ.lib.CategoricalData;
 import mesquite.categ.lib.CategoricalState;
 import mesquite.categ.lib.DNAData;
-import mesquite.categ.lib.DNAState;
-import mesquite.lib.Arguments;
-import mesquite.lib.EmployeeNeed;
 import mesquite.lib.IntegerArray;
 import mesquite.lib.Listable;
 import mesquite.lib.ListableVector;
@@ -19,7 +13,6 @@ import mesquite.lib.MesquiteString;
 import mesquite.lib.MesquiteStringBuffer;
 import mesquite.lib.MesquiteThread;
 import mesquite.lib.NumberArray;
-import mesquite.lib.Parser;
 import mesquite.lib.StringUtil;
 import mesquite.lib.characters.CharacterData;
 import mesquite.lib.characters.CharacterPartition;
@@ -30,8 +23,6 @@ import mesquite.lib.duties.FileInterpreterI;
 import mesquite.lib.taxa.Taxa;
 import mesquite.lib.taxa.Taxon;
 import mesquite.lib.taxa.TaxonNamer;
-import mesquite.lib.tree.TreeVector;
-import mesquite.io.lib.*;
 
 
 

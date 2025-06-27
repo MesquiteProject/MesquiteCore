@@ -2,14 +2,19 @@ package mesquite.categ.lib;
 
 import java.awt.Rectangle;
 
-import mesquite.basic.ManageSetsBlock.ManageSetsBlock;
-import mesquite.lib.*;
+import mesquite.align.lib.AlignUtil;
+import mesquite.align.lib.PairwiseAligner;
+import mesquite.lib.Bits;
+import mesquite.lib.MesquiteBoolean;
+import mesquite.lib.MesquiteInteger;
+import mesquite.lib.MesquiteListener;
+import mesquite.lib.MesquiteModule;
+import mesquite.lib.MesquiteNumber;
+import mesquite.lib.MesquiteTrunk;
+import mesquite.lib.Notification;
 import mesquite.lib.characters.CharacterData;
 import mesquite.lib.characters.CodonPositionsSet;
-import mesquite.lib.duties.ElementManager;
 import mesquite.lib.taxa.Taxa;
-import mesquite.lists.lib.ListModule;
-import mesquite.align.lib.*;
 
 /** This is a utility class that provides static methods to do various jobs with molecular data  */
 

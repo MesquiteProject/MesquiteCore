@@ -14,14 +14,24 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
 package mesquite.charMatrices.CharSrcCoordIndep;
 /*~~  */
 
-import java.util.*;
-import java.awt.*;
-import mesquite.lib.*;
-import mesquite.lib.characters.*;
-import mesquite.lib.duties.*;
+import java.awt.Color;
+
+import mesquite.lib.CommandChecker;
+import mesquite.lib.EmployeeNeed;
+import mesquite.lib.MesquiteDouble;
+import mesquite.lib.MesquiteFile;
+import mesquite.lib.MesquiteInteger;
+import mesquite.lib.MesquiteModule;
+import mesquite.lib.MesquiteModuleInfo;
+import mesquite.lib.MesquiteTrunk;
+import mesquite.lib.Selectionable;
+import mesquite.lib.Snapshot;
+import mesquite.lib.characters.CharacterDistribution;
+import mesquite.lib.characters.CharacterStates;
+import mesquite.lib.duties.CharSourceCoord;
+import mesquite.lib.duties.CharSourceCoordObed;
 import mesquite.lib.taxa.Taxa;
 import mesquite.lib.ui.MesquiteDialog;
-import mesquite.parsimony.lib.CharacterSteps;
 
 public class CharSrcCoordIndep extends CharSourceCoord {
 

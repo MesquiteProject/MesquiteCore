@@ -13,8 +13,6 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
 */
 package mesquite.lib;
 
-import java.awt.*;
-
 /*Last documented:  August 1999 */
 /* ======================================================================== */
 public class Integer2DArray {

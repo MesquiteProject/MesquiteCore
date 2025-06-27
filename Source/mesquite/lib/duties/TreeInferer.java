@@ -13,10 +13,22 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
  */
 package mesquite.lib.duties;
 
-import java.awt.Button;
 import java.awt.Checkbox;
 
-import mesquite.lib.*;
+import mesquite.lib.CommandChecker;
+import mesquite.lib.Listened;
+import mesquite.lib.MesquiteBoolean;
+import mesquite.lib.MesquiteFile;
+import mesquite.lib.MesquiteInteger;
+import mesquite.lib.MesquiteListener;
+import mesquite.lib.MesquiteLong;
+import mesquite.lib.MesquiteNumber;
+import mesquite.lib.MesquiteString;
+import mesquite.lib.Notification;
+import mesquite.lib.OutputTextListener;
+import mesquite.lib.Puppeteer;
+import mesquite.lib.Snapshot;
+import mesquite.lib.StringUtil;
 import mesquite.lib.taxa.Taxa;
 import mesquite.lib.taxa.TaxaSelectionSet;
 import mesquite.lib.tree.AdjustableTree;
@@ -25,7 +37,7 @@ import mesquite.lib.tree.TreeDisplay;
 import mesquite.lib.tree.TreeVector;
 import mesquite.lib.ui.ExtensibleDialog;
 import mesquite.lib.ui.MesquiteWindow;
-import mesquite.trees.lib.*;
+import mesquite.trees.lib.SimpleTreeWindow;
 
 
 /* ======================================================================== */
@@ -39,7 +51,7 @@ public abstract class TreeInferer extends TreeBlockFiller {
 	TWindowMaker tWindowMaker;
 	 MesquiteBoolean autoSaveFile = new MesquiteBoolean(false);
 	 
-	 
+	 boolean alwaysPrepareForAnyMatrices=false;
 
 	 
 	public Class getDutyClass() {
@@ -57,6 +69,14 @@ public abstract class TreeInferer extends TreeBlockFiller {
 	}
 	
 	
+	/*.................................................................................................................*/
+	public boolean getAlwaysPrepareForAnyMatrices() {
+		return alwaysPrepareForAnyMatrices;
+	}
+	/*.................................................................................................................*/
+	public void setAlwaysPrepareForAnyMatrices(boolean alwaysPrepareForAnyMatrices) {
+		this.alwaysPrepareForAnyMatrices = alwaysPrepareForAnyMatrices;
+	}
 
 	/*.................................................................................................................*/
 	public String getTitleOfTextCommandLink() {
@@ -189,6 +209,8 @@ public abstract class TreeInferer extends TreeBlockFiller {
 			return;
 		listened.removeListener(listener);
 	}
+	
+	boolean needToSizeDisplay = true;
 	protected void newResultsAvailable(TaxaSelectionSet outgroupSet){
 		MesquiteString title = new MesquiteString();
 		Tree tree = getLatestTree(null, null, title);
@@ -216,8 +238,8 @@ public abstract class TreeInferer extends TreeBlockFiller {
 				}
 				else 
 					stw.setMinimumFieldSize(-1, -1); 
-				stw.sizeDisplays(false);
-				
+				if (needToSizeDisplay) stw.sizeDisplays(false);
+				needToSizeDisplay = false;
 			}
 			String commands = getExtraIntermediateTreeWindowCommands();
 			if (!StringUtil.blank(commands)) {
@@ -236,6 +258,7 @@ public abstract class TreeInferer extends TreeBlockFiller {
 //This is used for just single current tree; a different system is used in ZephyrRunner for consensus trees
 	public MesquiteWindow prepareIntermediatesWindow(){
 		if (tWindowMaker == null) {
+			needToSizeDisplay = true;
 			tWindowMaker = (TWindowMaker)hireNamedEmployee(TWindowMaker.class, "#ObedientTreeWindow");
 			String commands = getExtraTreeWindowCommands(false, MesquiteLong.unassigned);
 			commands += " showWindowForce;";

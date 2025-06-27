@@ -14,15 +14,39 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
 package mesquite.minimal.InterpretNEXUS;
 /*~~  */
 
-import java.util.*;
-import java.awt.*;
+import java.awt.TextArea;
+import java.util.Date;
+import java.util.Enumeration;
+import java.util.Vector;
 
-import mesquite.lib.*;
+import mesquite.lib.CommandChecker;
+import mesquite.lib.CommandRecord;
+import mesquite.lib.EmployeeNeed;
+import mesquite.lib.EmployeeVector;
+import mesquite.lib.FileBlock;
+import mesquite.lib.FileElement;
+import mesquite.lib.ListableVector;
+import mesquite.lib.MesquiteBoolean;
+import mesquite.lib.MesquiteException;
+import mesquite.lib.MesquiteFile;
+import mesquite.lib.MesquiteInteger;
+import mesquite.lib.MesquiteLong;
+import mesquite.lib.MesquiteModule;
+import mesquite.lib.MesquiteModuleInfo;
+import mesquite.lib.MesquiteProject;
+import mesquite.lib.MesquiteString;
+import mesquite.lib.MesquiteThread;
+import mesquite.lib.MesquiteTimer;
+import mesquite.lib.MesquiteTrunk;
+import mesquite.lib.NexusBlock;
+import mesquite.lib.Snapshot;
+import mesquite.lib.StringArray;
+import mesquite.lib.StringUtil;
 import mesquite.lib.characters.CharactersBlock;
-import mesquite.lib.duties.*;
-import mesquite.lib.taxa.Taxa;
+import mesquite.lib.duties.ManagerAssistant;
+import mesquite.lib.duties.NEXUSInterpreter;
+import mesquite.lib.duties.NexusFileInterpreter;
 import mesquite.lib.taxa.TaxaBlock;
-import mesquite.lib.ui.AlertDialog;
 import mesquite.lib.ui.ExtensibleDialog;
 import mesquite.lib.ui.MesquiteFrame;
 import mesquite.lib.ui.MesquiteWindow;
@@ -422,7 +446,13 @@ public class InterpretNEXUS extends NexusFileInterpreter implements NEXUSInterpr
 				logln("");
 				logln("This file contained one or more blocks or commands not recognized; a list is written below.  It is possible that some packages of Mesquite that are not currently loaded might be able to recognize the commands; try rereading after choosing \"Use All Installed Modules\" under \"Activate/Deactivate Packages\".\n");
 				for (int i=0; i<mNF.foreignElements.size(); i++) {
-					logln("Unrecognized " + mNF.foreignElements.elementAt(i));
+					if (i<20)
+						logln("Unrecognized " + mNF.foreignElements.elementAt(i));
+					else {
+						if (i==20)
+						logln("There were unrecognized commands or blocks, " + mNF.foreignElements.size() + " in total.");
+					}
+						
 				}
 				logln("");
 			}

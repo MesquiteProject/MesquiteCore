@@ -12,13 +12,20 @@ This source code and its compiled class files are free and modifiable under the 
 GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
  */
 package mesquite.charMatrices.WandBlock;
-import java.util.*;
-import java.awt.*;
-
-import mesquite.lib.*;
-import mesquite.lib.characters.*;
-import mesquite.lib.duties.*;
-import mesquite.lib.table.*;
+import mesquite.categ.lib.RequiresAnyMolecularData;
+import mesquite.lib.CommandChecker;
+import mesquite.lib.CompatibilityTest;
+import mesquite.lib.MesquiteBoolean;
+import mesquite.lib.MesquiteFile;
+import mesquite.lib.MesquiteInteger;
+import mesquite.lib.MesquiteListener;
+import mesquite.lib.MesquiteModule;
+import mesquite.lib.Notification;
+import mesquite.lib.Snapshot;
+import mesquite.lib.characters.CharacterData;
+import mesquite.lib.duties.DataWindowAssistantI;
+import mesquite.lib.table.MesquiteTable;
+import mesquite.lib.table.TableTool;
 import mesquite.lib.ui.MesquiteWindow;
 
 /*   to do:
@@ -64,6 +71,11 @@ public class WandBlock extends DataWindowAssistantI {
 	public void setTableAndData(MesquiteTable table, CharacterData data){
 		this.table = table;
 		this.data = data;
+	}
+	/*.................................................................................................................*/
+	/** Returns CompatibilityTest so other modules know if this is compatible with some object. */
+	public CompatibilityTest getCompatibilityTest(){
+		return new RequiresAnyMolecularData();
 	}
 	/*.................................................................................................................*/
 	public Snapshot getSnapshot(MesquiteFile file) {

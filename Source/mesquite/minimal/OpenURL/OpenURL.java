@@ -14,12 +14,21 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
 package mesquite.minimal.OpenURL;
 /*~~  */
 
-import java.awt.*;
-import java.net.*;
-import java.util.*;
-import java.io.*;
-import mesquite.lib.*;
-import mesquite.lib.duties.*;
+import java.net.MalformedURLException;
+import java.net.URL;
+
+import mesquite.lib.CommandRecord;
+import mesquite.lib.MesquiteFile;
+import mesquite.lib.MesquiteModule;
+import mesquite.lib.MesquiteProject;
+import mesquite.lib.MesquiteString;
+import mesquite.lib.MesquiteThread;
+import mesquite.lib.MesquiteTrunk;
+import mesquite.lib.StringUtil;
+import mesquite.lib.duties.FileCoordinator;
+import mesquite.lib.duties.FileInterpreter;
+import mesquite.lib.duties.GeneralFileMakerSingle;
+import mesquite.lib.duties.NexusFileInterpreter;
 
 public class OpenURL extends GeneralFileMakerSingle  {
 	public String getNameForMenuItem() {

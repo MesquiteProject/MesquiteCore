@@ -13,17 +13,21 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
  */
 package mesquite.charMatrices.MatrixNavigationTool; 
 
-import java.util.*;
-import java.awt.*;
-import java.awt.image.*;
-import mesquite.lib.*;
-import mesquite.lib.characters.*;
-import mesquite.lib.duties.*;
-import mesquite.lib.table.*;
+import mesquite.categ.lib.MolecularData;
+import mesquite.lib.CommandChecker;
+import mesquite.lib.Debugg;
+import mesquite.lib.MesquiteCommand;
+import mesquite.lib.MesquiteInteger;
+import mesquite.lib.MesquiteMessage;
+import mesquite.lib.MesquiteModule;
+import mesquite.lib.characters.CharacterData;
+import mesquite.lib.duties.DataWindowAssistantI;
+import mesquite.lib.table.CMTable;
+import mesquite.lib.table.MesquiteTable;
+import mesquite.lib.table.TableTool;
 import mesquite.lib.taxa.Taxa;
 import mesquite.lib.ui.MesquitePopup;
 import mesquite.lib.ui.MesquiteWindow;
-import mesquite.categ.lib.*;
 
 /* TODO: 
  * 	- emphasize rows and columns on mousedowns
@@ -98,7 +102,7 @@ public class MatrixNavigationTool extends DataWindowAssistantI {
 			return;
 		int max = data.getNumberApplicableInTaxon(row, false);
 		if (max<1) {
-			Debugg.printStackTrace();
+			MesquiteMessage.printStackTrace("max<1 in moveToBaseInSequence");
 		}
 		int num = MesquiteInteger.queryInteger(table.getWindow(), "Base within sequence to move to", "Base within sequence to move to", 1, 1, max);
 		if (!MesquiteInteger.isCombinable(num)) 	
@@ -261,7 +265,7 @@ public class MatrixNavigationTool extends DataWindowAssistantI {
 	 * then the number refers to the Mesquite version.  This should be used only by modules part of the core release of Mesquite.
 	 * If a NEGATIVE integer, then the number refers to the local version of the package, e.g. a third party package*/
 	public int getVersionOfFirstRelease(){
-		return NEXTRELEASE;  
+		return 400;  
 	}
 	/*.................................................................................................................*/
 	/** returns an explanation of what the module does.*/
