@@ -747,6 +747,10 @@ public class TaxaListHasData extends TaxonListAssistant  {
 		int code = Notification.getCode(notification);
 		if (obj==datas){
 			parametersChanged(notification);
+		} else if (obj instanceof CharacterData) {
+			doCalcs();
+			outputInvalid();
+			parametersChanged(notification);
 		}
 	}
 	/*.................................................................................................................*/
@@ -807,15 +811,15 @@ public class TaxaListHasData extends TaxonListAssistant  {
 		String noteGB = getNote(it,MolecularData.genBankNumberRef);
 		String notePC = getNote(it,CharacterData.publicationCodeNameRef);
 		String note = null;
-		if (noteTM != null)
+		if (StringUtil.notEmpty(noteTM))
 			note = noteTM;
-		if (noteGB != null) {
+		if (StringUtil.notEmpty(noteGB)) {
 			if (note == null)
 				note = noteGB;
 			else
 				note += " – " + noteGB;
 		}
-		if (notePC != null) {
+		if (StringUtil.notEmpty(notePC)) {
 			if (note == null)
 				note = notePC;
 			else
