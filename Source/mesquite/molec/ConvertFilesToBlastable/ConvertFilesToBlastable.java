@@ -111,7 +111,6 @@ public class ConvertFilesToBlastable extends UtilitiesAssistant implements Actio
 		}
 		if (appInfoFile!=null) {
 			String fullPath = appInfoFile.getFullPath();
-			Debugg.println(getAppInfoForLog());
 			return fullPath;
 		}
 		return null;

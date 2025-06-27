@@ -23,7 +23,6 @@ import mesquite.assoc.lib.TaxaAssociation;
 import mesquite.categ.lib.MolecularState;
 import mesquite.lib.Arguments;
 import mesquite.lib.Bits;
-import mesquite.lib.Debugg;
 import mesquite.lib.IntegerField;
 import mesquite.lib.MesquiteBoolean;
 import mesquite.lib.MesquiteFile;
@@ -460,9 +459,9 @@ public class ExportForBPP extends FileInterpreterI {
 				}
 			}
 			if (allPopulationTerminals.anyBitsOn()) { // then some terminals aren't included in the selected clades.
-				Debugg.println("\nWARNING:  Some terminals not included");
+				logln("\nNOTE:  Some terminals not included");
 			} else if (nested) {  // all population terminals are included, but there is a nesting of selected clades
-				Debugg.println("\nWARNING:  Selected clades are nested");
+				logln("\nNOTE:  Selected clades are nested");
 			} else {
 				boolean exportAll = true;
 				int counter = 0;

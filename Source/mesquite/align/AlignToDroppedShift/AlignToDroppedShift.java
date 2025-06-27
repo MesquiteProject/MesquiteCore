@@ -202,17 +202,6 @@ public  class AlignToDroppedShift extends AlignShiftToDroppedBase {
 		int effectiveColumnDropped = columnDropped.getValue();  // this is the column on which it is dropped, adjusted to a real data cell if it was dropped on a gap
 		int effectiveColumnDragged = columnDragged.getValue(); // this is the column which was dragged, adjusted to a real data cell if a gap was dragged
 
-		
-/*		
-		Debugg.println("\n============= row " + rowToAlign + "  =============");
-		Debugg.println("  columnDragged " + columnDragged.getValue());
-		Debugg.println("  columnDropped " + columnDropped.getValue());
-		Debugg.println("  numberOfCellsWithDataBeforeDroppedCell " + numberOfCellsWithDataBeforeDroppedCell);
-		Debugg.println("  numberOfCellsWithDataBeforeDraggedCell " + numberOfCellsWithDataBeforeDraggedCell);
-		Debugg.println("  windowStart " + windowStart.getValue());
-		Debugg.println("  windowEnd " + windowEnd.getValue());
-*/
-
 
 		/* ==================== SHIFT TO DROPPED ===================*/
 		if (shiftToDropped) {
@@ -243,7 +232,6 @@ public  class AlignToDroppedShift extends AlignShiftToDroppedBase {
 					}
 				}
 			}
-		//	Debugg.println("    numberOfCellsWithDataBeforeWindowStart " + numberOfCellsWithDataBeforeWindowStart);
 
 			//let's find where the dropped cell is in the new alignment
 			int droppedAlignmentCount=0;
@@ -261,7 +249,6 @@ public  class AlignToDroppedShift extends AlignShiftToDroppedBase {
 					}
 				}
 			}
-		//	Debugg.println("    droppedCellPositionInAlignment " + droppedCellPositionInAlignment);
 			// we know it was dropped on the position that is at droppedCellPositionInAlignment in the new alignment.
 
 			//let's see how many cells are within the dragged sequence up to the point in the alignment where the dropped cell is
@@ -305,37 +292,6 @@ public  class AlignToDroppedShift extends AlignShiftToDroppedBase {
 			int positionInOriginalAlignment= lastFilledCellDraggedOriginalPosition+extraGapsInNewAlignment;
 			amountToMove = effectiveColumnDropped-positionInOriginalAlignment+1;
 			
-			
-			/*				
-			Debugg.println("    numberDataCellsInDraggedinAlignmentUpToDroppedSite " + numberDataCellsInDraggedinAlignmentUpToDroppedSite);
-			Debugg.println("    lastFilledCellDraggedAlignmentPositionBeforeDroppedSite " + lastFilledCellDraggedAlignmentPositionBeforeDroppedSite);
-			Debugg.println("    extraGapsInNewAlignment " + extraGapsInNewAlignment);
-			Debugg.println("        numberOfCellsWithDataBeforeDroppedCell [after] " + numberOfCellsWithDataBeforeDroppedCell);
-			Debugg.println("        numberOfCellsWithDataBeforeDraggedCell [after] " + numberOfCellsWithDataBeforeDraggedCell);
-			Debugg.println("    effectiveColumnDragged " + effectiveColumnDragged);
-			Debugg.println("    effectiveColumnDropped " + effectiveColumnDropped);
-			Debugg.println("    lastFilledCellDraggedOriginalPosition " + lastFilledCellDraggedOriginalPosition);
-			Debugg.println("    extraGapsInNewAlignment " + extraGapsInNewAlignment);
-			Debugg.println("    positionInOriginalAlignment " + positionInOriginalAlignment);
-			Debugg.println("    amountToMove (1) " + amountToMove);
-			
-
-		
-			if (useWindow() && false) {
-				amountToMove=amountToMove-windowLength/2;
-				int  windowStartShiftShift = (columnDropped.getValue()-(windowLength/2)-windowStart.getValue());
-				if (windowStartShiftShift>0) {
-					amountToMove-=windowStartShiftShift;
-				}
-				int  windowEndShiftShift = (columnDropped.getValue()+(windowLength/2)-windowEnd.getValue()-1);
-				if (windowEndShiftShift<0) {
-					amountToMove-=windowEndShiftShift;
-				}
-				Debugg.println("    windowStartShiftShift " + windowStartShiftShift);
-				Debugg.println("    windowEndShiftShift " + windowEndShiftShift);
-				Debugg.println("    amountToMove (2) " + amountToMove);
-			}
-*/
 		} 
 		
 		/* ==================== SHIFT TO DRAGGED ===================*/

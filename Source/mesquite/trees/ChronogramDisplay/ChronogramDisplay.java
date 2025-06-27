@@ -411,7 +411,6 @@ class ChonogramDisplayExtra extends TreeDisplayExtra implements TreeDisplayBkgdE
 			g.fillOval((int)(x-nodeCircleSize/2), (int)(y-nodeCircleSize/2), nodeCircleSize, nodeCircleSize);
 		}
 		else {
-			//Debugg.println(taxa.getTaxonName(node)+" x="+x +", y="+y);
 		}
 
 	}

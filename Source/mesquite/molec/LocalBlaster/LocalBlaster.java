@@ -127,7 +127,6 @@ public class LocalBlaster extends Blaster implements ActionListener,  AppUser, P
 		}
 		if (appInfoFile!=null) {
 			String fullPath = appInfoFile.getFullPath();
-			Debugg.println(getAppInfoForLog());
 			return fullPath;
 		}
 		return null;
