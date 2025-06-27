@@ -160,6 +160,7 @@ public abstract class MesquiteModule extends EmployerEmployee implements Command
 	//3.70  = 940 released 21 Aug 2021
 	//3.80  = 950 released 10 Apr 2023
 	//3.81  = 955 released 20 Apr 2023
+	//4.0  = 1086 released 27 June 2025
 	// build 1000 1 October 2024
 
 	/*.................................................................................................................*/
