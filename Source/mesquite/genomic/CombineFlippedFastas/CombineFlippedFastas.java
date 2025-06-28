@@ -42,14 +42,19 @@ import mesquite.lib.taxa.Taxon;
 import mesquite.lib.ui.ListDialog;
 import mesquite.lib.ui.MesquiteWindow;
 import mesquite.lib.ui.ProgressIndicator;
+import mesquite.lib.ui.QueryDialogs;
 
 /* ======================================================================== */
 public class CombineFlippedFastas extends GeneralFileMakerMultiple {
 	TaxonNameAlterer nameAlterer;
 	/*.................................................................................................................*/
 	public boolean startJob(String arguments, Object condition, boolean hiredByName){
-		nameAlterer = (TaxonNameAlterer)hireEmployee(TaxonNameAlterer.class, "Name Alterer; hit cancel to use none");
-		return true;
+		int result = QueryDialogs.queryTwoRadioButtons(containerOfModule(), "Alter names?", "Do you want to alter or adjust the names of loci (e.g., by deleting part of the name) "
+				+"as the files are being read?\n\nIf you choose to alter the names, note that some of the choices in the next dialog will refer to \"taxon names\", but it's actually the locus names that are getting altered."
+				+" The reason for this is that Mesquite is set to interpret rows in a file as taxa, but in these flipped fasta files, the rows are loci.", null, "Don't alter locus names", "Alter locus names");
+		if (result ==1)
+			nameAlterer = (TaxonNameAlterer)hireEmployee(TaxonNameAlterer.class, "How to alter locus names");
+			return result >=0;
 	}
 
 	boolean firstFile = true;
