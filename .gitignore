@@ -45,3 +45,9 @@ Thumbs.db
 .gitignore
 /.gitignore
 /target/
+
+
+# executables #
+######################
+Mesquite_Starter.*
+
