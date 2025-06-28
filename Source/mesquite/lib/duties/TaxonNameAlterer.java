@@ -69,7 +69,6 @@ public abstract class TaxonNameAlterer extends MesquiteModule  {
    		}
    		this.taxa = taxa;
    		this.table = table;
-   	
 		if (okToInteractWithUser(CAN_PROCEED_ANYWAY, "Asking to change taxon names"))
 			if (!getOptions(taxa, first)) {
 				return ResultCodes.USERCANCELONINITIALIZE;
