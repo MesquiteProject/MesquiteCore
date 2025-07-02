@@ -51,6 +51,8 @@ public class MesquiteFileUtil {
 	/*.................................................................................................................*/
 	public static String createDirectoryForFiles(MesquiteModule module, int location, String subDirectoryName, String name, String suffix, boolean createUniqueDatedName) {
 		MesquiteBoolean directoryCreated = new MesquiteBoolean(false);
+		if ( module.getProject() == null) //ZQQ
+			return null;
 		String rootDir = null;
 		if (location == IN_SUPPORT_DIR)
 			rootDir = module.createEmptySupportDirectory(directoryCreated) + MesquiteFile.fileSeparator;  //replace this with current directory of file
