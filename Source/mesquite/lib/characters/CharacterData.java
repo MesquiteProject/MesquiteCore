@@ -245,7 +245,7 @@ public abstract class CharacterData extends FileElement implements MesquiteListe
 		changedSinceSave = null;
 		anyChangesSinceSave = false;
 	}
-	
+
 	//THIS SHOULD BE USED with great caution. Designed only for transferring a matrix to another block of taxa in special circumstances.
 	public boolean setTaxa(Taxa otherTaxa, boolean areYouReallySureYouWantToDoThis){
 		if (otherTaxa == taxa)
@@ -253,7 +253,7 @@ public abstract class CharacterData extends FileElement implements MesquiteListe
 		if (otherTaxa.getNumTaxa() != taxa.getNumTaxa())
 			return false;
 		taxa.removeListenerHighPriority(this);  //TODO: this is dangerous for simulation matrices; if not disposed will be source of memory leak
-		
+
 		this.taxa = otherTaxa;
 		taxa.addListenerHighPriority(this);  //TODO: this is dangerous for simulation matrices; if not disposed will be source of memory leak
 		taxaIDs = taxa.getTaxaIDs();
@@ -732,7 +732,7 @@ public abstract class CharacterData extends FileElement implements MesquiteListe
 	public void copyMetadataTo(CharacterData targetData){
 		if (targetData.getNumChars()!= numChars)
 			return;
-		
+
 		for (int ic=0; ic<numChars; ic++){
 			if (characterHasName(ic))
 				targetData.setCharacterName(ic, getCharacterName(ic));
@@ -788,7 +788,7 @@ public abstract class CharacterData extends FileElement implements MesquiteListe
 			targetData.footnotes = targetFootnotes;
 		}
 		for (int j = 0; j<numChars; j++)
-				targetData.setAnnotation(j, getAnnotation(j));
+			targetData.setAnnotation(j, getAnnotation(j));
 
 	}
 	//TODO: also need setToClone(data) method to set specsets and names etc. including super.setToClone()
@@ -1067,7 +1067,7 @@ public abstract class CharacterData extends FileElement implements MesquiteListe
 			return false;
 		if (toBeDeleted == null)
 			return false;
-		
+
 		if (toBeDeleted.getSize()>numChars)
 			toBeDeleted.resetSize(numChars);
 
@@ -1076,7 +1076,7 @@ public abstract class CharacterData extends FileElement implements MesquiteListe
 		charIDs = LongArray.deletePartsFlagged(charIDs, toBeDeleted);
 
 		notifyOfChangeLowLevel(MesquiteListener.PARTS_DELETED, 0, 0, 0);  
-		
+
 		uniqueIDs = StringArray.deletePartsFlagged(uniqueIDs, toBeDeleted);
 		characterNames = StringArray.deletePartsFlagged(characterNames, toBeDeleted);
 		footnotes = StringArray.deleteColumnsFlagged(footnotes, toBeDeleted);
@@ -1094,13 +1094,13 @@ public abstract class CharacterData extends FileElement implements MesquiteListe
 
 		//How much deleted?.
 		numChars -= toBeDeleted.numBitsOn();
-		
+
 		//calculateFirstLastApplicable();
 		super.deletePartsFlagged(toBeDeleted); //for specs sets
 		uncheckThread();
 		return true;
 	}	
-	
+
 	/*-----------------------------------------------------------*/
 	/* Deletes characters, taxa, or cell state (to inapplicable). Used initially in sequence alignment trimming */
 	public String deleteByMatrixFlags(MatrixFlags flags){
@@ -1166,7 +1166,7 @@ public abstract class CharacterData extends FileElement implements MesquiteListe
 		charIDs = LongArray.deletePartsBy Blocks(charIDs, blocks);
 
 		notifyOfChangeLowLevel(MesquiteListener.PARTS_DELETED, 0, 0, 0);  
-		
+
 		uniqueIDs = StringArray.deletePartsBy Blocks(uniqueIDs, blocks);
 		characterNames = StringArray.deletePartsBy Blocks(characterNames, blocks);
 		footnotes = StringArray.deleteColumnsBy Blocks(footnotes, blocks);
@@ -1187,7 +1187,7 @@ public abstract class CharacterData extends FileElement implements MesquiteListe
 		for (int block = 0; block<blocks.length; block++) 
 			shift += blocks[block][1]- blocks[block][0]+1;
 		numChars -= shift;
-		
+
 		//calculateFirstLastApplicable();
 		super.deletePartsBy Blocks(blocks); //for specs sets
 		uncheckThread();
@@ -1196,7 +1196,7 @@ public abstract class CharacterData extends FileElement implements MesquiteListe
 
 
 
-*/
+	 */
 	/*-----------------------------------------------------------*/
 	/** deletes num characters from (and including) position "starting"; returns true iff successful.  Should be overridden by particular subclasses, but this called via super so it can clean up.*/
 	public boolean deleteParts(int starting, int num){
@@ -2275,11 +2275,11 @@ public abstract class CharacterData extends FileElement implements MesquiteListe
 	}
 
 	/** appends to buffer string describing the state(s) of character ic in taxon it.*/
-//	public abstract void statesIntoStringBuffer(int ic, int it, StringBuffer sb, boolean forDisplay, boolean includeInapplicable, boolean includeUnassigned);
+	//	public abstract void statesIntoStringBuffer(int ic, int it, StringBuffer sb, boolean forDisplay, boolean includeInapplicable, boolean includeUnassigned);
 	/** appends to buffer string describing the state(s) of character ic in taxon it.*/
 	public abstract void statesIntoStringBuffer(int ic, int it, MesquiteStringBuffer sb, boolean forDisplay, boolean includeInapplicable, boolean includeUnassigned);
 	/** appends to buffer string describing the state(s) of character ic in taxon it.*/
-//	public abstract void statesIntoStringBuffer(int ic, int it, StringBuffer sb, boolean forDisplay);
+	//	public abstract void statesIntoStringBuffer(int ic, int it, StringBuffer sb, boolean forDisplay);
 	/** appends to buffer string describing the state(s) of character ic in taxon it.*/
 	public abstract void statesIntoStringBuffer(int ic, int it, MesquiteStringBuffer sb, boolean forDisplay);
 	/** appends to buffer string describing the state(s) of character ic in taxon it.*/
@@ -2327,49 +2327,49 @@ public abstract class CharacterData extends FileElement implements MesquiteListe
 	/*.................................................................................................................*/
 	public int getStartofBlock(int seedIC, int it, boolean mustBeApplicable) {
 		int start = -1;
-			if (isInapplicable(seedIC,  it) && !mustBeApplicable) {
-				start=seedIC;
-				for (int ic=seedIC; ic>=0; ic--){
-					if (isInapplicable(ic, it))
-						start=ic;
-					else
-						break;
-				}
-			} else if (!isInapplicable(seedIC,  it)) {
-				start=seedIC;
-				for (int ic=seedIC; ic>=0; ic--){
-					if (!isInapplicable(ic, it))
-						start=ic;
-					else
-						break;
-				}
+		if (isInapplicable(seedIC,  it) && !mustBeApplicable) {
+			start=seedIC;
+			for (int ic=seedIC; ic>=0; ic--){
+				if (isInapplicable(ic, it))
+					start=ic;
+				else
+					break;
+			}
+		} else if (!isInapplicable(seedIC,  it)) {
+			start=seedIC;
+			for (int ic=seedIC; ic>=0; ic--){
+				if (!isInapplicable(ic, it))
+					start=ic;
+				else
+					break;
+			}
 		}
 		return start;
 	}
 	/*.................................................................................................................*/
 	public int getEndofBlock(int seedIC, int it, boolean mustBeApplicable) {
 		int end = -1;
-			if (isInapplicable(seedIC,  it) && !mustBeApplicable) {
-				end=seedIC;
-				for (int ic=seedIC+1; ic<getNumChars(); ic++){
-					if (isInapplicable(ic, it))
-						end=ic;
-					else
-						break;
-				}
-			} else if (!isInapplicable(seedIC,  it)) {
-				end=seedIC;
-				for (int ic=seedIC+1; ic<getNumChars(); ic++){
-					if (!isInapplicable(ic, it))
-						end=ic;
-					else
-						break;
-				}
+		if (isInapplicable(seedIC,  it) && !mustBeApplicable) {
+			end=seedIC;
+			for (int ic=seedIC+1; ic<getNumChars(); ic++){
+				if (isInapplicable(ic, it))
+					end=ic;
+				else
+					break;
 			}
-			return end;
+		} else if (!isInapplicable(seedIC,  it)) {
+			end=seedIC;
+			for (int ic=seedIC+1; ic<getNumChars(); ic++){
+				if (!isInapplicable(ic, it))
+					end=ic;
+				else
+					break;
+			}
+		}
+		return end;
 	}
 
-	
+
 	/** returns whether the character ic is inapplicable to taxon it*/
 	public abstract boolean isInapplicable(int ic, int it);
 	/** returns whether the character ic is entirely inapplicable codings*/
@@ -2500,16 +2500,16 @@ public abstract class CharacterData extends FileElement implements MesquiteListe
 
 
 
-	
-public boolean removeCharactersThatAreEntirelyGaps(int icStart, int icEnd, boolean notify){
-	boolean removedSome =  false;
-	Bits bits = new Bits(getNumChars());
+
+	public boolean removeCharactersThatAreEntirelyGaps(int icStart, int icEnd, boolean notify){
+		boolean removedSome =  false;
+		Bits bits = new Bits(getNumChars());
 		for (int ic=icStart; ic<getNumChars() && ic<icEnd; ic++)
 			if (entirelyInapplicable(ic)) {
 				bits.setBit(ic, true);
 				removedSome = true;
 			}
-	//	int[][] blocks = bits.getBlocks(-1);
+		//	int[][] blocks = bits.getBlocks(-1);
 		deletePartsFlagged(bits, notify);
 		deleteInLinkedFlagged(bits, notify);
 
@@ -2531,21 +2531,21 @@ public boolean removeCharactersThatAreEntirelyGaps(int icStart, int icEnd, boole
 				removedSome=true;
 			}
 		}
-		*/
+		 */
 		return removedSome;
 	}
 
-public boolean removeCharactersThatAreEntirelyGaps(boolean notify){
-	boolean removedSome =  false;
-	Bits bits = new Bits(getNumChars());
-	for (int ic=0; ic<getNumChars(); ic++)
-		if (entirelyInapplicable(ic)) {
-			bits.setBit(ic, true);
-			removedSome = true;
-		}
-	deletePartsFlagged(bits, notify);
-	deleteInLinkedFlagged(bits, notify);
-/*		old
+	public boolean removeCharactersThatAreEntirelyGaps(boolean notify){
+		boolean removedSome =  false;
+		Bits bits = new Bits(getNumChars());
+		for (int ic=0; ic<getNumChars(); ic++)
+			if (entirelyInapplicable(ic)) {
+				bits.setBit(ic, true);
+				removedSome = true;
+			}
+		deletePartsFlagged(bits, notify);
+		deleteInLinkedFlagged(bits, notify);
+		/*		old
 
 		for (int ic = getNumChars()-1; ic>=0; ic--){
 			if (entirelyInapplicable(ic)) {
@@ -2596,10 +2596,10 @@ public boolean removeCharactersThatAreEntirelyGaps(boolean notify){
 				removedSome=true;
 			}
 		}
-		*/
+		 */
 		return removedSome;
 	}
-	
+
 
 	public boolean removeCharactersThatAreEntirelyUnassignedOrInapplicable(boolean notify){
 		boolean removedSome =  false;
@@ -2611,8 +2611,8 @@ public boolean removeCharactersThatAreEntirelyGaps(boolean notify){
 			}
 		deletePartsFlagged(bits, notify);
 		deleteInLinkedFlagged(bits, notify);
-/*		 old
- * for (int ic = getNumChars()-1; ic>=0; ic--){
+		/*		 old
+		 * for (int ic = getNumChars()-1; ic>=0; ic--){
 			if (entirelyUnassignedOrInapplicable(ic)) {
 				int numToDelete = 1;
 				int firstToDelete = ic;
@@ -4141,8 +4141,8 @@ public boolean removeCharactersThatAreEntirelyGaps(boolean notify){
 		CharacterPartition partition = (CharacterPartition) getCurrentSpecsSet(CharacterPartition.class);   // partition of this object
 		CharactersGroupVector groups = (CharactersGroupVector)getProject().getFileElement(CharactersGroupVector.class, 0);
 		CharactersGroup group = null;  //see if one with prefix already exists
-		
-		
+
+
 		randomColor = ColorDistribution.getRandomColor(randomColor);
 		if (partition==null && origNumChars-1>=0){ // let's give the original ones a group, as they didn't have any before
 			group = groups.findGroup(getName());  //let's see if there already exists a group with this matrix name
@@ -4393,59 +4393,100 @@ public boolean removeCharactersThatAreEntirelyGaps(boolean notify){
 	}
 
 	/*..........................................CharacterData.....................................*/
-	/**merges the states for taxon it2 into it1  within this Data object */
-	public  boolean mergeSecondTaxonIntoFirst(int it1, int it2, boolean mergeMultistateAsUncertainty) {
+	/**merges the states for taxon it2 into it1  within this Data object 
+	 * Returns whether any choice was needed because both had data present*/
+	public  boolean mergeSecondTaxonIntoFirst(int it1, int it2,  int mergeRule) {
 		if ( it1<0 || it1>=getNumTaxa() || it2<0 || it2>=getNumTaxa() )
 			return false;
-
-		boolean mergedAssigned = false;
-		CharacterState cs1= null;
-		CharacterState cs2= null;
-		for (int ic=0; ic<getNumChars(); ic++) {
-			cs1 = getCharacterState(cs1, ic,it1);
-			cs2 = getCharacterState(cs2, ic,it2);
-			if (cs1.isCombinable() && cs2.isCombinable()){ //both have states; just leave first state as is
-				mergedAssigned = true;
-			}
-			else if (cs1.isCombinable()){  // taxon 1 has state but not taxon 2; just use first
-			}
-			else if (cs2.isCombinable()){  // taxon 2 has state but not taxon 1; just use second
+		if (!hasDataForTaxon(it2))
+			return false;
+		boolean receivingHasData = hasDataForTaxon(it1);
+		boolean bothHadStates = true;
+		System.err.println("@ mergeRule " + mergeRule + " receivingHasData " + receivingHasData);
+		if (!receivingHasData){
+			mergeRule = MERGE_preferIncoming;
+			bothHadStates = false;
+		}
+		else if (mergeRule == MERGE_useLongest){
+			int n1 =  numNotInapplicableNotUnassigned(it1);
+			int n2 =  numNotInapplicableNotUnassigned(it2);
+			if (n2>n1)
+				mergeRule = MERGE_preferIncoming;
+			else
+				mergeRule = MERGE_preferReceiving;
+			System.err.println("@ n1 " + n1 + " n2 " + n2);
+		}
+		
+		if (mergeRule == MERGE_preferReceiving){
+		}
+		else if (mergeRule == MERGE_preferIncoming){
+			CharacterState cs2= null;
+			for (int ic=0; ic<getNumChars(); ic++) {
+				cs2 = getCharacterState(cs2, ic,it2);
 				setState( ic, it1, cs2);
 			}
-			else {
-				setToUnassigned( ic, it1);
-			}
 		}
-		return mergedAssigned;
+		else if (mergeRule == MERGE_blendMultistateAsUncertainty || mergeRule == MERGE_blendMultistateAsPolymorphism){
+			boolean mergedAssigned = false;
+			CharacterState cs1= null;
+			CharacterState cs2= null;
+			for (int ic=0; ic<getNumChars(); ic++) {
+				cs1 = getCharacterState(cs1, ic,it1);
+				cs2 = getCharacterState(cs2, ic,it2);
+				if (cs1.isCombinable() && cs2.isCombinable()){ //both have states; just leave first state as is
+					mergedAssigned = true;
+				}
+				else if (cs1.isCombinable()){  // taxon 1 has state but not taxon 2; just use first
+				}
+				else if (cs2.isCombinable()){  // taxon 2 has state but not taxon 1; just use second
+					setState( ic, it1, cs2);
+				}
+				else if (cs1.isInapplicable() && cs2.isInapplicable()){  // both are inapplicable; use that
+					setToInapplicable( ic, it1);
+				}
+				else {
+					setToUnassigned( ic, it1);
+				}
+			}
+			//return mergedAssigned;
+		}
+		if (!receivingHasData){
+			//in this case tInfo brought in from merging.  This isn't ideal, as should fuse tInfo if both have data
+			Associable a = getTaxaInfo(false);
+			if (a != null)
+				a.swapParts(it1, it2, true);
+		}
+	return bothHadStates;
 	}
 	/*..........................................CharacterData.....................................*/
-	/**merges the states for taxon it2 into it1  within this Data object */
+	/**merges the states for taxon it2 into it1  within this Data object *
 	public  boolean mergeSecondTaxonIntoFirst(int it1, int it2) {
 		return mergeSecondTaxonIntoFirst(it1,it2,false);
 	}
 	/*..........................................CharacterData.....................................*/
 	/**merges the states for the taxa recorded in taxaToMerge into taxon it  within this Data object.  
 	 * Returns a boolean array of which taxa had states merged  (i.e. something other than 
-	 * unassigned + assigned or inapplicable + assigned */
-	public boolean[] mergeTaxa(int sinkTaxon, boolean[]taxaToMerge, boolean mergeMultistateAsUncertainty) {
-		if (!(MesquiteInteger.isCombinable(sinkTaxon)) || sinkTaxon<0 || sinkTaxon>=getNumTaxa() || taxaToMerge==null)
+	 * unassigned + assigned or inapplicable + assigned )*/
+	public static final int MERGE_blendMultistateAsPolymorphism = 0;
+	public static final int MERGE_blendMultistateAsUncertainty = 1;
+	public static final int MERGE_useLongest = 2;
+	public static final int MERGE_preferReceiving = 3;
+	public static final int MERGE_preferIncoming = 4;
+	
+	public boolean[] mergeTaxa(int receivingTaxon, boolean[]taxaToMerge, int mergeRule) {
+		if (!(MesquiteInteger.isCombinable(receivingTaxon)) || receivingTaxon<0 || receivingTaxon>=getNumTaxa() || taxaToMerge==null)
 			return null;
 		boolean[] mA = new boolean[taxaToMerge.length];
 		boolean mergedAssigned = false;
-		boolean firstHasData = hasDataForTaxon(sinkTaxon);
+		//boolean receivingHasData = hasDataForTaxon(receivingTaxon);
+		System.err.println("@ ======= receivingTaxon " + receivingTaxon+ " matrix " + getName());
 		for (int it=0; it<getNumTaxa() && it<taxaToMerge.length; it++) {
-			if (it!=sinkTaxon && taxaToMerge[it]){
-				boolean mergingHadData = hasDataForTaxon(it);
-				boolean ma = mergeSecondTaxonIntoFirst(sinkTaxon, it, mergeMultistateAsUncertainty);
-				if (mergingHadData && ! firstHasData){
-					//in this case tInfo brought in from merging.  This isn't ideal, as should fuse tInfo if both have data
-					Associable a = getTaxaInfo(false);
-					if (a != null)
-						a.swapParts(sinkTaxon, it, true);
-				}
+			if (it!=receivingTaxon && taxaToMerge[it]){
+				System.err.println("@~~~ mergingTaxon " + it);
+				//Note: this no longer reports whether a blended state is present, but wehther both taxa had data and thus there was some sort of merge
+				boolean ma = mergeSecondTaxonIntoFirst(receivingTaxon, it, mergeRule);
 				mA[it] = ma;   
 				mergedAssigned = mergedAssigned | ma;
-
 			}
 		}
 		if (mergedAssigned)
@@ -4457,9 +4498,9 @@ public boolean removeCharactersThatAreEntirelyGaps(boolean notify){
 	/*..........................................CharacterData.....................................*/
 	/**merges the states for the taxa recorded in taxaToMerge into taxon it  within this Data object.  
 	 * Returns a boolean array of which taxa had states merged  (i.e. something other than 
-	 * unassigned + assigned or inapplicable + assigned */
-	public boolean[] mergeTaxa(int sinkTaxon, boolean[]taxaToMerge) {
-		return mergeTaxa(sinkTaxon, taxaToMerge, false);
+	 * unassigned + assigned or inapplicable + assigned *
+	public boolean[] mergeTaxa(int receivingTaxon, boolean[]taxaToMerge) {
+		return mergeTaxa(receivingTaxon, taxaToMerge, false);
 	}
 
 	/*..........................................CharacterData.....................................*/
