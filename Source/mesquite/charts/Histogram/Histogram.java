@@ -731,7 +731,7 @@ public class Histogram extends DrawChart {
 	}
 	public void changed(Object caller, Object obj, Notification notification){
 		int code = Notification.getCode(notification);
-		if ((obj==pointsAssociable || obj instanceof Selectionable) && (code==MesquiteListener.PARTS_MOVED ||code == MesquiteListener.SELECTION_CHANGED || code == MesquiteListener.PARTS_DELETED || code == MesquiteListener.PARTS_ADDED)) {
+		if ((obj==pointsAssociable || obj instanceof Selectionable) && (code==MesquiteListener.PARTS_MOVED ||code == MesquiteListener.SELECTION_CHANGED || code == MesquiteListener.PARTS_CHANGED || code == MesquiteListener.PARTS_DELETED || code == MesquiteListener.PARTS_ADDED)) {
 			syncSel(true);
 		}
 	}

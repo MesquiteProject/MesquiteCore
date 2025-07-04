@@ -24,8 +24,10 @@ import mesquite.lib.MesquiteBoolean;
 import mesquite.lib.MesquiteInteger;
 import mesquite.lib.MesquiteThread;
 import mesquite.lib.Notification;
+import mesquite.lib.ResultCodes;
 import mesquite.lib.StringUtil;
 import mesquite.lib.characters.CharacterData;
+import mesquite.lib.duties.TaxonMerger;
 import mesquite.lib.duties.TaxonUtility;
 import mesquite.lib.taxa.Taxa;
 import mesquite.lib.ui.AlertDialog;
@@ -34,7 +36,7 @@ import mesquite.lib.ui.RadioButtons;
 
 
 /* ======================================================================== */
-public class MergeTaxa extends TaxonUtility {
+public class MergeTaxa extends TaxonMerger {
 	//	int maxNameLength=30;
 	boolean keepEntireName=true;
 	static int USEFIRSTNAME = 0;
@@ -44,8 +46,9 @@ public class MergeTaxa extends TaxonUtility {
 	int startLengthToKeep = 10;
 	int endLengthToKeep = 4;
 	boolean preferencesSet = false;
-	boolean setMultiplestatesToUncertainty = false;
-	boolean keepUnmergedTaxa = false;  
+
+	boolean keepUnmergedTaxa = false;  //this is the one saved to preferences
+	boolean retainOriginals = false; //this is the temporary one sorted out during querying
 	boolean addMergedToName = true;
 	boolean verboseReport = false;
 	/*.................................................................................................................*/
@@ -70,7 +73,11 @@ public class MergeTaxa extends TaxonUtility {
 		} else  if ("mergeRule".equalsIgnoreCase(tag)) {
 			mergeRule = MesquiteInteger.fromString(content);
 		} else  if ("setMultiplestatesToUncertainty".equalsIgnoreCase(tag)) { //old, v. 4.00 and before
-			setMultiplestatesToUncertainty = MesquiteBoolean.fromTrueFalseString(content);
+			boolean setMultiplestatesToUncertainty = setMultiplestatesToUncertainty = MesquiteBoolean.fromTrueFalseString(content);
+			if (setMultiplestatesToUncertainty)
+				mergeRule = CharacterData.MERGE_blendMultistateAsUncertainty;
+			else
+				mergeRule = CharacterData.MERGE_blendMultistateAsPolymorphism;
 		} else  if ("addMergedToName".equalsIgnoreCase(tag)) {
 			addMergedToName = MesquiteBoolean.fromTrueFalseString(content);
 		} else  if ("verboseReport".equalsIgnoreCase(tag)) {
@@ -96,17 +103,7 @@ public class MergeTaxa extends TaxonUtility {
 		return buffer.toString();
 	}
 	/*.................................................................................................................*/
-	String getDialogTitle(){
-		return "Merge Selected Taxa";
-	}
 
-	//why is this protected if there are no subclasses?
-	protected boolean permitRetainOriginal(){
-		return true;
-	}
-	protected String getHelpStringStart() {
-		return "This will cause the selected taxa to be merged together into a single taxon. " ;
-	}
 	/*
 	 * Merge rules:
 	public static final int MERGE_blendMultistateAsPolymorphism = 0;
@@ -118,36 +115,71 @@ public class MergeTaxa extends TaxonUtility {
 	 * */
 	int mergeRule = CharacterData.MERGE_useLongest;
 	/*.................................................................................................................*/
-	public boolean queryOptions(int numMatricesWithMultiple, String matrixList, boolean nonCategFound) {
+	public boolean queryOptions(Taxa taxa, boolean[] toBeMerged, boolean formTaxonName, String dialogTitle, boolean permitRetainOriginals) {
 
-		/*
-		 * 		if (nonCategFound)
-			discreetAlert( "Some character matrices are neither categorical nor molecular (e.g. are continuous, meristic). For these matrices, if more than one of the merged taxa have states in some characters, only the first taxon's states will be kept.");
-		boolean OK = AlertDialog.query(containerOfModule(), "Merge?", "Are you sure you want to merge the selected taxa?  You will not be able to undo this.  " 
-				+ "Their character states in their character matrices will be merged.  " 
-				+ "Other associated information like footnotes, attachments, and so forth WILL NOT be merged and will be lost from all but the first taxon.");
+		boolean nonCategFound = false;
+		int numMatricesWithMultiple = 0;
+		String matrixList =  "";
 
-		 * */
+		if (toBeMerged != null){
+			int numMatrices = getProject().getNumberCharMatrices(taxa);
+			boolean[] multipleTaxaWithData = new boolean[numMatrices];
+			for (int iM = 0; iM < numMatrices; iM++){
+				multipleTaxaWithData[iM]=false;
+				CharacterData data = getProject().getCharacterMatrix(taxa, iM);
+				boolean dataFound=false;
+				for (int it = 0; it<taxa.getNumTaxa() && !multipleTaxaWithData[iM]; it++) {
+					if (toBeMerged[it] && data.hasDataForTaxon(it)) {
+						if (dataFound) {
+							multipleTaxaWithData[iM] = true;
+							numMatricesWithMultiple++;
+							if (numMatricesWithMultiple <6) {
+								if (StringUtil.blank(matrixList)) {
+									matrixList += data.getName();
+								} else
+									matrixList += ", " + data.getName();
+							}
+							else if (numMatricesWithMultiple == 6)
+								matrixList += " and others";
+							if (!(data instanceof CategoricalData)){
+								nonCategFound = true;
+							}
+						}
+						else
+							dataFound=true;
+					}
+
+				}
+			}
+		}
+
+
 		MesquiteInteger buttonPressed = new MesquiteInteger(1);
 		ExtensibleDialog queryDialog = new ExtensibleDialog(containerOfModule(), "Merge Taxa",buttonPressed);  //MesquiteTrunk.mesquiteTrunk.containerOfModule()
-		queryDialog.appendToHelpString(getHelpStringStart());
+		queryDialog.appendToHelpString("This will cause the taxa to be merged together into a single taxon. ");
 		String s = "Their character states in their character matrices will be merged.  " 
 				+ "Other associated information like footnotes, attachments, and so forth WILL NOT be merged and will be lost from all but the first taxon."
 				+ "We recommend you save a version of the data file before you do this.  You will not be able to undo this. ";
 		queryDialog.appendToHelpString(s);
-		queryDialog.addLabel(getDialogTitle());
+		queryDialog.addLabel(dialogTitle);
 
 		queryDialog.addHorizontalLine(1);
-		queryDialog.addLabel("Name of merged taxon", Label.CENTER, true, true);
-		RadioButtons choices = queryDialog.addRadioButtons (new String[]{"Use first taxon's name", "Merge taxon names, retaining full length", "Merge taxon names, retaining partial names:"}, keepMode);
 
-		IntegerField startLengthToKeepField = queryDialog.addIntegerField("Number of characters from start of each name to retain:", startLengthToKeep, 6, 0, 200);
-		IntegerField endLengthToKeepField = queryDialog.addIntegerField("Number of characters from end of each name to retain:", endLengthToKeep, 6, 0, 200);
+		RadioButtons choices = null;
+		IntegerField startLengthToKeepField = null;
+		IntegerField endLengthToKeepField = null;
+		Checkbox addMergedToNameBox = null;
+		if (formTaxonName){
+			queryDialog.addLabel("Name of merged taxon", Label.CENTER, true, true);
+			choices = queryDialog.addRadioButtons (new String[]{"Use first taxon's name", "Merge taxon names, retaining full length", "Merge taxon names, retaining partial names:"}, keepMode);
+			startLengthToKeepField = queryDialog.addIntegerField("Number of characters from start of each name to retain:", startLengthToKeep, 6, 0, 200);
+			endLengthToKeepField = queryDialog.addIntegerField("Number of characters from end of each name to retain:", endLengthToKeep, 6, 0, 200);
+			addMergedToNameBox = queryDialog.addCheckBox("Add \"merged\" to name if not done automatically", addMergedToName);
+		}
 
-		Checkbox addMergedToNameBox = queryDialog.addCheckBox("Add \"merged\" to name if not done automatically", addMergedToName);
 		queryDialog.addHorizontalLine(1);
 		Checkbox keepUnmergedTaxaBox = null;
-		if (permitRetainOriginal()) {
+		if (permitRetainOriginals) {
 			keepUnmergedTaxaBox = queryDialog.addCheckBox("Keep original, unmerged taxa", keepUnmergedTaxa);
 			queryDialog.addHorizontalLine(1);
 		}
@@ -160,7 +192,7 @@ public class MergeTaxa extends TaxonUtility {
 				queryDialog.addLabel("Note: For " + numMatricesWithMultiple+ " matrices, ", Label.LEFT);
 			else
 				queryDialog.addLabel("Note: For 1 matrix, ", Label.LEFT);
-				queryDialog.addLabel("there are at least two taxa to be merged that each contain data: ",Label.LEFT);
+			queryDialog.addLabel("there are at least two taxa to be merged that each contain data: ",Label.LEFT);
 			queryDialog.addLabel(matrixList, Label.CENTER, true, true);
 			String ncS = ".";
 			if (nonCategFound)
@@ -174,18 +206,21 @@ public class MergeTaxa extends TaxonUtility {
 		}
 		queryDialog.addLargeOrSmallTextLabel("CAUTION: You will not be able to undo this. Associated information like footnotes, attachments, and so forth may be lost from all but the first taxon.");
 		Checkbox verboseCB = queryDialog.addCheckBox("Give verbose report", verboseReport);
-	queryDialog.completeAndShowDialog(true);
+		queryDialog.completeAndShowDialog(true);
 		if (buttonPressed.getValue()==0)  {
-			keepMode = choices.getValue();
-			startLengthToKeep = startLengthToKeepField.getValue();
-			endLengthToKeep = endLengthToKeepField.getValue();
+			if (formTaxonName){
+				keepMode = choices.getValue();
+				startLengthToKeep = startLengthToKeepField.getValue();
+				endLengthToKeep = endLengthToKeepField.getValue();
+				addMergedToName = addMergedToNameBox.getState();
+			}
 			mergeRule = mergeRulesRB.getValue();
-			addMergedToName = addMergedToNameBox.getState();
 			verboseReport = verboseCB.getState();
-			if (permitRetainOriginal())
+			if (permitRetainOriginals)
 				keepUnmergedTaxa = keepUnmergedTaxaBox.getState();
 			storePreferences();
 		}
+		retainOriginals = keepUnmergedTaxa && permitRetainOriginals;
 		queryDialog.dispose();
 		return (buttonPressed.getValue()==0);
 	}
@@ -195,7 +230,7 @@ public class MergeTaxa extends TaxonUtility {
 		return false;
 	}
 	/*.................................................................................................................*/
-	boolean doMerge(Taxa taxa, boolean[] selected, StringBuffer reportRecord){
+	boolean doMerge(Taxa taxa, boolean[] selected, String taxonName, StringBuffer reportRecord){
 		int numSelected = 0;
 		for (int i = 0; i< selected.length; i++)
 			if (selected[i]) numSelected++;
@@ -210,65 +245,35 @@ public class MergeTaxa extends TaxonUtility {
 			}
 		String originalTaxonName = taxa.getTaxonName(firstSelected);
 
-		//now let's merge the taxon names
 		StringBuffer sb = new StringBuffer();
-		int count=0;
-		for (int it = 0; it<taxa.getNumTaxa(); it++) {
-			if (selected[it]) {
-				String s = taxa.getTaxonName(it);
-				if (keepMode==KEEPPARTIAL && startLengthToKeep>0 && endLengthToKeep>0) {
-					if (s.length()>startLengthToKeep+endLengthToKeep) {
-						sb.append(s.substring(0,startLengthToKeep)+s.substring(s.length()-endLengthToKeep));
-					}
-				} else {
-					sb.append(s);
-					if (keepMode==USEFIRSTNAME) {
-						break;
-					}
-				}
-				count++;
-				if (count<numSelected)
-					sb.append("+");
-			}
-		}
-		if (addMergedToName || keepUnmergedTaxa)
-			sb.append(" merged");
-
-		/*
-		 * 		if (sb.length()> maxNameLength && !keepEntireName) {
-			int indivLength = maxNameLength / numSelected-1;
-			count=0;
-			sb.setLength(0);
-			if (indivLength<=2) {  // then the pieces are too small; let's just do it based upon the first two
-				indivLength = (maxNameLength-2)/2;
-				for (int it = 0; it<taxa.getNumTaxa(); it++) {
-					if (selected[it]) {
-						String partName = taxa.getTaxonName(it);
-						if (partName.length()>indivLength)
-							sb.append(partName.substring(0, indivLength+1) + "+");
-						else
-							sb.append(partName + "+");
-						count++;
-						if (count>=2)
+		if (taxonName == null){
+			//now let's merge the taxon names
+			int count=0;
+			for (int it = 0; it<taxa.getNumTaxa(); it++) {
+				if (selected[it]) {
+					String s = taxa.getTaxonName(it);
+					if (keepMode==KEEPPARTIAL && startLengthToKeep>0 && endLengthToKeep>0) {
+						if (s.length()>startLengthToKeep+endLengthToKeep) {
+							sb.append(s.substring(0,startLengthToKeep)+s.substring(s.length()-endLengthToKeep));
+						}
+					} else {
+						sb.append(s);
+						if (keepMode==USEFIRSTNAME) {
 							break;
+						}
 					}
+					count++;
+					if (count<numSelected)
+						sb.append("+");
 				}
 			}
-			else
-				for (int it = 0; it<taxa.getNumTaxa(); it++) {
-					if (selected[it]) {
-						String partName = taxa.getTaxonName(it);
-						if (partName.length()>indivLength)
-							sb.append(partName.substring(0, indivLength+1));
-						else
-							sb.append(partName);
-						count++;
-						if (count<numSelected)
-							sb.append("+");
-					}
-				}
+			if (addMergedToName || keepUnmergedTaxa)
+				sb.append(" merged");
+
 		}
-		 */
+		else
+			sb.append(taxonName);
+
 		//	selected[firstSelected] = false;
 
 		/*
@@ -280,7 +285,7 @@ public class MergeTaxa extends TaxonUtility {
 
 		 * */
 		int destinationTaxon = firstSelected;
-		if (keepUnmergedTaxa && permitRetainOriginal()) {
+		if (retainOriginals) {
 			int lastSelected = taxa.lastSelected();
 			taxa.addTaxa(lastSelected, 1, true);
 			destinationTaxon=lastSelected+1;
@@ -329,7 +334,7 @@ public class MergeTaxa extends TaxonUtility {
 			reportRecord.append("\n");
 		}
 
-		if (!keepUnmergedTaxa || !permitRetainOriginal()) {
+		if (!retainOriginals) {
 			for (int it =  taxa.getNumTaxa() -1; it>= firstSelected; it--){
 				if (it<selected.length && selected[it] && it!=destinationTaxon) {
 					taxa.deleteTaxa(it, 1, false);
@@ -341,90 +346,44 @@ public class MergeTaxa extends TaxonUtility {
 	}
 
 	/*.................................................................................................................*/
-	/** Called to operate on the taxa in the block.  Returns true if taxa altered*/
-	public  boolean operateOnTaxa(Taxa taxa){
-		int numSelected = taxa.numberSelected();
-		if (numSelected<2){
-			discreetAlert( "You need to select at least two taxa before merging them.");
-			return false;
-		}
+	/** Called to merge the set of taxa indicated by the boolean array. If a bit is set, that is one of the taxa to be merged.  */
+	public int mergeTaxa(Taxa taxa, boolean[] toBeMerged, String taxonName, StringBuffer report){
+
 		int numMatrices = getProject().getNumberCharMatrices(taxa);
-		boolean nonCategFound = false;
-		boolean[] selected = new boolean[taxa.getNumTaxa()];
-		for (int it = 0; it<taxa.getNumTaxa(); it++) {
-			selected[it] = taxa.getSelected(it);
-		}
-
-		boolean[] multipleTaxaWithData = new boolean[numMatrices];
-		String matrixList =  "";
-		int numMatricesWithMultiple = 0;
-		for (int iM = 0; iM < numMatrices; iM++){
-			multipleTaxaWithData[iM]=false;
-			CharacterData data = getProject().getCharacterMatrix(taxa, iM);
-			boolean dataFound=false;
-			for (int it = 0; it<taxa.getNumTaxa() && !multipleTaxaWithData[iM]; it++) {
-				if (selected[it] && data.hasDataForTaxon(it)) {
-					if (dataFound) {
-						multipleTaxaWithData[iM] = true;
-						numMatricesWithMultiple++;
-						if (numMatricesWithMultiple <6) {
-							if (StringUtil.blank(matrixList)) {
-								matrixList += data.getName();
-							} else
-								matrixList += ", " + data.getName();
-						}
-						else if (numMatricesWithMultiple == 6)
-							matrixList += " and others";
-						if (!(data instanceof CategoricalData)){
-							nonCategFound = true;
-						}
-					}
-					else
-						dataFound=true;
-				}
-
-			}
-		}
-
-		if (!MesquiteThread.isScripting()){
-			if (!queryOptions(numMatricesWithMultiple, matrixList, nonCategFound))
-				return false;
-		}
-		StringBuffer report = new StringBuffer();
-		boolean success =  doMerge(taxa, selected, report);
-		if (!keepUnmergedTaxa || !permitRetainOriginal()) {
+		boolean success =  doMerge(taxa, toBeMerged, taxonName, report);
+		if (!retainOriginals) {
 			taxa.notifyListeners(this, new Notification(PARTS_DELETED));
 			for (int iM = 0; iM < numMatrices; iM++){
 				CharacterData data = getProject().getCharacterMatrix(taxa, iM);
 				data.notifyListeners(this, new Notification(PARTS_DELETED));
 			}
 		}
-		String r = report.toString();
-		logln(r);
-		if (!StringUtil.blank(r))
-			discreetAlert(r);
 
-		return success;
+		if (success)
+			return ResultCodes.SUCCEEDED;
+		else
+			return ResultCodes.ERROR;
+
 	}
 	/*.................................................................................................................*/
 	public String getName() {
-		return "Merge Selected Taxa";
+		return "Merge Taxa";
 	}
-	/*.................................................................................................................*/
+	/*.................................................................................................................*
 	public String getNameForMenuItem() {
 		return "Merge Selected Taxa...";
 	}
 
 	/*.................................................................................................................*/
 	public String getExplanation() {
-		return "Merges selected taxa and their character states.";
+		return "Merges taxa and their character states.";
 	}
 	/*.................................................................................................................*/
 	/** returns the version number at which this module was first released.  If 0, then no version number is claimed.  If a POSITIVE integer
 	 * then the number refers to the Mesquite version.  This should be used only by modules part of the core release of Mesquite.
 	 * If a NEGATIVE integer, then the number refers to the local version of the package, e.g. a third party package*/
 	public int getVersionOfFirstRelease(){
-		return 110;  
+		return NEXTRELEASE;   //in modified form
 	}
 	/*.................................................................................................................*/
 	public boolean isPrerelease(){
