@@ -37,7 +37,7 @@ import mesquite.lib.tree.TreeVector;
 
 /* ======================================================================== */
 
-public class NeighborJoining extends TreeInferer implements Incrementable, com.traviswheeler.libs.Logger, DistanceAnalysis {  //Incrementable just in case distance task is
+public class NeighborJoining extends TreeInferer implements Incrementable, com.traviswheeler.libs.Logger {  //Incrementable just in case distance task is
 	public void getEmployeeNeeds(){  //This gets called on startup to harvest information; override this and inside, call registerEmployeeNeed
 		EmployeeNeed e = registerEmployeeNeed(TaxaDistanceSource.class, getName() + "  needs a source of distances.",
 		"The source of distances can be selected initially");
