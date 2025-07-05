@@ -29,6 +29,7 @@ import mesquite.lib.MesquiteModule;
 import mesquite.lib.MesquiteTimer;
 import mesquite.lib.ResultCodes;
 import mesquite.lib.Snapshot;
+import mesquite.lib.analysis.DistanceAnalysis;
 import mesquite.lib.duties.TreeInferer;
 import mesquite.lib.taxa.Taxa;
 import mesquite.lib.tree.MesquiteTree;
@@ -36,7 +37,7 @@ import mesquite.lib.tree.TreeVector;
 
 /* ======================================================================== */
 
-public class NeighborJoining extends TreeInferer implements Incrementable, com.traviswheeler.libs.Logger {  //Incrementable just in case distance task is
+public class NeighborJoining extends TreeInferer implements Incrementable, com.traviswheeler.libs.Logger, DistanceAnalysis {  //Incrementable just in case distance task is
 	public void getEmployeeNeeds(){  //This gets called on startup to harvest information; override this and inside, call registerEmployeeNeed
 		EmployeeNeed e = registerEmployeeNeed(TaxaDistanceSource.class, getName() + "  needs a source of distances.",
 		"The source of distances can be selected initially");
@@ -125,7 +126,23 @@ public class NeighborJoining extends TreeInferer implements Incrementable, com.t
    		distanceTask.initialize(taxa);
    	}
    	
-   	
+ 	 public String getExtraTreeWindowCommands (boolean finalTree, long treeBlockID){
+		String commands = "getTreeDrawCoordinator #mesquite.trees.BasicTreeDrawCoordinator.BasicTreeDrawCoordinator;\ntell It; ";
+		commands += "setTreeDrawer  #mesquite.trees.SquareLineTree.SquareLineTree; tell It; showEdgeLines off; ";
+		
+		
+		commands += "setNodeLocs #mesquite.trees.NodeLocsStandard.NodeLocsStandard;  tell It; orientRight; ";
+		commands += " branchLengthsDisplay 1; ";
+		commands += " endTell; setEdgeWidth 3; endTell; ";  // endTell is for SquareLineTree
+		commands += "labelBranchLengths off;";
+		
+		commands += "getEmployee #mesquite.trees.BasicDrawTaxonNames.BasicDrawTaxonNames; tell It; setTaxonNameStyler  #mesquite.trees.ColorTaxonByPartition.ColorTaxonByPartition; setFontSize 12; endTell; ";		
+
+		commands += " endTell; resetTitle;"; //endTell for BasicTreeDrawCoordinator
+		commands += "getOwnerModule; tell It; getEmployee #mesquite.ornamental.ColorTreeByPartition.ColorTreeByPartition; tell It; colorByPartition on; endTell; endTell; ";
+		return commands;
+	}
+/*
 	public String getExtraTreeWindowCommands (boolean finalTree){
 
 		String commands = "setSize 400 600; ";
@@ -137,7 +154,7 @@ public class NeighborJoining extends TreeInferer implements Incrementable, com.t
 		commands += " endTell; ladderize root; ";
 		return commands;
 	}
-	
+	*/
 	/*.................................................................................................................*/
 	public static String createDirectoryForFiles(MesquiteModule module, String name) {
 		MesquiteBoolean directoryCreated = new MesquiteBoolean(false);
