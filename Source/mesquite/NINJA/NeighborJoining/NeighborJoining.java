@@ -15,9 +15,11 @@ import java.io.FileNotFoundException;
 import com.traviswheeler.ninja.TreeBuilder;
 import com.traviswheeler.ninja.TreeBuilderManager;
 
+import mesquite.distance.lib.MolecularTaxaDistance;
 import mesquite.distance.lib.TaxaDistance;
 import mesquite.distance.lib.TaxaDistanceSource;
 import mesquite.lib.CommandChecker;
+import mesquite.lib.Debugg;
 import mesquite.lib.EmployeeNeed;
 import mesquite.lib.Incrementable;
 import mesquite.lib.MesquiteBoolean;
@@ -153,7 +155,7 @@ public class NeighborJoining extends TreeInferer implements Incrementable, com.t
 
   	
 	/*.................................................................................................................*/
-  	public String getNJTree(float[][] distanceMatrixFloat){
+  	public String getNJTree(Taxa taxa, float[][] distanceMatrixFloat){
   		
   		
 		String method = "default";
@@ -161,8 +163,10 @@ public class NeighborJoining extends TreeInferer implements Incrementable, com.t
 		
 		//Added by TW 10/7/09 - simple method of giving numeric names to input seqs
  		String[] names = new String[distanceMatrixFloat.length];
+/* 		for (int i=0; i<distanceMatrixFloat.length; i++)
+ 			names[i] = "" + (i+1); */
  		for (int i=0; i<distanceMatrixFloat.length; i++)
- 			names[i] = "" + (i+1);
+ 			names[i] = "" + taxa.getTaxonName(i);
  		
  		
  		TreeBuilder.verbose = 2; 		
@@ -189,19 +193,27 @@ public class NeighborJoining extends TreeInferer implements Incrementable, com.t
    		timer.start();
    		log("\n---------------\nCalculating distance matrix.  ");
  		TaxaDistance dist = distanceTask.getTaxaDistance(taxa);
- 		double[][] distanceMatrix = dist.getMatrix();
+ 		double[][] distanceMatrix = dist.getReducedMatrix(true);
+ 		Taxa reducedTaxa = dist.getReducedTaxa(true, true);
 		float[][] distanceMatrixFloat = new float[distanceMatrix.length][distanceMatrix.length];
 		for (int i = 0; i<distanceMatrix.length; i++)
  	 		for (int j= 0; j<distanceMatrix.length; j++) {
  	 			distanceMatrixFloat[i][j] = (float) distanceMatrix[i][j];
  	 		}
+		
+		Debugg.println("|||||||||||||||||\n");
+		//dist.distancesToLog();
+		Debugg.println("\n|||||||||||||||\n");
+		
+
+		
  		
    		logln("["+ timer.timeSinceLastInSeconds()+" seconds]");
    		logln("NINJA: now calculating neighbor-joining tree.");
-		String NJTree = getNJTree(distanceMatrixFloat);
+		String NJTree = getNJTree(reducedTaxa, distanceMatrixFloat);
    		logln("\nNINJA: completed neighbor-joining tree. ["+ timer.timeSinceLastInSeconds()+" seconds]");
    		logln("---------------\n");
-		MesquiteTree tree = new MesquiteTree(taxa,NJTree);
+		MesquiteTree tree = new MesquiteTree(taxa,NJTree, true);
 		tree.setName(getName() + " tree");
 		treeList.addElement(tree, false);
   		
@@ -237,7 +249,7 @@ public class NeighborJoining extends TreeInferer implements Incrementable, com.t
    	 }
  	/*.................................................................................................................*/
    	 public boolean loadModule(){
-   	 	return false;
+   	 	return true;
    	 }
  	/*.................................................................................................................*/
    	 public boolean showCitation(){

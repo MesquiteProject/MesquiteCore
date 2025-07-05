@@ -23,6 +23,7 @@ import mesquite.lib.CompatibilityTest;
 import mesquite.lib.MesquiteDouble;
 import mesquite.lib.MesquiteModule;
 import mesquite.lib.MesquiteTrunk;
+import mesquite.lib.StringUtil;
 import mesquite.lib.characters.CharInclusionSet;
 import mesquite.lib.characters.MCharactersDistribution;
 import mesquite.lib.taxa.Taxa;
@@ -288,6 +289,72 @@ public abstract class MolecularTaxaDistance extends TaxaDistance {
 					MesquiteTrunk.mesquiteTrunk.logln("");
 				}
 		}
+		
+		public double[][] getReducedMatrix(boolean resetTaxaWithNoData) {
+			if (resetTaxaWithNoData) {
+				int  emptyTaxa = 0;
+				for (int it=0; it<taxa.getNumTaxa(); it++) 
+					if (!data.hasDataForTaxon(it)) {
+						emptyTaxa++;
+					}					
+				double[][] reducedDistances = new double[getNumTaxa()-emptyTaxa][getNumTaxa()-emptyTaxa]; 
+				int taxon1Count = 0;
+				for (int taxon1=0; taxon1<getNumTaxa(); taxon1++) {
+					if (data.hasDataForTaxon(taxon1)) {
+						int taxon2Count = 0;
+						for (int taxon2=0; taxon2<getNumTaxa(); taxon2++) {
+							if (data.hasDataForTaxon(taxon2)) {
+								reducedDistances[taxon1Count][taxon2Count] = distances[taxon1][taxon2]; 
+								taxon2Count++;
+							}
+						}	
+						taxon1Count++;
+					}
+				}
+				return reducedDistances;
+
+			}
+			else
+				return distances;
+
+		}
+		public double[][] getRevisedMatrix(boolean resetTaxaWithNoData) {
+			double[][] revisedDistances = new double[getNumTaxa()][getNumTaxa()]; 
+			for (int taxon1=0; taxon1<getNumTaxa(); taxon1++) {
+				for (int taxon2=0; taxon2<getNumTaxa(); taxon2++) {
+						if (MesquiteDouble.isInfinite(distances[taxon1][taxon2]))
+							revisedDistances[taxon1][taxon2] = MesquiteDouble.unassigned; 
+						else if (resetTaxaWithNoData && (!data.hasDataForTaxon(taxon1) ||!data.hasDataForTaxon(taxon2)))
+							revisedDistances[taxon1][taxon2] = MesquiteDouble.unassigned; 
+						else 
+							revisedDistances[taxon1][taxon2] = distances[taxon1][taxon2]; 
+				}					
+			}
+			return revisedDistances;
+			
+		}
+		
+		public Taxa getReducedTaxa(boolean resetTaxaWithNoData, boolean useT0Names) {
+			int  emptyTaxa = 0;
+			for (int it=0; it<taxa.getNumTaxa(); it++) 
+				if (resetTaxaWithNoData && (!data.hasDataForTaxon(it))) {
+					emptyTaxa++;
+				}					
+			Taxa reducedTaxa = new Taxa(taxa.getNumTaxa()-emptyTaxa);
+			int count = 0;
+			for (int it=0; it<taxa.getNumTaxa(); it++) 
+				if (!resetTaxaWithNoData || (data.hasDataForTaxon(it))) {
+					if (useT0Names)
+						reducedTaxa.setTaxonName(count, "t"+it);
+					else 
+						reducedTaxa.setTaxonName(count, taxa.getTaxonName(it));
+					count++;
+				}					
+
+			return reducedTaxa;
+		}
+
+
 		public boolean isSymmetrical(){
 			return true;
 		}

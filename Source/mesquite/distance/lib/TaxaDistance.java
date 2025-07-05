@@ -59,6 +59,17 @@ public abstract class TaxaDistance {
 		return distances;
 	}
 	
+
+	public double[][] getReducedMatrix(boolean resetTaxaWithNoData) {
+			return getMatrix();
+	}
+	public double[][] getRevisedMatrix(boolean resetTaxaWithNoData) {
+		return getMatrix();
+	}
+	public Taxa getReducedTaxa(boolean resetTaxaWithNoData, boolean useT0Names) {
+		return taxa;
+	}
+	
 	public double getAverageDistance() {
 		double totalDistance = 0.0;
 		int count = 0;
@@ -173,12 +184,24 @@ public abstract class TaxaDistance {
 		return sb.toString();
 	}
 
-
+	
 	public void distancesToLog(){
+		for (int taxon1=0; taxon1<getNumTaxa(); taxon1++) {
+			for (int taxon2=0; taxon2<getNumTaxa(); taxon2++) {
+				if (taxon1<taxon2)
+					if (MesquiteDouble.isInfinite(getDistance(taxon1,taxon2)))
+						MesquiteTrunk.mesquiteTrunk.logln("" + (taxon1+1) + "-"+ (taxon2+1) + ": INFINITE");
+					else
+						MesquiteTrunk.mesquiteTrunk.logln("" + (taxon1+1) + "-"+ (taxon2+1) + ": " + getDistance(taxon1,taxon2));
+			}					
+			MesquiteTrunk.mesquiteTrunk.logln("");
+		}
+}
+/*	public void distancesToLog(){
 		MesquiteTrunk.mesquiteTrunk.logln("Sorry, this feature isn't enabled yet for this type of distance.");
 
 	}
-
+*/
 	public String getName(){
 		return "Unnamed Distance";
 	}

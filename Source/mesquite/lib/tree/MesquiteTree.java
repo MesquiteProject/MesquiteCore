@@ -279,6 +279,14 @@ public class MesquiteTree extends Associable implements AdjustableTree, Listable
 		interpretNumericalLabelsAsOnBranches = interpretNumericalLabelsAsOnBranchesRUN;
 		readTree(description);
 	}
+	/** The constructor, passed the Taxa on which the tree is based, and a string description of the tree */
+	public MesquiteTree (Taxa taxa, String description, boolean permitT0Names) {
+		this(taxa);
+		numericalLabelInterpretationSet = numericalLabelInterpretationSetRUN;
+		interpretNumericalLabelsAsOnBranches = interpretNumericalLabelsAsOnBranchesRUN;
+		this.permitT0Names = permitT0Names;
+		readTree(description);
+	}
 	public String toHTMLStringDescription(){
 		String sT = super.toHTMLStringDescription();
 		if (!StringUtil.blank(sT))
