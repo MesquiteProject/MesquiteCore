@@ -318,22 +318,6 @@ public abstract class MolecularTaxaDistance extends TaxaDistance {
 				return distances;
 
 		}
-		public double[][] getRevisedMatrix(boolean resetTaxaWithNoData) {
-			double[][] revisedDistances = new double[getNumTaxa()][getNumTaxa()]; 
-			for (int taxon1=0; taxon1<getNumTaxa(); taxon1++) {
-				for (int taxon2=0; taxon2<getNumTaxa(); taxon2++) {
-						if (MesquiteDouble.isInfinite(distances[taxon1][taxon2]))
-							revisedDistances[taxon1][taxon2] = MesquiteDouble.unassigned; 
-						else if (resetTaxaWithNoData && (!data.hasDataForTaxon(taxon1) ||!data.hasDataForTaxon(taxon2)))
-							revisedDistances[taxon1][taxon2] = MesquiteDouble.unassigned; 
-						else 
-							revisedDistances[taxon1][taxon2] = distances[taxon1][taxon2]; 
-				}					
-			}
-			return revisedDistances;
-			
-		}
-		
 		public Taxa getReducedTaxa(boolean resetTaxaWithNoData, boolean useT0Names) {
 			int  emptyTaxa = 0;
 			for (int it=0; it<taxa.getNumTaxa(); it++) 

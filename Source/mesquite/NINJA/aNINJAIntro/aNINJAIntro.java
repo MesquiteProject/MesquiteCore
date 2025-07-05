@@ -43,7 +43,7 @@ public class aNINJAIntro extends PackageIntro {
 	/*.................................................................................................................*/
 	/** Returns citation for a package of modules*/
 	public String getPackageCitation(){
-		return "Wheeler, T. J., and Maddison, D.R.  2010. NINJA.  A package of modules for creating neighbor-joining trees in Mesquite. Version 1.0.  "+
+		return "Wheeler, T. J., and Maddison, D.R.  2025. NINJA.  A package of modules for creating neighbor-joining trees in Mesquite. Version 1.01.  "+
 		"Please also cite Wheeler, T.J. 2009. Large-scale neighbor-joining with NINJA. " + 	 
 		"In S.L. Salzberg and T. Warnow (Eds.), Proceedings of the 9th Workshop on Algorithms in Bioinformatics. WABI 2009, pp. 375-389. Springer, Berlin.";
 	}
@@ -63,16 +63,20 @@ public class aNINJAIntro extends PackageIntro {
 	}
 	/*.................................................................................................................*/
 	 public String getPackageVersion() {
-		return "1.00";
+		return "1.01";
  	 }
 		/*.................................................................................................................*/
  	 public int getPackageVersionInt() {
-		return 100;
+		return 101;
   	 }
 		/*.................................................................................................................*/
  	 public boolean loadModule() {
 		return true;
   	 }
+ 	/*.................................................................................................................*/
+ 	public boolean isPrerelease(){
+ 		return true;
+ 	}
 
 	/*.................................................................................................................*/
 	public int getVersionOfFirstRelease(){

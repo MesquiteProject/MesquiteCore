@@ -166,7 +166,7 @@ public class NeighborJoining extends TreeInferer implements Incrementable, com.t
 /* 		for (int i=0; i<distanceMatrixFloat.length; i++)
  			names[i] = "" + (i+1); */
  		for (int i=0; i<distanceMatrixFloat.length; i++)
- 			names[i] = "" + taxa.getTaxonName(i);
+ 			names[i] = "" + taxa.getTaxonName(i);  // 2025.July.05:  DRM added to ignore taxa with no data
  		
  		
  		TreeBuilder.verbose = 2; 		
@@ -193,20 +193,14 @@ public class NeighborJoining extends TreeInferer implements Incrementable, com.t
    		timer.start();
    		log("\n---------------\nCalculating distance matrix.  ");
  		TaxaDistance dist = distanceTask.getTaxaDistance(taxa);
- 		double[][] distanceMatrix = dist.getReducedMatrix(true);
- 		Taxa reducedTaxa = dist.getReducedTaxa(true, true);
+ 		double[][] distanceMatrix = dist.getReducedMatrix(true);  // 2025.July.05:  DRM added to ignore taxa with no data
+ 		Taxa reducedTaxa = dist.getReducedTaxa(true, true);  // 2025.July.05:  DRM added to ignore taxa with no data
 		float[][] distanceMatrixFloat = new float[distanceMatrix.length][distanceMatrix.length];
 		for (int i = 0; i<distanceMatrix.length; i++)
  	 		for (int j= 0; j<distanceMatrix.length; j++) {
  	 			distanceMatrixFloat[i][j] = (float) distanceMatrix[i][j];
  	 		}
-		
-		Debugg.println("|||||||||||||||||\n");
-		//dist.distancesToLog();
-		Debugg.println("\n|||||||||||||||\n");
-		
-
-		
+				
  		
    		logln("["+ timer.timeSinceLastInSeconds()+" seconds]");
    		logln("NINJA: now calculating neighbor-joining tree.");
