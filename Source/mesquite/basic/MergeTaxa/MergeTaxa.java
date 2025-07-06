@@ -172,8 +172,9 @@ public class MergeTaxa extends TaxonMerger {
 		if (formTaxonName){
 			queryDialog.addLabel("Name of merged taxon", Label.CENTER, true, true);
 			choices = queryDialog.addRadioButtons (new String[]{"Use first taxon's name", "Merge taxon names, retaining full length", "Merge taxon names, retaining partial names:"}, keepMode);
-			startLengthToKeepField = queryDialog.addIntegerField("Number of characters from start of each name to retain:", startLengthToKeep, 6, 0, 200);
-			endLengthToKeepField = queryDialog.addIntegerField("Number of characters from end of each name to retain:", endLengthToKeep, 6, 0, 200);
+			startLengthToKeepField = queryDialog.addIntegerField("                                                    Number of characters from start of each name to retain:", startLengthToKeep, 6, 0, 200);
+			endLengthToKeepField = queryDialog.addIntegerField("                                                    Number of characters from end of each name to retain:", endLengthToKeep, 6, 0, 200);
+
 			addMergedToNameBox = queryDialog.addCheckBox("Add \"merged\" to name if not done automatically", addMergedToName);
 		}
 
@@ -329,7 +330,7 @@ public class MergeTaxa extends TaxonMerger {
 		taxa.setTaxonName(destinationTaxon, sb.toString());
 		if (reportRecord != null && !StringUtil.blank(report)){
 			if (!verboseReport)
-				reportRecord.append("In these matrices there was data in multiple merged taxa: ");
+				reportRecord.append("Matrices with data in multiple merged taxa: ");
 			reportRecord.append(report);
 			reportRecord.append("\n");
 		}

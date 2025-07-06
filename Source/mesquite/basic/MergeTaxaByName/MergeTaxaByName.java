@@ -93,13 +93,16 @@ public class MergeTaxaByName extends TaxonUtility {
 
 		boolean atLeastOneMerger = false;
 		StringBuffer report = new StringBuffer();
-		mergeTask.queryOptions(taxa, null, false, "Merge Taxa With Matching Name Components", false);
+		boolean ok = mergeTask.queryOptions(taxa, null, false, "Merge Taxa With Matching Name Components", false);
+		if (!ok)
+			return false;
 		boolean[] selected = new boolean[taxa.getNumTaxa()];
 		for (int it = 0; it< taxa.getNumTaxa(); it++){
 			for (int s = 0; s<selected.length; s++)
 				selected[s] = false;
 			selected[it] = true;
 			String namePart = nameParser.extractPart(taxa.getTaxonName(it));
+			report.setLength(0);
 			if (StringUtil.notEmpty(namePart)){
 				boolean otherFound = false;
 				for (int itOther = it+1; itOther<taxa.getNumTaxa(); itOther++){
@@ -110,15 +113,17 @@ public class MergeTaxaByName extends TaxonUtility {
 					}
 				}
 				if (otherFound){
-					report.append("\nTaxa being merged:");
+					logln("\nTaxa being merged:");
 					for (int iMg = 0; iMg<selected.length; iMg++){
 						if (selected[iMg])
-							report.append(" " + taxa.getTaxonName(iMg));
+							logln(" " + taxa.getTaxonName(iMg));
 					}
-					report.append("\n");
-					int result = mergeTask.mergeTaxa(taxa, selected, namePart, report);
-					if (result == ResultCodes.SUCCEEDED)
+					logln("\n");
+					int result = mergeTask.mergeTaxa(taxa, selected, namePart+ " (merged)", report);
+					if (result == ResultCodes.SUCCEEDED) {
 						atLeastOneMerger = true;
+						logln(report.toString());
+					}
 				}
 			}
 
@@ -134,8 +139,8 @@ public class MergeTaxaByName extends TaxonUtility {
 		else
 		discreetAlert("Sorry, no matching taxa were found to merge.");
 
-		String r = report.toString();
-		logln(r);
+		//String r = report.toString();
+	//	logln(r);
 		//if (!StringUtil.blank(r))
 		//	discreetAlert(r);
 

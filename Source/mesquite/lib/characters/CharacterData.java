@@ -1102,18 +1102,18 @@ public abstract class CharacterData extends FileElement implements MesquiteListe
 	}	
 
 	/*-----------------------------------------------------------*/
-	/* Deletes characters, taxa, or cell state (to inapplicable). Used initially in sequence alignment trimming */
+	/* Deletes characters, states in taxa, or cell state (to inapplicable). Used initially in sequence alignment trimming.
+	 * NOTE: This does not delete taxa, just clears their states. */
 	public String deleteByMatrixFlags(MatrixFlags flags){
 		if (getNumChars()==0 || getNumTaxa()==0)
 			return "Nothing trimmed; matrix has no data";
 		boolean anyDeletion = false;
 		String report = "Trimmed:";
 		//do cells before the character/taxon deletions, which would shift the indices
-		boolean[][] toMakeGaps = flags.getCellFlags();
 		int numC =0;
-		for (int ic = 0; ic< getNumChars() && ic<toMakeGaps.length; ic++)
-			for (int it = 0; it<getNumTaxa() && it<toMakeGaps[ic].length; it++)
-				if (toMakeGaps[ic][it]){
+		for (int ic = 0; ic< getNumChars() && ic<flags.getNumChars(); ic++)
+			for (int it = 0; it<getNumTaxa() && it<flags.getNumTaxa(); it++)
+				if (flags.isCellFlaggedAnyWay(ic, it)){
 					setToInapplicable(ic, it);
 					numC++;
 				}
@@ -1135,7 +1135,13 @@ public abstract class CharacterData extends FileElement implements MesquiteListe
 		}
 		bits = flags.getTaxonFlags();
 		if (bits.anyBitsOn()){
-			getTaxa().deleteTaxaFlagged(bits, false);
+			for (int it = 0; it<getNumTaxa() && it<bits.getSize(); it++)
+				if (bits.isBitOn(it))
+					for (int ic = 0; ic< getNumChars(); ic++){ //deleting all of the cells in the taxon, but not deleting the taxon
+						anyDeletion = true;
+						setToInapplicable(ic, it);
+					}
+			//getTaxa().deleteTaxaFlagged(bits, false);
 			int numT = bits.numBitsOn();
 			if (numT>1)
 				report += " " + numT + " taxa";
@@ -4402,7 +4408,6 @@ public abstract class CharacterData extends FileElement implements MesquiteListe
 			return false;
 		boolean receivingHasData = hasDataForTaxon(it1);
 		boolean bothHadStates = true;
-		System.err.println("@ mergeRule " + mergeRule + " receivingHasData " + receivingHasData);
 		if (!receivingHasData){
 			mergeRule = MERGE_preferIncoming;
 			bothHadStates = false;
@@ -4414,7 +4419,6 @@ public abstract class CharacterData extends FileElement implements MesquiteListe
 				mergeRule = MERGE_preferIncoming;
 			else
 				mergeRule = MERGE_preferReceiving;
-			System.err.println("@ n1 " + n1 + " n2 " + n2);
 		}
 		
 		if (mergeRule == MERGE_preferReceiving){
@@ -4479,10 +4483,8 @@ public abstract class CharacterData extends FileElement implements MesquiteListe
 		boolean[] mA = new boolean[taxaToMerge.length];
 		boolean mergedAssigned = false;
 		//boolean receivingHasData = hasDataForTaxon(receivingTaxon);
-		System.err.println("@ ======= receivingTaxon " + receivingTaxon+ " matrix " + getName());
 		for (int it=0; it<getNumTaxa() && it<taxaToMerge.length; it++) {
 			if (it!=receivingTaxon && taxaToMerge[it]){
-				System.err.println("@~~~ mergingTaxon " + it);
 				//Note: this no longer reports whether a blended state is present, but wehther both taxa had data and thus there was some sort of merge
 				boolean ma = mergeSecondTaxonIntoFirst(receivingTaxon, it, mergeRule);
 				mA[it] = ma;   

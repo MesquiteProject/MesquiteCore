@@ -117,15 +117,18 @@ public class HighlightTrimming extends DataWindowAssistantID implements CellColo
 			if (data != null && flags != null && AlertDialog.query(containerOfModule(),  "Delete?",  "Are you sure you want to delete the darkened (highlighted) parts?")){
 				data.incrementNotifySuppress();
 				Vector v = pauseAllPausables();
-				MatrixFlags useFlags = flags;
-				
+				String report = null;
 				if (invert.getValue()){
-					useFlags = flags.clone();
-					useFlags.invertOnlyIfSet();  //Debugg.println( need to invert all in terms of darkness, not just invert as was
+					//flags.isCellFlaggedAnyWay(ic, it);
 					
-					//
+					
+					MatrixFlags useFlags = flags.clone();
+					useFlags.invertUnion();
+					report = data.deleteByMatrixFlags(useFlags);
 				}
-				String report = data.deleteByMatrixFlags(useFlags);
+				else {
+					report = data.deleteByMatrixFlags(flags);
+			}
 				logln(report);
 				unpauseAllPausables(v);
 				data.decrementNotifySuppress();
@@ -194,7 +197,7 @@ public class HighlightTrimming extends DataWindowAssistantID implements CellColo
 			mmir = addMenuItem("-", null);
 			mmiVE= addCheckMenuItem(null, "Use Extremely Dark Highlights", makeCommand("toggleExtremelyDark", this), useExtremelyDark);
 			mmiVP= addCheckMenuItem(null, "Use Pale for Unhighlighted", makeCommand("togglePale", this), usePale);
-			mmJJ= addCheckMenuItem(null, "Invert Highlights", makeCommand("toggleInvert", this), hide);
+			mmJJ= addCheckMenuItem(null, "Invert Highlights", makeCommand("toggleInvert", this), invert);
 			mmJ= addCheckMenuItem(null, "Hide/Show Highlights", makeCommand("toggleHide", this), hide);
 			mmJ.setShortcut(KeyEvent.VK_J);
 			mmis = addMenuItem("Reset Trimmers to be Highlighted...", makeCommand("resetFlaggers", this));

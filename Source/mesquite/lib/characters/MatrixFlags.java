@@ -17,7 +17,7 @@ public class MatrixFlags {
 	}
 	public void reset(CharacterData data) {
 		reset(data.getNumChars(), data.getNumTaxa());
-		}
+	}
 	public void reset(int nC, int nT) {
 		numChars = nC;
 		numTaxa = nT;
@@ -46,29 +46,47 @@ public class MatrixFlags {
 						cellFlags[ic][it] = false;
 		}
 	}
-	
-	public void invertOnlyIfSet() {  //DANGER: this will not necessarily generate the same pattern as inversion of OR not taken into account
-		if (characterFlags == null)
-			return;
-		if (anyCellFlagsSet())
-			for (int ic = 0; ic<numChars; ic++)
-			for (int it=0; it<numTaxa; it++)
-				cellFlags[ic][it] = !cellFlags[ic][it];
-		if (anyCharacterFlagsSet())
-			characterFlags.invertAllBits();
-		if (anyTaxonFlagsSet())
-		taxonFlags.invertAllBits();
-
+	public void clearCharacterFlags() {
+		if (characterFlags != null)
+			characterFlags.clearAllBits();
+	}
+	public void clearTaxonFlags() {
+		if (taxonFlags != null)
+			taxonFlags.clearAllBits();
+	}
+	public void clearCellFlags() {
+		if (cellFlags != null)
+			for (int ic = 0; ic<cellFlags.length; ic++)
+				for (int it=0; it<cellFlags[ic].length; it++)
+					cellFlags[ic][it] = false;
+	}
+	public void clear() {
+		clearCharacterFlags();
+		clearTaxonFlags();
+		clearCellFlags();
 	}
 	
-	public void invert() {  //DANGER: this will not necessarily generate the same pattern as inversion of OR not taken into account
-		if (characterFlags == null)
-			return;
-		for (int ic = 0; ic<numChars; ic++)
-			for (int it=0; it<numTaxa; it++)
-				cellFlags[ic][it] = !cellFlags[ic][it];
+
+	/* inversion of flags is dangerous, because inverting each part separately will not invert the union, which is what the user sees
+	 * as the overall flag. This is designed for Invert highlighting and then deletion */
+	public void invertUnion() {
+		MatrixFlags copy = clone();
+
 		characterFlags.invertAllBits();
 		taxonFlags.invertAllBits();
+
+		for (int ic = 0; ic<numChars; ic++){
+			for (int it = 0; it<numTaxa; it++)
+				if (copy.isCellFlaggedAnyWay(ic, it)){ //original had this cell flagged, which means it has to end up unflagged, which means char and taxa need to be unflagged
+					characterFlags.setBit(ic, false); //turn off flag
+					taxonFlags.setBit(it, false); //turn off flag
+					cellFlags[ic][it] = false;
+				}
+				else 
+					cellFlags[ic][it] = true;
+
+		}
+
 
 	}
 	public void invertCharacters() {
