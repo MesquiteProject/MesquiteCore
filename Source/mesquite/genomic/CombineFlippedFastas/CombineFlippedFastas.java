@@ -110,8 +110,17 @@ public class CombineFlippedFastas extends GeneralFileMakerMultiple {
 				String[] files = directory.list();
 				if (files == null || files.length ==0)
 					return;
-
-				ProgressIndicator progIndicator = new ProgressIndicator(null,"Processing Folder of Data Files", "Reading file: " + files[0], files.length, true);//MesquiteProject mp, String title, String initialMessage, long total, boolean showStop
+					
+				String message = null; //"Looking for acceptable files";
+				int iF = 0;
+				while (message == null && iF<files.length){
+					if (StringUtil.endsWithIgnoreCase(files[iF], ".fas") || StringUtil.endsWithIgnoreCase(files[iF], ".fasta"))
+						message = "Reading file: " + files[iF];
+					iF++;
+				}
+				if (message == null)
+					message = "Looking for acceptable files";
+				ProgressIndicator progIndicator = new ProgressIndicator(null,"Processing Folder of Data Files", message, files.length, true);//MesquiteProject mp, String title, String initialMessage, long total, boolean showStop
 				progIndicator.start();
 				int filesFound = 0;
 				DNAState state = new DNAState();
@@ -135,13 +144,13 @@ public class CombineFlippedFastas extends GeneralFileMakerMultiple {
 							File cFile = new File(path);
 
 							if (cFile.exists() && !cFile.isDirectory() && (!files[i].startsWith("."))) {
-								progIndicator.setText("Reading file: " + files[i]);
+								progIndicator.setText("Reading flipped FASTA file: " + files[i]);
 								MesquiteFile file = new MesquiteFile();
 								file.setPath(path);
 								project.addFile(file);
 								file.setProject(project);
 								if (files.length<20)
-									logln("Reading file " + files[i]);
+									logln("Reading flipped FASTA file " + files[i]);
 								else if (i == 0)
 									log(" [File " + (i+1) + "]");
 								else
