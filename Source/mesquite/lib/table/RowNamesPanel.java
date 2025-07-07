@@ -238,7 +238,6 @@ public class RowNamesPanel extends EditorPanel implements FocusListener  {
 			return;
 		try {
 			table.checkResetFont(g);
-		//	Debugg.println("@ MatrixPanel " + rowHeight(0) + " vs " +  table.getRowNamesPanel().rowHeight(0));
 
 			int lineY = 0;
 			int oldLineY=lineY;

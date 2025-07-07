@@ -31,13 +31,15 @@ import mesquite.lib.ResultCodes;
 import mesquite.lib.Snapshot;
 import mesquite.lib.analysis.DistanceAnalysis;
 import mesquite.lib.duties.TreeInferer;
+import mesquite.lib.duties.TreeSearcher;
 import mesquite.lib.taxa.Taxa;
 import mesquite.lib.tree.MesquiteTree;
 import mesquite.lib.tree.TreeVector;
+import mesquite.search.lib.TreeSearch;
 
 /* ======================================================================== */
 
-public class NeighborJoining extends TreeInferer implements Incrementable, com.traviswheeler.libs.Logger {  //Incrementable just in case distance task is
+public class NeighborJoining extends TreeSearcher implements DistanceAnalysis, Incrementable, com.traviswheeler.libs.Logger {  //Incrementable just in case distance task is
 	public void getEmployeeNeeds(){  //This gets called on startup to harvest information; override this and inside, call registerEmployeeNeed
 		EmployeeNeed e = registerEmployeeNeed(TaxaDistanceSource.class, getName() + "  needs a source of distances.",
 		"The source of distances can be selected initially");
@@ -45,7 +47,7 @@ public class NeighborJoining extends TreeInferer implements Incrementable, com.t
 	TaxaDistanceSource distanceTask;
 	/*.................................................................................................................*/
 	public boolean startJob(String arguments, Object condition, boolean hiredByName) {
- 		distanceTask = (TaxaDistanceSource)hireEmployee(TaxaDistanceSource.class, "Source of distance for Cluster Analysis");
+ 		distanceTask = (TaxaDistanceSource)hireEmployee(TaxaDistanceSource.class, "Source of distance for Neighbour Joining Analysis");
  		if (distanceTask == null) {
  			return sorry(getName() + " couldn't start because no source of distances was obtained.");
  		}
@@ -67,8 +69,8 @@ public class NeighborJoining extends TreeInferer implements Incrementable, com.t
   	 }
 	/*.................................................................................................................*/
     	 public Object doCommand(String commandName, String arguments, CommandChecker checker) {
-    	 	 if (checker.compare(this.getClass(), "Sets the source of distances for use in cluster analysis", "[name of module]", commandName, "setDistanceSource")) { 
-    	 		TaxaDistanceSource temp=  (TaxaDistanceSource)replaceEmployee(TaxaDistanceSource.class, arguments, "Source of distance for cluster analysis", distanceTask);
+    	 	 if (checker.compare(this.getClass(), "Sets the source of distances for use in NJ analysis", "[name of module]", commandName, "setDistanceSource")) { 
+    	 		TaxaDistanceSource temp=  (TaxaDistanceSource)replaceEmployee(TaxaDistanceSource.class, arguments, "Source of distance for Neighbour Joining analysis", distanceTask);
  			if (temp!=null) {
  				distanceTask= temp;
  			}
@@ -122,8 +124,9 @@ public class NeighborJoining extends TreeInferer implements Incrementable, com.t
 	/*.................................................................................................................*/
    	/** Called to provoke any necessary initialization.  This helps prevent the module's intialization queries to the user from
    	happening at inopportune times (e.g., while a long chart calculation is in mid-progress)*/
-   	public void initialize(Taxa taxa){
+   	public boolean initialize(Taxa taxa){
    		distanceTask.initialize(taxa);
+   		return true;
    	}
    	
  	 public String getExtraTreeWindowCommands (boolean finalTree, long treeBlockID){
@@ -199,9 +202,9 @@ public class NeighborJoining extends TreeInferer implements Incrementable, com.t
   		return treeString;
   	}
   	
-  	
-	/*.................................................................................................................*/
-  	public int fillTreeBlock(TreeVector treeList, int numberIfUnlimited){
+	/*.................................................................................................................*
+  	public int fillTreeBlock(TreeVector treeList, int numberIfUnlimited){*/
+  public int fillTreeBlock(TreeVector treeList){
  		if (treeList==null)
  			return ResultCodes.INPUT_NULL;
    		Taxa taxa = treeList.getTaxa();

@@ -371,7 +371,6 @@ timer6.end();
 
 		try {
 			table.checkResetFont(g);
-		//	Debugg.println("@ MatrixPanel " + rowHeight(0) + " vs " +  table.getRowNamesPanel().rowHeight(0));
 			paints++;
 			int lineY;
 			int lineX;
