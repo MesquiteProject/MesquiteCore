@@ -758,6 +758,8 @@ public abstract class ListWindow extends TableWindow implements KeyListener, Mes
 		}
 		else if (checker.compare(this.getClass(), "Reviews column widths", null, commandName, "reviewColumnWidths")) {
 			reviewColumnWidths();
+			if (table != null && table.getMatrixPanel() != null)
+				table.checkResetFont(table.getMatrixPanel().getGraphics());
 			return null;
 		}
 		else if (checker.compare(this.getClass(), "Inverts which rows are selected", null, commandName, "invertSelection")) {

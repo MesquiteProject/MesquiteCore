@@ -23,6 +23,7 @@ import java.awt.event.FocusEvent;
 import java.awt.event.FocusListener;
 import java.awt.event.KeyEvent;
 
+import mesquite.lib.Debugg;
 import mesquite.lib.MesquiteFile;
 import mesquite.lib.MesquiteTimer;
 import mesquite.lib.MesquiteTrunk;
@@ -369,6 +370,8 @@ timer6.end();
 			return;
 
 		try {
+			table.checkResetFont(g);
+		//	Debugg.println("@ MatrixPanel " + rowHeight(0) + " vs " +  table.getRowNamesPanel().rowHeight(0));
 			paints++;
 			int lineY;
 			int lineX;

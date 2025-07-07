@@ -325,9 +325,9 @@ public class Defaults extends MesquiteInit  {
 			if (MesquiteInteger.isCombinable(defFontSize)) 
 				MesquiteFrame.resourcesFontSize = defFontSize;
 		}
-		else if ("suggestedDirectory".equalsIgnoreCase(tag)){
-			MesquiteTrunk.setSuggestedDirectory(StringUtil.cleanXMLEscapeCharacters(content));
-		}
+	//	else if ("suggestedDirectory".equalsIgnoreCase(tag)){
+	//		MesquiteTrunk.setSuggestedDirectory(StringUtil.cleanXMLEscapeCharacters(content));
+	//	}
 		else if ("python2Path".equalsIgnoreCase(tag)){
 			PythonUtil.python2Path = StringUtil.cleanXMLEscapeCharacters(content);
 		}
@@ -344,7 +344,7 @@ public class Defaults extends MesquiteInit  {
 		StringUtil.appendXMLTag(buffer, 2, "maxLinesOfAnyElementInPanelQueried", FileCoordinator.maxLinesOfAnyElementInPanelQueried);
 		StringUtil.appendXMLTag(buffer, 2, "maxLinesOfMatricesTreeBlocksSeparateInPanel", FileCoordinator.maxLinesOfMatricesTreeBlocksSeparateInPanel);
 		StringUtil.appendXMLTag(buffer, 2, "useOtherChoicesInMenus", useOtherChoices);   
-		StringUtil.appendXMLTag(buffer, 2, "suggestedDirectory", MesquiteTrunk.getSuggestedDirectory());
+		//StringUtil.appendXMLTag(buffer, 2, "suggestedDirectory", MesquiteTrunk.getSuggestedDirectory());
 		StringUtil.appendXMLTag(buffer, 2, "python2Path", PythonUtil.python2Path);
 		StringUtil.appendXMLTag(buffer, 2, "python3Path", PythonUtil.python3Path);
 		StringUtil.appendXMLTag(buffer, 2, "askSeed", askSeed);   
