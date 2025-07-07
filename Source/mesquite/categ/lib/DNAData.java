@@ -360,7 +360,6 @@ public class DNAData extends MolecularData {
 	public boolean isSNP(int ic, boolean parsInformOnly, boolean gapsAsStates, boolean prohibitUncertainty) {
 		long accumul = 0L;
 		int[] counts = null;
-	//	System.err.println("@isSNP " + ic + " ================");
 		if (parsInformOnly)
 			counts = new int[5];
 		for (int it=0; it<getNumTaxa(); it++){
@@ -388,7 +387,6 @@ public class DNAData extends MolecularData {
 			if (DNAState.cardinality(accumul)>2)
 				return false;
 		}
-	//	System.err.println("@cardinality " + DNAState.cardinality(accumul) + " to string " + DNAState.toString(accumul));
 		if ( DNAState.cardinality(accumul)!=2)
 			return false;
 		if (parsInformOnly){
@@ -397,7 +395,6 @@ public class DNAData extends MolecularData {
 					return false;
 			}
 		}
-	//	System.err.println("@ TRUE! "+ ic);
 		return true;
 	}
 	/* .......................................... DNAData .................................................. */

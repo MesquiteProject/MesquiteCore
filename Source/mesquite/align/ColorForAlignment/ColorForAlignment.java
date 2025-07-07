@@ -23,7 +23,7 @@ import mesquite.categ.lib.RequiresAnyDNAData;
 import mesquite.lib.CompatibilityTest;
 import mesquite.lib.characters.CharacterData;
 import mesquite.lib.duties.CellColorer;
-import mesquite.lib.duties.CellColorerMatrixHighPriority;
+import mesquite.lib.duties.CellColorerMatrix;
 import mesquite.lib.duties.DataWindowAssistantID;
 import mesquite.lib.table.MesquiteTable;
 import mesquite.lib.ui.ColorDistribution;
@@ -31,7 +31,7 @@ import mesquite.lib.ui.ColorRecord;
 
 
 /* ======================================================================== */
-public class ColorForAlignment extends DataWindowAssistantID implements CellColorer, CellColorerMatrixHighPriority {
+public class ColorForAlignment extends DataWindowAssistantID implements CellColorer, CellColorerMatrix {
 	MesquiteTable table;
 	CharacterData data;
 	Color Acolor, Ccolor, Gcolor, Tcolor, AGcolor, CTcolor;

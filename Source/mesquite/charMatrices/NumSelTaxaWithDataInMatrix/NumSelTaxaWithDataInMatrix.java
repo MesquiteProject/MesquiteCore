@@ -69,7 +69,7 @@ public class NumSelTaxaWithDataInMatrix extends NumberForMatrix {
 		if (count>0) {
 			result.setValue(count); 
 		}  else
-			result.setValue(0.0); 
+			result.setValue(0); 
 
 		if (resultString!=null) {
 			resultString.setValue("Number of selected taxa with data: " + result.toString());

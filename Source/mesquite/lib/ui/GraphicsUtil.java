@@ -163,6 +163,19 @@ public class GraphicsUtil {
 		drawRect(g2,x,y,width,height);
 	}
 	/*_________________________________________________*/
+	public static void drawRect(Graphics g, double x, double y, double width, double height, float strokeWidth) {
+		if (!(g instanceof Graphics2D)){
+			g.drawRect( (int)x, (int)y, (int)width, (int)height);
+			return;
+		}
+		Graphics2D g2 = (Graphics2D)g;
+		Stroke st = g2.getStroke();
+		if (strokeWidth>=0)
+			g2.setStroke(new BasicStroke(strokeWidth));
+		drawRect(g2,x,y,width,height);
+		g2.setStroke(st);
+	}
+	/*_________________________________________________*/
 	public static void fillOval(Graphics2D g2, double x, double y, double width, double height) {
 		Ellipse2D oval = new Ellipse2D.Double(x,y,width,height);
 		g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
@@ -861,6 +874,22 @@ public class GraphicsUtil {
 	}
 	/* -------------------------------------------------*/
 	public static void drawOval(Graphics g, double x, double y, int w, int h, float strokeWidth){
+		try {
+			Graphics2D g2 = (Graphics2D)g;
+			Stroke st = g2.getStroke();
+			if (strokeWidth>=0)
+				g2.setStroke(new BasicStroke(strokeWidth));
+			g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+			Ellipse2D oval = new Ellipse2D.Double(x,y,w,h);
+			g2.draw(oval); 
+			g2.setStroke(st);
+		}
+		catch(NullPointerException e){
+			MesquiteMessage.warnProgrammer("npe in draw oval x " + x + " y " + y + " w " + w + " h " + h);
+		}
+	}
+	/* -------------------------------------------------*/
+	public static void drawOval(Graphics g, double x, double y, double w, double h, float strokeWidth){
 		try {
 			Graphics2D g2 = (Graphics2D)g;
 			Stroke st = g2.getStroke();

@@ -2718,6 +2718,14 @@ class BasicDataWindow extends TableWindow implements MesquiteListener {
 				table.repaintAll();
 				setUndoer();
 			}
+			else if (code == MesquiteListener.PARTS_CHANGED) {
+				table.offAllEditsDontRecord();// 1. 12
+				table.setNumRows(taxa.getNumTaxa());
+				table.synchronizeRowSelection(taxa);
+				table.resetComponentSizes();
+				table.repaintAll();
+				setUndoer();
+			}
 			else if (code == MesquiteListener.PARTS_MOVED) {
 				table.offAllEditsDontRecord();// 1. 12
 				table.setNumRows(taxa.getNumTaxa());

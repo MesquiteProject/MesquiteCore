@@ -35,7 +35,7 @@ import mesquite.lib.characters.CharacterData;
 import mesquite.lib.characters.CharacterStateTest;
 import mesquite.lib.duties.CellColorer;
 import mesquite.lib.duties.CellColorerCharacters;
-import mesquite.lib.duties.CellColorerMatrixHighPriority;
+import mesquite.lib.duties.CellColorerMatrix;
 import mesquite.lib.duties.DataWindowAssistantID;
 import mesquite.lib.duties.NumberForCharacter;
 import mesquite.lib.table.MesquiteTable;
@@ -44,7 +44,7 @@ import mesquite.lib.ui.MesquiteColorTable;
 import mesquite.lib.ui.MesquiteSubmenuSpec;
 
 /* ======================================================================== */
-public class ColorByCharValue extends DataWindowAssistantID implements CellColorer, CellColorerCharacters, CellColorerMatrixHighPriority {
+public class ColorByCharValue extends DataWindowAssistantID implements CellColorer, CellColorerCharacters, CellColorerMatrix {
 	public void getEmployeeNeeds(){  //This gets called on startup to harvest information; override this and inside, call registerEmployeeNeed
 		EmployeeNeed e = registerEmployeeNeed(NumberForCharacter.class, getName() + " colors the columns (characters) of the matrix to reflect some value for the character.",
 				"You can request a value to calculate initially, or later under the Values for Colors submenu.");
