@@ -28,11 +28,12 @@ import mesquite.lib.UndoReference;
 import mesquite.lib.characters.AltererMetadata;
 import mesquite.lib.characters.CharacterData;
 import mesquite.lib.characters.CodonPositionsSet;
+import mesquite.lib.duties.DataAltererParallelizable;
 import mesquite.lib.table.MesquiteTable;
 import mesquite.molec.lib.CodonPositionAssigner;
 
 /* ======================================================================== */
-public class AssignCodonPositions extends DNADataAlterer implements AltererMetadata {
+public class AssignCodonPositions extends DNADataAlterer implements AltererMetadata, DataAltererParallelizable {
 	CodonPositionAssigner assigner = null;
 	/*.................................................................................................................*/
 	public boolean startJob(String arguments, Object condition, boolean hiredByName) {

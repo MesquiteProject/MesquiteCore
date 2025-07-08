@@ -18,24 +18,28 @@ import java.awt.Checkbox;
 
 import mesquite.categ.lib.MolecularData;
 import mesquite.categ.lib.MolecularDataAlterer;
+import mesquite.lib.CommandChecker;
 import mesquite.lib.IntegerField;
 import mesquite.lib.MesquiteBoolean;
+import mesquite.lib.MesquiteFile;
 import mesquite.lib.MesquiteInteger;
 import mesquite.lib.MesquiteListener;
 import mesquite.lib.Notification;
 import mesquite.lib.ResultCodes;
+import mesquite.lib.Snapshot;
 import mesquite.lib.StringUtil;
 import mesquite.lib.UndoReference;
 import mesquite.lib.characters.AltererAlignShift;
 import mesquite.lib.characters.CharacterData;
 import mesquite.lib.characters.CharacterState;
+import mesquite.lib.duties.DataAltererParallelizable;
 import mesquite.lib.table.MesquiteTable;
 import mesquite.lib.ui.ExtensibleDialog;
 
 
 
 /* ======================================================================== */
-public class ZeroSequencesTooShort extends MolecularDataAlterer  implements AltererAlignShift {
+public class ZeroSequencesTooShort extends MolecularDataAlterer  implements AltererAlignShift, DataAltererParallelizable {
 	/*.................................................................................................................*/
 	public boolean startJob(String arguments, Object condition, boolean hiredByName) {
 		loadPreferences();
@@ -61,7 +65,26 @@ public class ZeroSequencesTooShort extends MolecularDataAlterer  implements Alte
 
 		return buffer.toString();
 	}
-
+	/*.................................................................................................................*/
+ 	public Snapshot getSnapshot(MesquiteFile file) { 
+ 		Snapshot temp = new Snapshot();
+ 		temp.addLine("removeGapsOnly " + removeGapsOnly);
+ 		temp.addLine("longEnough " + longEnough);
+		return temp;
+ 	}
+ 	/*.................................................................................................................*/
+ 	public Object doCommand(String commandName, String arguments, CommandChecker checker) {
+ 		 if (checker.compare(this.getClass(), "Sets whether to remove gaps only", "[true or false]", commandName, "removeGapsOnly")) {
+ 			removeGapsOnly = MesquiteBoolean.fromTrueFalseString(arguments);
+ 		}
+ 		else if (checker.compare(this.getClass(), "Sets what is a long enough sequence", "[integer]", commandName, "longEnough")) {  
+ 			longEnough = MesquiteInteger.fromString(arguments); //this is not protected against a bad number, because it's expected to be autoscripting in things like Parallel Alter Matrices
+ 		}
+		else
+ 			return  super.doCommand(commandName, arguments, checker);
+ 		return null;
+ 	}	
+ 	/*.................................................................................................................*/
 	boolean lengthButNotEnough(MolecularData data, int it, int enough, CharacterState cs){
 		int seqLen = 0;
 		for (int ic=0; ic<data.getNumChars(); ic++) {

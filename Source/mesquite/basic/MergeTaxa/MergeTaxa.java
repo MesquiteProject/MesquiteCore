@@ -247,6 +247,14 @@ public class MergeTaxa extends TaxonMerger {
 		String originalTaxonName = taxa.getTaxonName(firstSelected);
 
 		StringBuffer sb = new StringBuffer();
+		String mergedNames = "Merger of " + numSelected +":";
+		for (int it = 0; it<taxa.getNumTaxa(); it++) 
+			if (selected[it]) {
+				if (it != firstSelected)
+					mergedNames += ",";
+				mergedNames += " " + taxa.getTaxonName(it);
+			}
+		
 		if (taxonName == null){
 			//now let's merge the taxon names
 			int count=0;
@@ -328,6 +336,7 @@ public class MergeTaxa extends TaxonMerger {
 
 		}
 		taxa.setTaxonName(destinationTaxon, sb.toString());
+		taxa.setAnnotation(destinationTaxon, mergedNames);
 		if (reportRecord != null && !StringUtil.blank(report)){
 			if (!verboseReport)
 				reportRecord.append("Matrices with data in multiple merged taxa: ");

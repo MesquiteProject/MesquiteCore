@@ -16,10 +16,11 @@ import mesquite.lib.Snapshot;
 import mesquite.lib.UndoReference;
 import mesquite.lib.characters.AltererAlignShift;
 import mesquite.lib.characters.CharacterData;
+import mesquite.lib.duties.DataAltererParallelizable;
 import mesquite.lib.table.MesquiteTable;
 
 /* ======================================================================== */
-public class AMultipleAlignService extends MolecularDataAlterer  implements AltererAlignShift{
+public class AMultipleAlignService extends MolecularDataAlterer  implements AltererAlignShift, DataAltererParallelizable{
 	public void getEmployeeNeeds(){  //This gets called on startup to harvest information; override this and inside, call registerEmployeeNeed
 		EmployeeNeed e2 = registerEmployeeNeed(MultipleSequenceAligner.class, getName() + " needs a module to calculate alignments.",
 		"The sequence aligner is chosen in dialogs or in the Align Sequences or Selected Cell Block submenu");

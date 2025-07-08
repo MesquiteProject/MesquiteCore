@@ -115,11 +115,15 @@ public class MergeTaxaByName extends TaxonUtility {
 				if (otherFound){
 					logln("\nTaxa being merged:");
 					for (int iMg = 0; iMg<selected.length; iMg++){
-						if (selected[iMg])
+						if (selected[iMg]){
 							logln(" " + taxa.getTaxonName(iMg));
+						}
 					}
 					logln("\n");
+					
+					//======= MERGING =======
 					int result = mergeTask.mergeTaxa(taxa, selected, namePart+ " (merged)", report);
+					//======================
 					if (result == ResultCodes.SUCCEEDED) {
 						atLeastOneMerger = true;
 						logln(report.toString());

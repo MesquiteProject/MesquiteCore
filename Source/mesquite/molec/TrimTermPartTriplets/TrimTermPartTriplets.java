@@ -22,9 +22,10 @@ import mesquite.lib.UndoInstructions;
 import mesquite.lib.UndoReference;
 import mesquite.lib.characters.AltererDNACell;
 import mesquite.lib.characters.CharacterData;
+import mesquite.lib.duties.DataAltererParallelizable;
 import mesquite.lib.table.MesquiteTable;
 
-public class TrimTermPartTriplets extends DNADataAlterer  implements AltererDNACell {
+public class TrimTermPartTriplets extends DNADataAlterer  implements AltererDNACell, DataAltererParallelizable {
 
 	/*.................................................................................................................*/
 	public boolean startJob(String arguments, Object condition, boolean hiredByName) {

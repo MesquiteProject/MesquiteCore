@@ -23,12 +23,11 @@ import mesquite.lib.ResultCodes;
 import mesquite.lib.UndoReference;
 import mesquite.lib.characters.AltererConvertGapMissPolyUncert;
 import mesquite.lib.characters.CharacterData;
+import mesquite.lib.duties.DataAltererParallelizable;
 import mesquite.lib.table.MesquiteTable;
 
 /* ======================================================================== */
-public class PolymToAmbiguity extends CategDataAlterer implements AltererConvertGapMissPolyUncert {
-	MesquiteTable table;
-	CharacterData data;
+public class PolymToAmbiguity extends CategDataAlterer implements AltererConvertGapMissPolyUncert, DataAltererParallelizable {
 	/*.................................................................................................................*/
 	public boolean startJob(String arguments, Object condition, boolean hiredByName) {
 		return true;

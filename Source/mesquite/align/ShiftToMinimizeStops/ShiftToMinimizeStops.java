@@ -27,12 +27,13 @@ import mesquite.lib.UndoReference;
 import mesquite.lib.characters.AlteredDataParameters;
 import mesquite.lib.characters.AltererAlignShift;
 import mesquite.lib.characters.CharacterData;
+import mesquite.lib.duties.DataAltererParallelizable;
 import mesquite.lib.table.MesquiteTable;
 
 
 
 /* ======================================================================== */
-public class ShiftToMinimizeStops extends DNADataAlterer  implements AltererAlignShift {
+public class ShiftToMinimizeStops extends DNADataAlterer  implements AltererAlignShift, DataAltererParallelizable {
 
 	/*.................................................................................................................*/
 	public boolean startJob(String arguments, Object condition, boolean hiredByName) {
@@ -41,7 +42,7 @@ public class ShiftToMinimizeStops extends DNADataAlterer  implements AltererAlig
 	/*.................................................................................................................*/
 	/** returns whether this module is requesting to appear as a primary choice */
 	public boolean requestPrimaryChoice(){
-		return true;  
+		return false;  
 	}
 	/*.................................................................................................................*/
 	public void alterCell(CharacterData data, int ic, int it){
@@ -54,7 +55,7 @@ public class ShiftToMinimizeStops extends DNADataAlterer  implements AltererAlig
 	/*.................................................................................................................*/
 	/** Called to alter data in those cells selected in table*/
 	public int alterData(CharacterData data, MesquiteTable table,  UndoReference undoReference, AlteredDataParameters alteredDataParameters){
-		if (data==null || table==null || !(data instanceof DNAData))
+		if (data==null || !(data instanceof DNAData))
 			return -10;
 
 		DNAData dnaData = (DNAData)data;
@@ -69,8 +70,13 @@ public class ShiftToMinimizeStops extends DNADataAlterer  implements AltererAlig
 		
 		
 		int[] numStops= new int[3];
-		for (int it=0; it<dnaData.getNumTaxa(); it++) 
-			if (table.wholeRowSelectedAnyWay(it)) {
+		for (int it=0; it<dnaData.getNumTaxa(); it++) {
+			boolean proceed = false;
+			if (table != null)
+				proceed = table.wholeRowSelectedAnyWay(it);
+			else 
+				proceed = !data.getTaxa().anySelected() || data.getTaxa().isSelected(it);
+			if (proceed) {
 				numStops[0]= dnaData.getAminoAcidNumbers(it,ProteinData.TER);   //unshifted amount
 				if (numStops[0]>0) {
 					int added = data.shiftAllCells(1, it, true, true, false, dataChanged,charAdded, null);
@@ -104,6 +110,7 @@ public class ShiftToMinimizeStops extends DNADataAlterer  implements AltererAlig
 
 				}
 			}
+		}
 		if (!someCharAdded && alteredDataParameters!=null) {
 			if (singleTaxonChanged>=0 && MesquiteInteger.isCombinable(singleTaxonChanged)) {
 				alteredDataParameters.setSubcodes(new int[] {MesquiteListener.SINGLE_TAXON});

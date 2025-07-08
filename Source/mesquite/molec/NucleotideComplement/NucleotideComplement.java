@@ -21,11 +21,11 @@ import mesquite.lib.ResultCodes;
 import mesquite.lib.UndoReference;
 import mesquite.lib.characters.AltererDNACell;
 import mesquite.lib.characters.CharacterData;
+import mesquite.lib.duties.DataAltererParallelizable;
 import mesquite.lib.table.MesquiteTable;
 
 /* ======================================================================== */
-public class NucleotideComplement extends DNADataAlterer  implements AltererDNACell {
-	MesquiteTable table;
+public class NucleotideComplement extends DNADataAlterer  implements AltererDNACell, DataAltererParallelizable {
 	/*.................................................................................................................*/
 	public boolean startJob(String arguments, Object condition, boolean hiredByName) {
 		return true;

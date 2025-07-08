@@ -21,10 +21,11 @@ import mesquite.lib.ResultCodes;
 import mesquite.lib.UndoReference;
 import mesquite.lib.characters.AltererContinuousTransformations;
 import mesquite.lib.characters.CharacterData;
+import mesquite.lib.duties.DataAltererParallelizable;
 import mesquite.lib.table.MesquiteTable;
 
 /* ======================================================================== */
-public class ArcSineTransform extends ContDataAlterer  implements AltererContinuousTransformations{
+public class ArcSineTransform extends ContDataAlterer  implements AltererContinuousTransformations, DataAltererParallelizable{
 	/*.................................................................................................................*/
 	public boolean startJob(String arguments, Object condition, boolean hiredByName) {
 		return true;

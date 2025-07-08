@@ -23,12 +23,12 @@ import mesquite.lib.ResultCodes;
 import mesquite.lib.UndoReference;
 import mesquite.lib.characters.AltererConvertGapMissPolyUncert;
 import mesquite.lib.characters.CharacterData;
+import mesquite.lib.duties.DataAltererParallelizable;
 import mesquite.lib.table.MesquiteTable;
 
 /* ======================================================================== */
-public class MultistateToMissing extends CategDataAlterer implements AltererConvertGapMissPolyUncert {
-	MesquiteTable table;
-	CharacterData data;
+public class MultistateToMissing extends CategDataAlterer implements AltererConvertGapMissPolyUncert, DataAltererParallelizable {
+	//CharacterData data;
 	/*.................................................................................................................*/
 	public boolean startJob(String arguments, Object condition, boolean hiredByName) {
 		return true;

@@ -23,10 +23,11 @@ import mesquite.lib.characters.AltererMetadata;
 import mesquite.lib.characters.CharInclusionSet;
 import mesquite.lib.characters.CharacterData;
 import mesquite.lib.duties.DataAlterer;
+import mesquite.lib.duties.DataAltererParallelizable;
 import mesquite.lib.table.MesquiteTable;
 
 /* ======================================================================== */
-public class IncludeAllAlt extends DataAlterer implements AltererMetadata {
+public class IncludeAllAlt extends DataAlterer implements AltererMetadata, DataAltererParallelizable {
 	/*.................................................................................................................*/
 	public boolean startJob(String arguments, Object condition, boolean hiredByName) {
 		return true;

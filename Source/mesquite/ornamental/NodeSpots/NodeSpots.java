@@ -36,8 +36,9 @@ public class NodeSpots extends TreeDisplayAssistantI {
 	NodeSpotsDrawing spots;
 	MesquiteBoolean showSpots = new MesquiteBoolean(true); 
 	ListableVector spotTypes = new ListableVector();
-	long spotType = 0;
+	long spotType = 0; //These are module copies, but most of the action is in the TreeDisplayExtra below
 	int spotSize = 12;
+	int offset = 0;
 
 	public boolean startJob(String arguments, Object condition, boolean hiredByName){
 		setUseMenubar(false); //menu available by touching on button
@@ -50,6 +51,7 @@ public class NodeSpots extends TreeDisplayAssistantI {
 		mss.setList(spotTypes);
 		mss.setCommand(makeCommand("spotType",  this));
 		addMenuItem("Spot Size...", makeCommand("spotSize", this));
+		addMenuItem("Offset from Nodes...", makeCommand("offset", this));
 		addMenuItem("Remove All Spots", makeCommand("removeSpots", this));
 
 		return true;
@@ -73,6 +75,7 @@ public class NodeSpots extends TreeDisplayAssistantI {
 		Snapshot temp = new Snapshot();
 		temp.addLine("spotSize " + spotSize); 
 		temp.addLine("spotType " + spotType);
+		temp.addLine("offset " + offset);
 		temp.addLine("showSpots " + showSpots.toOffOnString());
 		return temp;
 	}
@@ -95,19 +98,35 @@ public class NodeSpots extends TreeDisplayAssistantI {
 					spots.setSpotType(spotType);
 			}
 		}
-	else if (checker.compare(this.getClass(), "Sets spot size", null, commandName, "spotSize")) {
+		else if (checker.compare(this.getClass(), "Sets spot size", null, commandName, "spotSize")) {
 			int ic = MesquiteInteger.fromString(arguments);
 			if (MesquiteInteger.isCombinable(ic)){
 				spotSize = ic;
 				if (spots != null)
 					spots.setSpotSize(spotSize);
-		}
+			}
 			else if (!MesquiteThread.isScripting()){
 				ic = MesquiteInteger.queryInteger(containerOfModule(), "Spot Size", "Size of spots for emphasis", (int)spotSize, 1, 40);
 				if (MesquiteInteger.isCombinable(ic)){
 					spotSize = ic;
 					if (spots != null)
 						spots.setSpotSize(spotSize);
+				}
+			}
+		}
+		else if (checker.compare(this.getClass(), "Sets offset", null, commandName, "offset")) {
+			int ic = MesquiteInteger.fromString(arguments);
+			if (MesquiteInteger.isCombinable(ic)){
+				offset = ic;
+				if (spots != null)
+					spots.setOffset(offset);
+			}
+			else if (!MesquiteThread.isScripting()){
+				ic = MesquiteInteger.queryInteger(containerOfModule(), "Offset from node", "How far away is the spot from the node (0 = on the node)", offset, -200, 200);
+				if (MesquiteInteger.isCombinable(ic)){
+					offset = ic;
+					if (spots != null)
+						spots.setOffset(offset);
 				}
 			}
 		}
@@ -145,6 +164,7 @@ class NodeSpotsDrawing extends TreeDisplayDrawnExtra implements Commandable {
 	NodeSpots nsModule;
 	long currentSpotType = 0;
 	long currentSpotSize = 12;
+	int currentOffset = 0;
 	MesquiteCursor[] cursors;
 	public NodeSpotsDrawing (NodeSpots ownerModule, TreeDisplay treeDisplay, int numTaxa) {
 		super(ownerModule, treeDisplay);
@@ -152,7 +172,7 @@ class NodeSpotsDrawing extends TreeDisplayDrawnExtra implements Commandable {
 		cursors = new MesquiteCursor[ownerModule.spotTypes.size()];
 		for (int i=0; i<cursors.length; i++)
 			cursors[i] =  new MesquiteCursor(this, "spot" + i, ownerModule.getPath(), "spot" + i + ".gif", 8, 4);
-		
+
 		spotTool = new TreeTool(this, "AddSpots", ownerModule.getPath(), "spot0.gif", 8,4 ,"Add/Delete Spot at Node", "This tool adds a spot at a node of a tree.  This has cosmetic effect only. It can be used for emphasis. ");
 		currentSpotType = ownerModule.spotType;
 		setSpotType(currentSpotType);
@@ -162,7 +182,7 @@ class NodeSpotsDrawing extends TreeDisplayDrawnExtra implements Commandable {
 			spotTool.setPopUpOwner(ownerModule);
 		}
 	}
-	
+
 	void setSpotType(long t){
 		spotTool.setCurrentStandardCursor(cursors[(int)t]);
 		currentSpotType = t;
@@ -170,9 +190,14 @@ class NodeSpotsDrawing extends TreeDisplayDrawnExtra implements Commandable {
 	void setSpotSize(long t){
 		currentSpotSize = t;
 	}
+	void setOffset(int t){
+		currentOffset = t;
+		treeDisplay.repaint();
+	}
 	NameReference spotTypeNR = NameReference.getNameReference("spotType");
 	NameReference spotSizeNR = NameReference.getNameReference("spotSize");
-	double offsetX = 0; double offsetY = 0;
+
+	double centeringOffsetX = 0; double centeringOffsetY = 0;  //These are the offsets needed to center the spot over the branch, considering branch width and tree orientation
 	/*_________________________________________________*/
 	private   void drawSpot(TreeDisplay treeDisplay, MesquiteTree tree, Graphics g, int N) {
 		if (tree.withinCollapsedClade(N))
@@ -180,10 +205,52 @@ class NodeSpotsDrawing extends TreeDisplayDrawnExtra implements Commandable {
 		if (tree.nodeExists(N)) {
 			long spotStored = tree.getAssociatedLong(spotTypeNR, N);
 			long spotSizeStored = tree.getAssociatedLong(spotSizeNR, N);
-			
+
 			if (MesquiteLong.isCombinable(spotStored)){
-				double x = treeDisplay.getTreeDrawing().x[N] + offsetX;
-				double y = treeDisplay.getTreeDrawing().y[N] + offsetY;
+				double x = treeDisplay.getTreeDrawing().x[N] + centeringOffsetX;
+				double y = treeDisplay.getTreeDrawing().y[N] + centeringOffsetY;
+
+				if (currentOffset!=0){
+					double bx = treeDisplay.getTreeDrawing().lineBaseX[N];
+					double by = treeDisplay.getTreeDrawing().lineBaseY[N];
+					double tx = treeDisplay.getTreeDrawing().lineTipX[N];
+					double ty = treeDisplay.getTreeDrawing().lineTipY[N];
+					if (bx == tx) { //Vertical
+						if (currentOffset>0){
+							if (ty>by)
+								y -= currentOffset;
+							else
+								y +=currentOffset;
+						}
+						else if (ty<by)
+							y += currentOffset;
+						else
+							y -=currentOffset;
+					}
+					else {
+						double slope = (by-ty)/(bx-tx);
+						double dx = Math.sqrt((currentOffset*currentOffset)/(1+slope*slope));
+						double dy = Math.abs(slope*dx);
+						if (currentOffset<0) { //should go beyond node
+							if (tx<bx)
+								dx = -dx;						
+						}
+						else if (tx>bx)
+							dx = -dx;
+						if (currentOffset<0) {
+							if (ty<by)
+								dy = -dy;						
+						}
+						else if (ty>by)
+							dy = -dy;
+						x += dx;
+						y += dy;
+					}
+				}
+				/*To go away from the node we follow the node's line. The two end points of the line are:
+				treeDisplay.getTreeDrawing().lineTipX[N], lineTipY[N]  //this is basically the x,y of the node
+				treeDisplay.getTreeDrawing().lineBaseX[N], lineBaseY[N]  //you can think of this as x,y for the ancestor, but it is only if diagonal
+				 * */
 				double spotSize = nsModule.spotSize;
 				if (MesquiteLong.isCombinable(spotSizeStored))
 					spotSize = (int)spotSizeStored;
@@ -223,19 +290,19 @@ class NodeSpotsDrawing extends TreeDisplayDrawnExtra implements Commandable {
 	public   void drawSpots(TreeDisplay treeDisplay, Tree tree, int drawnRoot, Graphics g) {
 		double edgeWidth = treeDisplay.getTreeDrawing().getEdgeWidth();
 		if (treeDisplay.isUp()){
-			offsetX = edgeWidth/2;
-			offsetY = edgeWidth/2;
+			centeringOffsetX = edgeWidth/2;
+			centeringOffsetY = edgeWidth/2;
 		}
 		else if (treeDisplay.isDown()){
-			offsetX = edgeWidth/2;
-			offsetY = -edgeWidth/2;
+			centeringOffsetX = edgeWidth/2;
+			centeringOffsetY = -edgeWidth/2;
 		}
 		else if (treeDisplay.isRight()){
-			offsetY = edgeWidth/2;
-			offsetX = -edgeWidth/2;
+			centeringOffsetY = edgeWidth/2;
+			centeringOffsetX = -edgeWidth/2;
 		}
 		else if (treeDisplay.isLeft()){
-			offsetY = edgeWidth/2;
+			centeringOffsetY = edgeWidth/2;
 		}
 		if (MesquiteTree.OK(tree)) {
 			drawSpot(treeDisplay, (MesquiteTree)tree, g, drawnRoot);  
@@ -276,7 +343,7 @@ class NodeSpotsDrawing extends TreeDisplayDrawnExtra implements Commandable {
 					tree.setAssociatedLong(spotSizeNR, branchFound, currentSpotSize);
 				}
 
-					
+
 				tree.notifyListeners(this, new Notification(MesquiteListener.ANNOTATION_CHANGED));
 				//treeDisplay.repaint();
 			}

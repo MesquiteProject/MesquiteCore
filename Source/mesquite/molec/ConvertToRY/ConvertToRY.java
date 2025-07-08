@@ -23,11 +23,11 @@ import mesquite.lib.ResultCodes;
 import mesquite.lib.UndoReference;
 import mesquite.lib.characters.AltererDNACell;
 import mesquite.lib.characters.CharacterData;
+import mesquite.lib.duties.DataAltererParallelizable;
 import mesquite.lib.table.MesquiteTable;
 
 /* ======================================================================== */
-public class ConvertToRY extends DNADataAlterer implements AltererDNACell {
-	MesquiteTable table;
+public class ConvertToRY extends DNADataAlterer implements AltererDNACell, DataAltererParallelizable {
 	DNAState charState = new DNAState();
 
 	/*.................................................................................................................*/
@@ -38,7 +38,6 @@ public class ConvertToRY extends DNADataAlterer implements AltererDNACell {
 	/*.................................................................................................................*/
 	/** Called to alter data in those cells selected in table*/
 	public int alterData(CharacterData data, MesquiteTable table, UndoReference undoReference){
-		this.table = table;
 		if (!(data instanceof DNAData)){
 			MesquiteMessage.warnProgrammer("Can use " + getName() + " only on nucleotide data");
 			return ResultCodes.INCOMPATIBLE_DATA;

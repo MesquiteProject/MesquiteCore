@@ -18,9 +18,10 @@ import mesquite.categ.lib.MolecularData;
 import mesquite.lib.characters.AltererAlignShift;
 import mesquite.lib.characters.CharacterData;
 import mesquite.lib.duties.DataAltererCon;
+import mesquite.lib.duties.DataAltererParallelizable;
 
 /* ======================================================================== */
-public class ReverseSequence extends DataAltererCon   implements AltererAlignShift {
+public class ReverseSequence extends DataAltererCon   implements AltererAlignShift, DataAltererParallelizable {
 
 	public boolean alterBlockInTaxon(CharacterData data, int icStart, int icEnd, int it) {
 		if (data==null)
