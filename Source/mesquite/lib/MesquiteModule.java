@@ -1129,6 +1129,13 @@ public abstract class MesquiteModule extends EmployerEmployee implements Command
 		return  moduleInfo.getPackagePath();
 	}
 	/*.................................................................................................................*/
+	/** returns path to this module's package directory*/
+	public String getPackageCanonicalDocsPath() {  
+		if (this == MesquiteTrunk.mesquiteTrunk)
+			return getRootPath() + "docs" + MesquiteFile.fileSeparator;
+		return  moduleInfo.getPackagePath()+ "docs" + MesquiteFile.fileSeparator;
+	}
+	/*.................................................................................................................*/
 	/** returns path to the image directory for this module's images*/
 	public String getPackageImagesPath() {  
 		if (this == MesquiteTrunk.mesquiteTrunk)
