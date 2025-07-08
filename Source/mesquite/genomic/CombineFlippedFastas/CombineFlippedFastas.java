@@ -50,7 +50,7 @@ public class CombineFlippedFastas extends GeneralFileMakerMultiple {
 	/*.................................................................................................................*/
 	public boolean startJob(String arguments, Object condition, boolean hiredByName){
 		int result = QueryDialogs.queryTwoRadioButtons(containerOfModule(), "Alter names?", "Do you want to alter or adjust the names of loci (e.g., by deleting part of the name) "
-				+"as the flipped FASTA files are being read?\n\n(Touch the help (?) button for an explanation of what a flipped FASTA file is.)", "What is a flipped FASTA file? A typical phylogenetic data file has character or sequence data for multiple taxa. Each taxon is typically a row in a matrix."
+				+"as the flipped FASTA files are being read?\n\nTouch the help (?) button for an explanation of what a flipped FASTA file is.", "What is a flipped FASTA file? A typical phylogenetic data file has character or sequence data for multiple taxa. Each taxon is typically a row in a matrix."
 				+ " A flipped FASTA has the opposite orientation — the file is about a single taxon, and each row concerns the data for a separate locus. This feature imports all of the flipped FASTA files in a folder."
 						+"<p>Note: If you choose to alter the locus names, some of the choices in the subsequent dialog box refer to \"taxon names\", but it's actually the locus names that are getting altered."
 				+" The reason for this is misnaming is that Mesquite is set to interpret rows in a file as taxa, but in these flipped fasta files, the rows are loci.", "Don't alter locus names", "Alter locus names");
@@ -63,7 +63,7 @@ public class CombineFlippedFastas extends GeneralFileMakerMultiple {
 		}
 		return result >=0;
 	}
-
+	
 	boolean firstFile = true;
 	public boolean okToInteractWithUser(int howImportant, String messageToUser){
 		return firstFile;
@@ -259,16 +259,11 @@ public class CombineFlippedFastas extends GeneralFileMakerMultiple {
 									}
 								}
 								//==========================================
-
 								project.getCoordinatorModule().closeFile(file, true);
 								filesFound++;
-
 							}
-
 						}
-
 					}
-
 				}
 				if (files.length>=20)
 					logln("");
@@ -278,7 +273,6 @@ public class CombineFlippedFastas extends GeneralFileMakerMultiple {
 						alert("No appropriate files with extensions (.fas or .fasta) were found in folder.");
 					else
 						discreetAlert("No appropriate files with extensions (.fas or .fasta) were found in folder.");
-
 				}
 				else
 					logln("Flipped Fastas read for " + files.length + " taxa; " + lociAdded + " different loci found. [" + overallTime.timeSinceLastInSeconds() + " sec.]" );
@@ -289,8 +283,6 @@ public class CombineFlippedFastas extends GeneralFileMakerMultiple {
 				if (!taxaNew)
 					taxa.notifyListeners(this, new Notification(MesquiteListener.PARTS_ADDED));
 			}
-
-
 		}
 		decrementNEXUSBlockSortSuppression();
 		FileCoordinator fCoord =project.getCoordinatorModule();
@@ -299,6 +291,8 @@ public class CombineFlippedFastas extends GeneralFileMakerMultiple {
 			if (fi != null)
 				fi.sortAllBlocks();
 		}
+		fireEmployee(nameAlterer);
+
 		decrementMenuResetSuppression();
 	}
 	/*.................................................................................................................*/

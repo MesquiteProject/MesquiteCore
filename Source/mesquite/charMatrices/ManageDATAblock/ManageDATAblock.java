@@ -70,6 +70,11 @@ public class ManageDATAblock extends MesquiteModule {
 		String taxaTitle=getProject().getCharacterMatrices().getUniqueName("Taxa");
 		int firstTaxon = 0;
 		boolean fuse = parser.hasFileReadingArgument(fileReadingArguments, "fuseTaxaCharBlocks");
+		if (fuse){
+			discreetAlert("Files with matrices in DATA blocks cannot be fused into an existing file in this way. DATA blocks are an archaic format,"
+					+ " recommended against strongly in the original NEXUS paper (Maddison et al. 1997). To include this file properly, first read it in and re-save it in Mesquite to convert it to one with TAXA and CHARACTERS blocks.");
+			return skipNexusBlock(file, name, block, null, fileReadingArguments);
+		}
 		
 		String commandName;
 		Taxa taxa= null;
@@ -91,14 +96,19 @@ public class ManageDATAblock extends MesquiteModule {
 					alert("Sorry, the DIMENSIONS statement of the DATA block appears to be misformatted.  The number of characters is not validly specified. File reading will fail.");
 					return null;
 				}
-				if (fuse){
-					String message = "In the file being imported, there is a taxa block. Mesquite will either fuse this imported taxa block into the taxa block you select below, or it will import that taxa block as new, separate taxa block.";
-					taxa = getProject().chooseTaxa(containerOfModule(), message, true, "Fuse with Selected Taxa Block", "Add as New Taxa Block");
+				/*if (fuse){
+					String message = "In the file being imported, there is a taxa block implied by a DATA block.\n\nIf you choose the Merge button, Mesquite will fuse the incoming taxa block into the existing taxa block you select. "
+							+"You will later get to choose whether an incoming taxon of the same name as an existing taxon is treated as the same taxon or kept separate.\n\n"
+							+"If you choose the Add as New button, the incoming block of taxa will be treated as independent of the existing block.";
+					taxa = getProject().chooseTaxa(containerOfModule(), message, true, "Merge into Selected Taxa Block", "Add as New Taxa Block");
+					if (taxa == null) //about to add as new taxa; DO NOT ASK ABOUT DELETING apparent duplicate TAXA BLOCK
+						noWarnDupTaxaBlock = true;
 					if (taxa != null){
 						firstTaxon = taxa.getNumTaxa();
+						merging = true;
 						taxa.addTaxa( taxa.getNumTaxa()-1, numTaxa, true);
-					}
 				}
+				}*/
 				if (taxa == null)
 					taxa = taxaTask.makeNewTaxaBlock(taxaTitle, numTaxa, false);
 			}
@@ -173,6 +183,7 @@ public class ManageDATAblock extends MesquiteModule {
 		if (data !=null) {
 			data.resetCellMetadata();
 		}
+		
 		file.setCurrentTaxa(taxa);
 		file.setCurrentData(data);
 		return b;

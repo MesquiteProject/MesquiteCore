@@ -845,6 +845,22 @@ public class Taxa extends FileElement implements NameableWithNotify {
 			deleteTaxa(it, 1, notify);
 	}
 	/*.................................................................................................................*/
+	public String fixDuplicateNames (){
+		String list = "";
+		for (int i=0; i<getNumTaxa(); i++){
+			String name = getTaxonName(i);
+			for (int j=i+1; j<getNumTaxa(); j++){
+				String name2 = getTaxonName(j);
+				if (name!=null && name.equalsIgnoreCase(name2)) {
+					String s = getUniqueName(name2);
+					setTaxonName(j, s);
+					list += "Taxon \"" + name2 + "\" changed to \"" + s + "\"\n";
+				}
+			}
+		}
+		return list;
+	}
+	/*.................................................................................................................*/
 	public void deleteTaxaWithDuplicateNames (){
 		if (inhibitEdit>0)
 			return;

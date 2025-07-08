@@ -19,6 +19,7 @@ import mesquite.lib.MesquiteCommand;
 import mesquite.lib.MesquiteModule;
 import mesquite.lib.StringUtil;
 import mesquite.lib.duties.FileAssistantFM;
+import mesquite.lib.taxa.Taxa;
 import mesquite.lib.ui.MesquiteFrame;
 import mesquite.lib.ui.MesquiteWindow;
 
@@ -51,7 +52,6 @@ public class FuseTaxaMatrices extends FileAssistantFM {
 		MesquiteModule fCoord = getFileCoordinator();
 		MesquiteCommand command = makeCommand("includeFileFuse", fCoord);
 		command.doItMainThread(StringUtil.argumentMarker + "fuseTaxaCharBlocks " + StringUtil.argumentMarker + "justTheseBlocks.TAXA.DATA.CHARACTERS", null, this);
-		
 		MesquiteWindow w = containerOfModule();
 		MesquiteFrame f = w.getParentFrame();
 		if (f.getResourcesClosedWhenMinimized())

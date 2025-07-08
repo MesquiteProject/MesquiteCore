@@ -185,7 +185,7 @@ public class xExportSimpleNexus extends FileInterpreterI {
 
 	/*.................................................................................................................*/
 	public String getName() {
-		return "Simplified NEXUS";
+		return "Simplified (Archaic) NEXUS";
 	}
 	/*.................................................................................................................*/
 
