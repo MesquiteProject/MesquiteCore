@@ -38,10 +38,11 @@ public class NodeSpots extends TreeDisplayAssistantI {
 	MesquiteBoolean showSpots = new MesquiteBoolean(true); 
 	ListableVector spotTypes = new ListableVector();
 	long spotType = 0; //These are module copies, but most of the action is in the TreeDisplayExtra below
-	int spotSize = 12;
+	int spotSize = 8;
 	static String black = "#000000";
 	static String white = "#ffffff";
 	String spotColor = black;
+	boolean spotSizeSet = false;
 	int offset = 0;
 
 	public boolean startJob(String arguments, Object condition, boolean hiredByName){
@@ -59,7 +60,7 @@ public class NodeSpots extends TreeDisplayAssistantI {
 		addItemToSubmenu(null, mss, "Enter Hex Value of Color...", new MesquiteCommand("spotColor", this));
 		addMenuItem("Size of New Spots...", makeCommand("spotSize", this));
 		addMenuSeparator();
-	addMenuItem("Set Size All Spots...", makeCommand("spotSizeAll", this));
+		addMenuItem("Set Size All Spots...", makeCommand("spotSizeAll", this));
 		addMenuItem("Offset from Nodes...", makeCommand("offset", this));
 		addMenuItem("Remove All Spots", makeCommand("removeSpots", this));
 
@@ -75,18 +76,19 @@ public class NodeSpots extends TreeDisplayAssistantI {
 	}
 	/*.................................................................................................................*/
 	public   TreeDisplayExtra createTreeDisplayExtra(TreeDisplay treeDisplay) {
-		spots = new NodeSpotsDrawing(this, treeDisplay, 0); //TODO: should remember all of these
+		spots = new NodeSpotsDrawing(this, treeDisplay, 0); //TODO: should remember all of these or restrict to one
 		return spots;
 	}
 
 	/*.................................................................................................................*/
 	public Snapshot getSnapshot(MesquiteFile file) {
 		Snapshot temp = new Snapshot();
+		temp.addLine("showSpots " + showSpots.toOffOnString());
 		temp.addLine("spotSize " + spotSize); 
+		temp.addLine("spotSizeSet " + spotSizeSet); 
 		temp.addLine("spotType " + spotType);
 		temp.addLine("spotColor " + StringUtil.tokenize(spotColor));
 		temp.addLine("offset " + offset);
-		temp.addLine("showSpots " + showSpots.toOffOnString());
 		return temp;
 	}
 
@@ -99,6 +101,9 @@ public class NodeSpots extends TreeDisplayAssistantI {
 			showSpots.toggleValue(parser.getFirstToken(arguments));
 			if (spots != null)
 				spots.getTreeDisplay().repaint();
+		}
+		else if (checker.compare(this.getClass(), "Sets whether to spot size has been set", "[true or false]", commandName, "spotSizeSet")) {
+			spotSizeSet = MesquiteBoolean.fromTrueFalseString(arguments);
 		}
 		else if (checker.compare(this.getClass(), "Sets current spot color", "[hex color, as in #0000ff for blue]", commandName, "spotColor")) {
 			String temp = parser.getFirstToken(arguments);
@@ -175,7 +180,7 @@ public class NodeSpots extends TreeDisplayAssistantI {
 	 * then the number refers to the Mesquite version.  This should be used only by modules part of the core release of Mesquite.
 	 * If a NEGATIVE integer, then the number refers to the local version of the package, e.g. a third party package*/
 	public int getVersionOfFirstRelease(){
-		return MesquiteModule.NEXTRELEASE;  
+		return 401;  
 	}
 	/*.................................................................................................................*/
 	/** returns an explanation of what the module does.*/
@@ -211,6 +216,7 @@ class NodeSpotsDrawing extends TreeDisplayDrawnExtra implements Commandable {
 		setSpotType(ownerModule.spotType);
 		setSpotColor(ownerModule.spotColor);
 		setSpotSize(ownerModule.spotSize);
+		nsModule.spotSizeSet = false;
 		spotTool.setTouchedCommand(new MesquiteCommand("toggleSpot",  this));
 		if (ownerModule.containerOfModule() instanceof MesquiteWindow) {
 			((MesquiteWindow)ownerModule.containerOfModule()).addTool(spotTool);
@@ -238,6 +244,7 @@ class NodeSpotsDrawing extends TreeDisplayDrawnExtra implements Commandable {
 		
 	}
 	void setSpotSize(long t){
+		nsModule.spotSizeSet = true;
 		currentSpotSize = t;
 	}
 	void setOffset(int t){
@@ -338,6 +345,10 @@ class NodeSpotsDrawing extends TreeDisplayDrawnExtra implements Commandable {
 	/*_________________________________________________*/
 	public   void drawSpots(TreeDisplay treeDisplay, Tree tree, int drawnRoot, Graphics g) {
 		double edgeWidth = treeDisplay.getTreeDrawing().getEdgeWidth();
+		if (!nsModule.spotSizeSet && currentSpotSize< (int)(edgeWidth+4)){
+			nsModule.spotSize = (int)(edgeWidth+4);
+			setSpotSize(nsModule.spotSize);
+		}
 		if (treeDisplay.isUp()){
 			centeringOffsetX = edgeWidth/2;
 			centeringOffsetY = edgeWidth/2;
@@ -360,8 +371,9 @@ class NodeSpotsDrawing extends TreeDisplayDrawnExtra implements Commandable {
 	/*.................................................................................................................*/
 	public   void drawOnTree(Tree tree, int drawnRoot, Graphics g) {
 		myTree = (MesquiteTree)tree;
-		if (nsModule.showSpots.getValue())
+		if (nsModule.showSpots.getValue()){
 			drawSpots(treeDisplay, tree, drawnRoot, g);
+		}
 	}
 	public   void printOnTree(Tree tree, int drawnRoot, Graphics g) {
 		myTree = (MesquiteTree)tree;

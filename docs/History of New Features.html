@@ -41,8 +41,8 @@
     <td width="51%"><strong id="PackageTitle">Mesquite</strong></td>
     <td width="33%" align="right"><div id="subtitle"><!-- InstanceBeginEditable name="subtitle" -->History of New Features<!-- InstanceEndEditable --></div></td>
     <td width="2%">&nbsp;</td>
-    <td width="14%">Version 4.0<br />
-      June 2025<br /></td>
+    <td width="14%">Version 4.01<br />
+      July 2025<br /></td>
   </tr>
 </table>
 
@@ -216,13 +216,15 @@
 	  
 	  <h4 id="toc86">New Features </h4>
  <ul>
-   <li>The NINJA package (<a href="https://doi.org/10.1007/978-3-642-04241-6_31">https://doi.org/10.1007/978-3-642-04241-6_31</a>), for inferring large-scale neighbor-joining phylogenies, has been incorporated into Mesquite, and can now work even if some taxa have no sequence data (they will automatically be excluded). </li>
-   <li></li>
+   <li>The <strong>NINJA package</strong> (<a href="https://doi.org/10.1007/978-3-642-04241-6_31">https://doi.org/10.1007/978-3-642-04241-6_31</a>), for inferring large-scale neighbor-joining phylogenies, has been incorporated into the standard distribution of Mesquite, and can now work even if some taxa have no sequence data (they will automatically be excluded). </li>
+   <li>For merging two or more taxa, the options have expanded. In the List of Taxa window, you can merge selected taxa (List&gt;Taxon Utilities&gt;<strong>Merge Selected Taxa</strong>) or merge taxa according to their having a part of their name that matches (&gt;<strong>Merge Taxa by Name Matching</strong>). There are more options in how their data are merged, including choosing the longest sequence.</li>
+	 <li>There's a new <strong>Node Spots</strong> tool in the tree window to put spots (circles) or squares at nodes ( <img src="files/nodeSpotsTool.jpg" width="15" height="17" alt="" />). This is graphical only, e.g to make a figure showing which branches have 100% bootstrap values. The circles and squares can be assigned different colors and sizes.</li>
+	
  </ul>
  <h4 id="toc87">Bug Fixes, Workarounds, and Improvements</h4>
  <ul>
-   <li>[report major bug fix]</li>
-   <li>Several more minor bug fixes</li>
+   <li>A bug in trimming sequences via the matrix coloring option Highlight by Trimming or Flagging Methods was fixed. In version 4.0, if you had chosen that option, and then the option Invert Highlights, and then asked to Delete Parts Highlighted Dark, it would actually delete the parts that were not highlighted dark. Users would have likely noticed immediately that the deletion was opposite to that intended. This has been fixed.</li>
+   <li>There were several more minor bug fixes and interface improvements.</li>
  </ul>
  <p>&nbsp;</p>
   <hr />

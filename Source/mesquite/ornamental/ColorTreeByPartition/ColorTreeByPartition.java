@@ -200,12 +200,10 @@ class ColorByPartitionExtra extends TreeDisplayExtra implements MesquiteListener
 				t[i] = group;
 				return;
 			}
-
 	}
 	/*.................................................................................................................*/
-	public   void harvestColorsDOWN(Tree tree, int node) {
+	public void harvestColorsDOWN(Tree tree, int node) {
 		if (partition != null){
-			int count = 0;
 			if (tree.nodeIsTerminal(node)){
 				int taxonNumber = tree.taxonNumberOfNode(node);
 				TaxaGroup mi = (TaxaGroup)partition.getProperty(taxonNumber);
@@ -226,9 +224,7 @@ class ColorByPartitionExtra extends TreeDisplayExtra implements MesquiteListener
 				if (groupsAtNode[node][i] != null)
 					colors[node].setColor(counter++, groupsAtNode[node][i].getColor());
 			}
-
 		}
-
 	}
 
 	boolean inArray(TaxaGroup[] gs, TaxaGroup g){
