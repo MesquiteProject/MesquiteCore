@@ -25,6 +25,7 @@ import mesquite.lib.tree.TreeDisplay;
 import mesquite.lib.tree.TreeDisplayDrawnExtra;
 import mesquite.lib.tree.TreeDisplayExtra;
 import mesquite.lib.tree.TreeTool;
+import mesquite.lib.ui.ColorDistribution;
 import mesquite.lib.ui.GraphicsUtil;
 import mesquite.lib.ui.MesquiteCursor;
 import mesquite.lib.ui.MesquiteImage;
@@ -38,19 +39,27 @@ public class NodeSpots extends TreeDisplayAssistantI {
 	ListableVector spotTypes = new ListableVector();
 	long spotType = 0; //These are module copies, but most of the action is in the TreeDisplayExtra below
 	int spotSize = 12;
+	static String black = "#000000";
+	static String white = "#ffffff";
+	String spotColor = black;
 	int offset = 0;
 
 	public boolean startJob(String arguments, Object condition, boolean hiredByName){
 		setUseMenubar(false); //menu available by touching on button
 		addCheckMenuItem(null, "Show Spots", makeCommand("showSpots", this), showSpots);
-		MesquiteSubmenuSpec mss = addSubmenu(null, "Spot Type");
-		spotTypes.addElement(new MesquiteInteger("Filled Circle (Spot)", 0), false);
-		spotTypes.addElement(new MesquiteInteger("Open Circle", 1), false);
-		spotTypes.addElement(new MesquiteInteger("Filled Square", 2), false);
-		spotTypes.addElement(new MesquiteInteger("Open Square", 3), false);
+		addMenuSeparator();
+		MesquiteSubmenuSpec mss = addSubmenu(null, "Shape of New Spots");
+		spotTypes.addElement(new MesquiteInteger("Circle", 0), false);
+		spotTypes.addElement(new MesquiteInteger("Square", 1), false);
 		mss.setList(spotTypes);
 		mss.setCommand(makeCommand("spotType",  this));
-		addMenuItem("Spot Size...", makeCommand("spotSize", this));
+		mss = addSubmenu(null, "Color of New Spots");
+		addItemToSubmenu(null, mss, "Black", new MesquiteCommand("spotColor", StringUtil.tokenize(black), this));
+		addItemToSubmenu(null, mss, "White", new MesquiteCommand("spotColor", StringUtil.tokenize(white), this));
+		addItemToSubmenu(null, mss, "Enter Hex Value of Color...", new MesquiteCommand("spotColor", this));
+		addMenuItem("Size of New Spots...", makeCommand("spotSize", this));
+		addMenuSeparator();
+	addMenuItem("Set Size All Spots...", makeCommand("spotSizeAll", this));
 		addMenuItem("Offset from Nodes...", makeCommand("offset", this));
 		addMenuItem("Remove All Spots", makeCommand("removeSpots", this));
 
@@ -75,6 +84,7 @@ public class NodeSpots extends TreeDisplayAssistantI {
 		Snapshot temp = new Snapshot();
 		temp.addLine("spotSize " + spotSize); 
 		temp.addLine("spotType " + spotType);
+		temp.addLine("spotColor " + StringUtil.tokenize(spotColor));
 		temp.addLine("offset " + offset);
 		temp.addLine("showSpots " + showSpots.toOffOnString());
 		return temp;
@@ -90,7 +100,19 @@ public class NodeSpots extends TreeDisplayAssistantI {
 			if (spots != null)
 				spots.getTreeDisplay().repaint();
 		}
-		else if (checker.compare(this.getClass(), "Sets spot size", null, commandName, "spotType")) {
+		else if (checker.compare(this.getClass(), "Sets current spot color", "[hex color, as in #0000ff for blue]", commandName, "spotColor")) {
+			String temp = parser.getFirstToken(arguments);
+			if (StringUtil.blank(temp) && !MesquiteThread.isScripting()){
+				temp = MesquiteString.queryString(containerOfModule(), "Hex value of color", "Set current color as a hex string (e.g., red would be #ff0000):", spotColor);
+			}
+			Color c = ColorDistribution.colorFromHex(temp);
+			if (c!= null)
+				spotColor = temp;
+			if (spots != null){
+				spots.setSpotColor(spotColor);
+			}
+		}
+		else if (checker.compare(this.getClass(), "Sets spot type", null, commandName, "spotType")) {
 			int ic = MesquiteInteger.fromString(arguments);
 			if (MesquiteInteger.isCombinable(ic)){
 				spotType = ic;
@@ -106,11 +128,20 @@ public class NodeSpots extends TreeDisplayAssistantI {
 					spots.setSpotSize(spotSize);
 			}
 			else if (!MesquiteThread.isScripting()){
-				ic = MesquiteInteger.queryInteger(containerOfModule(), "Spot Size", "Size of spots for emphasis", (int)spotSize, 1, 40);
+				ic = MesquiteInteger.queryInteger(containerOfModule(), "Spot Size", "Size of new spots", (int)spotSize, 1, 40);
 				if (MesquiteInteger.isCombinable(ic)){
 					spotSize = ic;
 					if (spots != null)
 						spots.setSpotSize(spotSize);
+				}
+			}
+		}
+		else if (checker.compare(this.getClass(), "Sets spot size for all spots", null, commandName, "spotSizeAll")) {
+			if (!MesquiteThread.isScripting()){
+				int ic = MesquiteInteger.queryInteger(containerOfModule(), "Spot Size", "Size of all current spots", (int)spotSize, 1, 40);
+				if (MesquiteInteger.isCombinable(ic)){
+					if (spots != null)
+						spots.setSpotSizeAll(ic);
 				}
 			}
 		}
@@ -165,6 +196,9 @@ class NodeSpotsDrawing extends TreeDisplayDrawnExtra implements Commandable {
 	long currentSpotType = 0;
 	long currentSpotSize = 12;
 	int currentOffset = 0;
+	String currentColorHex = NodeSpots.black;
+	Color currentColor = Color.black;
+	MesquiteTree myTree = null;
 	MesquiteCursor[] cursors;
 	public NodeSpotsDrawing (NodeSpots ownerModule, TreeDisplay treeDisplay, int numTaxa) {
 		super(ownerModule, treeDisplay);
@@ -174,8 +208,9 @@ class NodeSpotsDrawing extends TreeDisplayDrawnExtra implements Commandable {
 			cursors[i] =  new MesquiteCursor(this, "spot" + i, ownerModule.getPath(), "spot" + i + ".gif", 8, 4);
 
 		spotTool = new TreeTool(this, "AddSpots", ownerModule.getPath(), "spot0.gif", 8,4 ,"Add/Delete Spot at Node", "This tool adds a spot at a node of a tree.  This has cosmetic effect only. It can be used for emphasis. ");
-		currentSpotType = ownerModule.spotType;
-		setSpotType(currentSpotType);
+		setSpotType(ownerModule.spotType);
+		setSpotColor(ownerModule.spotColor);
+		setSpotSize(ownerModule.spotSize);
 		spotTool.setTouchedCommand(new MesquiteCommand("toggleSpot",  this));
 		if (ownerModule.containerOfModule() instanceof MesquiteWindow) {
 			((MesquiteWindow)ownerModule.containerOfModule()).addTool(spotTool);
@@ -187,6 +222,21 @@ class NodeSpotsDrawing extends TreeDisplayDrawnExtra implements Commandable {
 		spotTool.setCurrentStandardCursor(cursors[(int)t]);
 		currentSpotType = t;
 	}
+	private   void spotSizeAll(MesquiteTree tree, int N, long size) {
+		long spotSizeStored = tree.getAssociatedLong(spotSizeNR, N);
+		if (MesquiteLong.isCombinable(spotSizeStored))
+			 tree.setAssociatedLong(spotSizeNR, N, size);
+			for (int d = tree.firstDaughterOfNode(N); tree.nodeExists(d); d = tree.nextSisterOfNode(d))
+				spotSizeAll(tree, d, size);
+	}
+	
+	void setSpotSizeAll(long t){
+		setSpotSize(t);
+		if (myTree != null)
+			spotSizeAll(myTree, myTree.getRoot(), t);
+		treeDisplay.repaint();
+		
+	}
 	void setSpotSize(long t){
 		currentSpotSize = t;
 	}
@@ -194,17 +244,28 @@ class NodeSpotsDrawing extends TreeDisplayDrawnExtra implements Commandable {
 		currentOffset = t;
 		treeDisplay.repaint();
 	}
+	void setSpotColor(String t){
+		currentColorHex = t;
+		currentColor = ColorDistribution.colorFromHex(t);
+		
+	}
 	NameReference spotTypeNR = NameReference.getNameReference("spotType");
 	NameReference spotSizeNR = NameReference.getNameReference("spotSize");
+	NameReference spotColorNR = NameReference.getNameReference("spotColor");
 
 	double centeringOffsetX = 0; double centeringOffsetY = 0;  //These are the offsets needed to center the spot over the branch, considering branch width and tree orientation
 	/*_________________________________________________*/
-	private   void drawSpot(TreeDisplay treeDisplay, MesquiteTree tree, Graphics g, int N) {
+	private void drawSpot(TreeDisplay treeDisplay, MesquiteTree tree, Graphics g, int N) {
 		if (tree.withinCollapsedClade(N))
 			return;
 		if (tree.nodeExists(N)) {
 			long spotStored = tree.getAssociatedLong(spotTypeNR, N);
 			long spotSizeStored = tree.getAssociatedLong(spotSizeNR, N);
+			String spotColorHexStored = tree.getAssociatedString(spotColorNR, N);
+			Color dark = treeDisplay.branchColorDimmed;
+			Color spotColorStored = ColorDistribution.colorFromHex(spotColorHexStored);
+			if (spotColorStored == null)
+				spotColorStored = dark;
 
 			if (MesquiteLong.isCombinable(spotStored)){
 				double x = treeDisplay.getTreeDrawing().x[N] + centeringOffsetX;
@@ -254,28 +315,16 @@ class NodeSpotsDrawing extends TreeDisplayDrawnExtra implements Commandable {
 				double spotSize = nsModule.spotSize;
 				if (MesquiteLong.isCombinable(spotSizeStored))
 					spotSize = (int)spotSizeStored;
-				Color dark = treeDisplay.branchColorDimmed;
 				if (tree.isSelected(N) || !tree.anySelected())
 					dark = treeDisplay.branchColor;
-				if (spotStored == 0){ //Filled circle
-					g.setColor(dark);
-					GraphicsUtil.fillOval(g, x-spotSize/2, y-spotSize/2, spotSize,spotSize);
-					GraphicsUtil.drawOval(g, x-spotSize/2, y-spotSize/2, spotSize,spotSize, (float)1.5);
-				}
-				else if (spotStored == 1){ //Open circle
-					g.setColor(Color.white);
+				if (spotStored == 0){ //circle
+					g.setColor(spotColorStored);
 					GraphicsUtil.fillOval(g, x-spotSize/2, y-spotSize/2, spotSize,spotSize);
 					g.setColor(dark);
 					GraphicsUtil.drawOval(g, x-spotSize/2, y-spotSize/2, spotSize,spotSize, (float)1.5);
 				}
-				else if (spotStored == 2){ //Filled square
-					g.setColor(dark);
-					spotSize =  (spotSize *0.92); //so squares aren't much larger area
-					GraphicsUtil.fillRect(g, x-spotSize/2, y-spotSize/2, spotSize,spotSize);
-					GraphicsUtil.drawRect(g, x-spotSize/2, y-spotSize/2, spotSize,spotSize, (float)1.6);
-				}
-				else if (spotStored == 3){ //Open square
-					g.setColor(Color.white);
+				else if (spotStored == 1){ //Square
+					g.setColor(spotColorStored);
 					spotSize =  (spotSize *0.92);//so squares aren't much larger area
 					GraphicsUtil.fillRect(g, x-spotSize/2, y-spotSize/2, spotSize,spotSize);
 					g.setColor(dark);
@@ -310,18 +359,22 @@ class NodeSpotsDrawing extends TreeDisplayDrawnExtra implements Commandable {
 	}
 	/*.................................................................................................................*/
 	public   void drawOnTree(Tree tree, int drawnRoot, Graphics g) {
+		myTree = (MesquiteTree)tree;
 		if (nsModule.showSpots.getValue())
 			drawSpots(treeDisplay, tree, drawnRoot, g);
 	}
 	public   void printOnTree(Tree tree, int drawnRoot, Graphics g) {
+		myTree = (MesquiteTree)tree;
 		drawOnTree(tree, drawnRoot, g);
 	}
 	public   void setTree(Tree tree) {
+		myTree = (MesquiteTree)tree;
 	}
 	public   void removeAllSpots() {
 		MesquiteTree tree = (MesquiteTree)treeDisplay.getTree();
 		tree.removeAssociatedLongs(spotTypeNR);
 		tree.removeAssociatedLongs(spotSizeNR);
+		tree.removeAssociatedStrings(spotColorNR);
 		tree.notifyListeners(this, new Notification(MesquiteListener.ANNOTATION_CHANGED));
 	}
 
@@ -334,18 +387,20 @@ class NodeSpotsDrawing extends TreeDisplayDrawnExtra implements Commandable {
 			if (tree != null && tree.nodeExists(branchFound)){
 				long spotThere = tree.getAssociatedLong(spotTypeNR, branchFound);
 				long spotSizeThere = tree.getAssociatedLong(spotSizeNR, branchFound);
-				if (MesquiteLong.isCombinable(spotThere) && spotThere == currentSpotType && spotSizeThere == currentSpotSize){
+				String spotColorThere = tree.getAssociatedString(spotColorNR, branchFound);
+				if (MesquiteLong.isCombinable(spotThere) && spotThere == currentSpotType && spotSizeThere == currentSpotSize && (spotColorThere!= null && spotColorThere.equalsIgnoreCase( currentColorHex))){
 					tree.setAssociatedLong(spotTypeNR, branchFound, MesquiteLong.unassigned);
 					tree.setAssociatedLong(spotSizeNR, branchFound, MesquiteLong.unassigned);
+					tree.setAssociatedString(spotColorNR, branchFound, null);
 				}
 				else {
 					tree.setAssociatedLong(spotTypeNR, branchFound, currentSpotType);
 					tree.setAssociatedLong(spotSizeNR, branchFound, currentSpotSize);
+					tree.setAssociatedString(spotColorNR, branchFound, currentColorHex);
 				}
 
 
 				tree.notifyListeners(this, new Notification(MesquiteListener.ANNOTATION_CHANGED));
-				//treeDisplay.repaint();
 			}
 		}
 		return null;
