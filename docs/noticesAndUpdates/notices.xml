@@ -4,10 +4,10 @@
 	<MessagesFromHome>
 		<version>1</version>
 		<currentReleaseVersion>
-			<versionString>4.0</versionString>
-			<build>1086</build>
-			<version>400</version>
-			<downloadURL>http://www.mesquiteproject.org/Installation.html</downloadURL>
+			<versionString>4.01</versionString>
+			<build>1092</build>
+			<version>401</version>
+			<downloadURL>https://www.mesquiteproject.org/Installation.html</downloadURL>
 		</currentReleaseVersion>
 		<notice>
 			<forMesquiteVersionLessOrEqual>400</forMesquiteVersionLessOrEqual>
