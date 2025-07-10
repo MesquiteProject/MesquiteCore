@@ -862,7 +862,7 @@ public class MesquiteProject extends Attachable implements Listable, MesquiteLis
 	/** passes which object changed, along with optional Notification object with details (e.g., code number (type of change) and integers (e.g. which character))*/
 	public void changed(Object caller, Object obj, Notification notification){
 		int code = Notification.getCode(notification);
-		if ((obj == datas || obj == taxas || obj == charModels) && (code == MesquiteListener.PARTS_ADDED || code == MesquiteListener.PARTS_DELETED || code == MesquiteListener.PARTS_MOVED || code == MesquiteListener.ITEMS_ADDED)){
+		if ((obj == datas || obj == taxas || obj == charModels) && (code == MesquiteListener.PARTS_ADDED || code == MesquiteListener.PARTS_DELETED  || code == MesquiteListener.PARTS_CHANGED || code == MesquiteListener.PARTS_MOVED || code == MesquiteListener.ITEMS_ADDED)){
 			ownerModule.resetAllMenuBars();
 			return;
 		}

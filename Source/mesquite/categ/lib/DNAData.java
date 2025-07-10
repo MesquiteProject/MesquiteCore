@@ -1,6 +1,6 @@
 /* Mesquite source code.  Copyright 1997 and onward, W. Maddison and D. Maddison. 
 
- 
+
  Disclaimer:  The Mesquite source code is lengthy and we are few.  There are no doubt inefficiencies and goofs in this code. 
  The commenting leaves much to be desired. Please approach this source code with the spirit of helping out.
  Perhaps with your help we can be more than a few, and make Mesquite better.
@@ -356,6 +356,48 @@ public class DNAData extends MolecularData {
 	}
 
 	/* .......................................... DNAData .................................................. */
+	/** returns the whether character ic is a SNP */
+	public boolean isSNP(int ic, boolean parsInformOnly, boolean gapsAsStates, boolean prohibitUncertainty) {
+		long accumul = 0L;
+		int[] counts = null;
+		if (parsInformOnly)
+			counts = new int[5];
+		for (int it=0; it<getNumTaxa(); it++){
+			long state = getState(ic, it);
+			if (prohibitUncertainty){
+				long rawState = getStateRaw(ic, it);
+				if (DNAState.isUncertain(rawState))
+					return false;
+			}
+			accumul |= state;
+			if (gapsAsStates){
+				if (isInapplicable(ic, it)){
+					accumul |= CategoricalState.makeSet(4);
+					if (parsInformOnly)
+						counts[4]++;
+				}
+			}
+			if (parsInformOnly){
+				for (int e=0; e<= 4; e++) {
+					if (((1L<<e)&state)!=0L) {  //test bit
+						counts[e]++;
+					}
+				}
+			}
+			if (DNAState.cardinality(accumul)>2)
+				return false;
+		}
+		if ( DNAState.cardinality(accumul)!=2)
+			return false;
+		if (parsInformOnly){
+			for (int e=0; e<= 4; e++) {
+				if (counts[e] ==1)
+					return false;
+			}
+		}
+		return true;
+	}
+	/* .......................................... DNAData .................................................. */
 	/** returns the codon position of character ic in taxon it */
 	public int getCodonPosition(int ic) {
 		if (ic>=getNumChars(false) || ic<0)
@@ -405,7 +447,7 @@ public class DNAData extends MolecularData {
 				}
 			}
 		} else if (whichTermChars>0) {  //added whichTermChars to end, so we need to get info from the one just before then.
-				// the last character is character getNumChars()-1.  We then go back whichTermChars more to find the one we want.
+			// the last character is character getNumChars()-1.  We then go back whichTermChars more to find the one we want.
 			int nextChar = getNumChars()-1-whichTermChars;
 			int nextPos = getCodonPosition(nextChar);
 			if (MesquiteInteger.isCombinable(nextPos) && (nextPos>=1) && (nextPos<=3)) { // the immediately adjacent character (the previous first character) has an assigned codon position
@@ -573,79 +615,79 @@ public class DNAData extends MolecularData {
 		triplet[1]=-1;
 		triplet[2]=-1;
 		int icPos = getCodonPosition(ic);
-			switch (icPos) {
-			case 1:  {// we are at a first position
-				triplet[0]=ic;
-				int ic2=-1;
-				for (ic2=ic+1; ic2<numChars && triplet[1]<0; ic2++){
-					int pos = getCodonPosition(ic2);
-					if (pos==1 || pos==3)
-						return null;
-					if (pos==2){
-						triplet[1]=ic2;
-					}
+		switch (icPos) {
+		case 1:  {// we are at a first position
+			triplet[0]=ic;
+			int ic2=-1;
+			for (ic2=ic+1; ic2<numChars && triplet[1]<0; ic2++){
+				int pos = getCodonPosition(ic2);
+				if (pos==1 || pos==3)
+					return null;
+				if (pos==2){
+					triplet[1]=ic2;
 				}
-				for (int ic3=triplet[1]+1; ic3<numChars; ic3++){
-					int pos = getCodonPosition(ic3);
-					if (pos==1 || pos==2)
-						return null;
-					if (pos==3){
-						triplet[2]=ic3;
-						break;
-					}
-				}
-				break;
 			}
-			case 2: {  // we are at a second position
-				triplet[1]=ic;
-				int ic2=-1;
-				for (ic2=ic-1; ic2>=0 && triplet[0]<0; ic2--){
-					int pos = getCodonPosition(ic2);
-					if (pos==2 || pos==3)
-						return null;
-					if (pos==1){
-						triplet[0]=ic2;
-					}
+			for (int ic3=triplet[1]+1; ic3<numChars; ic3++){
+				int pos = getCodonPosition(ic3);
+				if (pos==1 || pos==2)
+					return null;
+				if (pos==3){
+					triplet[2]=ic3;
+					break;
 				}
-				for (int ic3=ic+1; ic3<numChars; ic3++){
-					int pos = getCodonPosition(ic3);
-					if (pos==1 || pos==2)
-						return null;
-					if (pos==3){
-						triplet[2]=ic3;
-						break;
-					}
-				}
-				break;
 			}
-			case 3:  {// we are at a third position
-				triplet[2]=ic;
-				int ic2=-1;
-				for (ic2=ic-1; ic2>=0 && triplet[1]<0; ic2--){
-					int pos = getCodonPosition(ic2);
-					if (pos==1 || pos==3)
-						return null;
-					if (pos==2){
-						triplet[1]=ic2;
-					}
+			break;
+		}
+		case 2: {  // we are at a second position
+			triplet[1]=ic;
+			int ic2=-1;
+			for (ic2=ic-1; ic2>=0 && triplet[0]<0; ic2--){
+				int pos = getCodonPosition(ic2);
+				if (pos==2 || pos==3)
+					return null;
+				if (pos==1){
+					triplet[0]=ic2;
 				}
-				for (int ic3=triplet[1]-1; ic3>=0; ic3--){
-					int pos = getCodonPosition(ic3);
-					if (pos==2 || pos==3)
-						return null;
-					if (pos==1){
-						triplet[0]=ic3;
-						break;
-					}
+			}
+			for (int ic3=ic+1; ic3<numChars; ic3++){
+				int pos = getCodonPosition(ic3);
+				if (pos==1 || pos==2)
+					return null;
+				if (pos==3){
+					triplet[2]=ic3;
+					break;
 				}
-				break;
 			}
-			default:
-				return null;
+			break;
+		}
+		case 3:  {// we are at a third position
+			triplet[2]=ic;
+			int ic2=-1;
+			for (ic2=ic-1; ic2>=0 && triplet[1]<0; ic2--){
+				int pos = getCodonPosition(ic2);
+				if (pos==1 || pos==3)
+					return null;
+				if (pos==2){
+					triplet[1]=ic2;
+				}
 			}
-			if (triplet[0]==-1 || triplet[1]==-1 || triplet[2]==-1 )
-				return null;
-			return triplet;
+			for (int ic3=triplet[1]-1; ic3>=0; ic3--){
+				int pos = getCodonPosition(ic3);
+				if (pos==2 || pos==3)
+					return null;
+				if (pos==1){
+					triplet[0]=ic3;
+					break;
+				}
+			}
+			break;
+		}
+		default:
+			return null;
+		}
+		if (triplet[0]==-1 || triplet[1]==-1 || triplet[2]==-1 )
+			return null;
+		return triplet;
 	}
 
 	/* ................................................................................................................. */
@@ -697,8 +739,8 @@ public class DNAData extends MolecularData {
 				else
 					oneApplicable = true;
 			if (oneApplicable && oneInapplicable) {
-			if (matchLength!=null)
-				matchLength.setValue(triplet[2]-triplet[0]+1);
+				if (matchLength!=null)
+					matchLength.setValue(triplet[2]-triplet[0]+1);
 				return true;
 			}
 		}
@@ -710,7 +752,7 @@ public class DNAData extends MolecularData {
 	public boolean isStartOfPartialTriplet(int ic, int it, MesquiteInteger matchLength){
 		if (!someCoding()) 
 			return false;
-	
+
 		if (getCodonPosition(ic)==1) {
 			return isInPartialTriplet(ic,it,matchLength);
 		}
@@ -1017,7 +1059,7 @@ public class DNAData extends MolecularData {
 			sb.append(""+ freq[0] + "\t" + freq[1] + "\t" + freq[2] + "\t" +freq[3]+"\t");
 		} else
 			sb.append("\t\t\t\t");
-	
+
 
 		return sb.toString();
 	}
@@ -1343,7 +1385,7 @@ public class DNAData extends MolecularData {
 		complement(icStart, icEnd, it, adjustCellLinked);
 	}
 
-	
+
 	public void reverseComplement(int icStart, int icEnd, boolean adjustCellLinked) { //NOTE: this version reverses character metadata (codon positions, etc.)
 		reverse(icStart, icEnd, adjustCellLinked);
 		for (int it = 0; it<getNumTaxa(); it++)

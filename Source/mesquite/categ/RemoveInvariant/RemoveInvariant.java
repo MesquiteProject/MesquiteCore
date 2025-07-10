@@ -21,10 +21,11 @@ import mesquite.lib.UndoReference;
 import mesquite.lib.characters.AltererWholeCharacterAddRemove;
 import mesquite.lib.characters.CharacterData;
 import mesquite.lib.duties.DataAlterer;
+import mesquite.lib.duties.DataAltererParallelizable;
 import mesquite.lib.table.MesquiteTable;
 
 /* ======================================================================== */
-public class RemoveInvariant extends DataAlterer  implements AltererWholeCharacterAddRemove {
+public class RemoveInvariant extends DataAlterer  implements AltererWholeCharacterAddRemove, DataAltererParallelizable {
 	/*.................................................................................................................*/
 	public boolean startJob(String arguments, Object condition, boolean hiredByName) {
 		return true;

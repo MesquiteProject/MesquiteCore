@@ -141,20 +141,20 @@ public class Mesquite extends MesquiteTrunk
 	}
 	/*.................................................................................................................*/
 	public String getVersion() {
-		return "4.0";
+		return "4.01";
 	}
 
 	/*.................................................................................................................*/
 	public int getVersionInt() {
-		return 400;
+		return 401;
 	}
 	/*.................................................................................................................*/
 	public double getMesquiteVersionNumber(){
-		return 4.00;
+		return 4.01;
 	}
 	/*.................................................................................................................*/
 	public String getDateReleased() {
-		return "June 2025"; //"April 2007";
+		return "July 2025"; //"April 2007";
 	}
 	/*.................................................................................................................*/
 	public boolean isPrerelease(){
@@ -454,6 +454,7 @@ public class Mesquite extends MesquiteTrunk
 		addToStartupNotices("==================================\n");
 
 		if (verboseStartup) System.out.println("main init 6h");
+		setSuggestedDirectory(mesquiteDirectoryPath + "examples");
 		if (prefsFile.exists() || prefsFileXML.exists()) {
 			loadPreferences();
 			if (!preferencesSet) {
@@ -644,7 +645,6 @@ public class Mesquite extends MesquiteTrunk
 
 		/*----*/
 
-		setSuggestedDirectory(mesquiteDirectoryPath + "examples");
 		appsDirectory = mesquiteDirectoryPath + "apps";
 		pythonDirectory = mesquiteDirectoryPath + "python";
 		if (mesquiteDirectory!=null)
@@ -1222,6 +1222,7 @@ public class Mesquite extends MesquiteTrunk
 		}
 		else if ("suggestedDirectory".equalsIgnoreCase(tag)){
 			MesquiteTrunk.setSuggestedDirectory(StringUtil.cleanXMLEscapeCharacters(content));
+			System.err.println("getSuggestedDirectory " + MesquiteTrunk.getSuggestedDirectory());
 		}
 
 		/* EMBEDDED disable if embedded */

@@ -38,6 +38,7 @@ import mesquite.lib.StringUtil;
 import mesquite.lib.characters.AlteredDataParameters;
 import mesquite.lib.characters.CharacterData;
 import mesquite.lib.duties.DataAlterer;
+import mesquite.lib.duties.DataAltererParallelizable;
 import mesquite.lib.duties.FileCoordinator;
 import mesquite.lib.table.MesquiteTable;
 import mesquite.lib.ui.ExtensibleDialog;
@@ -67,12 +68,12 @@ static boolean beaned = false;
 	public boolean startJob(String arguments, Object condition, boolean hiredByName) {
 		loadPreferences();
 		if (arguments != null) {
-			firstAlterTask = (DataAlterer) hireNamedEmployee(DataAlterer.class, arguments);
+			firstAlterTask = (DataAlterer) hireNamedEmployee(DataAltererParallelizable.class, arguments);
 			if (firstAlterTask == null)
 				return sorry(getName() + " couldn't start because the requested data alterer wasn't successfully hired.");
 		}
 		else if (!MesquiteThread.isScripting()) {
-			firstAlterTask = (DataAlterer) hireEmployee(DataAlterer.class, "Alterer of matrices");
+			firstAlterTask = (DataAlterer) hireEmployee(DataAltererParallelizable.class, "Alterer of matrices");
 			if (firstAlterTask == null)
 				return sorry(getName() + " couldn't start because no matrix alterer module obtained.");
 		}
@@ -128,7 +129,7 @@ static boolean beaned = false;
 	/* ................................................................................................................. */
 	public Object doCommand(String commandName, String arguments, CommandChecker checker) {
 		if (checker.compare(this.getClass(), "Sets the module that alters data", "[name of module]", commandName, "setDataAlterer")) {
-			DataAlterer temp = (DataAlterer) replaceEmployee(DataAlterer.class, arguments, "Data alterer", firstAlterTask);
+			DataAlterer temp = (DataAlterer) replaceEmployee(DataAltererParallelizable.class, arguments, "Data alterer", firstAlterTask);
 			if (temp != null) {
 				firstAlterTask = temp;
 				return firstAlterTask;

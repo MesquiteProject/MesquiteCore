@@ -2831,11 +2831,13 @@ public class CategoricalData extends CharacterData {
 	}
 
 	/*..........................................CategoricalData.....................................*/
-	/**merges the states for taxon it2 into it1  within this Data object */
-	public boolean mergeSecondTaxonIntoFirst(int it1, int it2, boolean mergeMultistateAsUncertainty) {
+	/**merges the states for taxon it2 into it1  within this Data object 
+	 * Returns whether any choice was needed because both had data present*/
+	public  boolean mergeSecondTaxonIntoFirst(int it1, int it2,  int mergeRule) {
 		if ( it1<0 || it1>=getNumTaxa() || it2<0 || it2>=getNumTaxa() )
 			return false;
-
+		if (mergeRule != MERGE_blendMultistateAsUncertainty && mergeRule != MERGE_blendMultistateAsPolymorphism)
+			return super.mergeSecondTaxonIntoFirst(it1, it2, mergeRule);
 		boolean mergedAssigned = false;
 		for (int ic=0; ic<getNumChars(); ic++) {
 			long s1 = getState(ic,it1);
@@ -2844,7 +2846,7 @@ public class CategoricalData extends CharacterData {
 				mergedAssigned = true;
 
 			long sMerged = CategoricalState.mergeStates(s1,s2);
-			if (mergeMultistateAsUncertainty && CategoricalState.hasMultipleStates(sMerged)) {   // set to uncertainty if it makes sense
+			if (mergeRule == MERGE_blendMultistateAsUncertainty && CategoricalState.hasMultipleStates(sMerged)) {   // set to uncertainty if it makes sense
 				if ((CategoricalState.hasMultipleStates(s1) && !CategoricalState.isUncertain(s1)) || (CategoricalState.hasMultipleStates(s2) && !CategoricalState.isUncertain(s2))) {  // has polymorphism, don't do anything
 				} else {
 					sMerged = CategoricalState.setUncertainty(sMerged, true);		
@@ -2854,12 +2856,6 @@ public class CategoricalData extends CharacterData {
 		}
 		return mergedAssigned;
 	}
-	/*..........................................CategoricalData.....................................*/
-	/**merges the states for taxon it2 into it1  within this Data object */
-	public boolean mergeSecondTaxonIntoFirst(int it1, int it2) {
-		return mergeSecondTaxonIntoFirst(it1, it2, false);
-	}
-
 
 }
 

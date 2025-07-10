@@ -19,23 +19,26 @@ import java.awt.Checkbox;
 import mesquite.categ.lib.DNAData;
 import mesquite.categ.lib.DNADataAlterer;
 import mesquite.categ.lib.DNAState;
+import mesquite.lib.CommandChecker;
 import mesquite.lib.MesquiteBoolean;
+import mesquite.lib.MesquiteFile;
 import mesquite.lib.MesquiteInteger;
 import mesquite.lib.MesquiteLong;
 import mesquite.lib.MesquiteMessage;
 import mesquite.lib.MesquiteThread;
 import mesquite.lib.ResultCodes;
+import mesquite.lib.Snapshot;
 import mesquite.lib.StringUtil;
 import mesquite.lib.UndoReference;
 import mesquite.lib.characters.AltererDNACell;
 import mesquite.lib.characters.CharacterData;
+import mesquite.lib.duties.DataAltererParallelizable;
 import mesquite.lib.table.MesquiteTable;
 import mesquite.lib.ui.ExtensibleDialog;
 import mesquite.molec.lib.MolecUtil;
 
 /* ======================================================================== */
-public class ResolveDNAAmbiguities extends DNADataAlterer implements AltererDNACell {
-	MesquiteTable table;
+public class ResolveDNAAmbiguities extends DNADataAlterer implements AltererDNACell, DataAltererParallelizable {
 	DNAState charState = new DNAState();
 	boolean randomlyChooseStateAsFallback = true;
 	boolean avoidStopCodons = true;
@@ -62,10 +65,28 @@ public class ResolveDNAAmbiguities extends DNADataAlterer implements AltererDNAC
 		StringBuffer buffer = new StringBuffer(200);
 		StringUtil.appendXMLTag(buffer, 2, "randomlyChooseStateAsFallback", randomlyChooseStateAsFallback);
 		StringUtil.appendXMLTag(buffer, 2, "avoidStopCodons", avoidStopCodons);
-
 		preferencesSet = true;
 		return buffer.toString();
 	}
+	/*.................................................................................................................*/
+ 	public Snapshot getSnapshot(MesquiteFile file) { 
+ 		Snapshot temp = new Snapshot();
+ 		temp.addLine("randomlyChooseStateAsFallback " + randomlyChooseStateAsFallback);
+ 		temp.addLine("avoidStopCodons " + avoidStopCodons);
+		return temp;
+ 	}
+ 	/*.................................................................................................................*/
+ 	public Object doCommand(String commandName, String arguments, CommandChecker checker) {
+ 		 if (checker.compare(this.getClass(), "Sets whether to choose states randomly as a fallback", "[true or false]", commandName, "randomlyChooseStateAsFallback")) {
+ 			randomlyChooseStateAsFallback = MesquiteBoolean.fromTrueFalseString(arguments);
+ 		}
+ 		else if (checker.compare(this.getClass(), "Sets whether to avoid stop codons", "[true or false]", commandName, "avoidStopCodons")) {  
+ 			avoidStopCodons = MesquiteBoolean.fromTrueFalseString(arguments);
+ 		}
+		else
+ 			return  super.doCommand(commandName, arguments, checker);
+ 		return null;
+ 	}	
 
 	/*.................................................................................................................*/
 	public boolean queryOptions() {
@@ -99,7 +120,6 @@ public class ResolveDNAAmbiguities extends DNADataAlterer implements AltererDNAC
 	/*.................................................................................................................*/
 	/** Called to alter data in those cells selected in table*/
 	public int alterData(CharacterData data, MesquiteTable table, UndoReference undoReference){
-		this.table = table;
 		if (!(data instanceof DNAData)){
 			MesquiteMessage.warnProgrammer("Can use " + getName() + " only on nucleotide data");
 			return ResultCodes.INCOMPATIBLE_DATA;

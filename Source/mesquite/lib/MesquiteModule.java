@@ -86,12 +86,12 @@ public abstract class MesquiteModule extends EmployerEmployee implements Command
 	/*.................................................................................................................*/
 	/** returns build date of the Mesquite system (e.g., "22 September 2003") */
 	public final static String getBuildDate() {
-		return "27 June 2025";
+		return "9 July 2025";
 	}
 	/*.................................................................................................................*/
 	/** returns version of the Mesquite system */
 	public final static String getMesquiteVersion() {
-		return "4.0";
+		return "4.01";
 	}
 	/*.................................................................................................................*/
 	/** returns letter in the build number of the Mesquite system (e.g., "e" of "e58") */
@@ -104,7 +104,7 @@ public abstract class MesquiteModule extends EmployerEmployee implements Command
 	public final static int getBuildNumber() {
 		//as of 26 Dec 08, build naming changed from letter + number to just number.  Accordingly j105 became 473, based on
 		// highest build numbers of d51+e81+g97+h66+i69+j105 + 3 for a, b, c
-		return 1086;  
+		return 1092;  
 	}
 	//0.95.80    14 Mar 01 - first beta release 
 	//0.96  2 April 01 beta  - second beta release
@@ -1127,6 +1127,13 @@ public abstract class MesquiteModule extends EmployerEmployee implements Command
 		if (this == MesquiteTrunk.mesquiteTrunk)
 			return getRootPath() + "mesquite" + MesquiteFile.fileSeparator;
 		return  moduleInfo.getPackagePath();
+	}
+	/*.................................................................................................................*/
+	/** returns path to this module's package directory*/
+	public String getPackageCanonicalDocsPath() {  
+		if (this == MesquiteTrunk.mesquiteTrunk)
+			return getRootPath() + "docs" + MesquiteFile.fileSeparator;
+		return  moduleInfo.getPackagePath()+ "docs" + MesquiteFile.fileSeparator;
 	}
 	/*.................................................................................................................*/
 	/** returns path to the image directory for this module's images*/

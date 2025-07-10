@@ -83,6 +83,7 @@ public class NameParserOnTaxonName extends TaxonNameAlterer {
 
 		if (name!=null){
 			String newName = nameParser.extractPart(taxa.getTaxonName(it));
+			//Could check if this would be a duplicate taxon name. If taxa.whichTaxonNumber(newName) >=0, then the name already exists. ;
 			taxa.setTaxonName(it, newName, false);
 			nameChanged = true;
 		}

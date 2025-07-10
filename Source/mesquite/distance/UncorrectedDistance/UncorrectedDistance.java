@@ -74,10 +74,14 @@ public class UncorrectedDistance extends TaxaDistFromMatrix {
 class SimpleTD extends TaxaDistance {
 	double[][] distances;
 	int numTaxa;
+	Taxa taxa;
+	CharacterData data;
 	
 	public SimpleTD(Taxa taxa, MCharactersDistribution observedStates){
 		super(taxa);
+		this.taxa = taxa;
 		CharacterData data = observedStates.getParentData();
+		this.data = data;
 		CharInclusionSet incl = null;
 		if (data !=null)
 			incl = (CharInclusionSet)data.getCurrentSpecsSet(CharInclusionSet.class);
@@ -142,6 +146,59 @@ class SimpleTD extends TaxaDistance {
 			return MesquiteDouble.unassigned;
 		
 	}
+	
+	public double[][] getReducedMatrix(boolean resetTaxaWithNoData) {
+		if (resetTaxaWithNoData) {
+			if (taxa==null || data==null)
+				return distances;
+			int  emptyTaxa = 0;
+			for (int it=0; it<taxa.getNumTaxa(); it++) 
+				if (!data.hasDataForTaxon(it)) {
+					emptyTaxa++;
+				}					
+			double[][] reducedDistances = new double[getNumTaxa()-emptyTaxa][getNumTaxa()-emptyTaxa]; 
+			int taxon1Count = 0;
+			for (int taxon1=0; taxon1<getNumTaxa(); taxon1++) {
+				if (data.hasDataForTaxon(taxon1)) {
+					int taxon2Count = 0;
+					for (int taxon2=0; taxon2<getNumTaxa(); taxon2++) {
+						if (data.hasDataForTaxon(taxon2)) {
+							reducedDistances[taxon1Count][taxon2Count] = distances[taxon1][taxon2]; 
+							taxon2Count++;
+						}
+					}	
+					taxon1Count++;
+				}
+			}
+			return reducedDistances;
+
+		}
+		else
+			return distances;
+
+	}
+	public Taxa getReducedTaxa(boolean resetTaxaWithNoData, boolean useT0Names) {
+		if (taxa==null || data==null)
+			return taxa;
+		int  emptyTaxa = 0;
+		for (int it=0; it<taxa.getNumTaxa(); it++) 
+			if (resetTaxaWithNoData && (!data.hasDataForTaxon(it))) {
+				emptyTaxa++;
+			}					
+		Taxa reducedTaxa = new Taxa(taxa.getNumTaxa()-emptyTaxa);
+		int count = 0;
+		for (int it=0; it<taxa.getNumTaxa(); it++) 
+			if (!resetTaxaWithNoData || (data.hasDataForTaxon(it))) {
+				if (useT0Names)
+					reducedTaxa.setTaxonName(count, "t"+it);
+				else 
+					reducedTaxa.setTaxonName(count, taxa.getTaxonName(it));
+				count++;
+			}					
+
+		return reducedTaxa;
+	}
+
 	public double[][] getMatrix(){
 		return distances;
 	}

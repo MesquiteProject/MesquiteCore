@@ -819,6 +819,7 @@ public class BasicFileCoordinator extends FileCoordinator implements PackageIntr
 			doCommand("showWindow", null, CommandChecker.defaultChecker); //TODO: will this always be non-scripting???
 			showBasicWindows();
 		}
+		fireEmployee((MesquiteModule)e);
 		if (thisFile != null && thisFile.getCloseAfterReading()){
 			closeFile(thisFile);
 			MesquiteTrunk.mesquiteTrunk.refreshBrowser(MesquiteProject.class);
@@ -1710,7 +1711,14 @@ public class BasicFileCoordinator extends FileCoordinator implements PackageIntr
 			String path = filterIfMarkedArgument(parser.getFirstToken(arguments));
 			String importer = filterIfMarkedArgument(parser.getNextToken());
 			includeFileFuse(path, importer, arguments, 0, null);
-		}
+			for (int i = 0; i<getProject().getNumberTaxas(); i++){
+				Taxa taxa = getProject().getTaxa(i);
+				String report = taxa.fixDuplicateNames();
+				if (StringUtil.notEmpty(report))
+					discreetAlert("Duplicate taxon names were corrected in taxa block " + taxa.getName() + ".\n\nThis was done because taxa within the same taxa block are not allowed to have the same names.\n\n"
+							+"The duplicated names were: " + report);
+			}
+	}
 		else if (checker.compare(this.getClass(), "Reverts to saved by closing ALL files without saving then opening the home file of project", null, commandName, "revert")) {
 			revertToSaved(true);
 		}

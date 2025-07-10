@@ -15,9 +15,11 @@ import java.io.FileNotFoundException;
 import com.traviswheeler.ninja.TreeBuilder;
 import com.traviswheeler.ninja.TreeBuilderManager;
 
+import mesquite.distance.lib.MolecularTaxaDistance;
 import mesquite.distance.lib.TaxaDistance;
 import mesquite.distance.lib.TaxaDistanceSource;
 import mesquite.lib.CommandChecker;
+import mesquite.lib.Debugg;
 import mesquite.lib.EmployeeNeed;
 import mesquite.lib.Incrementable;
 import mesquite.lib.MesquiteBoolean;
@@ -27,14 +29,17 @@ import mesquite.lib.MesquiteModule;
 import mesquite.lib.MesquiteTimer;
 import mesquite.lib.ResultCodes;
 import mesquite.lib.Snapshot;
+import mesquite.lib.analysis.DistanceAnalysis;
 import mesquite.lib.duties.TreeInferer;
+import mesquite.lib.duties.TreeSearcher;
 import mesquite.lib.taxa.Taxa;
 import mesquite.lib.tree.MesquiteTree;
 import mesquite.lib.tree.TreeVector;
+import mesquite.search.lib.TreeSearch;
 
 /* ======================================================================== */
 
-public class NeighborJoining extends TreeInferer implements Incrementable, com.traviswheeler.libs.Logger {  //Incrementable just in case distance task is
+public class NeighborJoining extends TreeSearcher implements DistanceAnalysis, Incrementable, com.traviswheeler.libs.Logger {  //Incrementable just in case distance task is
 	public void getEmployeeNeeds(){  //This gets called on startup to harvest information; override this and inside, call registerEmployeeNeed
 		EmployeeNeed e = registerEmployeeNeed(TaxaDistanceSource.class, getName() + "  needs a source of distances.",
 		"The source of distances can be selected initially");
@@ -42,7 +47,7 @@ public class NeighborJoining extends TreeInferer implements Incrementable, com.t
 	TaxaDistanceSource distanceTask;
 	/*.................................................................................................................*/
 	public boolean startJob(String arguments, Object condition, boolean hiredByName) {
- 		distanceTask = (TaxaDistanceSource)hireEmployee(TaxaDistanceSource.class, "Source of distance for Cluster Analysis");
+ 		distanceTask = (TaxaDistanceSource)hireEmployee(TaxaDistanceSource.class, "Source of distance for Neighbour Joining Analysis");
  		if (distanceTask == null) {
  			return sorry(getName() + " couldn't start because no source of distances was obtained.");
  		}
@@ -64,8 +69,8 @@ public class NeighborJoining extends TreeInferer implements Incrementable, com.t
   	 }
 	/*.................................................................................................................*/
     	 public Object doCommand(String commandName, String arguments, CommandChecker checker) {
-    	 	 if (checker.compare(this.getClass(), "Sets the source of distances for use in cluster analysis", "[name of module]", commandName, "setDistanceSource")) { 
-    	 		TaxaDistanceSource temp=  (TaxaDistanceSource)replaceEmployee(TaxaDistanceSource.class, arguments, "Source of distance for cluster analysis", distanceTask);
+    	 	 if (checker.compare(this.getClass(), "Sets the source of distances for use in NJ analysis", "[name of module]", commandName, "setDistanceSource")) { 
+    	 		TaxaDistanceSource temp=  (TaxaDistanceSource)replaceEmployee(TaxaDistanceSource.class, arguments, "Source of distance for Neighbour Joining analysis", distanceTask);
  			if (temp!=null) {
  				distanceTask= temp;
  			}
@@ -119,11 +124,28 @@ public class NeighborJoining extends TreeInferer implements Incrementable, com.t
 	/*.................................................................................................................*/
    	/** Called to provoke any necessary initialization.  This helps prevent the module's intialization queries to the user from
    	happening at inopportune times (e.g., while a long chart calculation is in mid-progress)*/
-   	public void initialize(Taxa taxa){
+   	public boolean initialize(Taxa taxa){
    		distanceTask.initialize(taxa);
+   		return true;
    	}
    	
-   	
+ 	 public String getExtraTreeWindowCommands (boolean finalTree, long treeBlockID){
+		String commands = "getTreeDrawCoordinator #mesquite.trees.BasicTreeDrawCoordinator.BasicTreeDrawCoordinator;\ntell It; ";
+		commands += "setTreeDrawer  #mesquite.trees.SquareLineTree.SquareLineTree; tell It; showEdgeLines off; ";
+		
+		
+		commands += "setNodeLocs #mesquite.trees.NodeLocsStandard.NodeLocsStandard;  tell It; orientRight; ";
+		commands += " branchLengthsDisplay 1; ";
+		commands += " endTell; setEdgeWidth 3; endTell; ";  // endTell is for SquareLineTree
+		commands += "labelBranchLengths off;";
+		
+		commands += "getEmployee #mesquite.trees.BasicDrawTaxonNames.BasicDrawTaxonNames; tell It; setTaxonNameStyler  #mesquite.trees.ColorTaxonByPartition.ColorTaxonByPartition; setFontSize 12; endTell; ";		
+
+		commands += " endTell; resetTitle;"; //endTell for BasicTreeDrawCoordinator
+		commands += "getOwnerModule; tell It; getEmployee #mesquite.ornamental.ColorTreeByPartition.ColorTreeByPartition; tell It; colorByPartition on; endTell; endTell; ";
+		return commands;
+	}
+/*
 	public String getExtraTreeWindowCommands (boolean finalTree){
 
 		String commands = "setSize 400 600; ";
@@ -135,7 +157,7 @@ public class NeighborJoining extends TreeInferer implements Incrementable, com.t
 		commands += " endTell; ladderize root; ";
 		return commands;
 	}
-	
+	*/
 	/*.................................................................................................................*/
 	public static String createDirectoryForFiles(MesquiteModule module, String name) {
 		MesquiteBoolean directoryCreated = new MesquiteBoolean(false);
@@ -153,7 +175,7 @@ public class NeighborJoining extends TreeInferer implements Incrementable, com.t
 
   	
 	/*.................................................................................................................*/
-  	public String getNJTree(float[][] distanceMatrixFloat){
+  	public String getNJTree(Taxa taxa, float[][] distanceMatrixFloat){
   		
   		
 		String method = "default";
@@ -161,8 +183,10 @@ public class NeighborJoining extends TreeInferer implements Incrementable, com.t
 		
 		//Added by TW 10/7/09 - simple method of giving numeric names to input seqs
  		String[] names = new String[distanceMatrixFloat.length];
+/* 		for (int i=0; i<distanceMatrixFloat.length; i++)
+ 			names[i] = "" + (i+1); */
  		for (int i=0; i<distanceMatrixFloat.length; i++)
- 			names[i] = "" + (i+1);
+ 			names[i] = "" + taxa.getTaxonName(i);  // 2025.July.05:  DRM added to ignore taxa with no data
  		
  		
  		TreeBuilder.verbose = 2; 		
@@ -178,9 +202,9 @@ public class NeighborJoining extends TreeInferer implements Incrementable, com.t
   		return treeString;
   	}
   	
-  	
-	/*.................................................................................................................*/
-  	public int fillTreeBlock(TreeVector treeList, int numberIfUnlimited){
+	/*.................................................................................................................*
+  	public int fillTreeBlock(TreeVector treeList, int numberIfUnlimited){*/
+  public int fillTreeBlock(TreeVector treeList){
  		if (treeList==null)
  			return ResultCodes.INPUT_NULL;
    		Taxa taxa = treeList.getTaxa();
@@ -189,19 +213,21 @@ public class NeighborJoining extends TreeInferer implements Incrementable, com.t
    		timer.start();
    		log("\n---------------\nCalculating distance matrix.  ");
  		TaxaDistance dist = distanceTask.getTaxaDistance(taxa);
- 		double[][] distanceMatrix = dist.getMatrix();
+ 		double[][] distanceMatrix = dist.getReducedMatrix(true);  // 2025.July.05:  DRM added to ignore taxa with no data
+ 		Taxa reducedTaxa = dist.getReducedTaxa(true, true);  // 2025.July.05:  DRM added to ignore taxa with no data
 		float[][] distanceMatrixFloat = new float[distanceMatrix.length][distanceMatrix.length];
 		for (int i = 0; i<distanceMatrix.length; i++)
  	 		for (int j= 0; j<distanceMatrix.length; j++) {
  	 			distanceMatrixFloat[i][j] = (float) distanceMatrix[i][j];
  	 		}
+				
  		
    		logln("["+ timer.timeSinceLastInSeconds()+" seconds]");
    		logln("NINJA: now calculating neighbor-joining tree.");
-		String NJTree = getNJTree(distanceMatrixFloat);
+		String NJTree = getNJTree(reducedTaxa, distanceMatrixFloat);
    		logln("\nNINJA: completed neighbor-joining tree. ["+ timer.timeSinceLastInSeconds()+" seconds]");
    		logln("---------------\n");
-		MesquiteTree tree = new MesquiteTree(taxa,NJTree);
+		MesquiteTree tree = new MesquiteTree(taxa,NJTree, true);
 		tree.setName(getName() + " tree");
 		treeList.addElement(tree, false);
   		
@@ -237,7 +263,7 @@ public class NeighborJoining extends TreeInferer implements Incrementable, com.t
    	 }
  	/*.................................................................................................................*/
    	 public boolean loadModule(){
-   	 	return false;
+   	 	return true;
    	 }
  	/*.................................................................................................................*/
    	 public boolean showCitation(){

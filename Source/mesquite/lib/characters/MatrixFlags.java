@@ -7,13 +7,20 @@ public class MatrixFlags {
 	Bits taxonFlags;
 	boolean[][] cellFlags;
 	int numChars, numTaxa;
+	CharacterData data;
 
+	public MatrixFlags(int numChars, int numTaxa) {
+		reset(numChars, numTaxa);
+	}
 	public MatrixFlags(CharacterData data) {
 		reset(data);
 	}
 	public void reset(CharacterData data) {
-		numChars = data.getNumChars();
-		numTaxa = data.getNumTaxa();
+		reset(data.getNumChars(), data.getNumTaxa());
+	}
+	public void reset(int nC, int nT) {
+		numChars = nC;
+		numTaxa = nT;
 		if (characterFlags == null)
 			characterFlags = new Bits(numChars);
 		else {
@@ -39,14 +46,47 @@ public class MatrixFlags {
 						cellFlags[ic][it] = false;
 		}
 	}
-	public void invert() {
-		if (characterFlags == null)
-			return;
-		for (int ic = 0; ic<numChars; ic++)
-			for (int it=0; it<numTaxa; it++)
-				cellFlags[ic][it] = !cellFlags[ic][it];
+	public void clearCharacterFlags() {
+		if (characterFlags != null)
+			characterFlags.clearAllBits();
+	}
+	public void clearTaxonFlags() {
+		if (taxonFlags != null)
+			taxonFlags.clearAllBits();
+	}
+	public void clearCellFlags() {
+		if (cellFlags != null)
+			for (int ic = 0; ic<cellFlags.length; ic++)
+				for (int it=0; it<cellFlags[ic].length; it++)
+					cellFlags[ic][it] = false;
+	}
+	public void clear() {
+		clearCharacterFlags();
+		clearTaxonFlags();
+		clearCellFlags();
+	}
+	
+
+	/* inversion of flags is dangerous, because inverting each part separately will not invert the union, which is what the user sees
+	 * as the overall flag. This is designed for Invert highlighting and then deletion */
+	public void invertUnion() {
+		MatrixFlags copy = clone();
+
 		characterFlags.invertAllBits();
 		taxonFlags.invertAllBits();
+
+		for (int ic = 0; ic<numChars; ic++){
+			for (int it = 0; it<numTaxa; it++)
+				if (copy.isCellFlaggedAnyWay(ic, it)){ //original had this cell flagged, which means it has to end up unflagged, which means char and taxa need to be unflagged
+					characterFlags.setBit(ic, false); //turn off flag
+					taxonFlags.setBit(it, false); //turn off flag
+					cellFlags[ic][it] = false;
+				}
+				else 
+					cellFlags[ic][it] = true;
+
+		}
+
 
 	}
 	public void invertCharacters() {
@@ -68,6 +108,23 @@ public class MatrixFlags {
 			for (int it=0; it<numTaxa; it++)
 				cellFlags[ic][it] = !cellFlags[ic][it];
 
+	}
+	public boolean anyCharacterFlagsSet(){
+		if (characterFlags.anyBitsOn())
+			return true;
+		return false;
+	}
+	public boolean anyTaxonFlagsSet(){
+		if (taxonFlags.anyBitsOn())
+			return true;
+		return false;
+	}
+	public boolean anyCellFlagsSet(){
+		for (int ic = 0; ic<cellFlags.length; ic++)
+			for (int it = 0; it<cellFlags[ic].length; it++)
+				if (cellFlags[ic][it])
+					return true;
+		return false;
 	}
 	public boolean anyFlagsSet(){
 		if (characterFlags.anyBitsOn())
@@ -130,7 +187,11 @@ public class MatrixFlags {
 		String s = "Matrix Flags: of " + numChars + " chars, " + characterFlags.numBitsOn() + " on; of " + numTaxa + ", " + taxonFlags.numBitsOn() + " on; cells on: " + countCells;
 		return s;
 	}
-
+	public MatrixFlags clone(){
+		MatrixFlags newF = new MatrixFlags(numChars, numTaxa);
+		newF.copyFlags(this);
+		return newF;
+	}
 	public void copyFlags(MatrixFlags flags) {
 		if (flags == null)
 			return;

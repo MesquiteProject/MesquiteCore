@@ -423,6 +423,7 @@ class BasicDataWindow extends TableWindow implements MesquiteListener {
 	MesquiteBoolean linkedScrolling = new MesquiteBoolean(true);
 	MesquiteBoolean showTaxonNames = new MesquiteBoolean(true);
 	MesquiteBoolean useDiagonal = new MesquiteBoolean(false);
+	MesquiteBoolean contrastCellText = new MesquiteBoolean(true);
 	MesquiteBoolean allowAutosize;
 	boolean oldShowStates;
 	boolean oldReduceCellBorders;
@@ -593,6 +594,8 @@ class BasicDataWindow extends TableWindow implements MesquiteListener {
 		ownerModule.addCheckMenuItemToSubmenu(ownerModule.displayMenu, softnessSubmenu, "Lighten Gaps/Inapplicable", MesquiteModule.makeCommand("togglePaleInapplicable", this), table.paleInapplicable);
 		ownerModule.addCheckMenuItemToSubmenu(ownerModule.displayMenu, softnessSubmenu, "Lighten Missing", MesquiteModule.makeCommand("togglePaleMissing", this), table.paleMissing);
 		ownerModule.addCheckMenuItemToSubmenu(ownerModule.displayMenu, softnessSubmenu, "Lighten Excluded Characters", MesquiteModule.makeCommand("toggleShowPaleExcluded", this), showPaleExcluded);
+
+		ownerModule.addCheckMenuItem(ownerModule.displayMenu,"Auto-contrast Cell Text", MesquiteModule.makeCommand("contrastCellText", this), contrastCellText);
 
 		ownerModule.addCheckMenuItem(ownerModule.displayMenu,"Reduce Cell Borders", MesquiteModule.makeCommand("toggleReduceCellBorders", this), table.reduceCellBorders);
 
@@ -1045,6 +1048,7 @@ class BasicDataWindow extends TableWindow implements MesquiteListener {
 		temp.addLine("toggleShowChanges " + table.showChanges.toOffOnString());
 		temp.addLine("toggleSeparateLines " + table.statesSeparateLines.toOffOnString());
 		temp.addLine("toggleShowStates " + table.showStates.toOffOnString());
+		temp.addLine("contrastCellText " + contrastCellText.toOffOnString());
 		temp.addLine("toggleReduceCellBorders " + table.reduceCellBorders.toOffOnString());
 		temp.addLine("toggleAutoWCharNames " + table.autoWithCharNames.toOffOnString());
 		temp.addLine("toggleAutoTaxonNames " + table.autoRowNameWidth.toOffOnString());
@@ -2259,6 +2263,10 @@ class BasicDataWindow extends TableWindow implements MesquiteListener {
 			table.doAutosize = true;
 			table.repaintAll();
 		}
+		else if (checker.compare(this.getClass(), "Sets whether or not cell borders should be reduced", "[on or off]", commandName, "contrastCellText")) {
+			contrastCellText.toggleValue(ParseUtil.getFirstToken(arguments, pos));
+			table.repaintAll();
+		}
 		else if (checker.compare(this.getClass(), "Sets whether or not default character names are shown", "[on or off]", commandName, "toggleShowDefaultCharNames")) {
 			table.showDefaultCharNames.toggleValue(ParseUtil.getFirstToken(arguments, pos));
 			table.doAutosize = true;
@@ -2703,6 +2711,14 @@ class BasicDataWindow extends TableWindow implements MesquiteListener {
 				setUndoer(undoReference);
 			}
 			else if (code == MesquiteListener.PARTS_DELETED) {
+				table.offAllEditsDontRecord();// 1. 12
+				table.setNumRows(taxa.getNumTaxa());
+				table.synchronizeRowSelection(taxa);
+				table.resetComponentSizes();
+				table.repaintAll();
+				setUndoer();
+			}
+			else if (code == MesquiteListener.PARTS_CHANGED) {
 				table.offAllEditsDontRecord();// 1. 12
 				table.setNumRows(taxa.getNumTaxa());
 				table.synchronizeRowSelection(taxa);
@@ -4172,7 +4188,7 @@ class MatrixTable extends mesquite.lib.table.CMTable implements MesquiteDroppedF
 		if (writeStates) {
 			timers[timerNum].start();
 			if (changedSinceSave) {
-				g.setColor(ColorDistribution.getContrasting(selected, fillColor, hsb, Color.lightGray, Color.darkGray));
+					g.setColor(ColorDistribution.getContrasting(selected, fillColor, hsb, Color.lightGray, Color.darkGray));
 				g.drawLine(x, y + 1, x + 1, y);
 				g.drawLine(x, y + 2, x + 2, y);
 				g.drawLine(x, y + 3, x + 3, y);
@@ -4213,8 +4229,12 @@ class MatrixTable extends mesquite.lib.table.CMTable implements MesquiteDroppedF
 								else */
 						textColor = Color.lightGray;
 					}
-					else
-						textColor = ColorDistribution.getContrasting(selected, fillColor, hsb, Color.white, Color.black);
+					else {
+						if (window.contrastCellText.getValue())
+							textColor = ColorDistribution.getContrasting(selected, fillColor, hsb, Color.white, Color.black);
+						else
+							textColor = Color.black;
+					}
 				}
 				timers[timerNum++].end();
 				timers[timerNum].start();

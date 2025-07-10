@@ -2034,13 +2034,16 @@ public class MesquiteTable extends MesquitePanel implements KeyListener, MouseWh
 	private Dimension totalDimension() {
 		return new Dimension(getTotalColumnWidth() + getRowNamesWidth() + 25, getTotalRowHeight() + getColumnNamesRowHeight() + 20);
 	}
-
 	/* ............................................................................................................... */
-	public boolean checkResetFont(Graphics g) { // ^^^
+	public boolean checkResetFont(Graphics g) { 
+		return checkResetFont(g, false);
+	}
+	/* ............................................................................................................... */
+	public boolean checkResetFont(Graphics g, boolean force) { // ^^^
 		boolean doReset = false;
 		if (g != null) {
 			Font f = g.getFont();
-			if (f != null && f != oldF) {
+			if (f != null && (f != oldF || force)) {
 				FontMetrics fm = g.getFontMetrics(f);
 				if (fm != null) {
 					int height = fm.getHeight();

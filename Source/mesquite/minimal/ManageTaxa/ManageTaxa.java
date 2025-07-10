@@ -949,6 +949,7 @@ public class ManageTaxa extends TaxaManager {
 		boolean fuse = parser.hasFileReadingArgument(fileReadingArguments, "fuseTaxaCharBlocks");
 		boolean noWarnDupTaxaBlock = parser.hasFileReadingArgument(fileReadingArguments, "noWarnDupTaxaBlock");
 		boolean hadDuplicateNames= false;
+
 		int firstNewTaxon = 0;
 		boolean nameProblems = false;
 		boolean merging = false;
@@ -957,8 +958,12 @@ public class ManageTaxa extends TaxaManager {
 			String commandName = parser.getFirstToken(s);
 			if (commandName.equalsIgnoreCase("DIMENSIONS")) {
 				if (fuse){
-					String message = "In the file being imported, there is a taxa block called \"" + title + "\". Mesquite will either fuse this taxa block into the taxa block you select below, or it will import that taxa block as new, separate taxa block.";
-					newTaxa = getProject().chooseTaxa(containerOfModule(), message, true, "Fuse with Selected Taxa Block", "Add as New Taxa Block");
+					String message = "In the file being imported, there is a taxa block called \"" + title + "\".\n\nIf you choose the Merge button, Mesquite will fuse the incoming taxa block into the existing taxa block you select. "
+							+"You will later get to choose whether an incoming taxon of the same name as an existing taxon is treated as the same taxon or kept separate.\n\n"
+							+"If you choose the Add as New button, the incoming block of taxa will be treated as independent of the existing block.";
+					newTaxa = getProject().chooseTaxa(containerOfModule(), message, true, "Merge into Selected Taxa Block", "Add as New Taxa Block");
+					if (newTaxa == null) //about to add as new taxa; DO NOT ASK ABOUT DELETING apparent duplicate TAXA BLOCK
+						noWarnDupTaxaBlock = true;
 					if (newTaxa != null){
 						firstNewTaxon = newTaxa.getNumTaxa();
 						merging = true;
@@ -966,7 +971,6 @@ public class ManageTaxa extends TaxaManager {
 						if (titleFound)
 							file.taxaNameTranslationTable.addElement(new MesquiteString(title, newTaxa.getName()), false);
 						hadDuplicateNames= !StringUtil.blank(newTaxa.hasDuplicateNames());
-
 					}
 				}
 				int numTaxa = MesquiteInteger.fromString(parser.getTokenNumber(4));
@@ -986,7 +990,7 @@ public class ManageTaxa extends TaxaManager {
 				}
 				else {
 
-					newTaxa = new Taxa(numTaxa);
+				newTaxa = new Taxa(numTaxa);
 
 					newTaxa.setName(title);
 					//t = newTaxa.addToFile(file, getProject(), this);
@@ -1047,7 +1051,7 @@ public class ManageTaxa extends TaxaManager {
 				}
 				/**/
 				CommandRecord.tick("TAXLABELS statement read");
-			}
+		}
 			else if (commandName.equalsIgnoreCase("IDS")) {
 				String cN = parser.getNextToken();
 				int taxNumber = firstNewTaxon;
@@ -1175,7 +1179,9 @@ public class ManageTaxa extends TaxaManager {
 			String d = newTaxa.hasDuplicateNames();
 			if (d !=null){
 				if (fuse && !hadDuplicateNames){
-					if (AlertDialog.query(containerOfModule(), "Duplicated taxa", "Some taxon names in the file being read are the same as some already in the project for the taxa block \"" + newTaxa.getName() + "\". Do you want to merge these taxa? \n\n(duplicated names: " + d + ").  WARNING: if these taxa have data in matrices that you are fusing to existing matrices, then the taxon will take on the newly fused values. (mt)")){
+					if (AlertDialog.query(containerOfModule(), "Matching taxon names", "Some incoming taxon names are the same as some already in the existing taxa block \"" + newTaxa.getName() 
+					+ "\". Do you want to treat these incoming taxa as the same as the existing, and merge them? \n\n(Matching names: " + d + ").  "
+					+"WARNING: if a taxon has data in matrices that you are fusing to existing matrices, then the taxon will take on the newly fused values. (mt)", "Merge Taxa (Treat as Same)", "Keep Separate")){
 						IntegerArray originalIndices = new IntegerArray(newTaxa.getNumTaxa());
 						originalIndices.setNameReference(NameReference.getNameReference("originalIndicesDupRead"));
 						newTaxa.attach(originalIndices);
@@ -1184,6 +1190,9 @@ public class ManageTaxa extends TaxaManager {
 
 						originalIndices.deleteParts(0, firstNewTaxon);
 
+					}
+					else {
+						// didn't delete duplicates; therefore set the fuse to rename the taxa once read-in is finished.
 					}
 				}
 				else {
@@ -1331,22 +1340,6 @@ public class ManageTaxa extends TaxaManager {
 		return false;
 	}
 	/*.................................................................................................................*/
-	String fixDuplicateNames (Taxa taxa){
-		String list = "";
-		for (int i=0; i<taxa.getNumTaxa(); i++){
-			String name = taxa.getTaxonName(i);
-			for (int j=i+1; j<taxa.getNumTaxa(); j++){
-				String name2 = taxa.getTaxonName(j);
-				if (name!=null && name.equalsIgnoreCase(name2)) {
-					String s = taxa.getUniqueName(name2);
-					taxa.setTaxonName(j, s);
-					list += "Taxon \"" + name2 + "\" changed to \"" + s + "\"\n";
-				}
-			}
-		}
-		return list;
-	}
-	/*.................................................................................................................*/
 	String fixBlankNames (Taxa taxa){
 		String list = "";
 		for (int i=0; i<taxa.getNumTaxa(); i++){
@@ -1384,9 +1377,9 @@ public class ManageTaxa extends TaxaManager {
 		String d = taxa.hasDuplicateNames(true);
 		if (d !=null){
 			if (MesquiteThread.isScripting())
-				logln("Summary of name changes:\n" + fixDuplicateNames(taxa));
+				logln("Summary of name changes:\n" + taxa.fixDuplicateNames());
 			else if (AlertDialog.query(containerOfModule(), "Duplicate names!", "The block of taxa being saved (" + taxa.getName() + ") has duplicate taxon names.  This may cause problems in saving and reading trees and other functions.  Do you want Mesquite to fix this by generating unique names by suffixing a number to duplicate names?   (Duplicates: " +d + ")", "Fix", "Don't Fix"))
-				alert("Summary of name changes:\n" + fixDuplicateNames(taxa));
+				alert("Summary of name changes:\n" +taxa.fixDuplicateNames());
 		}
 
 		if (file == null)

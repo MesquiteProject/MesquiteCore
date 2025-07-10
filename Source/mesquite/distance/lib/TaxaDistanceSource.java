@@ -33,6 +33,8 @@ public abstract class TaxaDistanceSource extends MesquiteModule  {
  	}
 
 	public abstract TaxaDistance getTaxaDistance(Taxa taxa);
+	
+
 
    	/** Called to provoke any necessary initialization.  This helps prevent the module's intialization queries to the user from
    	happening at inopportune times (e.g., while a long chart calculation is in mid-progress)*/

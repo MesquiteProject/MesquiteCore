@@ -52,18 +52,23 @@ public abstract class DataAlterer extends MesquiteModule  {
    	}
 	/*.................................................................................................................*/
 	
-   	/** Called to alter data in those cells selected in table.  
+   	/** Called to alter data in a matrix. It may restrict its altering to selected taxa or characters. If there's a table, it may restrict its altering to those cells selected in table.  
    	 * Returns 
    	 * 0 if data altered; 
    	 * a positive number if not altered but no errors happened; 
    	 * a negative number if serious errors.
-	For those DataAlterers that supply AlteredDataParameters, this method should be overridden. */
+	For those DataAlterers that supply AlteredDataParameters, this method should be overridden. 
+	NOTE: in general it's best to require the table is non-null only if the table is required for its function. It's OK to use it, but also rely on taxa or data selection, for instance.
+	Freedom from the table is needed for the module to satisfy DataAltererParallelizable*/
    	public int alterData(mesquite.lib.characters.CharacterData data, MesquiteTable table, UndoReference undoReference, AlteredDataParameters alteredDataParameters){
    		return alterData(data,table,undoReference);
    	}
    	
 	/*.................................................................................................................*/
-   	/** Called to alter data in those cells selected in table.  Returns true if data altered*/
+   	/** Called to alter data in a matrix. It may restrict its altering to selected taxa or characters. If there's a table, it may restrict its altering to those cells selected in table.  
+ 	* Returns codes as above.
+   	 * NOTE: in general it's best to require the table is non-null only if the table is required for its function. It's OK to use it, but also rely on taxa or data selection, for instance.
+	Freedom from the table is needed for the module to satisfy DataAltererParallelizable*/
    	public abstract int alterData(mesquite.lib.characters.CharacterData data, MesquiteTable table, UndoReference undoReference);
    	
 	/*.................................................................................................................*/

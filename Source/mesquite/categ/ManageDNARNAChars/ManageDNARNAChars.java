@@ -86,7 +86,7 @@ public class ManageDNARNAChars extends CategMatrixManager {
 
 		if (dataType != null && dataType.equalsIgnoreCase("RNA")) {
 			if (fuse){
-				String message = "In the file being imported, there is a matrix called \"" + title + "\". Mesquite will either fuse this matrix into the matrix you select below, or it will import that matrix as new, separate matrix.";
+				String message = "In the file being imported, there is a matrix called \"" + title + "\". Mesquite will either fuse this matrix into the matrix you select below, or it will import that matrix as a new, separate matrix.";
 				data = (DNAData)getProject().chooseData(containerOfModule(), null, taxa, RNAState.class, message,  true,"Fuse with Selected Matrix", "Add as New Matrix");
 				if (data != null && numChars > data.getNumChars())
 					data.addCharacters(data.getNumChars()-1, numChars - data.getNumChars(), false);
@@ -107,7 +107,7 @@ public class ManageDNARNAChars extends CategMatrixManager {
 		}
 		else {
 			if (fuse){
-				String message = "In the file being imported, there is a matrix called \"" + title + "\". Mesquite will either fuse this matrix into the matrix you select below, or it will import that matrix as new, separate matrix.";
+				String message = "In the file being imported, there is a matrix called \"" + title + "\". Mesquite will either fuse this matrix into the matrix you select below, or it will import that matrix as a new, separate matrix.";
 				data = (DNAData)getProject().chooseData(containerOfModule(), null, taxa, DNAState.class, message,  true,"Fuse with Selected Matrix", "Add as New Matrix");
 				if (data != null && numChars > data.getNumChars())
 					data.addCharacters(data.getNumChars()-1, numChars - data.getNumChars(), false);

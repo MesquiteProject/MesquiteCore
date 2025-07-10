@@ -17,8 +17,9 @@ import mesquite.categ.lib.DNAData;
 import mesquite.categ.lib.DNADataAltererCon;
 import mesquite.lib.characters.AltererAlignShift;
 import mesquite.lib.characters.CharacterData;
+import mesquite.lib.duties.DataAltererParallelizable;
 
-public class ReverseComplement extends DNADataAltererCon  implements AltererAlignShift{
+public class ReverseComplement extends DNADataAltererCon  implements AltererAlignShift, DataAltererParallelizable{
 
 
 	public boolean alterBlockInTaxon(CharacterData data, int icStart, int icEnd, int it) {

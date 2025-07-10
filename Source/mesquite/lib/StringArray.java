@@ -376,7 +376,7 @@ public class StringArray implements StringLister, Listable, Nameable {
 			return d;
 		int source = flags.nextBit(toFill, false); //find source to move into it
 		int highestFilled = toFill-1; //
-		while (source >=0 && source < d.length && toFill >=0) { //First, compact storage toward the start of the array.
+		while (source >=0 && source < d.length && toFill >=0 && toFill<d.length) { //First, compact storage toward the start of the array.
 			for (int it=0; it<numRows; it++)
 				d[toFill][it] = d[source][it]; //move content from source to place
 			highestFilled = toFill;

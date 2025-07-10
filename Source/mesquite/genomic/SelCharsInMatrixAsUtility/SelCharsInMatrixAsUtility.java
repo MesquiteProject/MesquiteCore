@@ -53,7 +53,7 @@ public class SelCharsInMatrixAsUtility extends CharMatricesListProcessorUtility 
 				return sorry(getName() + " couldn't start because the requested data alterer wasn't successfully hired.");
 		}
 		else if (!MesquiteThread.isScripting()) {
-			selectTask = (CharacterSelector)hireEmployee(CharacterSelector.class, "Alterer of matrices");
+			selectTask = (CharacterSelector)hireEmployee(CharacterSelector.class, "Character selector");
 			if (selectTask == null)
 				return sorry(getName() + " couldn't start because no matrix alterer module obtained.");
 		}

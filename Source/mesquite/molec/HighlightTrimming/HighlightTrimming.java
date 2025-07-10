@@ -27,6 +27,7 @@ import mesquite.lib.MesquiteFile;
 import mesquite.lib.MesquiteListener;
 import mesquite.lib.MesquiteModule;
 import mesquite.lib.MesquiteThread;
+import mesquite.lib.MesquiteTrunk;
 import mesquite.lib.Notification;
 import mesquite.lib.Snapshot;
 import mesquite.lib.characters.CharacterData;
@@ -116,7 +117,18 @@ public class HighlightTrimming extends DataWindowAssistantID implements CellColo
 			if (data != null && flags != null && AlertDialog.query(containerOfModule(),  "Delete?",  "Are you sure you want to delete the darkened (highlighted) parts?")){
 				data.incrementNotifySuppress();
 				Vector v = pauseAllPausables();
-				String report = data.deleteByMatrixFlags(flags);
+				String report = null;
+				if (invert.getValue()){
+					//flags.isCellFlaggedAnyWay(ic, it);
+					
+					
+					MatrixFlags useFlags = flags.clone();
+					useFlags.invertUnion();
+					report = data.deleteByMatrixFlags(useFlags);
+				}
+				else {
+					report = data.deleteByMatrixFlags(flags);
+			}
 				logln(report);
 				unpauseAllPausables(v);
 				data.decrementNotifySuppress();
@@ -135,6 +147,7 @@ public class HighlightTrimming extends DataWindowAssistantID implements CellColo
 		}
 		else if (checker.compare(this.getClass(), "Invert highlighting", null, commandName, "toggleInvert")) {
 			invert.toggleValue(parser.getFirstToken(arguments));
+			MesquiteTrunk.resetCheckMenuItems();
 			parametersChanged();
 		}
 
@@ -165,6 +178,9 @@ public class HighlightTrimming extends DataWindowAssistantID implements CellColo
 	public boolean setActiveColors(boolean active){
 		boolean wasActive = isActive();
 		setActive(active);
+		if (active)
+			suspended = false;
+
 		if (isActive() && !wasActive){
 			if (!flaggerInitialized) {
 				MatrixFlagger flaggerTask = (MatrixFlagger)hireEmployee(MatrixFlagger.class, "Trimming or flagging method to highlight");
@@ -181,7 +197,7 @@ public class HighlightTrimming extends DataWindowAssistantID implements CellColo
 			mmir = addMenuItem("-", null);
 			mmiVE= addCheckMenuItem(null, "Use Extremely Dark Highlights", makeCommand("toggleExtremelyDark", this), useExtremelyDark);
 			mmiVP= addCheckMenuItem(null, "Use Pale for Unhighlighted", makeCommand("togglePale", this), usePale);
-			mmJJ= addCheckMenuItem(null, "Invert Highlights", makeCommand("toggleInvert", this), hide);
+			mmJJ= addCheckMenuItem(null, "Invert Highlights", makeCommand("toggleInvert", this), invert);
 			mmJ= addCheckMenuItem(null, "Hide/Show Highlights", makeCommand("toggleHide", this), hide);
 			mmJ.setShortcut(KeyEvent.VK_J);
 			mmis = addMenuItem("Reset Trimmers to be Highlighted...", makeCommand("resetFlaggers", this));

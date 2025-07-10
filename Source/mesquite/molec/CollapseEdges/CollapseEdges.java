@@ -20,10 +20,11 @@ import mesquite.lib.ResultCodes;
 import mesquite.lib.UndoReference;
 import mesquite.lib.characters.AltererWholeCharacterAddRemove;
 import mesquite.lib.characters.CharacterData;
+import mesquite.lib.duties.DataAltererParallelizable;
 import mesquite.lib.table.MesquiteTable;
 
 /* ======================================================================== */
-public class CollapseEdges extends MolecularDataAlterer implements AltererWholeCharacterAddRemove{
+public class CollapseEdges extends MolecularDataAlterer implements AltererWholeCharacterAddRemove, DataAltererParallelizable{
 	/*.................................................................................................................*/
 	public boolean startJob(String arguments, Object condition, boolean hiredByName) {
 		return true;
@@ -33,12 +34,7 @@ public class CollapseEdges extends MolecularDataAlterer implements AltererWholeC
    	public boolean requestPrimaryChoice(){
    		return false;  
    	}
-	/*.................................................................................................................*
-   	public void alterCell(CharacterData cData, int ic, int it){
-   		if (cData instanceof CategoricalData) { //this does not do state names recoding!
-   		}
-   	}
-   	
+	
 	/*.................................................................................................................*/
    	/** Called to alter data in those cells selected in table*/
    	public int alterData(CharacterData cData, MesquiteTable table,  UndoReference undoReference){

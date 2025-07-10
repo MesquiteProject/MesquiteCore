@@ -19,6 +19,7 @@ import mesquite.lib.characters.CharInclusionSet;
 import mesquite.lib.characters.CharacterData;
 import mesquite.lib.duties.CellColorer;
 import mesquite.lib.duties.CellColorerCharacters;
+import mesquite.lib.duties.CellColorerMatrix;
 import mesquite.lib.duties.CellColorerMatrixHighPriority;
 import mesquite.lib.duties.DataWindowAssistantID;
 import mesquite.lib.table.MesquiteTable;
@@ -26,7 +27,7 @@ import mesquite.lib.ui.ColorRecord;
 
 
 /* ======================================================================== */
-public class ColorByExcluded extends DataWindowAssistantID implements CellColorer, CellColorerCharacters, CellColorerMatrixHighPriority {
+public class ColorByExcluded extends DataWindowAssistantID implements CellColorer, CellColorerCharacters, CellColorerMatrix {
 	MesquiteTable table;
 	CharacterData data;
 	/*.................................................................................................................*/

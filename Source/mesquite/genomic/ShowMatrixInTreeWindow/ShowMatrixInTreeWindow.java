@@ -50,6 +50,7 @@ import mesquite.lib.tree.TreeDisplayRequests;
 import mesquite.lib.tree.TreeDrawing;
 import mesquite.lib.ui.ColorDistribution;
 import mesquite.lib.ui.ExtensibleDialog;
+import mesquite.lib.ui.GraphicsUtil;
 import mesquite.lib.ui.MesquiteImage;
 import mesquite.lib.ui.MesquitePopup;
 import mesquite.lib.ui.MesquiteWindow;
@@ -572,9 +573,9 @@ class ShowMatrixLinkedExtra extends TreeDisplayExtra implements TreeDisplayBkgdE
 		if (data instanceof MolecularData){
 			g.setColor(data.getColorOfStates(ic, it));  
 			if (treeDisplay.isRight() || treeDisplay.isLeft())
-				g.fillRect((int)x,(int)y,(int)( spacingPerCharacter()),  (int)(taxonSpace));
+				GraphicsUtil.fillRect(g, x,y,spacingPerCharacter(),  taxonSpace);
 			else if (treeDisplay.isUp() || treeDisplay.isDown()) 
-				g.fillRect((int)x,(int)y,(int)(taxonSpace), (int)( spacingPerCharacter()));
+				GraphicsUtil.fillRect(g,x,y,taxonSpace,  spacingPerCharacter());
 		}
 		else {
 			if (data.isUnassigned(ic, it) || data.isInapplicable(ic, it))
