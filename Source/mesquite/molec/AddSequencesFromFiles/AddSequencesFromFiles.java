@@ -44,6 +44,7 @@ public class AddSequencesFromFiles extends FileAssistantFM {
 			}
 		}
 		alert("To add sequences, you must have a character matrix editor window at the front");
+		iQuit();
 		return false;
 	}
 
