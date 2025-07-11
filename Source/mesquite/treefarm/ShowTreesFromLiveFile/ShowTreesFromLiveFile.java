@@ -36,6 +36,7 @@ public class ShowTreesFromLiveFile extends FileAssistantFM {
 		if (!MesquiteThread.isScripting())
  			importerTask.readFile(getProject(), null, false);
 
+		iQuit();
 		return true;
 	}
 	/*.................................................................................................................*/

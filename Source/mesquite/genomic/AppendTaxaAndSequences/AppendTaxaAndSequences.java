@@ -38,6 +38,7 @@ public class AppendTaxaAndSequences extends FileAssistantFM {
 	/*.................................................................................................................*/
 	public boolean startJob(String arguments, Object condition, boolean hiredByName) {
 		findAndAppend();
+		iQuit();
 		return true;
 	}
 
