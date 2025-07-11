@@ -502,11 +502,7 @@ public class MesquitePDFFile {
 		// step 5: we close the document
 		if (document != null) 
 			if (cb!=null) {
-				int count = 1;
 				while (keepRestoring()) {
-					if (MesquiteTrunk.debugMode)
-						System.out.println("restore " + count);
-					count++;
 					try {
 						cb.restoreState();  
 					} catch (IllegalPdfSyntaxException e) {
