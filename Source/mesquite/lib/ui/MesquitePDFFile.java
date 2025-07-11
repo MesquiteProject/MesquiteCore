@@ -486,22 +486,36 @@ public class MesquitePDFFile {
 		endDocument();
 	}
 
+	public boolean keepRestoring() {
+		try {
+			cb.sanityCheck();
+			return false;
+		} catch (IllegalPdfSyntaxException e) {
+			return true;
+
+		}
+	}
 
 	/**
 	 */
 	public void endDocument() {
 		// step 5: we close the document
-		if (document != null) {
+		if (document != null) 
 			if (cb!=null) {
-				try {
-					for (int i = 0; i<100; i++)   // it seems as if somewhere 
-						cb.restoreState();  //TODO: why do we need to do this?????
-				} catch (IllegalPdfSyntaxException e) {
-
+				int count = 1;
+				while (keepRestoring()) {
+					if (MesquiteTrunk.debugMode)
+						System.out.println("restore " + count);
+					count++;
+					try {
+						cb.restoreState();  
+					} catch (IllegalPdfSyntaxException e) {
+					}
 				}
 			}
-			document.close();
-		}
+		document.close();
 	}
+
+
 
 }
