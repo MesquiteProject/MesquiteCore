@@ -433,11 +433,17 @@ class SquareLineTreeDrawing extends TreeDrawing  {
 		return true;
 	}
 
+	/*.................................................................................................................*/
+	public boolean recordsBranchColors(){
+		return true;
+	}
 
 	/*_________________________________________________*/
 	private   void drawClade(Tree tree, Graphics g, int node) {
 		if (tree.nodeExists(node)) {
 			g.setColor(treeDisplay.getBranchColor(node));
+			recordBranchColor(tree, node, g.getColor());
+
 			if (tree.isVisibleEvenIfInCollapsed(node)) {
 				if (tree.isLeftmostTerminalOfCollapsedClade(node)){
 					DrawTreeUtil.drawOneSquareLineBranch(treeDisplay, xSolid, ySolid, useEdgeWidth(), tree, g, null, node, 0, useEdgeWidth(),0, emphasizeNodes(), nodePoly(node), defaultStroke);
@@ -560,6 +566,7 @@ class SquareLineTreeDrawing extends TreeDrawing  {
 				localInset=inset;
 			float fillWidth = useEdgeWidth()-2*localInset;
 			int numColors = colors.getNumColors();
+			recordBranchFillColors(tree, node, colors.clone());
 			Color color;
 			if (numColors<=1) {
 				if ((color = colors.getColor(0, !tree.anySelected()|| tree.getSelected(node)))!=null)
@@ -591,6 +598,7 @@ class SquareLineTreeDrawing extends TreeDrawing  {
 	/*_________________________________________________*/
 	public   void fillBranch(Tree tree, int node, Graphics g) {
 
+		recordBranchFillColors(tree, node, g.getColor());
 		if (node>0 && (tree.getRooted() || tree.getRoot()!=node)) {
 			//if (ownerModule.getShowEdgeLines())
 			if (tree.isLeftmostTerminalOfCollapsedClade(node)){

@@ -291,6 +291,8 @@ public class TreeOfContext extends OneTreeSource implements TreeContextListener 
   		if (contextID !=null && contextID.equals(assignedID))
   			parametersChanged();
 	}
+	
+	
    	boolean warned = false;
 	/*.................................................................................................................*/
 	/* rule: first, look for context among ancestor employees. If one found, use as default. If not, look for closest.  If more than one, allow

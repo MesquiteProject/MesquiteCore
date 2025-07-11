@@ -497,6 +497,20 @@ public class ColorDistribution {
 			weights[i]=0;
 		}
 	}
+	
+	public ColorDistribution clone(){
+		ColorDistribution cl = new ColorDistribution();
+		cl.initialize();
+		cl.numColors = numColors;
+		for (int i=0; i<MAXCOLORS; i++) {
+			cl.colors[i]=colors[i];
+			cl.colorsDimmed[i]=colorsDimmed[i];
+			cl.weights[i]=weights[i];
+		}
+		cl.sequential = sequential;
+		return cl;
+	}
+	
 	/** set color for state (or other unit) i to the given color.*/
 	public void setColor(int i, Color color) {
 		if (i>=0 && i<MAXCOLORS) {
