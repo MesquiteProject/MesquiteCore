@@ -801,6 +801,7 @@ if (tree.isVisibleEvenIfInCollapsed(node))
 			boolean draw = branchIsVisible(tree, node);
 			if (draw){
 				g.setColor(treeDisplay.getBranchColor(node));
+				recordBranchColor(tree, node, g.getColor());
 				if ((tree.getRooted() || tree.getRoot()!=node) && branchPoly[node] != null){
 					if (SHOWTOUCHPOLYS && touchPoly!=null && touchPoly[node]!=null) {  //fordebugging
 						Color prev = g.getColor();
@@ -1019,6 +1020,7 @@ if (tree.isVisibleEvenIfInCollapsed(node))
 	}
 	/*_________________________________________________*/
 	public   void fillBranch(Tree tree, int node, Graphics g) {
+		recordBranchFillColors(tree, node, g.getColor());
 		if (node>0 && (tree.getRooted() || tree.getRoot()!=node)  && node<fillBranchPoly.length && branchIsVisible(tree, node)){
 			fillOneBranch(tree, g, fillBranchPoly[node], node, false);  
 		}
@@ -1135,6 +1137,10 @@ if (tree.isVisibleEvenIfInCollapsed(node))
 			if (c!=null) g.setColor(c);
 		}
 	}
+	/*.................................................................................................................*/
+	public boolean recordsBranchColors(){
+		return true;
+	}
 	/*_________________________________________________*
 	public void fillBranchWithMissingData(Tree tree, int node, Graphics g) {
 
@@ -1168,6 +1174,7 @@ if (tree.isVisibleEvenIfInCollapsed(node))
 	public void fillBranchWithColors(Tree tree, int node, ColorDistribution colors, Graphics g) {
 		if (node>0 && (tree.getRooted() || tree.getRoot()!=node) && branchIsVisible(tree, node)) {
 			Color c = g.getColor();
+			recordBranchFillColors(tree, node, colors.clone());
 			int numColors = colors.getNumColors();
 			double nShortcut = getShortcutOfDaughters(tree, tree.motherOfNode(node));
 			if (cornerMode == 2){

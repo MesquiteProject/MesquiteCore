@@ -217,6 +217,29 @@ public class GraphicsUtil {
 		drawArc(g2,x,y,width,height,startingAngle, angleExtent);
 	}
 	/*_________________________________________________*/
+	public static void drawPie(Graphics g, ColorDistribution colors, double x, double y, double dia, boolean select, boolean cosmic){
+		int numColors = colors.getNumColors();
+		double startAngle=90;//was 270
+		double totalFreq=0;
+		for (int i=0; i<numColors; i++) totalFreq += colors.getWeight(i);
+		double suppl = 0;
+		if (totalFreq == 0){
+			totalFreq = 1.0;
+			suppl = 1.0/numColors;
+		}
+		double arcAngle = 0;
+		for (int i=0; i<numColors; i++) {
+			Color color;
+			if ((color = colors.getColor(i, select))!=null)
+				g.setColor(color);
+
+			arcAngle = (((colors.getWeight(i)+suppl)/totalFreq)*360.0);
+			//GraphicsUtil.fillArc(g, x[node]- spotSize/2.0 + 2, y[node]- spotSize/2.0 + 2, spotSize - 4, spotSize - 4, startAngle, arcAngle, ownerModule.cosmic.getValue());
+			GraphicsUtil.fillArc(g, x, y, dia, dia, startAngle, arcAngle, cosmic);
+			startAngle+=arcAngle; 
+		}
+	}
+	/*_________________________________________________*/
 	public static void fill(Graphics g, Shape shape) {
 		if (!(g instanceof Graphics2D))
 			return;

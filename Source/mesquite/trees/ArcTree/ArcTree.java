@@ -278,6 +278,7 @@ class ArcTreeDrawing extends TreeDrawing  {
 	private   void drawClade(Tree tree, Graphics g, int node) {
 		if (tree.nodeExists(node) && tree.isVisibleEvenIfInCollapsed(node)) {
 			g.setColor(treeDisplay.getBranchColor(node));
+			recordBranchColor(tree, node, g.getColor());
 			if (tree.getRooted() || tree.getRoot()!=node) {
 				DrawTreeUtil.drawOneCurvedBranch(treeDisplay, x, y, getEdgeWidth(), tree, g, node, 0, edgewidth,0, emphasizeNodes(), nodePoly(node), defaultStroke);
 			}
@@ -380,6 +381,7 @@ class ArcTreeDrawing extends TreeDrawing  {
 	/*_________________________________________________*/
 	public void fillBranchWithColors(Tree tree, int node, ColorDistribution colors, Graphics g) {
 		if (node>0 && (tree.getRooted() || tree.getRoot()!=node)) {
+			recordBranchFillColors(tree, node, colors.clone());
 			Color c = g.getColor();
 			int fillWidth = edgewidth-2*inset;
 			int numColors = colors.getNumColors();
@@ -396,9 +398,14 @@ class ArcTreeDrawing extends TreeDrawing  {
 	}
 	/*_________________________________________________*/
 	public   void fillBranch(Tree tree, int node, Graphics g) {
+		recordBranchFillColors(tree, node, g.getColor());
 		if (node>0 && (tree.getRooted() || tree.getRoot()!=node)) {
 			DrawTreeUtil.drawOneCurvedBranch(treeDisplay,x,y,getEdgeWidth(), tree, g, node, inset, edgewidth-inset*2, 4,emphasizeNodes(),nodePoly(node), defaultStroke) ;
 		}
+	}
+	/*.................................................................................................................*/
+	public boolean recordsBranchColors(){
+		return true;
 	}
 
 	/*_________________________________________________*/

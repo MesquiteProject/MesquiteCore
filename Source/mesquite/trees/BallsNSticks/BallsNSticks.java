@@ -549,13 +549,16 @@ class BallsNSticksDrawing extends TreeDrawing  {
 			if ((tree.getRooted() || tree.getRoot()!=node) && tree.isVisibleEvenIfInCollapsed(node)) {
 				drawJustOneBranch(tree,g,node);
 				if (!tree.nodeIsInternal(node) || ownerModule.ballsInternal.getValue()){
-					drawSpot( g, node);
+					recordBranchColor(tree, node, g.getColor());
 					if (emphasizeNodes()) {
 						Color prev = g.getColor();
 						g.setColor(Color.red);
 						drawSpot( g, node);
+						recordBranchColor(tree, node, g.getColor());
 						g.setColor(prev);
 					}
+					else
+						drawSpot( g, node);
 				}
 			}
 		}
@@ -616,10 +619,13 @@ class BallsNSticksDrawing extends TreeDrawing  {
 			if (c!=null) g.setColor(c);
 		}
 	}
+	*/
+	
 	/*_________________________________________________*/
 	public void fillBranchWithColors(Tree tree, int node, ColorDistribution colors, Graphics g) {
 		if (node>0 && (tree.getRooted() || tree.getRoot()!=node) && tree.isVisibleEvenIfInCollapsed(node)) {
 			Color c = g.getColor();
+			recordBranchFillColors(tree, node, colors.clone());
 			int numColors = colors.getNumColors();
 			if (numColors==1){
 				g.setColor(colors.getColor(0, !tree.anySelected()|| tree.getSelected(node)));
@@ -627,7 +633,9 @@ class BallsNSticksDrawing extends TreeDrawing  {
 					fillSpot(g,node);
 			}
 			else if (numColors>0) {
-				double startAngle=90;//was 270
+				boolean select = !tree.anySelected()|| tree.getSelected(node);
+				GraphicsUtil.drawPie(g, colors, x[node]- spotSize/2.0 + 2, y[node]- spotSize/2.0 + 2, spotSize - 4.0, select, ownerModule.cosmic.getValue());
+				/*double startAngle=90;//was 270
 				double totalFreq=0;
 				for (int i=0; i<numColors; i++) totalFreq += colors.getWeight(i);
 				double suppl = 0;
@@ -638,7 +646,7 @@ class BallsNSticksDrawing extends TreeDrawing  {
 				double arcAngle = 0;
 				for (int i=0; i<numColors; i++) {
 					Color color;
-					if ((color = colors.getColor(i, !tree.anySelected()|| tree.getSelected(node)))!=null)
+					if ((color = colors.getColor(i, select))!=null)
 						g.setColor(color);
 
 					arcAngle = (((colors.getWeight(i)+suppl)/totalFreq)*360.0);
@@ -646,6 +654,7 @@ class BallsNSticksDrawing extends TreeDrawing  {
 					GraphicsUtil.fillArc(g, x[node]- spotSize/2.0 + 2, y[node]- spotSize/2.0 + 2, spotSize - 4.0, spotSize - 4.0, startAngle, arcAngle, ownerModule.cosmic.getValue());
 					startAngle+=arcAngle; 
 				}
+				*/
 			}
 			if (c!=null) g.setColor(c);
 		}
@@ -653,11 +662,16 @@ class BallsNSticksDrawing extends TreeDrawing  {
 
 	/*_________________________________________________*/
 	public   void fillBranch(Tree tree, int node, Graphics g) {
+		recordBranchFillColors(tree, node, g.getColor());
 		if (node>0 && (tree.getRooted() || tree.getRoot()!=node) && tree.isVisibleEvenIfInCollapsed(node)) {
 			//drawJustOneBranch(tree,g,node);
 			if (!tree.nodeIsInternal(node) || ownerModule.ballsInternal.getValue())
 				fillSpot(g,node);
 		}
+	}
+	/*.................................................................................................................*/
+	public boolean recordsBranchColors(){
+		return true;
 	}
 
 	public  boolean isInTerminalBox(Tree tree, int node, int xPos, int yPos){

@@ -117,6 +117,7 @@ public class IntegerField implements TextListener {
 		if (s != null && (s.equalsIgnoreCase("infinite") ||  s.equalsIgnoreCase("infinity")) && !MesquiteInteger.isCombinable(max))
 			return true;
 		int value = MesquiteInteger.fromString(s);
+		System.err.println("@ " + value);
 		if (!MesquiteInteger.isCombinable(value)) {
 			return false;
 		} else if (value< min && MesquiteInteger.isCombinable(min))

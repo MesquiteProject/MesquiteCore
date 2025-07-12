@@ -336,6 +336,7 @@ public abstract class TreeDrawing  {
 		}
 		else
 			g.setColor(Color.lightGray);
+		recordBranchFillColors(tree, N, Color.lightGray);
 		fillBranch(tree, N, g);
 		if (c!=null) g.setColor(c);
 	}

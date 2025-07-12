@@ -344,6 +344,7 @@ class CircleTreeDrawing extends TreeDrawing  {
 	private   void drawClade(Tree tree, int node, Graphics g) {
 		if (tree.nodeExists(node)) {
 			g.setColor(treeDisplay.getBranchColor(node));
+			recordBranchColor(tree, node, g.getColor());
 			if (tree.isVisibleEvenIfInCollapsed(node))
 				drawOneBranch(tree, node, g);
 
@@ -480,6 +481,7 @@ class CircleTreeDrawing extends TreeDrawing  {
 	public void fillBranchWithColors(Tree tree, int node, ColorDistribution colors, Graphics g) {
 		if (node>0 && tree.isVisibleEvenIfInCollapsed(node)) {
 			Color c = g.getColor();
+			recordBranchFillColors(tree, node, colors.clone());
 			if (treeDisplay.getOrientation()==TreeDisplay.CIRCULAR) {
 				int numColors = colors.getNumColors();
 				if (numColors == 1){
@@ -532,6 +534,7 @@ class CircleTreeDrawing extends TreeDrawing  {
 	}
 	/*_________________________________________________*/
 	public   void fillBranch(Tree tree, int node, Graphics g) {
+		recordBranchFillColors(tree, node, g.getColor());
 		if (node>0 && tree.isVisibleEvenIfInCollapsed(node)) {
 			GraphicsUtil.fill(g,fillBranchPoly[node]);
 			int motherN= tree.motherOfNode(node);
@@ -548,6 +551,11 @@ class CircleTreeDrawing extends TreeDrawing  {
 				g.drawArc(L+i, T+i, R-L-i-i, B-T-i-i, convertToDegrees(myAngleToTheirs(angle[motherN])), convertToDegrees(angle[motherN] -angle[node]));
 			 */
 		}
+	}
+
+	/*.................................................................................................................*/
+	public boolean recordsBranchColors(){
+		return true;
 	}
 
 	public void getMiddleOfBranch(Tree tree, int N, MesquiteNumber xValue, MesquiteNumber yValue, MesquiteDouble angle){
