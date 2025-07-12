@@ -57,7 +57,7 @@ public class SquareLineTree extends DrawTree implements SquareTipDrawer {
 	NodeLocsVH nodeLocsTask;
 	MesquiteCommand edgeWidthCommand;
 	Vector drawings;
-	static final int defaultEdgeWidth = 4;
+	static final int defaultEdgeWidth = 3;
 	int oldEdgeWidth = MesquiteInteger.unassigned;
 	int oldSpotSize = 18;
 	boolean colorCirclesOnly = false;
