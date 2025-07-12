@@ -632,7 +632,9 @@ public class MesquiteFile extends Listened implements HNode, Commandable, Listab
 		}
 		catch (NullPointerException e){
 		}
-		project.removeFile(this);
+		
+		if (project != null)
+			project.removeFile(this);
 		closed = true;
 		project = null;
 		MesquiteTrunk.mesquiteTrunk.resetAllMenuBars();

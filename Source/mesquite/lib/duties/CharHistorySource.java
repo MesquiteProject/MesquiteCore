@@ -72,8 +72,12 @@ public abstract class CharHistorySource extends MesquiteModule  {
    	public abstract String getHistoryName(Tree tree, int ic);
   
    	/** returns the name of histories for menu items, e.g. if each history represents a character, return "Character"*/
-   	public abstract String getHistoryTypeName();
+   	public abstract String getHistorySubjectName();
   
+ 
+   	/** returns the name of method for histories, e.g. "Parsimony Reconstruction"*/
+   	public abstract String getHistoryMethodName();
+
    	/** queryies the user to choose a history and returns an integer of the history chosen*/
    	public int queryUserChoose(Taxa taxa, String forMessage){
  		int ic=MesquiteInteger.unassigned;

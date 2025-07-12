@@ -241,7 +241,7 @@ public class CombineFlippedFastas extends GeneralFileMakerMultiple {
 												if (incomingSeqLeng == 0)
 													doTransfer = false;
 												else {
-													for (int ic = 0; ic< locusMatrix.getNumChars(); ic++) //delete existing sequence to prepare to receive other
+													for (int ic = 0; ic< locusMatrix.getNumChars(); ic++) //*%* delete existing sequence to prepare to receive other
 														locusMatrix.setToInapplicable(ic, receivingTaxonNumber);
 													if (++countWarnings <10)
 														logln("Data in matrix " + locusMatrix.getName() + " replaced for taxon " + taxa.getTaxonName(receivingTaxonNumber));

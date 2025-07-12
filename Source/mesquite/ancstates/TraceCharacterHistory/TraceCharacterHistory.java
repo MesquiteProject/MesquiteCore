@@ -86,10 +86,11 @@ public class TraceCharacterHistory extends TreeDisplayAssistantMA {
 	MesquiteBoolean showStateWeights;
 	MesquiteInteger colorMode;
 	boolean suspend = false;
+	String oldMethodName = "";
 	MesquiteMenuItemSpec propWeight = null;
 	MesquiteMenuItemSpec  revertColorsItem;
 	MesquiteMenuItemSpec  setColorsAsDefaultItem;
-	MesquiteMenuItemSpec  binsMenuItem, numBinsMenuItem;
+	MesquiteMenuItemSpec  binsMenuItem, numBinsMenuItem, closeTraceItem;
 	MesquiteSubmenuSpec colorSubmenu;
 	double[] binBoundaries;
 	double[] usedBoundaries;
@@ -133,11 +134,11 @@ public class TraceCharacterHistory extends TreeDisplayAssistantMA {
 			MesquiteSubmenuSpec mss = addSubmenu(null, "Character History Source", htC, CharHistorySource.class);
 			mss.setSelected(historyTaskName);
 		}
-		MesquiteMenuItemSpec mm = addMenuItem( "Next " + historyTask.getHistoryTypeName(), makeCommand("nextCharacter",  this));
+		MesquiteMenuItemSpec mm = addMenuItem( "Next " + historyTask.getHistorySubjectName(), makeCommand("nextCharacter",  this));
 		mm.setShortcut(KeyEvent.VK_RIGHT); //right
-		mm = addMenuItem( "Previous " + historyTask.getHistoryTypeName(), makeCommand("previousCharacter",  this));
+		mm = addMenuItem( "Previous " + historyTask.getHistorySubjectName(), makeCommand("previousCharacter",  this));
 		mm.setShortcut(KeyEvent.VK_LEFT); //right
-		addMenuItem( "Choose " + historyTask.getHistoryTypeName() + "...", makeCommand("chooseCharacter",  this));
+		addMenuItem( "Choose " + historyTask.getHistorySubjectName() + "...", makeCommand("chooseCharacter",  this));
 		if (enableStore)
 			addMenuItem( "Store History...", makeCommand("storeHistory",  this));
 		addCheckMenuItem(null, "Show Legend", makeCommand("toggleShowLegend",  this), showLegend);
@@ -176,7 +177,8 @@ public class TraceCharacterHistory extends TreeDisplayAssistantMA {
 		addCheckMenuItem(null, "Show Differences Window", makeCommand("toggleShowWindow",  this), showWindow);
 		addMenuItem(null, "Export Table of Node Differences...", makeCommand("exportDifferences",  this));
 		MesquiteTrunk.resetMenuItemEnabling();
-		addMenuItem( "Close Trace", makeCommand("closeTrace",  this));
+		oldMethodName =historyTask.getHistoryMethodName();
+		closeTraceItem = addMenuItem( "Close Trace (" + oldMethodName + ")", makeCommand("closeTrace",  this));
 		addMenuSeparator();
 		boolean someInits = false;
 		hireAllEmployees(TraceCharacterInit.class);
@@ -621,8 +623,12 @@ public class TraceCharacterHistory extends TreeDisplayAssistantMA {
 				historyTask=  temp;
 				historyTask.setHiringCommand(htC);
 				historyTaskName.setValue(historyTask.getName());
+				oldMethodName = historyTask.getHistoryMethodName();
+				closeTraceItem.setName("Close Trace (" + oldMethodName + ")");
+
 				propWeight.setEnabled(historyTask.allowsStateWeightChoice());
 				MesquiteTrunk.resetMenuItemEnabling();
+				resetContainingMenuBar();
 				currentChar=0;
 				resetAllTraceOperators();
 				recalculateAllTraceOperators(true);
@@ -790,6 +796,11 @@ public class TraceCharacterHistory extends TreeDisplayAssistantMA {
 			if (propWeight.isEnabled() != historyTask.allowsStateWeightChoice()){
 				propWeight.setEnabled(historyTask.allowsStateWeightChoice());
 				MesquiteTrunk.resetMenuItemEnabling();
+			}
+			if (!oldMethodName.equals(historyTask.getHistoryMethodName())){
+				oldMethodName = historyTask.getHistoryMethodName();
+				closeTraceItem.setName("Close Trace (" + oldMethodName + ")");
+				resetContainingMenuBar();
 			}
 			recalculateAllTraceOperators(true);
 			resetAllTraceOperators();

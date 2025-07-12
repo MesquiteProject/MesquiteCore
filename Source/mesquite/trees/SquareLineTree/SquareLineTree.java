@@ -6,6 +6,7 @@ import java.awt.Checkbox;
 import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
+import java.awt.Label;
 import java.awt.Rectangle;
 import java.awt.geom.Path2D;
 import java.awt.geom.Rectangle2D;
@@ -123,6 +124,7 @@ public class SquareLineTree extends DrawTree implements SquareTipDrawer {
 		Checkbox sSpots = dialog.addCheckBox("Show circles at nodes", showSpots.getValue());
 		Checkbox ccO = dialog.addCheckBox("Color inside circles only, when shown", colorCirclesOnly);
 		IntegerField pCS = dialog.addIntegerField("Preferred circle size", oldSpotSize, 4, 1, 99);
+		dialog.addLabelSmallText("(The circle size might be less than preferred if there isn't space.)");
 		dialog.completeAndShowDialog(true);
 		if (buttonPressed.getValue()==0)  {
 			showSpots.setValue(sSpots.getState());

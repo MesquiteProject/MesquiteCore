@@ -10,6 +10,7 @@ import mesquite.lib.MesquiteThread;
 import mesquite.lib.Puppeteer;import mesquite.lib.characters.CharacterData;
 import mesquite.lib.table.MesquiteTable;
 import mesquite.lib.taxa.Taxa;
+import mesquite.lib.ui.AlertDialog;
 import mesquite.lists.lib.ListAssistant;
 import mesquite.lists.lib.ListModule;
 import mesquite.lists.lib.TaxaListAssistantI;/* ======================================================================== */public class TaxonListShowAllHasData extends TaxaListAssistantI  {	Taxa taxa;	MesquiteTable table;	public String getName() {		return "Show Columns for All Matrices";	}	public String getExplanation() {		return "Shows the Has Data column for all matrices.";	}	/*.................................................................................................................*/	public int getVersionOfFirstRelease(){		return 304;  	}	/*.................................................................................................................*/	public boolean startJob(String arguments, Object condition, boolean hiredByName){
@@ -33,6 +34,11 @@ import mesquite.lists.lib.TaxaListAssistantI;/* ==============================
 				CharacterData data = getProject().getCharacterMatrix(taxa, i);
 				if (data.isUserVisible())
 					datas.addElement(data);
+			}
+			if (datas.size()>10 && !MesquiteThread.isScripting()){
+				boolean yes = AlertDialog.query(containerOfModule(), "All Matrices?", "Do you want to show columns for all " + datas.size() + " matrices?");
+				if (!yes)
+					return null;
 			}			if (getEmployer() instanceof ListModule){
 				ListModule listModule = (ListModule)getEmployer();
 				Vector v = listModule.getAssistants();
