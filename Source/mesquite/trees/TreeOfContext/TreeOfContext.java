@@ -255,6 +255,11 @@ public class TreeOfContext extends OneTreeSource implements TreeContextListener 
   			return null;
   		return context.getTreeSource();
   	}
+  	public MesquiteModule getImmediateSource(){
+  		if (context == null || !(context instanceof MesquiteModule))
+  			return null;
+  		return (MesquiteModule)context;
+  	}
 	/*.................................................................................................................*/
 	/** For TreeContextListener */
 	public void treeChanged(Tree tree) { 

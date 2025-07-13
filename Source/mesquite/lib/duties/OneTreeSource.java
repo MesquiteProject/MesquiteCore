@@ -57,7 +57,9 @@ public abstract class OneTreeSource extends MesquiteModule  {
 	/*.................................................................................................................*/
   	public abstract void setPreferredTaxa(Taxa taxa);
 
-	/* if tree source is getting trees from some other source, e.g. from TreeContext, then pass back here ultimate tree source from which trees are given*/
+	/* if tree source is getting trees from some other source, e.g. from a tree window, then pass back here that context*/
+  	public abstract MesquiteModule getImmediateSource();
+	/* if tree source is getting trees from some other source, e.g. from the source the tree window gets the trees, then pass back here ultimate tree source from which trees are given*/
   	public abstract MesquiteModule getUltimateSource();
 }
 
