@@ -380,7 +380,7 @@ class ArcTreeDrawing extends TreeDrawing  {
 	}
 	/*_________________________________________________*/
 	public void fillBranchWithColors(Tree tree, int node, ColorDistribution colors, Graphics g) {
-		if (node>0 && (tree.getRooted() || tree.getRoot()!=node)) {
+		if (colors!=null && node>0 && (tree.getRooted() || tree.getRoot()!=node)) {
 			recordBranchFillColors(tree, node, colors.clone());
 			Color c = g.getColor();
 			int fillWidth = edgewidth-2*inset;

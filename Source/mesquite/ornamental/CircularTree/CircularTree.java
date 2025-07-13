@@ -479,7 +479,7 @@ class CircleTreeDrawing extends TreeDrawing  {
 	}
 	/*----------------------------------------------------------------------------*/
 	public void fillBranchWithColors(Tree tree, int node, ColorDistribution colors, Graphics g) {
-		if (node>0 && tree.isVisibleEvenIfInCollapsed(node)) {
+		if (colors!=null && node>0 && tree.isVisibleEvenIfInCollapsed(node)) {
 			Color c = g.getColor();
 			recordBranchFillColors(tree, node, colors.clone());
 			if (treeDisplay.getOrientation()==TreeDisplay.CIRCULAR) {

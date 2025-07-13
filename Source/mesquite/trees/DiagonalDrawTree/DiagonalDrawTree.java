@@ -938,7 +938,7 @@ class DiagonalTreeDrawing extends TreeDrawing  {
 	}
 	/*_________________________________________________*/
 	public void fillBranchWithColors(Tree tree, int node, ColorDistribution colors, Graphics g) {
-		if (node>0 && (tree.getRooted() || tree.getRoot()!=node) && branchIsVisible(tree, node)) {
+		if (colors!=null && node>0 && (tree.getRooted() || tree.getRoot()!=node) && branchIsVisible(tree, node)) {
 			recordBranchFillColors(tree, node, colors.clone());
 			int numColors = colors.getNumColors();
 			if (isUP()) {

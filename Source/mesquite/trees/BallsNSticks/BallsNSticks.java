@@ -623,7 +623,7 @@ class BallsNSticksDrawing extends TreeDrawing  {
 	
 	/*_________________________________________________*/
 	public void fillBranchWithColors(Tree tree, int node, ColorDistribution colors, Graphics g) {
-		if (node>0 && (tree.getRooted() || tree.getRoot()!=node) && tree.isVisibleEvenIfInCollapsed(node)) {
+		if (colors!=null && node>0 && (tree.getRooted() || tree.getRoot()!=node) && tree.isVisibleEvenIfInCollapsed(node)) {
 			Color c = g.getColor();
 			recordBranchFillColors(tree, node, colors.clone());
 			int numColors = colors.getNumColors();

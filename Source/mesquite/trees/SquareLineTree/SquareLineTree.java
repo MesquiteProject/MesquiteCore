@@ -14,6 +14,7 @@ import java.util.Enumeration;
 import java.util.Vector;
 
 import mesquite.lib.CommandChecker;
+import mesquite.lib.Debugg;
 import mesquite.lib.EmployeeNeed;
 import mesquite.lib.IntegerField;
 import mesquite.lib.MesquiteBoolean;
@@ -684,7 +685,7 @@ class SquareLineTreeDrawing extends TreeDrawing  {
 	}
 	/*_________________________________________________*/
 	public void fillBranchWithColors(Tree tree, int node, ColorDistribution colors, Graphics g) {
-		if (node>0 && (tree.getRooted() || tree.getRoot()!=node)) {
+		if (colors != null && node>0 && (tree.getRooted() || tree.getRoot()!=node)) {
 			Color c = g.getColor();
 			float localInset = 0;
 			if (getShowEdgeLines())
@@ -692,6 +693,7 @@ class SquareLineTreeDrawing extends TreeDrawing  {
 			float fillWidth = useEdgeWidth()-2*localInset;
 			int numColors = colors.getNumColors();
 			recordBranchFillColors(tree, node, colors.clone());
+			
 			Color color;
 			if (numColors<=1) {
 				if ((color = colors.getColor(0, !tree.anySelected()|| tree.getSelected(node)))!=null)
@@ -730,7 +732,9 @@ class SquareLineTreeDrawing extends TreeDrawing  {
 				}
 			}
 			if (c!=null) g.setColor(c);
-		}
+		} else
+			recordBranchFillColors(tree, node, new ColorDistribution());
+
 	}
 	/*_________________________________________________*/
 	public   void fillBranch(Tree tree, int node, Graphics g) {

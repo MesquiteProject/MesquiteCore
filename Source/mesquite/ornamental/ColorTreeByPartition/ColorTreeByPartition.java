@@ -164,10 +164,10 @@ class ColorByPartitionExtra extends TreeDisplayExtra implements MesquiteListener
 					drawOnTree(tree, d, g);
 				if (tree.isLeftmostTerminalOfCollapsedClade(node)){
 					ColorDistribution cladeColors = colorsInClade(tree, tree.deepestCollapsedAncestor(node));
-					if (cladeColors != null && cladeColors.anyColors())
+					//if (cladeColors != null && cladeColors.anyColors())  // turned this off so fillBranchWithColors can recordFillBranchColors
 						treeDisplay.getTreeDrawing().fillBranchWithColors(tree,  node, cladeColors, g);
 				}
-				else if (colors[node].anyColors())
+				else //if (colors[node].anyColors())  // turned this off so fillBranchWithColors can recordFillBranchColors
 					treeDisplay.getTreeDrawing().fillBranchWithColors(tree,  node, colors[node], g);
 			}
 		}

@@ -459,7 +459,7 @@ class PlotTreeDrawing extends TreeDrawing  {
 	}
 	/*_________________________________________________*/
 	public void fillBranchWithColors(Tree tree, int node, ColorDistribution colors, Graphics g) {
-		if (node>0 && (tree.getRooted() || tree.getRoot()!=node) && (getDrawNode(tree,node))) {
+		if (colors!=null && node>0 && (tree.getRooted() || tree.getRoot()!=node) && (getDrawNode(tree,node))) {
 			recordBranchFillColors(tree, node, colors.clone());
 			if (MesquiteDouble.isCombinable(x[node]) && MesquiteDouble.isCombinable(y[node])) {
 				Color c = g.getColor();
