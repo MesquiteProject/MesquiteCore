@@ -190,7 +190,8 @@ public abstract class InterpretFasta extends FileInterpreterI implements ReadFil
 	public void readFileCore(Parser parser, MesquiteFile file, CharacterData data, Taxa taxa, ProgressIndicator progIndicator, String arguments) {
 		readFileCore(parser, file, data, taxa, 0, progIndicator, arguments, true, "");
 	}
-	public int queryOptionsDuplicate() {
+	
+	protected int queryOptionsDuplicate() {
 		String helpString = "If you choose Don't Add, then any incoming sequence with the same name as an existing sequence will be ignored. ";
 		helpString += "If you choose Replace Data, then the incoming sequence will replace any existing sequence for that taxon.  ";
 		helpString += "If you choose Replace If Empty, Otherwise Add, then the incoming sequence will be put into the existing spot for that taxon ONLY if that taxon has no previous data there; if there is already a sequence there, then the incoming sequence will be added as a new taxon. ";
@@ -232,7 +233,7 @@ public abstract class InterpretFasta extends FileInterpreterI implements ReadFil
 
 	boolean removePhyluceUCEfixes = false;  //this is for harvesting phyluce results that haven't had the taxon names cleaned up
 	/*.................................................................................................................*/
-	public void readFileCore(Parser parser, MesquiteFile file, CharacterData data, Taxa taxa, int lastTaxonNumber, ProgressIndicator progIndicator, String arguments, boolean newFile, String fileName) {
+	void readFileCore(Parser parser, MesquiteFile file, CharacterData data, Taxa taxa, int lastTaxonNumber, ProgressIndicator progIndicator, String arguments, boolean newFile, String fileName) {
 		boolean wassave = data.saveChangeHistory;
 		data.saveChangeHistory = false;
 		Parser subParser = new Parser();
@@ -263,7 +264,7 @@ public abstract class InterpretFasta extends FileInterpreterI implements ReadFil
 			//parser.setPunctuationString(null);
 
 			token = subParser.getRemaining();  //taxon Name
-			if (removePhyluceUCEfixes){
+			if (removePhyluceUCEfixes){  //this can be set in code, but for user, use Keep/Delete Parts of names
 				if (token.indexOf("_")>=0 && token.indexOf("|")>=0){
 					token = token.substring(token.indexOf("uce-")+1, token.length()-1);
 					token = token.substring(token.indexOf("_")+1, token.indexOf("|")-1);

@@ -175,7 +175,7 @@ public class ExportFlippedFASTAs extends FileInterpreterI {
 
 	/*.................................................................................................................*/
 	public String getName() {
-		return "Flipped FASTA Files (One per Taxon)";
+		return "Taxonwise (Multi-locus) FASTA Files";
 	}
 	/*.................................................................................................................*/
 	/** returns an explanation of what the module does.*/

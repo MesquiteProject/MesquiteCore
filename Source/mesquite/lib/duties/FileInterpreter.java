@@ -53,15 +53,15 @@ public abstract class FileInterpreter extends MesquiteModule  {
 
 	//protected String filePath2=null;
 
-	
+	//currently used only in InterpretFasta 
 	protected static int STOPIMPORT = -1;
 	protected static int DONTADD = 0;
 	protected static int REPLACEDATA = 1;
 	protected static int REPLACEIFEMPTYOTHERWISEADD = 2;
 	protected static int REPLACEIFEMPTYOTHERWISEIGNORE = 3;
 	protected static int ADDASNEW = 4;
+	protected int treatmentOfIncomingDuplicates = REPLACEIFEMPTYOTHERWISEADD;
 	
-	protected static int treatmentOfIncomingDuplicates = REPLACEIFEMPTYOTHERWISEADD;
 	protected  boolean selectIncoming = false;
 
 //	protected static boolean defaultReplaceDataOfTaxonWithSameName = false;

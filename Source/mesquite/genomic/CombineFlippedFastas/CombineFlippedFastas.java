@@ -49,12 +49,24 @@ public class CombineFlippedFastas extends GeneralFileMakerMultiple {
 	TaxonNameAlterer nameAlterer;
 	/*.................................................................................................................*/
 	public boolean startJob(String arguments, Object condition, boolean hiredByName){
-		int result = QueryDialogs.queryTwoRadioButtons(containerOfModule(), "Alter names?", "Do you want to alter or adjust the names of loci (e.g., by deleting part of the name) "
-				+"as the flipped FASTA files are being read?\n\nTouch the help (?) button for an explanation of what a flipped FASTA file is.", "What is a flipped FASTA file? "
-				+"A typical phylogenetic data file includes one or more matrices with each row being a taxon, and each column a character (or site in a sequence)."
-				+ " A flipped FASTA has the opposite orientation — each row has the sequence for a separate locus, and the file as a whole concerns a single taxon.<p>This feature imports all of the flipped FASTA files in a folder."
-						+"<p>Note: If you choose to alter the locus names, some of the choices in the subsequent dialog box refer to \"taxon names\", but it's actually the locus names that are getting altered."
-				+" The reason for this misnaming is that Mesquite is set to interpret rows in a file as taxa, but in these flipped fasta files, the rows are loci.", "Don't alter locus names", "Alter locus names");
+		//Debugg.println rebuild as Extensible dialog to put the caution about "taxon" into a separate label after radio buttons
+		int result = QueryDialogs.queryTwoRadioButtons(containerOfModule(), "Combining Taxonwise FASTA files", 
+				"This imports all of the taxonwise FASTA files in a folder. (Touch the help (?) button for an explanation "
+						+ "of what a taxonwise FASTA file is.)"
+						+ "\n\nDo you want to alter or adjust the names of loci (e.g., by deleting part of the name) "
+						+"as the taxonwise FASTA files are being read?\n\nNote: If you choose to alter the locus names, some of the choices in the "
+						+"subsequent dialog box refer to \"taxon names\", but it's actually the locus names that are getting altered."
+						+" The reason for this misnaming is that Mesquite is set to interpret rows "
+						+"in a file as taxa, but in these taxonwise fasta files, the rows are loci.", 
+						"What is a taxonwise FASTA file? "
+								+"A FASTA file is often in one of two orentations, locuswise or taxonwise:"
+								+"<ul><li>A <b>locuswise FASTA file</b> concerns data for a single locus for each of many taxa.</li>"
+								+ "<li>A <b>taxonwise FASTA file</b> concerns data for a single taxon, listing the sequences in each of many loci.</li></ul>"
+								+"A genome assembly file for a single taxon is usually a taxonwise FASTA file, "
+								+"each sequence being a contig. However, taxonwise FASTA files can be compiled by this feature only if homologs have been"
+								+" identified and named as such in each file. "
+								+"A locus appearing in different files needs to have a name that is at least partially consistent from file to file.", 
+								"Don't alter locus names", "Alter locus names");
 		/*
 			\n\nIf you choose to alter the names, note that some of the choices in the next dialog will 	*/
 		if (result ==1) {
@@ -64,7 +76,7 @@ public class CombineFlippedFastas extends GeneralFileMakerMultiple {
 		}
 		return result >=0;
 	}
-	
+
 	boolean firstFile = true;
 	public boolean okToInteractWithUser(int howImportant, String messageToUser){
 		return firstFile;
@@ -118,7 +130,7 @@ public class CombineFlippedFastas extends GeneralFileMakerMultiple {
 				String[] files = directory.list();
 				if (files == null || files.length ==0)
 					return;
-					
+
 				String message = null; //"Looking for acceptable files";
 				int iF = 0;
 				while (message == null && iF<files.length){
@@ -134,7 +146,7 @@ public class CombineFlippedFastas extends GeneralFileMakerMultiple {
 				DNAState state = new DNAState();
 
 				int lociAdded = 0;
-				
+
 				// ============ GOING THROUGH DIRECTORY OF FILES, each representing a taxon, within which each "taxon" represents a locus ===========
 				for (int i=0; i<files.length; i++) {
 					progIndicator.setCurrentValue(i);
@@ -145,31 +157,31 @@ public class CombineFlippedFastas extends GeneralFileMakerMultiple {
 					if (abort)
 						break;
 					if (files[i]!=null) {
-						
+
 						boolean acceptableFile = (StringUtil.endsWithIgnoreCase(files[i], ".fas") || StringUtil.endsWithIgnoreCase(files[i], ".fasta"));   
 						if (acceptableFile){
 							path = directoryPath + MesquiteFile.fileSeparator + files[i];
 							File cFile = new File(path);
 
 							if (cFile.exists() && !cFile.isDirectory() && (!files[i].startsWith("."))) {
-								progIndicator.setText("Reading flipped FASTA file: " + files[i]);
+								progIndicator.setText("Reading taxonwise FASTA file: " + files[i]);
 								MesquiteFile file = new MesquiteFile();
 								file.setPath(path);
 								project.addFile(file);
 								file.setProject(project);
 								if (files.length<20)
-									logln("Reading flipped FASTA file " + files[i]);
+									logln("Reading taxonwise FASTA file " + files[i]);
 								else if (i == 0)
 									log(" [File " + (i+1) + "]");
 								else
 									log(" [" + (i+1) + "]");
-								
+
 								//===================================================
 								/*
-								Here the taxon file (i.e. the flipped fasta file) for a single taxon is read. 
+								Here the taxon file (i.e. the taxonwise fasta file) for a single taxon is read. 
 								The sequences within it will be interpreted as taxa by Mesquite, but in fact 
 								each is the sequence for a particular locus.
-								*/
+								 */
 								MesquiteThread.setHintToSuppressProgressIndicatorCurrentThread(true);
 								importer.readFile(project, file, null);
 								MesquiteThread.setHintToSuppressProgressIndicatorCurrentThread(false);
@@ -180,10 +192,10 @@ public class CombineFlippedFastas extends GeneralFileMakerMultiple {
 
 								//Now let's look at the "taxa", i.e. loci, in this file
 								Taxa loci = project.getTaxa(file, 0);
-								
-								
+
+
 								if (loci != null){
-									
+
 									//First, alter the names of the loci if requested <<<<======= NEW 4.01 Altering the name of the loci
 									if (nameAlterer != null)
 										nameAlterer.alterTaxonNames(loci, null);
@@ -192,7 +204,7 @@ public class CombineFlippedFastas extends GeneralFileMakerMultiple {
 									CharacterData incomingFlippedMatrix = project.getCharacterMatrix(file, loci, null, 0, false);
 									if (incomingFlippedMatrix != null){
 										progIndicator.setSecondaryMessage("Taxon: " + taxonName + " with " + loci.getNumTaxa() + " loci");
-										
+
 										//OK, ready to go. Have matrix. Will add new taxon based on the name of the file, and transfer over its sequences
 										boolean existingTaxon = true;
 										int receivingTaxonNumber = taxa.whichTaxonNumber(taxonName);
@@ -207,15 +219,15 @@ public class CombineFlippedFastas extends GeneralFileMakerMultiple {
 										for (int iLocus = 0; iLocus < loci.getNumTaxa(); iLocus++){
 
 											CommandRecord.tick("For taxon " + taxonName + ", recovering sequence #" + (iLocus+1));
-											
-											//Get the name of the iLocus'th locus in the flipped fasta file
+
+											//Get the name of the iLocus'th locus in the taxonwise fasta file
 											String locusName = loci.getTaxonName(iLocus);
-											
+
 											//Can we find a matrix by this name already in the project?
 											CharacterData locusMatrix = recProject.getCharacterMatrixByReference(null,  taxa, null, locusName);
 											if (!(locusMatrix instanceof DNAData))
 												locusMatrix = null;
-											
+
 											if (locusMatrix == null) { //This must be a new locus. Establish a new matrix for it
 												locusMatrix = charactersManager.newCharacterData(taxa, 0, DNAData.DATATYPENAME); //this is manager of receiving project
 												locusMatrix.setName(locusName, false);
@@ -240,7 +252,7 @@ public class CombineFlippedFastas extends GeneralFileMakerMultiple {
 											if (existingTaxon){
 												if (incomingSeqLeng == 0)
 													doTransfer = false;
-												else {
+												else { //Debugg.println: give options for replacement rules
 													for (int ic = 0; ic< locusMatrix.getNumChars(); ic++) //*%* delete existing sequence to prepare to receive other
 														locusMatrix.setToInapplicable(ic, receivingTaxonNumber);
 													if (++countWarnings <10)
@@ -276,7 +288,7 @@ public class CombineFlippedFastas extends GeneralFileMakerMultiple {
 						discreetAlert("No appropriate files with extensions (.fas or .fasta) were found in folder.");
 				}
 				else
-					logln("Flipped Fastas read for " + files.length + " taxa; " + lociAdded + " different loci found. [" + overallTime.timeSinceLastInSeconds() + " sec.]" );
+					logln("Taxonwise Fastas read for " + files.length + " taxa; " + lociAdded + " different loci found. [" + overallTime.timeSinceLastInSeconds() + " sec.]" );
 
 				MesquiteMessage.beep();
 				progIndicator.goAway();
@@ -352,18 +364,23 @@ public class CombineFlippedFastas extends GeneralFileMakerMultiple {
 
 	/*.................................................................................................................*/
 	public String getName() {
-		return "Combine Flipped FASTA Files";
+		return "Combine Taxonwise (Multi-Locus) FASTA Files";
 	}
 	/*.................................................................................................................*/
 	public String getNameForMenuItem() {
-		return "Combine Flipped FASTA Files (One per Taxon)";
+		return "Combine Taxonwise (Multi-Locus) FASTA Files...";
 	}
 	/*.................................................................................................................*/
 	public String getExplanation() {
-		return "Reads taxa & sequences. Imports all \"flipped\" FASTA files in a folder, each containing the sequences of many loci for a single taxon, to establish and build a file with with all of the taxa and a matrix for each of those loci."
-				+" Each input file should be named by the taxon name, and each sequence should be named for its locus. As each file is read, sequences are matched by name to the locus matrices being accumulated."
-				+" Tuned for phylogenomics workflows that maintain a library of flipped fasta files that can be combined for varied studies with different taxon sampling. "
-				+" Flipped FASTA files can be produced using File, Export, Flipped FASTA files (One per taxon). (Note: to add to existing matrices, use Include Flipped FASTA Files in the Include & Merge submenu.)" ;
+		return "Reads taxa & sequences. Imports all taxonwise FASTA files in a folder. "
+				+"Each taxonwise FASTA file contains the sequences of many loci for a single taxon."
+				+" This import will build a file with all of the taxa and a matrix for each of those loci."
+				+" Each input file should be named by the taxon name, and each sequence should be named for its locus. "
+				+" As each file is read, sequences are matched by name to the locus matrices being accumulated."
+				+" Tuned for phylogenomics workflows that maintain a library of taxonwise fasta files that "
+				+"can be combined for varied studies with different taxon sampling. "
+				+" Taxonwise FASTA files can be produced using File, Export, Taxonwise (Multi-Locus) FASTA files."
+				+" (Note: to add to existing matrices, use Include Multi-Locus Single-Taxon FASTA Files in the Include & Merge submenu.)" ;
 	}
 
 
