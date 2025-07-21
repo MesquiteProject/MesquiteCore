@@ -497,7 +497,7 @@ public class ExtensibleDialog extends MesquiteDialog implements ActionListener, 
 			g.drawLine(x1,y1,x2, y2);
 		}
 	}
-	
+
 	/*.................................................................................................................*/
 	public int getButtonNumber (String buttonLabel) {
 		if (buttonLabel == null)
@@ -580,7 +580,7 @@ public class ExtensibleDialog extends MesquiteDialog implements ActionListener, 
 	public void setCheckTextEdge(boolean cte){
 		checkTextEdge = cte;
 	}
-	
+
 	public void resetPrimaryButtonLabel(int buttonNumber, String label){
 		if (label == null)
 			return;
@@ -600,7 +600,7 @@ public class ExtensibleDialog extends MesquiteDialog implements ActionListener, 
 			if (button2 != null){
 				button2.setLabel(label);
 				buttonLabel2 = label;
-		}
+			}
 		}
 	}
 	public String getPrimaryButtonLabel(int buttonNumber){
@@ -617,7 +617,7 @@ public class ExtensibleDialog extends MesquiteDialog implements ActionListener, 
 		else if (buttonNumber == 2){
 			if (button2 != null){
 				return buttonLabel2;
-		}
+			}
 		}
 		return null;
 	}
@@ -1056,7 +1056,6 @@ public class ExtensibleDialog extends MesquiteDialog implements ActionListener, 
 		}
 		else
 			d.width += 20;
-
 
 		setDialogSize(d);
 		try {
@@ -1741,13 +1740,13 @@ public class ExtensibleDialog extends MesquiteDialog implements ActionListener, 
 		if (fieldLength>=1) {
 			if (MesquiteTrunk.isLinux())
 				newPanel.setLayout(new GridLayout(1,1));
-				
+
 			textField =new MesquitePasswordField(initialString,fieldLength);
 			if (MesquiteTrunk.isLinux()) {
 				textField.setSize(new Dimension(dialogWidth-sideBuffer*2, textField.getSize().height));
 				newPanel.setSize(textField.getSize());
 			}
-			
+
 		}
 		else {
 			newPanel.setLayout(new GridLayout(1,1));
@@ -2099,10 +2098,12 @@ public class ExtensibleDialog extends MesquiteDialog implements ActionListener, 
 			pack();
 			Dimension d = getPreferredSize();
 			dialogWidth = d.width;
+
 			if (dialogWidth<minDialogWidthWithCanvas) //this had been hardcoded at 240
 				dialogWidth = minDialogWidthWithCanvas;
 			else if (dialogWidth> maxDialogWidthWithCanvas) 
 				dialogWidth =maxDialogWidthWithCanvas;
+
 			if (font==null)
 				font = getFont();
 			MesquiteTextCanvas textCanvas = MesquiteTextCanvas.getTextCanvas(dialogWidth-sideBuffer*2, font, message);
@@ -2321,7 +2322,7 @@ public class ExtensibleDialog extends MesquiteDialog implements ActionListener, 
 	/** This displays the help note.  If you override this, make sure you call super.actionPerformed(e) at the end of your method so that the help system still works */
 	public  void actionPerformed(ActionEvent e) {
 		if   ("?".equals(e.getActionCommand())) {
-			
+
 			MesquiteTrunk.mesquiteTrunk.alertHTML(getParentDialog(), getHelpString(),"Mesquite Help", null, helpWidth, helpHeight);
 			toFront();
 		}

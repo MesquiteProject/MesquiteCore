@@ -14,6 +14,8 @@
 
 package mesquite.genomic.CombineFlippedFastas;
 
+import java.awt.Checkbox;
+import java.awt.Label;
 import java.io.File;
 
 import mesquite.categ.lib.DNAData;
@@ -23,6 +25,7 @@ import mesquite.lib.CommandRecord;
 import mesquite.lib.Listable;
 import mesquite.lib.ListableVector;
 import mesquite.lib.MesquiteFile;
+import mesquite.lib.MesquiteInteger;
 import mesquite.lib.MesquiteListener;
 import mesquite.lib.MesquiteMessage;
 import mesquite.lib.MesquiteProject;
@@ -39,18 +42,22 @@ import mesquite.lib.duties.TaxaManager;
 import mesquite.lib.duties.TaxonNameAlterer;
 import mesquite.lib.taxa.Taxa;
 import mesquite.lib.taxa.Taxon;
+import mesquite.lib.ui.ExtensibleDialog;
 import mesquite.lib.ui.ListDialog;
 import mesquite.lib.ui.MesquiteWindow;
 import mesquite.lib.ui.ProgressIndicator;
 import mesquite.lib.ui.QueryDialogs;
+import mesquite.lib.ui.RadioButtons;
 
 /* ======================================================================== */
 public class CombineFlippedFastas extends GeneralFileMakerMultiple {
 	TaxonNameAlterer nameAlterer;
+	int alterNames = 0; //don't alter; 1 = alter
 	/*.................................................................................................................*/
 	public boolean startJob(String arguments, Object condition, boolean hiredByName){
 		//Debugg.println rebuild as Extensible dialog to put the caution about "taxon" into a separate label after radio buttons
-		int result = QueryDialogs.queryTwoRadioButtons(containerOfModule(), "Combining Taxonwise FASTA files", 
+		boolean goAhead = queryOptions();
+		/*int result = QueryDialogs.queryTwoRadioButtons(containerOfModule(), "Combining Taxonwise FASTA files", 
 				"This imports all of the taxonwise FASTA files in a folder. (Touch the help (?) button for an explanation "
 						+ "of what a taxonwise FASTA file is.)"
 						+ "\n\nDo you want to alter or adjust the names of loci (e.g., by deleting part of the name) "
@@ -69,14 +76,65 @@ public class CombineFlippedFastas extends GeneralFileMakerMultiple {
 								"Don't alter locus names", "Alter locus names");
 		/*
 			\n\nIf you choose to alter the names, note that some of the choices in the next dialog will 	*/
-		if (result ==1) {
+		if (!goAhead)
+			return false;
+		if (alterNames == 1) {
 			nameAlterer = (TaxonNameAlterer)hireEmployee(TaxonNameAlterer.class, "How to alter locus names (even though some say \"taxon names\")");
 			if (nameAlterer == null)
 				return false;
 		}
-		return result >=0;
+		return true;
 	}
 
+	boolean queryOptions() {
+		MesquiteInteger buttonPressed = new MesquiteInteger(1);
+		ExtensibleDialog id = new ExtensibleDialog(containerOfModule(), "Combining Taxonwise FASTA files",buttonPressed);
+		id.addLabel("This imports all of the taxonwise FASTA files in a folder.");
+		id.addBlankLine();
+		id.addLargeTextLabel("A taxonwise FASTA file concerns a single taxon, "
+				+ "and contains sequences for various loci. Touch the help (?) button for more explanation.");
+		id.addBlankLine();
+		id.addHorizontalLine(2);
+		id.addLabel("Adjust names of incoming loci?");
+		id.addBlankLine();
+		id.addLabel("Do you want to alter or adjust the names of loci", Label.LEFT);
+		id.addLabel("(e.g., by deleting part of the name)", Label.LEFT);
+		id.addLabel("as the taxonwise FASTA files are being read?", Label.LEFT);
+
+
+		String helpString = "<h3>What is a taxonwise FASTA file?</h3>"
+				+"A FASTA file is often in one of two orentations, locuswise or taxonwise:"
+				+"<ul><li>A <b>locuswise FASTA file</b> concerns data for a single locus for each of many taxa. If you have a series of such files, "
+				+"you would say your data are arranged locuswise.</li>"
+				+ "<li>A <b>taxonwise FASTA file</b> concerns data for a single taxon, listing the sequences in each of many loci. If you have a series of such files, "
+				+"you would say your data are arranged taxonwise.</li></ul>"
+				+"An example of a taxonwise FASTA file is a genome assembly file for a single taxon, "
+				+"each sequence being a contig. However, taxonwise FASTA files can be compiled by this feature only if homologs have been"
+				+" identified and named as such in each file. "
+				+"A locus appearing in different files needs to have a name that is at least partially consistent from file to file, "
+				+"so that Mesquite can recognize them as belonging to the same locus, and thus be compiled into a single matrix "
+				+"(and eventually alignment).";
+		id.appendToHelpString(helpString);
+
+		
+
+		id.addBlankLine();
+		RadioButtons radio = id.addRadioButtons(new String[] {"Don't alter locus names", "Alter locus names"},alterNames);
+		id.addBlankLine();
+		id.addLargeOrSmallTextLabel("Note: If you choose to alter the locus names, some of the subsequent choices "
+						+"refer to \"taxon names\", but it's actually the locus names that are getting altered."
+						+" The reason for this misnaming is that Mesquite is set to interpret rows "
+						+"in a file as taxa, but in these taxonwise FASTA files, the rows are loci.");
+
+		id.completeAndShowDialog(true);
+
+		if (buttonPressed.getValue()==0)  {
+			alterNames = radio.getValue();
+		}
+		id.dispose();
+		return buttonPressed.getValue()==0;
+	}
+	
 	boolean firstFile = true;
 	public boolean okToInteractWithUser(int howImportant, String messageToUser){
 		return firstFile;
@@ -374,13 +432,13 @@ public class CombineFlippedFastas extends GeneralFileMakerMultiple {
 	public String getExplanation() {
 		return "Reads taxa & sequences. Imports all taxonwise FASTA files in a folder. "
 				+"Each taxonwise FASTA file contains the sequences of many loci for a single taxon."
-				+" This import will build a file with all of the taxa and a matrix for each of those loci."
-				+" Each input file should be named by the taxon name, and each sequence should be named for its locus. "
-				+" As each file is read, sequences are matched by name to the locus matrices being accumulated."
+				+" This import will compile a single file with all of the taxa and a matrix for each of those loci."
+				+" Each input file should be named by the taxon name, and each sequence within the file should be named for its locus. "
+				+" As each file is read, sequences are matched by name to the locus among those being accumulated."
 				+" Tuned for phylogenomics workflows that maintain a library of taxonwise fasta files that "
 				+"can be combined for varied studies with different taxon sampling. "
 				+" Taxonwise FASTA files can be produced using File, Export, Taxonwise (Multi-Locus) FASTA files."
-				+" (Note: to add to existing matrices, use Include Multi-Locus Single-Taxon FASTA Files in the Include & Merge submenu.)" ;
+				+" (Note: to add to existing matrices, use Include Data from Taxonwise (Multi-Locus) FASTAs in the Include & Merge submenu.)" ;
 	}
 
 
