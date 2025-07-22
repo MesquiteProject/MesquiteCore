@@ -38,6 +38,9 @@ import mesquite.lib.ui.RadioButtons;
 public class InterpretFlippedFastaDNA extends InterpretFastaDNA {
 	//Debugg.println: Rewording incomplete, and options should be different, e.g. should allow longest sequence
 	protected int queryOptionsDuplicate() {
+		treatmentOfIncomingDuplicates = USELONGEST;
+		
+		/*
 		String helpString = "If you choose Don't Add, then any incoming sequence with the same name as an existing sequence will be ignored. ";
 		helpString += "If you choose Replace Data, then the incoming sequence will replace any existing sequence for that locus.  ";
 		helpString += "If you choose Replace If Empty, Otherwise Add, then the incoming sequence will be put into the existing spot for that locus ONLY if that locus has no previous data there; if there is already a sequence there, then the incoming sequence will be added as a new locus. ";
@@ -45,7 +48,7 @@ public class InterpretFlippedFastaDNA extends InterpretFastaDNA {
 		helpString+= "If you choose Add As New Locus then all incoming sequences will be added as new loci, even if there already exist taxa in the matrix with identical names.";
 		MesquiteInteger buttonPressed = new MesquiteInteger(1);
 		ExtensibleDialog id = new ExtensibleDialog(containerOfModule(), "Incoming loci match existing loci",buttonPressed);
-		id.addLargeTextLabel("Some of the loci already found have the same name as incoming loci.  Please choose how incoming sequences with the same name as existing loci will be treated.");
+		id.addLargeTextLabel("Some of the loci already found have the same names as incoming loci.  Please choose how incoming sequences with the same name as existing loci will be treated.");
 		if (StringUtil.blank(helpString) && id.isInWizard())
 			helpString = "<h3>" + StringUtil.protectForXML("Incoming loci match existing loci") + "</h3>Please choose.";
 		id.appendToHelpString(helpString);
@@ -64,8 +67,8 @@ public class InterpretFlippedFastaDNA extends InterpretFastaDNA {
 			treatmentOfIncomingDuplicates = value;
 			selectIncoming = selectIncomingBox.getState();
 		}
-		id.dispose();
-		return value;
+		id.dispose(); */
+		return treatmentOfIncomingDuplicates;
 	}
 	
 	/*.................................................................................................................*/

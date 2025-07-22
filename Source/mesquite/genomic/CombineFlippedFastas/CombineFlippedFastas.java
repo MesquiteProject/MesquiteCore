@@ -21,6 +21,7 @@ import java.io.File;
 import mesquite.categ.lib.DNAData;
 import mesquite.categ.lib.DNAState;
 import mesquite.io.InterpretFastaDNA.InterpretFastaDNA;
+import mesquite.io.InterpretFlippedFastaDNA.InterpretFlippedFastaDNA;
 import mesquite.lib.CommandRecord;
 import mesquite.lib.Listable;
 import mesquite.lib.ListableVector;
@@ -53,10 +54,13 @@ import mesquite.lib.ui.RadioButtons;
 public class CombineFlippedFastas extends GeneralFileMakerMultiple {
 	TaxonNameAlterer nameAlterer;
 	int alterNames = 0; //don't alter; 1 = alter
+	int replacementRule = CharacterData.MERGE_useLongest; 
+	public boolean queryReplacementRules = false;
+
 	/*.................................................................................................................*/
 	public boolean startJob(String arguments, Object condition, boolean hiredByName){
 		//Debugg.println rebuild as Extensible dialog to put the caution about "taxon" into a separate label after radio buttons
-		boolean goAhead = queryOptions();
+		boolean goAhead = introductoryOptions();
 		/*int result = QueryDialogs.queryTwoRadioButtons(containerOfModule(), "Combining Taxonwise FASTA files", 
 				"This imports all of the taxonwise FASTA files in a folder. (Touch the help (?) button for an explanation "
 						+ "of what a taxonwise FASTA file is.)"
@@ -86,7 +90,7 @@ public class CombineFlippedFastas extends GeneralFileMakerMultiple {
 		return true;
 	}
 
-	boolean queryOptions() {
+	boolean introductoryOptions() {
 		MesquiteInteger buttonPressed = new MesquiteInteger(1);
 		ExtensibleDialog id = new ExtensibleDialog(containerOfModule(), "Combining Taxonwise FASTA files",buttonPressed);
 		id.addLabel("This imports all of the taxonwise FASTA files in a folder.");
@@ -116,15 +120,15 @@ public class CombineFlippedFastas extends GeneralFileMakerMultiple {
 				+"(and eventually alignment).";
 		id.appendToHelpString(helpString);
 
-		
+
 
 		id.addBlankLine();
 		RadioButtons radio = id.addRadioButtons(new String[] {"Don't alter locus names", "Alter locus names"},alterNames);
 		id.addBlankLine();
 		id.addLargeOrSmallTextLabel("Note: If you choose to alter the locus names, some of the subsequent choices "
-						+"refer to \"taxon names\", but it's actually the locus names that are getting altered."
-						+" The reason for this misnaming is that Mesquite is set to interpret rows "
-						+"in a file as taxa, but in these taxonwise FASTA files, the rows are loci.");
+				+"refer to \"taxon names\", but it's actually the locus names that are getting altered."
+				+" The reason for this misnaming is that Mesquite is set to interpret rows "
+				+"in a file as taxa, but in these taxonwise FASTA files, the rows are loci.");
 
 		id.completeAndShowDialog(true);
 
@@ -134,7 +138,32 @@ public class CombineFlippedFastas extends GeneralFileMakerMultiple {
 		id.dispose();
 		return buttonPressed.getValue()==0;
 	}
-	
+	void duplicateLocusNamesOptions() {
+		if (queryReplacementRules) //default is to not query and use MERGE_useLongest
+			return;
+		MesquiteInteger buttonPressed = new MesquiteInteger(1);
+		ExtensibleDialog id = new ExtensibleDialog(containerOfModule(), "Duplicate locus names",buttonPressed);
+		id.addLargeTextLabel("An incoming sequence appears to belong to a locus that already has data for this taxon.");
+		id.addBlankLine();
+		RadioButtons radio = id.addRadioButtons(new String[] {"Use the longest sequence", 
+				"Retain the existing sequence", "Replace existing by incoming sequence"},alterNames);
+		id.addBlankLine();
+
+		id.completeAndShowDialog("OK",null,null,"OK");
+
+		if (buttonPressed.getValue()==0)  {
+			int v = radio.getValue();
+			if (v == 0)
+				replacementRule = CharacterData.MERGE_useLongest;
+			else if (v == 1)
+				replacementRule = CharacterData.MERGE_preferReceiving;
+			else if (v == 2)
+				replacementRule = CharacterData.MERGE_preferIncoming;
+			
+		}
+		id.dispose();
+	}
+
 	boolean firstFile = true;
 	public boolean okToInteractWithUser(int howImportant, String messageToUser){
 		return firstFile;
@@ -159,7 +188,7 @@ public class CombineFlippedFastas extends GeneralFileMakerMultiple {
 			if (taxa == null)
 				return;
 		}
-
+		boolean replacementQueried = false;
 		File directory = new File(directoryPath);
 		boolean abort = false;
 		String path = "";
@@ -184,7 +213,7 @@ public class CombineFlippedFastas extends GeneralFileMakerMultiple {
 				//-----
 				if (!taxaNew)
 					logln("Adding taxa to block " + taxa.getName() + " in file " + taxa.getFile().getFileName());
-				InterpretFastaDNA importer = (InterpretFastaDNA)findNearestColleagueWithDuty(InterpretFastaDNA.class);
+				InterpretFlippedFastaDNA importer = (InterpretFlippedFastaDNA)findNearestColleagueWithDuty(InterpretFlippedFastaDNA.class);
 				String[] files = directory.list();
 				if (files == null || files.length ==0)
 					return;
@@ -303,26 +332,61 @@ public class CombineFlippedFastas extends GeneralFileMakerMultiple {
 											 * Next, pull sequence into locus matrix 
 											 * Sequence on row iLocus of incomingFlippedMatrix corresponds to sequence for newTaxon in locusMatrix
 											 */
-											int incomingSeqLeng = incomingFlippedMatrix.lastApplicable(iLocus) + 1;
-											if (incomingSeqLeng>locusMatrix.getNumChars())
-												locusMatrix.addCharacters(locusMatrix.getNumChars(), incomingSeqLeng-locusMatrix.getNumChars(), false);
-											boolean doTransfer = true; //for now, always overwrite
+
+											/*
+											CharacterData.MERGE_useLongest
+											CharacterData.MERGE_preferReceiving
+											CharacterData.MERGE_preferIncoming
+											 */
+
 											if (existingTaxon){
-												if (incomingSeqLeng == 0)
-													doTransfer = false;
-												else { //Debugg.println: give options for replacement rules
-													for (int ic = 0; ic< locusMatrix.getNumChars(); ic++) //*%* delete existing sequence to prepare to receive other
-														locusMatrix.setToInapplicable(ic, receivingTaxonNumber);
-													if (++countWarnings <10)
-														logln("Data in matrix " + locusMatrix.getName() + " replaced for taxon " + taxa.getTaxonName(receivingTaxonNumber));
-													else if (countWarnings == 10)
-														logln("Data replaced for other matrices or taxa as well");
+												int incomingSeqLeng = incomingFlippedMatrix.getTotalNumApplicable(iLocus, false);
+												if (incomingSeqLeng > 0){ 
+
+													int existingSeqLeng = locusMatrix.getTotalNumApplicable(receivingTaxonNumber, false);
+													boolean doTransfer = false;
+													if (existingSeqLeng>0 && !replacementQueried){
+														duplicateLocusNamesOptions();
+														replacementQueried = true;
+													}
+													
+													if (replacementRule == CharacterData.MERGE_preferReceiving) {
+														doTransfer = existingSeqLeng == 0 && incomingSeqLeng > 0;
+													}
+													else if (replacementRule == CharacterData.MERGE_preferIncoming){
+														doTransfer = incomingSeqLeng > 0;
+													}
+													else if (replacementRule == CharacterData.MERGE_useLongest)
+														doTransfer = existingSeqLeng < incomingSeqLeng;
+
+													if (doTransfer){
+														int incomingSeqLengNeeded = incomingFlippedMatrix.lastApplicable(iLocus) + 1;
+														if (incomingSeqLengNeeded>locusMatrix.getNumChars())
+															locusMatrix.addCharacters(locusMatrix.getNumChars(), incomingSeqLengNeeded-locusMatrix.getNumChars(), false);
+														for (int ic = 0; ic< locusMatrix.getNumChars(); ic++) //*%* delete existing sequence to prepare to receive other
+															locusMatrix.setToInapplicable(ic, receivingTaxonNumber);
+														for (int ic = 0; ic< locusMatrix.getNumChars() && ic< incomingFlippedMatrix.getNumChars(); ic++){
+															state = (DNAState)incomingFlippedMatrix.getCharacterState(state, ic, iLocus);
+															locusMatrix.setState(ic, receivingTaxonNumber, state);
+														}
+														if (existingSeqLeng>0){
+															if (++countWarnings <10)
+																logln("Data in matrix " + locusMatrix.getName() + " replaced for taxon " + taxa.getTaxonName(receivingTaxonNumber));
+															else if (countWarnings == 10)
+																logln("Data replaced for other matrices or taxa as well");
+														}
+													}
 												}
 											}
-											for (int ic = 0; ic< locusMatrix.getNumChars() && ic< incomingFlippedMatrix.getNumChars(); ic++){
-												state = (DNAState)incomingFlippedMatrix.getCharacterState(state, ic, iLocus);
-												locusMatrix.setState(ic, receivingTaxonNumber, state);
+											else {
+												int incomingSeqLengNeeded = incomingFlippedMatrix.lastApplicable(iLocus) + 1;
+												if (incomingSeqLengNeeded>locusMatrix.getNumChars())
+													locusMatrix.addCharacters(locusMatrix.getNumChars(), incomingSeqLengNeeded-locusMatrix.getNumChars(), false);
+												for (int ic = 0; ic< locusMatrix.getNumChars() && ic< incomingFlippedMatrix.getNumChars(); ic++){
+													state = (DNAState)incomingFlippedMatrix.getCharacterState(state, ic, iLocus);
+													locusMatrix.setState(ic, receivingTaxonNumber, state);
 
+												}
 											}
 										}
 										if (files.length<20)

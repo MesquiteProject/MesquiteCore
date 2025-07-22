@@ -17,6 +17,7 @@ package mesquite.genomic.IncludeFlippedFastaFiles;
 import mesquite.genomic.CombineFlippedFastas.CombineFlippedFastas;
 import mesquite.lib.MesquiteFile;
 import mesquite.lib.StringUtil;
+import mesquite.lib.characters.CharacterData;
 import mesquite.lib.duties.FileAssistantFM;
 
 /* ======================================================================== */
@@ -30,6 +31,7 @@ public class IncludeFlippedFastaFiles extends FileAssistantFM {
 		CombineFlippedFastas importerTask = (CombineFlippedFastas)hireNamedEmployee(CombineFlippedFastas.class, "#CombineFlippedFastas");
 		if (importerTask == null)
 			return false;
+		//importerTask.queryReplacementRules = true;
 		importerTask.processDirectory(directoryPath, getProject());
 		iQuit();
 		return true;

@@ -1513,7 +1513,7 @@ public class BasicFileCoordinator extends FileCoordinator implements PackageIntr
 		int count = 0;
 		for (int i=0; i<fInterpreters.length; i++){
 			boolean stateOK = (stateClass==null || ((FileInterpreterI)fInterpreters[i]).canImport(stateClass));
-			if (((FileInterpreterI)fInterpreters[i]).canImport(arguments) && (fInterpreters[i] instanceof ReadFileFromString || !mustReadFromString) && stateOK)
+			if (((FileInterpreterI)fInterpreters[i]).getUserChooseable() && ((FileInterpreterI)fInterpreters[i]).canImport(arguments) && (fInterpreters[i] instanceof ReadFileFromString || !mustReadFromString) && stateOK)
 				count++;
 		}
 		if (count == 0 ){
@@ -1523,7 +1523,7 @@ public class BasicFileCoordinator extends FileCoordinator implements PackageIntr
 		count = 0;
 		for (int i=0; i<fInterpreters.length; i++){
 			boolean stateOK = (stateClass==null || ((FileInterpreterI)fInterpreters[i]).canImport(stateClass));
-			if (((FileInterpreterI)fInterpreters[i]).canImport(arguments) && (fInterpreters[i] instanceof ReadFileFromString || !mustReadFromString) && stateOK)
+			if (((FileInterpreterI)fInterpreters[i]).getUserChooseable() && ((FileInterpreterI)fInterpreters[i]).canImport(arguments) && (fInterpreters[i] instanceof ReadFileFromString || !mustReadFromString) && stateOK)
 				fInterpretersCanImport[count++] = fInterpreters[i];
 		}
 		if (fInterpretersCanImport.length == 1)

@@ -60,6 +60,7 @@ public abstract class FileInterpreter extends MesquiteModule  {
 	protected static int REPLACEIFEMPTYOTHERWISEADD = 2;
 	protected static int REPLACEIFEMPTYOTHERWISEIGNORE = 3;
 	protected static int ADDASNEW = 4;
+	protected static int USELONGEST = 5;
 	protected int treatmentOfIncomingDuplicates = REPLACEIFEMPTYOTHERWISEADD;
 	
 	protected  boolean selectIncoming = false;
