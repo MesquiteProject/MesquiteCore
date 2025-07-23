@@ -168,6 +168,29 @@ public class CombineFlippedFastas extends GeneralFileMakerMultiple {
 	public boolean okToInteractWithUser(int howImportant, String messageToUser){
 		return firstFile;
 	}/**/
+	
+	String[] acceptableFileExtensions = new String[]{".fas", ".fasta", ".fna"};
+	/*.................................................................................................................*/
+	
+	public String getAcceptableFileExtensions () {
+		String s="";
+		for (int i=0; i<acceptableFileExtensions.length; i++) {
+			if (i>0)
+				s+= " or ";
+			s+=acceptableFileExtensions[i];
+		}
+		return s;
+
+	}
+	/*.................................................................................................................*/
+	
+	public boolean acceptableFileName (String fileName) {
+		for (int i=0; i<acceptableFileExtensions.length; i++)
+			if (StringUtil.endsWithIgnoreCase(fileName, acceptableFileExtensions[i]))
+					return true;
+		return false;
+	}
+	
 	/*.................................................................................................................*/
 	public void processDirectory(String directoryPath, MesquiteProject project){
 		if (StringUtil.blank(directoryPath) || project == null)
@@ -221,7 +244,7 @@ public class CombineFlippedFastas extends GeneralFileMakerMultiple {
 				String message = null; //"Looking for acceptable files";
 				int iF = 0;
 				while (message == null && iF<files.length){
-					if (StringUtil.endsWithIgnoreCase(files[iF], ".fas") || StringUtil.endsWithIgnoreCase(files[iF], ".fasta"))
+					if (acceptableFileName(files[iF]))
 						message = "Reading file: " + files[iF];
 					iF++;
 				}
@@ -245,7 +268,7 @@ public class CombineFlippedFastas extends GeneralFileMakerMultiple {
 						break;
 					if (files[i]!=null) {
 
-						boolean acceptableFile = (StringUtil.endsWithIgnoreCase(files[i], ".fas") || StringUtil.endsWithIgnoreCase(files[i], ".fasta"));   
+						boolean acceptableFile = acceptableFileName(files[i]);   
 						if (acceptableFile){
 							path = directoryPath + MesquiteFile.fileSeparator + files[i];
 							File cFile = new File(path);
@@ -405,9 +428,9 @@ public class CombineFlippedFastas extends GeneralFileMakerMultiple {
 				overallTime.end();
 				if (filesFound == 0){
 					if (okToInteractWithUser(CAN_PROCEED_ANYWAY, "No files found"))  
-						alert("No appropriate files with extensions (.fas or .fasta) were found in folder.");
+						alert("No appropriate files with extensions (" + getAcceptableFileExtensions() + ") were found in folder.");
 					else
-						discreetAlert("No appropriate files with extensions (.fas or .fasta) were found in folder.");
+						discreetAlert("No appropriate files with extensions (" + getAcceptableFileExtensions() + ") were found in folder.");
 				}
 				else
 					logln("Taxonwise Fastas read for " + files.length + " taxa; " + lociAdded + " different loci found. [" + overallTime.timeSinceLastInSeconds() + " sec.]" );
