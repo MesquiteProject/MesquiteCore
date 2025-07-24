@@ -1870,7 +1870,7 @@ class NodeLocsExtra extends TreeDisplayExtra implements TreeDisplayBkgdExtra {
 	/*.................................................................................................................*/
 	boolean showRectangles = false; //see also drawDebuggingLines in TreeDrawing
 	public   void drawUnderTree(Tree tree, int drawnRoot, Graphics g) {
-		/* recorded branch length
+		/* recorded branch colors
 		if (treeDisplay.getTreeDrawing().recordsBranchColors()){
 			Color bc = treeDisplay.getTreeDrawing().getBranchColor(drawnRoot);
 			ColorDistribution bcd = treeDisplay.getTreeDrawing().getBranchFillColors(drawnRoot);

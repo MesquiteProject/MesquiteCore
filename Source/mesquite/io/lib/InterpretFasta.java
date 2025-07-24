@@ -419,7 +419,9 @@ public abstract class InterpretFasta extends FileInterpreterI implements ReadFil
 						}
 						logln("Duplicate name (" + taxa.getTaxonName(origTaxonNumber) + "). Character data replaced because incoming had more data.");
 					}
+					//System.err.println("@ numTaxa " + taxa.getNumTaxa());
 					taxa.deleteTaxa(taxonNumber, 1, true);
+					//System.err.println("@ numTaxa2 " + taxa.getNumTaxa());
 					taxonNumber = origTaxonNumber;
 				}
 				if (selectIncoming)

@@ -13,7 +13,8 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
  */package mesquite.lib.duties;
 
 /*It is parallelizable if it:
--- uses only saved instructions (relies entirely on preferences, or saves a snapshot)
+-- can rely for all its parameters on only saved instructions 
+	(can rely entirely on preferences, or saves a snapshot, preferably a snapshot to avoid reentrancy issues)
 -- does not rely on the MesquiteTable passed to it in alterData
 -- is careful not to put up dialogs except after asking okToInteractWithUsers
  */

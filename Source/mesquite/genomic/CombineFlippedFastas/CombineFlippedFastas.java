@@ -342,6 +342,7 @@ public class CombineFlippedFastas extends GeneralFileMakerMultiple {
 											if (existingTaxon){
 												int incomingSeqLeng = incomingFlippedMatrix.getTotalNumApplicable(iLocus, false);
 												if (incomingSeqLeng > 0){ 
+													//System.err.println("@ existing Taxon ");
 
 													int existingSeqLeng = locusMatrix.getTotalNumApplicable(receivingTaxonNumber, false);
 													boolean doTransfer = false;
@@ -379,6 +380,7 @@ public class CombineFlippedFastas extends GeneralFileMakerMultiple {
 												}
 											}
 											else {
+												//System.err.println("@ not existing Taxon ");
 												int incomingSeqLengNeeded = incomingFlippedMatrix.lastApplicable(iLocus) + 1;
 												if (incomingSeqLengNeeded>locusMatrix.getNumChars())
 													locusMatrix.addCharacters(locusMatrix.getNumChars(), incomingSeqLengNeeded-locusMatrix.getNumChars(), false);
