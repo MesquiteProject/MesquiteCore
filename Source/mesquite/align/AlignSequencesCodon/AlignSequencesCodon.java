@@ -11,7 +11,7 @@ Mesquite's web site is http://mesquiteproject.org
 This source code and its compiled class files are free and modifiable under the terms of 
 GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
  */
-package mesquite.align.AlignSequences;
+package mesquite.align.AlignSequencesCodon;
 /*~~  */
 
 
@@ -34,10 +34,10 @@ import mesquite.lib.ui.MesquiteWindow;
 
 /* ======================================================================== */
 /** This class duplicates part of the function of MultipleAlignService in the Alter menu, but appears in the Matrix menu */
-public class AlignSequences extends MolecDataEditorInit { //implements CalculationMonitor, SeparateThreadStorage {
+public class AlignSequencesCodon extends MolecDataEditorInit { //implements CalculationMonitor, SeparateThreadStorage {
 	public void getEmployeeNeeds(){  //This gets called on startup to harvest information; override this and inside, call registerEmployeeNeed
 		EmployeeNeed e2 = registerEmployeeNeed(MultipleSequenceAligner.class, getName() + " needs a module to calculate alignments.",
-		"The sequence aligner is chosen in the Align Sequences or Selected Cell Block submenu");
+		"The sequence aligner is chosen in the Codon Align Entire Matrix submenu");
 	}
 
 	MolecularData data ;
@@ -49,7 +49,7 @@ public class AlignSequences extends MolecDataEditorInit { //implements Calculati
 	
 	/*.................................................................................................................*/
 	public boolean startJob(String arguments, Object condition, boolean hiredByName) {
-		mss = addModuleMenuItems(null, makeCommand("doAligner",  this), mesquite.align.AMultipleAlignService.AMultipleAlignService.class);
+		mss = addModuleMenuItems(null, makeCommand("doCodonAligner",  this), mesquite.align.AMultipleAlignServiceCodon.AMultipleAlignServiceCodon.class);
 	
 		return true;
 	}
@@ -58,7 +58,7 @@ public class AlignSequences extends MolecDataEditorInit { //implements Calculati
 	public boolean requestPrimaryChoice(){
 		return true;  
 	}
-	/*.......................................d..........................................................................*/
+	/*.................................................................................................................*/
 	public void setTableAndData(MesquiteTable table, CharacterData data){
 		if (!(data instanceof MolecularData)){
 			mss.setEnabled(false);
@@ -78,7 +78,7 @@ public class AlignSequences extends MolecDataEditorInit { //implements Calculati
 	}
 	/*.................................................................................................................*/
 	public Object doCommand(String commandName, String arguments, CommandChecker checker) {
-		if (checker.compare(this.getClass(), "Hires module to align sequences", "[name of module]", commandName, "doAligner")) {
+		if (checker.compare(this.getClass(), "Hires module to align sequences", "[name of module]", commandName, "doCodonAligner")) {
 			DataAlterer tda= (DataAlterer)hireNamedEmployee(DataAlterer.class,  arguments);
 			if (tda!=null) {
 				MesquiteWindow w = table.getMesquiteWindow();
@@ -117,12 +117,12 @@ public class AlignSequences extends MolecDataEditorInit { //implements Calculati
 	}
 	/*.................................................................................................................*/
 	public String getName() {
-		return "Align Sequences";
+		return "Codon Align Sequences";
 	}
 	/*.................................................................................................................*/
 	/** returns an explanation of what the module does.*/
 	public String getExplanation() {
-		return "Sends the selected sequence to be aligned." ;
+		return "Sends the selected sequence to be codon aligned." ;
 	}
 
 

@@ -313,19 +313,20 @@ public abstract class ExternalSequenceAligner extends MultipleSequenceAligner im
 	}
 	/*.................................................................................................................*/
 	public void queryLocalOptions () {
-		if (queryOptions(codonAlign))   // DAVIDQUERY:  Is it ok to just pass codonAlign?
+		if (queryOptions())   // DAVIDQUERY:  Is it ok to just pass codonAlign?
 			storePreferences();
 	}
 	AppChooser appChooser;
 	/*.................................................................................................................*/
-	public boolean queryOptions(boolean codonAlignAvailable) {
+	public boolean queryOptions() {
 		if (!okToInteractWithUser(CAN_PROCEED_ANYWAY, "Querying Options"))  
 			return true;
 		MesquiteInteger buttonPressed = new MesquiteInteger(1);
 		ExtensibleDialog dialog = new ExtensibleDialog(containerOfModule(), getProgramName() + " Locations & Options",buttonPressed);  //MesquiteTrunk.mesquiteTrunk.containerOfModule()
 		dialog.addLabel(getProgramName() + " - File Locations & Options");
 		dialog.appendToHelpString(getHelpString());
-		dialog.appendToHelpString(" If \"codon alignment\" is chosen, then Mesquite will assign codon positions, translate the sequences to amino acids, send the resulting data to the"
+		if (isCodonAlign())
+			dialog.appendToHelpString(" Because this is a codon alignment, Mesquite will assign codon positions, translate the sequences to amino acids, send the resulting data to the"
 				+ " alignment program, harvest the results, and force the nucleotides to match the amino acid alignment.  This will only work "
 				+ " if the number of nucleotides in each sequence is a multiple of 3.");
 		dialog.setHelpURL(getHelpURL());
@@ -345,22 +346,27 @@ public abstract class ExternalSequenceAligner extends MultipleSequenceAligner im
 	*/	
 		
 
-		Checkbox codonAlignCheckBox = null;
-		if (!codonAlignAvailable || !allowCodonAlign)
-			codonAlign=false;
-		if (allowCodonAlign) {
-			codonAlignCheckBox = dialog.addCheckBox("codon alignment", codonAlign);
-			codonAlignCheckBox.setEnabled(codonAlignAvailable);
-		}
-
-		Checkbox includeGapsCheckBox = dialog.addCheckBox("include gaps", includeGaps);
-
 		queryProgramOptions(dialog);
 		
 		
 
 		SingleLineTextField programOptionsField = dialog.addTextField("Additional " + getProgramName() + " options:", programOptions, 26, true);
 
+/*		dialog.addHorizontalLine(1);
+		Checkbox codonAlignCheckBox = null;
+		Debugg.println("   |||||||||||||| codonAlignAvailable: " + codonAlignAvailable);
+		Debugg.println("   |||||||||||||| allowCodonAlign: " + allowCodonAlign);
+		if (!codonAlignAvailable || !allowCodonAlign)
+			codonAlign=false;
+		if (allowCodonAlign) {
+			codonAlignCheckBox = dialog.addCheckBox("codon alignment", codonAlign);
+			codonAlignCheckBox.setEnabled(codonAlignAvailable);
+			dialog.addLabelSmallText("(will align entire matrix; requires all sequences to be in triplets)");
+		}
+		*/
+		dialog.addHorizontalLine(1);
+
+		Checkbox includeGapsCheckBox = dialog.addCheckBox("include gaps", includeGaps);
 
 
 		dialog.completeAndShowDialog(true);
@@ -382,8 +388,8 @@ public abstract class ExternalSequenceAligner extends MultipleSequenceAligner im
 			 */
 			programOptions = programOptionsField.getText();
 			includeGaps = includeGapsCheckBox.getState();
-			if (codonAlignCheckBox !=null)
-				codonAlign = codonAlignCheckBox.getState();
+//			if (codonAlignCheckBox !=null)
+//				codonAlign = codonAlignCheckBox.getState();
 			processQueryProgramOptions(dialog);
 			storePreferences();
 			//preferencesSet = true;
@@ -423,7 +429,7 @@ public abstract class ExternalSequenceAligner extends MultipleSequenceAligner im
 		
 		
 		for (int ic=0; ic<data.getNumChars(); ic++){
-			if (data.getSelected(ic) || (firstSite>=0 && MesquiteInteger.isCombinable(firstSite) && ic>= firstSite && lastSite<data.getNumChars() && MesquiteInteger.isCombinable(lastSite) && ic<= lastSite)){
+			if ((data.getSelected(ic) && !alwaysAlignEntireMatrix()) || (firstSite>=0 && MesquiteInteger.isCombinable(firstSite) && ic>= firstSite && lastSite<data.getNumChars() && MesquiteInteger.isCombinable(lastSite) && ic<= lastSite)){
 				numNewChars++;
 				if (firstChar<0) //first one found
 					firstChar=ic;
@@ -480,19 +486,29 @@ public abstract class ExternalSequenceAligner extends MultipleSequenceAligner im
 	/*.................................................................................................................*/
 	boolean codonAlignmentAvailable(MCategoricalDistribution matrix, boolean[] taxaToAlign, int firstSite, int lastSite, int firstTaxon, int lastTaxon) {
 		CharacterData data = matrix.getParentData();
-		if (!(data instanceof DNAData))
+		if (!(data instanceof DNAData)) {
+			MesquiteMessage.discreetNotifyUser("Codon alignment can only be performed on nucleotide data.");
 			return false;
+		}
 		DNAData dData = (DNAData)data;
-		if (!dData.allSequencesMultiplesOfThree())
+		if (!dData.allSequencesMultiplesOfThree()) {
+			MesquiteMessage.discreetNotifyUser("Codon alignment cannot be performed as the number of nucleotides in some sequences is not divisible by 3.");
 			return false;
+		}
 		return true;
 	}
 	/*.................................................................................................................*/
 	public long[][] alignSequences(MCategoricalDistribution matrix, boolean[] taxaToAlign, int firstSite, int lastSite, int firstTaxon, int lastTaxon, MesquiteInteger resultCode) {
 
-		boolean codonAlignAvailable = codonAlignmentAvailable( matrix, taxaToAlign, firstSite,  lastSite,  firstTaxon,  lastTaxon);
+		Debugg.println("\n||||||| isCodonAlign(): " + isCodonAlign() );
+		
+		
+		if (isCodonAlign() && !codonAlignmentAvailable( matrix, taxaToAlign, firstSite,  lastSite,  firstTaxon,  lastTaxon)) {
+			return null;
+		}
 
-		if (!optionsAlreadySet && !queryOptions(codonAlignAvailable)){
+
+		if (!optionsAlreadySet && !queryOptions()){
 			if (resultCode != null)
 				resultCode.setValue(ResultCodes.USER_STOPPED);
 			return null;
@@ -519,11 +535,10 @@ public abstract class ExternalSequenceAligner extends MultipleSequenceAligner im
 			dData.setAllCodonPositions(1,true,false);
 			dataToAlign = dData.getProteinData(null, true);
 			if (dataToAlign==null) {
-				dataToAlign=data;
-				codonAlign=false;
+				return null;
 			} 
-
 		}
+		
 		boolean pleaseStorePref = false;
 		/*  commented out DRM 27 Dec 2023
 		 * 		if (!preferencesSet) {

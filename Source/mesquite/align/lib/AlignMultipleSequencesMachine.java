@@ -147,7 +147,7 @@ class AlignThread extends Thread {
 
 		boolean entireColumnsSelected = false;
 		int oldNumChars = data.getNumChars();
-		if (table == null || !table.singleCellBlockSelected(firstRow, lastRow,  firstColumn, lastColumn)) {
+		if (aligner.alwaysAlignEntireMatrix() || table == null ||  !table.singleCellBlockSelected(firstRow, lastRow,  firstColumn, lastColumn)) {
 			firstRow.setValue(0);
 			lastRow.setValue(data.getNumTaxa()-1);
 			firstColumn.setValue(0);
@@ -158,25 +158,28 @@ class AlignThread extends Thread {
 		//NOTE: at present this deals only with whole character selecting, and with all taxa
 		MesquiteInteger resultCodeFromAligner = new MesquiteInteger(ResultCodes.NO_RESPONSE);
 		long[][] m  = aligner.alignSequences((MCategoricalDistribution)data.getMCharactersDistribution(), null, firstColumn.getValue(), lastColumn.getValue(), firstRow.getValue(), lastRow.getValue(), resultCodeFromAligner);
-		if (aligner.isCodonAlign()) {  // we need to alter m so that it expands to match nucleotides
-			m = getPlaceHolderNucleotideAlignmentFromAminoAcidAlignment(m);
-		}
-		resultCode = resultCodeFromAligner.getValue();
-		alignmentMachine.integrateAlignment(m, data,  firstColumn.getValue(), lastColumn.getValue(), firstRow.getValue(), lastRow.getValue(), !aligner.isCodonAlign());
-		if (entireColumnsSelected) {
-			for (int ic = 0; ic<data.getNumChars(); ic++) 
-				data.setSelected(ic,ic>=firstColumn.getValue() && ic<=lastColumn.getValue()- (oldNumChars - data.getNumChars()));
-			if (table !=null) 
-				table.selectColumns(firstColumn.getValue(),lastColumn.getValue()- (oldNumChars - data.getNumChars()));
-		}
-		if (aligner.isCodonAlign() && data instanceof DNAData) {
-			DNAData dData = (DNAData)data;
-			dData.assignCodonPositionsToTerminalChars(data.getNumChars()-oldNumChars);
+		if (m!=null) {
+			if (aligner.isCodonAlign()) {  // we need to alter m so that it expands to match nucleotides
+				m = getPlaceHolderNucleotideAlignmentFromAminoAcidAlignment(m);
+			}
+			resultCode = resultCodeFromAligner.getValue();
+			alignmentMachine.integrateAlignment(m, data,  firstColumn.getValue(), lastColumn.getValue(), firstRow.getValue(), lastRow.getValue(), !aligner.isCodonAlign());
+			if (entireColumnsSelected) {
+				for (int ic = 0; ic<data.getNumChars(); ic++) 
+					data.setSelected(ic,ic>=firstColumn.getValue() && ic<=lastColumn.getValue()- (oldNumChars - data.getNumChars()));
+				if (table !=null) 
+					table.selectColumns(firstColumn.getValue(),lastColumn.getValue()- (oldNumChars - data.getNumChars()));
+			}
+			if (aligner.isCodonAlign() && data instanceof DNAData) {
+				DNAData dData = (DNAData)data;
+				//dData.assignCodonPositionsToTerminalChars(data.getNumChars()-oldNumChars);
+				dData.setAllCodonPositions(1,true,false);
 
+			}
+			if (separateThread) 
+				data.notifyListeners(ownerModule, new Notification(MesquiteListener.DATA_CHANGED));
+			if (table != null)
+				table.repaintAll();
 		}
-		if (separateThread) 
-			data.notifyListeners(ownerModule, new Notification(MesquiteListener.DATA_CHANGED));
-		if (table != null)
-			table.repaintAll();
 	}
 }

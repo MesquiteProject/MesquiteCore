@@ -15,8 +15,7 @@ package mesquite.align.lib;
 
 import mesquite.categ.lib.MCategoricalDistribution;
 import mesquite.categ.lib.ProteinData;
-import mesquite.lib.MesquiteInteger;
-import mesquite.lib.MesquiteModule;
+import mesquite.lib.*;
 
 /* ======================================================================== */
 public abstract class MultipleSequenceAligner extends MesquiteModule {
@@ -41,6 +40,10 @@ public abstract class MultipleSequenceAligner extends MesquiteModule {
 	}
 	public void setCodonAlign(boolean codonAlign) {
 		this.codonAlign = codonAlign;
+	}
+
+ 	public boolean alwaysAlignEntireMatrix() {
+		return isCodonAlign();
 	}
 
 	public boolean permitSeparateThread(){

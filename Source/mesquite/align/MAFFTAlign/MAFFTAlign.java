@@ -8,6 +8,7 @@ import java.awt.event.ItemListener;
 import mesquite.align.lib.ExternalSequenceAligner;
 import mesquite.categ.lib.MolecularData;
 import mesquite.lib.CommandChecker;
+import mesquite.lib.Debugg;
 import mesquite.lib.MesquiteBoolean;
 import mesquite.lib.MesquiteFile;
 import mesquite.lib.MesquiteInteger;
