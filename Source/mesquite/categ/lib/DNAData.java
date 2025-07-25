@@ -20,6 +20,7 @@ import mesquite.lib.Associable;
 import mesquite.lib.AssociableWithSpecs;
 import mesquite.lib.MesquiteInteger;
 import mesquite.lib.MesquiteMessage;
+import mesquite.lib.MesquiteNumber;
 import mesquite.lib.MesquiteStringBuffer;
 import mesquite.lib.NameReference;
 import mesquite.lib.Notification;
@@ -34,6 +35,7 @@ import mesquite.lib.duties.CharMatrixManager;
 import mesquite.lib.duties.CharactersManager;
 import mesquite.lib.taxa.Taxa;
 import mesquite.lib.ui.ColorDistribution;
+import mesquite.lists.lib.ListModule;
 import mesquite.molec.lib.GeneticCode;
 
 /* ======================================================================== */
@@ -416,6 +418,36 @@ public class DNAData extends MolecularData {
 		return  (position >= 1 && position <= 3);
 
 	}
+
+	/*.................................................................................................................*/
+	public void setAllCodonPositions(int position,  boolean calc, boolean notify){
+		boolean changed=false;
+		MesquiteNumber num = new MesquiteNumber();
+		num.setValue(position);
+		CodonPositionsSet modelSet = (CodonPositionsSet) getCurrentSpecsSet(CodonPositionsSet.class);
+		if (modelSet == null) {
+			modelSet= new CodonPositionsSet("Codon Positions", getNumChars(), this);
+			modelSet.addToFile(getFile(), getProject(), (CharactersManager) getMatrixManager().findElementManager(CodonPositionsSet.class)); //THIS
+			setCurrentSpecsSet(modelSet, CodonPositionsSet.class);
+		}
+		if (modelSet != null) {
+			for (int i=0; i<getNumChars(); i++) {
+				modelSet.setValue(i, num);
+				if (calc) {
+					num.setValue(num.getIntValue()+1);
+					if (num.getIntValue()>3)
+						num.setValue(1);
+				}
+				changed = true;
+			}
+		}
+		if (notify) {
+			if (changed)
+				notifyListeners(this, new Notification(AssociableWithSpecs.SPECSSET_CHANGED));  //not quite kosher; HOW TO HAVE MODEL SET LISTENERS??? -- modelSource
+		}
+	}
+
+
 	/*.................................................................................................................*/
 	public void setCodonPosition(int ic,  int pos, boolean canCreateCodPosSet, boolean notify){
 		boolean changed=false;

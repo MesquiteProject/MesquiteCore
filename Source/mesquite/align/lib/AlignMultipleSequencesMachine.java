@@ -130,7 +130,6 @@ class AlignThread extends Thread {
 		long[][] nucM = new long[numChars][numTaxa];
 		for (int it=0; it<numTaxa; it++) {
 			for (int ic=0; ic<numChars; ic++)
-				//nucM[ic][it]=CategoricalState.inapplicable;
 				nucM[ic][it]=0L;
 			for (int icAA=0; icAA<numCharsAA; icAA++)
 				if (!CategoricalState.isInapplicable(m[icAA][it])) {

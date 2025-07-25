@@ -325,6 +325,9 @@ public abstract class ExternalSequenceAligner extends MultipleSequenceAligner im
 		ExtensibleDialog dialog = new ExtensibleDialog(containerOfModule(), getProgramName() + " Locations & Options",buttonPressed);  //MesquiteTrunk.mesquiteTrunk.containerOfModule()
 		dialog.addLabel(getProgramName() + " - File Locations & Options");
 		dialog.appendToHelpString(getHelpString());
+		dialog.appendToHelpString(" If \"codon alignment\" is chosen, then Mesquite will assign codon positions, translate the sequences to amino acids, send the resulting data to the"
+				+ " alignment program, harvest the results, and force the nucleotides to match the amino acid alignment.  This will only work "
+				+ " if the number of nucleotides in each sequence is a multiple of 3.");
 		dialog.setHelpURL(getHelpURL());
 
 		
@@ -511,8 +514,8 @@ public abstract class ExternalSequenceAligner extends MultipleSequenceAligner im
 		if (codonAlign && !isProtein) {
 			DNAData dData = (DNAData)data;
 			dData.collapseGapsInCellBlock(firstTaxon, lastTaxon, 0, data.getNumChars()-1, false);
-			if (dData.someCoding())
-				dataToAlign = dData.getProteinData(null, true);
+			dData.setAllCodonPositions(1,true,false);
+			dataToAlign = dData.getProteinData(null, true);
 			if (dataToAlign==null) {
 				dataToAlign=data;
 				codonAlign=false;
@@ -603,7 +606,7 @@ public abstract class ExternalSequenceAligner extends MultipleSequenceAligner im
 		if (programOptions == null);
 		programOptions = "";
 
-		logln("Options: " + programOptions + " " + getQueryProgramOptions());
+		//logln("Options: " + programOptions + " " + getQueryProgramOptions());
 		if (programOptionsComeFirst()){
 			shellScript.append(" " + programOptions + " " + getQueryProgramOptions() + " ");
 			argumentsForLogging.append(" " + programOptions + " " + getQueryProgramOptions() + " ");
@@ -622,9 +625,9 @@ public abstract class ExternalSequenceAligner extends MultipleSequenceAligner im
 		if (scriptBased)
 			MesquiteFile.putFileContents(scriptPath, shellScript.toString(), false);
 
-		logln("Requesting the operating system to run " + getProgramName());
-		logln("Location of  " + getProgramName()+ ": " + getProgramPath());
-		logln("Arguments given in running alignment program:\r" + argumentsForLogging.toString()); 
+		logln("\nRequesting the operating system to run " + getProgramName());
+		logln(" Location of  " + getProgramName()+ ": " + getProgramPath());
+		logln(" Arguments given in running alignment program:\r" + argumentsForLogging.toString()); 
 		MesquiteTimer timer = new MesquiteTimer();
 		timer.start();
 		ProgressIndicator progressIndicator = null;
