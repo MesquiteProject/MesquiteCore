@@ -15,13 +15,14 @@ package mesquite.align.lib;
 
 import mesquite.categ.lib.MCategoricalDistribution;
 import mesquite.categ.lib.ProteinData;
-import mesquite.lib.MesquiteInteger;
-import mesquite.lib.MesquiteModule;
+import mesquite.lib.*;
 
 /* ======================================================================== */
 public abstract class MultipleSequenceAligner extends MesquiteModule {
 	protected Class characterDataClass = null;
 	protected boolean isProtein = true;
+	protected boolean codonAlign = false;
+	protected boolean allowCodonAlign = true;
 
 	public Class getDutyClass() {
 		return MultipleSequenceAligner.class;
@@ -33,6 +34,17 @@ public abstract class MultipleSequenceAligner extends MesquiteModule {
  	 public String[] getDefaultModule() {
     	 	return new String[] {"#MAFFTAlign", "#MuscleAlign", "#OpalMultiSeqAligner"};
     	 }
+
+ 	public boolean isCodonAlign() {
+		return allowCodonAlign && codonAlign;
+	}
+	public void setCodonAlign(boolean codonAlign) {
+		this.codonAlign = codonAlign;
+	}
+
+ 	public boolean alwaysAlignEntireMatrix() {
+		return isCodonAlign();
+	}
 
 	public boolean permitSeparateThread(){
 		return true;   
