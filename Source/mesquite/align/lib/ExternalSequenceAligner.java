@@ -346,10 +346,12 @@ public abstract class ExternalSequenceAligner extends MultipleSequenceAligner im
 		
 
 		Checkbox codonAlignCheckBox = null;
-		if (!codonAlignAvailable)
+		if (!codonAlignAvailable || !allowCodonAlign)
 			codonAlign=false;
-		codonAlignCheckBox = dialog.addCheckBox("codon alignment", codonAlign);
-		codonAlignCheckBox.setEnabled(codonAlignAvailable);
+		if (allowCodonAlign) {
+			codonAlignCheckBox = dialog.addCheckBox("codon alignment", codonAlign);
+			codonAlignCheckBox.setEnabled(codonAlignAvailable);
+		}
 
 		Checkbox includeGapsCheckBox = dialog.addCheckBox("include gaps", includeGaps);
 

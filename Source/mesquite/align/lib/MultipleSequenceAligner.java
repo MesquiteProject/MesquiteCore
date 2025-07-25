@@ -23,6 +23,7 @@ public abstract class MultipleSequenceAligner extends MesquiteModule {
 	protected Class characterDataClass = null;
 	protected boolean isProtein = true;
 	protected boolean codonAlign = false;
+	protected boolean allowCodonAlign = true;
 
 	public Class getDutyClass() {
 		return MultipleSequenceAligner.class;
@@ -36,7 +37,7 @@ public abstract class MultipleSequenceAligner extends MesquiteModule {
     	 }
 
  	public boolean isCodonAlign() {
-		return codonAlign;
+		return allowCodonAlign && codonAlign;
 	}
 	public void setCodonAlign(boolean codonAlign) {
 		this.codonAlign = codonAlign;
