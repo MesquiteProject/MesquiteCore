@@ -758,6 +758,15 @@ public class DNAData extends MolecularData {
 		}
 		return false;
 	}
+	/*.................................................................................................................*/
+	public boolean allSequencesMultiplesOfThree(){
+		for (int it=0; it<numChars; it++) {
+			int num = getNumberApplicableInTaxon(it, true);
+			if (num % 3 != 0)
+				return false;
+		}
+		return true;
+	}
 
 	/* ................................................................................................................. */
 	public  Color alterColorToDeemphasizeDegeneracy(int aa, Color color){

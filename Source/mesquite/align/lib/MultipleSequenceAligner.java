@@ -22,6 +22,7 @@ import mesquite.lib.MesquiteModule;
 public abstract class MultipleSequenceAligner extends MesquiteModule {
 	protected Class characterDataClass = null;
 	protected boolean isProtein = true;
+	protected boolean codonAlign = false;
 
 	public Class getDutyClass() {
 		return MultipleSequenceAligner.class;
@@ -33,6 +34,13 @@ public abstract class MultipleSequenceAligner extends MesquiteModule {
  	 public String[] getDefaultModule() {
     	 	return new String[] {"#MAFFTAlign", "#MuscleAlign", "#OpalMultiSeqAligner"};
     	 }
+
+ 	public boolean isCodonAlign() {
+		return codonAlign;
+	}
+	public void setCodonAlign(boolean codonAlign) {
+		this.codonAlign = codonAlign;
+	}
 
 	public boolean permitSeparateThread(){
 		return true;   

@@ -90,7 +90,7 @@ public class AlignToDropped extends AlignShiftToDroppedBase {
 		int[] newGaps = aligner.getGapInsertionArray();
 		if (newGaps!=null) 
 			alignUtil.insertNewGaps((MolecularData)data, newGaps, aligner.getPreSequenceTerminalFlaggedGap(), aligner.getPostSequenceTerminalFlaggedGap());
-		Rectangle problem = alignUtil.forceAlignment((MolecularData)data, 0, data.getNumChars()-1, rowToAlign, rowToAlign, 1, aligned);
+		Rectangle problem = alignUtil.forceAlignment((MolecularData)data, 0, data.getNumChars()-1, rowToAlign, rowToAlign, 1, aligned, true);
 		logln(" " +getActionName()+ " " + (rowToAlign+1) + " onto " + (recipientRow+1));
 
 	}

@@ -74,7 +74,7 @@ public class MolecularDataUtil {
 					data.notifyListeners(module, new Notification(CharacterData.PARTS_ADDED, null, null));
 					data.notifyInLinked(new Notification(MesquiteListener.PARTS_ADDED, null, null));
 				}
-				Rectangle problem = alignUtil.forceAlignment((MolecularData)data, 0, data.getNumChars()-1, it, it, 1, aligned);
+				Rectangle problem = alignUtil.forceAlignment((MolecularData)data, 0, data.getNumChars()-1, it, it, 1, aligned, true);
 				if (problem!=null)
 					module.logln("problem with alignment: " + problem.toString());
 				((CategoricalData)data).examineCheckSum(0, data.getNumChars()-1,it, it, "Bad checksum; alignment has inappropriately altered data!", warnCheckSum, originalCheckSum);
@@ -107,7 +107,7 @@ public class MolecularDataUtil {
 					data.notifyListeners(module, new Notification(CharacterData.PARTS_ADDED, null, null));
 					data.notifyInLinked(new Notification(MesquiteListener.PARTS_ADDED, null, null));
 				}
-				Rectangle problem = alignUtil.forceAlignment((MolecularData)data, 0, data.getNumChars()-1, it, it, 1, aligned);
+				Rectangle problem = alignUtil.forceAlignment((MolecularData)data, 0, data.getNumChars()-1, it, it, 1, aligned, true);
 			}
 		}
 		//		((CategoricalData)data).examineCheckSum(0, data.getNumChars()-1,itStart, itEnd, "Bad checksum; alignment has inappropriately altered data!", warnCheckSum, originalCheckSum);

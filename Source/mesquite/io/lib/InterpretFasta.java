@@ -24,6 +24,7 @@ import mesquite.io.InterpretFastaProtein.InterpretFastaProtein;
 import mesquite.lib.Arguments;
 import mesquite.lib.CommandChecker;
 import mesquite.lib.CommandRecord;
+import mesquite.lib.Debugg;
 import mesquite.lib.EmployeeNeed;
 import mesquite.lib.ExporterDialog;
 import mesquite.lib.MesquiteBoolean;
@@ -721,6 +722,7 @@ public abstract class InterpretFasta extends FileInterpreterI implements ReadFil
 		if (totalCells > 10000000)
 			log("Writing Fasta file ");
 		double lastChunkReported = 0;
+
 		for (int it = 0; it<numTaxa; it++){
 			if ((!writeOnlySelectedTaxa || (taxa.getSelected(it))) && (!includeOnlyTaxaWithData || taxonHasData(data, it))){
 

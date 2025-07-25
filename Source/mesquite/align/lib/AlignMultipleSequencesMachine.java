@@ -1,9 +1,13 @@
 package mesquite.align.lib;
 
 
+import mesquite.categ.lib.CategoricalState;
+import mesquite.categ.lib.DNAData;
+import mesquite.categ.lib.DNAState;
 import mesquite.categ.lib.MCategoricalDistribution;
 import mesquite.categ.lib.MolecularData;
 import mesquite.lib.CalculationMonitor;
+import mesquite.lib.Debugg;
 import mesquite.lib.MesquiteInteger;
 import mesquite.lib.MesquiteListener;
 import mesquite.lib.MesquiteModule;
@@ -34,6 +38,7 @@ public class AlignMultipleSequencesMachine {
 	MesquiteTable table;
 	CalculationMonitor calculationMonitor;
 	SeparateThreadStorage separateThreadStorage;
+	boolean codonAlign = false;
 	
 
 	public AlignMultipleSequencesMachine (MesquiteModule ownerModule,SeparateThreadStorage separateThreadStorage, CalculationMonitor calculationMonitor, 	MultipleSequenceAligner aligner) {
@@ -46,11 +51,11 @@ public class AlignMultipleSequencesMachine {
 
 	
 	/*.................................................................................................................*/
-	public boolean integrateAlignment(long[][] alignedMatrix, MolecularData data, int icStart, int icEnd, int itStart, int itEnd){
+	public boolean integrateAlignment(long[][] alignedMatrix, MolecularData data, int icStart, int icEnd, int itStart, int itEnd, boolean checkForMismatch){
 		if (alignedMatrix == null || data == null)
 			return false;
 		ownerModule.getProject().incrementProjectWindowSuppression();
-		boolean success = AlignUtil.integrateAlignment(alignedMatrix, data,  icStart,  icEnd,  itStart,  itEnd);
+		boolean success = AlignUtil.integrateAlignment(alignedMatrix, data,  icStart,  icEnd,  itStart,  itEnd, checkForMismatch);
 		ownerModule.getProject().decrementProjectWindowSuppression();
 		if (separateThread && calculationMonitor != null)
 			calculationMonitor.calculationCompleted(this);  // TODO:  this should ideally be in the full control of the module
@@ -118,6 +123,23 @@ class AlignThread extends Thread {
 		this.table = table;
 	}
 
+	private long[][] getPlaceHolderNucleotideAlignmentFromAminoAcidAlignment(long[][] m) {
+		int numCharsAA = ((long[][])m).length;
+		int numChars =numCharsAA*3;
+		int numTaxa = m[0].length;
+		long[][] nucM = new long[numChars][numTaxa];
+		for (int it=0; it<numTaxa; it++) {
+			for (int ic=0; ic<numChars; ic++)
+				//nucM[ic][it]=CategoricalState.inapplicable;
+				nucM[ic][it]=0L;
+			for (int icAA=0; icAA<numCharsAA; icAA++)
+				if (!CategoricalState.isInapplicable(m[icAA][it])) {
+					for (int ic=icAA*3; ic<icAA*3+3; ic++)
+						nucM[ic][it]=DNAState.A;
+				}
+		}
+		return nucM;
+	}
 	public void run() {
 		MesquiteInteger firstRow = new MesquiteInteger();
 		MesquiteInteger lastRow = new MesquiteInteger();
@@ -137,13 +159,21 @@ class AlignThread extends Thread {
 		//NOTE: at present this deals only with whole character selecting, and with all taxa
 		MesquiteInteger resultCodeFromAligner = new MesquiteInteger(ResultCodes.NO_RESPONSE);
 		long[][] m  = aligner.alignSequences((MCategoricalDistribution)data.getMCharactersDistribution(), null, firstColumn.getValue(), lastColumn.getValue(), firstRow.getValue(), lastRow.getValue(), resultCodeFromAligner);
+		if (aligner.isCodonAlign()) {  // we need to alter m so that it expands to match nucleotides
+			m = getPlaceHolderNucleotideAlignmentFromAminoAcidAlignment(m);
+		}
 		resultCode = resultCodeFromAligner.getValue();
-		alignmentMachine.integrateAlignment(m, data,  firstColumn.getValue(), lastColumn.getValue(), firstRow.getValue(), lastRow.getValue());
+		alignmentMachine.integrateAlignment(m, data,  firstColumn.getValue(), lastColumn.getValue(), firstRow.getValue(), lastRow.getValue(), !aligner.isCodonAlign());
 		if (entireColumnsSelected) {
 			for (int ic = 0; ic<data.getNumChars(); ic++) 
 				data.setSelected(ic,ic>=firstColumn.getValue() && ic<=lastColumn.getValue()- (oldNumChars - data.getNumChars()));
 			if (table !=null) 
 				table.selectColumns(firstColumn.getValue(),lastColumn.getValue()- (oldNumChars - data.getNumChars()));
+		}
+		if (aligner.isCodonAlign() && data instanceof DNAData) {
+			DNAData dData = (DNAData)data;
+			dData.assignCodonPositionsToTerminalChars(data.getNumChars()-oldNumChars);
+
 		}
 		if (separateThread) 
 			data.notifyListeners(ownerModule, new Notification(MesquiteListener.DATA_CHANGED));
