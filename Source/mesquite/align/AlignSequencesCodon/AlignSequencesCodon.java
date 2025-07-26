@@ -37,7 +37,7 @@ import mesquite.lib.ui.MesquiteWindow;
 public class AlignSequencesCodon extends MolecDataEditorInit { //implements CalculationMonitor, SeparateThreadStorage {
 	public void getEmployeeNeeds(){  //This gets called on startup to harvest information; override this and inside, call registerEmployeeNeed
 		EmployeeNeed e2 = registerEmployeeNeed(MultipleSequenceAligner.class, getName() + " needs a module to calculate alignments.",
-		"The sequence aligner is chosen in the Codon Align Entire Matrix submenu");
+		"The sequence aligner is chosen in the Codon Alignment of Entire Matrix submenu");
 	}
 
 	MolecularData data ;

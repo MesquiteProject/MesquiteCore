@@ -1,10 +1,3 @@
-package mesquite.align.lib;
-
-import java.awt.Checkbox;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.io.File;
-
 /* Mesquite source code.  Copyright 1997 and onward, W. Maddison and D. Maddison. 
 
 
@@ -20,6 +13,12 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
  */
 /*~~  */
 
+package mesquite.align.lib;
+
+import java.awt.Checkbox;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.io.File;
 import java.util.Random;
 import mesquite.categ.lib.DNAData;
 import mesquite.categ.lib.MCategoricalDistribution;
@@ -31,25 +30,7 @@ import mesquite.externalCommunication.lib.AppInformationFile;
 import mesquite.externalCommunication.lib.AppUser;
 import mesquite.lib.CommandChecker;
 import mesquite.lib.CommandRecord;
-import mesquite.lib.Debugg;
-import mesquite.lib.ExternalProcessManager;
-import mesquite.lib.MesquiteBoolean;
-import mesquite.lib.MesquiteFile;
-import mesquite.lib.MesquiteInteger;
-import mesquite.lib.MesquiteListener;
-import mesquite.lib.MesquiteMessage;
-import mesquite.lib.MesquiteModule;
-import mesquite.lib.MesquiteThread;
-import mesquite.lib.MesquiteTimer;
-import mesquite.lib.MesquiteTrunk;
-import mesquite.lib.Notification;
-import mesquite.lib.OutputFileProcessor;
-import mesquite.lib.ProcessWatcher;
-import mesquite.lib.ResultCodes;
-import mesquite.lib.ShellScriptRunner;
-import mesquite.lib.ShellScriptUtil;
-import mesquite.lib.Snapshot;
-import mesquite.lib.StringUtil;
+import mesquite.lib.*;
 import mesquite.lib.characters.CharacterData;
 import mesquite.lib.duties.CharMatrixManager;
 import mesquite.lib.duties.FileCoordinator;
