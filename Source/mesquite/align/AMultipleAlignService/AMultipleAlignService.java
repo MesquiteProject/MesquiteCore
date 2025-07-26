@@ -28,7 +28,6 @@ public class AMultipleAlignService extends AMultipleAlignServiceLib{
 	}
 	/*.................................................................................................................*/
 	public boolean startJob(String arguments, Object condition, boolean hiredByName) {
-		Debugg.println("   ************** AMultipleAlignService");
 		aligner= (MultipleSequenceAligner)hireNamedEmployee(MultipleSequenceAligner.class, arguments);
 		if (aligner ==null) {
 			aligner = (MultipleSequenceAligner)hireEmployee(MultipleSequenceAligner.class, "Aligner");

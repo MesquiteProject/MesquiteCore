@@ -19,7 +19,6 @@ public class AMultipleAlignServiceCodon extends AMultipleAlignServiceLib{
 	}
 	/*.................................................................................................................*/
 	public boolean startJob(String arguments, Object condition, boolean hiredByName) {
-		Debugg.println("   ************** AMultipleAlignService CODON");
 		aligner= (MultipleSequenceAligner)hireNamedEmployee(MultipleSequenceAligner.class, arguments);
 		if (aligner ==null) {
 			aligner = (MultipleSequenceAligner)hireEmployee(MultipleSequenceAligner.class, "Aligner");

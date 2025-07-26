@@ -335,8 +335,6 @@ public abstract class ExternalSequenceAligner extends MultipleSequenceAligner im
 
 /*		dialog.addHorizontalLine(1);
 		Checkbox codonAlignCheckBox = null;
-		Debugg.println("   |||||||||||||| codonAlignAvailable: " + codonAlignAvailable);
-		Debugg.println("   |||||||||||||| allowCodonAlign: " + allowCodonAlign);
 		if (!codonAlignAvailable || !allowCodonAlign)
 			codonAlign=false;
 		if (allowCodonAlign) {
@@ -481,9 +479,6 @@ public abstract class ExternalSequenceAligner extends MultipleSequenceAligner im
 	/*.................................................................................................................*/
 	public long[][] alignSequences(MCategoricalDistribution matrix, boolean[] taxaToAlign, int firstSite, int lastSite, int firstTaxon, int lastTaxon, MesquiteInteger resultCode) {
 
-		Debugg.println("\n||||||| isCodonAlign(): " + isCodonAlign() );
-		
-		
 		if (isCodonAlign() && !codonAlignmentAvailable( matrix, taxaToAlign, firstSite,  lastSite,  firstTaxon,  lastTaxon)) {
 			return null;
 		}
