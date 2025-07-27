@@ -24,7 +24,8 @@ import mesquite.lib.MesquiteNumber;
 import mesquite.lib.MesquiteStringBuffer;
 import mesquite.lib.NameReference;
 import mesquite.lib.Notification;
-import mesquite.lib.characters.CharacterData;
+import mesquite.categ.lib.*;
+import mesquite.lib.characters.*;
 import mesquite.lib.characters.CharacterDistribution;
 import mesquite.lib.characters.CharacterModel;
 import mesquite.lib.characters.CharacterState;
@@ -32,6 +33,7 @@ import mesquite.lib.characters.CodonPositionsSet;
 import mesquite.lib.characters.DefaultReference;
 import mesquite.lib.characters.MCharactersDistribution;
 import mesquite.lib.duties.CharMatrixManager;
+import mesquite.lib.duties.*;
 import mesquite.lib.duties.CharactersManager;
 import mesquite.lib.taxa.Taxa;
 import mesquite.lib.ui.ColorDistribution;
@@ -427,7 +429,7 @@ public class DNAData extends MolecularData {
 		CodonPositionsSet modelSet = (CodonPositionsSet) getCurrentSpecsSet(CodonPositionsSet.class);
 		if (modelSet == null) {
 			modelSet= new CodonPositionsSet("Codon Positions", getNumChars(), this);
-			modelSet.addToFile(getFile(), getProject(), (CharactersManager) getMatrixManager().findElementManager(CodonPositionsSet.class)); //THIS
+			modelSet.addToFile(getFile(), getProject(), (CharSpecsSetManager) getMatrixManager().findElementManager(CodonPositionsSet.class)); //THIS
 			setCurrentSpecsSet(modelSet, CodonPositionsSet.class);
 		}
 		if (modelSet != null) {
@@ -454,7 +456,7 @@ public class DNAData extends MolecularData {
 		CodonPositionsSet modelSet = (CodonPositionsSet) getCurrentSpecsSet(CodonPositionsSet.class);
 		if (modelSet == null && canCreateCodPosSet) {
 			modelSet= new CodonPositionsSet("Codon Positions", getNumChars(), this);
-			modelSet.addToFile(getFile(), getProject(), (CharactersManager) getMatrixManager().findElementManager(CodonPositionsSet.class)); //THIS
+			modelSet.addToFile(getFile(), getProject(), (CharSpecsSetManager) getMatrixManager().findElementManager(CodonPositionsSet.class)); //THIS
 			setCurrentSpecsSet(modelSet, CodonPositionsSet.class);
 		}
 		if (modelSet != null) {
