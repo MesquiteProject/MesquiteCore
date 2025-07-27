@@ -2361,7 +2361,8 @@ class FileRead implements CommandRecordHolder, Runnable {
 			}
 			else {
 				ownerModule.alert("Sorry, an interpreter was not found for this file");
-				ownerModule.getProject().removeFile(linkedFile);
+				if (ownerModule.getProject()!=null)
+					ownerModule.getProject().removeFile(linkedFile);
 				ownerModule.decrementMenuResetSuppression();
 				MesquiteTrunk.mesquiteTrunk.refreshBrowser(MesquiteProject.class);
 				linkedFile.fileReadingArguments = null;

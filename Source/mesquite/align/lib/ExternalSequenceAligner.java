@@ -28,8 +28,6 @@ import mesquite.externalCommunication.AppHarvester.AppHarvester;
 import mesquite.externalCommunication.lib.AppChooser;
 import mesquite.externalCommunication.lib.AppInformationFile;
 import mesquite.externalCommunication.lib.AppUser;
-import mesquite.lib.CommandChecker;
-import mesquite.lib.CommandRecord;
 import mesquite.lib.*;
 import mesquite.lib.characters.CharacterData;
 import mesquite.lib.duties.CharMatrixManager;
@@ -508,8 +506,8 @@ public abstract class ExternalSequenceAligner extends MultipleSequenceAligner im
 		if (codonAlign && !isProtein) {
 			DNAData dData = (DNAData)data;
 			dData.collapseGapsInCellBlock(firstTaxon, lastTaxon, 0, data.getNumChars()-1, false);
-			dData.setAllCodonPositions(1,true,false);
-			dataToAlign = dData.getProteinData(null, true);
+			dData.setAllCodonPositions(1,true,true);
+			dataToAlign = dData.getProteinData(null, false);
 			if (dataToAlign==null) {
 				return null;
 			} 
