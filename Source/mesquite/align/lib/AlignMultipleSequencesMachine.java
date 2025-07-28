@@ -172,7 +172,7 @@ class AlignThread extends Thread {
 			}
 			if (aligner.isCodonAlign() && data instanceof DNAData) {
 				DNAData dData = (DNAData)data;
-				dData.setAllCodonPositions(1,true,false);
+				dData.setAllCodonPositions(ownerModule,1,true,false);
 
 			}
 			if (separateThread) 

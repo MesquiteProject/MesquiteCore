@@ -18,12 +18,14 @@ import java.util.Vector;
 
 import mesquite.lib.Associable;
 import mesquite.lib.AssociableWithSpecs;
-import mesquite.lib.Debugg;
+import mesquite.lib.*;
 import mesquite.lib.MesquiteInteger;
 import mesquite.lib.MesquiteMessage;
+import mesquite.lib.MesquiteModule;
 import mesquite.lib.MesquiteNumber;
 import mesquite.lib.MesquiteStringBuffer;
 import mesquite.lib.NameReference;
+import mesquite.lib.NexusBlock;
 import mesquite.lib.Notification;
 import mesquite.categ.lib.*;
 import mesquite.lib.characters.*;
@@ -423,44 +425,31 @@ public class DNAData extends MolecularData {
 	}
 
 	/*.................................................................................................................*/
-	public synchronized void setAllCodonPositions(int position,  boolean calc, boolean notify){
-		try {
-			boolean changed=false;
-			MesquiteNumber num = new MesquiteNumber();
-			num.setValue(position);
-			int numChars = getNumChars();
-			CodonPositionsSet modelSet = (CodonPositionsSet) getCurrentSpecsSet(CodonPositionsSet.class);
-			if (modelSet == null) {
-				modelSet= new CodonPositionsSet("Codon Positions", numChars, this);
-				modelSet.addToFile(getFile(), getProject(), (CharSpecsSetManager) getMatrixManager().findElementManager(CodonPositionsSet.class)); //THIS
-				setCurrentSpecsSet(modelSet, CodonPositionsSet.class);
+	public synchronized void setAllCodonPositions(MesquiteModule module, int position,  boolean calc, boolean notify){
+		boolean changed=false;
+		MesquiteNumber num = new MesquiteNumber();
+		num.setValue(position);
+		int numChars = getNumChars();
+		CodonPositionsSet modelSet = (CodonPositionsSet) getCurrentSpecsSet(CodonPositionsSet.class);
+		if (modelSet == null) {
+			modelSet= new CodonPositionsSet("Codon Positions", numChars, this);
+			modelSet.addToFile(getFile(), getProject(), module.findElementManager(CodonPositionsSet.class)); //THIS
+			setCurrentSpecsSet(modelSet, CodonPositionsSet.class);
+		}
+		if (modelSet != null) {
+			for (int i=0; i<numChars; i++) {
+				modelSet.setValue(i, num);
+				 if (calc) {
+					 num.setValue(num.getIntValue()+1);
+					 if (num.getIntValue()>3)
+						 num.setValue(1);
+				 }
+				 changed = true;
 			}
-			if (modelSet != null) {
-//				Debugg.println("     setting modelSet");
-				for (int i=0; i<numChars; i++) {
-/*					if (num.getIntValue()<1 || num.getIntValue()>3)
-						Debugg.println("    ^^^^^^^^^ "+ num.getIntValue());
-					if (i<0 || i>=numChars)
-						Debugg.println("          i out of bounds "+ i +", numchars: " + numChars);
-*/					modelSet.setValue(i, num);
-					if (calc) {
-						num.setValue(num.getIntValue()+1);
-						if (num.getIntValue()>3)
-							num.setValue(1);
-					}
-					changed = true;
-				}
-//				Debugg.println("     after setting modelSet");
-			} else {
-			}
-			if (notify) {
-				if (changed)
-					notifyListeners(this, new Notification(AssociableWithSpecs.SPECSSET_CHANGED));  //not quite kosher; HOW TO HAVE MODEL SET LISTENERS??? -- modelSource
-			}
-		} catch (Exception e) {
-
-			Debugg.println("\n   WARNING:  EXCEPTION in setAllCodonPositions: " + e);
-
+		}
+		if (notify) {
+			if (changed)
+				notifyListeners(this, new Notification(AssociableWithSpecs.SPECSSET_CHANGED));  //not quite kosher; HOW TO HAVE MODEL SET LISTENERS??? -- modelSource
 		}
 	}
 

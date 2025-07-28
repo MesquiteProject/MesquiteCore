@@ -31,27 +31,7 @@ import mesquite.assoc.lib.TaxaAssociation;
 import mesquite.categ.lib.DNAState;
 import mesquite.categ.lib.MolecularData;
 import mesquite.cont.lib.ContinuousData;
-import mesquite.lib.CommandChecker;
-import mesquite.lib.CommandRecord;
-import mesquite.lib.Commandable;
-import mesquite.lib.FileElement;
-import mesquite.lib.Listable;
-import mesquite.lib.ListableVector;
-import mesquite.lib.MesquiteCommand;
-import mesquite.lib.MesquiteFile;
-import mesquite.lib.MesquiteInteger;
-import mesquite.lib.MesquiteListener;
-import mesquite.lib.MesquiteMessage;
-import mesquite.lib.MesquiteModule;
-import mesquite.lib.MesquiteProject;
-import mesquite.lib.MesquiteString;
-import mesquite.lib.MesquiteThread;
-import mesquite.lib.MesquiteTrunk;
-import mesquite.lib.Notification;
-import mesquite.lib.Parser;
-import mesquite.lib.ProjPanelPanel;
-import mesquite.lib.Snapshot;
-import mesquite.lib.StringUtil;
+import mesquite.lib.*;
 import mesquite.lib.characters.CharacterData;
 import mesquite.lib.duties.ElementManager;
 import mesquite.lib.duties.FileCoordinator;
@@ -388,9 +368,9 @@ class ProjectPanel extends MousePanel implements ClosablePanelContainer{
 	public void requestHeightChange(ClosablePanel panel){
 		resetSizes(getBounds().width, getBounds().height);
 	}
-	public void refreshGraphics(){
+	public synchronized void refreshGraphics(){
 		for (int e = 0; e< elements.size(); e++){
-			ProjPanelPanel panel = ((ProjPanelPanel)elements.elementAt(e));
+			ProjPanelPanel panel  = ((ProjPanelPanel)elements.elementAt(e));
 			panel.refreshGraphics();
 		}
 	}
@@ -668,7 +648,7 @@ class ProjectPanel extends MousePanel implements ClosablePanelContainer{
 
 		return 0;
 	}
-	public void refresh(FileElement e){
+	public synchronized void refresh(FileElement e){
 		for (int i = 0; i<elements.size(); i++){
 			ClosablePanel panel = ((ClosablePanel)elements.elementAt(i));
 			if (panel instanceof ElementPanel && ((ElementPanel)panel).element == e){
@@ -679,100 +659,101 @@ class ProjectPanel extends MousePanel implements ClosablePanelContainer{
 	}
 	//boolean fipOpen = false;
 	//FileIncorporatePanel fip = null;
-	public void refresh(){
-
-		int sutd = sequenceUpToDate();  //integer passed to diagnose why not up to date, for debugging
-
-		if (sutd==0){
-			resetSizes();
-			return;
-		}
-		//if (fip != null)
-		//	fipOpen = fip.isOpen();
-		for (int i = 0; i<elements.size(); i++){
-			ClosablePanel panel = ((ClosablePanel)elements.elementAt(i));
-			remove(panel);
-			panel.dispose();
-		}
-		elements.removeAllElements();
+	public synchronized void refresh(){
 		ElementPanel panel = null;
-		MesquiteProject proj = bfc.getProject();
 
-		addExtraPanel(panel = new ProjectLabelPanel(bfc, this, w,proj));
-		Enumeration efi = bfc.getEmployeeVector().elements();
-		while (efi.hasMoreElements()) {
-			Object obj = efi.nextElement();
-			if (obj instanceof FileInit){
-				FileInit mbe = (FileInit)obj;
-				ProjPanelPanel ppp = mbe.getProjectPanelPanel();
-				if (ppp != null){
-					ppp.setContainer(this);
-					addExtraPanel(ppp);
+			int sutd = sequenceUpToDate();  //integer passed to diagnose why not up to date, for debugging
+
+			if (sutd==0){
+				resetSizes();
+				return;
+			}
+			//if (fip != null)
+			//	fipOpen = fip.isOpen();
+			for (int i = 0; i<elements.size(); i++){
+				ClosablePanel closeablePanel = ((ClosablePanel)elements.elementAt(i));
+				remove(closeablePanel);
+				closeablePanel.dispose();
+			}
+			elements.removeAllElements();
+			MesquiteProject proj = bfc.getProject();
+
+			addExtraPanel(panel = new ProjectLabelPanel(bfc, this, w,proj));
+			Enumeration efi = bfc.getEmployeeVector().elements();
+			while (efi.hasMoreElements()) {
+				Object obj = efi.nextElement();
+				if (obj instanceof FileInit){
+					FileInit mbe = (FileInit)obj;
+					ProjPanelPanel ppp = mbe.getProjectPanelPanel();
+					if (ppp != null){
+						ppp.setContainer(this);
+						addExtraPanel(ppp);
+					}
 				}
 			}
-		}
 
-		panel.setLocation(0,0);
-		for (int i=0; i<proj.getNumberLinkedFiles(); i++){
-			MesquiteFile mf = proj.getFile(i);
-			addExtraPanel(panel = new FilePanel(bfc, this, w,mf));
-			panel.setSize(94, 10);
 			panel.setLocation(0,0);
-		}
-		//addExtraPanel(fip = new FileIncorporatePanel(bfc,this,w));
-		//fip.setOpen(fipOpen);
-		panel.setLocation(0,0);
-		addExtraPanel(panel = new AddElementPanel(bfc, this,w));
-		panel.setOpen(false);
-		panel.setLocation(0,0);
-		if (proj.taxas.size()>0){
-			for (int i = 0; i< proj.taxas.size() && elementInBounds(i, "taxa blocks"); i++){
-				Taxa t = (Taxa)proj.taxas.elementAt(i);
-				addExtraPanel(panel = new TaxaPanel(bfc, this, w, t));
+			for (int i=0; i<proj.getNumberLinkedFiles(); i++){
+				MesquiteFile mf = proj.getFile(i);
+				addExtraPanel(panel = new FilePanel(bfc, this, w,mf));
+				panel.setSize(94, 10);
 				panel.setLocation(0,0);
-				if (proj.getNumberCharMatricesVisible(t)>0){
-					addExtraPanel(panel = new AbundanceMPanel(bfc, this, w, proj, t));
-					if (proj.getNumberCharMatricesVisible(t)<=FileCoordinator.maxLinesOfMatricesTreeBlocksSeparateInPanel)
-						for (int k = 0; k<proj.getNumberCharMatricesVisible(t) && elementInBounds(k, "character matrices"); k++){
-							CharacterData data = proj.getCharacterMatrixVisible(t, k);
-							if (data.isUserVisible()){
-								if (data instanceof MolecularData)
-									addExtraPanel(panel = new MolecMPanel(bfc, this, w,data));
-								else if (data instanceof ContinuousData)
-									addExtraPanel(panel = new ContMPanel(bfc, this, w, data));
-								else if (data instanceof MeristicData)
-									addExtraPanel(panel = new MeristicMPanel(bfc, this, w, data));
-								else
-									addExtraPanel(panel = new CategMPanel(bfc, this, w, data));
-								panel.setLocation(0,0);
-							}
-						}
-				}
-				if (proj.getTreeVectors().size()>0 && proj.getNumberTreeVectors(t)>0){
-					addExtraPanel(panel = new AbundanceTPanel(bfc, this, w, proj, t));
-					if (proj.getTreeVectors().size()<=FileCoordinator.maxLinesOfMatricesTreeBlocksSeparateInPanel)
-						for (int k = 0; k<proj.getNumberOfFileElements(TreeVector.class) && elementInBounds(k, "tree blocks"); k++){
-							TreeVector trees = (TreeVector)proj.getFileElement(TreeVector.class, k);
-							if (trees.getTaxa() == t){
-								addExtraPanel(panel = new TreesRPanel(bfc, this, w, trees));
-								panel.setLocation(0,0);
-							}
-						}
-				}
-
 			}
-		}
-		/*	if (bfc.getProject().getCharacterModels().getNumNotBuiltIn()>0){
+			//addExtraPanel(fip = new FileIncorporatePanel(bfc,this,w));
+			//fip.setOpen(fipOpen);
+			panel.setLocation(0,0);
+			addExtraPanel(panel = new AddElementPanel(bfc, this,w));
+			panel.setOpen(false);
+			panel.setLocation(0,0);
+			
+			if (proj.taxas.size()>0){
+				for (int i = 0; i< proj.taxas.size() && elementInBounds(i, "taxa blocks"); i++){
+					Taxa t = (Taxa)proj.taxas.elementAt(i);
+					addExtraPanel(panel = new TaxaPanel(bfc, this, w, t));
+					panel.setLocation(0,0);
+					if (proj.getNumberCharMatricesVisible(t)>0){
+						addExtraPanel(panel = new AbundanceMPanel(bfc, this, w, proj, t));
+						if (proj.getNumberCharMatricesVisible(t)<=FileCoordinator.maxLinesOfMatricesTreeBlocksSeparateInPanel)
+							for (int k = 0; k<proj.getNumberCharMatricesVisible(t) && elementInBounds(k, "character matrices"); k++){
+								CharacterData data = proj.getCharacterMatrixVisible(t, k);
+								if (data.isUserVisible()){
+									if (data instanceof MolecularData)
+										addExtraPanel(panel = new MolecMPanel(bfc, this, w,data));
+									else if (data instanceof ContinuousData)
+										addExtraPanel(panel = new ContMPanel(bfc, this, w, data));
+									else if (data instanceof MeristicData)
+										addExtraPanel(panel = new MeristicMPanel(bfc, this, w, data));
+									else
+										addExtraPanel(panel = new CategMPanel(bfc, this, w, data));
+									panel.setLocation(0,0);
+								}
+							}
+					}
+					if (proj.getTreeVectors().size()>0 && proj.getNumberTreeVectors(t)>0){
+						addExtraPanel(panel = new AbundanceTPanel(bfc, this, w, proj, t));
+						if (proj.getTreeVectors().size()<=FileCoordinator.maxLinesOfMatricesTreeBlocksSeparateInPanel)
+							for (int k = 0; k<proj.getNumberOfFileElements(TreeVector.class) && elementInBounds(k, "tree blocks"); k++){
+								TreeVector trees = (TreeVector)proj.getFileElement(TreeVector.class, k);
+								if (trees.getTaxa() == t){
+									addExtraPanel(panel = new TreesRPanel(bfc, this, w, trees));
+									panel.setLocation(0,0);
+								}
+							}
+					}
+
+				}
+			}
+			/*	if (bfc.getProject().getCharacterModels().getNumNotBuiltIn()>0){
 			addExtraPanel(panel = new CharModelsPanel(bfc, this, w));
 			panel.setLocation(0,0);
 		}
-		 */
-		if (bfc != null){
-			ListableVector others = bfc.getProject().getOtherElements();
-			if (others.size()>0){
-				for (int i=0; i<others.size(); i++){
-					FileElement f = (FileElement)others.elementAt(i);
-					/*if (f instanceof TaxaGroupVector || f instanceof CharactersGroupVector){
+			 */
+			if (bfc != null){
+				ListableVector others = bfc.getProject().getOtherElements();
+				if (others.size()>0){
+					for (int i=0; i<others.size(); i++){
+						FileElement f = (FileElement)others.elementAt(i);
+						/*if (f instanceof TaxaGroupVector || f instanceof CharactersGroupVector){
 					if (((ListableVector)f).size()>0){
 						addExtraPanel(panel = new GroupsPanel(bfc, this, w, (ListableVector)f));
 						panel.setLocation(0,0);
@@ -782,13 +763,17 @@ class ProjectPanel extends MousePanel implements ClosablePanelContainer{
 					addExtraPanel(panel = new AssocPanel(bfc, this, w, f));
 					panel.setLocation(0,0);
 				}
-				}
+					}
 
+				}
 			}
-		}
-		addExtraPanel(notesPanel = new NotesPanel(bfc, this, w));
-		resetSizes();
+			addExtraPanel(notesPanel = new NotesPanel(bfc, this, w));
+			resetSizes();
+
 	}
+	
+	
+	
 	int scrollOffset = 0;
 	int lowestPanel = 0;
 	int highestTaxaPanel = 0;

@@ -91,7 +91,7 @@ public void resetTitle(){
 	protected int getFontSize(){
 		return MesquiteFrame.resourcesFontSize;
 	}
-	public void refreshGraphics(){
+	public synchronized void refreshGraphics(){
 		if (getBold())
 			setFont(new Font("SansSerif", Font.BOLD, getFontSize()));
 		else
