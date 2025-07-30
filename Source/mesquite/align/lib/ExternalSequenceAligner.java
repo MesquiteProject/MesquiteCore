@@ -746,6 +746,9 @@ public abstract class ExternalSequenceAligner extends MultipleSequenceAligner im
 			else 
 				MesquiteMessage.println("Processing unsuccessful: alignedData is null");
 
+			if (codonAlign && !isProtein)
+				dataToAlign.dispose();   //this is the newly created, extra data object, so dispose of it. 
+			
 			if (tempDataFile!=null)
 				tempDataFile.close();
 			getProject().decrementProjectWindowSuppression();
