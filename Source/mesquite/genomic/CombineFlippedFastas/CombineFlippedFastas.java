@@ -25,6 +25,7 @@ import mesquite.io.InterpretFlippedFastaDNA.InterpretFlippedFastaDNA;
 import mesquite.lib.CommandRecord;
 import mesquite.lib.Listable;
 import mesquite.lib.ListableVector;
+import mesquite.lib.MesquiteBoolean;
 import mesquite.lib.MesquiteFile;
 import mesquite.lib.MesquiteInteger;
 import mesquite.lib.MesquiteListener;
@@ -82,6 +83,7 @@ public class CombineFlippedFastas extends GeneralFileMakerMultiple {
 			\n\nIf you choose to alter the names, note that some of the choices in the next dialog will 	*/
 		if (!goAhead)
 			return false;
+		loadPreferences();
 		if (alterNames == 1) {
 			nameAlterer = (TaxonNameAlterer)hireEmployee(TaxonNameAlterer.class, "How to alter locus names (even though some say \"taxon names\")");
 			if (nameAlterer == null)
@@ -90,6 +92,21 @@ public class CombineFlippedFastas extends GeneralFileMakerMultiple {
 		return true;
 	}
 
+	/*.................................................................................................................*/
+	public void processSingleXMLPreference (String tag, String content) {
+		if ("alterNames".equalsIgnoreCase(tag))
+			alterNames = MesquiteInteger.fromString(content);
+	}
+
+	/*.................................................................................................................*/
+	public String preparePreferencesForXML () {
+		StringBuffer buffer = new StringBuffer(200);
+		StringUtil.appendXMLTag(buffer, 2, "alterNames", alterNames);  
+		return buffer.toString();
+	}
+
+	
+	
 	boolean introductoryOptions() {
 		MesquiteInteger buttonPressed = new MesquiteInteger(1);
 		ExtensibleDialog id = new ExtensibleDialog(containerOfModule(), "Combining Taxonwise FASTA files",buttonPressed);
@@ -134,6 +151,7 @@ public class CombineFlippedFastas extends GeneralFileMakerMultiple {
 
 		if (buttonPressed.getValue()==0)  {
 			alterNames = radio.getValue();
+			storePreferences();
 		}
 		id.dispose();
 		return buttonPressed.getValue()==0;
