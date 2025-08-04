@@ -501,7 +501,8 @@ public class CombineFlippedFastas extends GeneralFileMakerMultiple {
 			}
 			else
 				proj = null;
-			proj.developing = false;
+			if (proj !=null)
+				proj.developing = false;
 		}
 		decrementMenuResetSuppression();
 		return proj;
