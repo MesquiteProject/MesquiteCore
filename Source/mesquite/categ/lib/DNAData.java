@@ -805,6 +805,18 @@ public class DNAData extends MolecularData {
 		}
 		return true;
 	}
+	/*.................................................................................................................*/
+	public boolean allSequencesMultiplesOfThree(MesquiteString message){
+		for (int it=0; it<numChars; it++) {
+			int num = getNumberApplicableInTaxon(it, true);
+			if (num % 3 != 0) {
+				if (message!=null) 
+					message.setValue("taxon " + (it+1) + ", " + getTaxa().getTaxonName(it));
+				return false;
+			}
+		}
+		return true;
+	}
 
 	/* ................................................................................................................. */
 	public  Color alterColorToDeemphasizeDegeneracy(int aa, Color color){

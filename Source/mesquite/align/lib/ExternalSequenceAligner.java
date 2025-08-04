@@ -468,8 +468,12 @@ public abstract class ExternalSequenceAligner extends MultipleSequenceAligner im
 			return false;
 		}
 		DNAData dData = (DNAData)data;
-		if (!dData.allSequencesMultiplesOfThree()) {
-			MesquiteMessage.discreetNotifyUser("Codon alignment cannot be performed as the number of nucleotides in some sequences is not divisible by 3.");
+		MesquiteString message = new MesquiteString();
+		if (!dData.allSequencesMultiplesOfThree(message)) {
+			if (message.isBlank())
+				MesquiteMessage.discreetNotifyUser("Codon alignment cannot be performed as the number of nucleotides in some sequences is not divisible by 3.");
+			else
+				MesquiteMessage.discreetNotifyUser("Codon alignment cannot be performed as the number of nucleotides in " + message.getValue() + " (and possibly others) is not divisible by 3.");
 			return false;
 		}
 		return true;
