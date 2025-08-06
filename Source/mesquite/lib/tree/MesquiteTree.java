@@ -4819,6 +4819,7 @@ public int randomTerminalInClade(int node, Random rng, boolean tipwise){
 	int target = rng.nextInt(numberOfDaughtersOfNode(node));
 	int randomDaughter = indexedDaughterOfNode(node, target);
 	return randomTerminalInClade(randomDaughter, rng, tipwise);
+
 }
 
 /*-----------------------------------------*/
