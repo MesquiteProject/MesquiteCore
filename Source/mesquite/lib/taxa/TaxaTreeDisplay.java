@@ -19,6 +19,7 @@ import java.awt.Graphics;
 import java.awt.Panel;
 import java.awt.Rectangle;
 
+import mesquite.lib.Debugg;
 import mesquite.lib.ListableVector;
 import mesquite.lib.MesquiteMessage;
 import mesquite.lib.MesquiteModule;

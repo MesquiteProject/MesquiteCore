@@ -305,6 +305,13 @@ public class CommandCommunicator {
 		else if ("tellIt".equalsIgnoreCase(command)) {
 			setObjectCommanded(result, useQueue, false);
 		}
+		else if ("xyzzy".equalsIgnoreCase(command)) {
+			MesquiteModule mb = MesquiteTrunk.mesquiteTrunk.findEmployeeWithName("Adv");
+			if (mb != null){
+				mb.doCommand("reset", null,CommandChecker.defaultChecker);
+				setObjectCommanded(mb, useQueue, false);
+			}
+		}
 		else if ("jw".equalsIgnoreCase(command)) {
 			int i = MesquiteInteger.fromString(arguments);
 			ListableVector w = MesquiteTrunk.windowVector;

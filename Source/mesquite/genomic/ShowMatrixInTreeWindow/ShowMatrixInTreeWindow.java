@@ -171,7 +171,8 @@ public class ShowMatrixInTreeWindow extends TreeWindowAssistantI implements Item
 		int[] parameters = Notification.getParameters(notification);
 		if (obj instanceof CharacterData || obj instanceof ListableVector ) {
 			resetMatrix(tree);
-			extra.forceRefresh();
+			if (showMatrix)
+				extra.forceRefresh();
 		}
 	}
 

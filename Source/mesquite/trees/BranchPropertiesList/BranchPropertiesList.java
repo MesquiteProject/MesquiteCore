@@ -38,6 +38,7 @@ import mesquite.lib.MesquiteThread;
 import mesquite.lib.MesquiteTrunk;
 import mesquite.lib.NameReference;
 import mesquite.lib.Notification;
+import mesquite.lib.ObjectArray;
 import mesquite.lib.PropertyRecord;
 import mesquite.lib.Snapshot;
 import mesquite.lib.StringArray;
@@ -301,7 +302,7 @@ public class BranchPropertiesList extends ListModule implements Annotatable {
 
 			Listable chosen = ListDialog.queryList(containerOfModule(), "Property to add to branches/nodes", "What property do you want to add to the branches/nodes of the tree?", null, propertiesToAdd, -1);
 			if (chosen == newProperty){
-				String[] kinds = new String[]{ "Decimal number", "Integer number", "String of text", "Boolean (true/false)"};
+				String[] kinds = new String[]{ "Decimal number", "Integer number", "String of text", "Generic object (e.g., Array of Strings)", "Boolean (true/false)"};
 				MesquiteInteger selectedInDialog = new MesquiteInteger(0);
 				ListDialog dialog = new ListDialog(containerOfModule(), "New Property for branches/nodes", "What kind of property?", false,BranchProperty.branchNodeExplanation, kinds, 8, selectedInDialog, "OK", null, false, true);
 				SingleLineTextField nameF = dialog.addTextField("Name of Property:", "", 30);
@@ -322,6 +323,8 @@ public class BranchPropertiesList extends ListModule implements Annotatable {
 						else if (result == 2)
 							kind = Associable.STRINGS;
 						else if (result == 3)
+							kind = Associable.OBJECTS;  //Note, recorded as kind OBJECTS, but only StringArray objects are editable at present
+						else if (result == 4)
 							kind = Associable.BITS;
 						NameReference nameRef = NameReference.getNameReference(name);
 						//MAKE SURE DOESN't CONFLICT WITH DEFAULT/built in etc. 
@@ -703,6 +706,17 @@ class NodesAssociatesListWindow extends ListWindow implements MesquiteListener {
 				candidateName = name + (nameCount++);
 			NameReference nameRef = tree.makeAssociatedStrings(candidateName);
 			StringArray sa = tree.getAssociatedStrings(nameRef);
+			sa.setBetweenness(betweenness);
+			checkNodeOrientedProperties(betweenness);
+			tree.notifyListeners(this, new Notification(MesquiteListener.ASSOCIATED_CHANGED));
+		}
+		else if (kind == Associable.OBJECTS){
+			String candidateName = name;
+			int nameCount = 2;
+			while (tree.getAssociatedObjects(NameReference.getNameReference(candidateName)) != null)
+				candidateName = name + (nameCount++);
+			NameReference nameRef = tree.makeAssociatedObjects(candidateName);
+			ObjectArray sa = tree.getAssociatedObjects(nameRef);
 			sa.setBetweenness(betweenness);
 			checkNodeOrientedProperties(betweenness);
 			tree.notifyListeners(this, new Notification(MesquiteListener.ASSOCIATED_CHANGED));

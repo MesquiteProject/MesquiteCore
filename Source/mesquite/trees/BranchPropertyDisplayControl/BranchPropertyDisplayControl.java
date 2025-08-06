@@ -26,6 +26,7 @@ import java.awt.Graphics;
 import java.awt.Image;
 import java.awt.Rectangle;
 import java.awt.Shape;
+import java.awt.TextField;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.ItemEvent;
@@ -74,9 +75,11 @@ import mesquite.lib.tree.TreeDisplayLateExtra;
 import mesquite.lib.tree.TreeDisplayRequests;
 import mesquite.lib.tree.TreeDrawing;
 import mesquite.lib.tree.TreeTool;
+import mesquite.lib.ui.AlertDialog;
 import mesquite.lib.ui.ColorDistribution;
 import mesquite.lib.ui.DoubleClickList;
 import mesquite.lib.ui.DoubleField;
+import mesquite.lib.ui.ExtensibleDialog;
 import mesquite.lib.ui.ListDialog;
 import mesquite.lib.ui.MQJLabel;
 import mesquite.lib.ui.MesquiteImage;
@@ -90,7 +93,7 @@ import mesquite.trees.BranchPropertiesAManager.BranchPropertiesAManager;
 public class BranchPropertyDisplayControl extends TreeDisplayAssistantI implements ActionListener, ItemListener, TextListener {
 	public Vector extras;
 
-	
+
 	static boolean asked= false;
 
 	boolean moduleIsNaive = true; //so as not to save the snapshot
@@ -604,10 +607,10 @@ public class BranchPropertyDisplayControl extends TreeDisplayAssistantI implemen
 		return null;
 	}
 
- 	/*.................................................................................................................*/
- 	public boolean isPrerelease(){
- 		return false;  
- 	}
+	/*.................................................................................................................*/
+	public boolean isPrerelease(){
+		return false;  
+	}
 
 	/*.................................................................................................................*/
 	public String getName() {
@@ -687,7 +690,7 @@ class NodeAssocDisplayExtra extends TreeDisplayExtra implements Commandable, Tre
 	}
 
 	/*.................................................................................................................*/
-	String[] stringsAtNode(MesquiteTree tree, int node, boolean showingAll, boolean showNamesRegardless, Vector nameCodes, int forWhere){ //0 elsewhere; 1 = screen display; 2 = popup
+	String[] stringsAtNode(MesquiteTree tree, int node, boolean showingAll, boolean showNamesRegardless, ListableVector nameCodes, int forWhere){ //0 elsewhere; 1 = screen display; 2 = popup
 		Vector nodeStrings = new Vector();
 		for (int p = 0; p< controlModule.propertyList.size(); p++){
 			DisplayableBranchProperty property = (DisplayableBranchProperty)controlModule.propertyList.elementAt(p);
@@ -697,8 +700,9 @@ class NodeAssocDisplayExtra extends TreeDisplayExtra implements Commandable, Tre
 					if (forWhere == 2){ //popup, don't show node label; shownames regardless; show if in tree but unassigned
 						if (property.kind != Associable.BUILTIN || !property.getNameReference().equals(MesquiteTree.nodeLabelNameRef)){
 							nodeStrings.addElement(property.getStringAtNode(tree, node, showNamesRegardless, true));
-							if (nameCodes != null)
-								nameCodes.addElement(property);
+							if (nameCodes != null) {
+								nameCodes.addElement(property, false);
+							}
 						}
 					}
 				}
@@ -719,18 +723,20 @@ class NodeAssocDisplayExtra extends TreeDisplayExtra implements Commandable, Tre
 				nL +=  "[none]";
 			else
 				nL += myTree.getNodeLabel(branchFound);
-			popupKeys.addElement(new DisplayableBranchProperty(MesquiteTree.nodeLabelName, Associable.BUILTIN));
+			popupKeys.removeAllElements(false);
+			popupKeys.addElement(new DisplayableBranchProperty(MesquiteTree.nodeLabelName, Associable.BUILTIN), false);
 			addToPopup(popup, nL, branchFound, responseNumber++);
 
 			addToPopup(popup, "Branch/node number: " + branchFound, branchFound, responseNumber++);
-			popupKeys.addElement(new DisplayableBranchProperty("nodenumber", Associable.BUILTIN));
+			popupKeys.addElement(new DisplayableBranchProperty("nodenumber", Associable.BUILTIN), false);
 			addToPopup(popup, "-", branchFound, responseNumber++);
-			popupKeys.addElement(new DisplayableBranchProperty("dash", Associable.BUILTIN));
+			popupKeys.addElement(new DisplayableBranchProperty("dash", Associable.BUILTIN), false);
 			String[] strings = stringsAtNode(myTree, branchFound, true, true, popupKeys, 2);
 			if (strings != null)
-				for (int i = 0; i<strings.length; i++)
+				for (int i = 0; i<strings.length; i++) {
 					addToPopup(popup, strings[i], branchFound, responseNumber++);
-
+				}
+			
 			addToPopup(popup, "-", branchFound, -1);
 			if (!lengthsConsistent(myTree, branchFound)){
 				addToPopup(popup, "Inconsistency in branch lengths!", branchFound, -1);
@@ -750,7 +756,7 @@ class NodeAssocDisplayExtra extends TreeDisplayExtra implements Commandable, Tre
 	}
 	/*...........................................*/
 	MesquitePopup myPopup;
-	Vector popupKeys = new Vector();
+	ListableVector popupKeys = new ListableVector();
 	MesquiteInteger pos = new MesquiteInteger();
 	/*...........................................*/
 	void addToPopup(MesquitePopup popup, String s, int node, int response){
@@ -763,20 +769,20 @@ class NodeAssocDisplayExtra extends TreeDisplayExtra implements Commandable, Tre
 		if (myPopup==null)
 			myPopup = new MesquitePopup(treeDisplay);
 		myPopup.removeAll();
-		popupKeys.removeAllElements();
+		popupKeys.removeAllElements(false);
 		int responseNumber = 0;
 		String nL = "Node Label: ";
 		if (StringUtil.blank(myTree.getNodeLabel(branchFound)))
 			nL +=  "[none]";
 		else
 			nL += myTree.getNodeLabel(branchFound);
-		popupKeys.addElement(new DisplayableBranchProperty(MesquiteTree.nodeLabelName, Associable.BUILTIN));
+		popupKeys.addElement(new DisplayableBranchProperty(MesquiteTree.nodeLabelName, Associable.BUILTIN), false);
 		addToPopup(myPopup,nL, branchFound, responseNumber++);
 
 		addToPopup(myPopup,"Branch/node number: " + branchFound, branchFound, responseNumber++);
-		popupKeys.addElement(new DisplayableBranchProperty("nodenumber", Associable.BUILTIN));
+		popupKeys.addElement(new DisplayableBranchProperty("nodenumber", Associable.BUILTIN), false);
 		addToPopup(myPopup,"-", branchFound, responseNumber++);
-		popupKeys.addElement(new DisplayableBranchProperty("dash", Associable.BUILTIN));
+		popupKeys.addElement(new DisplayableBranchProperty("dash", Associable.BUILTIN), false);
 		String[] strings = stringsAtNode(myTree, branchFound, true, true, popupKeys, 2);
 		if (strings != null)
 			for (int i = 0; i<strings.length; i++)
@@ -880,7 +886,56 @@ class NodeAssocDisplayExtra extends TreeDisplayExtra implements Commandable, Tre
 						//controlModule.discreetAlert("This is a floating-point (double) value attached to the branch of the tree, with name \"" + name + "\" and value \"" + stringAtNode(myTree, branchFound,  name,  kind, false) + "\".");
 					}
 					else  if (kind == Associable.OBJECTS) {
-						Object d = myTree.getAssociatedObject(nameRef, branchFound);  
+						Object d = myTree.getAssociatedObject(nameRef, branchFound);
+						if (d == null && myTree.anyAssociatedObject(nameRef)){
+							Object example = myTree.exampleAssociatedObject(nameRef);
+							if (example == null){
+								if (AlertDialog.query(controlModule.containerOfModule(), "Make array of strings?", "Do you want to attach an array of strings to this branch/node?"))
+									d = new StringArray(0);
+								else
+								return null;
+							}
+							else if (example instanceof StringArray){
+								d = new StringArray(0);
+							}
+						}
+						if (d instanceof StringArray){
+							StringArray sArray = (StringArray)d;
+							if (sArray.getSize()>8){
+								controlModule.discreetAlert("This is an array of strings of text. There are too many strings to be edited in this version of Mesquite.");
+								return null;
+							}
+							MesquiteInteger buttonPressed = new MesquiteInteger(1);
+							ExtensibleDialog dialog = new ExtensibleDialog(controlModule.containerOfModule(),  "Edit " + nameRef.getName(),buttonPressed);  //MesquiteTrunk.mesquiteTrunk.containerOfModule()
+							dialog.addLabel("Enter text of elements");
+							TextField[] tfs = new TextField[8];
+							for (int i = 0; i<8; i++){
+								String text = sArray.getValue(i);
+								if (StringUtil.blank(text))
+									text = "";
+								tfs[i] = dialog.addTextField(text);
+							}
+							dialog.completeAndShowDialog(true);
+							if (buttonPressed.getValue()==0)  {
+								int count = 0;
+								for (int i = 0; i<8; i++){
+									sArray.setValue(i, null);
+									String text = tfs[i].getText();
+									if (!StringUtil.blank(text)){
+										if (count>= sArray.getSize())
+											sArray.resetSize(count+1);
+										sArray.setValue(count, text);
+										count++;
+									}
+									
+
+								}
+								myTree.setAssociatedObject(nameRef, branchFound, sArray);
+								myTree.notifyListeners(this, new Notification(MesquiteListener.ASSOCIATED_CHANGED));
+							}
+							dialog.dispose();
+							return null;
+						}
 						String typeName = "an unspecified object";
 						if (d instanceof DoubleArray)
 							typeName = "an array of floating-point numbers";

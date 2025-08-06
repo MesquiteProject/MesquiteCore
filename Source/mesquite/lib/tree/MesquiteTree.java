@@ -2080,6 +2080,28 @@ public class MesquiteTree extends Associable implements AdjustableTree, Listable
 	}
 	/*-----------------------------------------*/
 	/** Returns list of terminal taxa of clade of node.*/
+	public int[] getTerminalNodes(int node){
+		if (!inBounds(node))
+			return null;
+		int numTerms = numberOfTerminalsInClade(node);
+		int[] result = new int[numTerms];
+		MesquiteInteger count = new MesquiteInteger(0);
+		if (numTerms>0)
+			fillTermArN(node, result, count);
+		return result;
+	}
+	/*-----------------------------------------*/
+	private void fillTermArN(int node, int[] ar, MesquiteInteger count){
+		if (nodeIsTerminal(node)) {
+			ar[count.getValue()] = node;
+			count.increment();
+		}
+		else
+			for (int d = firstDaughterOfNode(node); nodeExists(d); d = nextSisterOfNode(d))
+				fillTermArN(d, ar, count);
+	}
+	/*-----------------------------------------*/
+	/** Returns list of terminal taxa of clade of node.*/
 	public int[] getTerminalTaxa(int node){
 		if (!inBounds(node))
 			return null;
@@ -4785,6 +4807,20 @@ private  void sortDescendants(int node, boolean leftToRight){
 		}
 	}
 }
+
+/*-----------------------------------------*/
+public int randomTerminalInClade(int node, Random rng, boolean tipwise){
+	if (nodeIsTerminal(node))
+		return node;
+	if (tipwise){
+		int[] tips = getTerminalNodes(node);
+		return tips[rng.nextInt(tips.length)];
+	}
+	int target = rng.nextInt(numberOfDaughtersOfNode(node));
+	int randomDaughter = indexedDaughterOfNode(node, target);
+	return randomTerminalInClade(randomDaughter, rng, tipwise);
+}
+
 /*-----------------------------------------*/
 /** Returns the number of a randomly chosen node.*/
 public int randomNode(RandomBetween rng, boolean allowRoot){

@@ -2552,6 +2552,22 @@ public ListableVector getAssociatesOfKind(int kind){
 		return null;
 	}
 
+	/** Returns an example associated object of that name, not necessarily of same part */
+	public Object exampleAssociatedObject(NameReference nRef){
+		if (objects==null || nRef==null)
+			return null;
+		for (int i=0; i<objects.size(); i++) {
+			ObjectArray b = (ObjectArray)objects.elementAt(i);
+			if (b !=null && nRef.equals(b.getNameReference())) {
+				for (int p = 0; p<getNumberOfParts(); p++){
+					Object obj = b.getValue(p);
+					if (obj != null)
+						return obj; 
+				}
+			}
+		}
+		return null;
+	}
 	/** Returns true iff there is at least one associate object of type nRef */
 	public boolean anyAssociatedObject(NameReference nRef){
 		if (objects==null || nRef==null)
