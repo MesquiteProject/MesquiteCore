@@ -306,7 +306,7 @@ public class CommandCommunicator {
 			setObjectCommanded(result, useQueue, false);
 		}
 		else if ("xyzzy".equalsIgnoreCase(command)) {
-			MesquiteModule mb = MesquiteTrunk.mesquiteTrunk.findEmployeeWithName("Adv");
+			MesquiteModule mb = MesquiteTrunk.mesquiteTrunk.findEmployeeWithName("ZoL");
 			if (mb != null){
 				mb.doCommand("reset", null,CommandChecker.defaultChecker);
 				setObjectCommanded(mb, useQueue, false);
