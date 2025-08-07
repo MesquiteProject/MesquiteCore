@@ -2079,6 +2079,25 @@ public class MesquiteTree extends Associable implements AdjustableTree, Listable
 		return b;
 	}
 	/*-----------------------------------------*/
+	/** Returns list of nodes of clade of node.*/
+	public int[] getAllNodes(int node){
+		if (!inBounds(node))
+			return null;
+		int numNodes = numberOfNodesInClade(node);
+		int[] result = new int[numNodes];
+		MesquiteInteger count = new MesquiteInteger(0);
+		if (numNodes>0)
+			fillNodesArN(node, result, count);
+		return result;
+	}
+	/*-----------------------------------------*/
+	private void fillNodesArN(int node, int[] ar, MesquiteInteger count){
+		ar[count.getValue()] = node;
+		count.increment();
+		for (int d = firstDaughterOfNode(node); nodeExists(d); d = nextSisterOfNode(d))
+			fillNodesArN(d, ar, count);
+	}
+	/*-----------------------------------------*/
 	/** Returns list of terminal taxa of clade of node.*/
 	public int[] getTerminalNodes(int node){
 		if (!inBounds(node))
@@ -2700,7 +2719,7 @@ public class MesquiteTree extends Associable implements AdjustableTree, Listable
 		}
 		return nts;
 	}
-	
+
 	void collectTerms(int anc, int node, int[] terms, MesquiteInteger k){
 		if (nodeIsTerminal(node)){
 			terms[k.getValue()] = taxonNumberOfNode(node);
@@ -3126,7 +3145,7 @@ public class MesquiteTree extends Associable implements AdjustableTree, Listable
 			if (taxon>=0){
 				System.out.println("Observed taxon " + c + " in ancestral position; not yet allowed by Mesquite.  Tree will not be read in properly");
 			}
-			
+
 			setNodeLabel(c, sN); 
 
 			if (!MesquiteNumber.isNumber(c) && taxa!=null && taxa.getClades()!=null && taxa.getClades().findClade(c) == null){
@@ -3225,7 +3244,7 @@ public class MesquiteTree extends Associable implements AdjustableTree, Listable
 		nodeInfo= nodeInfo.replace("\"", "\'");  // replace double quotes with single quotes
 		return nodeInfo;
 	}
-*/
+	 */
 
 	private void readAssociatedInTree (String TreeDescription, int node, MesquiteInteger stringLoc) {
 		readAssociated(TreeDescription, node, stringLoc,whitespaceInNewickComments, punctuationInNewickComments, predefinedDouble(TreeDescription, stringLoc));
@@ -3475,7 +3494,7 @@ and the tree has been rerooted. Properties that belong to nodes implicitly have 
 					return CONTINUE;
 				}
 				else { //same taxon encountered previously at tip!
-					
+
 					int termN = nodeOfTaxonNumber(taxonNumber);
 					if (motherOfNode(termN) != motherOfNode(node)) { //protect against redundant references; NOTE: may not protect if more than two parents
 						//apparent reticulation found!
@@ -3625,7 +3644,7 @@ and the tree has been rerooted. Properties that belong to nodes implicitly have 
 	private String preprocessForDialect(String tD, ObjectContainer correspondenceContainer, String dialectName){
 		if (dialects.indexOfByNameIgnoreCase(dialectName)>=0){
 			NewickDialect dialect = (NewickDialect)dialects.elementAt(dialects.indexOfByNameIgnoreCase(dialectName));
-		punctuationInNewickComments = dialect.getPunctuation();
+			punctuationInNewickComments = dialect.getPunctuation();
 			whitespaceInNewickComments = dialect.getWhitespace();
 			if (punctuationInNewickComments == null)
 				punctuationInNewickComments = wellTokenizedNewickCommentPunctuation;  
@@ -4360,1884 +4379,1893 @@ and the tree has been rerooted. Properties that belong to nodes implicitly have 
 		return d;
 	}
 
-/*-----------------------------------------*/
-private void processAttachedProperties(){
-	Object or = getAttachment("unrooted");
-	Object ob = getAttachment("polytomiesHard");
+	/*-----------------------------------------*/
+	private void processAttachedProperties(){
+		Object or = getAttachment("unrooted");
+		Object ob = getAttachment("polytomiesHard");
 
-	MesquiteBoolean mr = null;
-	MesquiteBoolean mb = null;
-	if (or instanceof MesquiteBoolean)
-		mr = (MesquiteBoolean)or;
-	if (ob instanceof MesquiteBoolean)
-		mb = (MesquiteBoolean)ob;
-	if (mr !=null){
-		setRooted(!mr.getValue(), false);
-		detach(mr);
+		MesquiteBoolean mr = null;
+		MesquiteBoolean mb = null;
+		if (or instanceof MesquiteBoolean)
+			mr = (MesquiteBoolean)or;
+		if (ob instanceof MesquiteBoolean)
+			mb = (MesquiteBoolean)ob;
+		if (mr !=null){
+			setRooted(!mr.getValue(), false);
+			detach(mr);
+		}
+		if (mb !=null){
+			if (mb.getValue())
+				setPolytomiesAssumption(0, false);
+			else
+				setPolytomiesAssumption(1, false);
+			detach(mb);
+		}
 	}
-	if (mb !=null){
-		if (mb.getValue())
-			setPolytomiesAssumption(0, false);
-		else
-			setPolytomiesAssumption(1, false);
-		detach(mb);
-	}
-}
 
-void readAppliesToNodes(String toWhom){
-	NameReference nRef = NameReference.getNameReference(toWhom);
-	Bits b = getAssociatedBits(nRef);
-	if (b != null)
-		b.setBetweenness(false);
-	else {
-		LongArray bL = getAssociatedLongs(nRef);
-		if (bL != null)
-			bL.setBetweenness(false);
-		else {
-			DoubleArray bD = getAssociatedDoubles(nRef);
-			if (bD != null)
-				bD.setBetweenness(false);
-			else {
-				StringArray bS = getAssociatedStrings(nRef);
-				if (bS != null)
-					bS.setBetweenness(false);
-				else {
-					ObjectArray bO = getAssociatedObjects(nRef);
-					if (bO != null)
-						bO.setBetweenness(false);
-				}
-			}
-		}
-	}
-}
-
-public boolean readAttachment(String assocString, MesquiteInteger pos){
-	//assumes already past "<", and we're about to read a key
-	int oldPos = pos.getValue();  //just in case fails
-	String key=ParseUtil.getToken(assocString, pos);
-	if (StringUtil.blank(key))
-		return false;
-	if (key.equals(";")){
-		pos.decrement(); //go back to leave the semicolon to be read
-		return false;
-	}
-	if (key.equals("U")){
-		setRooted(false, false);
-		return true;
-	}
-	else if (key.equals("R")){
-		setRooted(true, false);
-		return true;
-	}
-	else if (key.equals("W")){
-		double numerator = MesquiteDouble.fromString(assocString, pos);
-		int justBeforeSlash = pos.getValue();
-		String slash = ParseUtil.getToken(assocString, pos);
-		double denominator = MesquiteDouble.fromString(assocString, pos);
-		double w = 0;
-		if (slash !=null && "/".equals(slash))
-			w = numerator/denominator;
-		else {
-			w = numerator;
-			pos.setValue(justBeforeSlash);
-		}
-		if (MesquiteDouble.isCombinable(w)) {
-			MesquiteDouble d = new MesquiteDouble(w);
-			d.setName(TreesManager.WEIGHT);
-			attachIfUniqueName(d);
-		}
-		return true;
-	}
-	ParseUtil.getToken(assocString, pos); //eating up equals
-	String value = ParseUtil.getToken(assocString, pos); //finding value
-	if (StringUtil.blank(value))
-		return false;
-
-	if (key.equalsIgnoreCase("appliesToNodes")){
-		if (value.equals("{")){
-			String value2 = ParseUtil.getToken(assocString, pos); //finding value
-			while (StringUtil.notEmpty(value2) && !value2.equals("}")){
-				readAppliesToNodes(value2);
-				value2 = ParseUtil.getToken(assocString, pos); //finding value
-			}
-		}
-		else {
-			readAppliesToNodes(value);
-		}
-	}
-	else if (key.equalsIgnoreCase("treeProperties")) { //used fleetingly
-	}
-	else if (key.equalsIgnoreCase("setBetweenBits")) {
-		NameReference nRef = NameReference.getNameReference(value);
+	void readAppliesToNodes(String toWhom){
+		NameReference nRef = NameReference.getNameReference(toWhom);
 		Bits b = getAssociatedBits(nRef);
 		if (b != null)
-			b.setBetweenness(true);
-	}
-	else if (key.equalsIgnoreCase("setBetweenLong")) {
-		NameReference nRef = NameReference.getNameReference(value);
-		LongArray b = getAssociatedLongs(nRef);
-		if (b != null)
-			b.setBetweenness(true);
-	}
-	else if (key.equalsIgnoreCase("setBetweenDouble")) {
-		NameReference nRef = NameReference.getNameReference(value);
-		DoubleArray b = getAssociatedDoubles(nRef);
-		if (b != null)
-			b.setBetweenness(true);
-	}
-	else if (key.equalsIgnoreCase("setBetweenObject")) {
-		NameReference nRef = NameReference.getNameReference(value);
-		ObjectArray b = getAssociatedObjects(nRef);
-		if (b != null)
-			b.setBetweenness(true);
-	}
-	else { //can't read it, so go back!
-		pos.setValue(oldPos);
-		return super.readAttachment(assocString, pos);
-	}
-	return true;
-}
-
-/*-----------------------------------------*/
-/** Branches a terminal node off taxon number taxonNum, and assigns it taxon newNumber.  If newNumber < 0, then assign next available taxon not in tree  */
-public  void splitTerminal(int taxonNum, int newNumber, boolean notify) {
-	int node = nodeOfTaxonNumber(taxonNum);
-	if (nodeExists(node)) {
-		int N1= sproutDaughter(node, notify);
-		setTaxonNumber(N1, taxonNum, false);
-		int N2= sproutDaughter(node, notify);
-		if (newNumber<0){
-			for (int it = 0; it< taxa.getNumTaxa(); it++){
-				if (!taxonInTree(it)){  // found taxon not in tree
-					newNumber = it;
-					break;
+			b.setBetweenness(false);
+		else {
+			LongArray bL = getAssociatedLongs(nRef);
+			if (bL != null)
+				bL.setBetweenness(false);
+			else {
+				DoubleArray bD = getAssociatedDoubles(nRef);
+				if (bD != null)
+					bD.setBetweenness(false);
+				else {
+					StringArray bS = getAssociatedStrings(nRef);
+					if (bS != null)
+						bS.setBetweenness(false);
+					else {
+						ObjectArray bO = getAssociatedObjects(nRef);
+						if (bO != null)
+							bO.setBetweenness(false);
+					}
 				}
 			}
 		}
-		setTaxonNumber(N2, newNumber, false);
-		setTaxonNumber(node, -1, false);
-		incrementVersion(MesquiteListener.BRANCHES_REARRANGED,notify);
 	}
 
-}
-/*-----------------------------------------*/
-/** Sprouts a new daughter from node and returns it. */
-public  int sproutDaughter(int node, boolean notify) {
-	if (!nodeExists(node))
-		return 0;
-	int op = openNode();
-	if (op == 0)
-		return 0;
-	mother[op] = node;
-
-	if (!nodeExists(firstDaughterOfNode(node)))
-		firstDaughter[node] = op;
-	else
-		nextSister[lastDaughterOfNode(node)] = op;
-	if (branchLength!=null)
-		branchLength[op] = MesquiteDouble.unassigned; //add 1. 1 just in case
-	incrementVersion(MesquiteListener.BRANCHES_REARRANGED,notify);
-	return op;
-}
-
-/*-----------------------------------------*/
-//VIRTUAL DELETION. See also LEGAL system as an alternative
-/** Marks taxon (and any nodes required by it) as deleted virtually in the boolean array.  Used in conjunction with subsequent
- * traversals that ignore the deleted area, e.g. for ignoring taxa with missing data.*/
-public void virtualDeleteTaxon(int it, boolean[] deleted){
-	if (deleted == null)
-		return;
-	int node = nodeOfTaxonNumber(it);
-	int mother = motherOfNode(node);
-	if (!nodeExists(node) || node >= deleted.length || mother >= deleted.length)
-		return;
-	deleted[node] = true;
-	virtualDeleteReviewClades(getRoot(), deleted);
-	virtualDeleteReviewAttachPoints(getRoot(), deleted);
-
-}
-/*-----------------------------------------*/
-/* Ensures that virtual deletion doesn't leave orphaned internal nodes*/
-private void virtualDeleteReviewClades(int node, boolean[] deleted){
-	boolean allDescDeleted = true;
-	if (nodeIsTerminal(node))
-		return;
-	if (node < deleted.length)
-		deleted[node] = false;
-	for (int d = firstDaughterOfNode(node); nodeExists(d); d = nextSisterOfNode(d)){
-		virtualDeleteReviewClades(d, deleted);
-		if (d < deleted.length && !deleted[d])
-			allDescDeleted = false;
-	}
-	if (allDescDeleted && node < deleted.length)
-		deleted[node] = true;
-
-}
-/*-----------------------------------------*/
-/* Ensures that virtual deletion doesn't leave orphaned internal nodes*/
-private void virtualDeleteReviewAttachPoints(int node, boolean[] deleted){
-	if (nodeIsTerminal(node))
-		return;
-	int numNotDeleted = 0;
-	for (int d = firstDaughterOfNode(node); nodeExists(d); d = nextSisterOfNode(d)){
-		if (d < deleted.length && !deleted[d])
-			numNotDeleted++;
-		virtualDeleteReviewAttachPoints(d, deleted);
-	}
-	if (numNotDeleted<2)
-		deleted[node] = true;
-
-}
-/*-----------------------------------------*/
-/** Writes a tree description into the StringBuffer, filtering virtually deleted nodes */
-public void writeTree(int node, StringBuffer treeDescription, boolean[] deleted) {
-	if (nodeIsInternal(node)) {
-		treeDescription.append('(');
-		int thisSister = firstDaughterOfNode(node);
-		writeTree(thisSister, treeDescription, deleted);
-		while (nodeExists(thisSister = nextSisterOfNode(thisSister))) {
-			treeDescription.append(',');
-			writeTree(thisSister, treeDescription, deleted);
+	public boolean readAttachment(String assocString, MesquiteInteger pos){
+		//assumes already past "<", and we're about to read a key
+		int oldPos = pos.getValue();  //just in case fails
+		String key=ParseUtil.getToken(assocString, pos);
+		if (StringUtil.blank(key))
+			return false;
+		if (key.equals(";")){
+			pos.decrement(); //go back to leave the semicolon to be read
+			return false;
 		}
-		treeDescription.append(')');
-	}
-	else {
-		treeDescription.append(Integer.toString(Taxon.toExternal(taxonNumberOfNode(node))));
-	}
-	if (deleted != null && node < deleted.length && deleted[node])
-		treeDescription.append("*");
-	//if (!branchLengthUnassigned(node, deleted)) {
-	treeDescription.append(':');
-	treeDescription.append(MesquiteDouble.toStringDigitsSpecified(getBranchLength(node, 1.0, deleted), -1)); //add -1 to signal full accuracy 17 Dec 01
-	//}
-}
-/*-----------------------------------------*/
-/** Returns the root of the tree (i.e., the most recent common ancestor of the terminal taxa in the tree.*/
-public int getRoot(boolean[] deleted) {
-	if (deleted == null)
-		return root;
-	return findFirstNonDeleted(root, -1, deleted);
-}
-/*-----------------------------------------*/
-/** Returns whether root is a real node, considering virtually deleted nodes.*/
-public boolean rootIsReal(boolean[] deleted) {
-	if (deleted == null)
-		return rootIsReal();
-	if (root < deleted.length && deleted[root])
+		if (key.equals("U")){
+			setRooted(false, false);
+			return true;
+		}
+		else if (key.equals("R")){
+			setRooted(true, false);
+			return true;
+		}
+		else if (key.equals("W")){
+			double numerator = MesquiteDouble.fromString(assocString, pos);
+			int justBeforeSlash = pos.getValue();
+			String slash = ParseUtil.getToken(assocString, pos);
+			double denominator = MesquiteDouble.fromString(assocString, pos);
+			double w = 0;
+			if (slash !=null && "/".equals(slash))
+				w = numerator/denominator;
+			else {
+				w = numerator;
+				pos.setValue(justBeforeSlash);
+			}
+			if (MesquiteDouble.isCombinable(w)) {
+				MesquiteDouble d = new MesquiteDouble(w);
+				d.setName(TreesManager.WEIGHT);
+				attachIfUniqueName(d);
+			}
+			return true;
+		}
+		ParseUtil.getToken(assocString, pos); //eating up equals
+		String value = ParseUtil.getToken(assocString, pos); //finding value
+		if (StringUtil.blank(value))
+			return false;
+
+		if (key.equalsIgnoreCase("appliesToNodes")){
+			if (value.equals("{")){
+				String value2 = ParseUtil.getToken(assocString, pos); //finding value
+				while (StringUtil.notEmpty(value2) && !value2.equals("}")){
+					readAppliesToNodes(value2);
+					value2 = ParseUtil.getToken(assocString, pos); //finding value
+				}
+			}
+			else {
+				readAppliesToNodes(value);
+			}
+		}
+		else if (key.equalsIgnoreCase("treeProperties")) { //used fleetingly
+		}
+		else if (key.equalsIgnoreCase("setBetweenBits")) {
+			NameReference nRef = NameReference.getNameReference(value);
+			Bits b = getAssociatedBits(nRef);
+			if (b != null)
+				b.setBetweenness(true);
+		}
+		else if (key.equalsIgnoreCase("setBetweenLong")) {
+			NameReference nRef = NameReference.getNameReference(value);
+			LongArray b = getAssociatedLongs(nRef);
+			if (b != null)
+				b.setBetweenness(true);
+		}
+		else if (key.equalsIgnoreCase("setBetweenDouble")) {
+			NameReference nRef = NameReference.getNameReference(value);
+			DoubleArray b = getAssociatedDoubles(nRef);
+			if (b != null)
+				b.setBetweenness(true);
+		}
+		else if (key.equalsIgnoreCase("setBetweenObject")) {
+			NameReference nRef = NameReference.getNameReference(value);
+			ObjectArray b = getAssociatedObjects(nRef);
+			if (b != null)
+				b.setBetweenness(true);
+		}
+		else { //can't read it, so go back!
+			pos.setValue(oldPos);
+			return super.readAttachment(assocString, pos);
+		}
 		return true;
-	return rootIsReal();
-}
-/*-----------------------------------------*/
-/** Returns the first (left-most) daughter of node filtering virtuallyDeleted nodes.*/
-public  int firstDaughterOfNode(int node, boolean[] deleted) {
-	if (deleted == null)
-		return firstDaughterOfNode(node);
-	if (!inBounds(node) || node >= deleted.length || deleted[node])
-		return 0;
-	return findFirstNonDeleted(node, node, deleted);
-	/*int d = node;
+	}
+
+	/*-----------------------------------------*/
+	/** Branches a terminal node off taxon number taxonNum, and assigns it taxon newNumber.  If newNumber < 0, then assign next available taxon not in tree  */
+	public  void splitTerminal(int taxonNum, int newNumber, boolean notify) {
+		int node = nodeOfTaxonNumber(taxonNum);
+		if (nodeExists(node)) {
+			int N1= sproutDaughter(node, notify);
+			setTaxonNumber(N1, taxonNum, false);
+			int N2= sproutDaughter(node, notify);
+			if (newNumber<0){
+				for (int it = 0; it< taxa.getNumTaxa(); it++){
+					if (!taxonInTree(it)){  // found taxon not in tree
+						newNumber = it;
+						break;
+					}
+				}
+			}
+			setTaxonNumber(N2, newNumber, false);
+			setTaxonNumber(node, -1, false);
+			incrementVersion(MesquiteListener.BRANCHES_REARRANGED,notify);
+		}
+
+	}
+	/*-----------------------------------------*/
+	/** Sprouts a new daughter from node and returns it. */
+	public  int sproutDaughter(int node, boolean notify) {
+		if (!nodeExists(node))
+			return 0;
+		int op = openNode();
+		if (op == 0)
+			return 0;
+		mother[op] = node;
+
+		if (!nodeExists(firstDaughterOfNode(node)))
+			firstDaughter[node] = op;
+		else
+			nextSister[lastDaughterOfNode(node)] = op;
+		if (branchLength!=null)
+			branchLength[op] = MesquiteDouble.unassigned; //add 1. 1 just in case
+		incrementVersion(MesquiteListener.BRANCHES_REARRANGED,notify);
+		return op;
+	}
+
+	/*-----------------------------------------*/
+	//VIRTUAL DELETION. See also LEGAL system as an alternative
+	/** Marks taxon (and any nodes required by it) as deleted virtually in the boolean array.  Used in conjunction with subsequent
+	 * traversals that ignore the deleted area, e.g. for ignoring taxa with missing data.*/
+	public void virtualDeleteTaxon(int it, boolean[] deleted){
+		if (deleted == null)
+			return;
+		int node = nodeOfTaxonNumber(it);
+		int mother = motherOfNode(node);
+		if (!nodeExists(node) || node >= deleted.length || mother >= deleted.length)
+			return;
+		deleted[node] = true;
+		virtualDeleteReviewClades(getRoot(), deleted);
+		virtualDeleteReviewAttachPoints(getRoot(), deleted);
+
+	}
+	/*-----------------------------------------*/
+	/* Ensures that virtual deletion doesn't leave orphaned internal nodes*/
+	private void virtualDeleteReviewClades(int node, boolean[] deleted){
+		boolean allDescDeleted = true;
+		if (nodeIsTerminal(node))
+			return;
+		if (node < deleted.length)
+			deleted[node] = false;
+		for (int d = firstDaughterOfNode(node); nodeExists(d); d = nextSisterOfNode(d)){
+			virtualDeleteReviewClades(d, deleted);
+			if (d < deleted.length && !deleted[d])
+				allDescDeleted = false;
+		}
+		if (allDescDeleted && node < deleted.length)
+			deleted[node] = true;
+
+	}
+	/*-----------------------------------------*/
+	/* Ensures that virtual deletion doesn't leave orphaned internal nodes*/
+	private void virtualDeleteReviewAttachPoints(int node, boolean[] deleted){
+		if (nodeIsTerminal(node))
+			return;
+		int numNotDeleted = 0;
+		for (int d = firstDaughterOfNode(node); nodeExists(d); d = nextSisterOfNode(d)){
+			if (d < deleted.length && !deleted[d])
+				numNotDeleted++;
+			virtualDeleteReviewAttachPoints(d, deleted);
+		}
+		if (numNotDeleted<2)
+			deleted[node] = true;
+
+	}
+	/*-----------------------------------------*/
+	/** Writes a tree description into the StringBuffer, filtering virtually deleted nodes */
+	public void writeTree(int node, StringBuffer treeDescription, boolean[] deleted) {
+		if (nodeIsInternal(node)) {
+			treeDescription.append('(');
+			int thisSister = firstDaughterOfNode(node);
+			writeTree(thisSister, treeDescription, deleted);
+			while (nodeExists(thisSister = nextSisterOfNode(thisSister))) {
+				treeDescription.append(',');
+				writeTree(thisSister, treeDescription, deleted);
+			}
+			treeDescription.append(')');
+		}
+		else {
+			treeDescription.append(Integer.toString(Taxon.toExternal(taxonNumberOfNode(node))));
+		}
+		if (deleted != null && node < deleted.length && deleted[node])
+			treeDescription.append("*");
+		//if (!branchLengthUnassigned(node, deleted)) {
+		treeDescription.append(':');
+		treeDescription.append(MesquiteDouble.toStringDigitsSpecified(getBranchLength(node, 1.0, deleted), -1)); //add -1 to signal full accuracy 17 Dec 01
+		//}
+	}
+	/*-----------------------------------------*/
+	/** Returns the root of the tree (i.e., the most recent common ancestor of the terminal taxa in the tree.*/
+	public int getRoot(boolean[] deleted) {
+		if (deleted == null)
+			return root;
+		return findFirstNonDeleted(root, -1, deleted);
+	}
+	/*-----------------------------------------*/
+	/** Returns whether root is a real node, considering virtually deleted nodes.*/
+	public boolean rootIsReal(boolean[] deleted) {
+		if (deleted == null)
+			return rootIsReal();
+		if (root < deleted.length && deleted[root])
+			return true;
+		return rootIsReal();
+	}
+	/*-----------------------------------------*/
+	/** Returns the first (left-most) daughter of node filtering virtuallyDeleted nodes.*/
+	public  int firstDaughterOfNode(int node, boolean[] deleted) {
+		if (deleted == null)
+			return firstDaughterOfNode(node);
+		if (!inBounds(node) || node >= deleted.length || deleted[node])
+			return 0;
+		return findFirstNonDeleted(node, node, deleted);
+		/*int d = node;
 		while ((d = firstDaughter[d])!= 0){
 			 if (d < deleted.length && !deleted[d])
 				return d;
 		}
 		return 0;*/
-}
-/*-----------------------------------------*/
-/** Returns the right-most daughter of node, filtering virtually deleted nodes.*/
-public int lastDaughterOfNode(int node, boolean[] deleted) {
-	if (deleted == null)
-		return lastDaughterOfNode(node);
-	if (!inBounds(node))
-		return 0;
-	int thisSister = firstDaughterOfNode(node, deleted);
-	while (nodeExists(nextSisterOfNode(thisSister, deleted)))
-		thisSister = nextSisterOfNode(thisSister, deleted);
-	return thisSister;
-}
-/*-----------------------------------------*/
-/* finding first non deleted in traversal*/
-private int findFirstNonDeleted(int node, int exceptThisNode, boolean[] deleted){
-	if (node != exceptThisNode && node < deleted.length && !deleted[node])
-		return node;
-	for (int d = firstDaughterOfNode(node); nodeExists(d); d = nextSisterOfNode(d)){
-		int n = findFirstNonDeleted(d, exceptThisNode, deleted);
-		if (n != 0)
-			return n;
 	}
-	return 0;
-}
-/*-----------------------------------------*/
-/** Returns the node's sister immediately to the right, filtering virtually deleted nodes.*/
-public  int nextSisterOfNode(int node, boolean[] deleted) {
-	if (deleted == null)
-		return nextSisterOfNode(node);
-	if (!inBounds(node) || node >= deleted.length || deleted[node])
-		return 0;
-	int mn = node;
-	while (mn!=0){ 
-		int d = mn;
-
-		while ((d = nextSisterOfNode(d))!= 0){
-			int n = findFirstNonDeleted(d, -1, deleted);
-			if (n != 0)
-				return n; 
-		}
-		//unsuccessful; go to next level of cousin
-		mn = motherOfNode(mn);
-		if (mn< deleted.length && !deleted[mn])//mn exists, thus ran out of chances
+	/*-----------------------------------------*/
+	/** Returns the right-most daughter of node, filtering virtually deleted nodes.*/
+	public int lastDaughterOfNode(int node, boolean[] deleted) {
+		if (deleted == null)
+			return lastDaughterOfNode(node);
+		if (!inBounds(node))
 			return 0;
+		int thisSister = firstDaughterOfNode(node, deleted);
+		while (nodeExists(nextSisterOfNode(thisSister, deleted)))
+			thisSister = nextSisterOfNode(thisSister, deleted);
+		return thisSister;
 	}
-	return 0;
-}
-/*-----------------------------------------*/
-/** Returns the node's sister immediately to the left, filtering virtually deleted nodes.*/
-public int previousSisterOfNode(int node, boolean[] deleted) {
-	if (deleted == null)
-		return previousSisterOfNode(node);
-	if (!inBounds(node))
+	/*-----------------------------------------*/
+	/* finding first non deleted in traversal*/
+	private int findFirstNonDeleted(int node, int exceptThisNode, boolean[] deleted){
+		if (node != exceptThisNode && node < deleted.length && !deleted[node])
+			return node;
+		for (int d = firstDaughterOfNode(node); nodeExists(d); d = nextSisterOfNode(d)){
+			int n = findFirstNonDeleted(d, exceptThisNode, deleted);
+			if (n != 0)
+				return n;
+		}
 		return 0;
-	int thisSister = firstDaughterOfNode(motherOfNode(node, deleted),  deleted);
-	if (node==thisSister)
-		return 0;
-	int lastSister;
-	while (nodeExists(thisSister)) {
-		lastSister=thisSister;
-		thisSister = nextSisterOfNode(thisSister,  deleted);
-		if (thisSister==node)
-			return lastSister;
 	}
-	return 0;
-}
-/*-----------------------------------------*/
-/** Returns the immediate ancestor of node (mother) if node is non-reticulate, filtering virtually deleted nodes*/
-public  int motherOfNode(int node, boolean[] deleted) {
-	if (deleted == null)
-		return motherOfNode(node);
-	if (!inBounds(node) || node >= deleted.length || deleted[node])
-		return 0;
-	int d = node;
-	while ((d = mother[d])!= 0){
-		if (d == getRoot(deleted))
-			return d;
-		if (d < deleted.length && !deleted[d])
-			return d;
-	}
-	return 0;
-}
-/*-----------------------------------------*/
-/** Returns the branch length of the node, filtered by virtual deletion of nodes.*/
-public  double getBranchLength(int node, boolean[] deleted) {
-	return getBranchLength(node, MesquiteDouble.unassigned, deleted);
-}
-/*-----------------------------------------*/
-/** Returns the branch length of the node.  If the branch length is unassigned, pass back the double passed in, filtered by virtual deletion of nodes*/
-public  double getBranchLength(int node, double ifUnassigned, boolean[] deleted) {
-	if (deleted == null)
-		return getBranchLength(node, ifUnassigned);
-	if (!inBounds(node) || node >= deleted.length || deleted[node])
-		return ifUnassigned;
-	if (branchLength==null)
-		return ifUnassigned;
-	int d = node;
-	double sum = MesquiteDouble.unassigned;
-	int mom = motherOfNode(node, deleted);
-	if (mom == 0)
-		return ifUnassigned;
-	while ( d != mom ) {  //bug fixed June 08 by R. FitzJohn
-		sum = MesquiteDouble.add(sum, branchLength[d]);
-		d = mother[d];
-	}
-	if (MesquiteDouble.isUnassigned(sum))
-		return ifUnassigned;
-	else
-		return sum;
-}
-/*-----------------------------------------*/
-/** Returns whether branch length of node is unassigned, filtering virtually deleted nodes.*/
-public  boolean branchLengthUnassigned(int node, boolean[] deleted) { 
-	if (deleted == null)
-		return branchLengthUnassigned(node);
-	if (!inBounds(node))
-		return true;
-	double b = getBranchLength(node, deleted);
-	return MesquiteDouble.isUnassigned(b);
-}
-/*-----------------------------------------*/
-private int lowestValuedTerminal(int node){
-	if (nodeIsTerminal(node))
-		return taxonNumberOfNode(node);
-	int min = lowestValuedTerminal(firstDaughterOfNode(node));
-	for (int d = nextSisterOfNode(firstDaughterOfNode(node)); nodeExists(d); d = nextSisterOfNode(d)) {
-		int dT = lowestValuedTerminal(d);
-		if (dT<min)
-			min = dT;
-	}
-	return min;
-}
-private boolean firstSortsAfter(int firstNode, int secondNode, boolean leftToRight){
-	int fN = numberOfTerminalsInClade(firstNode);
-	int sN = numberOfTerminalsInClade(secondNode);
-	if (leftToRight){
-		if (fN>sN)
-			return true;
-		else if (sN>fN)
-			return false;
-		else 
-			return lowestValuedTerminal(firstNode) > lowestValuedTerminal(secondNode);
-	}
-	else {
-		if (fN<sN)
-			return true;
-		else if (sN<fN)
-			return false;
-		else 
-			return lowestValuedTerminal(firstNode) < lowestValuedTerminal(secondNode);
-	}
-}
+	/*-----------------------------------------*/
+	/** Returns the node's sister immediately to the right, filtering virtually deleted nodes.*/
+	public  int nextSisterOfNode(int node, boolean[] deleted) {
+		if (deleted == null)
+			return nextSisterOfNode(node);
+		if (!inBounds(node) || node >= deleted.length || deleted[node])
+			return 0;
+		int mn = node;
+		while (mn!=0){ 
+			int d = mn;
 
-private  void sortDescendants(int node, boolean leftToRight){
-	if (nodeIsTerminal(node))
-		return;
-	for (int d = firstDaughterOfNode(node); nodeExists(d); d = nextSisterOfNode(d))
-		sortDescendants(d, leftToRight);
-	int numDaughters = numberOfDaughtersOfNode(node);
-	for (int i=1; i<numDaughters; i++) {
-		for (int j= i-1; j>=0 && firstSortsAfter(indexedDaughterOfNode(node, j), indexedDaughterOfNode(node, j+1), leftToRight); j--) {
-			interchangeBranches(indexedDaughterOfNode(node, j), indexedDaughterOfNode(node, j+1), false);
+			while ((d = nextSisterOfNode(d))!= 0){
+				int n = findFirstNonDeleted(d, -1, deleted);
+				if (n != 0)
+					return n; 
+			}
+			//unsuccessful; go to next level of cousin
+			mn = motherOfNode(mn);
+			if (mn< deleted.length && !deleted[mn])//mn exists, thus ran out of chances
+				return 0;
+		}
+		return 0;
+	}
+	/*-----------------------------------------*/
+	/** Returns the node's sister immediately to the left, filtering virtually deleted nodes.*/
+	public int previousSisterOfNode(int node, boolean[] deleted) {
+		if (deleted == null)
+			return previousSisterOfNode(node);
+		if (!inBounds(node))
+			return 0;
+		int thisSister = firstDaughterOfNode(motherOfNode(node, deleted),  deleted);
+		if (node==thisSister)
+			return 0;
+		int lastSister;
+		while (nodeExists(thisSister)) {
+			lastSister=thisSister;
+			thisSister = nextSisterOfNode(thisSister,  deleted);
+			if (thisSister==node)
+				return lastSister;
+		}
+		return 0;
+	}
+	/*-----------------------------------------*/
+	/** Returns the immediate ancestor of node (mother) if node is non-reticulate, filtering virtually deleted nodes*/
+	public  int motherOfNode(int node, boolean[] deleted) {
+		if (deleted == null)
+			return motherOfNode(node);
+		if (!inBounds(node) || node >= deleted.length || deleted[node])
+			return 0;
+		int d = node;
+		while ((d = mother[d])!= 0){
+			if (d == getRoot(deleted))
+				return d;
+			if (d < deleted.length && !deleted[d])
+				return d;
+		}
+		return 0;
+	}
+	/*-----------------------------------------*/
+	/** Returns the branch length of the node, filtered by virtual deletion of nodes.*/
+	public  double getBranchLength(int node, boolean[] deleted) {
+		return getBranchLength(node, MesquiteDouble.unassigned, deleted);
+	}
+	/*-----------------------------------------*/
+	/** Returns the branch length of the node.  If the branch length is unassigned, pass back the double passed in, filtered by virtual deletion of nodes*/
+	public  double getBranchLength(int node, double ifUnassigned, boolean[] deleted) {
+		if (deleted == null)
+			return getBranchLength(node, ifUnassigned);
+		if (!inBounds(node) || node >= deleted.length || deleted[node])
+			return ifUnassigned;
+		if (branchLength==null)
+			return ifUnassigned;
+		int d = node;
+		double sum = MesquiteDouble.unassigned;
+		int mom = motherOfNode(node, deleted);
+		if (mom == 0)
+			return ifUnassigned;
+		while ( d != mom ) {  //bug fixed June 08 by R. FitzJohn
+			sum = MesquiteDouble.add(sum, branchLength[d]);
+			d = mother[d];
+		}
+		if (MesquiteDouble.isUnassigned(sum))
+			return ifUnassigned;
+		else
+			return sum;
+	}
+	/*-----------------------------------------*/
+	/** Returns whether branch length of node is unassigned, filtering virtually deleted nodes.*/
+	public  boolean branchLengthUnassigned(int node, boolean[] deleted) { 
+		if (deleted == null)
+			return branchLengthUnassigned(node);
+		if (!inBounds(node))
+			return true;
+		double b = getBranchLength(node, deleted);
+		return MesquiteDouble.isUnassigned(b);
+	}
+	/*-----------------------------------------*/
+	private int lowestValuedTerminal(int node){
+		if (nodeIsTerminal(node))
+			return taxonNumberOfNode(node);
+		int min = lowestValuedTerminal(firstDaughterOfNode(node));
+		for (int d = nextSisterOfNode(firstDaughterOfNode(node)); nodeExists(d); d = nextSisterOfNode(d)) {
+			int dT = lowestValuedTerminal(d);
+			if (dT<min)
+				min = dT;
+		}
+		return min;
+	}
+	private boolean firstSortsAfter(int firstNode, int secondNode, boolean leftToRight){
+		int fN = numberOfTerminalsInClade(firstNode);
+		int sN = numberOfTerminalsInClade(secondNode);
+		if (leftToRight){
+			if (fN>sN)
+				return true;
+			else if (sN>fN)
+				return false;
+			else 
+				return lowestValuedTerminal(firstNode) > lowestValuedTerminal(secondNode);
+		}
+		else {
+			if (fN<sN)
+				return true;
+			else if (sN<fN)
+				return false;
+			else 
+				return lowestValuedTerminal(firstNode) < lowestValuedTerminal(secondNode);
 		}
 	}
-}
 
-/*-----------------------------------------*/
-public int randomTerminalInClade(int node, Random rng, boolean tipwise){
-	if (nodeIsTerminal(node))
-		return node;
-	if (tipwise){
-		int[] tips = getTerminalNodes(node);
-		return tips[rng.nextInt(tips.length)];
-	}
-	int target = rng.nextInt(numberOfDaughtersOfNode(node));
-	int randomDaughter = indexedDaughterOfNode(node, target);
-	return randomTerminalInClade(randomDaughter, rng, tipwise);
-
-}
-
-/*-----------------------------------------*/
-/** Returns the number of a randomly chosen node.*/
-public int randomNode(RandomBetween rng, boolean allowRoot){
-	int candidate = -1;
-	while (!(nodeExists(candidate) && getSubRoot()!=candidate && (getRoot()!=candidate || allowRoot))) {
-		candidate = rng.randomIntBetween(0, getNumNodeSpaces());
-	}
-	return candidate;
-}
-
-/*-----------------------------------------*/
-private  void randomizeDescendants(int node, Random rng){
-	if (nodeIsTerminal(node))
-		return;
-	for (int d = firstDaughterOfNode(node); nodeExists(d); d = nextSisterOfNode(d))
-		randomizeDescendants(d, rng);
-
-	int numDaughters = numberOfDaughtersOfNode(node);
-	int[] order = new int[numDaughters];
-	IntegerArray.fillWithRandomOrderValues(order, rng);
-	for (int i=0; i<numDaughters; i++) {
-		int positionOfDaughter = -1;
-		for (int j=i; j<numDaughters && positionOfDaughter<0; j++) {
-			if (order[j]==i) // we've found the next one, and it is at j
-				positionOfDaughter=j;
-		}
-		if (i!=positionOfDaughter)
-			interchangeBranches(indexedDaughterOfNode(node, i), indexedDaughterOfNode(node, positionOfDaughter), false);
-	}
-}
-
-/*-----------------------------------------*/
-/** Puts clade in random arrangement.*/
-public  boolean randomlyRotateDescendants(int node, Random rng, boolean notify){
-	randomizeDescendants(node, rng);
-	checkTreeIntegrity(getRoot());
-	incrementVersion(MesquiteListener.BRANCHES_REARRANGED,notify);
-	return true;
-}
-/*-----------------------------------------*/
-/** Puts clade in standard arrangement, such that smaller clades to left, 
-	and if sister clades have same number of terminals, then with one with lowest numbered terminal to left.*/
-public  boolean standardize(int node, boolean notify){
-	return standardize(node, true, notify);
-}
-/*-----------------------------------------*/
-/** Puts clade in standard arrangement, such that smaller clades to left (or right, depending on boolean passed), 
-	and if sister clades have same number of terminals, then with one with lowest numbered terminal to left (or right).*/
-public  boolean standardize(int node, boolean leftToRight, boolean notify){
-	sortDescendants(node, leftToRight);
-	checkTreeIntegrity(root);
-	incrementVersion(MesquiteListener.BRANCHES_REARRANGED,notify);
-	return true;
-}
-/*-----------------------------------------*/
-/** Puts clade in standard arrangement, such that smaller clades to left (or right, depending on boolean passed), 
-	and if sister clades have same number of terminals, then with one with lowest numbered terminal to left (or right).*/
-public  boolean standardize(TaxaSelectionSet taxonSet, boolean notify){
-	MesquiteInteger descendantBoundary = new MesquiteInteger();
-	if (taxonSet==null) {
-		for (int i=0; i<getNumTaxa(); i++) { // find lowest number taxon that is in the tree
-			if (taxonInTree(i)) {
-				int atBranch = nodeOfTaxonNumber(i);   
-				reroot(atBranch, getRoot(), false);
-				break;
+	private  void sortDescendants(int node, boolean leftToRight){
+		if (nodeIsTerminal(node))
+			return;
+		for (int d = firstDaughterOfNode(node); nodeExists(d); d = nextSisterOfNode(d))
+			sortDescendants(d, leftToRight);
+		int numDaughters = numberOfDaughtersOfNode(node);
+		for (int i=1; i<numDaughters; i++) {
+			for (int j= i-1; j>=0 && firstSortsAfter(indexedDaughterOfNode(node, j), indexedDaughterOfNode(node, j+1), leftToRight); j--) {
+				interchangeBranches(indexedDaughterOfNode(node, j), indexedDaughterOfNode(node, j+1), false);
 			}
 		}
 	}
-	else if (isConvex(taxonSet.getBits(), descendantBoundary)) {
-		if (descendantBoundary.isCombinable())
-			reroot(descendantBoundary.getValue(), getRoot(), false);
-		else 
+
+	/*-----------------------------------------*/
+	public int randomNodeInClade(int node, Random rng){
+		if (nodeIsTerminal(node))
+			return node;
+		int[] nodes = getAllNodes(node);
+		return nodes[rng.nextInt(nodes.length)];
+
+
+	}
+	/*-----------------------------------------*/
+	public int randomTerminalInClade(int node, Random rng, boolean tipwise){
+		if (nodeIsTerminal(node))
+			return node;
+		if (tipwise){
+			int[] tips = getTerminalNodes(node);
+			return tips[rng.nextInt(tips.length)];
+		}
+		int target = rng.nextInt(numberOfDaughtersOfNode(node));
+		int randomDaughter = indexedDaughterOfNode(node, target);
+		return randomTerminalInClade(randomDaughter, rng, tipwise);
+
+	}
+
+	/*-----------------------------------------*/
+	/** Returns the number of a randomly chosen node.*/
+	public int randomNode(RandomBetween rng, boolean allowRoot){
+		int candidate = -1;
+		while (!(nodeExists(candidate) && getSubRoot()!=candidate && (getRoot()!=candidate || allowRoot))) {
+			candidate = rng.randomIntBetween(0, getNumNodeSpaces());
+		}
+		return candidate;
+	}
+
+	/*-----------------------------------------*/
+	private  void randomizeDescendants(int node, Random rng){
+		if (nodeIsTerminal(node))
+			return;
+		for (int d = firstDaughterOfNode(node); nodeExists(d); d = nextSisterOfNode(d))
+			randomizeDescendants(d, rng);
+
+		int numDaughters = numberOfDaughtersOfNode(node);
+		int[] order = new int[numDaughters];
+		IntegerArray.fillWithRandomOrderValues(order, rng);
+		for (int i=0; i<numDaughters; i++) {
+			int positionOfDaughter = -1;
+			for (int j=i; j<numDaughters && positionOfDaughter<0; j++) {
+				if (order[j]==i) // we've found the next one, and it is at j
+					positionOfDaughter=j;
+			}
+			if (i!=positionOfDaughter)
+				interchangeBranches(indexedDaughterOfNode(node, i), indexedDaughterOfNode(node, positionOfDaughter), false);
+		}
+	}
+
+	/*-----------------------------------------*/
+	/** Puts clade in random arrangement.*/
+	public  boolean randomlyRotateDescendants(int node, Random rng, boolean notify){
+		randomizeDescendants(node, rng);
+		checkTreeIntegrity(getRoot());
+		incrementVersion(MesquiteListener.BRANCHES_REARRANGED,notify);
+		return true;
+	}
+	/*-----------------------------------------*/
+	/** Puts clade in standard arrangement, such that smaller clades to left, 
+	and if sister clades have same number of terminals, then with one with lowest numbered terminal to left.*/
+	public  boolean standardize(int node, boolean notify){
+		return standardize(node, true, notify);
+	}
+	/*-----------------------------------------*/
+	/** Puts clade in standard arrangement, such that smaller clades to left (or right, depending on boolean passed), 
+	and if sister clades have same number of terminals, then with one with lowest numbered terminal to left (or right).*/
+	public  boolean standardize(int node, boolean leftToRight, boolean notify){
+		sortDescendants(node, leftToRight);
+		checkTreeIntegrity(root);
+		incrementVersion(MesquiteListener.BRANCHES_REARRANGED,notify);
+		return true;
+	}
+	/*-----------------------------------------*/
+	/** Puts clade in standard arrangement, such that smaller clades to left (or right, depending on boolean passed), 
+	and if sister clades have same number of terminals, then with one with lowest numbered terminal to left (or right).*/
+	public  boolean standardize(TaxaSelectionSet taxonSet, boolean notify){
+		MesquiteInteger descendantBoundary = new MesquiteInteger();
+		if (taxonSet==null) {
 			for (int i=0; i<getNumTaxa(); i++) { // find lowest number taxon that is in the tree
 				if (taxonInTree(i)) {
+					int atBranch = nodeOfTaxonNumber(i);   
+					reroot(atBranch, getRoot(), false);
+					break;
+				}
+			}
+		}
+		else if (isConvex(taxonSet.getBits(), descendantBoundary)) {
+			if (descendantBoundary.isCombinable())
+				reroot(descendantBoundary.getValue(), getRoot(), false);
+			else 
+				for (int i=0; i<getNumTaxa(); i++) { // find lowest number taxon that is in the tree
+					if (taxonInTree(i)) {
+						int atBranch = nodeOfTaxonNumber(i);
+						reroot(atBranch, getRoot(), false);
+						break;
+					}
+				}
+		}
+		else
+
+			for (int i=0; i<getNumTaxa(); i++) { // find lowest number taxon that is in the set
+				if (taxonInTree(i) && taxonSet.isBitOn(i)) {
 					int atBranch = nodeOfTaxonNumber(i);
 					reroot(atBranch, getRoot(), false);
 					break;
 				}
 			}
+		return standardize(getRoot(), true, notify);
 	}
-	else
 
-		for (int i=0; i<getNumTaxa(); i++) { // find lowest number taxon that is in the set
-			if (taxonInTree(i) && taxonSet.isBitOn(i)) {
-				int atBranch = nodeOfTaxonNumber(i);
-				reroot(atBranch, getRoot(), false);
-				break;
+	private  void focalSortDescendants(int node, int focalNode, boolean leftToRight, boolean extremeAlreadySorted){
+		if (nodeIsTerminal(node))
+			return;
+		for (int d = firstDaughterOfNode(node); nodeExists(d); d = nextSisterOfNode(d))
+			focalSortDescendants(d, focalNode, leftToRight, extremeAlreadySorted);
+		int numDaughters = numberOfDaughtersOfNode(node);
+		int startDaughter = 1;
+		int endDaughter = numDaughters;
+		if (extremeAlreadySorted && descendantOf(focalNode,node)) {
+			if (leftToRight)
+				endDaughter--;
+			else if (!leftToRight )
+				startDaughter++;
+		}
+		for (int i=startDaughter; i<endDaughter; i++) {
+			for (int j= i-1; j>=startDaughter-1&& firstSortsAfter(indexedDaughterOfNode(node, j), indexedDaughterOfNode(node, j+1), leftToRight); j--) {
+				interchangeBranches(indexedDaughterOfNode(node, j), indexedDaughterOfNode(node, j+1), false);
 			}
 		}
-	return standardize(getRoot(), true, notify);
-}
-
-private  void focalSortDescendants(int node, int focalNode, boolean leftToRight, boolean extremeAlreadySorted){
-	if (nodeIsTerminal(node))
-		return;
-	for (int d = firstDaughterOfNode(node); nodeExists(d); d = nextSisterOfNode(d))
-		focalSortDescendants(d, focalNode, leftToRight, extremeAlreadySorted);
-	int numDaughters = numberOfDaughtersOfNode(node);
-	int startDaughter = 1;
-	int endDaughter = numDaughters;
-	if (extremeAlreadySorted && descendantOf(focalNode,node)) {
-		if (leftToRight)
-			endDaughter--;
-		else if (!leftToRight )
-			startDaughter++;
 	}
-	for (int i=startDaughter; i<endDaughter; i++) {
-		for (int j= i-1; j>=startDaughter-1&& firstSortsAfter(indexedDaughterOfNode(node, j), indexedDaughterOfNode(node, j+1), leftToRight); j--) {
-			interchangeBranches(indexedDaughterOfNode(node, j), indexedDaughterOfNode(node, j+1), false);
+	/*-----------------------------------------*/
+	/** Puts clade in standard arrangement, such that focalTaxon is to left (or right, depending on boolean passed). */
+	public  boolean focalStandardize(int focalTaxon, boolean leftToRight, boolean notify){
+		int focalNode = nodeOfTaxonNumber(focalTaxon);
+		int node = focalNode;
+		while (node!=getSubRoot() && nodeExists(node)) {
+			int motherNode = motherOfNode(node);
+			if (motherNode>0)
+				if (!leftToRight &&  node!= firstDaughterOfNode(motherNode))
+					interchangeBranches(firstDaughterOfNode(motherNode), node, false);
+				else if (leftToRight &&  node!= lastDaughterOfNode(motherNode))
+					interchangeBranches(lastDaughterOfNode(motherNode), node, false);
+			node = motherOfNode(node);
 		}
-	}
-}
-/*-----------------------------------------*/
-/** Puts clade in standard arrangement, such that focalTaxon is to left (or right, depending on boolean passed). */
-public  boolean focalStandardize(int focalTaxon, boolean leftToRight, boolean notify){
-	int focalNode = nodeOfTaxonNumber(focalTaxon);
-	int node = focalNode;
-	while (node!=getSubRoot() && nodeExists(node)) {
-		int motherNode = motherOfNode(node);
-		if (motherNode>0)
-			if (!leftToRight &&  node!= firstDaughterOfNode(motherNode))
-				interchangeBranches(firstDaughterOfNode(motherNode), node, false);
-			else if (leftToRight &&  node!= lastDaughterOfNode(motherNode))
-				interchangeBranches(lastDaughterOfNode(motherNode), node, false);
-		node = motherOfNode(node);
-	}
 
 
-	focalSortDescendants(root, focalNode, leftToRight, true);
-	checkTreeIntegrity(root);
-	incrementVersion(MesquiteListener.BRANCHES_REARRANGED,notify);
-	return true;
-}
-/*-----------------------------------------*/
-/** Interchanges two branches of tree.*/
-public  boolean interchangeBranches(int node, int otherNode, boolean notify) {   
-	return interchangeBranches(node, otherNode, false, notify);
-}
-/*-----------------------------------------*/
-/** Interchanges two branches of tree.*/
-public  boolean interchangeBranches(int node, int otherNode, boolean preserveHeights, boolean notify) {   
-	if (!nodeExists(node) || !nodeExists(otherNode))
-		return false;
-	if (node==otherNode)
-		return false;
-	else if  (descendantOf(node,otherNode) || descendantOf(otherNode,node))
-		return false;
-	double oldNodeHeight = 0;
-	double oldOtherNodeHeight = 0;
-	double oldNodeMotherHeight = 0;
-	double oldOtherNodeMotherHeight = 0;
-	if (preserveHeights){
-		oldNodeHeight = distanceToRoot(node, false, 0);
-		oldOtherNodeHeight = distanceToRoot(otherNode, false, 0);
-		oldNodeMotherHeight = distanceToRoot(motherOfNode(node), false, 0);
-		oldOtherNodeMotherHeight = distanceToRoot(motherOfNode(otherNode), false, 0);
-	}
-	if (nodeIsInternal(node) || nodeIsInternal(otherNode)) {
-		int nFD = firstDaughterOfNode(node);
-		int mFD = firstDaughterOfNode(otherNode);
-
-		for (int d = firstDaughterOfNode(node); nodeExists(d); d=nextSisterOfNode(d))
-			mother[d]=otherNode;  // trade first all the daughters
-		for (int d = firstDaughterOfNode(otherNode); nodeExists(d); d=nextSisterOfNode(d))
-			mother[d]=node;  // trade first all the daughters
-
-		firstDaughter[node]=mFD; 
-		firstDaughter[otherNode]=nFD;
-	}
-
-	if (branchLength!=null) {
-		double nL = branchLength[node];  // trade lengths
-		branchLength[node]=branchLength[otherNode];
-		branchLength[otherNode]=nL;
-	}
-	if (label!=null) {
-		String nL = label[node];  // trade lengths
-		label[node]=label[otherNode];
-		label[otherNode]=nL;
-	}
-	exchangeAssociated(node,otherNode);
-	boolean mIs = getSelected(otherNode);
-	setSelected(otherNode, getSelected(node));
-	setSelected(node, mIs);
-	int nN = taxonNumber[node];  // trade NUMBERS
-	taxonNumber[node]=taxonNumber[otherNode]; 
-	taxonNumber[otherNode]=nN; 
-	if (taxonNumber[otherNode]>=0)
-		nodeOfTaxon[taxonNumber[otherNode]] = otherNode;
-	if (taxonNumber[node]>=0)
-		nodeOfTaxon[taxonNumber[node]] = node;
-	if (preserveHeights){ 
-		if (MesquiteDouble.isCombinable(oldNodeHeight) && MesquiteDouble.isCombinable(oldOtherNodeHeight) && MesquiteDouble.isCombinable(oldNodeMotherHeight) && MesquiteDouble.isCombinable(oldOtherNodeMotherHeight)){
-
-			setBranchLength(otherNode, oldNodeHeight-oldOtherNodeMotherHeight, false);
-			setBranchLength(node, oldOtherNodeHeight-oldNodeMotherHeight, false);
-
-		}
-	}
-	checkTreeIntegrity(root);
-	incrementVersion(MesquiteListener.BRANCHES_REARRANGED,notify);
-	return true;
-}
-/*-----------------------------------------*/
-/** Collapses branch to yield polytomy.*/
-public  boolean collapseBranch(int node, boolean notify) {   
-	if (!nodeExists(node))
-		return false;
-	if (nodeIsInternal(node) && (node!=root)) {
-		int pS = previousSisterOfNode(node);
-		if (MesquiteTrunk.trackActivity) System.out.println("collapse branch");
-		int sis = nextSisterOfNode(node);
-		int d = firstDaughterOfNode(node);
-
-		while (nodeExists(d)) {	// connecting all Daughters to their grandmother
-			if (!branchLengthUnassigned(node)){ //added post 1. 12 to preserve ultrametricity
-				if (branchLengthUnassigned(d))
-					branchLength[d] = branchLength[node];
-				else
-					branchLength[d] += branchLength[node];
-			}
-			mother[d] = motherOfNode(node);
-			d = nextSisterOfNode(d);
-
-		}
-		nextSister[lastDaughterOfNode(node)] = sis;
-		if (nodeIsFirstDaughter(node))
-			firstDaughter[motherOfNode(node)] = firstDaughterOfNode(node);
-		else 
-			nextSister[pS] = firstDaughterOfNode(node);
-		firstDaughter[node]=0;
-		nextSister[node]=0;
-		mother[node]=0;
-		setTaxonNumber(node, -1);
-		if (branchLength!=null)
-			branchLength[node] = MesquiteDouble.unassigned;
-		if (label !=null)
-			label[node] = null;
+		focalSortDescendants(root, focalNode, leftToRight, true);
+		checkTreeIntegrity(root);
 		incrementVersion(MesquiteListener.BRANCHES_REARRANGED,notify);
 		return true;
+	}
+	/*-----------------------------------------*/
+	/** Interchanges two branches of tree.*/
+	public  boolean interchangeBranches(int node, int otherNode, boolean notify) {   
+		return interchangeBranches(node, otherNode, false, notify);
+	}
+	/*-----------------------------------------*/
+	/** Interchanges two branches of tree.*/
+	public  boolean interchangeBranches(int node, int otherNode, boolean preserveHeights, boolean notify) {   
+		if (!nodeExists(node) || !nodeExists(otherNode))
+			return false;
+		if (node==otherNode)
+			return false;
+		else if  (descendantOf(node,otherNode) || descendantOf(otherNode,node))
+			return false;
+		double oldNodeHeight = 0;
+		double oldOtherNodeHeight = 0;
+		double oldNodeMotherHeight = 0;
+		double oldOtherNodeMotherHeight = 0;
+		if (preserveHeights){
+			oldNodeHeight = distanceToRoot(node, false, 0);
+			oldOtherNodeHeight = distanceToRoot(otherNode, false, 0);
+			oldNodeMotherHeight = distanceToRoot(motherOfNode(node), false, 0);
+			oldOtherNodeMotherHeight = distanceToRoot(motherOfNode(otherNode), false, 0);
+		}
+		if (nodeIsInternal(node) || nodeIsInternal(otherNode)) {
+			int nFD = firstDaughterOfNode(node);
+			int mFD = firstDaughterOfNode(otherNode);
 
-	}
-	else {
-		if (MesquiteTrunk.trackActivity) System.out.println("collapse branch failed");
-		return false;
-	}
-}
-/*-----------------------------------------*/
-/** Collapses all internal branches within clade above node, to yield bush.*/
-private  void inCollapseAllBranches(int node) {   
-	int d=firstDaughterOfNode(node);
-	while (nodeExists(d)) {
-		int nNS = nextSisterOfNode(d);
-		inCollapseAllBranches(d);
-		if (nodeIsInternal(d))
-			collapseBranch(d, false);
-		d = nNS;
-	}
-}
-/*-----------------------------------------*/
-/** Collapses all internal branches within tree BELOW node, to yield bush.*/
-private  void inCollapseAllBranchesUntilNode(int node, int endNode) {   
-	int d=firstDaughterOfNode(node);
-	while (nodeExists(d)) {
-		int nNS = nextSisterOfNode(d);
-		if (d!=endNode)
-			inCollapseAllBranchesUntilNode(d, endNode);
-		if (nodeIsInternal(d) && d!=endNode)
-			collapseBranch(d, false);
-		d = nNS;
-	}
-}
-/*-----------------------------------------*/
-/** Collapses all internal branches within clade above node, to yield bush.*/
-public  boolean collapseAllBranches(int node, boolean below, boolean notify) {   
-	if (!nodeExists(node))
-		return false;
-	if (below)
-		inCollapseAllBranchesUntilNode(root, node);
-	else
-		inCollapseAllBranches(node);
-	incrementVersion(MesquiteListener.BRANCHES_REARRANGED,notify);
-	return true;
-}
-/*.................................................................................................................*/
-public void reshuffleTerminals(RandomBetween rng){ 
+			for (int d = firstDaughterOfNode(node); nodeExists(d); d=nextSisterOfNode(d))
+				mother[d]=otherNode;  // trade first all the daughters
+			for (int d = firstDaughterOfNode(otherNode); nodeExists(d); d=nextSisterOfNode(d))
+				mother[d]=node;  // trade first all the daughters
 
-	int[] terminals = getTerminalTaxa(getRoot());
-	int numTerminals =numberOfTerminalsInClade(getRoot());
-	for (int fT = 0; fT < numTerminals-1; fT++) {
-		int firstTerminal = terminals[fT];
-		int secondTerminal = terminals[rng.randomIntBetween(fT,numTerminals-1)];
+			firstDaughter[node]=mFD; 
+			firstDaughter[otherNode]=nFD;
+		}
 
-		int firstTaxonNode = nodeOfTaxonNumber(firstTerminal);
-		int secondTaxonNode = nodeOfTaxonNumber(secondTerminal);
-		setTaxonNumber(secondTaxonNode,firstTerminal,false);
-		setTaxonNumber(firstTaxonNode,secondTerminal,false);
+		if (branchLength!=null) {
+			double nL = branchLength[node];  // trade lengths
+			branchLength[node]=branchLength[otherNode];
+			branchLength[otherNode]=nL;
+		}
+		if (label!=null) {
+			String nL = label[node];  // trade lengths
+			label[node]=label[otherNode];
+			label[otherNode]=nL;
+		}
+		exchangeAssociated(node,otherNode);
+		boolean mIs = getSelected(otherNode);
+		setSelected(otherNode, getSelected(node));
+		setSelected(node, mIs);
+		int nN = taxonNumber[node];  // trade NUMBERS
+		taxonNumber[node]=taxonNumber[otherNode]; 
+		taxonNumber[otherNode]=nN; 
+		if (taxonNumber[otherNode]>=0)
+			nodeOfTaxon[taxonNumber[otherNode]] = otherNode;
+		if (taxonNumber[node]>=0)
+			nodeOfTaxon[taxonNumber[node]] = node;
+		if (preserveHeights){ 
+			if (MesquiteDouble.isCombinable(oldNodeHeight) && MesquiteDouble.isCombinable(oldOtherNodeHeight) && MesquiteDouble.isCombinable(oldNodeMotherHeight) && MesquiteDouble.isCombinable(oldOtherNodeMotherHeight)){
 
-	}
-	terminals = getTerminalTaxa(getRoot());
-}
-/*-----------------------------------------*/
-private void zeroClade(int node){
-	for (int d = firstDaughterOfNode(node); nodeExists(d); d=nextSisterOfNode(d)) {
-		zeroClade(d);
-	}
-	firstDaughter[node]=0;
-	nextSister[node] = 0;
-	mother[node]=0;
-	setTaxonNumber(node, -1);
-	if (label !=null)
-		label[node] = null;
-	deassignAssociated(node);
-}
-/** Excise node and clade above it from tree, zeroing information at each node in clade.*/
-public  boolean deleteClade(int node, boolean notify) {   
-	if (snipClade(node, notify)){
-		zeroClade(node);
+				setBranchLength(otherNode, oldNodeHeight-oldOtherNodeMotherHeight, false);
+				setBranchLength(node, oldOtherNodeHeight-oldNodeMotherHeight, false);
+
+			}
+		}
+		checkTreeIntegrity(root);
+		incrementVersion(MesquiteListener.BRANCHES_REARRANGED,notify);
 		return true;
 	}
-	return false;
-}
-/** Excise node and clade above it from tree, zeroing information at each node in clade.*/
-public  static void pruneTaxaNotInCommon(MesquiteTree tree1, MesquiteTree tree2, boolean notify) {   
-	if (tree1.getTaxa() != tree2.getTaxa())
-		return;
-	for (int it=0; it<tree1.getNumTaxa(); it++) {
-		if (tree1.taxonInTree(it) && ! tree2.taxonInTree(it))
-			tree1.deleteClade(tree1.nodeOfTaxonNumber(it), notify);
-		else if (!tree1.taxonInTree(it) && tree2.taxonInTree(it))
-			tree2.deleteClade(tree2.nodeOfTaxonNumber(it), notify);
-	}
-}
-/*-----------------------------------------*/
-/** Excise node and clade above it from tree but leave the clade intact, in case it is to be attached elsewhere.*/
-public  boolean snipClade(int node, boolean notify) {   
-	if (node==root)
-		return false;
-	else {  // also prohibit if will be left fewer than three??
+	/*-----------------------------------------*/
+	/** Collapses branch to yield polytomy.*/
+	public  boolean collapseBranch(int node, boolean notify) {   
 		if (!nodeExists(node))
 			return false;
-		locked = true;
-		//int numSnipped = numberOfTerminalsInClade(node);
-		int mom = motherOfNode(node);
-		if (!nodeExists(mom))
+		if (nodeIsInternal(node) && (node!=root)) {
+			int pS = previousSisterOfNode(node);
+			if (MesquiteTrunk.trackActivity) System.out.println("collapse branch");
+			int sis = nextSisterOfNode(node);
+			int d = firstDaughterOfNode(node);
+
+			while (nodeExists(d)) {	// connecting all Daughters to their grandmother
+				if (!branchLengthUnassigned(node)){ //added post 1. 12 to preserve ultrametricity
+					if (branchLengthUnassigned(d))
+						branchLength[d] = branchLength[node];
+					else
+						branchLength[d] += branchLength[node];
+				}
+				mother[d] = motherOfNode(node);
+				d = nextSisterOfNode(d);
+
+			}
+			nextSister[lastDaughterOfNode(node)] = sis;
+			if (nodeIsFirstDaughter(node))
+				firstDaughter[motherOfNode(node)] = firstDaughterOfNode(node);
+			else 
+				nextSister[pS] = firstDaughterOfNode(node);
+			firstDaughter[node]=0;
+			nextSister[node]=0;
+			mother[node]=0;
+			setTaxonNumber(node, -1);
+			if (branchLength!=null)
+				branchLength[node] = MesquiteDouble.unassigned;
+			if (label !=null)
+				label[node] = null;
+			incrementVersion(MesquiteListener.BRANCHES_REARRANGED,notify);
+			return true;
+
+		}
+		else {
+			if (MesquiteTrunk.trackActivity) System.out.println("collapse branch failed");
 			return false;
-		if (numberOfDaughtersOfNode(mom)>2) {     //easy case; just pluck out
-			int sisterRight=nextSisterOfNode(node);
-			if (nodeIsFirstDaughter(node)) {
-				firstDaughter[mom] = sisterRight;
-			}
-			else {
-				int sisterLeft=previousSisterOfNode(node);
-				if (!nodeExists(sisterLeft))
-					return false;
-				nextSister[sisterLeft] = sisterRight;
-			}
-
 		}
-		else {// moving sister into mother's place
-			if (numberOfDaughtersOfNode(mom)==1) {     //cut down to 
-				while (mom != root && numberOfDaughtersOfNode(mom) == 1 && mom != 0){
-					node = mom;  //cut one deeper
-					mom = motherOfNode(mom);
-				}
-				if (!nodeExists(mom))
-					return false;
-				if (mom == root && numberOfDaughtersOfNode(mom)==1){
-					locked = false;
-					exists = false;
-					root = 0;
-					incrementVersion(MesquiteListener.BRANCHES_REARRANGED,notify);
-					return true;
-				}
-			}
-			int sister;
-			if (nodeIsFirstDaughter(node)) 
-				sister = nextSisterOfNode(node);
-			else  
-				sister = previousSisterOfNode(node);
-			if (!nodeExists(sister))
-				return false;
-			if (hasBranchLengths()) { //remember length of branches to adjust afterward
-				MesquiteDouble lengthOfRemoved = new MesquiteDouble();
-				if (!nodeIsPolytomous(mom)){ // && mom != root) {  post-1.12: adds also for root
-					lengthOfRemoved.setValue(branchLength[mom]); //add length of mom;
-					lengthOfRemoved.add(branchLength[sister]); // add length of sister of branchFrom
-					setBranchLength(sister, lengthOfRemoved.getValue(), false);
-				}
-			}
-			int neice = firstDaughterOfNode(sister);
-			firstDaughter[mom] = firstDaughter[sister];
-			while (nodeExists(neice)) {
-				mother[neice] = mom;
-				neice = nextSisterOfNode(neice);
-			}
-
-			if (branchLength!=null)
-				branchLength[mom] = branchLength[sister];
-			taxonNumber[mom] = taxonNumber[sister]; 
-			if (taxonNumber[mom]>=0 && taxonNumber[mom]<nodeOfTaxon.length)
-				nodeOfTaxon[taxonNumber[mom]] = mom;
-			if (label!=null)
-				label[mom] = label[sister];
-			transferAssociated(sister, mom);
-
-			deassignAssociated(sister);
-			setSelected(mom, getSelected(sister));
-			setSelected(sister, false);
-			firstDaughter[sister]=0;
-			nextSister[sister]=0;
-			mother[sister]=0;
-			setTaxonNumber(sister, -1);
-			if (label!=null)
-				label[sister] = null;
-			if (branchLength!=null)
-				branchLength[sister] = MesquiteDouble.unassigned;
+	}
+	/*-----------------------------------------*/
+	/** Collapses all internal branches within clade above node, to yield bush.*/
+	private  void inCollapseAllBranches(int node) {   
+		int d=firstDaughterOfNode(node);
+		while (nodeExists(d)) {
+			int nNS = nextSisterOfNode(d);
+			inCollapseAllBranches(d);
+			if (nodeIsInternal(d))
+				collapseBranch(d, false);
+			d = nNS;
 		}
-		locked = false;
-
-		resetNodeOfTaxonNumbers();  //added Nov 2013
+	}
+	/*-----------------------------------------*/
+	/** Collapses all internal branches within tree BELOW node, to yield bush.*/
+	private  void inCollapseAllBranchesUntilNode(int node, int endNode) {   
+		int d=firstDaughterOfNode(node);
+		while (nodeExists(d)) {
+			int nNS = nextSisterOfNode(d);
+			if (d!=endNode)
+				inCollapseAllBranchesUntilNode(d, endNode);
+			if (nodeIsInternal(d) && d!=endNode)
+				collapseBranch(d, false);
+			d = nNS;
+		}
+	}
+	/*-----------------------------------------*/
+	/** Collapses all internal branches within clade above node, to yield bush.*/
+	public  boolean collapseAllBranches(int node, boolean below, boolean notify) {   
+		if (!nodeExists(node))
+			return false;
+		if (below)
+			inCollapseAllBranchesUntilNode(root, node);
+		else
+			inCollapseAllBranches(node);
 		incrementVersion(MesquiteListener.BRANCHES_REARRANGED,notify);
-
 		return true;
 	}
-}
-/*................................................................................................................*/
-/** Attach terminal taxon to tree along given branch.*/
-public  boolean graftTaxon(int taxon, int toN, boolean notify) {   
-	if (!nodeInTree(toN)) {
-		MesquiteMessage.warnProgrammer("ATTEMPT TO GRAFT ONTO NODE NOT IN TREE");
+	/*.................................................................................................................*/
+	public void reshuffleTerminals(RandomBetween rng){ 
+
+		int[] terminals = getTerminalTaxa(getRoot());
+		int numTerminals =numberOfTerminalsInClade(getRoot());
+		for (int fT = 0; fT < numTerminals-1; fT++) {
+			int firstTerminal = terminals[fT];
+			int secondTerminal = terminals[rng.randomIntBetween(fT,numTerminals-1)];
+
+			int firstTaxonNode = nodeOfTaxonNumber(firstTerminal);
+			int secondTaxonNode = nodeOfTaxonNumber(secondTerminal);
+			setTaxonNumber(secondTaxonNode,firstTerminal,false);
+			setTaxonNumber(firstTaxonNode,secondTerminal,false);
+
+		}
+		terminals = getTerminalTaxa(getRoot());
+	}
+	/*-----------------------------------------*/
+	private void zeroClade(int node){
+		for (int d = firstDaughterOfNode(node); nodeExists(d); d=nextSisterOfNode(d)) {
+			zeroClade(d);
+		}
+		firstDaughter[node]=0;
+		nextSister[node] = 0;
+		mother[node]=0;
+		setTaxonNumber(node, -1);
+		if (label !=null)
+			label[node] = null;
+		deassignAssociated(node);
+	}
+	/** Excise node and clade above it from tree, zeroing information at each node in clade.*/
+	public  boolean deleteClade(int node, boolean notify) {   
+		if (snipClade(node, notify)){
+			zeroClade(node);
+			return true;
+		}
 		return false;
 	}
-	int fromN = openNode();
-	if (fromN==0)
-		return false;
-	mother[fromN] = -1;  //done some next openNode thinks it's not open
-	setTaxonNumber(fromN, taxon);
-	if (label!=null)
-		label[fromN] = null;
-	firstDaughter[fromN] = 0;
-	nextSister[fromN] = 0;
-	deassignAssociated(fromN);
-
-
-	boolean success = (nodeExists(graftClade(fromN, toN, notify)));
-
-
-	return success;
-}
-/*-----------------------------------------*/
-/** Attach node fromN (and any clade to attached to it) along node toN.  Returns the new node created to attach fromN*/
-public  int graftClade(int fromN, int toN, boolean notify) {   
-	if (!nodeExists(fromN) || !nodeExists(toN))
-		return 0;
-	locked = true;
-	int newMother = openNode();
-	if (newMother==0)
-		return 0;
-	setTaxonNumber(newMother, -1);
-	if (label!=null)
-		label[newMother] = null;
-	deassignAssociated(newMother);
-
-	int toMother = motherOfNode(toN);
-
-	if (nodeIsFirstDaughter(toN)) {
-		int nextSis = nextSisterOfNode(toN);
-		firstDaughter[toMother]=newMother;
-		firstDaughter[newMother]=toN;
-		nextSister[toN]=fromN;
-		mother[newMother]=toMother;
-		mother[toN]=newMother;
-		mother[fromN]=newMother;
-		nextSister[fromN]=0;
-		nextSister[newMother]=nextSis;
+	/** Excise node and clade above it from tree, zeroing information at each node in clade.*/
+	public  static void pruneTaxaNotInCommon(MesquiteTree tree1, MesquiteTree tree2, boolean notify) {   
+		if (tree1.getTaxa() != tree2.getTaxa())
+			return;
+		for (int it=0; it<tree1.getNumTaxa(); it++) {
+			if (tree1.taxonInTree(it) && ! tree2.taxonInTree(it))
+				tree1.deleteClade(tree1.nodeOfTaxonNumber(it), notify);
+			else if (!tree1.taxonInTree(it) && tree2.taxonInTree(it))
+				tree2.deleteClade(tree2.nodeOfTaxonNumber(it), notify);
+		}
 	}
-	else {
-		int prevSister = previousSisterOfNode(toN);
-		mother[newMother]=toMother;
-		mother[toN]=newMother;
-		mother[fromN]=newMother;
-		nextSister[prevSister]=newMother;
-		firstDaughter[newMother]=fromN;
-		nextSister[fromN]=toN;
-		nextSister[newMother]=nextSister[toN];
-		nextSister[toN]=0;
-	}
-	if (toN==root)
-		root = newMother;
-	locked = false;
+	/*-----------------------------------------*/
+	/** Excise node and clade above it from tree but leave the clade intact, in case it is to be attached elsewhere.*/
+	public  boolean snipClade(int node, boolean notify) {   
+		if (node==root)
+			return false;
+		else {  // also prohibit if will be left fewer than three??
+			if (!nodeExists(node))
+				return false;
+			locked = true;
+			//int numSnipped = numberOfTerminalsInClade(node);
+			int mom = motherOfNode(node);
+			if (!nodeExists(mom))
+				return false;
+			if (numberOfDaughtersOfNode(mom)>2) {     //easy case; just pluck out
+				int sisterRight=nextSisterOfNode(node);
+				if (nodeIsFirstDaughter(node)) {
+					firstDaughter[mom] = sisterRight;
+				}
+				else {
+					int sisterLeft=previousSisterOfNode(node);
+					if (!nodeExists(sisterLeft))
+						return false;
+					nextSister[sisterLeft] = sisterRight;
+				}
 
-	incrementVersion(MesquiteListener.BRANCHES_REARRANGED,notify);
-	return newMother;
-}
-/*-----------------------------------------*/
-/** Move branch so as to excise branchFrom from its current position, and attach it to branch beneath
+			}
+			else {// moving sister into mother's place
+				if (numberOfDaughtersOfNode(mom)==1) {     //cut down to 
+					while (mom != root && numberOfDaughtersOfNode(mom) == 1 && mom != 0){
+						node = mom;  //cut one deeper
+						mom = motherOfNode(mom);
+					}
+					if (!nodeExists(mom))
+						return false;
+					if (mom == root && numberOfDaughtersOfNode(mom)==1){
+						locked = false;
+						exists = false;
+						root = 0;
+						incrementVersion(MesquiteListener.BRANCHES_REARRANGED,notify);
+						return true;
+					}
+				}
+				int sister;
+				if (nodeIsFirstDaughter(node)) 
+					sister = nextSisterOfNode(node);
+				else  
+					sister = previousSisterOfNode(node);
+				if (!nodeExists(sister))
+					return false;
+				if (hasBranchLengths()) { //remember length of branches to adjust afterward
+					MesquiteDouble lengthOfRemoved = new MesquiteDouble();
+					if (!nodeIsPolytomous(mom)){ // && mom != root) {  post-1.12: adds also for root
+						lengthOfRemoved.setValue(branchLength[mom]); //add length of mom;
+						lengthOfRemoved.add(branchLength[sister]); // add length of sister of branchFrom
+						setBranchLength(sister, lengthOfRemoved.getValue(), false);
+					}
+				}
+				int neice = firstDaughterOfNode(sister);
+				firstDaughter[mom] = firstDaughter[sister];
+				while (nodeExists(neice)) {
+					mother[neice] = mom;
+					neice = nextSisterOfNode(neice);
+				}
+
+				if (branchLength!=null)
+					branchLength[mom] = branchLength[sister];
+				taxonNumber[mom] = taxonNumber[sister]; 
+				if (taxonNumber[mom]>=0 && taxonNumber[mom]<nodeOfTaxon.length)
+					nodeOfTaxon[taxonNumber[mom]] = mom;
+				if (label!=null)
+					label[mom] = label[sister];
+				transferAssociated(sister, mom);
+
+				deassignAssociated(sister);
+				setSelected(mom, getSelected(sister));
+				setSelected(sister, false);
+				firstDaughter[sister]=0;
+				nextSister[sister]=0;
+				mother[sister]=0;
+				setTaxonNumber(sister, -1);
+				if (label!=null)
+					label[sister] = null;
+				if (branchLength!=null)
+					branchLength[sister] = MesquiteDouble.unassigned;
+			}
+			locked = false;
+
+			resetNodeOfTaxonNumbers();  //added Nov 2013
+			incrementVersion(MesquiteListener.BRANCHES_REARRANGED,notify);
+
+			return true;
+		}
+	}
+	/*................................................................................................................*/
+	/** Attach terminal taxon to tree along given branch.*/
+	public  boolean graftTaxon(int taxon, int toN, boolean notify) {   
+		if (!nodeInTree(toN)) {
+			MesquiteMessage.warnProgrammer("ATTEMPT TO GRAFT ONTO NODE NOT IN TREE");
+			return false;
+		}
+		int fromN = openNode();
+		if (fromN==0)
+			return false;
+		mother[fromN] = -1;  //done some next openNode thinks it's not open
+		setTaxonNumber(fromN, taxon);
+		if (label!=null)
+			label[fromN] = null;
+		firstDaughter[fromN] = 0;
+		nextSister[fromN] = 0;
+		deassignAssociated(fromN);
+
+
+		boolean success = (nodeExists(graftClade(fromN, toN, notify)));
+
+
+		return success;
+	}
+	/*-----------------------------------------*/
+	/** Attach node fromN (and any clade to attached to it) along node toN.  Returns the new node created to attach fromN*/
+	public  int graftClade(int fromN, int toN, boolean notify) {   
+		if (!nodeExists(fromN) || !nodeExists(toN))
+			return 0;
+		locked = true;
+		int newMother = openNode();
+		if (newMother==0)
+			return 0;
+		setTaxonNumber(newMother, -1);
+		if (label!=null)
+			label[newMother] = null;
+		deassignAssociated(newMother);
+
+		int toMother = motherOfNode(toN);
+
+		if (nodeIsFirstDaughter(toN)) {
+			int nextSis = nextSisterOfNode(toN);
+			firstDaughter[toMother]=newMother;
+			firstDaughter[newMother]=toN;
+			nextSister[toN]=fromN;
+			mother[newMother]=toMother;
+			mother[toN]=newMother;
+			mother[fromN]=newMother;
+			nextSister[fromN]=0;
+			nextSister[newMother]=nextSis;
+		}
+		else {
+			int prevSister = previousSisterOfNode(toN);
+			mother[newMother]=toMother;
+			mother[toN]=newMother;
+			mother[fromN]=newMother;
+			nextSister[prevSister]=newMother;
+			firstDaughter[newMother]=fromN;
+			nextSister[fromN]=toN;
+			nextSister[newMother]=nextSister[toN];
+			nextSister[toN]=0;
+		}
+		if (toN==root)
+			root = newMother;
+		locked = false;
+
+		incrementVersion(MesquiteListener.BRANCHES_REARRANGED,notify);
+		return newMother;
+	}
+	/*-----------------------------------------*/
+	/** Move branch so as to excise branchFrom from its current position, and attach it to branch beneath
 	node branchTo.  If successful, rename as given (to ensure renamed before notified).*/
-public  boolean moveBranch(int branchFrom, int branchTo, boolean notify) {
-	return moveBranch(branchFrom, branchTo, notify, false, 0.0);
-}
-/*-----------------------------------------*/
-/** Move branch so as to excise branchFrom from its current position, and attach it to branch beneath
+	public  boolean moveBranch(int branchFrom, int branchTo, boolean notify) {
+		return moveBranch(branchFrom, branchTo, notify, false, 0.0);
+	}
+	/*-----------------------------------------*/
+	/** Move branch so as to excise branchFrom from its current position, and attach it to branch beneath
 	node branchTo.  If successful, rename as given (to ensure renamed before notified).
 	Preserve heights indicates that height of descendants from ancestor is preserved.
 	Preserve proportion indicates how the branch lengths are distributed; if 0 then new branches are 0 length; 0.5 means the new branch is 
 	half the length of the shortest of the two branches from/to.  preserveProportion is <strong>only</strong> considered when {@code preserveHeights=true};
 	if {@code preserveHeights=false} the branch receiving the new branch is effectively split in half by the newly grafted branch.*/
-public  boolean moveBranch(int branchFrom, int branchTo, boolean notify, boolean preserveHeights, double preserveProportion) {
-	if (branchFrom==branchTo)
-		return false;
-	else if (!nodeExists(branchFrom) || !nodeExists(branchTo))
-		return false;
-	else if  (descendantOf(branchTo,branchFrom))
-		return false;
-	else if  (branchTo == motherOfNode(branchFrom) && !nodeIsPolytomous(branchTo))
-		return false;
-	else if (nodesAreSisters(branchTo, branchFrom) && (numberOfDaughtersOfNode(motherOfNode(branchFrom))==2))
-		return false;
-	else if (numberOfDaughtersOfNode(motherOfNode(branchFrom))==1) //TODO: NOTE that you can't move a branch with 
-		return false;
+	public  boolean moveBranch(int branchFrom, int branchTo, boolean notify, boolean preserveHeights, double preserveProportion) {
+		if (branchFrom==branchTo)
+			return false;
+		else if (!nodeExists(branchFrom) || !nodeExists(branchTo))
+			return false;
+		else if  (descendantOf(branchTo,branchFrom))
+			return false;
+		else if  (branchTo == motherOfNode(branchFrom) && !nodeIsPolytomous(branchTo))
+			return false;
+		else if (nodesAreSisters(branchTo, branchFrom) && (numberOfDaughtersOfNode(motherOfNode(branchFrom))==2))
+			return false;
+		else if (numberOfDaughtersOfNode(motherOfNode(branchFrom))==1) //TODO: NOTE that you can't move a branch with 
+			return false;
 
-	checkTreeIntegrity(root);
+		checkTreeIntegrity(root);
 
-	double  toLength = getBranchLength(branchTo);
-	double  fromLength = getBranchLength(branchFrom);
+		double  toLength = getBranchLength(branchTo);
+		double  fromLength = getBranchLength(branchFrom);
 
-	//first, pluck out "branchFrom"
-	//next, attach branchFrom clade onto branchTo
-	if (snipClade(branchFrom, false)) {
-		int newMother = graftClade(branchFrom, branchTo, false);
-		if (hasBranchLengths() && MesquiteDouble.isCombinable(toLength)) { //remember length of branches to adjust afterward
-			if (preserveHeights){
-				if (preserveProportion< 0 || !MesquiteDouble.isCombinable(fromLength))
-					preserveProportion = 0;
-				if (preserveProportion>1)
-					preserveProportion = 1;
-				if (preserveProportion == 0)
-					setBranchLength(newMother, 0, false);
+		//first, pluck out "branchFrom"
+		//next, attach branchFrom clade onto branchTo
+		if (snipClade(branchFrom, false)) {
+			int newMother = graftClade(branchFrom, branchTo, false);
+			if (hasBranchLengths() && MesquiteDouble.isCombinable(toLength)) { //remember length of branches to adjust afterward
+				if (preserveHeights){
+					if (preserveProportion< 0 || !MesquiteDouble.isCombinable(fromLength))
+						preserveProportion = 0;
+					if (preserveProportion>1)
+						preserveProportion = 1;
+					if (preserveProportion == 0)
+						setBranchLength(newMother, 0, false);
+					else {
+						double min = 0;
+						if (toLength > fromLength)
+							min = fromLength*preserveProportion;
+						else
+							min = toLength*preserveProportion;
+
+						setBranchLength(newMother, min, false);
+						setBranchLength(branchTo, toLength-min, false);
+						setBranchLength(branchFrom, fromLength-min, false);
+					}
+				}
 				else {
-					double min = 0;
-					if (toLength > fromLength)
-						min = fromLength*preserveProportion;
-					else
-						min = toLength*preserveProportion;
-
-					setBranchLength(newMother, min, false);
-					setBranchLength(branchTo, toLength-min, false);
-					setBranchLength(branchFrom, fromLength-min, false);
+					setBranchLength(newMother, toLength/2.0, false);
+					setBranchLength(branchTo, toLength/2.0, false);
 				}
 			}
-			else {
-				setBranchLength(newMother, toLength/2.0, false);
-				setBranchLength(branchTo, toLength/2.0, false);
-			}
 		}
-	}
-	if (!checkTreeIntegrity(root)) {
-		locked = true;
-		//what to do here?  notify?
-	}
-	incrementVersion(MesquiteListener.BRANCHES_REARRANGED,notify);
-	return true;
-
-}
-/*-----------------------------------------*/
-/** Inserts a new node on the branch represented by "node", and returns the number of the inserted node */
-public  int insertNode(int node, boolean notify){
-	if (!nodeExists(node))
-		return -1;
-	int mom = motherOfNode(node);
-	int wD = whichDaughter(node);
-	int newN= openNode();
-	if (newN>0 && wD>=0) {
-		int youngerSister = nextSister[node];
-		if (wD==0){ //first daughter
-			firstDaughter[mom] = newN;
+		if (!checkTreeIntegrity(root)) {
+			locked = true;
+			//what to do here?  notify?
 		}
-		else {
-			int olderSister = indexedDaughterOfNode(mom, wD-1);
-			nextSister[olderSister] = newN;
-		}
-		nextSister[node] = 0;
-		nextSister[newN] = youngerSister;
-		firstDaughter[newN]= node;
-		taxonNumber[newN] = -1;  //Nov 2013
-		mother[node]=newN;
-		mother[newN]=mom;
-		if (node==root)
-			root = newN;
 		incrementVersion(MesquiteListener.BRANCHES_REARRANGED,notify);
-		return newN;
-	}
-	return -1;
+		return true;
 
-}
-/*-----------------------------------------*/
-/** Adds d to be a new daughter of node. */
-private  void insertDaughter(int node, int d) {
-	if (node!= 0){
-		if (!nodeExists(firstDaughterOfNode(node)))
-			firstDaughter[node] = d;
+	}
+	/*-----------------------------------------*/
+	/** Inserts a new node on the branch represented by "node", and returns the number of the inserted node */
+	public  int insertNode(int node, boolean notify){
+		if (!nodeExists(node))
+			return -1;
+		int mom = motherOfNode(node);
+		int wD = whichDaughter(node);
+		int newN= openNode();
+		if (newN>0 && wD>=0) {
+			int youngerSister = nextSister[node];
+			if (wD==0){ //first daughter
+				firstDaughter[mom] = newN;
+			}
+			else {
+				int olderSister = indexedDaughterOfNode(mom, wD-1);
+				nextSister[olderSister] = newN;
+			}
+			nextSister[node] = 0;
+			nextSister[newN] = youngerSister;
+			firstDaughter[newN]= node;
+			taxonNumber[newN] = -1;  //Nov 2013
+			mother[node]=newN;
+			mother[newN]=mom;
+			if (node==root)
+				root = newN;
+			incrementVersion(MesquiteListener.BRANCHES_REARRANGED,notify);
+			return newN;
+		}
+		return -1;
+
+	}
+	/*-----------------------------------------*/
+	/** Adds d to be a new daughter of node. */
+	private  void insertDaughter(int node, int d) {
+		if (node!= 0){
+			if (!nodeExists(firstDaughterOfNode(node)))
+				firstDaughter[node] = d;
+			else
+				nextSister[lastDaughterOfNode(node)] =d;
+			nextSister[d]=0;
+		}
+	}
+	/*-----------------------------------------*/
+	/** Adds d to be a new daughter of node. */
+	private  void flipFirstTwoDaughters(int node) {
+		if (node!= 0){
+			int first = firstDaughter[node];
+			int second = nextSister[first];
+			firstDaughter[node]=second;
+			nextSister[second] =first;
+			nextSister[first]=0;
+		}
+	}
+	/*------------------- SUBTLE REROOTING OF AUXILIARY INFORMATION ----------------------*/
+	/* This messy section up until floatNode is new as of 2. 72.  It permits information associated with the parts of the tree to be associated
+	 * either with the nodes or branches.  This is relevant in rerooting, because branch associated information then needs to flip to another node once
+	 * the branch is moved to the other side of the root.  Any associated arrays that have betweenness == true will behave as branch associated; others are node associated.
+	 * Modules setting these associated can indicate they are branch associated by adding the setAsBetween boolean = true to the setAssociatedXXXXX methods or
+	 * by the direct methods setAssociatedXXXXXBetweenness.  These write to the file as a special comment (see readExtras) at the end of the tree.
+	 *   For old files the standard branch associated info are forced
+	 * as such by checkAssociated() that looks to see if the name reference is recognized as branch associated */
+
+	public boolean rerootAssocBetweenOnlyFloatPoly(int first, int second){
+		if (first>numParts || first<0) 
+			return false;
+		if (second>numParts || second<0) 
+			return false;
+		if (bits!=null) {
+			for (int i=0; i< bits.size(); i++) {
+				Bits b = (Bits)bits.elementAt(i);
+				if (b.isBetween())
+					b.swapParts(first, second);
+			}
+		}
+		if (longs!=null) {
+			for (int i=0; i< longs.size(); i++) {
+				LongArray b = (LongArray)longs.elementAt(i);
+				if (b.isBetween())
+					b.swapParts(first, second);
+			}
+		}
+		if (doubles!=null)
+			for (int i=0; i< doubles.size(); i++) {
+				DoubleArray b = (DoubleArray)doubles.elementAt(i);
+				if (b.isBetween())
+					b.swapParts(first, second);
+			}
+		if (objects!=null)
+			for (int i=0; i< objects.size(); i++) {
+				ObjectArray b = (ObjectArray)objects.elementAt(i);
+				if (b.isBetween())
+					b.swapParts(first, second); //comments handled here
+			}
+
+		setDirty(true);
+		return true;
+	}
+	/*-----------------------------------------*/
+	public boolean rerootAssocBetweenOnlyFloatDichot(int previousFromAtNode, int sis, int targetNode){
+		if (previousFromAtNode>numParts || previousFromAtNode<0) 
+			return false;
+		if (sis>numParts || sis<0) 
+			return false;
+		if (targetNode>numParts || targetNode<0) 
+			return false;
+
+		if (bits!=null) {
+			for (int i=0; i< bits.size(); i++) {
+				Bits b = (Bits)bits.elementAt(i);
+				if (b.isBetween()) {
+					boolean newValue;
+					if (b.isBitOn(previousFromAtNode) || b.isBitOn(sis))
+						newValue = true;
+					else 
+						newValue = false;
+					boolean bT = b.isBitOn(targetNode);
+
+					b.setBit(sis, newValue);
+					b.setBit(previousFromAtNode, bT);
+					b.setBit(targetNode, false);
+				}
+			}
+		}
+		if (longs!=null) {
+			for (int i=0; i< longs.size(); i++) {
+				LongArray b = (LongArray)longs.elementAt(i);
+				if (b.isBetween()) {
+					long newValue = MesquiteLong.unassigned;
+					if (MesquiteLong.isUnassigned(b.getValue(previousFromAtNode)))
+						newValue = b.getValue(sis);
+					else if (MesquiteLong.isUnassigned(b.getValue(sis)))
+						newValue = b.getValue(previousFromAtNode);
+					else if (b.getValue(sis) == b.getValue(previousFromAtNode))
+						newValue = b.getValue(sis);
+					else
+						newValue = MesquiteLong.unassigned;
+					long bT = b.getValue(targetNode);
+					b.setValue(sis, newValue);
+					b.setValue(previousFromAtNode, bT);
+					b.setValue(targetNode, MesquiteLong.unassigned);
+				}
+			}
+		}
+		if (doubles!=null)
+			for (int i=0; i< doubles.size(); i++) {
+				DoubleArray b = (DoubleArray)doubles.elementAt(i);
+				if (b.isBetween()) {
+					double newValue = MesquiteLong.unassigned;
+					if (MesquiteDouble.isUnassigned(b.getValue(previousFromAtNode)))
+						newValue = b.getValue(sis);
+					else if (MesquiteDouble.isUnassigned(b.getValue(sis)))
+						newValue = b.getValue(previousFromAtNode);
+					else if (b.getValue(sis) == b.getValue(previousFromAtNode))
+						newValue = b.getValue(sis);
+					else
+						newValue = MesquiteDouble.unassigned;
+					double bT = b.getValue(targetNode);
+
+					b.setValue(sis, newValue);
+					b.setValue(previousFromAtNode, bT);
+					b.setValue(targetNode, MesquiteDouble.unassigned);
+				}
+			}
+		if (objects!=null)
+			for (int i=0; i< objects.size(); i++) {
+				ObjectArray b = (ObjectArray)objects.elementAt(i);
+				if (b.isBetween()) {
+					Object newValue = null;
+					if (b.getValue(previousFromAtNode) == null)
+						newValue = b.getValue(sis);
+					else if (b.getValue(sis) == null)
+						newValue = b.getValue(previousFromAtNode);
+					else if (b.getValue(sis).equals(b.getValue(previousFromAtNode)))
+						newValue = b.getValue(sis);
+					else
+						newValue = null;
+					Object bT = b.getValue(targetNode);
+
+					b.setValue(sis, newValue);
+					b.setValue(previousFromAtNode, bT);
+					b.setValue(targetNode, null);
+				}
+			}
+
+		setDirty(true);
+		return true;
+	}
+
+	/*-----------------------------------------*/
+	public boolean rerootAssocBetweenOnlyCladeRoot(int oldMother, int atNode, int cladeRoot){
+		if (oldMother>numParts || oldMother<0) 
+			return false;
+		if (atNode>numParts || atNode<0) 
+			return false;
+		if (cladeRoot>numParts || cladeRoot<0) 
+			return false;
+
+
+		if (bits!=null) {
+			for (int i=0; i< bits.size(); i++) {
+				Bits b = (Bits)bits.elementAt(i);
+				if (b.isBetween()) {
+					boolean bT = b.isBitOn(atNode);
+					boolean bSpan = b.isBitOn(oldMother);
+
+					b.setBit(oldMother, false);
+					b.setBit(atNode, bSpan);
+
+					b.setBit(cladeRoot, bT);
+				}
+			}
+		}
+		if (longs!=null) {
+			for (int i=0; i< longs.size(); i++) {
+				LongArray b = (LongArray)longs.elementAt(i);
+				if (b.isBetween()) {
+					long bT = b.getValue(atNode);
+					long bSpan = b.getValue(oldMother);
+
+					b.setValue(atNode, bSpan);
+					b.setValue(oldMother, MesquiteLong.unassigned);
+
+					b.setValue(cladeRoot, bT);
+				}
+			}
+		}
+		if (doubles!=null)
+			for (int i=0; i< doubles.size(); i++) {
+				DoubleArray b = (DoubleArray)doubles.elementAt(i);
+				if (b.isBetween()) {
+					double bT = b.getValue(atNode);
+					double bSpan = b.getValue(oldMother);
+
+					b.setValue(atNode, bSpan);
+					b.setValue(oldMother, MesquiteDouble.unassigned);
+
+					b.setValue(cladeRoot, bT);
+				}
+			}
+		if (objects!=null)
+			for (int i=0; i< objects.size(); i++) {
+				ObjectArray b = (ObjectArray)objects.elementAt(i);
+				if (b.isBetween()) {
+					Object bT = b.getValue(atNode);
+					Object bSpan = b.getValue(oldMother);
+
+					//b.setValue(oldMother, MesquiteDouble.unassigned);
+					b.setValue(atNode, bSpan);
+					b.setValue(oldMother, null);
+					b.setValue(cladeRoot, bT);
+				}
+			}
+
+		setDirty(true);
+		return true;
+	}
+
+	//These from Associable are overrident to set applying to branch ("betweenness") as default, unlike Associables in general,
+	//but also to read the betweenness from the defaults for PropertyRecords stored in settings
+	public NameReference makeAssociatedBits(String n){
+		NameReference nr = super.makeAssociatedBits(n);
+		Bits b = getAssociatedBits(nr);
+		b.setBetweenness(true); //default for trees
+		BranchProperty p = BranchProperty.findInBranchPropertySettings(nr, Associable.BITS);
+		if (p != null)
+			b.setBetweenness(p.getBelongsToBranch());
 		else
-			nextSister[lastDaughterOfNode(node)] =d;
-		nextSister[d]=0;
+			p = new BranchProperty(nr, Associable.BITS);
+		p.addToKnownBranchPropertiesIfNeeded(this);
+
+		return nr;
 	}
-}
-/*-----------------------------------------*/
-/** Adds d to be a new daughter of node. */
-private  void flipFirstTwoDaughters(int node) {
-	if (node!= 0){
-		int first = firstDaughter[node];
-		int second = nextSister[first];
-		firstDaughter[node]=second;
-		nextSister[second] =first;
-		nextSister[first]=0;
+	public NameReference makeAssociatedLongs(String n){
+		NameReference nr = super.makeAssociatedLongs(n);
+		LongArray b = getAssociatedLongs(nr);
+		b.setBetweenness(true); //default for trees
+		BranchProperty p = BranchProperty.findInBranchPropertySettings(nr, Associable.LONGS);
+		if (p != null)
+			b.setBetweenness(p.getBelongsToBranch());
+		else
+			p = new BranchProperty(nr, Associable.LONGS);
+		p.addToKnownBranchPropertiesIfNeeded(this);
+		return nr;
 	}
-}
-/*------------------- SUBTLE REROOTING OF AUXILIARY INFORMATION ----------------------*/
-/* This messy section up until floatNode is new as of 2. 72.  It permits information associated with the parts of the tree to be associated
- * either with the nodes or branches.  This is relevant in rerooting, because branch associated information then needs to flip to another node once
- * the branch is moved to the other side of the root.  Any associated arrays that have betweenness == true will behave as branch associated; others are node associated.
- * Modules setting these associated can indicate they are branch associated by adding the setAsBetween boolean = true to the setAssociatedXXXXX methods or
- * by the direct methods setAssociatedXXXXXBetweenness.  These write to the file as a special comment (see readExtras) at the end of the tree.
- *   For old files the standard branch associated info are forced
- * as such by checkAssociated() that looks to see if the name reference is recognized as branch associated */
-
-public boolean rerootAssocBetweenOnlyFloatPoly(int first, int second){
-	if (first>numParts || first<0) 
-		return false;
-	if (second>numParts || second<0) 
-		return false;
-	if (bits!=null) {
-		for (int i=0; i< bits.size(); i++) {
-			Bits b = (Bits)bits.elementAt(i);
-			if (b.isBetween())
-				b.swapParts(first, second);
-		}
+	public NameReference makeAssociatedDoubles(String n){
+		NameReference nr = super.makeAssociatedDoubles(n);
+		DoubleArray b = getAssociatedDoubles(nr);
+		b.setBetweenness(true); //default for trees
+		BranchProperty p = BranchProperty.findInBranchPropertySettings(nr, Associable.DOUBLES);
+		if (p != null)
+			b.setBetweenness(p.getBelongsToBranch());
+		else
+			p = new BranchProperty(nr, Associable.DOUBLES);
+		p.addToKnownBranchPropertiesIfNeeded(this);
+		return nr;
 	}
-	if (longs!=null) {
-		for (int i=0; i< longs.size(); i++) {
-			LongArray b = (LongArray)longs.elementAt(i);
-			if (b.isBetween())
-				b.swapParts(first, second);
-		}
+	public NameReference makeAssociatedStrings(String n){
+		NameReference nr = super.makeAssociatedStrings(n);
+		StringArray b = getAssociatedStrings(nr);
+		b.setBetweenness(true); //default for trees
+		BranchProperty p = BranchProperty.findInBranchPropertySettings(nr, Associable.STRINGS);
+		if (p != null)
+			b.setBetweenness(p.getBelongsToBranch());
+		else
+			p = new BranchProperty(nr, Associable.STRINGS);
+		p.addToKnownBranchPropertiesIfNeeded(this);
+		return nr;
 	}
-	if (doubles!=null)
-		for (int i=0; i< doubles.size(); i++) {
-			DoubleArray b = (DoubleArray)doubles.elementAt(i);
-			if (b.isBetween())
-				b.swapParts(first, second);
-		}
-	if (objects!=null)
-		for (int i=0; i< objects.size(); i++) {
-			ObjectArray b = (ObjectArray)objects.elementAt(i);
-			if (b.isBetween())
-				b.swapParts(first, second); //comments handled here
-		}
-
-	setDirty(true);
-	return true;
-}
-/*-----------------------------------------*/
-public boolean rerootAssocBetweenOnlyFloatDichot(int previousFromAtNode, int sis, int targetNode){
-	if (previousFromAtNode>numParts || previousFromAtNode<0) 
-		return false;
-	if (sis>numParts || sis<0) 
-		return false;
-	if (targetNode>numParts || targetNode<0) 
-		return false;
-
-	if (bits!=null) {
-		for (int i=0; i< bits.size(); i++) {
-			Bits b = (Bits)bits.elementAt(i);
-			if (b.isBetween()) {
-				boolean newValue;
-				if (b.isBitOn(previousFromAtNode) || b.isBitOn(sis))
-					newValue = true;
-				else 
-					newValue = false;
-				boolean bT = b.isBitOn(targetNode);
-
-				b.setBit(sis, newValue);
-				b.setBit(previousFromAtNode, bT);
-				b.setBit(targetNode, false);
-			}
-		}
+	public NameReference makeAssociatedObjects(String n){
+		NameReference nr = super.makeAssociatedObjects(n);
+		ObjectArray b = getAssociatedObjects(nr);
+		b.setBetweenness(true); //default for trees
+		BranchProperty p = BranchProperty.findInBranchPropertySettings(nr, Associable.OBJECTS);
+		if (p != null)
+			b.setBetweenness(p.getBelongsToBranch());
+		else
+			p = new BranchProperty(nr, Associable.OBJECTS);
+		p.addToKnownBranchPropertiesIfNeeded(this);
+		return nr;
 	}
-	if (longs!=null) {
-		for (int i=0; i< longs.size(); i++) {
-			LongArray b = (LongArray)longs.elementAt(i);
-			if (b.isBetween()) {
-				long newValue = MesquiteLong.unassigned;
-				if (MesquiteLong.isUnassigned(b.getValue(previousFromAtNode)))
-					newValue = b.getValue(sis);
-				else if (MesquiteLong.isUnassigned(b.getValue(sis)))
-					newValue = b.getValue(previousFromAtNode);
-				else if (b.getValue(sis) == b.getValue(previousFromAtNode))
-					newValue = b.getValue(sis);
-				else
-					newValue = MesquiteLong.unassigned;
-				long bT = b.getValue(targetNode);
-				b.setValue(sis, newValue);
-				b.setValue(previousFromAtNode, bT);
-				b.setValue(targetNode, MesquiteLong.unassigned);
-			}
-		}
-	}
-	if (doubles!=null)
-		for (int i=0; i< doubles.size(); i++) {
-			DoubleArray b = (DoubleArray)doubles.elementAt(i);
-			if (b.isBetween()) {
-				double newValue = MesquiteLong.unassigned;
-				if (MesquiteDouble.isUnassigned(b.getValue(previousFromAtNode)))
-					newValue = b.getValue(sis);
-				else if (MesquiteDouble.isUnassigned(b.getValue(sis)))
-					newValue = b.getValue(previousFromAtNode);
-				else if (b.getValue(sis) == b.getValue(previousFromAtNode))
-					newValue = b.getValue(sis);
-				else
-					newValue = MesquiteDouble.unassigned;
-				double bT = b.getValue(targetNode);
-
-				b.setValue(sis, newValue);
-				b.setValue(previousFromAtNode, bT);
-				b.setValue(targetNode, MesquiteDouble.unassigned);
-			}
-		}
-	if (objects!=null)
-		for (int i=0; i< objects.size(); i++) {
-			ObjectArray b = (ObjectArray)objects.elementAt(i);
-			if (b.isBetween()) {
-				Object newValue = null;
-				if (b.getValue(previousFromAtNode) == null)
-					newValue = b.getValue(sis);
-				else if (b.getValue(sis) == null)
-					newValue = b.getValue(previousFromAtNode);
-				else if (b.getValue(sis).equals(b.getValue(previousFromAtNode)))
-					newValue = b.getValue(sis);
-				else
-					newValue = null;
-				Object bT = b.getValue(targetNode);
-
-				b.setValue(sis, newValue);
-				b.setValue(previousFromAtNode, bT);
-				b.setValue(targetNode, null);
-			}
-		}
-
-	setDirty(true);
-	return true;
-}
-
-/*-----------------------------------------*/
-public boolean rerootAssocBetweenOnlyCladeRoot(int oldMother, int atNode, int cladeRoot){
-	if (oldMother>numParts || oldMother<0) 
-		return false;
-	if (atNode>numParts || atNode<0) 
-		return false;
-	if (cladeRoot>numParts || cladeRoot<0) 
-		return false;
-
-
-	if (bits!=null) {
-		for (int i=0; i< bits.size(); i++) {
-			Bits b = (Bits)bits.elementAt(i);
-			if (b.isBetween()) {
-				boolean bT = b.isBitOn(atNode);
-				boolean bSpan = b.isBitOn(oldMother);
-
-				b.setBit(oldMother, false);
-				b.setBit(atNode, bSpan);
-
-				b.setBit(cladeRoot, bT);
-			}
-		}
-	}
-	if (longs!=null) {
-		for (int i=0; i< longs.size(); i++) {
-			LongArray b = (LongArray)longs.elementAt(i);
-			if (b.isBetween()) {
-				long bT = b.getValue(atNode);
-				long bSpan = b.getValue(oldMother);
-
-				b.setValue(atNode, bSpan);
-				b.setValue(oldMother, MesquiteLong.unassigned);
-
-				b.setValue(cladeRoot, bT);
-			}
-		}
-	}
-	if (doubles!=null)
-		for (int i=0; i< doubles.size(); i++) {
-			DoubleArray b = (DoubleArray)doubles.elementAt(i);
-			if (b.isBetween()) {
-				double bT = b.getValue(atNode);
-				double bSpan = b.getValue(oldMother);
-
-				b.setValue(atNode, bSpan);
-				b.setValue(oldMother, MesquiteDouble.unassigned);
-
-				b.setValue(cladeRoot, bT);
-			}
-		}
-	if (objects!=null)
-		for (int i=0; i< objects.size(); i++) {
-			ObjectArray b = (ObjectArray)objects.elementAt(i);
-			if (b.isBetween()) {
-				Object bT = b.getValue(atNode);
-				Object bSpan = b.getValue(oldMother);
-
-				//b.setValue(oldMother, MesquiteDouble.unassigned);
-				b.setValue(atNode, bSpan);
-				b.setValue(oldMother, null);
-				b.setValue(cladeRoot, bT);
-			}
-		}
-
-	setDirty(true);
-	return true;
-}
-
-//These from Associable are overrident to set applying to branch ("betweenness") as default, unlike Associables in general,
-//but also to read the betweenness from the defaults for PropertyRecords stored in settings
-public NameReference makeAssociatedBits(String n){
-	NameReference nr = super.makeAssociatedBits(n);
-	Bits b = getAssociatedBits(nr);
-	b.setBetweenness(true); //default for trees
-	BranchProperty p = BranchProperty.findInBranchPropertySettings(nr, Associable.BITS);
-	if (p != null)
-		b.setBetweenness(p.getBelongsToBranch());
-	else
-		p = new BranchProperty(nr, Associable.BITS);
-	p.addToKnownBranchPropertiesIfNeeded(this);
-
-	return nr;
-}
-public NameReference makeAssociatedLongs(String n){
-	NameReference nr = super.makeAssociatedLongs(n);
-	LongArray b = getAssociatedLongs(nr);
-	b.setBetweenness(true); //default for trees
-	BranchProperty p = BranchProperty.findInBranchPropertySettings(nr, Associable.LONGS);
-	if (p != null)
-		b.setBetweenness(p.getBelongsToBranch());
-	else
-		p = new BranchProperty(nr, Associable.LONGS);
-	p.addToKnownBranchPropertiesIfNeeded(this);
-	return nr;
-}
-public NameReference makeAssociatedDoubles(String n){
-	NameReference nr = super.makeAssociatedDoubles(n);
-	DoubleArray b = getAssociatedDoubles(nr);
-	b.setBetweenness(true); //default for trees
-	BranchProperty p = BranchProperty.findInBranchPropertySettings(nr, Associable.DOUBLES);
-	if (p != null)
-		b.setBetweenness(p.getBelongsToBranch());
-	else
-		p = new BranchProperty(nr, Associable.DOUBLES);
-	p.addToKnownBranchPropertiesIfNeeded(this);
-	return nr;
-}
-public NameReference makeAssociatedStrings(String n){
-	NameReference nr = super.makeAssociatedStrings(n);
-	StringArray b = getAssociatedStrings(nr);
-	b.setBetweenness(true); //default for trees
-	BranchProperty p = BranchProperty.findInBranchPropertySettings(nr, Associable.STRINGS);
-	if (p != null)
-		b.setBetweenness(p.getBelongsToBranch());
-	else
-		p = new BranchProperty(nr, Associable.STRINGS);
-	p.addToKnownBranchPropertiesIfNeeded(this);
-	return nr;
-}
-public NameReference makeAssociatedObjects(String n){
-	NameReference nr = super.makeAssociatedObjects(n);
-	ObjectArray b = getAssociatedObjects(nr);
-	b.setBetweenness(true); //default for trees
-	BranchProperty p = BranchProperty.findInBranchPropertySettings(nr, Associable.OBJECTS);
-	if (p != null)
-		b.setBetweenness(p.getBelongsToBranch());
-	else
-		p = new BranchProperty(nr, Associable.OBJECTS);
-	p.addToKnownBranchPropertiesIfNeeded(this);
-	return nr;
-}
-public boolean addProperty(BranchProperty property, boolean notify){
-	NameReference nr = property.getNameReference();
-	if (property.kind == Associable.BITS){
-		if (getAssociatedBits(nr) != null)  //already exists
-			return false;
-		makeAssociatedBits(property.getName());
-		Bits bits = getAssociatedBits(nr);
-		bits.setBetweenness(property.getBelongsToBranch());
-		notifyListeners(this, new Notification(MesquiteListener.ASSOCIATED_CHANGED));
-		return true;
-	}
-	else if (property.kind == Associable.DOUBLES){
-		if (getAssociatedDoubles(nr) != null)  //already exists
-			return false;
-		makeAssociatedDoubles(property.getName());
-		DoubleArray ds =getAssociatedDoubles(nr);
-		ds.setBetweenness(property.getBelongsToBranch());
-		if (notify)
+	public boolean addProperty(BranchProperty property, boolean notify){
+		NameReference nr = property.getNameReference();
+		if (property.kind == Associable.BITS){
+			if (getAssociatedBits(nr) != null)  //already exists
+				return false;
+			makeAssociatedBits(property.getName());
+			Bits bits = getAssociatedBits(nr);
+			bits.setBetweenness(property.getBelongsToBranch());
 			notifyListeners(this, new Notification(MesquiteListener.ASSOCIATED_CHANGED));
-		return true;
-	}
-	else if (property.kind == Associable.LONGS){
-		if (getAssociatedLongs(nr) != null)  //already exists
-			return false;
-		makeAssociatedLongs(property.getName());
-		LongArray ls = getAssociatedLongs(nr);
-		ls.setBetweenness(property.getBelongsToBranch());
-		if (notify)
-			notifyListeners(this, new Notification(MesquiteListener.ASSOCIATED_CHANGED));
-		return true;
-	}
-	else if (property.kind == Associable.STRINGS){
-		if (getAssociatedStrings(nr) != null)  //already exists
-			return false;
-		makeAssociatedStrings(property.getName());
-		StringArray sa = getAssociatedStrings(nr);
-		sa.setBetweenness(property.getBelongsToBranch());
-		if (notify)
-			notifyListeners(this, new Notification(MesquiteListener.ASSOCIATED_CHANGED));
-		return true;
-	}
-	return false;
-}
-/*--------------------------------------------*/
-public DisplayableBranchProperty[] getPropertyRecords(){ 
-	int total = getNumberAssociatedBits() +getNumberAssociatedLongs() + getNumberAssociatedDoubles() + getNumberAssociatedStrings() + getNumberAssociatedObjects();
-	if (total == 0)
-		return null;
-	DisplayableBranchProperty[] names = new DisplayableBranchProperty[total];
-	int count = 0;
-	if (bits!=null) {
-		for (int i=0; i<bits.size(); i++) {
-			Listable b = (Listable)bits.elementAt(i);
-			names[count++] = new DisplayableBranchProperty(b.getName(), Associable.BITS);
+			return true;
 		}
-	}
-	if (longs!=null) {
-		for (int i=0; i<longs.size(); i++) {
-			Object obj = longs.elementAt(i);
-			Listable b = (Listable)longs.elementAt(i);
-			names[count++] = new DisplayableBranchProperty(b.getName(), Associable.LONGS);
+		else if (property.kind == Associable.DOUBLES){
+			if (getAssociatedDoubles(nr) != null)  //already exists
+				return false;
+			makeAssociatedDoubles(property.getName());
+			DoubleArray ds =getAssociatedDoubles(nr);
+			ds.setBetweenness(property.getBelongsToBranch());
+			if (notify)
+				notifyListeners(this, new Notification(MesquiteListener.ASSOCIATED_CHANGED));
+			return true;
 		}
-	}
-	if (doubles!=null){
-		for (int i=0; i<doubles.size(); i++) {
-			Listable b = (Listable)doubles.elementAt(i);
-			names[count++] = new DisplayableBranchProperty(b.getName(), Associable.DOUBLES);
+		else if (property.kind == Associable.LONGS){
+			if (getAssociatedLongs(nr) != null)  //already exists
+				return false;
+			makeAssociatedLongs(property.getName());
+			LongArray ls = getAssociatedLongs(nr);
+			ls.setBetweenness(property.getBelongsToBranch());
+			if (notify)
+				notifyListeners(this, new Notification(MesquiteListener.ASSOCIATED_CHANGED));
+			return true;
 		}
-	}
-	if (strings!=null){
-		for (int i=0; i<strings.size(); i++) {
-			Listable b = (Listable)strings.elementAt(i);
-			names[count++] = new DisplayableBranchProperty(b.getName(), Associable.STRINGS);
+		else if (property.kind == Associable.STRINGS){
+			if (getAssociatedStrings(nr) != null)  //already exists
+				return false;
+			makeAssociatedStrings(property.getName());
+			StringArray sa = getAssociatedStrings(nr);
+			sa.setBetweenness(property.getBelongsToBranch());
+			if (notify)
+				notifyListeners(this, new Notification(MesquiteListener.ASSOCIATED_CHANGED));
+			return true;
 		}
+		return false;
 	}
-	if (objects!=null) {
-		for (int i=0; i<objects.size(); i++) {
-			Listable b = (Listable)objects.elementAt(i);
-			names[count++] = new DisplayableBranchProperty(b.getName(), Associable.OBJECTS);
+	/*--------------------------------------------*/
+	public DisplayableBranchProperty[] getPropertyRecords(){ 
+		int total = getNumberAssociatedBits() +getNumberAssociatedLongs() + getNumberAssociatedDoubles() + getNumberAssociatedStrings() + getNumberAssociatedObjects();
+		if (total == 0)
+			return null;
+		DisplayableBranchProperty[] names = new DisplayableBranchProperty[total];
+		int count = 0;
+		if (bits!=null) {
+			for (int i=0; i<bits.size(); i++) {
+				Listable b = (Listable)bits.elementAt(i);
+				names[count++] = new DisplayableBranchProperty(b.getName(), Associable.BITS);
+			}
 		}
+		if (longs!=null) {
+			for (int i=0; i<longs.size(); i++) {
+				Object obj = longs.elementAt(i);
+				Listable b = (Listable)longs.elementAt(i);
+				names[count++] = new DisplayableBranchProperty(b.getName(), Associable.LONGS);
+			}
+		}
+		if (doubles!=null){
+			for (int i=0; i<doubles.size(); i++) {
+				Listable b = (Listable)doubles.elementAt(i);
+				names[count++] = new DisplayableBranchProperty(b.getName(), Associable.DOUBLES);
+			}
+		}
+		if (strings!=null){
+			for (int i=0; i<strings.size(); i++) {
+				Listable b = (Listable)strings.elementAt(i);
+				names[count++] = new DisplayableBranchProperty(b.getName(), Associable.STRINGS);
+			}
+		}
+		if (objects!=null) {
+			for (int i=0; i<objects.size(); i++) {
+				Listable b = (Listable)objects.elementAt(i);
+				names[count++] = new DisplayableBranchProperty(b.getName(), Associable.OBJECTS);
+			}
+		}
+		return names;
 	}
-	return names;
-}
-/* NOTE: if you add a name to one of these lists, you should consider if it should be added to the 
+	/* NOTE: if you add a name to one of these lists, you should consider if it should be added to the 
 	values in ManageTrees.queryAboutNumericalLabelIntepretation() */ 
 
 
 
-private String writeAssociatedBetweenness(){
-	String s = "";
-	int count = 0;
-	boolean first = true;
-	if (bits!=null) {
-		for (int i=0; i< bits.size(); i++) {
-			Bits b = (Bits)bits.elementAt(i);
-			if (BranchProperty.findInBranchPropertySettings(b.getNameReference().getValue())==null && !b.isBetween()) {  //writes only if not in property settings and if it says it's not between, i.e. for nodes
-				if (!first)
-					s += ",";
-				first = false;
-				s += " " + StringUtil.tokenize(b.getNameReference().getValue());
-				count++;
+	private String writeAssociatedBetweenness(){
+		String s = "";
+		int count = 0;
+		boolean first = true;
+		if (bits!=null) {
+			for (int i=0; i< bits.size(); i++) {
+				Bits b = (Bits)bits.elementAt(i);
+				if (BranchProperty.findInBranchPropertySettings(b.getNameReference().getValue())==null && !b.isBetween()) {  //writes only if not in property settings and if it says it's not between, i.e. for nodes
+					if (!first)
+						s += ",";
+					first = false;
+					s += " " + StringUtil.tokenize(b.getNameReference().getValue());
+					count++;
+				}
 			}
 		}
-	}
-	if (longs!=null) {
-		for (int i=0; i< longs.size(); i++) {
-			LongArray b = (LongArray)longs.elementAt(i);
-			if (BranchProperty.findInBranchPropertySettings(b.getNameReference().getValue())==null && !b.isBetween()) {  //writes only if not in property settings and if it says it's not between, i.e. for nodes
-				if (!first)
-					s += ",";
-				first = false;
-				s += " " + StringUtil.tokenize(b.getNameReference().getValue());
-				count++;
+		if (longs!=null) {
+			for (int i=0; i< longs.size(); i++) {
+				LongArray b = (LongArray)longs.elementAt(i);
+				if (BranchProperty.findInBranchPropertySettings(b.getNameReference().getValue())==null && !b.isBetween()) {  //writes only if not in property settings and if it says it's not between, i.e. for nodes
+					if (!first)
+						s += ",";
+					first = false;
+					s += " " + StringUtil.tokenize(b.getNameReference().getValue());
+					count++;
+				}
 			}
 		}
-	}
-	if (doubles!=null)
-		for (int i=0; i< doubles.size(); i++) {
-			DoubleArray b = (DoubleArray)doubles.elementAt(i);
-			if (BranchProperty.findInBranchPropertySettings(b.getNameReference().getValue())==null && !b.isBetween()) {  //writes only if not in property settings and if it says it's not between, i.e. for nodes
-				if (!first)
-					s += ",";
-				first = false;
-				s += " " + StringUtil.tokenize(b.getNameReference().getValue());
-				count++;
+		if (doubles!=null)
+			for (int i=0; i< doubles.size(); i++) {
+				DoubleArray b = (DoubleArray)doubles.elementAt(i);
+				if (BranchProperty.findInBranchPropertySettings(b.getNameReference().getValue())==null && !b.isBetween()) {  //writes only if not in property settings and if it says it's not between, i.e. for nodes
+					if (!first)
+						s += ",";
+					first = false;
+					s += " " + StringUtil.tokenize(b.getNameReference().getValue());
+					count++;
+				}
 			}
-		}
-	if (objects!=null)
-		for (int i=0; i< objects.size(); i++) {
-			ObjectArray b = (ObjectArray)objects.elementAt(i);
-			if (BranchProperty.findInBranchPropertySettings(b.getNameReference().getValue())==null && !b.isBetween()) {  //writes only if not in property settings and if it says it's not between, i.e. for nodes
-				if (!first)
-					s += ",";
-				first = false;
-				s += " " + StringUtil.tokenize(b.getNameReference().getValue());
-				count++;
+		if (objects!=null)
+			for (int i=0; i< objects.size(); i++) {
+				ObjectArray b = (ObjectArray)objects.elementAt(i);
+				if (BranchProperty.findInBranchPropertySettings(b.getNameReference().getValue())==null && !b.isBetween()) {  //writes only if not in property settings and if it says it's not between, i.e. for nodes
+					if (!first)
+						s += ",";
+					first = false;
+					s += " " + StringUtil.tokenize(b.getNameReference().getValue());
+					count++;
+				}
 			}
-		}
-	if (count == 0)
-		return "";
-	if (count ==1)
-		return " appliesToNodes = " + s;
+		if (count == 0)
+			return "";
+		if (count ==1)
+			return " appliesToNodes = " + s;
 
-	return " appliesToNodes = {" + s + " }";
-}
-/*-----------------------------------------*/
-//floatNode and reroot corrected to handle branch lengths 29 Sept 2001
+		return " appliesToNodes = {" + s + " }";
+	}
+	/*-----------------------------------------*/
+	//floatNode and reroot corrected to handle branch lengths 29 Sept 2001
 
-/** For rerooting.  This starts from the node chosen for the new root, and proceeds down to the clade root.
+	/** For rerooting.  This starts from the node chosen for the new root, and proceeds down to the clade root.
 	It then unhooks the clade root and lets it float upward, temporarily making the new clade root to be the previous
 	node on the path from the chosen node.  It then back up to that node, and lets it float upward, making the new clade
 	root to be the previous node on the path.  And so on, letting the clade float upward piece by piece from its root
 	back toward the chosen node. */
-private  void floatNode(int targetNode, int previousFromAtNode, int cladeRoot){
-	if (targetNode!=cladeRoot) {
-		floatNode(motherOfNode(targetNode), targetNode, cladeRoot);  //go down until at the clade root
-	}
-	/*Either at the original clade root, or coming back up from it.  If coming back up, then previous floating will have left
+	private  void floatNode(int targetNode, int previousFromAtNode, int cladeRoot){
+		if (targetNode!=cladeRoot) {
+			floatNode(motherOfNode(targetNode), targetNode, cladeRoot);  //go down until at the clade root
+		}
+		/*Either at the original clade root, or coming back up from it.  If coming back up, then previous floating will have left
 		the targetNode to be the current (possibly temporary) root of the clade.  The goal here will be to snip this target
 		from its mother and let it float upward relative to the previous node up the path from the chosen node*/
-	//About to snip the current targe
-	if (nodeIsPolytomous(targetNode)) { // target polytomous
-		//branch length that had belonged to previousFromAtNode needs to be assigned to targetNode
-		double bP = 0;
-		double bT = 0;
-		if (branchLength!=null) {
-			bP = branchLength[previousFromAtNode];
-			bT = branchLength[targetNode];
+		//About to snip the current targe
+		if (nodeIsPolytomous(targetNode)) { // target polytomous
+			//branch length that had belonged to previousFromAtNode needs to be assigned to targetNode
+			double bP = 0;
+			double bT = 0;
+			if (branchLength!=null) {
+				bP = branchLength[previousFromAtNode];
+				bT = branchLength[targetNode];
+			}
+			if (firstDaughter[targetNode]==previousFromAtNode) {
+				firstDaughter[targetNode]= nextSister[previousFromAtNode];
+			}
+			else {
+				int pSis = previousSisterOfNode(previousFromAtNode);
+				nextSister[pSis]= nextSister[previousFromAtNode];
+			}
+			mother[targetNode]=previousFromAtNode;
+			nextSister[previousFromAtNode] = 0;
+			insertDaughter(previousFromAtNode, targetNode);
+			if (branchLength!=null) {
+				branchLength[targetNode] = bP;
+				branchLength[previousFromAtNode] = bT;
+			}
+			rerootAssocBetweenOnlyFloatPoly(targetNode, previousFromAtNode);
 		}
-		if (firstDaughter[targetNode]==previousFromAtNode) {
-			firstDaughter[targetNode]= nextSister[previousFromAtNode];
+		else { //target dichotomous 
+			int sis = nextSisterOfNode(previousFromAtNode);
+			if (!nodeExists(sis))
+				sis = previousSisterOfNode(previousFromAtNode);
+			//branch lengths that had belonged to previousFromAtNode and sis need to be summed to be assigned to sis
+			double bSum = 0;
+			double bT = 0;
+			if (branchLength!=null) {
+				if (MesquiteDouble.isUnassigned(branchLength[previousFromAtNode]))
+					bSum = branchLength[sis];
+				else if (MesquiteDouble.isUnassigned(branchLength[sis]))
+					bSum = branchLength[previousFromAtNode];
+				else
+					bSum = branchLength[previousFromAtNode] + branchLength[sis];
+				bT = branchLength[targetNode];
+			}
+			mother[sis]=previousFromAtNode;
+			nextSister[previousFromAtNode] = 0;
+			insertDaughter(previousFromAtNode, sis);
+			mother[cladeRoot]=0; // zeroing root so it will be open
+			setTaxonNumber(cladeRoot,-1);
+			if (label!=null)
+				label[cladeRoot] = null;
+			if (branchLength!=null) {
+				branchLength[sis] = bSum;
+				branchLength[previousFromAtNode] = bT;
+				branchLength[targetNode] = MesquiteDouble.unassigned;
+			}
+			rerootAssocBetweenOnlyFloatDichot(previousFromAtNode, sis, targetNode);
 		}
-		else {
-			int pSis = previousSisterOfNode(previousFromAtNode);
-			nextSister[pSis]= nextSister[previousFromAtNode];
-		}
-		mother[targetNode]=previousFromAtNode;
-		nextSister[previousFromAtNode] = 0;
-		insertDaughter(previousFromAtNode, targetNode);
-		if (branchLength!=null) {
-			branchLength[targetNode] = bP;
-			branchLength[previousFromAtNode] = bT;
-		}
-		rerootAssocBetweenOnlyFloatPoly(targetNode, previousFromAtNode);
 	}
-	else { //target dichotomous 
-		int sis = nextSisterOfNode(previousFromAtNode);
-		if (!nodeExists(sis))
-			sis = previousSisterOfNode(previousFromAtNode);
-		//branch lengths that had belonged to previousFromAtNode and sis need to be summed to be assigned to sis
-		double bSum = 0;
-		double bT = 0;
-		if (branchLength!=null) {
-			if (MesquiteDouble.isUnassigned(branchLength[previousFromAtNode]))
-				bSum = branchLength[sis];
-			else if (MesquiteDouble.isUnassigned(branchLength[sis]))
-				bSum = branchLength[previousFromAtNode];
-			else
-				bSum = branchLength[previousFromAtNode] + branchLength[sis];
-			bT = branchLength[targetNode];
-		}
-		mother[sis]=previousFromAtNode;
-		nextSister[previousFromAtNode] = 0;
-		insertDaughter(previousFromAtNode, sis);
-		mother[cladeRoot]=0; // zeroing root so it will be open
-		setTaxonNumber(cladeRoot,-1);
-		if (label!=null)
-			label[cladeRoot] = null;
-		if (branchLength!=null) {
-			branchLength[sis] = bSum;
-			branchLength[previousFromAtNode] = bT;
-			branchLength[targetNode] = MesquiteDouble.unassigned;
-		}
-		rerootAssocBetweenOnlyFloatDichot(previousFromAtNode, sis, targetNode);
+	/*-----------------------------------------*/
+	/** Returns sum of all branchLengths.*/
+	private double totalBranchLength(int node) { 
+		if (branchLength ==null)
+			return MesquiteDouble.unassigned;
+		double total = branchLength[node];
+		if (nodeIsInternal(node))
+			for (int daughter = firstDaughterOfNode(node); nodeExists(daughter); daughter = nextSisterOfNode(daughter))
+				total = MesquiteDouble.add(total, totalBranchLength(daughter));
+		return total;
 	}
-}
-/*-----------------------------------------*/
-/** Returns sum of all branchLengths.*/
-private double totalBranchLength(int node) { 
-	if (branchLength ==null)
-		return MesquiteDouble.unassigned;
-	double total = branchLength[node];
-	if (nodeIsInternal(node))
-		for (int daughter = firstDaughterOfNode(node); nodeExists(daughter); daughter = nextSisterOfNode(daughter))
-			total = MesquiteDouble.add(total, totalBranchLength(daughter));
-	return total;
-}
-/*-----------------------------------------*/
-boolean nodeIsUnbranchedDescendantOfRoot(int node){
-	if (node == root)
-		return true;
-	int anc = motherOfNode(node);
-	while (anc != root && nodeExists(anc)){
-		if (!nodeIsUnbranchedInternal(anc))
-			return false;
-		anc = motherOfNode(anc);
-	}
-	if (anc == root)
-		return true;
-	return false;
-
-}
-
-/*-----------------------------------------*/
-void collapseRootwardUnbranched(int node){
-
-	if (nodeIsUnbranchedInternal(node)){
-		collapseRootwardUnbranched(firstDaughterOfNode(node));
-	}
-	if (node != root)
-		collapseBranch(node, false);
-}
-/*-----------------------------------------*/
-static boolean warnedUnbranchedReroot = false;
-/** reroot the clade below node atNode.*/
-public  boolean reroot(int atNode, int cladeRoot, boolean notify) {
-	if (!nodeExists(atNode) || !nodeExists(cladeRoot) ||cladeRoot==atNode || (!nodeIsPolytomous(cladeRoot) && cladeRoot == motherOfNode(atNode)))
-		return false;
-	checkTreeIntegrity(root);
-	if (hasUnbranchedInternals(root)){
-		//deleteUnbranchedInternals(root, false);
-		if (nodeIsUnbranchedInternal(atNode)){
-			taxa.discreetAlert("Sorry, you can't reroot at an unbranched internal node.");
-			return false;
-		}
-		if (nodeIsUnbranchedDescendantOfRoot(atNode)){
-			taxa.discreetAlert("Sorry, you can't reroot at an unbranched descendant of root.");
-			return false;
-		}
-		//delete all unbranched descendants of root
-		collapseRootwardUnbranched(root);
-		if (!nodeExists(atNode) || !nodeExists(cladeRoot) ||cladeRoot==atNode || (!nodeIsPolytomous(cladeRoot) && cladeRoot == motherOfNode(atNode)))
+	/*-----------------------------------------*/
+	boolean nodeIsUnbranchedDescendantOfRoot(int node){
+		if (node == root)
 			return true;
-
-
-		if (descendantOf(atNode, cladeRoot)) { 
-			int anc = atNode;
-			while (anc != cladeRoot && nodeExists(anc) && anc != root){
-				int ta = motherOfNode(anc);
-				if (nodeIsUnbranchedInternal(anc)) {
-					collapseBranch(anc, false);
-					if (!warnedUnbranchedReroot){
-						taxa.discreetAlert("Note: Unbranched internal nodes involved in rerooting were deleted.");
-						warnedUnbranchedReroot = true;
-					}
-				}
-				anc = ta;
-			}
+		int anc = motherOfNode(node);
+		while (anc != root && nodeExists(anc)){
+			if (!nodeIsUnbranchedInternal(anc))
+				return false;
+			anc = motherOfNode(anc);
 		}
-	}
-	double branchLengthBefore = totalBranchLength(root);
-	int oldMother = motherOfNode(atNode);
-	int oldMotherOfClade = motherOfNode(cladeRoot);
-	int oldPrevSisterOfRoot = previousSisterOfNode(cladeRoot);
-	int oldNextSisterOfRoot = nextSisterOfNode(cladeRoot);
-	boolean rootWasFirstDaughter = firstDaughter[oldMotherOfClade]==cladeRoot;
-	boolean atNodeWasFirstDaughter = firstDaughter[oldMother]==atNode;
-
-	//Do the major part of the work for the rerooting
-	floatNode(motherOfNode(atNode), atNode, cladeRoot);
-
-	//Clean up: floating will have rerooted it directly at atNode; must shift to be just below atNode
-	//At new root of clade:  create new node for new root of clade
-	if (cladeRoot==root) {
-		//establish tree's root at new location if needed
-		cladeRoot = openNode();
-		root = cladeRoot;
-	}
-	else
-		cladeRoot = openNode();
-	if (cladeRoot==0)
+		if (anc == root)
+			return true;
 		return false;
 
-	double bSpan = 0;
-	double bT = 0;
-	if (branchLength!=null) {
-		bT = branchLength[atNode];
-		bSpan = branchLength[oldMother];
 	}
 
-	setTaxonNumber(cladeRoot,-1);  //set clade root to be not terminal
-	if (label!=null)
-		label[cladeRoot] = null;
+	/*-----------------------------------------*/
+	void collapseRootwardUnbranched(int node){
 
-	//had clade root previously been the first daughter of its mother?
-	if (rootWasFirstDaughter)		//if so, connect this mother to its new first daughter
-		firstDaughter[oldMotherOfClade]=cladeRoot; 
-	else { //otherwise, connect the sister that had been the link to the clade root to its new next sister
-		nextSister[oldPrevSisterOfRoot]=cladeRoot;
-		nextSister[cladeRoot]=oldNextSisterOfRoot;
-	}
-
-	//shift connections so that new root of clade is just below atNode
-	if (oldMother== firstDaughter[atNode]) { //if so, it must be connected as first daughter of cladeRoot
-		firstDaughter[atNode]= nextSister[oldMother];
-		firstDaughter[cladeRoot]=oldMother;
-		insertDaughter(cladeRoot, atNode);
-	}
-	else {
-		int pSis = previousSisterOfNode(oldMother);
-		nextSister[pSis]= nextSister[oldMother];
-		nextSister[oldMother] = 0;
-		firstDaughter[cladeRoot]=atNode;
-		insertDaughter(cladeRoot, oldMother);
-		if (!atNodeWasFirstDaughter) {   //added 2. 01 to prevent odd flipping
-			flipFirstTwoDaughters(cladeRoot);
+		if (nodeIsUnbranchedInternal(node)){
+			collapseRootwardUnbranched(firstDaughterOfNode(node));
 		}
+		if (node != root)
+			collapseBranch(node, false);
 	}
-	if (branchLength!=null) {
-		branchLength[cladeRoot] = bT;
-		if (MesquiteDouble.isCombinable(bSpan)){
-			branchLength[oldMother] = bSpan/2.0;
-			branchLength[atNode] = bSpan/2.0;
-		}
-	}
-	rerootAssocBetweenOnlyCladeRoot(oldMother, atNode, cladeRoot);
-	mother[atNode]= cladeRoot;
-	mother[oldMother] = cladeRoot;
-	mother[cladeRoot]=oldMotherOfClade;
-	double branchLengthAfter = totalBranchLength(root);
-	if (!MesquiteDouble.closeEnough(branchLengthAfter, branchLengthBefore, 0.000001))
-		MesquiteMessage.warnProgrammer("Error: sum of branch lengths not preserved on reroot (before " + branchLengthBefore + " after " + branchLengthAfter + ")");
-	checkTreeIntegrity(root);
-	incrementVersion(MesquiteListener.BRANCHES_REARRANGED,notify);
-	return true;
+	/*-----------------------------------------*/
+	static boolean warnedUnbranchedReroot = false;
+	/** reroot the clade below node atNode.*/
+	public  boolean reroot(int atNode, int cladeRoot, boolean notify) {
+		if (!nodeExists(atNode) || !nodeExists(cladeRoot) ||cladeRoot==atNode || (!nodeIsPolytomous(cladeRoot) && cladeRoot == motherOfNode(atNode)))
+			return false;
+		checkTreeIntegrity(root);
+		if (hasUnbranchedInternals(root)){
+			//deleteUnbranchedInternals(root, false);
+			if (nodeIsUnbranchedInternal(atNode)){
+				taxa.discreetAlert("Sorry, you can't reroot at an unbranched internal node.");
+				return false;
+			}
+			if (nodeIsUnbranchedDescendantOfRoot(atNode)){
+				taxa.discreetAlert("Sorry, you can't reroot at an unbranched descendant of root.");
+				return false;
+			}
+			//delete all unbranched descendants of root
+			collapseRootwardUnbranched(root);
+			if (!nodeExists(atNode) || !nodeExists(cladeRoot) ||cladeRoot==atNode || (!nodeIsPolytomous(cladeRoot) && cladeRoot == motherOfNode(atNode)))
+				return true;
 
-}
-/*-----------------------------------------*/
-/** makes trees for all rootings of clade above node given, and places them into TreeVector*/
-public void makeAllRootings(int cladeRoot, TreeVector trees) {
-	if (trees!= null && nodeExists(cladeRoot)) {
-		MesquiteTree baseTree = cloneTree();
-		baseTree.setName("original");
-		trees.addElement(baseTree, false); //save first unrooted version
-		int numReroots = baseTree.numberOfNodesInClade(cladeRoot)-1;
-		int count = 1;
-		for (int i = 1; i<=numReroots; i++) {
-			int atNode = baseTree.nodeInTraversal(i, cladeRoot);
-			if (baseTree.nodeIsPolytomous(cladeRoot) || baseTree.motherOfNode(atNode)!= cladeRoot) {
-				count++;
-				MesquiteTree newTree = baseTree.cloneTree();
-				newTree.setName("Rooting " + count);
-				newTree.reroot(newTree.nodeInTraversal(i, cladeRoot), cladeRoot, false);
-				trees.addElement(newTree, false);
+
+			if (descendantOf(atNode, cladeRoot)) { 
+				int anc = atNode;
+				while (anc != cladeRoot && nodeExists(anc) && anc != root){
+					int ta = motherOfNode(anc);
+					if (nodeIsUnbranchedInternal(anc)) {
+						collapseBranch(anc, false);
+						if (!warnedUnbranchedReroot){
+							taxa.discreetAlert("Note: Unbranched internal nodes involved in rerooting were deleted.");
+							warnedUnbranchedReroot = true;
+						}
+					}
+					anc = ta;
+				}
 			}
 		}
-	}
-}
-/*-----------------------------------------*/
-/** Outputs to console the mother, firstDaughter and nextSister storage */
-public void dump (){
-	System.out.println("------------------------------------->");
-	System.out.println("tree: " +writeTree());
-	System.out.println("root: " + root);
-	System.out.println("numNodeSpaces: " + numNodeSpaces);
-	System.out.println("nodes not indicated have label[i] == null && mother[i] == 0 && firstDaughter[i] != 0 && nextSister[i] == 0 && taxonNumber[i] == -1");
-	for (int i=0; i<numNodeSpaces; i++) {
-		if (label != null){
-			if (label[i] != null && mother[i] != 0 || firstDaughter[i] != 0 || nextSister[i] != 0 || taxonNumber[i] != -1)
-				System.out.println("node " + i + " (label "+ label[i] + " ) (mother "+ mother[i] + ") (firstDaughter "+ firstDaughter[i] + ") (nextSister " + nextSister[i] + ") (taxon " + taxonNumber[i] + ")");
+		double branchLengthBefore = totalBranchLength(root);
+		int oldMother = motherOfNode(atNode);
+		int oldMotherOfClade = motherOfNode(cladeRoot);
+		int oldPrevSisterOfRoot = previousSisterOfNode(cladeRoot);
+		int oldNextSisterOfRoot = nextSisterOfNode(cladeRoot);
+		boolean rootWasFirstDaughter = firstDaughter[oldMotherOfClade]==cladeRoot;
+		boolean atNodeWasFirstDaughter = firstDaughter[oldMother]==atNode;
+
+		//Do the major part of the work for the rerooting
+		floatNode(motherOfNode(atNode), atNode, cladeRoot);
+
+		//Clean up: floating will have rerooted it directly at atNode; must shift to be just below atNode
+		//At new root of clade:  create new node for new root of clade
+		if (cladeRoot==root) {
+			//establish tree's root at new location if needed
+			cladeRoot = openNode();
+			root = cladeRoot;
 		}
 		else
-			if (mother[i] != 0 || firstDaughter[i] != 0 || nextSister[i] != 0 || taxonNumber[i] != -1)
-				System.out.println("node " + i + " (mother "+ mother[i] + ") (firstDaughter "+ firstDaughter[i] + ") (nextSister " + nextSister[i] + ") (taxon " + taxonNumber[i] + ")");
+			cladeRoot = openNode();
+		if (cladeRoot==0)
+			return false;
 
-	}
-	System.out.println("<-------------------------------------");
-}
-/*-----------------------------------------*/
-/** Returns a string with error message concerning the tree's integrity.  Does it recursively and hence may suffer when integrity damaged. (see dump as alternative) */
-private String outputcheckTreeIntegrity(int node) {
-	String s = "[Error in tree "  + getName() + " (id " + getID() + ", version " + getVersionNumber() + ")";
-	if (nodeIsTerminal(node) && (taxonNumberOfNode(node)<0)) 
-		s += ":  terminal node with number 0;  node = " + Integer.toString(node) + " (taxa: " + taxa.getName()+ ")]";
-	if (!nodeIsTerminal(node) && (taxonNumberOfNode(node)>=0)) 
-		s += ":  internal node with number non zero;  node = " + Integer.toString(node) + " (taxa: " + taxa.getName()+ ")]";
-	if (!daughterOf(node, motherOfNode(node))) 
-		s += ":  node is not mother's daughter;  node = " + Integer.toString(node) + " (taxa: " + taxa.getName()+ ")]";
-	if (node!=root)
-		if (!daughterOf(motherOfNode(node), motherOfNode(motherOfNode(node))))
-			s += ":  mother is not grandmother's daughter;  node = " + Integer.toString(node) + " (taxa: " + taxa.getName()+ ")]";
-	int thisSister = firstDaughterOfNode(node);
-
-	if (nodeIsTerminal(node)) 
-		return Integer.toString(taxonNumberOfNode(node));
-	else {
-		s += "(";
-		boolean first = true;
-		while (nodeExists(thisSister)) {
-			if (!first)
-				s += ",";
-			first = false;
-			s += outputcheckTreeIntegrity(thisSister);
-			thisSister = nextSisterOfNode(thisSister);
+		double bSpan = 0;
+		double bT = 0;
+		if (branchLength!=null) {
+			bT = branchLength[atNode];
+			bSpan = branchLength[oldMother];
 		}
-		s += ")";
-		return s;
+
+		setTaxonNumber(cladeRoot,-1);  //set clade root to be not terminal
+		if (label!=null)
+			label[cladeRoot] = null;
+
+		//had clade root previously been the first daughter of its mother?
+		if (rootWasFirstDaughter)		//if so, connect this mother to its new first daughter
+			firstDaughter[oldMotherOfClade]=cladeRoot; 
+		else { //otherwise, connect the sister that had been the link to the clade root to its new next sister
+			nextSister[oldPrevSisterOfRoot]=cladeRoot;
+			nextSister[cladeRoot]=oldNextSisterOfRoot;
+		}
+
+		//shift connections so that new root of clade is just below atNode
+		if (oldMother== firstDaughter[atNode]) { //if so, it must be connected as first daughter of cladeRoot
+			firstDaughter[atNode]= nextSister[oldMother];
+			firstDaughter[cladeRoot]=oldMother;
+			insertDaughter(cladeRoot, atNode);
+		}
+		else {
+			int pSis = previousSisterOfNode(oldMother);
+			nextSister[pSis]= nextSister[oldMother];
+			nextSister[oldMother] = 0;
+			firstDaughter[cladeRoot]=atNode;
+			insertDaughter(cladeRoot, oldMother);
+			if (!atNodeWasFirstDaughter) {   //added 2. 01 to prevent odd flipping
+				flipFirstTwoDaughters(cladeRoot);
+			}
+		}
+		if (branchLength!=null) {
+			branchLength[cladeRoot] = bT;
+			if (MesquiteDouble.isCombinable(bSpan)){
+				branchLength[oldMother] = bSpan/2.0;
+				branchLength[atNode] = bSpan/2.0;
+			}
+		}
+		rerootAssocBetweenOnlyCladeRoot(oldMother, atNode, cladeRoot);
+		mother[atNode]= cladeRoot;
+		mother[oldMother] = cladeRoot;
+		mother[cladeRoot]=oldMotherOfClade;
+		double branchLengthAfter = totalBranchLength(root);
+		if (!MesquiteDouble.closeEnough(branchLengthAfter, branchLengthBefore, 0.000001))
+			MesquiteMessage.warnProgrammer("Error: sum of branch lengths not preserved on reroot (before " + branchLengthBefore + " after " + branchLengthAfter + ")");
+		checkTreeIntegrity(root);
+		incrementVersion(MesquiteListener.BRANCHES_REARRANGED,notify);
+		return true;
+
 	}
-}
-/*-----------------------------------------*/
-/** Checks the tree integrity and outputs errors to system console if there are problems */
-private void recursecheckTreeIntegrity(int node) {
-	if (nodeIsTerminal(node) && (taxonNumberOfNode(node)<0)) {
-		System.out.println("*Error in tree " + getName() + ":  terminal node with number 0; node= " + Integer.toString(node) + " (taxa: " + taxa.getName()+ ")]");
-		dump();
-		System.out.println(outputcheckTreeIntegrity(root));
+	/*-----------------------------------------*/
+	/** makes trees for all rootings of clade above node given, and places them into TreeVector*/
+	public void makeAllRootings(int cladeRoot, TreeVector trees) {
+		if (trees!= null && nodeExists(cladeRoot)) {
+			MesquiteTree baseTree = cloneTree();
+			baseTree.setName("original");
+			trees.addElement(baseTree, false); //save first unrooted version
+			int numReroots = baseTree.numberOfNodesInClade(cladeRoot)-1;
+			int count = 1;
+			for (int i = 1; i<=numReroots; i++) {
+				int atNode = baseTree.nodeInTraversal(i, cladeRoot);
+				if (baseTree.nodeIsPolytomous(cladeRoot) || baseTree.motherOfNode(atNode)!= cladeRoot) {
+					count++;
+					MesquiteTree newTree = baseTree.cloneTree();
+					newTree.setName("Rooting " + count);
+					newTree.reroot(newTree.nodeInTraversal(i, cladeRoot), cladeRoot, false);
+					trees.addElement(newTree, false);
+				}
+			}
+		}
 	}
-	if (!nodeIsTerminal(node) && (taxonNumberOfNode(node)>=0)) {
-		System.out.println("*Error in tree " + getName() + ":  internal node with number non zero; node= " + Integer.toString(node) + " (taxa: " + taxa.getName()+ ")]");
-		dump();
-		System.out.println(outputcheckTreeIntegrity(root));
+	/*-----------------------------------------*/
+	/** Outputs to console the mother, firstDaughter and nextSister storage */
+	public void dump (){
+		System.out.println("------------------------------------->");
+		System.out.println("tree: " +writeTree());
+		System.out.println("root: " + root);
+		System.out.println("numNodeSpaces: " + numNodeSpaces);
+		System.out.println("nodes not indicated have label[i] == null && mother[i] == 0 && firstDaughter[i] != 0 && nextSister[i] == 0 && taxonNumber[i] == -1");
+		for (int i=0; i<numNodeSpaces; i++) {
+			if (label != null){
+				if (label[i] != null && mother[i] != 0 || firstDaughter[i] != 0 || nextSister[i] != 0 || taxonNumber[i] != -1)
+					System.out.println("node " + i + " (label "+ label[i] + " ) (mother "+ mother[i] + ") (firstDaughter "+ firstDaughter[i] + ") (nextSister " + nextSister[i] + ") (taxon " + taxonNumber[i] + ")");
+			}
+			else
+				if (mother[i] != 0 || firstDaughter[i] != 0 || nextSister[i] != 0 || taxonNumber[i] != -1)
+					System.out.println("node " + i + " (mother "+ mother[i] + ") (firstDaughter "+ firstDaughter[i] + ") (nextSister " + nextSister[i] + ") (taxon " + taxonNumber[i] + ")");
+
+		}
+		System.out.println("<-------------------------------------");
 	}
-	if (!daughterOf(node, motherOfNode(node))) {
-		System.out.println("*Error in tree " + getName() + ":  node is not mother's daughter; node= " + Integer.toString(node) + " (taxa: " + taxa.getName()+ ")]");
-		dump();
-		System.out.println(outputcheckTreeIntegrity(root));
+	/*-----------------------------------------*/
+	/** Returns a string with error message concerning the tree's integrity.  Does it recursively and hence may suffer when integrity damaged. (see dump as alternative) */
+	private String outputcheckTreeIntegrity(int node) {
+		String s = "[Error in tree "  + getName() + " (id " + getID() + ", version " + getVersionNumber() + ")";
+		if (nodeIsTerminal(node) && (taxonNumberOfNode(node)<0)) 
+			s += ":  terminal node with number 0;  node = " + Integer.toString(node) + " (taxa: " + taxa.getName()+ ")]";
+		if (!nodeIsTerminal(node) && (taxonNumberOfNode(node)>=0)) 
+			s += ":  internal node with number non zero;  node = " + Integer.toString(node) + " (taxa: " + taxa.getName()+ ")]";
+		if (!daughterOf(node, motherOfNode(node))) 
+			s += ":  node is not mother's daughter;  node = " + Integer.toString(node) + " (taxa: " + taxa.getName()+ ")]";
+		if (node!=root)
+			if (!daughterOf(motherOfNode(node), motherOfNode(motherOfNode(node))))
+				s += ":  mother is not grandmother's daughter;  node = " + Integer.toString(node) + " (taxa: " + taxa.getName()+ ")]";
+		int thisSister = firstDaughterOfNode(node);
+
+		if (nodeIsTerminal(node)) 
+			return Integer.toString(taxonNumberOfNode(node));
+		else {
+			s += "(";
+			boolean first = true;
+			while (nodeExists(thisSister)) {
+				if (!first)
+					s += ",";
+				first = false;
+				s += outputcheckTreeIntegrity(thisSister);
+				thisSister = nextSisterOfNode(thisSister);
+			}
+			s += ")";
+			return s;
+		}
 	}
-	if (node!=root)
-		if (!daughterOf(motherOfNode(node), motherOfNode(motherOfNode(node)))) {
-			System.out.println("*Error in tree " + getName() + ":  mother is not grandmother's daughter; node= " + Integer.toString(node) + " (taxa: " + taxa.getName()+ ")]");
+	/*-----------------------------------------*/
+	/** Checks the tree integrity and outputs errors to system console if there are problems */
+	private void recursecheckTreeIntegrity(int node) {
+		if (nodeIsTerminal(node) && (taxonNumberOfNode(node)<0)) {
+			System.out.println("*Error in tree " + getName() + ":  terminal node with number 0; node= " + Integer.toString(node) + " (taxa: " + taxa.getName()+ ")]");
 			dump();
 			System.out.println(outputcheckTreeIntegrity(root));
 		}
+		if (!nodeIsTerminal(node) && (taxonNumberOfNode(node)>=0)) {
+			System.out.println("*Error in tree " + getName() + ":  internal node with number non zero; node= " + Integer.toString(node) + " (taxa: " + taxa.getName()+ ")]");
+			dump();
+			System.out.println(outputcheckTreeIntegrity(root));
+		}
+		if (!daughterOf(node, motherOfNode(node))) {
+			System.out.println("*Error in tree " + getName() + ":  node is not mother's daughter; node= " + Integer.toString(node) + " (taxa: " + taxa.getName()+ ")]");
+			dump();
+			System.out.println(outputcheckTreeIntegrity(root));
+		}
+		if (node!=root)
+			if (!daughterOf(motherOfNode(node), motherOfNode(motherOfNode(node)))) {
+				System.out.println("*Error in tree " + getName() + ":  mother is not grandmother's daughter; node= " + Integer.toString(node) + " (taxa: " + taxa.getName()+ ")]");
+				dump();
+				System.out.println(outputcheckTreeIntegrity(root));
+			}
 
-	int thisSister = firstDaughterOfNode(node);
+		int thisSister = firstDaughterOfNode(node);
 
-	while (nodeExists(thisSister)) {
-		recursecheckTreeIntegrity(thisSister);
-		thisSister = nextSisterOfNode(thisSister);
-	}
-}
-/*-----------------------------------------*/
-/** Outputs warning */
-private boolean doWarn(String t) {
-	MesquiteTrunk.mesquiteTrunk.logln(t);
-	return false;
-}
-/*-----------------------------------------*/
-/** Checks integrity of tree and outputs messages for any errors found. */
-private boolean checkTreeIntegrity(int node) {
-	if (!checkIntegrity)
-		return true;
-	checkTaxaIDs();
-	boolean toReturn=true;
-
-	for (int i=1; i<numNodeSpaces; i++) {
-		if (motherOfNode(i)!=0) {
-			if (motherOfNode(i)==firstDaughterOfNode(i))
-				toReturn = doWarn("node " + Integer.toString(i) + " mother=first ");
-			if (motherOfNode(i)==nextSisterOfNode(i))
-				toReturn = doWarn("node " + Integer.toString(i) + " mother=next ");
-			if (motherOfNode(i)==i)
-				toReturn = doWarn("node " + Integer.toString(i) + " mother=node ");
-			if (firstDaughterOfNode(i)==i)
-				toReturn = doWarn("node " + Integer.toString(i) + " first=node ");
-			if (nextSisterOfNode(i)==i)
-				toReturn = doWarn("node " + Integer.toString(i) + " next=node ");
+		while (nodeExists(thisSister)) {
+			recursecheckTreeIntegrity(thisSister);
+			thisSister = nextSisterOfNode(thisSister);
 		}
 	}
+	/*-----------------------------------------*/
+	/** Outputs warning */
+	private boolean doWarn(String t) {
+		MesquiteTrunk.mesquiteTrunk.logln(t);
+		return false;
+	}
+	/*-----------------------------------------*/
+	/** Checks integrity of tree and outputs messages for any errors found. */
+	private boolean checkTreeIntegrity(int node) {
+		if (!checkIntegrity)
+			return true;
+		checkTaxaIDs();
+		boolean toReturn=true;
 
-	/**/
-	recursecheckTreeIntegrity(root);
-	if (false){ //This checking has never or rarely generated an error, and is expensive in time
-		int[] countsReferencesAsMother = new int[numNodeSpaces];
-		int[] countsReferencesAsDaughter = new int[numNodeSpaces];
 		for (int i=1; i<numNodeSpaces; i++) {
-			countsReferencesAsMother[i]=0;
-			countsReferencesAsDaughter[i]=0;
-		}
-		for (int i=1; i<numNodeSpaces; i++) {
-			if (nodeInTree(i)) {
-				if (inBounds(mother[i]))
-					countsReferencesAsMother[mother[i]]++;
-				if (inBounds(firstDaughter[i]))
-					countsReferencesAsDaughter[firstDaughter[i]]++;
-				if (inBounds(nextSister[i]))
-					countsReferencesAsDaughter[nextSister[i]]++;
+			if (motherOfNode(i)!=0) {
+				if (motherOfNode(i)==firstDaughterOfNode(i))
+					toReturn = doWarn("node " + Integer.toString(i) + " mother=first ");
+				if (motherOfNode(i)==nextSisterOfNode(i))
+					toReturn = doWarn("node " + Integer.toString(i) + " mother=next ");
+				if (motherOfNode(i)==i)
+					toReturn = doWarn("node " + Integer.toString(i) + " mother=node ");
+				if (firstDaughterOfNode(i)==i)
+					toReturn = doWarn("node " + Integer.toString(i) + " first=node ");
+				if (nextSisterOfNode(i)==i)
+					toReturn = doWarn("node " + Integer.toString(i) + " next=node ");
 			}
 		}
-		for (int i=2; i<numNodeSpaces; i++) {
-			if (nodeInTree(i) && countsReferencesAsDaughter[i]>1)
-				toReturn = doWarn("node " + Integer.toString(i) + " claimed as daughter more than once ");
+
+		/**/
+		recursecheckTreeIntegrity(root);
+		if (false){ //This checking has never or rarely generated an error, and is expensive in time
+			int[] countsReferencesAsMother = new int[numNodeSpaces];
+			int[] countsReferencesAsDaughter = new int[numNodeSpaces];
+			for (int i=1; i<numNodeSpaces; i++) {
+				countsReferencesAsMother[i]=0;
+				countsReferencesAsDaughter[i]=0;
+			}
+			for (int i=1; i<numNodeSpaces; i++) {
+				if (nodeInTree(i)) {
+					if (inBounds(mother[i]))
+						countsReferencesAsMother[mother[i]]++;
+					if (inBounds(firstDaughter[i]))
+						countsReferencesAsDaughter[firstDaughter[i]]++;
+					if (inBounds(nextSister[i]))
+						countsReferencesAsDaughter[nextSister[i]]++;
+				}
+			}
+			for (int i=2; i<numNodeSpaces; i++) {
+				if (nodeInTree(i) && countsReferencesAsDaughter[i]>1)
+					toReturn = doWarn("node " + Integer.toString(i) + " claimed as daughter more than once ");
+			}
+			for (int i=1; i<numNodeSpaces; i++) {
+				if (nodeInTree(i) && countsReferencesAsMother[i]!=numberOfDaughtersOfNode(i))
+					toReturn = doWarn("node " + Integer.toString(i) + " claimed as mother not same as Daughter count ");
+			}
 		}
-		for (int i=1; i<numNodeSpaces; i++) {
-			if (nodeInTree(i) && countsReferencesAsMother[i]!=numberOfDaughtersOfNode(i))
-				toReturn = doWarn("node " + Integer.toString(i) + " claimed as mother not same as Daughter count ");
-		}
+		return toReturn;
 	}
-	return toReturn;
-}
-/*
+	/*
 	static boolean noMoreWarnRet = false;
 	public void warnRetIfNeeded(){
 		if (noMoreWarnRet || !warnReticulations)
@@ -6253,62 +6281,62 @@ private boolean checkTreeIntegrity(int node) {
 		}
 	}
 	/*-----------------------------------------*/
-/** Finds the highest taxon number in the given clade */
-private int findHighestTaxonNumber (int node) {
-	if (!inBounds(node))
-		return -1;
-	if (nodeIsTerminal(node))
-		return taxonNumberOfNode(node);
-	int maximum = -1;
-	for (int daughter=firstDaughterOfNode(node); nodeExists(daughter); daughter = nextSisterOfNode(daughter) ) {
-		int highestInDaughter = findHighestTaxonNumber(daughter);
-		if (highestInDaughter>maximum)
-			maximum = highestInDaughter;
+	/** Finds the highest taxon number in the given clade */
+	private int findHighestTaxonNumber (int node) {
+		if (!inBounds(node))
+			return -1;
+		if (nodeIsTerminal(node))
+			return taxonNumberOfNode(node);
+		int maximum = -1;
+		for (int daughter=firstDaughterOfNode(node); nodeExists(daughter); daughter = nextSisterOfNode(daughter) ) {
+			int highestInDaughter = findHighestTaxonNumber(daughter);
+			if (highestInDaughter>maximum)
+				maximum = highestInDaughter;
+		}
+		return maximum;
 	}
-	return maximum;
-}
-/*-----------------------------------------*/
-/** Finds the node of the highest taxon number in the given clade */
-private int findTerminalOfHighestTaxonNumber (int node) {
-	return nodeOfTaxonNumber(findHighestTaxonNumber(node));
-}
-/*-----------------------------------------*/
-/** Finds the lowest taxon number in the given clade */
-private int findLowestTaxonNumber (int node) {
-	if (!inBounds(node))
-		return -1;
-	if (nodeIsTerminal(node))
-		return taxonNumberOfNode(node);
-	int minimum = getNumTaxa();
-	for (int daughter=firstDaughterOfNode(node); nodeExists(daughter); daughter = nextSisterOfNode(daughter) ) {
-		int lowestInDaughter = findLowestTaxonNumber(daughter);
-		if (lowestInDaughter<minimum)
-			minimum = lowestInDaughter;
+	/*-----------------------------------------*/
+	/** Finds the node of the highest taxon number in the given clade */
+	private int findTerminalOfHighestTaxonNumber (int node) {
+		return nodeOfTaxonNumber(findHighestTaxonNumber(node));
 	}
-	return minimum;
-}
-/*-----------------------------------------*/
-/** Finds the node of the lowest taxon number in the given clade */
-private int findTerminalOfLowestTaxonNumber (int node) {
-	return nodeOfTaxonNumber(findLowestTaxonNumber(node));
-}
-/*-----------------------------------------*/
-/** Places into the passed array (which must have been sized correctly in advance) the taxon numbers in the clade */
-public void accumulateTerminals (int node, int[] terminals, MesquiteInteger next) {
-	if (!inBounds(node))
-		return;
-	if (terminals==null || next==null || next.getValue()>= terminals.length)
-		return;
-	if (nodeIsTerminal(node))  {
-		terminals[next.getValue()] = taxonNumberOfNode(node);
-		next.increment();
+	/*-----------------------------------------*/
+	/** Finds the lowest taxon number in the given clade */
+	private int findLowestTaxonNumber (int node) {
+		if (!inBounds(node))
+			return -1;
+		if (nodeIsTerminal(node))
+			return taxonNumberOfNode(node);
+		int minimum = getNumTaxa();
+		for (int daughter=firstDaughterOfNode(node); nodeExists(daughter); daughter = nextSisterOfNode(daughter) ) {
+			int lowestInDaughter = findLowestTaxonNumber(daughter);
+			if (lowestInDaughter<minimum)
+				minimum = lowestInDaughter;
+		}
+		return minimum;
 	}
-	else
-		for (int daughter=firstDaughterOfNode(node); nodeExists(daughter); daughter = nextSisterOfNode(daughter) )
-			accumulateTerminals(daughter, terminals, next);
-}
-/*-----------------------------------------*/
-/** For enumerating all trees: returns whether the clade is set to the last form in the sequence *
+	/*-----------------------------------------*/
+	/** Finds the node of the lowest taxon number in the given clade */
+	private int findTerminalOfLowestTaxonNumber (int node) {
+		return nodeOfTaxonNumber(findLowestTaxonNumber(node));
+	}
+	/*-----------------------------------------*/
+	/** Places into the passed array (which must have been sized correctly in advance) the taxon numbers in the clade */
+	public void accumulateTerminals (int node, int[] terminals, MesquiteInteger next) {
+		if (!inBounds(node))
+			return;
+		if (terminals==null || next==null || next.getValue()>= terminals.length)
+			return;
+		if (nodeIsTerminal(node))  {
+			terminals[next.getValue()] = taxonNumberOfNode(node);
+			next.increment();
+		}
+		else
+			for (int daughter=firstDaughterOfNode(node); nodeExists(daughter); daughter = nextSisterOfNode(daughter) )
+				accumulateTerminals(daughter, terminals, next);
+	}
+	/*-----------------------------------------*/
+	/** For enumerating all trees: returns whether the clade is set to the last form in the sequence *
    	private boolean cladeIsLastInSequence(int node){
    		if (nodeIsTerminal(node))
    			return true;
@@ -6322,7 +6350,7 @@ public void accumulateTerminals (int node, int[] terminals, MesquiteInteger next
    		}
    	}
 	/*-----------------------------------------*/
-/* First in sequence is left ladder with terminal taxa in order from lowest numbered to highest numbered*
+	/* First in sequence is left ladder with terminal taxa in order from lowest numbered to highest numbered*
    	private void setCladeToFirstInSequence(int node){
 		if (!inBounds(node))
 			return;
@@ -6360,7 +6388,7 @@ public void accumulateTerminals (int node, int[] terminals, MesquiteInteger next
    		}	
    	}
 	/*-----------------------------------------*/
-/** Represent s as bitfield (actually a simple long) with bit cleared where element is in s but not in subS, bit set where in subS *
+	/** Represent s as bitfield (actually a simple long) with bit cleared where element is in s but not in subS, bit set where in subS *
    	private long representSubset(int[] s, int[] subS){
    		if (s== null || subS==null)
    			return 0L;
@@ -6373,7 +6401,7 @@ public void accumulateTerminals (int node, int[] terminals, MesquiteInteger next
    		return result;
    	}
 	/*-----------------------------------------*/
-/** Sets this the clade to have the next form in the sequence of all possible topologies (e.g., for exhaustive searches). *
+	/** Sets this the clade to have the next form in the sequence of all possible topologies (e.g., for exhaustive searches). *
    	private boolean setCladeToNextInSequence(int node, int whoseCalling){ 
    		if (nodeIsTerminal(node)) {
    			return false;
@@ -6510,12 +6538,12 @@ public void accumulateTerminals (int node, int[] terminals, MesquiteInteger next
    	}
 
 	/*-----------------------------------------*/
-/** Returns the first tree in the sequence of all possible trees (polytomies are set to first resolution)*
+	/** Returns the first tree in the sequence of all possible trees (polytomies are set to first resolution)*
 	public void setToFirstInSequence(){
 		setCladeToFirstInSequence(getRoot());
 	}
 	/*-----------------------------------------*/
-/** Returns the next tree in the sequence of all possible trees (polytomies are set to first resolution)*
+	/** Returns the next tree in the sequence of all possible trees (polytomies are set to first resolution)*
 	public boolean setToNextInSequence(){
 		if (numberOfTerminalsInClade(root)>60) {
 			MesquiteMessage.warnProgrammer("Cannot find next tree in sequence if tree has more than 60 terminal taxa");
@@ -6526,645 +6554,645 @@ public void accumulateTerminals (int node, int[] terminals, MesquiteInteger next
 	}
 
 	/*-----------------------------------------*/
-/** Returns whether the tree has node labels */
-public boolean hasNodeLabels(){
-	return (label!=null);
-}
-/*-----------------------------------------*/
-/** Sets the node label to the passed string (doesn't copy string; just uses reference) */
-public void setNodeLabel(String s, int node){
-	if (!nodeExists(node))
-		return;
-	if (label==null) {
-		label = new String[numNodeSpaces];
-		for (int i=0; i<numNodeSpaces; i++) {
-			label[i] = null;
+	/** Returns whether the tree has node labels */
+	public boolean hasNodeLabels(){
+		return (label!=null);
+	}
+	/*-----------------------------------------*/
+	/** Sets the node label to the passed string (doesn't copy string; just uses reference) */
+	public void setNodeLabel(String s, int node){
+		if (!nodeExists(node))
+			return;
+		if (label==null) {
+			label = new String[numNodeSpaces];
+			for (int i=0; i<numNodeSpaces; i++) {
+				label[i] = null;
+			}
 		}
+		label[node] = s;
 	}
-	label[node] = s;
-}
-/*-----------------------------------------*/
-/** Gets the node label of the node */
-public String getNodeLabel(int node){
-	if (!inBounds(node))
-		return  null;
-	if (nodeIsTerminal(node)) {
-		int it = taxonNumberOfNode(node);
-		if (it>=0)
-			return taxa.getTaxonName(it);
-	}
-	if (label==null) {
-		return null;
-	}
-	return label[node];
-}
-/*-----------------------------------------*/
-public void removeAllInternalNodeLabels(int node){
-	if (nodeIsInternal(node)){
-		if (nodeHasLabel(node))
-			setNodeLabel(null, node);
-		for (int daughter = firstDaughterOfNode(node); nodeExists(daughter); daughter = nextSisterOfNode(daughter)) {
-			removeAllInternalNodeLabels(daughter);
+	/*-----------------------------------------*/
+	/** Gets the node label of the node */
+	public String getNodeLabel(int node){
+		if (!inBounds(node))
+			return  null;
+		if (nodeIsTerminal(node)) {
+			int it = taxonNumberOfNode(node);
+			if (it>=0)
+				return taxa.getTaxonName(it);
 		}
+		if (label==null) {
+			return null;
+		}
+		return label[node];
 	}
+	/*-----------------------------------------*/
+	public void removeAllInternalNodeLabels(int node){
+		if (nodeIsInternal(node)){
+			if (nodeHasLabel(node))
+				setNodeLabel(null, node);
+			for (int daughter = firstDaughterOfNode(node); nodeExists(daughter); daughter = nextSisterOfNode(daughter)) {
+				removeAllInternalNodeLabels(daughter);
+			}
+		}
 
-}
-/*-----------------------------------------*/
-/** Returns whether the node has a label */
-public boolean nodeHasLabel(int node){
-	return (label!=null && nodeExists(node) && label[node]!=null) || (nodeIsTerminal(node));
-}
-/*-----------------------------------------*/
-/** Finds the node with the given label */
-public int nodeOfLabel(String s){
-	return nodeOfLabel(s, false);
-}
-/*-----------------------------------------*/
-/** Finds the node with the given label */
-public int nodeOfLabel(String s, boolean caseSensitive){
-	if (label==null || StringUtil.blank(s))
-		return -1;
-	else if (caseSensitive) {
-		for (int i=0; i<numNodeSpaces; i++) {
-			if (s.equals(label[i]))
-				return i;
-		}
-		int it = taxa.whichTaxonNumber(s, true, permitTruncTaxNames && !permitTaxaBlockEnlargement);
-		if (it>=0)
-			return nodeOfTaxonNumber(it);
-		return -1;
 	}
-	else  {
-		for (int i=0; i<numNodeSpaces; i++) {
-			if (s.equalsIgnoreCase(label[i]))
-				return i;
-		}
-		int it = taxa.whichTaxonNumber(s, false, permitTruncTaxNames && !permitTaxaBlockEnlargement);
-		if (it>=0)
-			return nodeOfTaxonNumber(it);
-		return -1;
+	/*-----------------------------------------*/
+	/** Returns whether the node has a label */
+	public boolean nodeHasLabel(int node){
+		return (label!=null && nodeExists(node) && label[node]!=null) || (nodeIsTerminal(node));
 	}
-}
-/*-----------------------------------------*/
-/** Returns whether tree is locked.*/
-public boolean isLocked() {
-	return locked;
-}
-/*-----------------------------------------*/
-/** Locks the tree (Currently, not used properly!!!!).*/
-public void setLocked(boolean locked) {
-	this.locked= locked;
-}
-/*-----------------------------------------*/
-/** Returns whether there are any selected nodes in the clade */
-private boolean selectedInClade( int node, boolean considerNode) {
-	if (!inBounds(node))
-		return false;
-	if (selected==null)
-		return false;
-	if (getSelected(node) && considerNode)
-		return true;
-	for (int d = firstDaughterOfNode(node); nodeExists(d); d = nextSisterOfNode(d)) {
-		if (selectedInClade(d))
+	/*-----------------------------------------*/
+	/** Finds the node with the given label */
+	public int nodeOfLabel(String s){
+		return nodeOfLabel(s, false);
+	}
+	/*-----------------------------------------*/
+	/** Finds the node with the given label */
+	public int nodeOfLabel(String s, boolean caseSensitive){
+		if (label==null || StringUtil.blank(s))
+			return -1;
+		else if (caseSensitive) {
+			for (int i=0; i<numNodeSpaces; i++) {
+				if (s.equals(label[i]))
+					return i;
+			}
+			int it = taxa.whichTaxonNumber(s, true, permitTruncTaxNames && !permitTaxaBlockEnlargement);
+			if (it>=0)
+				return nodeOfTaxonNumber(it);
+			return -1;
+		}
+		else  {
+			for (int i=0; i<numNodeSpaces; i++) {
+				if (s.equalsIgnoreCase(label[i]))
+					return i;
+			}
+			int it = taxa.whichTaxonNumber(s, false, permitTruncTaxNames && !permitTaxaBlockEnlargement);
+			if (it>=0)
+				return nodeOfTaxonNumber(it);
+			return -1;
+		}
+	}
+	/*-----------------------------------------*/
+	/** Returns whether tree is locked.*/
+	public boolean isLocked() {
+		return locked;
+	}
+	/*-----------------------------------------*/
+	/** Locks the tree (Currently, not used properly!!!!).*/
+	public void setLocked(boolean locked) {
+		this.locked= locked;
+	}
+	/*-----------------------------------------*/
+	/** Returns whether there are any selected nodes in the clade */
+	private boolean selectedInClade( int node, boolean considerNode) {
+		if (!inBounds(node))
+			return false;
+		if (selected==null)
+			return false;
+		if (getSelected(node) && considerNode)
 			return true;
-	}
-	return false;
-}
-/*-----------------------------------------*/
-/** Returns whether there are any selected nodes in the clade */
-private boolean selectedInClade( int node) {
-	return selectedInClade(node, true);
-}
-/*-----------------------------------------*/
-/** Returns whether there are any selected nodes in the clade */
-public boolean anySelectedInClade(int node) {
-	if (!inBounds(node))
-		return false;
-	if (selected==null)
-		return false;
-	return selectedInClade(node);
-}
-/*-----------------------------------------*/
-/** Returns whether there are any selected nodes in the clade */
-public boolean anySelectedInClade(int node, boolean considerNode) {
-	if (!inBounds(node))
-		return false;
-	if (selected==null)
-		return false;
-	return selectedInClade(node, considerNode);
-}
-/*-----------------------------------------*/
-/** Returns the number of nodes selected in the clade */
-public int numberSelectedInClade( int node) {
-	if (!inBounds(node))
-		return 0;
-	if (selected==null)
-		return 0;
-	int numInClade=0;
-	if (getSelected(node))
-		numInClade++;
-	for (int d = firstDaughterOfNode(node); nodeExists(d); d = nextSisterOfNode(d)) {
-		numInClade+= numberSelectedInClade(d);
-	}
-	return numInClade;
-}
-/*-----------------------------------------*/
-/** Gets the first node selected in clade of node node */
-public int getFirstSelected(int node) {
-	if (!inBounds(node))
-		return 0;
-	if (getSelected(node))
-		return node;
-	for (int d = firstDaughterOfNode(node); nodeExists(d); d = nextSisterOfNode(d)) {
-		int s = getFirstSelected(d);
-		if (s!=-1)
-			return s;
-	}
-	return -1;
-}
-/*-----------------------------------------*/
-/** SelectsAllNodes in the clade */
-public void selectAllInClade( int node, boolean select) {
-	if (!inBounds(node))
-		return;
-	if (selected==null)
-		return;
-	setSelected(node, select);
-	for (int d = firstDaughterOfNode(node); nodeExists(d); d = nextSisterOfNode(d)) {
-		selectAllInClade(d, select);
-	}
-}
-/*-----------------------------------------*/
-/** SelectsAllNodes in the clade */
-public void selectAllInClade( int node) {
-	if (!inBounds(node))
-		return;
-	if (selected==null)
-		return;
-	setSelected(node, true);
-	for (int d = firstDaughterOfNode(node); nodeExists(d); d = nextSisterOfNode(d)) {
-		selectAllInClade(d);
-	}
-}
-/*-----------------------------------------*/
-/** Attach the object to the sensitive attachments */
-public void attachToSensitives(Object obj){
-	if (obj ==null)
-		return;
-	if (sensitiveAttachments ==null)
-		sensitiveAttachments = new Vector();
-	sensitiveAttachments.addElement(obj);
-}
-/*-----------------------------------------*/
-/** Remove the object from the sensitive attachments */
-public void removeFromSensitives(Object obj){
-	if (obj ==null || sensitiveAttachments ==null)
-		return;
-	sensitiveAttachments.removeElement(obj);
-}
-/*-----------------------------------------*/
-/** Remove all objects from the sensitive attachments */
-public void removeAllSensitives(){
-	if (sensitiveAttachments ==null)
-		return;
-	sensitiveAttachments.removeAllElements();
-}
-/*-----------------------------------------*/
-/** Returns whether there are any sensitive attachments of the given class or a subclass */
-public boolean anyAttachedSensitive(Class c){
-	if (c ==null ||sensitiveAttachments == null ||sensitiveAttachments.size() == 0)
-		return false;
-	int s = sensitiveAttachments.size();
-	for (int i= 0; i< s; i++)
-		if (c.isAssignableFrom(sensitiveAttachments.elementAt(i).getClass()))
-			return true;
-	return false;
-}
-/*-----------------------------------------*/
-/** Returns the number of sensitive attachments of the given class or a subclass */
-public int numberAttachedSensitive(Class c){
-	if (c ==null ||sensitiveAttachments == null ||sensitiveAttachments.size() == 0)
-		return 0;
-	int s = sensitiveAttachments.size();
-	int count =0;
-	for (int i= 0; i< s; i++)
-		if (c.isAssignableFrom(sensitiveAttachments.elementAt(i).getClass()))
-			count++;
-	return count;
-}
-/*-----------------------------------------*/
-/** Returns the indexTH sensitive attachment of the given class or a subclass */
-public Object getAttachedSensitive(Class c, int index){
-	if (c ==null ||sensitiveAttachments == null ||sensitiveAttachments.size() == 0)
-		return null;
-	int s = sensitiveAttachments.size();
-	int count =0;
-	for (int i= 0; i< s; i++)
-		if (c.isAssignableFrom(sensitiveAttachments.elementAt(i).getClass())) {
-			if (count==index)
-				return sensitiveAttachments.elementAt(i);
-			count++;
+		for (int d = firstDaughterOfNode(node); nodeExists(d); d = nextSisterOfNode(d)) {
+			if (selectedInClade(d))
+				return true;
 		}
-	return null;
-}
-/*-----------------------------------------*/
-/** Lists attached sensitives */
-public String getListAttachedSensitives(){
-	if (sensitiveAttachments == null ||sensitiveAttachments.size() == 0)
+		return false;
+	}
+	/*-----------------------------------------*/
+	/** Returns whether there are any selected nodes in the clade */
+	private boolean selectedInClade( int node) {
+		return selectedInClade(node, true);
+	}
+	/*-----------------------------------------*/
+	/** Returns whether there are any selected nodes in the clade */
+	public boolean anySelectedInClade(int node) {
+		if (!inBounds(node))
+			return false;
+		if (selected==null)
+			return false;
+		return selectedInClade(node);
+	}
+	/*-----------------------------------------*/
+	/** Returns whether there are any selected nodes in the clade */
+	public boolean anySelectedInClade(int node, boolean considerNode) {
+		if (!inBounds(node))
+			return false;
+		if (selected==null)
+			return false;
+		return selectedInClade(node, considerNode);
+	}
+	/*-----------------------------------------*/
+	/** Returns the number of nodes selected in the clade */
+	public int numberSelectedInClade( int node) {
+		if (!inBounds(node))
+			return 0;
+		if (selected==null)
+			return 0;
+		int numInClade=0;
+		if (getSelected(node))
+			numInClade++;
+		for (int d = firstDaughterOfNode(node); nodeExists(d); d = nextSisterOfNode(d)) {
+			numInClade+= numberSelectedInClade(d);
+		}
+		return numInClade;
+	}
+	/*-----------------------------------------*/
+	/** Gets the first node selected in clade of node node */
+	public int getFirstSelected(int node) {
+		if (!inBounds(node))
+			return 0;
+		if (getSelected(node))
+			return node;
+		for (int d = firstDaughterOfNode(node); nodeExists(d); d = nextSisterOfNode(d)) {
+			int s = getFirstSelected(d);
+			if (s!=-1)
+				return s;
+		}
+		return -1;
+	}
+	/*-----------------------------------------*/
+	/** SelectsAllNodes in the clade */
+	public void selectAllInClade( int node, boolean select) {
+		if (!inBounds(node))
+			return;
+		if (selected==null)
+			return;
+		setSelected(node, select);
+		for (int d = firstDaughterOfNode(node); nodeExists(d); d = nextSisterOfNode(d)) {
+			selectAllInClade(d, select);
+		}
+	}
+	/*-----------------------------------------*/
+	/** SelectsAllNodes in the clade */
+	public void selectAllInClade( int node) {
+		if (!inBounds(node))
+			return;
+		if (selected==null)
+			return;
+		setSelected(node, true);
+		for (int d = firstDaughterOfNode(node); nodeExists(d); d = nextSisterOfNode(d)) {
+			selectAllInClade(d);
+		}
+	}
+	/*-----------------------------------------*/
+	/** Attach the object to the sensitive attachments */
+	public void attachToSensitives(Object obj){
+		if (obj ==null)
+			return;
+		if (sensitiveAttachments ==null)
+			sensitiveAttachments = new Vector();
+		sensitiveAttachments.addElement(obj);
+	}
+	/*-----------------------------------------*/
+	/** Remove the object from the sensitive attachments */
+	public void removeFromSensitives(Object obj){
+		if (obj ==null || sensitiveAttachments ==null)
+			return;
+		sensitiveAttachments.removeElement(obj);
+	}
+	/*-----------------------------------------*/
+	/** Remove all objects from the sensitive attachments */
+	public void removeAllSensitives(){
+		if (sensitiveAttachments ==null)
+			return;
+		sensitiveAttachments.removeAllElements();
+	}
+	/*-----------------------------------------*/
+	/** Returns whether there are any sensitive attachments of the given class or a subclass */
+	public boolean anyAttachedSensitive(Class c){
+		if (c ==null ||sensitiveAttachments == null ||sensitiveAttachments.size() == 0)
+			return false;
+		int s = sensitiveAttachments.size();
+		for (int i= 0; i< s; i++)
+			if (c.isAssignableFrom(sensitiveAttachments.elementAt(i).getClass()))
+				return true;
+		return false;
+	}
+	/*-----------------------------------------*/
+	/** Returns the number of sensitive attachments of the given class or a subclass */
+	public int numberAttachedSensitive(Class c){
+		if (c ==null ||sensitiveAttachments == null ||sensitiveAttachments.size() == 0)
+			return 0;
+		int s = sensitiveAttachments.size();
+		int count =0;
+		for (int i= 0; i< s; i++)
+			if (c.isAssignableFrom(sensitiveAttachments.elementAt(i).getClass()))
+				count++;
+		return count;
+	}
+	/*-----------------------------------------*/
+	/** Returns the indexTH sensitive attachment of the given class or a subclass */
+	public Object getAttachedSensitive(Class c, int index){
+		if (c ==null ||sensitiveAttachments == null ||sensitiveAttachments.size() == 0)
+			return null;
+		int s = sensitiveAttachments.size();
+		int count =0;
+		for (int i= 0; i< s; i++)
+			if (c.isAssignableFrom(sensitiveAttachments.elementAt(i).getClass())) {
+				if (count==index)
+					return sensitiveAttachments.elementAt(i);
+				count++;
+			}
 		return null;
-	String s = "";
-	for (int i= 0; i< sensitiveAttachments.size(); i++)
-		s += sensitiveAttachments.elementAt(i) + "\n";
-	return s;
-}
-private boolean doChecks = false; //turned off because of problems with mismatch of notifications causing frequent messages
-private boolean checkTaxaIDs(){
-	if (!doChecks)
-		return true;
-	String warning = null;
-	if (oldNumTaxa != taxa.getNumTaxa()) 
-		warning = "Error in tree "  + getName() + " (id " + getID() + ", version " + getVersionNumber() + ", treeVector: " + treeVector + "): oldNumTaxa != taxa.getNumTaxa()";
-	if (taxaIDs.length !=oldNumTaxa) 
-		warning = "Error in tree "  + getName() + " (id " + getID() + ", version " + getVersionNumber() + ", treeVector: " + treeVector +"): oldNumTaxa != taxaIDs.length";
-	for (int i = 0; i<taxa.getNumTaxa() && warning == null; i++)
-		if (i>= taxaIDs.length || taxa.getTaxon(i).getID() != taxaIDs[i])
-			warning = "Error in tree "  + getName() + " (id " + getID() + ", version " + getVersionNumber() + ", treeVector: " + treeVector +"): id of taxon " + i +" in Taxa doesn't match id recorded in MesquiteTree";
-	if (warning == null)
-		return true;
-	MesquiteMessage.warnProgrammer(warning);
-	return false;
-}
-public void reconcileTaxa(int code, Notification notification){
-	reconcileTaxa(code, notification, true);
-}
-public void reconcileTaxa(int code, Notification notification, boolean notify){
-	//check id list of taxa to see that it matches; otherwise add or subtract taxa;  ASSUMES TAXA DELETED OR ADDED BUT NOT MOVED!!!!!!
-	int newNumTaxa = taxa.getNumTaxa();
-	if (newNumTaxa == oldNumTaxa) {
-		if (code== MesquiteListener.PARTS_MOVED || code== MesquiteListener.PARTS_CHANGED) {
-			/*go through list of taxa.  If any taxon is not in sequence expected from Taxa then find where it is in the list of taxaID's
+	}
+	/*-----------------------------------------*/
+	/** Lists attached sensitives */
+	public String getListAttachedSensitives(){
+		if (sensitiveAttachments == null ||sensitiveAttachments.size() == 0)
+			return null;
+		String s = "";
+		for (int i= 0; i< sensitiveAttachments.size(); i++)
+			s += sensitiveAttachments.elementAt(i) + "\n";
+		return s;
+	}
+	private boolean doChecks = false; //turned off because of problems with mismatch of notifications causing frequent messages
+	private boolean checkTaxaIDs(){
+		if (!doChecks)
+			return true;
+		String warning = null;
+		if (oldNumTaxa != taxa.getNumTaxa()) 
+			warning = "Error in tree "  + getName() + " (id " + getID() + ", version " + getVersionNumber() + ", treeVector: " + treeVector + "): oldNumTaxa != taxa.getNumTaxa()";
+		if (taxaIDs.length !=oldNumTaxa) 
+			warning = "Error in tree "  + getName() + " (id " + getID() + ", version " + getVersionNumber() + ", treeVector: " + treeVector +"): oldNumTaxa != taxaIDs.length";
+		for (int i = 0; i<taxa.getNumTaxa() && warning == null; i++)
+			if (i>= taxaIDs.length || taxa.getTaxon(i).getID() != taxaIDs[i])
+				warning = "Error in tree "  + getName() + " (id " + getID() + ", version " + getVersionNumber() + ", treeVector: " + treeVector +"): id of taxon " + i +" in Taxa doesn't match id recorded in MesquiteTree";
+		if (warning == null)
+			return true;
+		MesquiteMessage.warnProgrammer(warning);
+		return false;
+	}
+	public void reconcileTaxa(int code, Notification notification){
+		reconcileTaxa(code, notification, true);
+	}
+	public void reconcileTaxa(int code, Notification notification, boolean notify){
+		//check id list of taxa to see that it matches; otherwise add or subtract taxa;  ASSUMES TAXA DELETED OR ADDED BUT NOT MOVED!!!!!!
+		int newNumTaxa = taxa.getNumTaxa();
+		if (newNumTaxa == oldNumTaxa) {
+			if (code== MesquiteListener.PARTS_MOVED || code== MesquiteListener.PARTS_CHANGED) {
+				/*go through list of taxa.  If any taxon is not in sequence expected from Taxa then find where it is in the list of taxaID's
 				and move it into place*/
-			for (int i = 0; i<taxa.getNumTaxa(); i++){ //go through list of taxa
-				if (taxa.getTaxon(i).getID() != taxaIDs[i]){ //taxon i is not in sequence expected from Taxa
-					int loc = LongArray.indexOf(taxaIDs, taxa.getTaxon(i).getID());
-					if (loc <0) {
-						MesquiteTrunk.mesquiteTrunk.discreetAlert( "Error in MesquiteTree: taxaID's cannot be reconciled with current Taxa");
-						return;
-					}
-					else {
-						//taxon in place loc in the taxaID's has been renumbered to i.  Must adjust taxonNumber array accordingly
-						//if loc>i, then any taxonNumber>loc or <i stay the same; taxonNumbers <loc and >=i get bumped up by one; taxonNumber loc becomes i
-						//if loc<i, then any taxonNumber<loc or >i stay the same; taxonNumbers >loc and <=i go down by one; taxonNumber loc becomes i
-						if (loc>i){
-							for (int j=0; j<numNodeSpaces; j++) {
-								int t = taxonNumber[j];
-								if (t < loc && t>=i)
-									incrementTaxonNumber(j, 1);
-								else if (t == loc)
-									setTaxonNumber(j, i);
-							}
+				for (int i = 0; i<taxa.getNumTaxa(); i++){ //go through list of taxa
+					if (taxa.getTaxon(i).getID() != taxaIDs[i]){ //taxon i is not in sequence expected from Taxa
+						int loc = LongArray.indexOf(taxaIDs, taxa.getTaxon(i).getID());
+						if (loc <0) {
+							MesquiteTrunk.mesquiteTrunk.discreetAlert( "Error in MesquiteTree: taxaID's cannot be reconciled with current Taxa");
+							return;
 						}
 						else {
-							for (int j=0; j<numNodeSpaces; j++) {
-								int t = taxonNumber[j];
-								if (t > loc && t<=i)
-									decrementTaxonNumber(j, 1);
-								else if (t == loc)
-									setTaxonNumber(j, i);
+							//taxon in place loc in the taxaID's has been renumbered to i.  Must adjust taxonNumber array accordingly
+							//if loc>i, then any taxonNumber>loc or <i stay the same; taxonNumbers <loc and >=i get bumped up by one; taxonNumber loc becomes i
+							//if loc<i, then any taxonNumber<loc or >i stay the same; taxonNumbers >loc and <=i go down by one; taxonNumber loc becomes i
+							if (loc>i){
+								for (int j=0; j<numNodeSpaces; j++) {
+									int t = taxonNumber[j];
+									if (t < loc && t>=i)
+										incrementTaxonNumber(j, 1);
+									else if (t == loc)
+										setTaxonNumber(j, i);
+								}
 							}
-						}
-						LongArray.moveParts(taxaIDs, loc, 1, i-1);
+							else {
+								for (int j=0; j<numNodeSpaces; j++) {
+									int t = taxonNumber[j];
+									if (t > loc && t<=i)
+										decrementTaxonNumber(j, 1);
+									else if (t == loc)
+										setTaxonNumber(j, i);
+								}
+							}
+							LongArray.moveParts(taxaIDs, loc, 1, i-1);
 
+						}
+					}
+				}
+				//MesquiteTrunk.mesquiteTrunk.discreetAlert( "ERROR in MesquiteTree: MesquiteListener.PARTS_MOVED not yet handled");
+				if (notify)
+					notifyListeners(this, notification);
+			}
+			else
+				checkTaxaIDs();
+			resetNodeOfTaxonNumbers();
+		}
+		else {
+			long[] oldTaxaIDs = taxaIDs;
+			boolean chgd = false;
+			if (code== MesquiteListener.PARTS_ADDED) {
+				//cycle through finding which taxa in Taxa are not in tree, and adding them
+				for (int i=0; i<newNumTaxa; i++) {
+					Taxon t = taxa.getTaxon(i);
+					long tid = t.getID();
+					if (LongArray.indexOf(oldTaxaIDs, tid)<0){
+						int tN = taxa.whichTaxonNumber(t);
+						addTaxa(tN-1, 1, false, false);
+						//should instead find contiguous block and add all at once!
+					}
+				}
+
+			}
+			else if (code== MesquiteListener.PARTS_DELETED) {
+				//cycle through finding which taxa in tree have been deleted && deleting them from tree
+				for (int i=oldNumTaxa-1; i>=0; i--) {
+					Taxon t = taxa.getTaxonByID(oldTaxaIDs[i]);
+					if (t==null) {
+						deleteTaxa(i, 1, false, false);
+						chgd = true;
+						//should instead find contiguous block and delete all at once!
 					}
 				}
 			}
-			//MesquiteTrunk.mesquiteTrunk.discreetAlert( "ERROR in MesquiteTree: MesquiteListener.PARTS_MOVED not yet handled");
-			if (notify)
-				notifyListeners(this, notification);
-		}
-		else
-			checkTaxaIDs();
-		resetNodeOfTaxonNumbers();
-	}
-	else {
-		long[] oldTaxaIDs = taxaIDs;
-		boolean chgd = false;
-		if (code== MesquiteListener.PARTS_ADDED) {
-			//cycle through finding which taxa in Taxa are not in tree, and adding them
-			for (int i=0; i<newNumTaxa; i++) {
-				Taxon t = taxa.getTaxon(i);
-				long tid = t.getID();
-				if (LongArray.indexOf(oldTaxaIDs, tid)<0){
-					int tN = taxa.whichTaxonNumber(t);
-					addTaxa(tN-1, 1, false, false);
-					//should instead find contiguous block and add all at once!
+			else {
+				//cycle through finding which taxa deleted && deleting them from tree
+				for (int i=oldNumTaxa-1; i>=0 && i<oldTaxaIDs.length; i--) {
+					Taxon t = taxa.getTaxonByID(oldTaxaIDs[i]);
+					if (t==null) {
+						deleteTaxa(i, 1, false, false);
+						chgd = true;
+						//should instead find contiguous block and delete all at once!
+					}
+				}
+				//cycle through finding which taxa in Taxa are not in tree, and adding them
+				for (int i=0; i<newNumTaxa; i++) {
+					Taxon t = taxa.getTaxon(i);
+					long tid = t.getID();
+					if (LongArray.indexOf(oldTaxaIDs, tid)<0){
+						int tN = taxa.whichTaxonNumber(t);
+						addTaxa(tN-1, 1, false, false);
+						chgd = true;
+						//should instead find contiguous block and add all at once!
+					}
 				}
 			}
 
+			oldNumTaxa = taxa.getNumTaxa();
+
+			taxaIDs = taxa.getTaxaIDs();
+			checkTaxaIDs();
+			if (chgd)
+				incrementVersion(MesquiteListener.BRANCHES_REARRANGED,true);
+			resetNodeOfTaxonNumbers();
 		}
-		else if (code== MesquiteListener.PARTS_DELETED) {
-			//cycle through finding which taxa in tree have been deleted && deleting them from tree
-			for (int i=oldNumTaxa-1; i>=0; i--) {
-				Taxon t = taxa.getTaxonByID(oldTaxaIDs[i]);
-				if (t==null) {
-					deleteTaxa(i, 1, false, false);
-					chgd = true;
-					//should instead find contiguous block and delete all at once!
+	}
+	private void addTaxa(int starting, int num, boolean resetOldNumTaxa, boolean notify){
+		//TODO: make more efficient. This leaves the arrays big
+		int newNumTaxa = oldNumTaxa+num;
+		setNumNodeSpaces(numNodeSpaces + standardNumNodeSpaces(num));
+		boolean added = false;
+		if (starting<0)
+			starting = -1;
+		else if (starting>=oldNumTaxa)
+			starting = oldNumTaxa-1;
+		for (int i=0; i<numNodeSpaces; i++) {
+			if (taxonNumber[i] > starting) {
+				incrementTaxonNumber(i,  num);
+				added = true;
+			}
+		}
+		nodeOfTaxon =  IntegerArray.addParts(nodeOfTaxon, starting, num);
+		taxaIDs = taxa.getTaxaIDs();
+		if (resetOldNumTaxa)
+			oldNumTaxa = taxa.getNumTaxa();
+		taxaVersion = taxa.getVersionNumber();
+		if (added && notify)
+			incrementVersion(MesquiteListener.BRANCHES_REARRANGED,true);
+	}
+	private void setTaxonNumber(int node, int taxNumber){
+		if (node<0 || node>=taxonNumber.length || taxNumber>= taxa.getNumTaxa())
+			return;
+		taxonNumber[node] = taxNumber;
+		if (taxNumber>=0 && taxNumber<nodeOfTaxon.length){
+			nodeOfTaxon[taxNumber]=node;
+		}
+	}
+	private void decrementTaxonNumber(int node, int  num){
+		if (node<0 || node>=taxonNumber.length)
+			return;
+		taxonNumber[node] -= num;
+		if (taxonNumber[node]>=0 && taxonNumber[node]<nodeOfTaxon.length)
+			nodeOfTaxon[taxonNumber[node]]=node;
+	}
+	private void incrementTaxonNumber(int node, int  num){
+		if (node<0 || node>=taxonNumber.length)
+			return;
+		taxonNumber[node] += num;
+		if (taxonNumber[node]>=0 && taxonNumber[node]<nodeOfTaxon.length)
+			nodeOfTaxon[taxonNumber[node]]=node;
+	}
+	private void deleteTaxa(int starting, int num, boolean resetOldNumTaxa, boolean notify){
+		//TODO: make more efficient. This leaves the arrays big
+		int deleted = 0; //added 14 Feb 02
+		for (int i=0; i<num; i++) {
+			if (starting+i>=0 && starting+i<oldNumTaxa)
+				snipClade(nodeOfTaxonNumber(starting+i), false);
+		}
+		for (int i=0; i<numNodeSpaces; i++) {
+			if (taxonNumber[i] >= starting) {
+				if (taxonNumber[i]-starting < num){ //among deleted
+					setTaxonNumber(i, -1);
+					deleted++; //added 14 Feb 02
+				}
+				else {
+					decrementTaxonNumber(i, num);
 				}
 			}
+		}
+		nodeOfTaxon =  IntegerArray.deleteParts(nodeOfTaxon, starting, num);
+		taxaIDs = taxa.getTaxaIDs();
+		if (resetOldNumTaxa)
+			oldNumTaxa = taxa.getNumTaxa();
+		taxaVersion = taxa.getVersionNumber();
+		if (deleted>0 && notify)
+			incrementVersion(MesquiteListener.BRANCHES_REARRANGED,true);
+	}
+	/*-----------------------------------------*/
+	private long[] lastNotifications = new long[]{-1, -1, -1, -1, -1, -1, -1, -1, -1, -1}; //a partial protection against responding to the same notification twice, e.g. coming via two different pathways.
+	private boolean notificationFound(Notification notification){
+		if (notification ==null)
+			return false;
+		long id = notification.getNotificationNumber();
+		if (id <0)
+			return false;
+		if (LongArray.indexOf(lastNotifications, id)>=0)
+			return true;
+		return false;
+	}
+	private void rememberNotification(Notification notification){
+		if (notification ==null)
+			return;
+		long id = notification.getNotificationNumber();
+		if (id <0)
+			return;
+		for (int i = 0; i< lastNotifications.length-1; i++)
+			lastNotifications[i+1] = lastNotifications[i];
+		lastNotifications[0] = id;
+	}
+	/** For MesquiteListener interface.  Passes which object changed, along with optional integer (e.g. for character)*/
+	public void changed(Object caller, Object obj, Notification notification){
+		if (notificationFound(notification))
+			return;
+		rememberNotification(notification);
+		if (obj == taxa){
+			if (Notification.appearsCosmetic(notification))
+				return;
+			int code = Notification.getCode(notification);
+			if  (code==MesquiteListener.SELECTION_CHANGED)  
+				return;
+			int[] parameters = Notification.getParameters(notification);
+			if ((parameters == null) || (code != MesquiteListener.PARTS_ADDED && code != MesquiteListener.PARTS_DELETED && code != MesquiteListener.PARTS_MOVED)) {
+				reconcileTaxa(code, notification);
+				return;
+			}
+			int starting = 0;
+			int num =  0;
+			try{
+				starting = parameters[0];
+				num = parameters[1];
+			}
+			catch (ArrayIndexOutOfBoundsException e){
+				MesquiteMessage.warnProgrammer("Error: insufficient parameters in changed in MesquiteTree ");
+				return;
+			}
+			if (code==MesquiteListener.PARTS_ADDED) {
+				addTaxa(starting, num, true, true);
+				taxaIDs = taxa.getTaxaIDs();
+				checkTaxaIDs();
+			}
+			else if (code==MesquiteListener.PARTS_DELETED){
+				deleteTaxa(starting, num, true, true);
+				taxaIDs = taxa.getTaxaIDs();
+				checkTaxaIDs();
+			}
+			else if (code==MesquiteListener.PARTS_MOVED){
+				reconcileTaxa(code, notification);
+				taxaIDs = taxa.getTaxaIDs();
+				incrementVersion(MesquiteListener.BRANCHES_REARRANGED,true);
+			}
+			taxaVersion = taxa.getVersionNumber();
+		}
+	}
+
+	public void resetTaxaInfo(){
+		taxaIDs = taxa.getTaxaIDs();
+		oldNumTaxa = taxa.getNumTaxa();
+	}
+
+	//THIS SHOULD BE USED with great caution. Designed only for transferring a matrix to another block of taxa in special circumstances.
+	public boolean setTaxa(Taxa otherTaxa, boolean areYouReallySureYouWantToDoThis){
+		if (otherTaxa == taxa){
+			return false;
+		}
+		if (otherTaxa.getNumTaxa() != taxa.getNumTaxa()){
+			return false;
+		}
+
+		this.taxa = otherTaxa;
+		resetTaxaInfo();
+		return true;
+	}
+
+	/*-----------------------------------------*/
+	/** For MesquiteListener interface.  Passes which object was disposed*/
+	public void disposing(Object obj){
+	}
+	/*-----------------------------------------*/
+	/** For MesquiteListener interface.  Asks whether it's ok to delete the object as far as the listener is concerned (e.g., is it in use?)*/
+	public boolean okToDispose(Object obj, int queryUser){
+		return true;
+	}
+
+	/*-----------------------------------------*/
+	/** Returns the number assigned to this tree (used by Stored Trees, see comment at field declaration)*/
+	public int getAssignedNumber(){
+		return sequenceNumber;
+	}
+	/*-----------------------------------------*/
+	/** Sets the number assigned to this tree (used by Stored Trees, see comment at field declaration)*/
+	public void setAssignedNumber(int num){
+		sequenceNumber = num;
+	}
+	/*-----------------------------------------*/
+	/**Translates internal numbering system to external (currently, 0 based to 1 based)*/
+	public static int toExternal(int i){
+		if (!MesquiteInteger.isCombinable(i))
+			return i;
+		else
+			return i+1;
+	}
+	/*-----------------------------------------*/
+	/**Translates external numbering system to internal (currently, 1 based to 0 based)*/
+	public static int toInternal(int i){
+		if (!MesquiteInteger.isCombinable(i))
+			return i;
+		else
+			return i-1;
+	}
+	/*-----------------------------------------*/
+	/** returns the number of dichotomous trees with the passed number of terminal taxa.  At 12 this is greater than the maximum int. */
+	public static BigInteger numberOfDichotomousTrees(int numTaxa){
+		if (numTaxa<=0)
+			return null;
+		BigInteger product = new BigInteger("1");
+		if (numTaxa<3)
+			return product;
+
+		for (int i=3; i<=numTaxa; i++)
+			product = product.multiply(new BigInteger(Integer.toString(2*i - 3)));
+		return product;
+	}
+
+	public static String getProfileReport(){
+		String s = "MesquiteTree profiling: ";
+		for (int i=0; i<timers.length; i++){
+			if (timers[i] != null)
+				s += " (" + i + ") " + timers[i].getAccumulatedTime();
+		}
+		return s;
+	}
+
+
+
+	/** Ultrametricizes the tree, in simple fashion.*/
+	/*.................................................................................................................*/
+	public  void arbitrarilyUltrametricize(){
+		setUnassignedToOnes(getRoot());
+		ut(getRoot(), tallestPathAboveNode(getRoot(), 0));
+	}
+	/*.................................................................................................................*/
+	private void setUnassignedToOnes(int node){
+		if (!MesquiteDouble.isCombinable(getBranchLength(node))) {
+			setBranchLength(node, 1, false);
+		}
+		for (int daughter=firstDaughterOfNode(node); nodeExists(daughter); daughter =  nextSisterOfNode(daughter) ) {
+			setUnassignedToOnes(daughter);
+		}
+	}
+	/*.................................................................................................................*/
+	private void ut( int node, double targetHeight){
+		if (nodeIsTerminal(node)) {
+			setBranchLength(node, targetHeight, false);
 		}
 		else {
-			//cycle through finding which taxa deleted && deleting them from tree
-			for (int i=oldNumTaxa-1; i>=0 && i<oldTaxaIDs.length; i--) {
-				Taxon t = taxa.getTaxonByID(oldTaxaIDs[i]);
-				if (t==null) {
-					deleteTaxa(i, 1, false, false);
-					chgd = true;
-					//should instead find contiguous block and delete all at once!
-				}
-			}
-			//cycle through finding which taxa in Taxa are not in tree, and adding them
-			for (int i=0; i<newNumTaxa; i++) {
-				Taxon t = taxa.getTaxon(i);
-				long tid = t.getID();
-				if (LongArray.indexOf(oldTaxaIDs, tid)<0){
-					int tN = taxa.whichTaxonNumber(t);
-					addTaxa(tN-1, 1, false, false);
-					chgd = true;
-					//should instead find contiguous block and add all at once!
-				}
+			double heightAbove = tallestPathAboveNode(node, 0);
+			double nodeLength;
+			if (heightAbove==0) 
+				nodeLength = targetHeight/2;
+			else
+				nodeLength = targetHeight-heightAbove;
+			if (getRoot()!=node)
+				setBranchLength(node, nodeLength, false);
+			for (int daughter=firstDaughterOfNode(node); nodeExists(daughter); daughter = nextSisterOfNode(daughter) ) {
+				ut(daughter, targetHeight - nodeLength);
 			}
 		}
 
-		oldNumTaxa = taxa.getNumTaxa();
-
-		taxaIDs = taxa.getTaxaIDs();
-		checkTaxaIDs();
-		if (chgd)
-			incrementVersion(MesquiteListener.BRANCHES_REARRANGED,true);
-		resetNodeOfTaxonNumbers();
-	}
-}
-private void addTaxa(int starting, int num, boolean resetOldNumTaxa, boolean notify){
-	//TODO: make more efficient. This leaves the arrays big
-	int newNumTaxa = oldNumTaxa+num;
-	setNumNodeSpaces(numNodeSpaces + standardNumNodeSpaces(num));
-	boolean added = false;
-	if (starting<0)
-		starting = -1;
-	else if (starting>=oldNumTaxa)
-		starting = oldNumTaxa-1;
-	for (int i=0; i<numNodeSpaces; i++) {
-		if (taxonNumber[i] > starting) {
-			incrementTaxonNumber(i,  num);
-			added = true;
-		}
-	}
-	nodeOfTaxon =  IntegerArray.addParts(nodeOfTaxon, starting, num);
-	taxaIDs = taxa.getTaxaIDs();
-	if (resetOldNumTaxa)
-		oldNumTaxa = taxa.getNumTaxa();
-	taxaVersion = taxa.getVersionNumber();
-	if (added && notify)
-		incrementVersion(MesquiteListener.BRANCHES_REARRANGED,true);
-}
-private void setTaxonNumber(int node, int taxNumber){
-	if (node<0 || node>=taxonNumber.length || taxNumber>= taxa.getNumTaxa())
-		return;
-	taxonNumber[node] = taxNumber;
-	if (taxNumber>=0 && taxNumber<nodeOfTaxon.length){
-		nodeOfTaxon[taxNumber]=node;
-	}
-}
-private void decrementTaxonNumber(int node, int  num){
-	if (node<0 || node>=taxonNumber.length)
-		return;
-	taxonNumber[node] -= num;
-	if (taxonNumber[node]>=0 && taxonNumber[node]<nodeOfTaxon.length)
-		nodeOfTaxon[taxonNumber[node]]=node;
-}
-private void incrementTaxonNumber(int node, int  num){
-	if (node<0 || node>=taxonNumber.length)
-		return;
-	taxonNumber[node] += num;
-	if (taxonNumber[node]>=0 && taxonNumber[node]<nodeOfTaxon.length)
-		nodeOfTaxon[taxonNumber[node]]=node;
-}
-private void deleteTaxa(int starting, int num, boolean resetOldNumTaxa, boolean notify){
-	//TODO: make more efficient. This leaves the arrays big
-	int deleted = 0; //added 14 Feb 02
-	for (int i=0; i<num; i++) {
-		if (starting+i>=0 && starting+i<oldNumTaxa)
-			snipClade(nodeOfTaxonNumber(starting+i), false);
-	}
-	for (int i=0; i<numNodeSpaces; i++) {
-		if (taxonNumber[i] >= starting) {
-			if (taxonNumber[i]-starting < num){ //among deleted
-				setTaxonNumber(i, -1);
-				deleted++; //added 14 Feb 02
-			}
-			else {
-				decrementTaxonNumber(i, num);
-			}
-		}
-	}
-	nodeOfTaxon =  IntegerArray.deleteParts(nodeOfTaxon, starting, num);
-	taxaIDs = taxa.getTaxaIDs();
-	if (resetOldNumTaxa)
-		oldNumTaxa = taxa.getNumTaxa();
-	taxaVersion = taxa.getVersionNumber();
-	if (deleted>0 && notify)
-		incrementVersion(MesquiteListener.BRANCHES_REARRANGED,true);
-}
-/*-----------------------------------------*/
-private long[] lastNotifications = new long[]{-1, -1, -1, -1, -1, -1, -1, -1, -1, -1}; //a partial protection against responding to the same notification twice, e.g. coming via two different pathways.
-private boolean notificationFound(Notification notification){
-	if (notification ==null)
-		return false;
-	long id = notification.getNotificationNumber();
-	if (id <0)
-		return false;
-	if (LongArray.indexOf(lastNotifications, id)>=0)
-		return true;
-	return false;
-}
-private void rememberNotification(Notification notification){
-	if (notification ==null)
-		return;
-	long id = notification.getNotificationNumber();
-	if (id <0)
-		return;
-	for (int i = 0; i< lastNotifications.length-1; i++)
-		lastNotifications[i+1] = lastNotifications[i];
-	lastNotifications[0] = id;
-}
-/** For MesquiteListener interface.  Passes which object changed, along with optional integer (e.g. for character)*/
-public void changed(Object caller, Object obj, Notification notification){
-	if (notificationFound(notification))
-		return;
-	rememberNotification(notification);
-	if (obj == taxa){
-		if (Notification.appearsCosmetic(notification))
-			return;
-		int code = Notification.getCode(notification);
-		if  (code==MesquiteListener.SELECTION_CHANGED)  
-			return;
-		int[] parameters = Notification.getParameters(notification);
-		if ((parameters == null) || (code != MesquiteListener.PARTS_ADDED && code != MesquiteListener.PARTS_DELETED && code != MesquiteListener.PARTS_MOVED)) {
-			reconcileTaxa(code, notification);
-			return;
-		}
-		int starting = 0;
-		int num =  0;
-		try{
-			starting = parameters[0];
-			num = parameters[1];
-		}
-		catch (ArrayIndexOutOfBoundsException e){
-			MesquiteMessage.warnProgrammer("Error: insufficient parameters in changed in MesquiteTree ");
-			return;
-		}
-		if (code==MesquiteListener.PARTS_ADDED) {
-			addTaxa(starting, num, true, true);
-			taxaIDs = taxa.getTaxaIDs();
-			checkTaxaIDs();
-		}
-		else if (code==MesquiteListener.PARTS_DELETED){
-			deleteTaxa(starting, num, true, true);
-			taxaIDs = taxa.getTaxaIDs();
-			checkTaxaIDs();
-		}
-		else if (code==MesquiteListener.PARTS_MOVED){
-			reconcileTaxa(code, notification);
-			taxaIDs = taxa.getTaxaIDs();
-			incrementVersion(MesquiteListener.BRANCHES_REARRANGED,true);
-		}
-		taxaVersion = taxa.getVersionNumber();
-	}
-}
-
-public void resetTaxaInfo(){
-	taxaIDs = taxa.getTaxaIDs();
-	oldNumTaxa = taxa.getNumTaxa();
-}
-
-//THIS SHOULD BE USED with great caution. Designed only for transferring a matrix to another block of taxa in special circumstances.
-public boolean setTaxa(Taxa otherTaxa, boolean areYouReallySureYouWantToDoThis){
-	if (otherTaxa == taxa){
-		return false;
-	}
-	if (otherTaxa.getNumTaxa() != taxa.getNumTaxa()){
-		return false;
-	}
-	
-	this.taxa = otherTaxa;
-	resetTaxaInfo();
-	return true;
-}
-
-/*-----------------------------------------*/
-/** For MesquiteListener interface.  Passes which object was disposed*/
-public void disposing(Object obj){
-}
-/*-----------------------------------------*/
-/** For MesquiteListener interface.  Asks whether it's ok to delete the object as far as the listener is concerned (e.g., is it in use?)*/
-public boolean okToDispose(Object obj, int queryUser){
-	return true;
-}
-
-/*-----------------------------------------*/
-/** Returns the number assigned to this tree (used by Stored Trees, see comment at field declaration)*/
-public int getAssignedNumber(){
-	return sequenceNumber;
-}
-/*-----------------------------------------*/
-/** Sets the number assigned to this tree (used by Stored Trees, see comment at field declaration)*/
-public void setAssignedNumber(int num){
-	sequenceNumber = num;
-}
-/*-----------------------------------------*/
-/**Translates internal numbering system to external (currently, 0 based to 1 based)*/
-public static int toExternal(int i){
-	if (!MesquiteInteger.isCombinable(i))
-		return i;
-	else
-		return i+1;
-}
-/*-----------------------------------------*/
-/**Translates external numbering system to internal (currently, 1 based to 0 based)*/
-public static int toInternal(int i){
-	if (!MesquiteInteger.isCombinable(i))
-		return i;
-	else
-		return i-1;
-}
-/*-----------------------------------------*/
-/** returns the number of dichotomous trees with the passed number of terminal taxa.  At 12 this is greater than the maximum int. */
-public static BigInteger numberOfDichotomousTrees(int numTaxa){
-	if (numTaxa<=0)
-		return null;
-	BigInteger product = new BigInteger("1");
-	if (numTaxa<3)
-		return product;
-
-	for (int i=3; i<=numTaxa; i++)
-		product = product.multiply(new BigInteger(Integer.toString(2*i - 3)));
-	return product;
-}
-
-public static String getProfileReport(){
-	String s = "MesquiteTree profiling: ";
-	for (int i=0; i<timers.length; i++){
-		if (timers[i] != null)
-			s += " (" + i + ") " + timers[i].getAccumulatedTime();
-	}
-	return s;
-}
-
-
-
-/** Ultrametricizes the tree, in simple fashion.*/
-/*.................................................................................................................*/
-public  void arbitrarilyUltrametricize(){
-	setUnassignedToOnes(getRoot());
-	ut(getRoot(), tallestPathAboveNode(getRoot(), 0));
-}
-/*.................................................................................................................*/
-private void setUnassignedToOnes(int node){
-	if (!MesquiteDouble.isCombinable(getBranchLength(node))) {
-		setBranchLength(node, 1, false);
-	}
-	for (int daughter=firstDaughterOfNode(node); nodeExists(daughter); daughter =  nextSisterOfNode(daughter) ) {
-		setUnassignedToOnes(daughter);
-	}
-}
-/*.................................................................................................................*/
-private void ut( int node, double targetHeight){
-	if (nodeIsTerminal(node)) {
-		setBranchLength(node, targetHeight, false);
-	}
-	else {
-		double heightAbove = tallestPathAboveNode(node, 0);
-		double nodeLength;
-		if (heightAbove==0) 
-			nodeLength = targetHeight/2;
-		else
-			nodeLength = targetHeight-heightAbove;
-		if (getRoot()!=node)
-			setBranchLength(node, nodeLength, false);
-		for (int daughter=firstDaughterOfNode(node); nodeExists(daughter); daughter = nextSisterOfNode(daughter) ) {
-			ut(daughter, targetHeight - nodeLength);
-		}
 	}
 
-}
-
-public int getFileIndex(){
-	return fileIndex;
-}
-public void setFileIndex(int index){
-	fileIndex =index;
-}
+	public int getFileIndex(){
+		return fileIndex;
+	}
+	public void setFileIndex(int index){
+		fileIndex =index;
+	}
 
 
 }
