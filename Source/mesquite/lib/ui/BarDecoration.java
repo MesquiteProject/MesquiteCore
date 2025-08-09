@@ -10,26 +10,40 @@ Mesquite's web site is http://mesquiteproject.org
 
 This source code and its compiled class files are free and modifiable under the terms of 
 GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
-*/
+ */
 package mesquite.lib.ui;
 
+import java.awt.Color;
+import java.awt.Font;
 import java.awt.Rectangle;
 
 
 
 /* ======================================================================== */
-	/** For bars on tree branches, e.g. TraceAllChanges
-	*/
-public class BarRecord {
-	public Rectangle r; public int ic;  public long stateset; public int node;public boolean unambiguous;
-	public BarRecord(Rectangle r, int ic, long stateset, int node, boolean unambiguous){
-		this.r = r;
-		this.ic = ic;
-		this.stateset=stateset;
+/** For bars on tree branches, e.g. TraceAllChanges
+ */
+public class BarDecoration {
+	public int node;
+	public Color lineColor;
+	public Color fillColor;
+	public String text;
+	public Font font;
+	public Color fontColor;
+	public Rectangle r;
+	public BarDecoration(int node, Color lineColor, Color fillColor, String text, Font font, Color fontColor){
+		this.fillColor = fillColor;
+		this.lineColor = lineColor;
+		this.text=text;
 		this.node = node;
-		this.unambiguous = unambiguous;
+		this.font = font;
+		this.fontColor = fontColor;
+	}
+	
+	public void setRectangle(Rectangle r){
+		this.r = r;
 	}
 	public boolean contains(int x, int y){
 		return r.contains(x, y);
 	}
+
 }

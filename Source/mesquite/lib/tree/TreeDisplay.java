@@ -14,6 +14,7 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
 package mesquite.lib.tree;
 
 import java.awt.Color;
+
 import java.awt.Composite;
 import java.awt.Font;
 import java.awt.Graphics;
@@ -36,8 +37,7 @@ import mesquite.lib.StringUtil;
 import mesquite.lib.duties.DrawNamesTreeDisplay;
 import mesquite.lib.taxa.Taxa;
 import mesquite.lib.taxa.TaxaTreeDisplay;
-import mesquite.lib.ui.BarDecorationRecord;
-import mesquite.lib.ui.BarRecord;
+import mesquite.lib.ui.BarDecoration;
 import mesquite.lib.ui.ColorDistribution;
 import mesquite.lib.ui.GraphicsUtil;
 import mesquite.lib.ui.MesquiteWindow;
@@ -563,16 +563,16 @@ public class TreeDisplay extends TaxaTreeDisplay  {
 		super.setLocation(x, y);
 	}
 	
-	
+	/* Initially used by TraceAllChanges */
 	TextRotator barTextRotator = new TextRotator(1);
-	public void drawBarDecorations(Graphics g, Vector vBarDecorations, Vector bars, int node, boolean constantDistance, double barLength, boolean tickOnly, int edgeWidth){
-		//Next, now that we know how many there are to draw, we can draw them
+	public void drawBarDecorations(Graphics g, Vector vBarDecorations,int node, boolean constantDistance, double barLength, boolean tickOnly, int edgeWidth){
 		double nodeX = getTreeDrawing().lineTipX[node];
 		double nodeY =  getTreeDrawing().lineTipY[node];
 		double ancX =  getTreeDrawing().lineBaseX[node];
 		double ancY =  getTreeDrawing().lineBaseY[node];
 		double barWidth = 8;
 		double barSpacing = 8;
+		Color oldColor = g.getColor();
 		if (constantDistance)
 			barSpacing = barWidth /2;
 		int numBars = vBarDecorations.size();
@@ -580,7 +580,7 @@ public class TreeDisplay extends TaxaTreeDisplay  {
 		double offsetRatio = 1;
 		offsetRatio = 0;
 		int extraGrabber = 32;
-		//	double barLength = traceAllModule.barLength;
+
 		boolean useColors = true;
 		double leftTopBase = 0;
 		if (numBars > 0) {
@@ -627,7 +627,7 @@ public class TreeDisplay extends TaxaTreeDisplay  {
 			offset = barWidth + barSpacing - 0.001;
 			double total = barWidth*(numBars+1) + barSpacing*(numBars+2);
 			for (int ic = 0; ic < vBarDecorations.size(); ic++) {
-				BarDecorationRecord bdr = (BarDecorationRecord) vBarDecorations.elementAt(ic);
+				BarDecoration bdr = (BarDecoration) vBarDecorations.elementAt(ic);
 				if (isUp() || isDown()) {  //======== UP/DOWN ======
 					double topY = nodeY;
 
@@ -639,23 +639,22 @@ public class TreeDisplay extends TaxaTreeDisplay  {
 
 					if (useColors) {
 						if (tickOnly){
-							g.setColor(Color.black);
+							g.setColor(bdr.lineColor);
 							GraphicsUtil.drawLine(g, left, topY + offset + barWidth/2, left+ barLength, topY + offset + barWidth/2, 2);
 						}
 						else {
-							g.setColor(bdr.color);
+							g.setColor(bdr.fillColor);
 							GraphicsUtil.fillRect(g, left, topY + offset, barLength, barWidth);
-							g.setColor(Color.black);
+							g.setColor(bdr.lineColor);
 							GraphicsUtil.drawRect(g, left, topY + offset, barLength, barWidth);
 						}
 						bdr.setRectangle(new Rectangle((int)left, (int)(topY + offset-4), (int)barLength + extraGrabber, (int)barWidth +8));
-						bars.addElement(new BarRecord(new Rectangle((int)left, (int)(topY + offset-4), (int)barLength + extraGrabber, (int)barWidth +8), bdr.ic, bdr.stateset, node, bdr.unambiguous));
 
 						g.setFont(bdr.font);
 						g.setColor(bdr.fontColor);
 
 						GraphicsUtil.drawString(g, bdr.text, left + barLength + 4, topY + offset + barWidth);
-						g.setColor(Color.black);
+						g.setColor(oldColor);
 						offset += barWidth + barSpacing;
 					}
 					else {
@@ -671,13 +670,13 @@ public class TreeDisplay extends TaxaTreeDisplay  {
 					}
 					if (useColors) {
 						if (tickOnly){
-							g.setColor(Color.black);
+							g.setColor(bdr.lineColor);
 							GraphicsUtil.drawLine(g, leftX + offset + barWidth/2, top, leftX + offset + barWidth/2, top + barLength, 2);
 						}
 						else {
-							g.setColor(bdr.color);
+							g.setColor(bdr.fillColor);
 							GraphicsUtil.fillRect(g, leftX + offset, top, barWidth, barLength);
-							g.setColor(Color.black);
+							g.setColor(bdr.lineColor);
 							GraphicsUtil.drawRect(g, leftX + offset, top, barWidth, barLength);
 						}
 						g.setFont(bdr.font);
@@ -685,14 +684,12 @@ public class TreeDisplay extends TaxaTreeDisplay  {
 						if (isRight()) {
 							barTextRotator.drawFreeRotatedText(bdr.text,  g, (int)(leftX + offset-barWidth - (8-barWidth)),(int)(top + barLength + 4), Math.PI/2, null, true, null); // the 8-barWidth is a mystery correction
 							bdr.setRectangle(new Rectangle((int)(leftX + offset-4), (int)(top), (int)barWidth+8, (int)barLength+extraGrabber));
-							bars.addElement(new BarRecord(new Rectangle((int)(leftX + offset-4), (int)(top), (int)barWidth+8, (int)barLength+extraGrabber), bdr.ic, bdr.stateset, node, bdr.unambiguous));
 						}
 						else {
 							barTextRotator.drawFreeRotatedText(bdr.text,  g, (int)(leftX + offset),(int)(top  - 4), -Math.PI/2, null, true, null);
 							bdr.setRectangle(new Rectangle((int)(leftX + offset-4), (int)(top)-extraGrabber, (int)barWidth+8, (int)barLength + extraGrabber+8));
-							bars.addElement(new BarRecord(new Rectangle((int)(leftX + offset-4), (int)(top)-extraGrabber, (int)barWidth+8, (int)barLength + extraGrabber+8), bdr.ic, bdr.stateset, node, bdr.unambiguous));
 						}
-						g.setColor(Color.black);
+						g.setColor(oldColor);
 						offset += barWidth + barSpacing;
 					}
 					else {
