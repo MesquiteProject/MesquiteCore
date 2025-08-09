@@ -61,6 +61,8 @@ import mesquite.lib.tree.TreeDisplayDrawnExtra;
 import mesquite.lib.tree.TreeDisplayExtra;
 import mesquite.lib.tree.TreeDisplayLateExtra;
 import mesquite.lib.tree.TreeDisplayLegendSimpleText;
+import mesquite.lib.ui.BarDecorationRecord;
+import mesquite.lib.ui.BarRecord;
 import mesquite.lib.ui.GraphicsUtil;
 import mesquite.lib.ui.MesquiteColorTable;
 import mesquite.lib.ui.MesquiteMenuItemSpec;
@@ -646,7 +648,7 @@ class TraceAllOperator extends TreeDisplayDrawnExtra implements TreeDisplayLateE
 			inclForDrawing = (CharInclusionSet) data.getCurrentSpecsSet(CharInclusionSet.class);
 		return data == null || data.getSelected(ic) && (inclForDrawing == null || inclForDrawing.isBitOn(ic));
 	}
-	TextRotator textRotator = new TextRotator(1);
+	//TextRotator textRotator = new TextRotator(1);
 
 	Vector possibleChanges(Tree tree, int node, MCategoricalStates charsStates, int ic){
 		Vector v = new Vector();
@@ -666,6 +668,143 @@ class TraceAllOperator extends TreeDisplayDrawnExtra implements TreeDisplayLateE
 		return v;
 	}
 
+/*	private void drawBarDecorations(Graphics g, Vector vBarDecorations, Vector bars, int node, boolean constantDistance, double barLength, boolean tickOnly, int edgeWidth){
+		//Next, now that we know how many there are to draw, we can draw them
+		double nodeX = treeDisplay.getTreeDrawing().lineTipX[node];
+		double nodeY =  treeDisplay.getTreeDrawing().lineTipY[node];
+		double ancX =  treeDisplay.getTreeDrawing().lineBaseX[node];
+		double ancY =  treeDisplay.getTreeDrawing().lineBaseY[node];
+		double barWidth = 8;
+		double barSpacing = 8;
+		if (constantDistance)
+			barSpacing = barWidth /2;
+		int numBars = vBarDecorations.size();
+		double offset = barWidth + barSpacing;
+		double offsetRatio = 1;
+		offsetRatio = 0;
+		int extraGrabber = 32;
+		//	double barLength = traceAllModule.barLength;
+		boolean useColors = true;
+		double leftTopBase = 0;
+		if (numBars > 0) {
+			double available = 0;
+			if (treeDisplay.isUp() || treeDisplay.isDown()) {
+				available = Math.abs(nodeY - ancY);
+				if (available != 0)
+					offsetRatio = (nodeX-ancX)/(nodeY-ancY);
+				if (treeDisplay.isUp())
+					leftTopBase = nodeX;
+				else
+					leftTopBase = ancX;
+			}
+			else if (treeDisplay.isRight() || treeDisplay.isLeft()) {
+				available = Math.abs(nodeX - ancX);
+				if (available != 0)
+					offsetRatio = (nodeY-ancY)/(nodeX-ancX);
+				if (treeDisplay.isLeft())
+					leftTopBase = nodeY;
+				else
+					leftTopBase = ancY;
+			}
+			double perBarAvailable = (available) / (numBars + 2);
+			if (perBarAvailable>=10){
+				barWidth = 8;
+			}
+			else if (perBarAvailable>=8)
+				barWidth = 6;
+			else if (perBarAvailable>=6)
+				barWidth = 4;
+			else
+				barWidth = 0;
+			if (constantDistance) {
+				barSpacing = barWidth /2;
+				if (barSpacing < 0.00001)
+					barSpacing = perBarAvailable;
+			}
+			else
+				barSpacing = perBarAvailable - barWidth;
+
+			if (barWidth < 4) {
+				useColors = false;
+			}
+			offset = barWidth + barSpacing - 0.001;
+			double total = barWidth*(numBars+1) + barSpacing*(numBars+2);
+			for (int ic = 0; ic < vBarDecorations.size(); ic++) {
+				BarDecorationRecord bdr = (BarDecorationRecord) vBarDecorations.elementAt(ic);
+				if (treeDisplay.isUp() || treeDisplay.isDown()) {  //======== UP/DOWN ======
+					double topY = nodeY;
+
+					double left = leftTopBase - (barLength-edgeWidth) / 2 + offsetRatio*offset;
+					if (treeDisplay.isDown()){
+						topY = nodeY-total; //ancY;
+					}
+					//if (true || offset + topY + barWidth + barSpacing < bottomY) {
+
+					if (useColors) {
+						if (tickOnly){
+							g.setColor(Color.black);
+							GraphicsUtil.drawLine(g, left, topY + offset + barWidth/2, left+ barLength, topY + offset + barWidth/2, 2);
+						}
+						else {
+							g.setColor(bdr.color);
+							GraphicsUtil.fillRect(g, left, topY + offset, barLength, barWidth);
+							g.setColor(Color.black);
+							GraphicsUtil.drawRect(g, left, topY + offset, barLength, barWidth);
+						}
+						bars.addElement(new BarRecord(new Rectangle((int)left, (int)(topY + offset-4), (int)barLength + extraGrabber, (int)barWidth +8), bdr.ic, bdr.stateset, node, bdr.unambiguous));
+
+						g.setFont(bdr.font);
+						g.setColor(bdr.fontColor);
+
+						GraphicsUtil.drawString(g, bdr.text, left + barLength + 4, topY + offset + barWidth);
+						g.setColor(Color.black);
+						offset += barWidth + barSpacing;
+					}
+					else {
+						GraphicsUtil.drawLine(g, left, topY + offset, left+barLength, topY + offset);
+						offset += barSpacing;
+					}
+				}
+				else if (treeDisplay.isRight() || treeDisplay.isLeft()) {  //======== RIGHT/LEFT ======
+					double leftX = nodeX;
+					double top = leftTopBase -(barLength-edgeWidth)/2 + offsetRatio*offset;
+					if (treeDisplay.isRight()){
+						leftX = nodeX-total;
+					}
+					if (useColors) {
+						if (tickOnly){
+							g.setColor(Color.black);
+							GraphicsUtil.drawLine(g, leftX + offset + barWidth/2, top, leftX + offset + barWidth/2, top + barLength, 2);
+						}
+						else {
+							g.setColor(bdr.color);
+							GraphicsUtil.fillRect(g, leftX + offset, top, barWidth, barLength);
+							g.setColor(Color.black);
+							GraphicsUtil.drawRect(g, leftX + offset, top, barWidth, barLength);
+						}
+						g.setFont(bdr.font);
+						g.setColor(bdr.fontColor);
+						if (treeDisplay.isRight()) {
+							textRotator.drawFreeRotatedText(bdr.text,  g, (int)(leftX + offset-barWidth - (8-barWidth)),(int)(top + barLength + 4), Math.PI/2, null, true, null); // the 8-barWidth is a mystery correction
+							bars.addElement(new BarRecord(new Rectangle((int)(leftX + offset-4), (int)(top), (int)barWidth+8, (int)barLength+extraGrabber), bdr.ic, bdr.stateset, node, bdr.unambiguous));
+						}
+						else {
+							textRotator.drawFreeRotatedText(bdr.text,  g, (int)(leftX + offset),(int)(top  - 4), -Math.PI/2, null, true, null);
+							bars.addElement(new BarRecord(new Rectangle((int)(leftX + offset-4), (int)(top)-extraGrabber, (int)barWidth+8, (int)barLength + extraGrabber+8), bdr.ic, bdr.stateset, node, bdr.unambiguous));
+						}
+						g.setColor(Color.black);
+						offset += barWidth + barSpacing;
+					}
+					else {
+						GraphicsUtil.drawLine(g, leftX + offset, top, leftX + offset,top+barLength);
+						offset += barSpacing;
+					}
+				}
+			}
+		}	
+	}
+	
+	*/
 	Font unambiguousFont, ambiguousFont;
 	/* ................................................................................................................. */
 	private void drawChanges(Tree tree, Graphics g, int node, MCategoricalStates charsStates) {
@@ -734,13 +873,21 @@ class TraceAllOperator extends TreeDisplayDrawnExtra implements TreeDisplayLateE
 						}
 						else if (traceAllModule.showStateNames.getValue())
 							s += statesString;
-
-						vBarDecorations.addElement(new BarDecorationRecord(fillColor, ic, s, stateset, recordableChange == 2));
+						
+						Font font = unambiguousFont;
+						Color fontColor = Color.black;
+						if (recordableChange!=2){ //ambiguous
+							font = ambiguousFont;
+							fontColor = Color.gray;
+						}
+						vBarDecorations.addElement(new BarDecorationRecord(fillColor, ic, s, stateset, recordableChange == 2, font, fontColor));
 					}
 				}
 			}
 
-			//Next, now that we know how many there are to draw, we can draw them
+			Vector bars = getBarRecordsVectorAtNode(node);
+			treeDisplay.drawBarDecorations(g, vBarDecorations,  bars, node, traceAllModule.constantDistance.getValue(), traceAllModule.barLength, traceAllModule.tickOnly.getValue(), edgeWidth);
+			/*Next, now that we know how many there are to draw, we can draw them
 			double barWidth = 8;
 			double barSpacing = 8;
 			if (traceAllModule.constantDistance.getValue())
@@ -879,7 +1026,7 @@ class TraceAllOperator extends TreeDisplayDrawnExtra implements TreeDisplayLateE
 							}
 					}
 				}
-			}
+			}*/
 		}
 		for (int d = tree.firstDaughterOfNode(node); tree.nodeExists(d); d = tree.nextSisterOfNode(d))
 			drawChanges(tree, g, d, charsStates);
@@ -1125,26 +1272,4 @@ class TraceAllOperator extends TreeDisplayDrawnExtra implements TreeDisplayLateE
 		super.turnOff();
 	}
 }
-class BarDecorationRecord {
-	Color color; int ic;  String text; long stateset; boolean unambiguous;
-	public BarDecorationRecord(Color c, int ic, String text, long stateset, boolean unambiguous){
-		this.color = c;
-		this.ic = ic;
-		this.text=text;
-		this.stateset = stateset;
-		this.unambiguous = unambiguous;
-	}
-}
-class BarRecord {
-	Rectangle r; int ic;  long stateset; int node;boolean unambiguous;
-	public BarRecord(Rectangle r, int ic, long stateset, int node, boolean unambiguous){
-		this.r = r;
-		this.ic = ic;
-		this.stateset=stateset;
-		this.node = node;
-		this.unambiguous = unambiguous;
-	}
-	public boolean contains(int x, int y){
-		return r.contains(x, y);
-	}
-}
+
