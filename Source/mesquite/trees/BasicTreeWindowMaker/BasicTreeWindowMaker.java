@@ -750,12 +750,12 @@ public class BasicTreeWindowMaker extends TreeWindowMaker implements Commandable
 						if (count == which){
 							TreeDisplayAsstShowToggleable tdawsc = (TreeDisplayAsstShowToggleable)mb;
 							tdawsc.toggleShowExtras();
+							return null;
 							
 						}
 						count++;
 					}
 				}
-				System.err.println("@ " + arguments);
 			}
 		}
 		else
