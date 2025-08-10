@@ -167,6 +167,12 @@ public abstract class InterpretFasta extends FileInterpreterI implements ReadFil
 								CommandRecord.tick("Importing, character " + ic);
 
 							added++;
+							if (data.getNumChars()>5000)
+								numCharToAdd=1000;
+							else if (data.getNumChars()>500)
+								numCharToAdd=100;
+
+							
 						}
 						setFastaState(data,ic, newTaxon, c);    // setting state to that specified by character c
 					}
