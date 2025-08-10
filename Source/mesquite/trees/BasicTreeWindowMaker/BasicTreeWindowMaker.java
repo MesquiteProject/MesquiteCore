@@ -104,6 +104,7 @@ import mesquite.lib.duties.TreeDisplayAssistantAO;
 import mesquite.lib.duties.TreeDisplayAssistantD;
 import mesquite.lib.duties.TreeDisplayAssistantDI;
 import mesquite.lib.duties.TreeDisplayAssistantI;
+import mesquite.lib.duties.TreeDisplayAsstShowToggleable;
 import mesquite.lib.duties.TreeInfoPanelAssistant;
 import mesquite.lib.duties.TreeSource;
 import mesquite.lib.duties.TreeWDIAssistant;
@@ -738,6 +739,25 @@ public class BasicTreeWindowMaker extends TreeWindowMaker implements Commandable
 		else if (checker.compare(this.getClass(), "Hires a tree window assistant module", "[name of assistant module]", commandName, "newWindowAssistant")) {
 			return basicTreeWindow.doCommand(commandName, arguments, checker);
 		}
+		else if (checker.compare(this.getClass(), "Controls whether to show/hide", "[name of assistant module]", commandName, "showExtra")) {
+			int which = MesquiteInteger.fromString(arguments);
+			if (MesquiteInteger.isCombinable(which)){
+				ListableVector emp = getEmployeeVector();
+				int count = 0;
+				for (int i = 0; i<emp.size(); i++){
+					Object mb = emp.elementAt(i);
+					if (mb instanceof TreeDisplayAsstShowToggleable){
+						if (count == which){
+							TreeDisplayAsstShowToggleable tdawsc = (TreeDisplayAsstShowToggleable)mb;
+							tdawsc.toggleShowExtras();
+							
+						}
+						count++;
+					}
+				}
+				System.err.println("@ " + arguments);
+			}
+		}
 		else
 			return super.doCommand(commandName, arguments, checker);
 		return null;
@@ -899,6 +919,11 @@ public class BasicTreeWindowMaker extends TreeWindowMaker implements Commandable
 				basicTreeWindow.addAssistant(tca);
 			}
 		}
+		
+		//println("@
+		MesquiteSubmenuSpec showHideSM = addSubmenu(null, "Show/Hide", new MesquiteCommand("showExtra", this), getEmployeeVector());
+		showHideSM.setListableFilter(TreeDisplayAsstShowToggleable.class);
+		
 		btw.sizeDisplay();
 		MesquiteMenuSpec aux = addAuxiliaryMenu("Analysis:Tree");
 		MesquiteCommand mC = makeCommand("newWindowAssistant", basicTreeWindow);
