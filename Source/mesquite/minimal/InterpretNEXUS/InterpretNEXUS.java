@@ -492,8 +492,10 @@ public class InterpretNEXUS extends NexusFileInterpreter implements NEXUSInterpr
 		}
 		if (getProject() != null) {
 			resolveCharMatrixIDs();
-			MesquiteFrame f = getProject().getFrame();
-			f.checkScriptedWindowSizes();
+			if (mNF.getReadCategory() == MesquiteFile.HOME){
+				MesquiteFrame f = getProject().getFrame();
+				f.checkScriptedWindowSizes();
+			}
 		}
 		MesquiteTrunk.recentFileRecord(mNF, true);  //updating that it's ok to reread in REcent
 		decrementMenuResetSuppression();
