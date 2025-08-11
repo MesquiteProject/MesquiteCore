@@ -305,10 +305,10 @@ public class CommandCommunicator {
 		else if ("tellIt".equalsIgnoreCase(command)) {
 			setObjectCommanded(result, useQueue, false);
 		}
-		else if ("xyzzy".equalsIgnoreCase(command)) {
+		else if ("zol".equalsIgnoreCase(command)) {
 			MesquiteModule mb = MesquiteTrunk.mesquiteTrunk.findEmployeeWithName("ZoL");
 			if (mb != null){
-				mb.doCommand("reset", null,CommandChecker.defaultChecker);
+				mb.doCommand("reset", arguments,CommandChecker.defaultChecker);
 				setObjectCommanded(mb, useQueue, false);
 			}
 		}
