@@ -170,7 +170,6 @@ public class MesquiteFrame extends Frame implements Commandable, MQComponent {
 	super.setFont(f);
 	}
 	public void superSetSize (int w, int h){
-		Debugg.printStackTrace("@@@@@@@@ " + w + " " + h);
 		super.setSize(w,h);
 	}
 	public void superSetLocation (int x, int y){
