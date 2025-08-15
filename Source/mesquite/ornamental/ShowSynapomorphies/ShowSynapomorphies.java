@@ -127,7 +127,7 @@ class ShowSynapExtra extends TreeDisplayDrawnExtra {
 				for (int i=0; i<syns.getSize(); i++)
 					bars.addElement(new BarDecoration(N, Color.blue, Color.blue, syns.getValue(i), treeDisplay.getFont(), Color.blue));
 
-				treeDisplay.drawBarDecorations(g,  bars,N, true, 20, true, treeDisplay.getEdgeWidth());
+				treeDisplay.drawBarDecorations(g,  bars,N, false, 20, true, treeDisplay.getEdgeWidth());
 			}
 			for (int d = tree.firstDaughterOfNode(N); tree.nodeExists(d); d = tree.nextSisterOfNode(d))
 				drawSynapomorphies(treeDisplay, tree, g, d);
