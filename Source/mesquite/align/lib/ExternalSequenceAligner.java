@@ -301,8 +301,11 @@ public abstract class ExternalSequenceAligner extends MultipleSequenceAligner im
 		if (!okToInteractWithUser(CAN_PROCEED_ANYWAY, "Querying Options"))  
 			return true;
 		MesquiteInteger buttonPressed = new MesquiteInteger(1);
-		ExtensibleDialog dialog = new ExtensibleDialog(containerOfModule(), getProgramName() + " Locations & Options",buttonPressed);  //MesquiteTrunk.mesquiteTrunk.containerOfModule()
-		dialog.addLabel(getProgramName() + " - File Locations & Options");
+		String title =  getProgramName() + " Standard Alignment - Options";
+		if (isCodonAlign())
+			title = getProgramName() + " Codon Alignment - Options";
+		ExtensibleDialog dialog = new ExtensibleDialog(containerOfModule(), title,buttonPressed);  //MesquiteTrunk.mesquiteTrunk.containerOfModule()
+		dialog.addLabel(title);
 		dialog.appendToHelpString(getHelpString());
 		if (isCodonAlign())
 			dialog.appendToHelpString(" Because this is a codon alignment, Mesquite will assign codon positions, translate the sequences to amino acids, send the resulting data to the"
