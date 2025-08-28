@@ -3032,6 +3032,9 @@ class BasicTreeWindow extends MesquiteWindow implements Fittable, MesquiteListen
 				int numTrees = treeSourceTask.getNumberOfTrees(taxa);
 				goToTreeNumber(numTrees-1, true);
 			}
+			else
+				goToTreeNumber(0, true);
+				
 			setScrollEnabled(!windowModule.pinToLastTree.getValue());
 		}
 		else if (checker.compare(this.getClass(), "Goes to the next tree in the tree source.", null, commandName, "goToNextTree")) {

@@ -949,6 +949,7 @@ class BasicTreeDisplay extends TreeDisplay  implements KeyListener {
 	public void print(Graphics g) {
 		printAll(g);
 	}
+	
 	/*_________________________________________________*/
 	public void printAll(Graphics g) {
 		if (g == null)
@@ -962,8 +963,8 @@ class BasicTreeDisplay extends TreeDisplay  implements KeyListener {
 		setSize(getFieldWidth(), getFieldHeight());
 		//super.paint(g);
 		if (tree==null) {
-			if (MesquiteTrunk.developmentMode)
-				MesquiteMessage.warnProgrammer("tree NULL in tree draw coord printing. Probably not a problem!");
+			if (getWidth()>0 && MesquiteTrunk.developmentMode)  //Why is there an extra tree display with no size?
+				MesquiteMessage.printStackTrace("tree NULL in tree draw coord printing. ");
 		}
 		else if ((!suppress) && (!tree.isLocked())) {
 			repaintsPending = 0;
@@ -986,7 +987,7 @@ class BasicTreeDisplay extends TreeDisplay  implements KeyListener {
 				printComponentsPDF(g);		//headless:  comment out
 			else										//headless:  comment out
 				printComponents(g);
-		} 
+			} 
 		else MesquiteMessage.warnProgrammer("tree drawing suppressed");
 		setSize(ww, hh);
 		setPrintingInProcess(false);

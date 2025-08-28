@@ -327,11 +327,11 @@ public abstract class ManyTreesFromFileLib extends TreeSource implements Mesquit
 	boolean ended = false;
 	/*.................................................................................................................*/
 	public void endJob(){
+		fileCheckingThread.abort = true;
 		if (file !=null){
 			file.closeReading();
 			file.dispose();
 		}
-		fileCheckingThread.abort = true;
 		fileCheckingThread.interrupt();
 		ended = true;
 		super.endJob();
@@ -910,7 +910,7 @@ public abstract class ManyTreesFromFileLib extends TreeSource implements Mesquit
 			command = findNextTree(currentTree, comment);
 			fileDone = command==null;
 			if (currentTree % 1000 == 0 && command != null && ! file.atEOF()) {
-				MesquiteMessage.println("Tree " + (currentTree) + " found by \"Trees from Separate File\"");
+				System.out.println("Tree " + (currentTree) + " found by \"Trees from Separate File\"");
 			}
 			recordFilePos(currentTree+1, file.getFilePosition()-1); 
 		}/**/
@@ -958,7 +958,7 @@ public abstract class ManyTreesFromFileLib extends TreeSource implements Mesquit
 
 				}
 				if (i % 1000 == 0 && !fileDone && ! file.atEOF()) {
-					MesquiteMessage.println("Tree " + (i) + " found by \"Trees from Separate File\"");
+					System.out.println("Tree " + (i) + " found by \"Trees from Separate File\"");
 				} 
 				if (timeout >= 10000)
 					alert("Error in reading tree file; 10000 commands found other than tree commands [last command (" + command + ")]");
