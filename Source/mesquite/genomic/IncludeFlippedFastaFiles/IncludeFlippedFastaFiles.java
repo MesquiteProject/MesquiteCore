@@ -43,11 +43,11 @@ public class IncludeFlippedFastaFiles extends FileAssistantFM {
 	}
 	/*.................................................................................................................*/
 	public String getNameForMenuItem() {
-		return "Include Data from Taxonwise (Multi-Locus) FASTAs...";
+		return "Include Data from Single-Taxon (Multi-Locus) FASTAs...";
 	}
 	/*.................................................................................................................*/
 	public String getName() {
-		return "Include Data from Taxonwise (Multi-Locus) FASTAs";
+		return "Include Data from Single-Taxon (Multi-Locus) FASTAs";
 	}
 	/*.................................................................................................................*/
 	/** returns the version number at which this module was first released.  If 0, then no version number is claimed.  If a POSITIVE integer
@@ -59,13 +59,13 @@ public class IncludeFlippedFastaFiles extends FileAssistantFM {
 	/*.................................................................................................................*/
 	/** returns an explanation of what the module does.*/
 	public String getExplanation() {
-		return "Imports all taxonwise FASTA files in a folder, to merge their taxa and sequences into the current project. "
-		+"Each taxonwise FASTA file contains the sequences of many loci for a single taxon."
+		return "Imports all single-taxon FASTA files in a folder, to merge their taxa and sequences into the current project. "
+		+"Each single-taxon FASTA file contains the sequences of many loci for a single taxon."
 		+" Each input file should be named by the taxon name, and each sequence within the file should be named for its locus. "
 		+" As each file is read, sequences are matched by name to the locus among those already present."
-		+" Tuned for phylogenomics workflows that maintain a library of taxonwise fasta files that "
+		+" Tuned for phylogenomics workflows that maintain a library of single-taxon fasta files that "
 		+"can be combined for varied studies with different taxon sampling. "
-		+" Taxonwise FASTA files can be produced using File, Export, Taxonwise (Multi-Locus) FASTA files.";
+		+" Single-Taxon FASTA files can be produced using File, Export, Single-Taxon (Multi-Locus) FASTA files.";
 	}
 
 }

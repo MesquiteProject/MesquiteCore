@@ -62,20 +62,20 @@ public class CombineFlippedFastas extends GeneralFileMakerMultiple {
 	public boolean startJob(String arguments, Object condition, boolean hiredByName){
 		//Debugg.println rebuild as Extensible dialog to put the caution about "taxon" into a separate label after radio buttons
 		boolean goAhead = introductoryOptions();
-		/*int result = QueryDialogs.queryTwoRadioButtons(containerOfModule(), "Combining Taxonwise FASTA files", 
-				"This imports all of the taxonwise FASTA files in a folder. (Touch the help (?) button for an explanation "
-						+ "of what a taxonwise FASTA file is.)"
+		/*int result = QueryDialogs.queryTwoRadioButtons(containerOfModule(), "Combining single-taxon FASTA files", 
+				"This imports all of the single-taxon FASTA files in a folder. (Touch the help (?) button for an explanation "
+						+ "of what a single-taxon FASTA file is.)"
 						+ "\n\nDo you want to alter or adjust the names of loci (e.g., by deleting part of the name) "
-						+"as the taxonwise FASTA files are being read?\n\nNote: If you choose to alter the locus names, some of the choices in the "
+						+"as the single-taxon FASTA files are being read?\n\nNote: If you choose to alter the locus names, some of the choices in the "
 						+"subsequent dialog box refer to \"taxon names\", but it's actually the locus names that are getting altered."
 						+" The reason for this misnaming is that Mesquite is set to interpret rows "
-						+"in a file as taxa, but in these taxonwise fasta files, the rows are loci.", 
-						"What is a taxonwise FASTA file? "
-								+"A FASTA file is often in one of two orentations, locuswise or taxonwise:"
-								+"<ul><li>A <b>locuswise FASTA file</b> concerns data for a single locus for each of many taxa.</li>"
-								+ "<li>A <b>taxonwise FASTA file</b> concerns data for a single taxon, listing the sequences in each of many loci.</li></ul>"
-								+"A genome assembly file for a single taxon is usually a taxonwise FASTA file, "
-								+"each sequence being a contig. However, taxonwise FASTA files can be compiled by this feature only if homologs have been"
+						+"in a file as taxa, but in these single-taxon fasta files, the rows are loci.", 
+						"What is a single-taxon FASTA file? "
+								+"A FASTA file is often in one of two orentations, single-locus or single-taxon:"
+								+"<ul><li>A <b>single-locus FASTA file</b> concerns data for a single locus for each of many taxa.</li>"
+								+ "<li>A <b>single-taxon FASTA file</b> concerns data for a single taxon, listing the sequences in each of many loci.</li></ul>"
+								+"A genome assembly file for a single taxon is usually a single-taxon FASTA file, "
+								+"each sequence being a contig. However, single-taxon FASTA files can be compiled by this feature only if homologs have been"
 								+" identified and named as such in each file. "
 								+"A locus appearing in different files needs to have a name that is at least partially consistent from file to file.", 
 								"Don't alter locus names", "Alter locus names");
@@ -109,10 +109,10 @@ public class CombineFlippedFastas extends GeneralFileMakerMultiple {
 	
 	boolean introductoryOptions() {
 		MesquiteInteger buttonPressed = new MesquiteInteger(1);
-		ExtensibleDialog id = new ExtensibleDialog(containerOfModule(), "Combining Taxonwise FASTA files",buttonPressed);
-		id.addLabel("This imports all of the taxonwise FASTA files in a folder.");
+		ExtensibleDialog id = new ExtensibleDialog(containerOfModule(), "Combining Single-Taxon (Mulit-locus) FASTA files",buttonPressed);
+		id.addLabel("This imports all of the Single-Taxon (Mulit-locus) FASTA files in a folder.");
 		id.addBlankLine();
-		id.addLargeTextLabel("A taxonwise FASTA file concerns a single taxon, "
+		id.addLargeTextLabel("A Single-Taxon (Mulit-locus) FASTA file concerns a single taxon, "
 				+ "and contains sequences for various loci. Touch the help (?) button for more explanation.");
 		id.addBlankLine();
 		id.addHorizontalLine(2);
@@ -120,17 +120,15 @@ public class CombineFlippedFastas extends GeneralFileMakerMultiple {
 		id.addBlankLine();
 		id.addLabel("Do you want to alter or adjust the names of loci", Label.LEFT);
 		id.addLabel("(e.g., by deleting part of the name)", Label.LEFT);
-		id.addLabel("as the taxonwise FASTA files are being read?", Label.LEFT);
+		id.addLabel("as the single-taxon FASTA files are being read?", Label.LEFT);
 
 
-		String helpString = "<h3>What is a taxonwise FASTA file?</h3>"
-				+"A FASTA file is often in one of two orentations, locuswise or taxonwise:"
-				+"<ul><li>A <b>locuswise FASTA file</b> concerns data for a single locus for each of many taxa. If you have a series of such files, "
-				+"you would say your data are arranged locuswise.</li>"
-				+ "<li>A <b>taxonwise FASTA file</b> concerns data for a single taxon, listing the sequences in each of many loci. If you have a series of such files, "
-				+"you would say your data are arranged taxonwise.</li></ul>"
-				+"An example of a taxonwise FASTA file is a genome assembly file for a single taxon, "
-				+"each sequence being a contig. However, taxonwise FASTA files can be compiled by this feature only if homologs have been"
+		String helpString = "<h3>What is a Single-Taxon (Mulit-locus) FASTA file?</h3>"
+				+"A FASTA file is often in one of two orentations, single-locus or single-taxon:"
+				+"<ul><li>A <b>single-locus FASTA file</b> concerns data for a single locus for each of many taxa.</li>"
+				+ "<li>A <b>single-taxon FASTA file</b> concerns data for a single taxon, listing the sequences in each of many loci.</li></ul>"
+				+"An example of a single-locus FASTA file is a genome assembly file for a single taxon, "
+				+"each sequence being a contig. However, single-taxon FASTA files can be compiled by this feature only if homologs have been"
 				+" identified and named as such in each file. "
 				+"A locus appearing in different files needs to have a name that is at least partially consistent from file to file, "
 				+"so that Mesquite can recognize them as belonging to the same locus, and thus be compiled into a single matrix "
@@ -145,7 +143,7 @@ public class CombineFlippedFastas extends GeneralFileMakerMultiple {
 		id.addLargeOrSmallTextLabel("Note: If you choose to alter the locus names, some of the subsequent choices "
 				+"refer to \"taxon names\", but it's actually the locus names that are getting altered."
 				+" The reason for this misnaming is that Mesquite is set to interpret rows "
-				+"in a file as taxa, but in these taxonwise FASTA files, the rows are loci.");
+				+"in a file as taxa, but in these single-taxon FASTA files, the rows are loci.");
 
 		id.completeAndShowDialog(true);
 
@@ -292,13 +290,13 @@ public class CombineFlippedFastas extends GeneralFileMakerMultiple {
 							File cFile = new File(path);
 
 							if (cFile.exists() && !cFile.isDirectory() && (!files[i].startsWith("."))) {
-								progIndicator.setText("Reading taxonwise FASTA file: " + files[i]);
+								progIndicator.setText("Reading single-taxon FASTA file: " + files[i]);
 								MesquiteFile file = new MesquiteFile();
 								file.setPath(path);
 								project.addFile(file);
 								file.setProject(project);
 								if (files.length<20)
-									logln("Reading taxonwise FASTA file " + files[i]);
+									logln("Reading single-taxon FASTA file " + files[i]);
 								else if (i == 0)
 									log(" [File " + (i+1) + "]");
 								else
@@ -306,7 +304,7 @@ public class CombineFlippedFastas extends GeneralFileMakerMultiple {
 
 								//===================================================
 								/*
-								Here the taxon file (i.e. the taxonwise fasta file) for a single taxon is read. 
+								Here the taxon file (i.e. the single-taxon fasta file) for a single taxon is read. 
 								The sequences within it will be interpreted as taxa by Mesquite, but in fact 
 								each is the sequence for a particular locus.
 								 */
@@ -348,7 +346,7 @@ public class CombineFlippedFastas extends GeneralFileMakerMultiple {
 
 											CommandRecord.tick("For taxon " + taxonName + ", recovering sequence #" + (iLocus+1));
 
-											//Get the name of the iLocus'th locus in the taxonwise fasta file
+											//Get the name of the iLocus'th locus in the single-taxon fasta file
 											String locusName = loci.getTaxonName(iLocus);
 
 											//Can we find a matrix by this name already in the project?
@@ -453,7 +451,7 @@ public class CombineFlippedFastas extends GeneralFileMakerMultiple {
 						discreetAlert("No appropriate files with extensions (" + getAcceptableFileExtensions() + ") were found in folder.");
 				}
 				else
-					logln("Taxonwise Fastas read for " + files.length + " taxa; " + lociAdded + " different loci found. [" + overallTime.timeSinceLastInSeconds() + " sec.]" );
+					logln("Single-Taxon Fastas read for " + files.length + " taxa; " + lociAdded + " different loci found. [" + overallTime.timeSinceLastInSeconds() + " sec.]" );
 
 				MesquiteMessage.beep();
 				progIndicator.goAway();
@@ -530,23 +528,23 @@ public class CombineFlippedFastas extends GeneralFileMakerMultiple {
 
 	/*.................................................................................................................*/
 	public String getName() {
-		return "Combine Taxonwise (Multi-Locus) FASTA Files";
+		return "Combine Single-Taxon (Multi-Locus) FASTA Files";
 	}
 	/*.................................................................................................................*/
 	public String getNameForMenuItem() {
-		return "Combine Taxonwise (Multi-Locus) FASTA Files...";
+		return "Combine Single-Taxon (Multi-Locus) FASTA Files...";
 	}
 	/*.................................................................................................................*/
 	public String getExplanation() {
-		return "Reads taxa & sequences. Imports all taxonwise FASTA files in a folder. "
-				+"Each taxonwise FASTA file contains the sequences of many loci for a single taxon."
+		return "Reads taxa & sequences. Imports all single-taxon FASTA files in a folder. "
+				+"Each single-taxon FASTA file contains the sequences of many loci for a single taxon."
 				+" This import will compile a single file with all of the taxa and a matrix for each of those loci."
 				+" Each input file should be named by the taxon name, and each sequence within the file should be named for its locus. "
 				+" As each file is read, sequences are matched by name to the locus among those being accumulated."
-				+" Tuned for phylogenomics workflows that maintain a library of taxonwise fasta files that "
+				+" Tuned for phylogenomics workflows that maintain a library of single-taxon fasta files that "
 				+"can be combined for varied studies with different taxon sampling. "
-				+" Taxonwise FASTA files can be produced using File, Export, Taxonwise (Multi-Locus) FASTA files."
-				+" (Note: to add to existing matrices, use Include Data from Taxonwise (Multi-Locus) FASTAs in the Include & Merge submenu.)" ;
+				+" Single-taxon (multi-locus) FASTA files can be produced using File, Export, Single-Taxon (Multi-Locus) FASTA files."
+				+" (Note: to add to existing matrices, use Include Data from Single-Taxon (Multi-Locus) FASTAs in the Include & Merge submenu.)" ;
 	}
 
 

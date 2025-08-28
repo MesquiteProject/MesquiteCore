@@ -90,12 +90,12 @@ public class InterpretFlippedFastaDNA extends InterpretFastaDNA {
 	 }
 /*.................................................................................................................*/
     	 public String getName() {
-		return "Taxonwise FASTA (DNA/RNA)";
+		return "Single-Taxon FASTA (DNA/RNA)";
    	 }
 /*.................................................................................................................*/
  	/** returns an explanation of what the module does.*/
  	public String getExplanation() {
- 		return "Imports and exports taxonwise FASTA files; for use by Combine Taxonwise Fastas." ;
+ 		return "Imports and exports single-taxon FASTA files; for use by Combine Single-Taxon Fastas." ;
    	 }
    	 
 }
