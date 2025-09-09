@@ -1201,6 +1201,8 @@ public abstract class ManyTreesFromFileLib extends TreeSource implements Mesquit
 		fileWasModified = true;
 		if (!live.getValue())
 			return;
+		if (isDoomed())
+			return;
 		fileWasModified = false;
 		int s = numTrees;
 		numTrees = MesquiteInteger.finite;
