@@ -4420,6 +4420,8 @@ public abstract class CharacterData extends FileElement implements MesquiteListe
 			else
 				mergeRule = MERGE_preferReceiving;
 		}
+
+		Associable tAssociableForMatrix = getTaxaInfo(false);
 		
 		if (mergeRule == MERGE_preferReceiving){
 		}
@@ -4429,6 +4431,9 @@ public abstract class CharacterData extends FileElement implements MesquiteListe
 				cs2 = getCharacterState(cs2, ic,it2);
 				setState( ic, it1, cs2);
 			}
+			if (tAssociableForMatrix != null)
+				tAssociableForMatrix.copyParts(it1, it2);
+				
 		}
 		else if (mergeRule == MERGE_blendMultistateAsUncertainty || mergeRule == MERGE_blendMultistateAsPolymorphism){
 			boolean mergedAssigned = false;
@@ -4452,14 +4457,10 @@ public abstract class CharacterData extends FileElement implements MesquiteListe
 					setToUnassigned( ic, it1);
 				}
 			}
-			//return mergedAssigned;
+			if (tAssociableForMatrix != null)
+				tAssociableForMatrix.mergeParts(it1, it2);
 		}
-		if (!receivingHasData){
-			//in this case tInfo brought in from merging.  This isn't ideal, as should fuse tInfo if both have data
-			Associable a = getTaxaInfo(false);
-			if (a != null)
-				a.swapParts(it1, it2, true);
-		}
+	
 	return bothHadStates;
 	}
 	/*..........................................CharacterData.....................................*/

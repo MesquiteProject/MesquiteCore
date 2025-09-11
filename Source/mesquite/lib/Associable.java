@@ -1748,7 +1748,71 @@ public ListableVector getAssociatesOfKind(int kind){
 		incrementVersion(MesquiteListener.ASSOCIATED_CHANGED, false);
 		return true;
 	}
-	/* ---------------------Default Order -----------------------*/
+	public boolean copyParts(int first, int second){
+		if (first>numParts || first<0) 
+			return false;
+		if (second>numParts || second<0) 
+			return false;
+		if (bits!=null) {
+			for (int i=0; i< bits.size(); i++) {
+				Bits b = (Bits)bits.elementAt(i);
+				b.setBit(first, b.isBitOn(second));
+			}
+		}
+		if (longs!=null) {
+			for (int i=0; i< longs.size(); i++) {
+				LongArray b = (LongArray)longs.elementAt(i);
+				b.setValue(first, b.getValue(second));
+			}
+		}
+		if (doubles!=null)
+			for (int i=0; i< doubles.size(); i++) {
+				DoubleArray b = (DoubleArray)doubles.elementAt(i);
+				b.setValue(first, b.getValue(second));
+			}
+		if (strings!=null)
+			for (int i=0; i< strings.size(); i++) {
+				StringArray b = (StringArray)strings.elementAt(i);
+				b.setValue(first, b.getValue(second));
+			}
+		if (objects!=null)
+			for (int i=0; i< objects.size(); i++) {
+				ObjectArray b = (ObjectArray)objects.elementAt(i);
+				b.setValue(first, b.getValue(second));
+			}
+
+		incrementVersion(MesquiteListener.ASSOCIATED_CHANGED, false);
+		return true;
+	}	
+	
+	public boolean mergeParts (int into, int from){  //THIS deals with merging strings ONLY; for others, there isn't an obvious sense of merging 
+		if (into>numParts || into<0) 
+			return false;
+		if (from>numParts || from<0) 
+			return false;
+		if (strings!=null)
+			for (int i=0; i< strings.size(); i++) {
+				StringArray b = (StringArray)strings.elementAt(i);
+				String sInto = b.getValue(into);
+				String sFrom = b.getValue(from);
+				String merged = "";
+				if (StringUtil.blank(sInto)){
+					if (!StringUtil.blank(sFrom))
+						merged = sFrom;
+					else
+						merged = null;
+				}
+				else if (StringUtil.blank(sFrom)){
+						merged = sInto;
+				}
+				else
+					merged = sInto + "; " + sFrom;
+				b.setValue(into, merged);
+			}
+
+		incrementVersion(MesquiteListener.ASSOCIATED_CHANGED, false);
+		return true;
+	}	/* ---------------------Default Order -----------------------*/
 	public int getDefaultPosition(int part){
 		if (!inBounds(part) || defaultOrder == null)
 			return -1;

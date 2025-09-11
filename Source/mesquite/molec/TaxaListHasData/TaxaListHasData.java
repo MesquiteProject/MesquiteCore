@@ -481,7 +481,7 @@ public class TaxaListHasData extends TaxonListAssistant  {
 					anySelected = anySelected || table.anyCellSelectedInColumnAnyWay(myColumn);
 			}
 			for (int it = 0; it<taxa.getNumTaxa(); it++){
-				if (hasData(it) && (!anySelected || selected(taxa, it, myColumn))){
+				if (!anySelected || selected(taxa, it, myColumn)){
 					setNote(it, null, CharacterData.taxonMatrixNotesRef);
 				}
 			}
@@ -501,7 +501,7 @@ public class TaxaListHasData extends TaxonListAssistant  {
 					anySelected = anySelected || table.anyCellSelectedInColumnAnyWay(myColumn);
 			}
 			for (int it = 0; it<taxa.getNumTaxa(); it++){
-				if (hasData(it) && (!anySelected || selected(taxa, it, myColumn))){
+				if (!anySelected || selected(taxa, it, myColumn)){
 					setNote(it, null, MolecularData.genBankNumberRef);
 				}
 			}
@@ -521,7 +521,7 @@ public class TaxaListHasData extends TaxonListAssistant  {
 					anySelected = anySelected || table.anyCellSelectedInColumnAnyWay(myColumn);
 			}
 			for (int it = 0; it<taxa.getNumTaxa(); it++){
-				if (hasData(it) && (!anySelected || selected(taxa, it, myColumn))){
+				if (!anySelected || selected(taxa, it, myColumn)){
 					setNote(it, null, MolecularData.publicationCodeNameRef);
 				}
 			}

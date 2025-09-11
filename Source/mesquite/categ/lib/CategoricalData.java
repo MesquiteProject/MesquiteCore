@@ -17,6 +17,7 @@ import java.awt.Color;
 import java.util.Vector;
 import java.util.zip.CRC32;
 
+import mesquite.lib.Associable;
 import mesquite.lib.Bits;
 import mesquite.lib.IntegerArray;
 import mesquite.lib.Long2DArray;
@@ -2854,6 +2855,9 @@ public class CategoricalData extends CharacterData {
 			}
 			setState(ic,it1,sMerged);
 		}
+		Associable tAssociableForMatrix = getTaxaInfo(false);
+		if (tAssociableForMatrix != null)
+			tAssociableForMatrix.mergeParts(it1, it2);
 		return mergedAssigned;
 	}
 
