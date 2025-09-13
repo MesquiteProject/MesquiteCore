@@ -74,6 +74,7 @@ public class Integer2DArray {
 			numT = values[0].length;
 	}
 	/*...........................................................*/
+	//NOTE: this assumes, probably, that the incoming matrix is complete, i.e. all d[i].length is the same for all i's
 	public static int[][] deleteColumnsFlagged(int[][] d, Bits toDelete) {
 		if (d == null)
 			return null;

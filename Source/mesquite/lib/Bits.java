@@ -244,7 +244,8 @@ public class Bits implements Listable, Nameable {
 	}
 
 	/* ........................................................... */
-	public static boolean[][] deleteColumnsFlagged(boolean[][] d, Bits toDelete) {
+	//NOTE: this assumes, probably, that the incoming matrix is complete, i.e. all d[i].length is the same for all i's
+public static boolean[][] deleteColumnsFlagged(boolean[][] d, Bits toDelete) {
 		if (d == null)
 			return null;
 		if (d.length <= 0)
@@ -610,6 +611,21 @@ public class Bits implements Listable, Nameable {
 			}
 		}
 		return true;
+	}
+	public boolean discontiguousBitsOn() {
+		int flag = 0;
+		for (int i = 0; i<getSize(); i++){
+			if (isBitOn(i)){
+				if (flag == 0) //nothing seen before
+					flag = 1; // first ON found; set flag to 1
+				else if (flag == 2) //oh, we've been through an ON and and OFF, and now another ON.. Discontiguous!
+					return true;
+			}
+			else if (flag == 1) //We've seen an ON, and now an OFF. Set flag to 2.
+				flag = 2;
+		}
+		return false;
+		
 	}
 
 	public boolean isBitOn(int whichBit) {

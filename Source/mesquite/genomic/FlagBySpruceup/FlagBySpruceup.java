@@ -398,7 +398,6 @@ public class FlagBySpruceup extends MatrixFlaggerForTrimming implements ActionLi
 
 			/*-----------------*/
 			//Now look for outliers
-			long count = 0;
 			for (int window=0; window<numWindows; window++) {
 				int windowStart = window*windowIncrement;
 				int windowEnd = windowStart+windowSize-1;
@@ -406,11 +405,11 @@ public class FlagBySpruceup extends MatrixFlaggerForTrimming implements ActionLi
 					for (int it = 0; it<numTaxa; it++) {
 						if (lonelinessInWindow[window][it] > cutoff * lonelinessOverall[it]) {
 							flags.addCellFlag(it, windowStart, windowEnd);
-							count+= windowSize;
 						}
 					}
 				}
 			}
+			long count = flags.numCellFlagsSet();
 			CommandRecord.tick("Spruceup complete. Number of windows done " + numWindowsDone + " of " + numWindows);
 			timer.end();
 			long time = timer.getAccumulatedTime();

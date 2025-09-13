@@ -630,6 +630,7 @@ class BasicDataWindow extends TableWindow implements MesquiteListener {
 		ownerModule.hireNamedEmployee(DataWindowAssistantI.class, "#AlterData");
 
 		ownerModule.hireNamedEmployee(DataWindowAssistantI.class, "#AlignSequences");
+		ownerModule.hireNamedEmployee(DataWindowAssistantI.class, "#AlignSequencesCodon");
 		ownerModule.hireNamedEmployee(DataWindowAssistantI.class, "#AddDeleteData");
 		ownerModule.hireNamedEmployee(DataWindowAssistantI.class, "#SearchData");
 		// ownerModule.addMenuSeparator();
@@ -651,7 +652,6 @@ class BasicDataWindow extends TableWindow implements MesquiteListener {
 				DataWindowAssistantI init = (DataWindowAssistantI) obj;
 				if (init instanceof DataWindowAssistantID || init instanceof CategDataEditorInitD)
 					init.setMenuToUse(ownerModule.displayMenu);
-
 				init.setTableAndData(table, data);
 			}
 		}

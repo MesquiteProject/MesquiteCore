@@ -88,6 +88,9 @@ public class GenBankNumber extends TaxonListAssistant {
 		if (datas != null)
 			datas.removeListener(this);
 	}
+	public CharacterData getCharacterData(){
+		return data;
+	}
 
 	/*.................................................................................................................*/
 	public void setTableAndTaxa(MesquiteTable table, Taxa taxa){
@@ -203,7 +206,7 @@ public class GenBankNumber extends TaxonListAssistant {
 	/*.................................................................................................................*/
 	public String getTitle() {
 		if (data != null)
-			return "GenBank # (" + data.getName() + ")";
+			return "GenBank (" + data.getName() + ")";
 			
 		return "GenBank Number";
 	}
@@ -221,6 +224,8 @@ public class GenBankNumber extends TaxonListAssistant {
 	public Color getBackgroundColorOfCell(int it, boolean selected){
 		if (data != null){
 			Associable tInfo = data.getTaxaInfo(false);
+			if (tInfo == null)
+				return null;
 			Object obj = tInfo.getAssociatedObject(genBankColor,  it);  //not saved to file
 			if (obj instanceof Color)
 				return (Color)obj;
@@ -232,6 +237,8 @@ public class GenBankNumber extends TaxonListAssistant {
 	public String getExplanationForRow(int ic){
 		if (data != null){
 			Associable tInfo = data.getTaxaInfo(false);
+			if (tInfo == null)
+				return "";
 			Object obj = tInfo.getAssociatedObject(genBankColor,  ic); 
 			if (obj != null && obj instanceof Color){
 				Color current = (Color)obj;

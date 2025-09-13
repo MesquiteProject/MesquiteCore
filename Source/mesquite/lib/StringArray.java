@@ -357,6 +357,7 @@ public class StringArray implements StringLister, Listable, Nameable {
 		return newD;
 	}
 	/*...........................................................*/
+	//NOTE: this assumes that the incoming matrix is complete, i.e. all d[i].length is the same for all i's
 	public static String[][] deleteColumnsFlaggedOLD(String[][] d, Bits toDelete) {
 		if (d == null)
 			return null;

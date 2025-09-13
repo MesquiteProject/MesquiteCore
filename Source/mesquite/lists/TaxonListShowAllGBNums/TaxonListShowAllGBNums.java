@@ -1,5 +1,5 @@
 /* Mesquite source code.  Copyright 1997 and onward, W. Maddison and D. Maddison. 
-Disclaimer:  The Mesquite source code is lengthy and we are few.  There are no doubt inefficiencies and goofs in this code. The commenting leaves much to be desired. Please approach this source code with the spirit of helping out.Perhaps with your help we can be more than a few, and make Mesquite better.Mesquite is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY.Mesquite's web site is http://mesquiteproject.orgThis source code and its compiled class files are free and modifiable under the terms of GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html) */package mesquite.lists.TaxonListShowAllHasData;/*~~  */import java.util.Vector;
+Disclaimer:  The Mesquite source code is lengthy and we are few.  There are no doubt inefficiencies and goofs in this code. The commenting leaves much to be desired. Please approach this source code with the spirit of helping out.Perhaps with your help we can be more than a few, and make Mesquite better.Mesquite is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY.Mesquite's web site is http://mesquiteproject.orgThis source code and its compiled class files are free and modifiable under the terms of GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html) */package mesquite.lists.TaxonListShowAllGBNums;/*~~  */import java.util.Vector;
 
 import mesquite.lib.CommandChecker;
 import mesquite.lib.CommandRecord;
@@ -13,11 +13,11 @@ import mesquite.lib.taxa.Taxa;
 import mesquite.lib.ui.AlertDialog;
 import mesquite.lists.lib.ListAssistant;
 import mesquite.lists.lib.ListModule;
-import mesquite.lists.lib.TaxaListAssistantI;/* ======================================================================== */public class TaxonListShowAllHasData extends TaxaListAssistantI  {	Taxa taxa;	MesquiteTable table;	public String getName() {		return "Show Columns for All Matrices";	}	public String getExplanation() {		return "Shows the Has Data column for all matrices.";	}	/*.................................................................................................................*/	public int getVersionOfFirstRelease(){		return 304;  	}	/*.................................................................................................................*/	public boolean startJob(String arguments, Object condition, boolean hiredByName){
-		addMenuItem("Show \"Has Data\" Columns for All Matrices", new MesquiteCommand("showAll", this));		return true;	}
+import mesquite.lists.lib.TaxaListAssistantI;/* ======================================================================== */public class TaxonListShowAllGBNums extends TaxaListAssistantI  {	Taxa taxa;	MesquiteTable table;	public String getName() {		return "Show GenBank Num. Columns for All Matrices";	}	public String getExplanation() {		return "Shows the GenBank number column for all matrices.";	}	/*.................................................................................................................*/	public int getVersionOfFirstRelease(){		return 304;  	}	/*.................................................................................................................*/	public boolean startJob(String arguments, Object condition, boolean hiredByName){
+		addMenuItem("Show \"GenBank #\" Columns for All Matrices", new MesquiteCommand("showAll", this));		return true;	}
 	
 	void makeColumn(Puppeteer puppeteer, ListModule listModule, CharacterData data){
-		String commands = "newAssistant #TaxaListHasData; " +
+		String commands = "newAssistant #GenBankNumber; " +
 				"tell It; getMatrixSource #mesquite.charMatrices.CharMatrixCoordIndep.CharMatrixCoordIndep; " +
 				"tell It; setCharacterSource #mesquite.charMatrices.StoredMatrices.StoredMatrices; tell It; setDataSet " + getProject().getCharMatrixReferenceExternal(data) + "; " +
 				"endTell; endTell; endTell;";
@@ -36,7 +36,7 @@ import mesquite.lists.lib.TaxaListAssistantI;/* ==============================
 					datas.addElement(data);
 			}
 			if (datas.size()>10 && !MesquiteThread.isScripting()){
-				boolean yes = AlertDialog.query(containerOfModule(), "All Matrices?", "Do you want to show Has Data columns for all " + datas.size() + " matrices?");
+				boolean yes = AlertDialog.query(containerOfModule(), "All Matrices?", "Do you want to show GenBank Number columns for all " + datas.size() + " matrices?");
 				if (!yes)
 					return null;
 			}			if (getEmployer() instanceof ListModule){
@@ -44,8 +44,8 @@ import mesquite.lists.lib.TaxaListAssistantI;/* ==============================
 				Vector v = listModule.getAssistants();
 				for (int k = 0; k< v.size(); k++){
 					ListAssistant a = (ListAssistant)v.elementAt(k);
-					if (a instanceof mesquite.molec.TaxaListHasData.TaxaListHasData){
-						mesquite.molec.TaxaListHasData.TaxaListHasData tLHD = (mesquite.molec.TaxaListHasData.TaxaListHasData)a;
+					if (a instanceof mesquite.molec.GenBankNumber.GenBankNumber){
+						mesquite.molec.GenBankNumber.GenBankNumber tLHD = (mesquite.molec.GenBankNumber.GenBankNumber)a;
 						CharacterData data = tLHD.getCharacterData();
 						if (datas.indexOf(data)>=0)
 							datas.removeElement(data);

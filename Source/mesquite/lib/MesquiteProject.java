@@ -168,7 +168,7 @@ public class MesquiteProject extends Attachable implements Listable, MesquiteLis
 		ownerModule.addItemToSubmenu(MesquiteTrunk.fileMenu, includeMergeSubmenuSpec,"-", null);
 		mmis = ownerModule.addItemToSubmenu(MesquiteTrunk.fileMenu, includeMergeSubmenuSpec,"Trees", null);
 		mmis.setEnabled(false); //just in case
-		ownerModule.addModuleMenuItemsSeparatelyToSubmenu(MesquiteTrunk.fileMenu, includeMergeSubmenuSpec, new MesquiteCommand("newAssistant", ownerModule), FileAssistantTM.class);
+		ownerModule.addModuleMenuItemsSeparatelyToSubmenu(MesquiteTrunk.fileMenu, includeMergeSubmenuSpec, new MesquiteCommand("newAssistantTM", ownerModule), FileAssistantTM.class);
 		ownerModule.addItemToSubmenu(MesquiteTrunk.fileMenu, includeMergeSubmenuSpec,"-", null);
 		MesquiteCommand eICC =   new MesquiteCommand("explainIncludeChoices", ownerModule);
 		eICC.bypassQueue = true;

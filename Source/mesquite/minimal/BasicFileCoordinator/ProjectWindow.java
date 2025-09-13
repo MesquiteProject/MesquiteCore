@@ -942,8 +942,8 @@ class AddElementPanel extends ElementPanel {
 		c.setDefaultArguments("#mesquite.dmanager.FuseTaxaMatrices.FuseTaxaMatrices");
 		addCommand(false, "fileMergeTM.gif", "Merge Taxa\n& Matrices", "Merge Taxa/Matrices...", c);
 		ElementManager tm = bfc.findElementManager(TreeVector.class);
-		addCommand(false, "fileLinkTrees.gif", "Link\nTrees", "Link Trees...", new MesquiteCommand("linkTreeFile", ((MesquiteModule)tm)));
-		addCommand(false, "fileIncludeTrees.gif", "Include\nTrees", "Include Trees...", new MesquiteCommand("includeTreeFileAskPartial", ((MesquiteModule)tm)));
+		addCommand(false, "fileIncludeTrees.gif", "Include\nTrees", "Include Trees (Specify Tree Dialect)...", new MesquiteCommand("newAssistantTM", "#IncludeTreesSpecifyTreeDialect", bfc));
+		addCommand(false, "fileIncludeTrees.gif", "Include\nTrees", "Include Partial Sample from Tree File...", new MesquiteCommand("newAssistantTM", "#IncludeTreeFilePartial", bfc));
 		addCommand(true, null, "-", "-",  null);
 		addCommand(true, null, "New Linked File...", "New Linked File...",  bfc.getProject().getNewLinkFileCommand());
 	}

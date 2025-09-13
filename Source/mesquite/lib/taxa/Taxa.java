@@ -1116,7 +1116,6 @@ public class Taxa extends FileElement implements NameableWithNotify {
 		if (inhibitEdit>0)
 			return false;
 		inFlux = true;
-
 		if (justAfter >= taxon.length)
 			justAfter = taxon.length - 1;
 		if (justAfter < 0)

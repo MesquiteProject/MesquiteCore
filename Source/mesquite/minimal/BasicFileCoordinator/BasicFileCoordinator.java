@@ -1790,6 +1790,9 @@ public class BasicFileCoordinator extends FileCoordinator implements PackageIntr
 		else if (checker.compare(this.getClass(), "Hires new file assistant module", "[name of module]", commandName, "newAssistant")) {
 			return (FileAssistant)hireNamedEmployee(FileAssistant.class, arguments);
 		}
+		else if (checker.compare(this.getClass(), "Hires new file assistant module", "[name of module]", commandName, "newAssistantTM")) {
+			return (FileAssistantTM)hireNamedEmployee(FileAssistantTM.class, arguments);
+		}
 		else if (checker.compare(this.getClass(), "Explains the Include & Merge menu items", "[]", commandName, "explainIncludeChoices")) {
 			String explanation = "<h3>Including &amp; Merging Other Files</h3>These menu items allow you to bring information — e.g., taxa, matrices and trees — from other files "
 					+ "into your already-open project, so that it can be used alongside the information already in the project. The options are built for different purposes, "

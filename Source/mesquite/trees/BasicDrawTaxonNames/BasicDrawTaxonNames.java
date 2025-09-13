@@ -164,7 +164,7 @@ public class BasicDrawTaxonNames extends DrawNamesTreeDisplay {
 		MesquiteSubmenuSpec namesMenu = addSubmenu(null, "Taxon Names");
 		shadePartition = new MesquiteBoolean(false);
 		addCheckMenuItem(colorMenu, "Taxon Background Color by Group", makeCommand("toggleShadePartition", this), shadePartition);
-		showFootnotes = new MesquiteBoolean(true);
+		showFootnotes = new MesquiteBoolean(false);
 		addCheckMenuItemToSubmenu(textMenu, namesMenu, "Mark Footnotes in Taxon Name", makeCommand("toggleShowFootnotes", this), showFootnotes);
 		showNodeLabels = new MesquiteBoolean(true);
 

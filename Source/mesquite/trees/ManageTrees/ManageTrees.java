@@ -718,6 +718,8 @@ public class ManageTrees extends TreesManager implements ItemListener {
 			}
 			return treeFillerTask;
 		}
+		/* The following were replaced by FileAssistantTM, with include partial and include specify dialect as options*/
+		
 		/*	else if (checker.compare(this.getClass(), "Links file with trees", null, commandName, "linkTreeFile")) { 
 			MesquiteModule fCoord = getFileCoordinator();
 			fCoord.doCommand("linkTreeFile", StringUtil.argumentMarker + "fuseTreeBlocks", checker);
