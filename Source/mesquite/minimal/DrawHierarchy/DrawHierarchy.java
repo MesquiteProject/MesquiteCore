@@ -40,6 +40,7 @@ import mesquite.lib.ui.MesquiteWindow;
 Projects & Files window). */
 
 public class DrawHierarchy extends BrowseHierarchy  {
+	public static boolean suppressNodeRepaints = false; //crude, but then the DrawHierarchy system is crude
 	/*.................................................................................................................*/
 	 public String getName() {
 	return "DrawHierarchy";
@@ -497,7 +498,11 @@ class NodeLabel extends MesquiteLabel implements HNode {
 				setText(node.getName());
 		}
 	}
-	
+	public void repaint(){
+		if (!DrawHierarchy.suppressNodeRepaints){
+			super.repaint();
+		}
+	}
 	public NodeLabel setDaughter(HNode node) {
 		NodeLabel eL = new NodeLabel(MesquiteTrunk.mesquiteTrunk, panel, node, motherNode);
 		if (daughterVector!=null)

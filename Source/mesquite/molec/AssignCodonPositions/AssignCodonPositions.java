@@ -81,7 +81,7 @@ public class AssignCodonPositions extends DNADataAlterer implements AltererMetad
 		CodonPositionsSet modelSet = (CodonPositionsSet) data.getCurrentSpecsSet(CodonPositionsSet.class);
 		if (modelSet == null) {
 			modelSet= new CodonPositionsSet("Codon Positions", data.getNumChars(), data);
-			modelSet.addToFile(data.getFile(), getProject(), findElementManager(CodonPositionsSet.class)); //THIS
+			modelSet.addToFile(data.getFile(), data.getProject(), findElementManager(CodonPositionsSet.class)); //THIS
 			data.setCurrentSpecsSet(modelSet, CodonPositionsSet.class);
 		}
 		int success = assigner.assignCodonPositions((DNAData)data,  modelSet);

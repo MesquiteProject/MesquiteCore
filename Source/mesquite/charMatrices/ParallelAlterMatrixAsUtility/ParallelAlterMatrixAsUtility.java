@@ -21,16 +21,22 @@ import mesquite.lib.Bits;
 import mesquite.lib.CommandChecker;
 import mesquite.lib.CommandRecord;
 import mesquite.lib.CompatibilityTest;
+import mesquite.lib.Debugg;
 import mesquite.lib.IntegerField;
 import mesquite.lib.ListableVector;
+import mesquite.lib.Listened;
+import mesquite.lib.MenuOwner;
 import mesquite.lib.MesquiteFile;
 import mesquite.lib.MesquiteInteger;
+import mesquite.lib.MesquiteLong;
 import mesquite.lib.MesquiteListener;
 import mesquite.lib.MesquiteMessage;
 import mesquite.lib.MesquiteModule;
 import mesquite.lib.MesquiteProject;
 import mesquite.lib.MesquiteThread;
+import mesquite.lib.MesquiteTrunk;
 import mesquite.lib.Notification;
+import mesquite.lib.ProjPanelPanel;
 import mesquite.lib.Puppeteer;
 import mesquite.lib.ResultCodes;
 import mesquite.lib.Snapshot;
@@ -42,8 +48,10 @@ import mesquite.lib.duties.DataAltererParallelizable;
 import mesquite.lib.duties.FileCoordinator;
 import mesquite.lib.table.MesquiteTable;
 import mesquite.lib.ui.ExtensibleDialog;
+import mesquite.lib.ui.MQPanel;
 import mesquite.lib.ui.ProgressIndicator;
 import mesquite.lists.lib.CharMatricesListProcessorUtility;
+import mesquite.minimal.DrawHierarchy.DrawHierarchy;
 
 /* ======================================================================== */
 public class ParallelAlterMatrixAsUtility extends CharMatricesListProcessorUtility {
@@ -63,7 +71,7 @@ public class ParallelAlterMatrixAsUtility extends CharMatricesListProcessorUtili
 	}
 
 	DataAlterer firstAlterTask = null;
-static boolean beaned = false;
+	static boolean beaned = false;
 	/* ................................................................................................................. */
 	public boolean startJob(String arguments, Object condition, boolean hiredByName) {
 		loadPreferences();
@@ -148,6 +156,8 @@ static boolean beaned = false;
 		queryDialog.addLargeOrSmallTextLabel("The calculations will be performed in parallel, on several threads. Choose the number of parallel threads according to your computer's multiprocessing capabilities.");
 		IntegerField integerField = queryDialog.addIntegerField("Number of threads", numThreads, 20, 1, 255);
 		queryDialog.addLargeOrSmallTextLabel("(Note: the first matrix will be processed alone, and then the others in parallel.)");
+		queryDialog.addLargeOrSmallTextLabel("The calculations tend to slow down after they have completed 1000 to 2000 matrices, for reasons mysterious to the Mesquite developers. "
+				+"If you are processing many matrices, you may want to do them 1000 at a time, by selecting the first 1000 rows, running Parallel Alter Matrices. After that is done, select matrices 1001 to 2000, run those, and so on.");
 
 		queryDialog.setDefaultTextComponent(integerField.getTextField());
 		queryDialog.setDefaultComponent(integerField.getTextField());
@@ -193,8 +203,9 @@ static boolean beaned = false;
 	/* ................................................................................................................. */
 	/** Called to operate on the CharacterData blocks. Returns true if taxa altered */
 	public boolean operateOnDatas(ListableVector datas, MesquiteTable table) {
-		
+
 		incrementMenuResetSuppression(numThreads + 1);
+		DrawHierarchy.suppressNodeRepaints = true;
 		CompatibilityTest test = firstAlterTask.getCompatibilityTest();
 		MesquiteProject project = getProject();
 		if (project != null) {
@@ -232,96 +243,208 @@ static boolean beaned = false;
 			unpauseAllPausables(v);
 			if (project != null)
 				project.decrementProjectWindowSuppression();
+
 			decrementMenuResetSuppression(numThreads + 1);
 			return false;
 		}
 
 		firstTime = false;
-
+		ListableVector sectionTimings = new ListableVector();
 		long startParallel = System.currentTimeMillis();
 		long longWait = (startParallel - startTime) * PATIENCE;
 		ProgressIndicator progIndicator = new ProgressIndicator(project, "Altering matrices", "", datas.size(), true);
 		progIndicator.start();
 		progIndicator.setText("Setting up " + numThreads + " threads");
-		// making threads and getting them started
-		int numMatrices = datas.size();
-		AlterThread[] threads = new AlterThread[numThreads];
-		int blockSize = (numMatrices - 1) / numThreads + 1; // first one already done
-		if (blockSize == 0)
-			blockSize = 1;
-		for (int i = 0; i < numThreads; i++) {
-			int firstMatrix = i * blockSize + 1; // shifted over 1 to account for matrix already done
-			int lastMatrix = firstMatrix + blockSize - 1; // shifted over 1 to account for matrix already done
-			if (lastMatrix > numMatrices - 1)
-				lastMatrix = numMatrices - 1;
-			threads[i] = new AlterThread(this, datas, firstMatrix, lastMatrix, test, longWait);
+
+		//Whether to notify within the threads. If not, a cruder notification is thereby given, but this isn't editing by hand
+		notifyAsYouGo = false;
+		//Whether to use a chunked system (see below)
+		boolean chunked = false;
+		//Pause time every 1000 to garbage collect, in case this helps. A good pause might be 5000 (5 seconds);
+		long pause = 0;
+
+		if (!notifyAsYouGo)
+			for (int im = 0; im<datas.size(); im++){
+				CharacterData data = (CharacterData) datas.elementAt(im);
+				data.setNotificationsOnOff(false);
+			}
+		long ListenednotificationsMadeTotal = Listened.notificationsMadeTotal;
+		long MQPanelrepaintRequestsTotal = MQPanel.repaintRequestsTotal;
+		long ProjPanelPanelrefreshRequestsTotal = ProjPanelPanel.refreshRequestsTotal;
+		long MenuOwnerallMenuBarResetsTotal = MenuOwner.allMenuBarResetsTotal;
+		long MesquiteFilefilesOpenTotal = MesquiteFile.filesOpenTotal;
+		long MesquiteProjecttotalCreated = MesquiteProject.totalCreated;
+		long MesquiteProjecttotalDisposed = MesquiteProject.totalDisposed;
+
+		if (MesquiteTrunk.developmentMode){
+			logln("");
+			logln(">>>>>BEFORE>> Element report " + getProject().elementsReport());
+			logln("");
 		}
-		progIndicator.setText("Starting threads");
-		logln("About to start " + numThreads + " threads to alter the matrices");
-		for (int i = 0; i < numThreads; i++)
-			threads[i].start();
 
-		int reportAtMatrix = -1;
+
+		//A system to divide the run into chunks of 500 or 1000 to see if that avoids the slowdown that starts at about 1000 matrices. 
+		//Didn't seem to help much, so disabled by chunked == false, in which case just make the chunk size as big as the total number.
+		int numMatricesInChunk = 1500;
+		int numMatricesTotal = datas.size();
+		if (!chunked ||numMatricesTotal<numMatricesInChunk*1.5) 
+			numMatricesInChunk = numMatricesTotal;
+
+
 		aborted = false;
-		// checking on all of the threads
-		boolean allDone = false;
+		int reportAtMatrix = -1;
 		long lastReportTime = System.currentTimeMillis();
-		while (!allDone && !aborted) {
-			try {
-				Thread.sleep(SLEEPTIME);
-				allDone = true;
-				boolean waiting = false;
-				for (int i = 0; i < numThreads; i++) {
-					if (threads[i] != null && !threads[i].done)
-						allDone = false;
-					waiting = waiting || threads[i].longWait();
-				}
+		long startTimeThisSection  =  System.currentTimeMillis();
+		int sectionStart = 1; //last section recorded in listableVector
+		boolean thisIsFirstChunk = true;
+		int millennium = 0;
+		for (int firstMatrixInChunk = 1; firstMatrixInChunk<numMatricesTotal; firstMatrixInChunk += numMatricesInChunk){
 
-				if (waiting && System.currentTimeMillis() - lastReportTime > REPORTDELAY) {
-					String report = "\n... still waiting on threads (matrix number)";
+			//=================================================
+			// making threads and getting them started
+			AlterThread[] threads = new AlterThread[numThreads];
+			int blockSize = (numMatricesInChunk - 1) / numThreads + 1; // first one already done
+			if (blockSize == 0)
+				blockSize = 1;
+			for (int i = 0; i < numThreads; i++) {
+				int firstMatrix = i * blockSize + firstMatrixInChunk; // shifted over firstMatrixInChunk to account for matrix already done
+				int lastMatrix = firstMatrix + blockSize - 1; // shifted over 1 to account for matrix already done
+				if (lastMatrix > numMatricesTotal - 1)
+					lastMatrix = numMatricesTotal - 1;
+				threads[i] = new AlterThread(this, datas, firstMatrix, lastMatrix, test, longWait);
+			}
+			if (thisIsFirstChunk){
+				progIndicator.setText("Starting threads");
+				logln("About to start " + numThreads + " threads to alter the matrices");
+			}
+			else {
+				progIndicator.setText("Restarting threads after first chunk of " + numMatricesInChunk + " matrices");
+				logln("\nResetting to do next chunk of matrices");
+			}
+			for (int i = 0; i < numThreads; i++)
+				threads[i].start();
+			thisIsFirstChunk = false;
+			boolean allDone = false;
+
+			// checking on all of the threads
+			while (!allDone && !aborted) {
+				try {
+					Thread.sleep(SLEEPTIME);
+					allDone = true;
+					boolean waiting = false;
 					for (int i = 0; i < numThreads; i++) {
-						if (threads[i].longWait()) {
-							report += " " + (i + 1) + " (im: " + (threads[i].im + 1);
-							String sta = threads[i].alterTask.reportStatus();
-							if (sta != null)
-								report += " status: " + sta;
-							report += ")";
+						if (threads[i] != null && !threads[i].done)
+							allDone = false;
+						waiting = waiting || threads[i].longWait();
+					}
+
+					if (waiting && System.currentTimeMillis() - lastReportTime > REPORTDELAY) {
+						String report = "\n... still waiting on threads (matrix number)";
+						for (int i = 0; i < numThreads; i++) {
+							if (threads[i].longWait()) {
+								report += " " + (i + 1) + " (im: " + (threads[i].im + 1);
+								String sta = threads[i].alterTask.reportStatus();
+								if (sta != null)
+									report += " status: " + sta;
+								report += ")";
+							}
+						}
+						int numDone = matricesDone.numBitsOn();
+						double parallelTimePerMatrix = (1.0 * System.currentTimeMillis() - startParallel) / numDone;
+						long timeAtCompletion = System.currentTimeMillis() + (long) (parallelTimePerMatrix * (numMatricesTotal - numDone));
+						report += ".  Matrices completed: " + numDone + " of " + numMatricesTotal + ". Expected completion of all matrices: " + StringUtil.getDateTime(new Date(timeAtCompletion));
+						logln(report);
+						lastReportTime = System.currentTimeMillis();
+					}
+
+					progIndicator.setText("Number of matrices altered " + matricesDone.numBitsOn());
+					progIndicator.setCurrentValue(matricesDone.numBitsOn());
+					if (progIndicator.isAborted())
+						aborted = true;
+					int numDone = matricesDone.numBitsOn();
+
+					if (numDone - sectionStart >=100){  //Recording section timing;
+						MesquiteLong sectTime = new MesquiteLong("to " + numDone, System.currentTimeMillis()-startTimeThisSection);
+						sectionStart = numDone;
+						startTimeThisSection = System.currentTimeMillis();
+						sectionTimings.addElement(sectTime, false);
+					}
+
+					if (pause > 0 && numDone - millennium > 1000){
+						millennium += 1000;
+						System.gc();
+						logln("\n\nTaking a deep breath before continuing...\n");
+						try {
+							Thread.sleep(pause); //take a breather before next chunk! (maybe help with garbage collection?)
+						}
+						catch (Exception e){
 						}
 					}
-					int numDone = matricesDone.numBitsOn();
-					double parallelTimePerMatrix = (1.0 * System.currentTimeMillis() - startParallel) / numDone;
-					long timeAtCompletion = System.currentTimeMillis() + (long) (parallelTimePerMatrix * (numMatrices - numDone));
-					report += ".  Matrices completed: " + numDone + " of " + numMatrices + ". Expected completion of all matrices: " + StringUtil.getDateTime(new Date(timeAtCompletion));
-					logln(report);
-					lastReportTime = System.currentTimeMillis();
-				}
 
-				progIndicator.setText("Number of matrices altered " + matricesDone.numBitsOn());
-				progIndicator.setCurrentValue(matricesDone.numBitsOn());
-				if (progIndicator.isAborted())
-					aborted = true;
-				int numDone = matricesDone.numBitsOn();
-				if ((numMatrices <= 1000 && numDone % 10 == 0) || (numMatrices > 1000 && numDone % (numMatrices / 100) == 0)) { // do every 1% of matrices
-					CommandRecord.tick("Finished altering " + numDone + " of " + numMatrices + " matrices.");
-					if (numDone > reportAtMatrix && (System.currentTimeMillis() - startParallel > 100000)) { // run has been longer than 100 seconds; worth reporting every so often what timing will be
-						reportAtMatrix = numDone;
-						double parallelTimePerMatrix = (1.0 * System.currentTimeMillis() - startParallel) / numDone;
-						long timeAtCompletion = System.currentTimeMillis() + (long) (parallelTimePerMatrix * (numMatrices - numDone));
-						logln("\nFinished altering " + numDone + " of " + numMatrices + " matrices. Expected completion of all matrices: " + StringUtil.getDateTime(new Date(timeAtCompletion)));
+					if ((numMatricesTotal <= 1000 && numDone % 10 == 0) || (numMatricesTotal > 1000 && numDone % (numMatricesTotal / 100) == 0)) { // do every 1% of matrices
+						CommandRecord.tick("Finished altering " + numDone + " of " + numMatricesTotal + " matrices.");
+						if (numDone > reportAtMatrix && (System.currentTimeMillis() - startParallel > 100000)) { // run has been longer than 100 seconds; worth reporting every so often what timing will be
+							reportAtMatrix = numDone;
+							double parallelTimePerMatrix = (1.0 * System.currentTimeMillis() - startParallel) / numDone;
+							long timeAtCompletion = System.currentTimeMillis() + (long) (parallelTimePerMatrix * (numMatricesTotal - numDone));
+							logln("\nFinished altering " + numDone + " of " + numMatricesTotal + " matrices. Expected completion of all matrices: " + StringUtil.getDateTime(new Date(timeAtCompletion)));
+						}
 					}
+
+				} catch (Exception e) {
 				}
 
-			} catch (Exception e) {
 			}
 
-		}
+			for (int i = 0; i < numThreads; i++) {
+				threads[i].shutDown();
+				//threads[i].fileCoordinator.fireEmployee(threads[i].alterTask);
+				//fireEmployee(threads[i].fileCoordinator);
+			}
 
-		for (int i = 0; i < numThreads; i++) {
-			threads[i].fileCoordinator.fireEmployee(threads[i].alterTask);
-			fireEmployee(threads[i].fileCoordinator);
+			if (chunked){
+				try {
+					Thread.sleep(1000); //take a breather before next chunk! (maybe help with garbage collection?)
+				}
+				catch (Exception e){
+				}
+			}
+			//Debugg.println("@@@@@@@@@ of project " + getProject().elementsReport() + " menu resets " + MenuOwner.allMenuBarResetsTotal);
+		}
+		if (MesquiteTrunk.developmentMode){
+			logln("");
+			logln(">>>>>AFTER>> Element report " + getProject().elementsReport());
+			logln(">>>>>CHANGE>>  Listened.notificationsMadeTotal " + -(ListenednotificationsMadeTotal - Listened.notificationsMadeTotal) );
+			logln(">>>>>CHANGE>>  MQPanel.repaintRequestsTotal " + -(MQPanelrepaintRequestsTotal-MQPanel.repaintRequestsTotal));
+			logln(">>>>>CHANGE>>  ProjPanelPanel.refreshRequestsTotal " + -(ProjPanelPanelrefreshRequestsTotal-ProjPanelPanel.refreshRequestsTotal));
+			logln(">>>>>CHANGE>>  MenuOwner.allMenuBarResetsTotal " + -(MenuOwnerallMenuBarResetsTotal-MenuOwner.allMenuBarResetsTotal ));
+			logln(">>>>>CHANGE>>  MesquiteFile.filesOpenTotal " + -(MesquiteFilefilesOpenTotal-MesquiteFile.filesOpenTotal));
+			logln(">>>>>CHANGE>>  MesquiteProject.totalCreated " + -(MesquiteProjecttotalCreated-MesquiteProject.totalCreated ));
+			logln(">>>>>CHANGE>>  MesquiteProject.totalDisposed " + -(MesquiteProjecttotalDisposed-MesquiteProject.totalDisposed));
+			logln("");
+		}
+		DrawHierarchy.suppressNodeRepaints = false;
+
+		if (!notifyAsYouGo){ //threads weren't notifying on completion, so do it all now
+			Notification notification = new Notification(MesquiteListener.DATA_CHANGED, null, null);
+			for (int im = 0; im<datas.size(); im++){
+				CharacterData data = (CharacterData) datas.elementAt(im);
+				data.setNotificationsOnOff(true);
+				if (matricesDone.isBitOn(im))
+					data.notifyListeners(this, notification);
+			}
 		}
 		progIndicator.goAway();
-		logln("Altered: " + (matricesDone.numBitsOn()) + " matrices. (Finished " + StringUtil.getDateTime(new Date(System.currentTimeMillis())) + ")");
+		long finishTime = System.currentTimeMillis();
+		logln("Altered: " + (matricesDone.numBitsOn()) + " matrices. (Finished " + StringUtil.getDateTime(new Date(finishTime)) + ", after " + ((finishTime- startTime)/1000.0) + " seconds)");
+		if (matricesDone.numBitsOn()>500 && ((System.currentTimeMillis()- startTime)/1000.0)>50){
+			logln("Timings, milliseconds: ");
+			for (int k = 0; k<sectionTimings.size(); k++){
+				MesquiteLong sT = (MesquiteLong)sectionTimings.elementAt(k);
+				logln("\t" + sT.getValue() + "\t" + sT.getName());
+			}
+			logln("\t" +  ((finishTime- startTime)/1000.0) + "\tTOTAL seconds");
+		}
 		unpauseAllPausables(v);
 		if (project != null) {
 			project.zeroProjectWindowSuppression();
@@ -336,6 +459,7 @@ static boolean beaned = false;
 	/* ................................................................................................................. */
 
 	boolean aborted;
+	boolean notifyAsYouGo = false;
 
 	public boolean okToInteractWithUser(int howImportant, String messageToUser) {
 		return firstTime;
@@ -351,8 +475,14 @@ static boolean beaned = false;
 		MesquiteModule.incrementMenuResetSuppression();
 		thread.fileCoordinator = (FileCoordinator) hireNamedEmployee(FileCoordinator.class, "#BasicFileCoordinator");
 		MesquiteFile home = thread.fileCoordinator.createBlankProject();
-		if (home != null)
+		if (home != null){
+			MesquiteProject hProj = home.getProject();
+			if (hProj!= null) {
+				hProj.incrementProjectWindowSuppression();
+				hProj.notifyFileElementsAdded = false;
+			}
 			thread.fileCoordinator.setProject(home.getProject());
+		}
 		DataAlterer alterer = (DataAlterer) thread.fileCoordinator.hireNamedEmployee(DataAlterer.class, "#" + getShortClassName(firstAlterTask.getClass()));
 		if (alterer != null) {
 			Puppeteer p = new Puppeteer(thread.fileCoordinator);
@@ -406,7 +536,10 @@ class AlterThread extends MesquiteThread {
 		alterTask = ownerModule.cloneFirstAlterTask(this);
 		this.longWait = longWait;
 	}
-
+	public void shutDown(){
+		fileCoordinator.fireEmployee(alterTask);
+		ownerModule.fireEmployee(fileCoordinator);
+	}
 	String report() {
 		if (done)
 			return "done";
@@ -428,7 +561,7 @@ class AlterThread extends MesquiteThread {
 					AlteredDataParameters alteredDataParameters = new AlteredDataParameters();
 					MesquiteThread.setHintToSuppressProgressIndicatorCurrentThread(true);
 					if (ownerModule.matricesDone.isBitOn(im))
-						MesquiteMessage.printStackTrace("ERROR: doing matrix " + im);
+						MesquiteMessage.printStackTrace("ERROR: Matrix appears to have already been done! " + im);
 					int result = -10;
 					try {
 						result = alterTask.alterData(data, null, null, alteredDataParameters);
@@ -437,10 +570,12 @@ class AlterThread extends MesquiteThread {
 					}
 					MesquiteThread.setHintToSuppressProgressIndicatorCurrentThread(false);
 					if (result == ResultCodes.SUCCEEDED) {
-						Notification notification = new Notification(MesquiteListener.DATA_CHANGED, alteredDataParameters.getParameters(), null);
-						if (alteredDataParameters.getSubcodes() != null)
-							notification.setSubcodes(alteredDataParameters.getSubcodes());
-						data.notifyListeners(this, notification);
+						if (ownerModule.notifyAsYouGo){ 
+							Notification notification = new Notification(MesquiteListener.DATA_CHANGED, alteredDataParameters.getParameters(), null);
+							if (alteredDataParameters.getSubcodes() != null)
+								notification.setSubcodes(alteredDataParameters.getSubcodes());
+							data.notifyListeners(this, notification);
+						}
 						ownerModule.matricesDone.setBit(im);
 					}
 				}

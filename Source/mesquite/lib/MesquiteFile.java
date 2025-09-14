@@ -973,6 +973,8 @@ public class MesquiteFile extends Listened implements HNode, Commandable, Listab
 		return project;
 	}
 	/*-------------------------------------------------------*/
+	public static int filesOpenTotal = 0;
+	/*-------------------------------------------------------*/
 	/** Opens the file for reading.*/
 	public boolean openReading(boolean warn) {
 		remnantString.setLength(0);
@@ -982,6 +984,7 @@ public class MesquiteFile extends Listened implements HNode, Commandable, Listab
 				filePos = 0;
 				currentByte = 0;
 				bytesAvailable = 0;
+				filesOpenTotal++;
 				return true;
 			}
 			catch( FileNotFoundException e ) {
@@ -1004,6 +1007,7 @@ public class MesquiteFile extends Listened implements HNode, Commandable, Listab
 					filePos = 0;
 					currentByte = 0;
 					bytesAvailable = 0;
+					filesOpenTotal++;
 					return true;
 				}
 				catch( IOException e ) {
@@ -1024,6 +1028,7 @@ public class MesquiteFile extends Listened implements HNode, Commandable, Listab
 			}*/
 
 		}
+		closeReading();
 		return false;
 	}
 	/*-------------------------------------------------------*/
@@ -1042,6 +1047,7 @@ public class MesquiteFile extends Listened implements HNode, Commandable, Listab
 			progIndicator = null;
 			if (inStream!=null){
 				inStream.close();
+				filesOpenTotal--;
 			}
 			inStream = null;
 			filePos = 0;
@@ -1113,6 +1119,7 @@ public class MesquiteFile extends Listened implements HNode, Commandable, Listab
 			else
 			 */
 			outStream = new FileOutputStream(new File(tempFileName));  //PrintWriter
+			filesOpenTotal++;
 			return true;
 		}
 		catch( FileNotFoundException e ) {
@@ -1192,6 +1199,7 @@ public class MesquiteFile extends Listened implements HNode, Commandable, Listab
 		if (outStream!=null){
 			try {
 				outStream.close();
+				filesOpenTotal--;
 				if (writingFileName == null)
 					return;
 				File writingFile = new File(writingFileName);
@@ -2170,6 +2178,7 @@ public class MesquiteFile extends Listened implements HNode, Commandable, Listab
 		}
 		return null;
 	}
+	
 	/*.................................................................................................................*/
 	/** Adds the passed FileElement to the file. */
 	public void addFileElement(FileElement element) {
@@ -2754,6 +2763,7 @@ public class MesquiteFile extends Listened implements HNode, Commandable, Listab
 			try {
 				stream = new DataInputStream(new FileInputStream(relativePath));
 				String newS = " ";
+				filesOpenTotal++;
 
 				while (newS != null) {
 					newS =readLine(stream, sBb, remnant);
@@ -2771,6 +2781,7 @@ public class MesquiteFile extends Listened implements HNode, Commandable, Listab
 					}
 				}
 				stream.close();
+				filesOpenTotal--;
 			}
 			catch( FileNotFoundException e ) {
 				if (warn) MesquiteMessage.warnProgrammer("File Busy or Not Found (z5) : " + relativePath);

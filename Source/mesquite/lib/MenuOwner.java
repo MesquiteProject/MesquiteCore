@@ -289,7 +289,7 @@ public abstract class MenuOwner implements Doomable { // EMBEDDED: extends Apple
 			resetWindowsMenuPending = true; // set this so will later know that full reset is needed
 	}
 
-	static int allMenuBarRests = 0;
+	public static long allMenuBarResetsTotal = 0;
 
 	/*............................................................................. */
 	/** This requests that ALL menu bars be recomposed. */
@@ -298,7 +298,7 @@ public abstract class MenuOwner implements Doomable { // EMBEDDED: extends Apple
 			return;
 		resetWindowsMenuPending = false;
 		if (menuSuppression == 0) {
-			allMenuBarRests++;
+			allMenuBarResetsTotal++;
 			MesquiteTimer timer = new MesquiteTimer();
 			if (MesquiteTrunk.debugMode)
 				timer.start();
@@ -319,7 +319,7 @@ public abstract class MenuOwner implements Doomable { // EMBEDDED: extends Apple
 			}
 			MesquiteTrunk.resumeResetCheckMenuItems();
 			if (MesquiteTrunk.debugMode) {
-				MesquiteModule.mesquiteTrunk.logln("\n>>>- All Menus Reset (" + allMenuBarRests
+				MesquiteModule.mesquiteTrunk.logln("\n>>>- All Menus Reset (" + allMenuBarResetsTotal
 						+ " times). This reset took " + timer.timeSinceLastInSeconds() + " seconds -<<< \n"); // temporary;
 				// to
 				// check

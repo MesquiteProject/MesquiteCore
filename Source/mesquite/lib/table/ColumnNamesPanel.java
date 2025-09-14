@@ -23,6 +23,7 @@ import java.awt.event.FocusEvent;
 import java.awt.event.FocusListener;
 import java.awt.event.KeyEvent;
 
+import mesquite.lib.Debugg;
 import mesquite.lib.MesquiteEvent;
 import mesquite.lib.MesquiteFile;
 import mesquite.lib.MesquiteInteger;
@@ -74,6 +75,7 @@ public class ColumnNamesPanel extends EditorPanel implements FocusListener {
 		setCursor(table.getHandCursor());
 		setSize(w, h);
 	}
+
 	public void setTableUnitSize (int w, int h) {
 		this.width=w;
 		this.height=h;

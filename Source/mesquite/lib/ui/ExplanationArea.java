@@ -43,6 +43,7 @@ public class ExplanationArea extends MousePanel implements TextListener, Mesquit
 	public static final int minimumHeightExplanation = 30;
 	public static final int minimumHeightAnnotation = 20;
 	boolean focusSuppressed = false;
+	public static boolean suppressExplanationRepaints = false; 
 	boolean hasFocus = false;
 	int fontIncrement = 0;
 	public static Image plusImage, minusImage, minusOffImage;
@@ -374,6 +375,11 @@ class ExplanationControl extends MousePanel {
 	}
 	public void dispose(){
 		super.dispose();
+	}
+	public void repaint(){
+		if (!ExplanationArea.suppressExplanationRepaints)
+			super.repaint();
+
 	}
 	public void paint(Graphics g){
 		if (MesquiteWindow.checkDoomed(this))

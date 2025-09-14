@@ -435,7 +435,8 @@ public abstract class MesquiteModule extends EmployerEmployee implements Command
 		iQuit(true);
 	}
 
-
+	MesquiteTimer[] timers = new MesquiteTimer[]{new MesquiteTimer(), new MesquiteTimer(), new MesquiteTimer(), new MesquiteTimer(), new MesquiteTimer(), new MesquiteTimer()};
+	
 	public final void iQuit(boolean giveMessage){
 		incrementMenuResetSuppression();
 		MesquiteCommand command = getHiringCommand();

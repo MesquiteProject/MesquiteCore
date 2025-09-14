@@ -396,7 +396,7 @@ public abstract class ExternalSequenceAligner extends MultipleSequenceAligner im
 
 		//rename taxa so program doesn't screw around with names
 		for (int it=0; it<newTaxa.getNumTaxa(); it++)
-			newTaxa.setTaxonName(it, "t" + it);
+			newTaxa.setTaxonName(it, "t" + it, false);
 		logln("Number of taxa to be aligned: " + newTaxa.getNumTaxa());
 		CharMatrixManager matrixManager = data.getMatrixManager();
 		int numNewChars=0;

@@ -31,6 +31,7 @@ public class Listened implements Listenable {
 	private boolean timeNotifications = false;
 	private static boolean checkMemory = MesquiteTrunk.checkMemory;
 	public static long notifications = 0;
+	public static long notificationsMadeTotal = 0;
 	public static ClassVector classes, classesNotified; //for detecting efficiency problems
 	public static Vector allListeners; //for detecting memory leaks
 	static {
@@ -143,6 +144,12 @@ public class Listened implements Listenable {
 		s += "\nclasses listener=====\n" + classesListener.recordsToString();
 		return s;
 	}
+	
+	// to be used rarely, e.g. Parallel Alter Matrices, when re-notification will be done afterward
+	boolean notificationsOn = true;
+	public void setNotificationsOnOff(boolean on){
+		notificationsOn = on;
+	}
 	public void incrementNotifySuppress(){
 		notifySuppress ++;
 	}
@@ -200,7 +207,7 @@ public class Listened implements Listenable {
  	Notifies only those elements of class clss if boolean is true; notifies only those elements not of class
  	clss if boolean is false*/
 	public  void notifyListeners(Object caller, Notification notification, Class clss, boolean classOnly) { 
-		if (MesquiteThread.getListenerSuppressionLevel()>1)
+		if (MesquiteThread.getListenerSuppressionLevel()>1 || !notificationsOn)
 			return;
 		if (listeners!=null) {
 			if (notifySuppress==0){
@@ -231,13 +238,15 @@ public class Listened implements Listenable {
 							if (MesquiteTrunk.debugMode) {
 								timer.timeSinceLast();
 								ls[m].changed(caller, this, notification);
+								notificationsMadeTotal++;
 								long time = timer.timeSinceLast();
 								if (time>20)
 									MesquiteMessage.println("Time: " +  time + " ms. " + "Object: " + this + ".   Listener: " + ls[m]);
 							} else {
 								try {
 									ls[m].changed(caller, this, notification); // >>>>> NOTIFICATION IS HERE <<<<<
-								}
+									notificationsMadeTotal++;
+							}
 								catch (Throwable e){  //added 2. 72 to avoid crash in changed from stopping all other listeners from hearing
 									try {
 										String warning = "Crash when notifying " + ls[m] + " of change in " + this + " {Notification code " + Notification.getCode(notification) + " params " + IntegerArray.toString(Notification.getParameters(notification)) + "} ";
