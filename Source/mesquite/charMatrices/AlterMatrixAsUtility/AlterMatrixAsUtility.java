@@ -112,6 +112,7 @@ public class AlterMatrixAsUtility extends CharMatricesListProcessorUtility {
 		ProgressIndicator progIndicator = new ProgressIndicator(getProject(),"Altering matrices", "", datas.size(), true);
 		progIndicator.start();
 		boolean abort = false;
+		MesquiteThread.setThreadMaxLogLevel(MesquiteMessage.HIGH_PRIORITY);
 		for (int im = 0; im < datas.size() && !abort; im++){
 			CharacterData data = (CharacterData)datas.elementAt(im);
 			if (progIndicator.isAborted())
@@ -141,6 +142,7 @@ public class AlterMatrixAsUtility extends CharMatricesListProcessorUtility {
 				firstTime = false;
 			}
 		}
+		MesquiteThread.releaseThreadMaxLogLevel();
 		progIndicator.goAway();
 		logln("Altered: " + (count) +  " matrices.");
 		unpauseAllPausables(v);

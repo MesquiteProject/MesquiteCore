@@ -158,8 +158,8 @@ public class ParallelAlterMatrixAsUtility extends CharMatricesListProcessorUtili
 		queryDialog.addLargeOrSmallTextLabel("The calculations will be performed in parallel, on several threads. Choose the number of parallel threads according to your computer's multiprocessing capabilities.");
 		IntegerField integerField = queryDialog.addIntegerField("Number of threads", numThreads, 20, 1, 255);
 		queryDialog.addLargeOrSmallTextLabel("(Note: the first matrix will be processed alone, and then the others in parallel.)");
-		queryDialog.addLargeOrSmallTextLabel("The calculations tend to slow down after they have completed 1000 to 2000 matrices, for reasons mysterious to the Mesquite developers. "
-				+"If you are processing many matrices, you may need to alter the first 1000 matrices by selecting those rows, then save the file, then reopening it for the next 1000, and so on. Alternatively, you may need to run it overnight.");
+		queryDialog.addLargeOrSmallTextLabel("The calculations sometimes slow down after they have completed 1000 to 3000 matrices, for reasons mysterious to the Mesquite developers. "
+				+"If you are processing many matrices, and it slows down too much, then you may need to alter the first 1000 matrices by selecting those rows, then save the file, then reopen it for the next 1000, and so on. Alternatively, you may need to run it overnight.");
 
 		queryDialog.setDefaultTextComponent(integerField.getTextField());
 		queryDialog.setDefaultComponent(integerField.getTextField());
