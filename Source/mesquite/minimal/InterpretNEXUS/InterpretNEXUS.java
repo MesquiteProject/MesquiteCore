@@ -625,6 +625,7 @@ public class InterpretNEXUS extends NexusFileInterpreter implements NEXUSInterpr
 		}
 		return true;
 	}
+	boolean pendingLn = false; //
 	/*.................................................................................................................*/
 	private NexusBlock sendBlockToReader(MesquiteProject mp, MesquiteFile mf, FileBlock block, String blockName, int totalLength, int readToNow, StringBuffer blockComments, String fileReadingArguments) {
 		if (blockName == null)
@@ -634,8 +635,15 @@ public class InterpretNEXUS extends NexusFileInterpreter implements NEXUSInterpr
 		MesquiteModule rM = findEmployeeThatCanRead(getFileCoordinator(), block, blockName);
 		ListableVector blocks = getProject().getNexusBlocks();
 		if (rM!=null) {
-			if (!MesquiteFile.suppressReadWriteLogging && !"CHARACTERS".equalsIgnoreCase(blockName)) 
-				logln("Reading block: " + blockName);
+			if (!MesquiteFile.suppressReadWriteLogging){
+				if (!"CHARACTERS".equalsIgnoreCase(blockName)) {
+					if (pendingLn)
+						logln("");
+					pendingLn = false;
+					logln("Reading block: " + blockName);
+				}
+				else pendingLn = true; //done in case many characters blocks, and shown as just .....
+			}
 			long startTimeForBlock = System.currentTimeMillis();
 			NexusBlock nb = rM.readNexusBlock( mf, blockName, block, blockComments, fileReadingArguments);
 			if (MesquiteTrunk.debugMode)

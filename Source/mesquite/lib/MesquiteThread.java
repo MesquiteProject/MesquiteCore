@@ -124,6 +124,18 @@ public class MesquiteThread extends Thread implements CommandRecordHolder {
 	public String toString(){
 		return getClass().getName() + " = " + super.toString();
 	}
+	public String getThreadName(){
+		return toString();
+	}
+	public static String getCurrentThreadName(){
+		Thread t = Thread.currentThread();
+		if (t instanceof MesquiteThread){
+			MesquiteThread mt = ((MesquiteThread)t);
+			return mt.getThreadName();
+		}
+		return t.toString();
+	}
+	
 	public static boolean okToResetUI(){
 		Thread thread = Thread.currentThread();
 		if (!(thread instanceof MesquiteThread))
