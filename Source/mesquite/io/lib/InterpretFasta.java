@@ -764,7 +764,7 @@ public abstract class InterpretFasta extends FileInterpreterI implements ReadFil
 							alert("Sorry, this data matrix can't be exported to this format (some character states aren't represented by a single symbol [char. " + CharacterStates.toExternal(ic) + ", taxon " + Taxon.toExternal(it) + "])");
 							return false;
 						}
-						if (timer.timeCurrentBout()>1000) {
+						if (timer.timeCurrentBout()>2000) {
 							double proportion = 1.0*it*ic/totalCells;
 							if (proportion > lastChunkReported + 0.1){
 								log("" + (int)(100.0*proportion) + "% ");
@@ -784,7 +784,7 @@ public abstract class InterpretFasta extends FileInterpreterI implements ReadFil
 		}
 		if (totalCells > 10000000)
 			logln("");
-		if (timer.timeSinceVeryStartInSeconds()>5)
+		if (timer.timeSinceVeryStartInSeconds()>30)
 			logln("Fasta file written " + timer.timeSinceVeryStartInSeconds());
 		return true;
 	}

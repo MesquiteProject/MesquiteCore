@@ -591,7 +591,7 @@ public class AlignUtil {
 		else {
 			wasSel = false;
 		}
-		MesquiteTrunk.mesquiteTrunk.logln("Alignment for " + (icEnd-icStart+1) + " sites; aligned to " + alignedMatrix.length + " sites.");
+		MesquiteTrunk.mesquiteTrunk.logln("Alignment for " + (icEnd-icStart+1) + " sites; aligned to " + alignedMatrix.length + " sites.", MesquiteMessage.LOW_PRIORITY);
 		problem = util.forceAlignment(data, icStart, icEnd, itStart, itEnd, 0, alignedMatrix, checkForMismatch);
 		if (wasSel) {
 			data.deselectAll();
@@ -602,7 +602,7 @@ public class AlignUtil {
 				data.setSelected(i, true);
 
 		}
-		MesquiteTrunk.mesquiteTrunk.logln("Alignment completed for " + data.getName());
+		MesquiteTrunk.mesquiteTrunk.logln("Alignment completed for " + data.getName(), MesquiteMessage.LOW_PRIORITY);
 		data.removeCharactersThatAreEntirelyGaps(icStart, icEnd, true);  // added 1 June 2016 
 
 		return true;
