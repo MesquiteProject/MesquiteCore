@@ -489,6 +489,7 @@ public class ParallelAlterMatrixAsUtility extends CharMatricesListProcessorUtili
 			if (hProj!= null) {
 				hProj.incrementProjectWindowSuppression();
 				hProj.notifyFileElementsAdded = false;
+				hProj.setNotificationsOnOff(false);
 			}
 			thread.fileCoordinator.setProject(home.getProject());
 		}
