@@ -2118,7 +2118,7 @@ public class ManageCharacters extends CharactersManager {
 				 if (verbose)
 					 logln("Reading CHARACTERS block " + title);
 				 else if (previousNumMatrices != 0 && previousNumMatrices % 100 == 0)
-					 log("" + (previousNumMatrices));
+					 log("" + (previousNumMatrices) + "\n");
 				 else
 					 log(".");
 

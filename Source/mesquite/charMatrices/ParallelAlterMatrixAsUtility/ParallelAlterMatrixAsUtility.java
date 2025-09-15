@@ -448,7 +448,10 @@ public class ParallelAlterMatrixAsUtility extends CharMatricesListProcessorUtili
 			logln("");
 		}
 		DrawHierarchy.suppressNodeRepaints = false;
-
+/*To do: 
+ * -- Report on matrices that didnt' succeed
+ * -- Have stop that nixes the threads
+		*/
 		if (!notifyAsYouGo){ //threads weren't notifying on completion, so do it all now
 			Notification notification = new Notification(MesquiteListener.DATA_CHANGED, null, null);
 			for (int im = 0; im<datas.size(); im++){

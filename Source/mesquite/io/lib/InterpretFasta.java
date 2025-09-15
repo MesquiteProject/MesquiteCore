@@ -772,10 +772,10 @@ public abstract class InterpretFasta extends FileInterpreterI implements ReadFil
 						if (timer.timeCurrentBout()>2000) {
 							double proportion = 1.0*it*ic/totalCells;
 							if (proportion > lastChunkReported + 0.1){
-								log("" + (int)(100.0*proportion) + "% ");
+								log("" + (int)(100.0*proportion) + "% ", MesquiteMessage.LOW_PRIORITY);
 								lastChunkReported = proportion;
 							}
-							else log(".");
+							else log(".", MesquiteMessage.LOW_PRIORITY);
 							timer.end();
 							timer.start();
 						}
