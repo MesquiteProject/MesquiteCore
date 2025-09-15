@@ -533,8 +533,11 @@ public abstract class InterpretFasta extends FileInterpreterI implements ReadFil
 				data = (CategoricalData)getProject().chooseData(containerOfModule(), null, taxa, CategoricalState.class, message,  true,"Fuse with Selected Matrix", "Add as New Matrix");
 				//		data = (CategoricalData)getProject().chooseData(containerOfModule(), null, taxa, CategoricalState.class, "Select matrix with which to fuse the matrix from the file \"" + file.getName() + "  being read.   If you choose cancel, a new matrix will be created instead.",  true);
 			}
+			boolean dataWasNew = false;
 			if (data == null){
 				data =(CategoricalData)createData(charTask,taxa);
+				data.setNotificationsOnOff(false);
+				dataWasNew = true;
 				data.addToFile(file, getProject(), null);
 			}
 
@@ -543,6 +546,8 @@ public abstract class InterpretFasta extends FileInterpreterI implements ReadFil
 				numTaxa = taxa.getNumTaxa();
 
 			readFileCore(parser, file, data,  taxa, numTaxa, progIndicator, arguments, !fuse, file.getName());	
+			if (dataWasNew)
+				data.setNotificationsOnOff(true);
 
 		}
 		decrementMenuResetSuppression();

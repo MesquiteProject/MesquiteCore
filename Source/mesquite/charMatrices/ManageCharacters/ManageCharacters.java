@@ -2079,9 +2079,9 @@ public class ManageCharacters extends CharactersManager {
 		 else
 			 title = getProject().getCharacterMatrices().getUniqueName("Matrix in file \"" + file.getName() + "\"");
 		 boolean fuse = parser.hasFileReadingArgument(fileReadingArguments, "fuseTaxaCharBlocks");
-
-		 boolean verbose =  (getProject().getNumberCharMatrices(file)<10);
-		 if (getProject().getNumberCharMatrices(file)== 10)
+		int previousNumMatrices = getProject().getNumberCharMatrices(file);
+		 boolean verbose =  (previousNumMatrices<20);
+		 if (previousNumMatrices== 20)
 			 logln("Reading more CHARACTERS blocks (matrices) ");
 		 boolean taxaLinkFound = false;
 		 boolean newTaxaFlag = false;
@@ -2117,6 +2117,8 @@ public class ManageCharacters extends CharactersManager {
 				 title = parser.getTokenNumber(2);
 				 if (verbose)
 					 logln("Reading CHARACTERS block " + title);
+				 else if (previousNumMatrices != 0 && previousNumMatrices % 100 == 0)
+					 log("" + (previousNumMatrices));
 				 else
 					 log(".");
 
