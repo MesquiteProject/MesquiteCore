@@ -239,6 +239,9 @@ public class Listened implements Listenable {
 								timer.timeSinceLast();
 								ls[m].changed(caller, this, notification);
 								notificationsMadeTotal++;
+								if (MesquiteTrunk.developmentMode && (notificationsMadeTotal+1)% 100000 == 0 && MesquiteTrunk.developmentMode)
+									Debugg.println(Long.toString(notificationsMadeTotal) +  " notifications (" + getClass() + ")");
+
 								long time = timer.timeSinceLast();
 								if (time>20)
 									MesquiteMessage.println("Time: " +  time + " ms. " + "Object: " + this + ".   Listener: " + ls[m]);
@@ -246,7 +249,9 @@ public class Listened implements Listenable {
 								try {
 									ls[m].changed(caller, this, notification); // >>>>> NOTIFICATION IS HERE <<<<<
 									notificationsMadeTotal++;
-							}
+									if (MesquiteTrunk.developmentMode && (notificationsMadeTotal+1)% 100000 == 0 && MesquiteTrunk.developmentMode)
+										Debugg.printStackTrace(Long.toString(notificationsMadeTotal) +  " notifications (" + getClass() + ")");
+						}
 								catch (Throwable e){  //added 2. 72 to avoid crash in changed from stopping all other listeners from hearing
 									try {
 										String warning = "Crash when notifying " + ls[m] + " of change in " + this + " {Notification code " + Notification.getCode(notification) + " params " + IntegerArray.toString(Notification.getParameters(notification)) + "} ";

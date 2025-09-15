@@ -107,6 +107,11 @@ class HierarchyPanel extends HPanel {
 		return;
 		super.validate();
 	}
+	public void repaint(){
+		if (!MesquiteWindow.itemIsShown(this))
+		return;
+		super.repaint();
+	}
 }
 
 /* ======================================================================== */
@@ -133,6 +138,11 @@ class FieldPanel extends MQPanel {
 		setBackground(Color.yellow);
 		pane.repaint();
 		repaint();
+	}
+	public void repaint(){
+		if (!MesquiteWindow.itemIsShown(this))
+		return;
+		super.repaint();
 	}
 	public void validateTree(){
 		if (!MesquiteWindow.itemIsShown(this))

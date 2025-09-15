@@ -95,7 +95,7 @@ public abstract class CharMatrixManager extends MesquiteModule   {
 			return;
 		if (taxa == null)
 			taxa = data.getTaxa();
-
+		boolean taxaAdded = false;
 		String taxonName;
 		parser.setLineEndingsDark(false);
 		String d = parser.getNextToken(); //eating MATRIX
@@ -104,6 +104,7 @@ public abstract class CharMatrixManager extends MesquiteModule   {
 			int numTaxa = taxa.getNumTaxa();
 			extraTaxon = numTaxa;
 			taxa.addTaxa(numTaxa-1, 1, false);
+			taxaAdded = true;
 			data.addTaxa(numTaxa-1, 1);
 			for (int it = extraTaxon; it<taxa.getNumTaxa(); it++)
 				taxa.setColor(it, ColorDistribution.hexFromColor(ColorDistribution.paleGoldenRod)); //paleGoldenRod
@@ -277,7 +278,8 @@ public abstract class CharMatrixManager extends MesquiteModule   {
 					}
 				taxa.notifyListeners(this, new Notification(MesquiteListener.PARTS_DELETED));
 			}
-			taxa.notifyListeners(this, new Notification(MesquiteListener.PARTS_ADDED));
+			if (taxaAdded)
+				taxa.notifyListeners(this, new Notification(MesquiteListener.PARTS_ADDED));
 			parser.setLineEndingsDark(false);
 		} //^^^^^^^^  INTERLEAVED #################################################################
 		
@@ -322,7 +324,7 @@ public abstract class CharMatrixManager extends MesquiteModule   {
 						int numTaxa = taxa.getNumTaxa();
 						taxa.addTaxa(numTaxa-1, 1, false);
 						data.addTaxa(numTaxa-1, 1);
-
+						taxaAdded = true;
 						whichTaxon = numTaxa;
 						Taxon taxon = taxa.getTaxon(whichTaxon);
 						taxon.setName(taxonName);
@@ -369,6 +371,7 @@ public abstract class CharMatrixManager extends MesquiteModule   {
 								taxa.setColor(extraTaxon, ColorDistribution.hexFromColor(Color.cyan));
 								int numTaxa = taxa.getNumTaxa();
 								taxa.addTaxa(numTaxa-1, 1, false);  //this is for future
+								taxaAdded = true;
 								data.addTaxa(numTaxa-1, 1);
 								taxa.setTaxonName(numTaxa, deleteID, false); 
 							}
@@ -431,7 +434,8 @@ public abstract class CharMatrixManager extends MesquiteModule   {
 				taxa.notifyListeners(this, new Notification(MesquiteListener.PARTS_DELETED));
 			}
 
-			taxa.notifyListeners(this, new Notification(MesquiteListener.PARTS_ADDED));
+			if (taxaAdded)
+				taxa.notifyListeners(this, new Notification(MesquiteListener.PARTS_ADDED));
 		}  //^^^^^^^^ NOT INTERLEAVED #################################################################
 
 

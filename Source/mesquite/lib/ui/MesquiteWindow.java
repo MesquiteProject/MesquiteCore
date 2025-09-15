@@ -727,12 +727,16 @@ public abstract class MesquiteWindow implements Listable, Commandable, OwnedByMo
 			return true;
 		if (!c.isVisible())
 			return false;
-		
+		if (c instanceof OuterContentArea){
+			MesquiteWindow w = ((OuterContentArea)c).ownerWindow;
+			if (!w.isFrontMostInLocation())
+				return false;
+		}
 		Container cont = c.getParent();
 		if (cont!= null)
 			return itemIsShown(cont);
 		return true;
-		
+
 	}
 	/*.................................................................................................................*/
 	/** Returns the MesquiteWindow containing the component.  Returns null if not contained in a MesquiteWindow*/
@@ -1522,7 +1526,7 @@ public abstract class MesquiteWindow implements Listable, Commandable, OwnedByMo
 	public void setCurrentTool(MesquiteTool tool){
 		if (tool!=null && !tool.getEnabled())
 			return;
-		
+
 		if (currentTool !=null) {
 			currentTool.setInUse(false);
 			previousTool = currentTool;
@@ -1572,7 +1576,7 @@ public abstract class MesquiteWindow implements Listable, Commandable, OwnedByMo
 			if (firstTool != null)
 				setCurrentTool(firstTool);
 			else
-			setToPreviousTool();
+				setToPreviousTool();
 		}
 	}
 	/*.................................................................................................................*/
@@ -1613,8 +1617,8 @@ public abstract class MesquiteWindow implements Listable, Commandable, OwnedByMo
 	/*.................................................................................................................*/
 	/** Sets the visibility of the explanation area */
 	public void setShowExplanation(boolean vis) {
-	//	if (!MesquiteThread.isScripting()) //if scripting, listen only to direct height setting
-			setShowExplanation(vis, ExplanationArea.minimumHeightExplanation);
+		//	if (!MesquiteThread.isScripting()) //if scripting, listen only to direct height setting
+		setShowExplanation(vis, ExplanationArea.minimumHeightExplanation);
 	}
 	/*.................................................................................................................*/
 	/** Gets the height of the explanation area */
@@ -1659,8 +1663,8 @@ public abstract class MesquiteWindow implements Listable, Commandable, OwnedByMo
 	/*.................................................................................................................*/
 	/** Sets the visibility of the Annotation area */
 	public void setShowAnnotation(boolean vis) {
-	//	if (!MesquiteThread.isScripting())
-			setShowAnnotation(vis, ExplanationArea.minimumHeightAnnotation);
+		//	if (!MesquiteThread.isScripting())
+		setShowAnnotation(vis, ExplanationArea.minimumHeightAnnotation);
 	}
 	/*.................................................................................................................*/
 	/** Gets the height of the Annotation area */
@@ -2209,7 +2213,7 @@ public abstract class MesquiteWindow implements Listable, Commandable, OwnedByMo
 	public boolean isVisible(){
 		return parentFrame != null && parentFrame.isVisible() && parentFrame.windowPresent(this);  
 	}
-	
+
 	public boolean isFrontWindow(){
 		if (parentFrame == null)
 			return false;
@@ -2404,22 +2408,22 @@ public abstract class MesquiteWindow implements Listable, Commandable, OwnedByMo
 	//This saves the menus of current up until a difference with target, then transfers target menus over
 	void mergeMenus(MenuBar current, MenuBar target){
 		try{
-		int startOfDifference = sameUntil(current, target);
-		
-		if (startOfDifference == current.getMenuCount() && startOfDifference == target.getMenuCount())
-			return;
-		for (int it= current.getMenuCount()-1; it>=startOfDifference; it--){
+			int startOfDifference = sameUntil(current, target);
+
+			if (startOfDifference == current.getMenuCount() && startOfDifference == target.getMenuCount())
+				return;
+			for (int it= current.getMenuCount()-1; it>=startOfDifference; it--){
 				Menu m = current.getMenu(it);
 				disposeMenuComponent(m);
 				current.remove(it);
-		}
-		Menu[] toTransfer = new Menu[target.getMenuCount()-startOfDifference+1];
-		int k = 0;
-		for (int it = startOfDifference; it<target.getMenuCount(); it++)
-			toTransfer[k++] = target.getMenu(it);
+			}
+			Menu[] toTransfer = new Menu[target.getMenuCount()-startOfDifference+1];
+			int k = 0;
+			for (int it = startOfDifference; it<target.getMenuCount(); it++)
+				toTransfer[k++] = target.getMenu(it);
 
-		for (int it = 0; it<toTransfer.length; it++)
-			current.add(toTransfer[it]);
+			for (int it = 0; it<toTransfer.length; it++)
+				current.add(toTransfer[it]);
 		}
 		catch (NullPointerException e){
 		}
@@ -2457,7 +2461,7 @@ public abstract class MesquiteWindow implements Listable, Commandable, OwnedByMo
 				if (MesquiteTrunk.developmentMode)
 					MesquiteMessage.printStackTrace("Menu bar needs resetting! " + getTitle());
 				return;
-		}
+			}
 		}
 		mergeMenus(menuBar, tempMenuBar);
 
@@ -2640,7 +2644,7 @@ public abstract class MesquiteWindow implements Listable, Commandable, OwnedByMo
 
 		return temp;
 	}
-	
+
 	String reportHeights(){
 		String s = "window " + getTitle() + " HEIGHTS: contentsHeight " + getContentsHeight();
 		s += " getBounds().height " + getBounds().height;
@@ -3098,12 +3102,12 @@ public abstract class MesquiteWindow implements Listable, Commandable, OwnedByMo
 			}
 		}
 		else if (checker.compare(MesquiteWindow.class, "Fits the window", "[]", commandName, "fitWindow")) {
-				Rectangle effectiveScreenSize = getEffectiveScreenSize();
-				int top = (int)effectiveScreenSize.getY();
-				int height = (int)effectiveScreenSize.getHeight();
-				int left = (int)effectiveScreenSize.getX();
-				int width = (int)effectiveScreenSize.getWidth();
-				parentFrame.setBounds(left+8, top+8, width-16, height-16);
+			Rectangle effectiveScreenSize = getEffectiveScreenSize();
+			int top = (int)effectiveScreenSize.getY();
+			int height = (int)effectiveScreenSize.getHeight();
+			int left = (int)effectiveScreenSize.getX();
+			int width = (int)effectiveScreenSize.getWidth();
+			parentFrame.setBounds(left+8, top+8, width-16, height-16);
 
 		}
 		else if (checker.compare(MesquiteWindow.class, "Sets the font of the window", "[name of font]", commandName, "setFont")) {
@@ -3118,7 +3122,7 @@ public abstract class MesquiteWindow implements Listable, Commandable, OwnedByMo
 		}
 		else if (checker.compare(MesquiteWindow.class, "Sets the font size of the window", "[font size]", commandName, "setFontSize")) {
 			int fontSize = MesquiteInteger.fromString(arguments);
-			
+
 			if (!setWindowFontSize(fontSize))
 				return null;
 		}

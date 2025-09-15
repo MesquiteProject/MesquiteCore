@@ -2080,7 +2080,9 @@ public class ManageCharacters extends CharactersManager {
 			 title = getProject().getCharacterMatrices().getUniqueName("Matrix in file \"" + file.getName() + "\"");
 		 boolean fuse = parser.hasFileReadingArgument(fileReadingArguments, "fuseTaxaCharBlocks");
 
-
+		 boolean verbose =  (getProject().getNumberCharMatrices(file)<10);
+		 if (getProject().getNumberCharMatrices(file)== 10)
+			 logln("Reading more CHARACTERS blocks (matrices) ");
 		 boolean taxaLinkFound = false;
 		 boolean newTaxaFlag = false;
 
@@ -2107,13 +2109,16 @@ public class ManageCharacters extends CharactersManager {
 						 return null;
 					 }
 				 }
-				 log("   " + MesquiteInteger.toString(numChars) + " characters");
+				 if (verbose) log("   " + MesquiteInteger.toString(numChars) + " characters");
 				 //numChars = MesquiteInteger.fromString(parser.getTokenNumber(4));
 			 }
 			 else if (commandName.equalsIgnoreCase("TITLE")) {
 				 parser.setString(commandParser.getNextCommand()); 
 				 title = parser.getTokenNumber(2);
-				 logln("Reading CHARACTERS block " + title);
+				 if (verbose)
+					 logln("Reading CHARACTERS block " + title);
+				 else
+					 log(".");
 
 			 }
 			 else if (commandName.equalsIgnoreCase("LINK")) {
@@ -2144,7 +2149,7 @@ public class ManageCharacters extends CharactersManager {
 					 return null;
 				 }
 
-				 logln(" for taxa block " + taxa.getName());
+				 if(verbose) logln(" for taxa block " + taxa.getName());
 				 data = processFormat(file, taxa, commandParser.getNextCommand(), numChars, title, fileReadingArguments);
 				 if (data==null) {
 					 alert("Sorry, the CHARACTERS block could not be read, possibly because it is of an unrecognized format.  You may need to activate or install other modules that would allow you to read the data block");
