@@ -1551,6 +1551,7 @@ public abstract class MesquiteModule extends EmployerEmployee implements Command
 		log(s, 0);
 	}
 	/*.................................................................................................................*/
+	/*.................................................................................................................*/
 	/** Places string in log AND in System.out.println.*/
 	public void log(String s, int level) {
 		int maxLevel = MesquiteThread.getThreadMaxLogLevel();

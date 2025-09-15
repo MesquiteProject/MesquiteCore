@@ -563,7 +563,7 @@ class AlterThread extends MesquiteThread {
 
 	public void run() {
 		if (alterTask != null) {
-			setThreadMaxLogLevel(0);
+			setThreadMaxLogLevel(MesquiteMessage.HIGH_PRIORITY);
 			for (im = firstMatrix; im <= lastMatrix && !ownerModule.aborted; im++) {
 				lastTimeChanged = System.currentTimeMillis() / 1000 * 1000; // truncating it to the second
 				CharacterData data = (CharacterData) datas.elementAt(im);

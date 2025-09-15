@@ -399,7 +399,7 @@ public abstract class ExternalSequenceAligner extends MultipleSequenceAligner im
 		//rename taxa so program doesn't screw around with names
 		for (int it=0; it<newTaxa.getNumTaxa(); it++)
 			newTaxa.setTaxonName(it, "t" + it, false);
-		logln("Number of taxa to be aligned: " + newTaxa.getNumTaxa(), 1);
+		logln("Number of taxa to be aligned: " + newTaxa.getNumTaxa(), MesquiteMessage.LOW_PRIORITY);
 		CharMatrixManager matrixManager = data.getMatrixManager();
 		int numNewChars=0;
 		int firstChar = -1;
@@ -557,11 +557,11 @@ public abstract class ExternalSequenceAligner extends MultipleSequenceAligner im
 
 
 		if (codonAlign) {
-			logln("Conducting codon alignment by translating to amino acids, aligning those, and then forcing nucleotides to match that alignment", 1);
-			logln("Exporting amino acid file for " + getProgramName(), 1);
+			logln("Conducting codon alignment by translating to amino acids, aligning those, and then forcing nucleotides to match that alignment", MesquiteMessage.LOW_PRIORITY);
+			logln("Exporting amino acid file for " + getProgramName(), MesquiteMessage.LOW_PRIORITY);
 		}
 		else
-			logln("Exporting file for " + getProgramName(), 1);
+			logln("Exporting file for " + getProgramName(), MesquiteMessage.LOW_PRIORITY);
 		int numTaxaToAlign=data.getNumTaxa();
 
 
@@ -626,9 +626,9 @@ public abstract class ExternalSequenceAligner extends MultipleSequenceAligner im
 		if (scriptBased)
 			MesquiteFile.putFileContents(scriptPath, shellScript.toString(), false);
 
-		logln("\nRequesting the operating system to run " + getProgramName(), 1);
-		logln(" Location of  " + getProgramName()+ ": " + getProgramPath(), 1);
-		logln(" Arguments given in running alignment program:\r" + argumentsForLogging.toString(), 1); 
+		logln("\nRequesting the operating system to run " + getProgramName(), MesquiteMessage.LOW_PRIORITY);
+		logln(" Location of  " + getProgramName()+ ": " + getProgramPath(), MesquiteMessage.LOW_PRIORITY);
+		logln(" Arguments given in running alignment program:\r" + argumentsForLogging.toString(), MesquiteMessage.LOW_PRIORITY); 
 		/*			logln(" Blah blah blah blah"); 
 			logln(" Blah blah blah blah blah"); 
 			logln(" Blah blah blah blah blah blah"); 
@@ -693,8 +693,8 @@ public abstract class ExternalSequenceAligner extends MultipleSequenceAligner im
 		}
 
 		if (success){
-			logln("Alignment completed by external program in " + timer.timeSinceLastInSeconds() + " seconds", 1);
-			logln("Processing results...", 1);
+			logln("Alignment completed by external program in " + timer.timeSinceLastInSeconds() + " seconds", MesquiteMessage.LOW_PRIORITY);
+			logln("Processing results...", MesquiteMessage.LOW_PRIORITY);
 
 			FileCoordinator coord = getFileCoordinator();
 			MesquiteFile tempDataFile = null;
@@ -718,7 +718,7 @@ public abstract class ExternalSequenceAligner extends MultipleSequenceAligner im
 			Taxa originalTaxa =  data.getTaxa();
 
 			if (alignedData!=null) {
-				logln("Acquired aligned data; now processing alignment.", 1);
+				logln("Acquired aligned data; now processing alignment.", MesquiteMessage.LOW_PRIORITY);
 				int numChars = alignedData.getNumChars();
 				//sorting to get taxon names in correct order
 				int[] keys = new int[alignedData.getNumTaxa()];
