@@ -585,7 +585,10 @@ public class MesquiteFile extends Listened implements HNode, Commandable, Listab
 		}
 		catch(InterruptedException e){}
 		boolean dirty = false;
+		long t = System.currentTimeMillis();
 		try {
+			//Debugg.println("@
+			MesquiteTimer[] timers = new MesquiteTimer[]{new MesquiteTimer(), new MesquiteTimer(), new MesquiteTimer(), new MesquiteTimer(), new MesquiteTimer(), new MesquiteTimer(), new MesquiteTimer()};
 			if (fileElements!=null){
 				project.incrementProjectWindowSuppression();
 				int numElements = fileElements.size();
@@ -593,9 +596,13 @@ public class MesquiteFile extends Listened implements HNode, Commandable, Listab
 				int numDisposed=0;
 				int numToDispose = calcNumToDispose();
 				boolean didOne;
+				t = System.currentTimeMillis();
+				
 				while (numToDispose>0 /*&& lastNumToDispose != numToDispose*/) {
 					didOne=false;
+					timers[0].start();
 					numToDispose = calcNumToDispose();
+					timers[0].end();
 					if (numToDispose>0){
 						Enumeration eDd = fileElements.elements();
 						while (eDd.hasMoreElements()) {
@@ -603,18 +610,23 @@ public class MesquiteFile extends Listened implements HNode, Commandable, Listab
 							elem.projectClosing = projectClosing;
 							if (projectClosing)
 								elem.incrementNotifySuppress();
+							timers[1].start();
 							elem.dispose();
+							timers[1].end();
 							if (!elem.isDoomed())
 								MesquiteMessage.warnProgrammer("oops, deleted element not marked as doomed");
 							numDisposed++;
+							timers[2].start();
 							project.removeFileElement(elem);
-							numToDispose--;
+							timers[2].end();
+						numToDispose--;
 							didOne = true;
 						}
 						if (!didOne)
 							MesquiteMessage.warnProgrammer("oops, cycle none disposed");
 					}
 				}
+				t = System.currentTimeMillis();
 				if (numElements!= numDisposed && fileElements.size()>0) {
 					MesquiteMessage.warnProgrammer("Number elements disposed (" + numDisposed + ") not same as number reference (" + numElements + ") in file " + getName());
 					Enumeration eDe = fileElements.elements();
@@ -624,22 +636,28 @@ public class MesquiteFile extends Listened implements HNode, Commandable, Listab
 							MesquiteMessage.warnProgrammer("    Not disposed: " + elem.getName() + " of class " + elem.getClass().getName());
 					}
 				}
+				t = System.currentTimeMillis();
 				fileElements.removeAllElements(false);
 				fileElements.dispose();
 				fileElements = null;
 				project.decrementProjectWindowSuppression();
+				t = System.currentTimeMillis();
 			}
-		}
+		
+	}
 		catch (NullPointerException e){
+
 		}
 		
 		if (project != null)
 			project.removeFile(this);
+		t = System.currentTimeMillis();
 		closed = true;
 		project = null;
 		MesquiteTrunk.mesquiteTrunk.resetAllMenuBars();
 		totalDisposed++;
 		dispose();
+		t = System.currentTimeMillis();
 		return true;
 	}
 

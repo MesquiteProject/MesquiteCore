@@ -480,12 +480,12 @@ public class MesquiteProject extends Attachable implements Listable, MesquiteLis
 	/** Disposes of the components of the project. */
 	public void dispose(){  //TODO: should all the dispose methods be renamed to something  else???
 		isDoomed = true;
-
-
+		long t = System.currentTimeMillis();
 		for (int i=0; i< files.size(); i++) {
 			((MesquiteFile)files.elementAt(i)).projectClosing = true;
 			((MesquiteFile)files.elementAt(i)).close();
 		}
+		t = System.currentTimeMillis();
 		windowToActivate = null;
 		activeWindowOfProject = null;
 
@@ -496,6 +496,7 @@ public class MesquiteProject extends Attachable implements Listable, MesquiteLis
 		treeVectors.dispose(true);
 		otherElements.dispose(true);
 		nexusBlocks.dispose(true);
+		t = System.currentTimeMillis();
 		files = null;
 		taxas = null;
 		datas = null;

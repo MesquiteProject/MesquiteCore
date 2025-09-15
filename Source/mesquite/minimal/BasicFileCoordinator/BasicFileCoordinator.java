@@ -189,8 +189,10 @@ public class BasicFileCoordinator extends FileCoordinator implements PackageIntr
 	public void endJob() {
 		doomed = true;
 		incrementMenuResetSuppression();
+		incrementEmployeeBrowserRefreshSuppression(MesquiteProject.class);
 		disposeMenuSpecifications();
 		MesquiteProject p=getProject();
+		
 		if (p!=null) {	
 			p.isDoomed = true;
 			int count = 0;
@@ -211,7 +213,8 @@ public class BasicFileCoordinator extends FileCoordinator implements PackageIntr
 			doomEmployees(this);
 			p.dispose();
 			MesquiteTrunk.mesquiteTrunk.removeProject(p);
-		}
+	}
+		decrementEmployeeBrowserRefreshSuppression(MesquiteProject.class);
 		decrementMenuResetSuppression();
 		setProject(null);
 		super.endJob();
@@ -1131,18 +1134,14 @@ public class BasicFileCoordinator extends FileCoordinator implements PackageIntr
 					iQuit();
 				}
 				else {
-					Debugg.println("@ close requested ");
 					boolean close = fileCloseRequested();
-					Debugg.println("@ close requested response");
 					if (!close)  
 						return false;
 					if (!getProject().isDirty() || getProject().getIgnoreDirtWhenCloseRequested()) {
 						waitWriting(null);
 						logln("Closing " + getProject().getName());
 						getProject().isDoomed = true;
-						Debugg.println("@ iQuit start ");
 						iQuit();
-						Debugg.println("@ iQuit end ");
 					}
 					else {
 						ListableVector files = getProject().getFiles();
@@ -1174,9 +1173,7 @@ public class BasicFileCoordinator extends FileCoordinator implements PackageIntr
 						}
 						logln("Closing " + getProject().getName());
 						long bfQ = System.currentTimeMillis();
-						Debugg.println("@ iQuit3 start ");
 					iQuit();
-					Debugg.println("@ iQuit3 end " + (System.currentTimeMillis()-bfQ));
 				}
 				}
 			}
@@ -1186,9 +1183,7 @@ public class BasicFileCoordinator extends FileCoordinator implements PackageIntr
 					fi.close();
 				}
 				else if (fi.isLocal()){
-					Debugg.println("@ close requested2 ");
 					fileCloseRequested();
-					Debugg.println("@ close requested2 response");
 				String message = "Do you want to save changes to \"" + fi.getName() + "\" before closing?";
 					int q = AlertDialog.query(containerOfModule(), "Save changes?",  message, "Save", "Cancel", "Don't Save");
 					if (q==0) 

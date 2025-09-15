@@ -22,6 +22,7 @@ import mesquite.lib.CommandChecker;
 import mesquite.lib.CommandRecord;
 import mesquite.lib.CompatibilityTest;
 import mesquite.lib.Debugg;
+import mesquite.lib.FileElement;
 import mesquite.lib.IntegerField;
 import mesquite.lib.ListableVector;
 import mesquite.lib.Listened;
@@ -33,6 +34,7 @@ import mesquite.lib.MesquiteListener;
 import mesquite.lib.MesquiteMessage;
 import mesquite.lib.MesquiteModule;
 import mesquite.lib.MesquiteProject;
+import mesquite.lib.NexusBlock;
 import mesquite.lib.MesquiteThread;
 import mesquite.lib.MesquiteTrunk;
 import mesquite.lib.Notification;
@@ -157,7 +159,7 @@ public class ParallelAlterMatrixAsUtility extends CharMatricesListProcessorUtili
 		IntegerField integerField = queryDialog.addIntegerField("Number of threads", numThreads, 20, 1, 255);
 		queryDialog.addLargeOrSmallTextLabel("(Note: the first matrix will be processed alone, and then the others in parallel.)");
 		queryDialog.addLargeOrSmallTextLabel("The calculations tend to slow down after they have completed 1000 to 2000 matrices, for reasons mysterious to the Mesquite developers. "
-				+"If you are processing many matrices, you may want to do them 1000 at a time, by selecting the first 1000 rows, running Parallel Alter Matrices. After that is done, select matrices 1001 to 2000, run those, and so on.");
+				+"If you are processing many matrices, you may need to alter the first 1000 matrices by selecting those rows, then save the file, then reopening it for the next 1000, and so on. Alternatively, you may need to run it overnight.");
 
 		queryDialog.setDefaultTextComponent(integerField.getTextField());
 		queryDialog.setDefaultComponent(integerField.getTextField());
@@ -275,6 +277,10 @@ public class ParallelAlterMatrixAsUtility extends CharMatricesListProcessorUtili
 		long MesquiteFilefilesOpenTotal = MesquiteFile.filesOpenTotal;
 		long MesquiteProjecttotalCreated = MesquiteProject.totalCreated;
 		long MesquiteProjecttotalDisposed = MesquiteProject.totalDisposed;
+		long FileElementtotalDisposed = FileElement.totalDisposed;
+		long FileElementtotalTrueFileElementCreated = FileElement.totalTrueFileElementCreated;
+		long NexusBlocktotalCreated = NexusBlock.totalCreated;
+		long NexusBlocktotalDisposed = NexusBlock.totalDisposed;
 
 		if (MesquiteTrunk.developmentMode){
 			logln("");
@@ -409,7 +415,6 @@ public class ParallelAlterMatrixAsUtility extends CharMatricesListProcessorUtili
 				catch (Exception e){
 				}
 			}
-			//Debugg.println("@@@@@@@@@ of project " + getProject().elementsReport() + " menu resets " + MenuOwner.allMenuBarResetsTotal);
 		}
 		if (MesquiteTrunk.developmentMode){
 			logln("");
@@ -421,6 +426,10 @@ public class ParallelAlterMatrixAsUtility extends CharMatricesListProcessorUtili
 			logln(">>>>>CHANGE>>  MesquiteFile.filesOpenTotal " + -(MesquiteFilefilesOpenTotal-MesquiteFile.filesOpenTotal));
 			logln(">>>>>CHANGE>>  MesquiteProject.totalCreated " + -(MesquiteProjecttotalCreated-MesquiteProject.totalCreated ));
 			logln(">>>>>CHANGE>>  MesquiteProject.totalDisposed " + -(MesquiteProjecttotalDisposed-MesquiteProject.totalDisposed));
+			logln(">>>>>CHANGE>>  NexusBlock.totalCreated " + -(NexusBlocktotalCreated-NexusBlock.totalCreated));
+			logln(">>>>>CHANGE>>  NexusBlock.totalDisposed " + -(NexusBlocktotalDisposed-NexusBlock.totalDisposed));
+			logln(">>>>>CHANGE>>  FileElement.totalTrueFileElementCreated " + -(FileElementtotalTrueFileElementCreated-FileElement.totalTrueFileElementCreated));
+			logln(">>>>>CHANGE>>  FileElement.totalDisposed " + -(FileElementtotalDisposed-FileElement.totalDisposed));
 			logln("");
 		}
 		DrawHierarchy.suppressNodeRepaints = false;
@@ -437,11 +446,11 @@ public class ParallelAlterMatrixAsUtility extends CharMatricesListProcessorUtili
 		progIndicator.goAway();
 		long finishTime = System.currentTimeMillis();
 		logln("Altered: " + (matricesDone.numBitsOn()) + " matrices. (Finished " + StringUtil.getDateTime(new Date(finishTime)) + ", after " + ((finishTime- startTime)/1000.0) + " seconds)");
-		if (matricesDone.numBitsOn()>500 && ((System.currentTimeMillis()- startTime)/1000.0)>50){
+		if (matricesDone.numBitsOn()>100 && ((System.currentTimeMillis()- startTime)/1000.0)>20){
 			logln("Timings, milliseconds: ");
 			for (int k = 0; k<sectionTimings.size(); k++){
 				MesquiteLong sT = (MesquiteLong)sectionTimings.elementAt(k);
-				logln("\t" + sT.getValue() + "\t" + sT.getName());
+				logln("\t" + (sT.getValue()/1000.0) + "\t" + sT.getName());
 			}
 			logln("\t" +  ((finishTime- startTime)/1000.0) + "\tTOTAL seconds");
 		}
@@ -554,6 +563,7 @@ class AlterThread extends MesquiteThread {
 
 	public void run() {
 		if (alterTask != null) {
+			setThreadMaxLogLevel(0);
 			for (im = firstMatrix; im <= lastMatrix && !ownerModule.aborted; im++) {
 				lastTimeChanged = System.currentTimeMillis() / 1000 * 1000; // truncating it to the second
 				CharacterData data = (CharacterData) datas.elementAt(im);
@@ -580,6 +590,7 @@ class AlterThread extends MesquiteThread {
 					}
 				}
 			}
+			releaseThreadMaxLogLevel();
 		}
 		done = true;
 	}

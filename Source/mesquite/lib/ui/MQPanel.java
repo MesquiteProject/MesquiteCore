@@ -33,7 +33,6 @@ public class MQPanel extends Panel implements MQComponent {
 	public void repaint(){
 		super.repaint();
 		repaintRequestsTotal++;
-		//System.err.println("@ MQP " + this.getClass());
 	}
 	//###########################################################
 	/*################################################################

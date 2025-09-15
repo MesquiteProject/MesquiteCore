@@ -97,6 +97,16 @@ class HierarchyPanel extends HPanel {
 	public void showTypes(boolean s){
 		ePane.setShowTypes(s);
 	}
+	public void validateTree(){
+		if (!MesquiteWindow.itemIsShown(this))
+		return;
+		super.validateTree();
+	}
+	public void validate(){
+		if (!MesquiteWindow.itemIsShown(this))
+		return;
+		super.validate();
+	}
 }
 
 /* ======================================================================== */
@@ -123,6 +133,16 @@ class FieldPanel extends MQPanel {
 		setBackground(Color.yellow);
 		pane.repaint();
 		repaint();
+	}
+	public void validateTree(){
+		if (!MesquiteWindow.itemIsShown(this))
+		return;
+		super.validateTree();
+	}
+	public void validate(){
+		if (!MesquiteWindow.itemIsShown(this))
+		return;
+		super.validate();
 	}
 	public void setTitle(String title) {
 		this.title = title;

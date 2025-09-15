@@ -342,7 +342,7 @@ public abstract class MesquiteModule extends EmployerEmployee implements Command
 	public void endJob() {
 		if (menuItemsSpecs != null) {
 			try {
-			menuItemsSpecs.dispose(true);
+				menuItemsSpecs.dispose(true);
 			} catch (Exception e) {
 				System.err.println("exception in endJob");
 			}
@@ -435,8 +435,8 @@ public abstract class MesquiteModule extends EmployerEmployee implements Command
 		iQuit(true);
 	}
 
-	MesquiteTimer[] timers = new MesquiteTimer[]{new MesquiteTimer(), new MesquiteTimer(), new MesquiteTimer(), new MesquiteTimer(), new MesquiteTimer(), new MesquiteTimer()};
-	
+	//protected MesquiteTimer[] timers = new MesquiteTimer[]{new MesquiteTimer(), new MesquiteTimer(), new MesquiteTimer(), new MesquiteTimer(), new MesquiteTimer(), new MesquiteTimer(), new MesquiteTimer(), new MesquiteTimer(), new MesquiteTimer(), new MesquiteTimer(), new MesquiteTimer(), new MesquiteTimer(), new MesquiteTimer()};
+
 	public final void iQuit(boolean giveMessage){
 		incrementMenuResetSuppression();
 		MesquiteCommand command = getHiringCommand();
@@ -461,7 +461,6 @@ public abstract class MesquiteModule extends EmployerEmployee implements Command
 			}
 			System.out.println("Development mode; attempting formal exit as a stress test.");
 		}
-
 
 		dispose();
 		resetAllWindowsMenus();
@@ -506,7 +505,6 @@ public abstract class MesquiteModule extends EmployerEmployee implements Command
 					if (!employerDoomed) localRefEmployer.decrementEmployeeBrowserRefreshSuppression(MesquiteModule.class);
 					return;
 				}
-
 
 				MesquiteModuleInfo prevC = null;
 				while ((c = MesquiteTrunk.mesquiteModulesInfoVector.findNextModule(getHiredAs(), c)) != null) {  // if wasn't successful, find first that works.
@@ -1435,7 +1433,7 @@ public abstract class MesquiteModule extends EmployerEmployee implements Command
 	}
 	/*.................................................................................................................*/
 
-	
+
 	/** posts a Bean to the bean log on the MesquiteServer*/
 	public void postBean(String notes, boolean notifyUser) {
 		if (!MesquiteTrunk.reportUse){
@@ -1550,6 +1548,14 @@ public abstract class MesquiteModule extends EmployerEmployee implements Command
 	/*.................................................................................................................*/
 	/** Places string in log AND in System.out.println.*/
 	public void log(String s) {
+		log(s, 0);
+	}
+	/*.................................................................................................................*/
+	/** Places string in log AND in System.out.println.*/
+	public void log(String s, int level) {
+		int maxLevel = MesquiteThread.getThreadMaxLogLevel();
+		if (level > maxLevel)
+			return;
 		logNoEcho(s);
 		if (useSysOut())
 			System.out.print(s);
@@ -1573,11 +1579,19 @@ public abstract class MesquiteModule extends EmployerEmployee implements Command
 	}
 	/*.................................................................................................................*/
 	/** Places string and newline character in log AND in System.out.println.*/
-	public void logln(String s) {
+	public void logln(String s, int level) {
+		int maxLevel = MesquiteThread.getThreadMaxLogLevel();
+		if (level > maxLevel)
+			return;
 		loglnNoEcho(s);
 		MesquiteThread.loglnToThreadLogger(s);
 		if (useSysOut())
 			System.out.println(s);
+	}
+	/*.................................................................................................................*/
+	/** Places string and newline character in log AND in System.out.println.*/
+	public void logln(String s) {
+		logln(s, 0);
 	}
 	/*.................................................................................................................*/
 	/** Places string in log.*/
