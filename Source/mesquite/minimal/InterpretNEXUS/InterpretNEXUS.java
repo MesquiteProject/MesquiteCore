@@ -333,7 +333,6 @@ public class InterpretNEXUS extends NexusFileInterpreter implements NEXUSInterpr
 			if (mt instanceof MesquiteThread)
 				((MesquiteThread)mt).setProgressIndicator(progIndicator);
 		}
-		Debugg.println("@ Number of notifications BEFORE " + Listened.notificationsMadeTotal);
 		incrementNEXUSBlockSortSuppression();
 		if (!parser.hasAnyFileReadingArguments(arguments) && !mNF.blockForRecentRereading) //needs to have not file reading arguments to go in list for reopening
 			mNF.okForRecentRereading = true;
@@ -464,7 +463,6 @@ public class InterpretNEXUS extends NexusFileInterpreter implements NEXUSInterpr
 			mNF.foreignElements = null;
 		}
 		decrementNEXUSBlockSortSuppression();
-		Debugg.println("@ Number of notifications AFTER " + Listened.notificationsMadeTotal);
 		sortAllBlocks();
 		
 		if (mProj.windowToActivate !=null) {

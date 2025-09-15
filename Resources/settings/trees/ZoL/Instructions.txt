@@ -1,0 +1,25 @@
+Instructions to play ZoL, and also to build your own ZoL adventure game
+
+============================
+To play ZoL
+
+First start Mesquite v. 4.02 or later. Make sure that the log window can be used to give text commands by checking the menu item File>Defaults>Use Log Window for Commands.
+
+To begin playing ZoL, type ZoL in the log window, and hit return.
+
+
+============================
+
+To prepare your own tree
+
+ZoL uses the trees stored in tree.phy in Mesquite_Folder/settings/tree/ZoL/  If there are multiple trees in that file, then it will treat each one in succession as new levels in the game.
+
+To make the tree.phy file, you can make a file in Mesquite that has the tree of interest, and then choose File>Export. If the tree you want to export is the one in a tree window, then choose Export Tree in Tree Window. If the tree(s) you want to export are in a tree block in the file, then choose Simple Newick/Phylip Treefile as the exporter. You can make trees and store them into tree blocks by using the Tree>Store Tree menu items. 
+
+If the tree has no synapomorphies indicated, the game will be about navigating from taxon to taxon. If the tree has synapomorphies indicated, then the game will also include the requirement to pick up a synapomorphy as you go by a branch.
+
+To add synapomorphies to a tree in Mesquite, first indicate you want to add synapomorphies to the tree. To do this, touch on the golden "i" button at the lower left of the tree window. This will bring up the Branch/Node Properties window. Choose the menu item List>Add Property to Tree, New Property. Say it is a String of text, and name it "synapomorphies".
+
+Now that you have added the property "synapomorphies", you can add synapomorphies at particular branches by right-clicking on the branch with the arrow tool. The drop down menu will have a synapomorphies item. Select it, and in the dialog box (starting at the top) list synapomorphies. After you've done it, remember to Store the tree and export the file to tree.phy.
+
+To you use a new tree.phy file, you'll need to re-start Mesquite.

@@ -158,8 +158,8 @@ public class ParallelAlterMatrixAsUtility extends CharMatricesListProcessorUtili
 		queryDialog.addLargeOrSmallTextLabel("The calculations will be performed in parallel, on several threads. Choose the number of parallel threads according to your computer's multiprocessing capabilities.");
 		IntegerField integerField = queryDialog.addIntegerField("Number of threads", numThreads, 20, 1, 255);
 		queryDialog.addLargeOrSmallTextLabel("(Note: the first matrix will be processed alone, and then the others in parallel.)");
-		queryDialog.addLargeOrSmallTextLabel("The calculations sometimes slow down after they have completed 1000 to 3000 matrices, for reasons mysterious to the Mesquite developers. "
-				+"If you are processing many matrices, and it slows down too much, then you may need to alter the first 1000 matrices by selecting those rows, then save the file, then reopen it for the next 1000, and so on. Alternatively, you may need to run it overnight.");
+//		queryDialog.addLargeOrSmallTextLabel("The calculations sometimes slow down after they have completed 1000 to 3000 matrices, for reasons mysterious to the Mesquite developers. "
+//				+"If you are processing many matrices, and it slows down too much, then you may need to alter the first 1000 matrices by selecting those rows, then save the file, then reopen it for the next 1000, and so on. Alternatively, you may need to run it overnight.");
 
 		queryDialog.setDefaultTextComponent(integerField.getTextField());
 		queryDialog.setDefaultComponent(integerField.getTextField());
@@ -199,7 +199,7 @@ public class ParallelAlterMatrixAsUtility extends CharMatricesListProcessorUtili
 	/* ................................................................................................................. */
 	static int PATIENCE = 3; // How much longer than first matrix is subsequent matrix considered stalled
 	static int SLEEPTIME = 50; // How much sleep between each check of threads
-	static long REPORTDELAY = 10000; // If there is a stalled calculation (determined by PATIENCE), how often to report (in milliseconds)
+	static long REPORTDELAY = 60000; // If there is a stalled calculation (determined by PATIENCE), how often to report (in milliseconds)
 	int[] matricesDone;
 	int numMatricesDone(){
 		if (matricesDone == null)
@@ -210,7 +210,7 @@ public class ParallelAlterMatrixAsUtility extends CharMatricesListProcessorUtili
 				count++;
 		return count;
 	}
-	
+
 	AlterThread[] threads;
 	/* ................................................................................................................. */
 	/** Called to operate on the CharacterData blocks. Returns true if taxa altered */
@@ -292,11 +292,6 @@ public class ParallelAlterMatrixAsUtility extends CharMatricesListProcessorUtili
 		long NexusBlocktotalCreated = NexusBlock.totalCreated;
 		long NexusBlocktotalDisposed = NexusBlock.totalDisposed;
 
-		if (MesquiteTrunk.developmentMode){
-			logln("");
-			logln(">>>>>BEFORE>> Element report " + getProject().elementsReport());
-			logln("");
-		}
 
 
 		//A system to divide the run into chunks of 500 or 1000 to see if that avoids the slowdown that starts at about 1000 matrices. 
@@ -359,24 +354,28 @@ public class ParallelAlterMatrixAsUtility extends CharMatricesListProcessorUtili
 						waiting = waiting || threads[i].longWait();
 					}
 
-					if (waiting && System.currentTimeMillis() - lastReportTime > REPORTDELAY) {
-						String report = "\n... still waiting on threads (matrix number)";
-						for (int i = 0; i < numThreads; i++) {
-							if (threads[i].longWait()) {
-								report += " Thread " + (i ) + " (matrix #: " + (threads[i].im + 1) + ", " + datas.elementAt(threads[i].im).getName();
-								String sta = threads[i].alterTask.reportStatus();
-								if (sta != null)
-									report += " status: " + sta;
-								report += ")";
-							}
-						}
+					if (System.currentTimeMillis() - lastReportTime > REPORTDELAY) {
 						int numDone = numMatricesDone();
 						double parallelTimePerMatrix = (1.0 * System.currentTimeMillis() - startParallel) / numDone;
 						long timeAtCompletion = System.currentTimeMillis() + (long) (parallelTimePerMatrix * (numMatricesTotal - numDone));
-						report += ".  Matrices completed: " + numDone + " of " + numMatricesTotal + ". Expected completion of all matrices: " + StringUtil.getDateTime(new Date(timeAtCompletion));
-						logln(report);
+						String report = "\nMatrices completed: " + numDone + " of " + numMatricesTotal + ". Expected completion of all matrices: " + StringUtil.getDateTime(new Date(timeAtCompletion));
 						lastReportTime = System.currentTimeMillis();
-					}
+						if (waiting && MesquiteTrunk.developmentMode){
+							report += "\n";
+							for (int i = 0; i < numThreads; i++) {
+								if (threads[i].longWait()) {
+									CharacterData data = (CharacterData)datas.elementAt(threads[i].im);
+									report += "...Still waiting on Thread #" + (i ) + " (matrix # " + (threads[i].im + 1) + ", name: " + data.getName() + ", with " + data.getNumChars() + " characters.";
+									String sta = threads[i].alterTask.reportStatus();
+									if (sta != null)
+										report += " Status: " + sta;
+									report += ")";
+								}
+							}
+						}
+						logln(report);
+						logln("");
+				}
 
 					progIndicator.setText("Number of matrices altered " + numMatricesDone());
 					progIndicator.setCurrentValue(numMatricesDone());
@@ -431,7 +430,7 @@ public class ParallelAlterMatrixAsUtility extends CharMatricesListProcessorUtili
 				}
 			}
 		}
-		if (MesquiteTrunk.developmentMode){
+		if (false && MesquiteTrunk.developmentMode){
 			logln("");
 			logln(">>>>>AFTER>> Element report " + getProject().elementsReport());
 			logln(">>>>>CHANGE>>  Listened.notificationsMadeTotal " + -(ListenednotificationsMadeTotal - Listened.notificationsMadeTotal) );
@@ -448,10 +447,10 @@ public class ParallelAlterMatrixAsUtility extends CharMatricesListProcessorUtili
 			logln("");
 		}
 		DrawHierarchy.suppressNodeRepaints = false;
-/*To do: 
- * -- Report on matrices that didnt' succeed
- * -- Have stop that nixes the threads
-		*/
+		/*To do: 
+		 * -- Report on matrices that didnt' succeed
+		 * -- Have stop that nixes the threads
+		 */
 		if (!notifyAsYouGo){ //threads weren't notifying on completion, so do it all now
 			Notification notification = new Notification(MesquiteListener.DATA_CHANGED, null, null);
 			for (int im = 0; im<datas.size(); im++){
@@ -653,7 +652,7 @@ class AlterThread extends MesquiteThread {
 			ownerModule.logln("~~~ " + getThreadName() + ", has completed its assigned tasks. ~~~");
 			int imOthers = -1;
 			while ((imOthers = ownerModule.giveMeAMatrixToDo(whichThreadAmI))>=0){
-				ownerModule.logln(">>>>> Thread #" + whichThreadAmI + " working to help with matrix " + (imOthers+1));
+				ownerModule.logln("~~> Thread #" + whichThreadAmI + " working to help with matrix " + (imOthers+1));
 				lastTimeChanged = System.currentTimeMillis() / 1000 * 1000; // truncating it to the second
 				alterData(imOthers);
 			}

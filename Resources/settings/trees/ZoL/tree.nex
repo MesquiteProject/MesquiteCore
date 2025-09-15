@@ -1,11 +1,11 @@
 #NEXUS
-[written Sun Aug 10 18:40:34 PDT 2025 by Mesquite  version 4.01+ (build 1097) at Tabuina.local/127.0.0.1]
+[written Mon Sep 15 12:31:14 PDT 2025 by Mesquite  version 4.01+ (build 1099) at mac.lan/192.168.87.58]
 
 BEGIN TAXA;
 	TITLE Taxa;
-	DIMENSIONS NTAX=25;
+	DIMENSIONS NTAX=28;
 	TAXLABELS
-		Bacterium Archaean Kelp Paramecium Amoeba Green_Alga Flowering_Plant Conifer Fern Moss Mushroom Jellyfish Spider Beetle Grasshopper Springtail Isopod Scorpion Roundworm Snail Salmon Frog Human Lizard Sea_Urchin 
+		Bacterium Archaean 'Kelp (Ochrophyta)' 'Paramecium (Ciliophora)' 'Amoeba (Amoebozoa)' 'Green Alga (Chlorophyta)' 'Magniolia (Magnoliales)' 'Pine (Conifer)' 'Fern (Polypodiophyta)' 'Moss (Bryophyta)' 'Mushroom (Basidiomycota)' 'Jellyfish (Cnidaria)' 'Spider (Araneae)' 'Beetle (Coleoptera)' 'Grasshopper (Orthoptera)' 'Springtail (Collembola)' 'Wood Louse (Isopoda)' 'Scorpion (Scorpiones)' 'Roundworm (Nematoda)' 'Snail (Mollusca)' 'Salmon (Actinopterygii)' 'Frog (Lissamphibia)' 'Human (Mammalia)' 'Lizard (Squamata)' 'Sea Urchin (Echinodermata)' 'Ginkgo (Ginkgophyta)' 'Baker''s Yeast (Ascomycota)' 'Rose (Eudicot)' 
 	;
 
 END;
@@ -18,31 +18,34 @@ BEGIN TREES;
 	TRANSLATE
 [0] 		n0 Bacterium,
 [1] 		n1 Archaean,
-[2] 		n2 Kelp,
-[3] 		n3 Paramecium,
-[4] 		n4 Amoeba,
-[5] 		n5 Green_Alga,
-[6] 		n6 Flowering_Plant,
-[7] 		n7 Conifer,
-[8] 		n8 Fern,
-[9] 		n9 Moss,
-[10] 		n10 Mushroom,
-[11] 		n11 Jellyfish,
-[12] 		n12 Spider,
-[13] 		n13 Beetle,
-[14] 		n14 Grasshopper,
-[15] 		n15 Springtail,
-[16] 		n16 Isopod,
-[17] 		n17 Scorpion,
-[18] 		n18 Roundworm,
-[19] 		n19 Snail,
-[20] 		n20 Salmon,
-[21] 		n21 Frog,
-[22] 		n22 Human,
-[23] 		n23 Lizard,
-[24] 		n24 Sea_Urchin;
-	TREE 'Imported tree 1+' = (n0,(n1,((n5,(n9,(n8,(n7,n6)))),(n2,n3),(n4,(n10,(n11,(((((n12,n17),(n16,(n15,(n14,n13)))),n18),n19),(n24,(((n22,n23),n21),n20)))))))));
-	TREE With_synapomorphies = (n0,(n1,((n5,(n9,(n8,(n7,n6)[&synapomorphies = {Seeds} ])[&synapomorphies = {Xylem_&_phloem} ]))[&synapomorphies = {Green_Chloroplast} ],(n2,n3),(n4,(n10,(n11,(((((n12,n17)[&synapomorphies = {Chelicerae} ],(n16,(n15,(n14,n13)[&synapomorphies = {'Wings (insect)'} ])[&synapomorphies = {Six_legs} ])[&synapomorphies = {'Left-right mandibles'} ])[&synapomorphies = {Jointed_exoskeleton} ],n18)[&synapomorphies = {Moulting_exoskeleton} ],n19)[&synapomorphies = {Spiral_cleavage} ],(n24,(((n22,n23)[&synapomorphies = {Amnion} ],n21)[&synapomorphies = {Four_legs} ],n20)[&synapomorphies = {Backbone} ])[&synapomorphies = {Secondary_mouth} ])[&synapomorphies = {'With head (bilaterally symm.)'} ])[&synapomorphies = {Nerves} ])))[&synapomorphies = {Cell_nucleus} ]));
+[2] 		n2 'Kelp (Ochrophyta)',
+[3] 		n3 'Paramecium (Ciliophora)',
+[4] 		n4 'Amoeba (Amoebozoa)',
+[5] 		n5 'Green Alga (Chlorophyta)',
+[6] 		n6 'Magniolia (Magnoliales)',
+[7] 		n7 'Pine (Conifer)',
+[8] 		n8 'Fern (Polypodiophyta)',
+[9] 		n9 'Moss (Bryophyta)',
+[10] 		n10 'Mushroom (Basidiomycota)',
+[11] 		n11 'Jellyfish (Cnidaria)',
+[12] 		n12 'Spider (Araneae)',
+[13] 		n13 'Beetle (Coleoptera)',
+[14] 		n14 'Grasshopper (Orthoptera)',
+[15] 		n15 'Springtail (Collembola)',
+[16] 		n16 'Wood Louse (Isopoda)',
+[17] 		n17 'Scorpion (Scorpiones)',
+[18] 		n18 'Roundworm (Nematoda)',
+[19] 		n19 'Snail (Mollusca)',
+[20] 		n20 'Salmon (Actinopterygii)',
+[21] 		n21 'Frog (Lissamphibia)',
+[22] 		n22 'Human (Mammalia)',
+[23] 		n23 'Lizard (Squamata)',
+[24] 		n24 'Sea Urchin (Echinodermata)',
+[25] 		n25 'Ginkgo (Ginkgophyta)',
+[26] 		n26 'Baker''s Yeast (Ascomycota)',
+[27] 		n27 'Rose (Eudicot)';
+	TREE 'Imported tree 1+' = (n0,(n1,((n5,(n9,(n8,((n7,n25),(n27,n6))))),(n2,n3),(n4,((n10,n26),(n11,(((((n12,n17),(n16,(n15,(n14,n13)))),n18),n19),(n24,(((n22,n23),n21),n20)))))))));
+	TREE 'With synapomorphies+' = (n0,(n1,((n5,(n9,(n8,((n7,n25),(n27,n6)[&synapomorphies = {Flower} ])[&synapomorphies = {Seeds} ])[&synapomorphies = {Xylem_&_phloem} ]))[&synapomorphies = {Green_Chloroplast} ],(n2,n3),(n4,((n10,n26),(n11,(((((n12,n17)[&synapomorphies = {Chelicerae} ],(n16,(n15,(n14,n13)[&synapomorphies = {'Wings (insect)'} ])[&synapomorphies = {Six_legs} ])[&synapomorphies = {'Left-right mandibles'} ])[&synapomorphies = {Jointed_exoskeleton} ],n18)[&synapomorphies = {Moulting_exoskeleton} ],n19)[&synapomorphies = {Spiral_cleavage} ],(n24,(((n22,n23)[&synapomorphies = {Amnion} ],n21)[&synapomorphies = {Four_legs} ],n20)[&synapomorphies = {Backbone} ])[&synapomorphies = {Secondary_mouth} ])[&synapomorphies = {'With head (bilaterally symm.)'} ])[&synapomorphies = {Nerves} ])))[&synapomorphies = {Cell_nucleus} ]));
 
 END;
 
@@ -51,12 +54,12 @@ Begin MESQUITE;
 		MESQUITESCRIPTVERSION 2;
 		TITLE AUTO;
 		tell ProjectCoordinator;
-		timeSaved 1754876434916;
+		timeSaved 1757964674651;
 		getEmployee #mesquite.minimal.ManageTaxa.ManageTaxa;
 		tell It;
 			setID 0 7527422914350845924;
 			tell It;
-				setDefaultOrder  0 22 23 24 1 2 3 18 19 20 4 5 6 7 10 11 12 13 14 15 9 16 8 17 21;
+				setDefaultOrder  0 22 23 24 1 2 3 18 19 20 4 5 6 7 10 11 12 13 14 15 9 16 8 17 21 25 26 27;
 				attachments <null>;
 			endTell;
 		endTell;
@@ -68,8 +71,8 @@ Begin MESQUITE;
 			setAnnotationSize 0;
 			setFontIncAnnot 0;
 			setFontIncExp 0;
-			setSize 1393 734;
-			setLocation 0 34;
+			setSize 1835 916;
+			setLocation 164 125;
 			setFont SanSerif;
 			setFontSize 10;
 			getToolPalette;
@@ -139,13 +142,13 @@ Begin MESQUITE;
 					setAnnotationSize 20;
 					setFontIncAnnot 0;
 					setFontIncExp 0;
-					setSize 760 662;
-					setLocation 0 34;
+					setSize 1202 844;
+					setLocation 164 125;
 					setFont SanSerif;
 					setFontSize 10;
 					getToolPalette;
 					tell It;
-						setTool mesquite.lists.TaxonList.TaxonListWindow.ibeam;
+						setTool mesquite.lists.TaxonList.TaxonListWindow.arrow;
 					endTell;
 					reviewColumnWidths;
 				endTell;
@@ -180,13 +183,13 @@ Begin MESQUITE;
 					setAnnotationSize 20;
 					setFontIncAnnot 0;
 					setFontIncExp 0;
-					setSize 760 662;
-					setLocation 0 34;
+					setSize 1202 844;
+					setLocation 164 125;
 					setFont SanSerif;
 					setFontSize 10;
 					getToolPalette;
 					tell It;
-						setTool mesquite.trees.ColorBranches.ColorToolExtra.ColorBranches;
+						setTool mesquite.trees.BasicTreeWindowMaker.BasicTreeWindow.arrow;
 					endTell;
 					setActive;
 					getTreeDrawCoordinator #mesquite.trees.BasicTreeDrawCoordinator.BasicTreeDrawCoordinator;
@@ -284,7 +287,7 @@ Begin MESQUITE;
 							setAnnotationSize 20;
 							setFontIncAnnot 0;
 							setFontIncExp 0;
-							setLocation 0 34;
+							setLocation 164 125;
 							setFont SanSerif;
 							setFontSize 10;
 							getToolPalette;
