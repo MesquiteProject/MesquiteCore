@@ -56,6 +56,9 @@ public abstract class ExternalSequenceAligner extends MultipleSequenceAligner im
 	protected AppInformationFile appInfoFile;
 	boolean hasApp=false;
 	
+	
+	boolean verbose = false;
+
 
 	/*.................................................................................................................*/
 	public boolean startJob(String arguments, Object condition, boolean hiredByName) {
@@ -397,7 +400,8 @@ public abstract class ExternalSequenceAligner extends MultipleSequenceAligner im
 		//rename taxa so program doesn't screw around with names
 		for (int it=0; it<newTaxa.getNumTaxa(); it++)
 			newTaxa.setTaxonName(it, "t" + it, false);
-		logln("Number of taxa to be aligned: " + newTaxa.getNumTaxa());
+		if (verbose)
+			logln("Number of taxa to be aligned: " + newTaxa.getNumTaxa());
 		CharMatrixManager matrixManager = data.getMatrixManager();
 		int numNewChars=0;
 		int firstChar = -1;
@@ -481,6 +485,7 @@ public abstract class ExternalSequenceAligner extends MultipleSequenceAligner im
 		}
 		return true;
 	}
+	
 	/*.................................................................................................................*/
 	public long[][] alignSequences(MCategoricalDistribution matrix, boolean[] taxaToAlign, int firstSite, int lastSite, int firstTaxon, int lastTaxon, MesquiteInteger resultCode) {
 
@@ -553,12 +558,13 @@ public abstract class ExternalSequenceAligner extends MultipleSequenceAligner im
 		
 
 
-		if (codonAlign) {
-			logln("Conducting codon alignment by translating to amino acids, aligning those, and then forcing nucleotides to match that alignment");
-			logln("Exporting amino acid file for " + getProgramName());
-		}
-		else
-			logln("Exporting file for " + getProgramName());
+		if (verbose)
+			if (codonAlign) {
+				logln("Conducting codon alignment by translating to amino acids, aligning those, and then forcing nucleotides to match that alignment");
+				logln("Exporting amino acid file for " + getProgramName());
+			}
+			else
+				logln("Exporting file for " + getProgramName());
 		int numTaxaToAlign=data.getNumTaxa();
 
 
@@ -623,9 +629,26 @@ public abstract class ExternalSequenceAligner extends MultipleSequenceAligner im
 		if (scriptBased)
 			MesquiteFile.putFileContents(scriptPath, shellScript.toString(), false);
 
-		logln("\nRequesting the operating system to run " + getProgramName());
-		logln(" Location of  " + getProgramName()+ ": " + getProgramPath());
-		logln(" Arguments given in running alignment program:\r" + argumentsForLogging.toString()); 
+		if (verbose) {
+			logln("\nRequesting the operating system to run " + getProgramName());
+			logln(" Location of  " + getProgramName()+ ": " + getProgramPath());
+			logln(" Arguments given in running alignment program:\r" + argumentsForLogging.toString()); 
+/*			logln(" Blah blah blah blah"); 
+			logln(" Blah blah blah blah blah"); 
+			logln(" Blah blah blah blah blah blah"); 
+			logln(" Blah blah blah blah blah blah blah"); 
+			logln(" Blah blah blah blah blah blah"); 
+			logln(" Blah blah blah blah blah"); 
+			logln(" Blah blah blah blah"); 
+			logln(" Blah blah blah blah blah"); 
+			logln(" Blah blah blah blah blah blah"); 
+			logln(" Blah blah blah blah blah blah blah"); 
+			logln(" Blah blah blah blah blah blah"); 
+			logln(" Blah blah blah blah blah"); 
+			logln(" Blah blah blah blah"); 
+			*/
+		}
+		logln("\n Matrix being aligned:\r" + data.getName()); 
 		MesquiteTimer timer = new MesquiteTimer();
 		timer.start();
 		ProgressIndicator progressIndicator = null;
@@ -674,8 +697,10 @@ public abstract class ExternalSequenceAligner extends MultipleSequenceAligner im
 		}
 		
 		if (success){
-			logln("Alignment completed by external program in " + timer.timeSinceLastInSeconds() + " seconds");
-			logln("Processing results...");
+			if (verbose) {
+				logln("Alignment completed by external program in " + timer.timeSinceLastInSeconds() + " seconds");
+				logln("Processing results...");
+			}
 			FileCoordinator coord = getFileCoordinator();
 			MesquiteFile tempDataFile = null;
 			CommandRecord oldCR = MesquiteThread.getCurrentCommandRecord();
@@ -698,7 +723,8 @@ public abstract class ExternalSequenceAligner extends MultipleSequenceAligner im
 			Taxa originalTaxa =  data.getTaxa();
 
 			if (alignedData!=null) {
-				logln("Acquired aligned data; now processing alignment.");
+				if (verbose)
+					logln("Acquired aligned data; now processing alignment.");
 				int numChars = alignedData.getNumChars();
 				//sorting to get taxon names in correct order
 				int[] keys = new int[alignedData.getNumTaxa()];
