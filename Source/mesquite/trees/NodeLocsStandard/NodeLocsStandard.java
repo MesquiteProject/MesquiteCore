@@ -152,7 +152,7 @@ public class NodeLocsStandard extends NodeLocsVH {
 			MesquiteSubmenuSpec mss = addSubmenu(null, "Branch Length Display");
 			addCheckMenuItemToSubmenu(null, mss, "Automatic", new MesquiteCommand("branchLengthsDisplay", "" + TreeDisplay.AUTOSHOWLENGTHS, this), autoOn = new MesquiteBoolean(branchLengthsDisplayMode.getValue() == TreeDisplay.AUTOSHOWLENGTHS));
 			addCheckMenuItemToSubmenu(null, mss, "Draw as Ultrametric (No branch lengths implied)", new MesquiteCommand("branchLengthsDisplay", "" + TreeDisplay.DRAWULTRAMETRIC, this), ultraOn = new MesquiteBoolean(branchLengthsDisplayMode.getValue() == TreeDisplay.DRAWULTRAMETRIC));
-			addCheckMenuItemToSubmenu(null, mss, "Draw with Lengths, Unassigned as One", new MesquiteCommand("branchLengthsDisplay", "" + TreeDisplay.DRAWUNASSIGNEDASONE, this), blOn = new MesquiteBoolean(branchLengthsDisplayMode.getValue() == TreeDisplay.DRAWUNASSIGNEDASONE));
+			addCheckMenuItemToSubmenu(null, mss, "Draw with Lengths (Unassigned as 1.0)", new MesquiteCommand("branchLengthsDisplay", "" + TreeDisplay.DRAWUNASSIGNEDASONE, this), blOn = new MesquiteBoolean(branchLengthsDisplayMode.getValue() == TreeDisplay.DRAWUNASSIGNEDASONE));
 		}
 
 		fixedScalingMenuItem = addMenuItem( "Fixed Scaling...", makeCommand("setFixedScaling", this));
