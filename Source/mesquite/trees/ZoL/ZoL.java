@@ -53,6 +53,7 @@ public class ZoL extends MesquiteInit {
 	boolean finished = false;
 	TreeVector trees = null;
 	int whichTree = 0;
+	int level = 1;
 	
 	/* IDEAS
 	 * 
@@ -118,6 +119,7 @@ public class ZoL extends MesquiteInit {
 		if (finished)
 			commandName = "reset";
 		if (checker.compare(this.getClass(), "", "", commandName, "reset")) {
+			level = 1;
 			MesquiteInteger pos = new MesquiteInteger();
 			int seed = MesquiteInteger.fromFirstToken(arguments, pos);
 			if (MesquiteInteger.isCombinable(seed))
@@ -139,7 +141,7 @@ public class ZoL extends MesquiteInit {
 			
 			println("\n\n************************************************");
 			println("ZoL: The Great Phylogenetic Adventure!");
-
+			println("Level 1");
 			println("");
 			println("You are standing in an open field.\nIn front of you, to your surprise, is an organism.\nYou recognize that it is a " + taxonNameOfNode(startNode)+ ".");
 			println("\nThere is a small mailbox here.");
@@ -315,9 +317,11 @@ public class ZoL extends MesquiteInit {
 					return;
 				}
 				println("!!!@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@!!!");
-
+				level++;
 				
-				println("\n\nYour journey continues to the next level...\n");
+				println("\n\nYour journey continues to the next level...");
+				println("Level " + level + "\n");
+
 				start();
 				println("You blink, and suddenly find yourself standing beside a " +taxonNameOfNode(currentNode)+ ".\n");
 				println("Your goal is now to get to the taxon " + taxonNameOfNode(endNode));
