@@ -10,7 +10,7 @@ Mesquite's web site is http://mesquiteproject.org
 This source code and its compiled class files are free and modifiable under the terms of 
 GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
  */
-package mesquite.io.ExportNewickTreeTreeWindow;
+package mesquite.io.XportNewickTreeTreeWindow;
 /*~~  */
 
 import mesquite.io.lib.InterpretPhylipTrees;
@@ -31,12 +31,16 @@ import mesquite.lib.ui.ListDialog;
 
 
 /* ============  a file interpreter for Phylip trees ============*/
-
-public class ExportNewickTreeTreeWindow extends InterpretPhylipTrees {
+//Note: strangely named so it sorts last among the primary
+public class XportNewickTreeTreeWindow extends InterpretPhylipTrees {
 	/*.................................................................................................................*/
 	public boolean canExportProject(MesquiteProject project) {  
 		boolean treeContextAvailable = findEmployerWithDuty(TreeContext.class) != null || findNearestColleagueWithDuty(TreeContext.class) != null;
 		return treeContextAvailable;
+	}
+	/*.................................................................................................................*/
+	public boolean requestPrimaryChoice() {  
+		 return true;  //
 	}
 	/*.................................................................................................................*/
 	public boolean canImport() {  

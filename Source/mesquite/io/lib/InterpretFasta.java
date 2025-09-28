@@ -72,11 +72,6 @@ public abstract class InterpretFasta extends FileInterpreterI implements ReadFil
 		EmployeeNeed e1 = registerEmployeeNeed(StringMatcher.class, "FASTA file import needs a way to determine if the taxon in a ; choose the one that appropriately determines the sequence names from the sample codes.", "This is activated automatically.");
 	}
 	/*.................................................................................................................*/
-	/** returns whether this module is requesting to appear as a primary choice */
-	public boolean requestPrimaryChoice(){
-		return true;  
-	}
-	/*.................................................................................................................*/
 	public boolean startJob(String arguments, Object condition, boolean hiredByName) {
 		acceptedClasses = new Class[] {ProteinState.class, DNAState.class};
 		loadPreferences();

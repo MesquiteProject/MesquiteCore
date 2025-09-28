@@ -51,6 +51,10 @@ public class InterpretPhylipDNA extends InterpretPhylip {
 	public String preferredDataFileExtension() {  
 		return "phy";
 	}
+	/*.................................................................................................................*/
+	public boolean requestPrimaryChoice() {  
+		 return true;  //
+	}
 /*.................................................................................................................*/
 	public boolean canExportEver() {  
 		 return true;  //

@@ -158,8 +158,8 @@ public class ParallelAlterMatrixAsUtility extends CharMatricesListProcessorUtili
 		queryDialog.addLargeOrSmallTextLabel("The calculations will be performed in parallel, on several threads. Choose the number of parallel threads according to your computer's multiprocessing capabilities.");
 		IntegerField integerField = queryDialog.addIntegerField("Number of threads", numThreads, 20, 1, 255);
 		queryDialog.addLargeOrSmallTextLabel("(Note: the first matrix will be processed alone, and then the others in parallel.)");
-//		queryDialog.addLargeOrSmallTextLabel("The calculations sometimes slow down after they have completed 1000 to 3000 matrices, for reasons mysterious to the Mesquite developers. "
-//				+"If you are processing many matrices, and it slows down too much, then you may need to alter the first 1000 matrices by selecting those rows, then save the file, then reopen it for the next 1000, and so on. Alternatively, you may need to run it overnight.");
+		//		queryDialog.addLargeOrSmallTextLabel("The calculations sometimes slow down after they have completed 1000 to 3000 matrices, for reasons mysterious to the Mesquite developers. "
+		//				+"If you are processing many matrices, and it slows down too much, then you may need to alter the first 1000 matrices by selecting those rows, then save the file, then reopen it for the next 1000, and so on. Alternatively, you may need to run it overnight.");
 
 		queryDialog.setDefaultTextComponent(integerField.getTextField());
 		queryDialog.setDefaultComponent(integerField.getTextField());
@@ -206,7 +206,25 @@ public class ParallelAlterMatrixAsUtility extends CharMatricesListProcessorUtili
 			return 0;
 		int count = 0;
 		for (int i = 0; i<matricesDone.length; i++)
-			if (matricesDone[i] == 2)
+			if (matricesDone[i] >1)  //note: counts also those that failed
+				count++;
+		return count;
+	}
+	int numMatricesFailed(){
+		if (matricesDone == null)
+			return 0;
+		int count = 0;
+		for (int i = 0; i<matricesDone.length; i++)
+			if (matricesDone[i] >2) 
+				count++;
+		return count;
+	}
+	int numMatricesSuccessful(){
+		if (matricesDone == null)
+			return 0;
+		int count = 0;
+		for (int i = 0; i<matricesDone.length; i++)
+			if (matricesDone[i] == 2) 
 				count++;
 		return count;
 	}
@@ -268,12 +286,8 @@ public class ParallelAlterMatrixAsUtility extends CharMatricesListProcessorUtili
 		progIndicator.start();
 		progIndicator.setText("Setting up " + numThreads + " threads");
 
-		//Whether to notify within the threads. If not, a cruder notification is thereby given, but this isn't editing by hand
+		//Whether to notify within the threads. If not, a cruder notification is thereby given, but that's OK because this isn't like editing the matrices by hand, which needs fine scale notifications
 		notifyAsYouGo = false;
-		//Whether to use a chunked system (see below)
-		boolean chunked = false;
-		//Pause time every 1000 to garbage collect, in case this helps. A good pause might be 5000 (5 seconds);
-		long pause = 0;
 
 		if (!notifyAsYouGo)
 			for (int im = 0; im<datas.size(); im++){
@@ -294,21 +308,30 @@ public class ParallelAlterMatrixAsUtility extends CharMatricesListProcessorUtili
 
 
 
-		//A system to divide the run into chunks of 500 or 1000 to see if that avoids the slowdown that starts at about 1000 matrices. 
+		//Pause time every 1000 to garbage collect, in case this helps. A good pause might be 5000 (5 seconds);
+		//long pause = 0;
+		
+		//Chunking: This was a system to divide the run into chunks of 500 or 1000 to see if that avoids the slowdown that starts at about 1000 matrices. 
 		//Didn't seem to help much, so disabled by chunked == false, in which case just make the chunk size as big as the total number.
+		//Cut out in future once this module stabilizes fully.
+		boolean chunked = false;
 		int numMatricesInChunk = 1500;
 		int numMatricesTotal = datas.size();
 		if (!chunked ||numMatricesTotal<numMatricesInChunk*1.5) 
 			numMatricesInChunk = numMatricesTotal;
+		boolean thisIsFirstChunk = true;
 
 
 		aborted = false;
 		int reportAtMatrix = -1;
 		long lastReportTime = System.currentTimeMillis();
-		long startTimeThisSection  =  System.currentTimeMillis();
-		int sectionStart = 1; //last section recorded in listableVector
-		boolean thisIsFirstChunk = true;
-		int millennium = 0;
+
+		//These were used to time sections to diagnose slowdown fixed in Sept 2025
+		//long startTimeThisSection  =  System.currentTimeMillis();
+		//int sectionStart = 1; //last section recorded in listableVector
+		//int millennium = 0;
+
+
 		for (int firstMatrixInChunk = 1; firstMatrixInChunk<numMatricesTotal; firstMatrixInChunk += numMatricesInChunk){
 
 			//=================================================
@@ -336,7 +359,7 @@ public class ParallelAlterMatrixAsUtility extends CharMatricesListProcessorUtili
 				progIndicator.setText("Restarting threads after first chunk of " + numMatricesInChunk + " matrices");
 				logln("\nResetting to do next chunk of matrices");
 			}
-			startTimeThisSection  =  System.currentTimeMillis();
+			//startTimeThisSection  =  System.currentTimeMillis();
 			for (int i = 0; i < numThreads; i++)
 				threads[i].start();
 			thisIsFirstChunk = false;
@@ -375,22 +398,23 @@ public class ParallelAlterMatrixAsUtility extends CharMatricesListProcessorUtili
 						}
 						logln(report);
 						logln("");
-				}
+					}
 
-					progIndicator.setText("Number of matrices altered " + numMatricesDone());
+					progIndicator.setText("Number of matrices completed " + numMatricesDone());
 					progIndicator.setCurrentValue(numMatricesDone());
 					if (progIndicator.isAborted())
 						aborted = true;
 					int numDone = numMatricesDone();
 
-					if (numDone - sectionStart >=100){  //Recording section timing;
-						MesquiteLong sectTime = new MesquiteLong("to " + numDone, System.currentTimeMillis()-startTimeThisSection);
-						sectionStart = numDone;
-						startTimeThisSection = System.currentTimeMillis();
-						sectionTimings.addElement(sectTime, false);
-					}
-
-					if (pause > 0 && numDone - millennium > 1000){
+					/*
+						if (numDone - sectionStart >=100){  //Recording section timing;
+							MesquiteLong sectTime = new MesquiteLong("to " + numDone, System.currentTimeMillis()-startTimeThisSection);
+							sectionStart = numDone;
+							startTimeThisSection = System.currentTimeMillis();
+							sectionTimings.addElement(sectTime, false);
+						}
+*/
+					/*	if (pause > 0 && numDone - millennium > 1000){
 						millennium += 1000;
 						System.gc();
 						logln("\n\nTaking a deep breath before continuing...\n");
@@ -400,14 +424,14 @@ public class ParallelAlterMatrixAsUtility extends CharMatricesListProcessorUtili
 						catch (Exception e){
 						}
 					}
-
+					 */
 					if ((numMatricesTotal <= 1000 && numDone % 10 == 0) || (numMatricesTotal > 1000 && numDone % (numMatricesTotal / 100) == 0)) { // do every 1% of matrices
-						CommandRecord.tick("Finished altering " + numDone + " of " + numMatricesTotal + " matrices.");
+						CommandRecord.tick("Completed " + numDone + " of " + numMatricesTotal + " matrices.");
 						if (numDone > reportAtMatrix && (System.currentTimeMillis() - startParallel > 100000)) { // run has been longer than 100 seconds; worth reporting every so often what timing will be
 							reportAtMatrix = numDone;
 							double parallelTimePerMatrix = (1.0 * System.currentTimeMillis() - startParallel) / numDone;
 							long timeAtCompletion = System.currentTimeMillis() + (long) (parallelTimePerMatrix * (numMatricesTotal - numDone));
-							logln("\nFinished altering " + numDone + " of " + numMatricesTotal + " matrices. Expected completion of all matrices: " + StringUtil.getDateTime(new Date(timeAtCompletion)));
+							logln("\nCompleted " + numDone + " of " + numMatricesTotal + " matrices. Expected completion of all matrices: " + StringUtil.getDateTime(new Date(timeAtCompletion)));
 						}
 					}
 
@@ -462,15 +486,21 @@ public class ParallelAlterMatrixAsUtility extends CharMatricesListProcessorUtili
 		}
 		progIndicator.goAway();
 		long finishTime = System.currentTimeMillis();
-		logln("Altered: " + (numMatricesDone()) + " matrices. (Finished " + StringUtil.getDateTime(new Date(finishTime)) + ", after " + ((finishTime- startTime)/1000.0) + " seconds)");
-		if (numMatricesDone()>100 && ((System.currentTimeMillis()- startTime)/1000.0)>20){
-			logln("Timings, milliseconds: ");
-			for (int k = 0; k<sectionTimings.size(); k++){
-				MesquiteLong sT = (MesquiteLong)sectionTimings.elementAt(k);
-				logln("\t" + (sT.getValue()/1000.0) + "\t" + sT.getName());
+		String failed = "";
+		int numFailed = numMatricesFailed();
+		if (numFailed>0)
+			failed = " Failed or incompatible: " + numFailed + " matrices.";
+		logln("Altered: " + (numMatricesSuccessful()) + " matrices." + failed + " (Finished " + StringUtil.getDateTime(new Date(finishTime)) + ", after " + ((finishTime- startTime)/1000.0) + " seconds)");
+		/*
+			if (numMatricesDone()>100 && ((System.currentTimeMillis()- startTime)/1000.0)>20){
+				logln("Timings, milliseconds: ");
+				for (int k = 0; k<sectionTimings.size(); k++){
+					MesquiteLong sT = (MesquiteLong)sectionTimings.elementAt(k);
+					logln("\t" + (sT.getValue()/1000.0) + "\t" + sT.getName());
+				}
+				logln("\t" +  ((finishTime- startTime)/1000.0) + "\tTOTAL seconds");
 			}
-			logln("\t" +  ((finishTime- startTime)/1000.0) + "\tTOTAL seconds");
-		}
+			*/
 		unpauseAllPausables(v);
 		if (project != null) {
 			project.zeroProjectWindowSuppression();
