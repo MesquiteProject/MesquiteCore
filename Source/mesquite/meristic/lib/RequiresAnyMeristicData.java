@@ -12,6 +12,8 @@ This source code and its compiled class files are free and modifiable under the 
 GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
  */package mesquite.meristic.lib;
 
+import mesquite.categ.lib.DNAData;
+import mesquite.categ.lib.DNAState;
 import mesquite.lib.CompatibilityTest;
 import mesquite.lib.EmployerEmployee;
 import mesquite.lib.MesquiteProject;
@@ -28,6 +30,8 @@ public class RequiresAnyMeristicData extends CompatibilityTest {
 			return true;
 		if (obj instanceof RequiresExactlyMeristicData)
 			return true;
+		if (obj instanceof CharacterData || obj instanceof CharacterState)
+			return (obj instanceof MeristicState || obj instanceof MeristicData);
 		if (obj instanceof CompatibilityTest)
 			return false;
 

@@ -18,6 +18,7 @@ import java.util.Vector;
 
 import mesquite.lib.CommandChecker;
 import mesquite.lib.CompatibilityTest;
+import mesquite.lib.Debugg;
 import mesquite.lib.ListableVector;
 import mesquite.lib.MesquiteFile;
 import mesquite.lib.MesquiteListener;
@@ -137,14 +138,18 @@ public class AlterMatrixAsUtility extends CharMatricesListProcessorUtility {
 					data.notifyListeners(this, notification);
 					count++;
 				} else if (returnCode < 0) {
-					abort = true;
+					MesquiteMessage.warnProgrammer("   Failed to alter matrix #" + (im+1) + " " +data.getName() + " (code " + returnCode + ").");
+					if (im == 0){
+						MesquiteMessage.warnProgrammer("\nBecause this occurred with the first matrix, altering matrices will be stopped.\n");
+						abort = true;
+					}
 				}
 				firstTime = false;
 			}
 		}
 		MesquiteThread.releaseThreadMaxLogLevel();
 		progIndicator.goAway();
-		logln("Altered: " + (count) +  " matrices.");
+		logln("\nAltered: " + (count) +  " matrices.");
 		unpauseAllPausables(v);
 		if (getProject() != null)
 			getProject().decrementProjectWindowSuppression();

@@ -13,6 +13,7 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
 */
 package mesquite.categ.lib;
 
+import mesquite.cont.lib.ContinuousState;
 import mesquite.lib.CompatibilityTest;
 import mesquite.lib.EmployerEmployee;
 import mesquite.lib.MesquiteProject;
@@ -31,6 +32,8 @@ public class RequiresAnyDNAData extends CompatibilityTest {
 			return true;
 		if (obj instanceof RequiresAnyDNAData)
 			return true;
+		if (obj instanceof CharacterData || obj instanceof CharacterState)
+			return (obj instanceof DNAState || obj instanceof DNAData);
 		if (obj instanceof CompatibilityTest)
 			return false;
 		if (!(obj instanceof Class))

@@ -29,6 +29,8 @@ public class RequiresProteinData extends CompatibilityTest {
 			return true;
 		if (obj instanceof RequiresProteinData)
 			return true;
+		if (obj instanceof CharacterData || obj instanceof CharacterState)
+			return (obj instanceof ProteinState || obj instanceof ProteinData);
 		if (obj instanceof CompatibilityTest)
 			return false;
 		if (!(obj instanceof Class))

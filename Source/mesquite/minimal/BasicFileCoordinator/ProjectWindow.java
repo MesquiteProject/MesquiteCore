@@ -368,7 +368,7 @@ class ProjectPanel extends MousePanel implements ClosablePanelContainer{
 	public void requestHeightChange(ClosablePanel panel){
 		resetSizes(getBounds().width, getBounds().height);
 	}
-	public synchronized void refreshGraphics(){
+	public synchronized void refreshGraphics(){ 
 		for (int e = 0; e< elements.size(); e++){
 			ProjPanelPanel panel  = ((ProjPanelPanel)elements.elementAt(e));
 			panel.refreshGraphics();

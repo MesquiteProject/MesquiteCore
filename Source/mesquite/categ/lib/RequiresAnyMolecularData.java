@@ -31,6 +31,8 @@ public class RequiresAnyMolecularData extends CompatibilityTest {
 			return true;
 		if (obj instanceof CompatibilityTest)
 			return false;
+		if (obj instanceof CharacterData || obj instanceof CharacterState)
+			return obj instanceof MolecularData || obj instanceof MolecularState;
 		if (!(obj instanceof Class))
 			return true;
 		if (!CharacterState.class.isAssignableFrom((Class)obj) &&  !CharacterData.class.isAssignableFrom((Class)obj))
