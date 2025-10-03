@@ -165,6 +165,10 @@ public class CharListInclusion extends CharListAssistant {
 	/*.................................................................................................................*/
 	public void setTableAndData(MesquiteTable table, CharacterData data){
 		deleteAllMenuItems();
+		addMenuItem("Include", makeCommand("include", this));
+		addMenuItem("Exclude", makeCommand("exclude", this));
+		addMenuItem("Invert", makeCommand("reverse", this));
+		addMenuSeparator();
 		addMenuItem("Store current set", makeCommand("storeCurrent",  this));
 		addMenuItem("Replace stored set by current", makeCommand("replaceWithCurrent",  this));
 		if (data !=null)
