@@ -545,7 +545,7 @@ public class BasicTreeWindowMaker extends TreeWindowMaker implements Commandable
 			}
 			for (int i = 0; i < getNumberOfEmployees(); i++) {
 				Object e = getEmployeeVector().elementAt(i);
-				if (e instanceof TreeWindowAssistantC || e instanceof TreeWindowAssistantN || e instanceof TreeWindowAssistantA) {
+				if (e instanceof TreeWindowAssistantC || e instanceof TreeWindowAssistantN || e instanceof TreeWindowAssistantA || e instanceof TreeWindowAssistantSGA) {
 					if (((TreeWindowAssistant)e).rehireMeInSnapshot())   
 						temp.addLine("\tnewWindowAssistant ", ((MesquiteModule) e));
 				}

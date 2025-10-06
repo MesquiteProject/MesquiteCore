@@ -54,6 +54,7 @@ import mesquite.lib.ui.AlertDialog;
 import mesquite.lib.ui.ExtensibleDialog;
 import mesquite.lib.ui.ProgressIndicator;
 import mesquite.lib.ui.SingleLineTextField;
+import mesquite.minimal.DrawHierarchy.DrawHierarchy;
 
 
 /* ======================================================================== */
@@ -563,6 +564,8 @@ public class ProcessDataFiles extends GeneralFileMakerMultiple implements Action
 				beforeProcessFiles();
 				MesquiteThread.setQuietPlease(true);
 				int filesFound = 0;
+				DrawHierarchy.suppressNodeRepaints = true;
+
 				for (int i=0; i<files.length; i++) {
 					progIndicator.setCurrentValue(i);
 					requestToSequester.setValue(false);
@@ -616,6 +619,7 @@ public class ProcessDataFiles extends GeneralFileMakerMultiple implements Action
 						}
 					}
 				}
+				DrawHierarchy.suppressNodeRepaints = false;
 				logln("");
 				if (filesFound == 0){
 					if (okToInteractWithUser(CAN_PROCEED_ANYWAY, "No files found"))  

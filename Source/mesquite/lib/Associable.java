@@ -1957,6 +1957,22 @@ public ListableVector getAssociatesOfKind(int kind){
 		return -1;
 	}
 	/*-----------------------------------------*/
+	/** Returns index of single selected part */
+	public int singleSelected() {
+		if (!anySelected())
+			return -1;
+		int candidate = -1;
+		for (int i = 0; i<getNumberOfParts(); i++) {
+			if (selected.isBitOn(i)){
+				if (candidate<0) //first one found!
+					candidate = i;
+				else //oops, second found
+					return -1;
+			}
+		}
+		return candidate;
+	}
+	/*-----------------------------------------*/
 	/** Returns index of i'th selected part if any are selected, otherwise returns i.
 	 * If there are not i parts selected (but some are), numParts is returned */
 	public int selectedIndexToPartIndex(int i) {
@@ -2347,6 +2363,27 @@ public ListableVector getAssociatesOfKind(int kind){
 			}
 			makeAssociatedDoubles(nRef.getValue());
 			DoubleArray b = getAssociatedDoubles(nRef);
+			if (b==null)
+				return;
+			b.setValue(index, value);
+			incrementVersion(MesquiteListener.ASSOCIATED_CHANGED, false);
+		}
+	}
+	public void setAssociatedDoubleUpgradeIfNeeded(NameReference nRef, int index, double value){
+		if (doubles!=null && nRef!=null) {
+			NameReference nr = makeAssociatedDoubles(nRef.getValue());
+			DoubleArray b = getAssociatedDoubles(nRef);
+
+			//but first check to see if there are longs.  If so, and if doubles hadn't existed before, then transfer
+			LongArray longs = getAssociatedLongs(nRef);
+			if (longs != null){
+				System.err.println("@ removing longs " + nRef);
+				//There is an array of longs of the same name.  It's therefore assumed that they should all be upgraded to doubles!
+				longs.copyTo(b);
+				removeAssociatedLongs(nRef);   //delete longs as no longer needed
+			}
+
+			
 			if (b==null)
 				return;
 			b.setValue(index, value);

@@ -576,6 +576,22 @@ public abstract class EmployerEmployee extends MenuOwner implements HNode, Lista
 		}
 		return closed;
 	}
+	
+	/* ................................................................................................................. */
+	/**
+	 * Suppresses use of UI for all employees. E.g., for parallelization. Currently affects only menu bars	 */
+	public void noUIForEmployeeBranch() {
+		setUseMenubar(false);
+		if (employees == null)
+			return ;
+		Enumeration enumeration = employees.elements();
+		while (enumeration.hasMoreElements()) {
+			MesquiteModule mb = (MesquiteModule) enumeration.nextElement();
+			mb.noUIForEmployeeBranch();
+		}
+		
+	}
+
 	/* ................................................................................................................. */
 	/** Moves the employee to first in the vector. */
 	public void moveEmployeeToFirst(MesquiteModule mb) {
