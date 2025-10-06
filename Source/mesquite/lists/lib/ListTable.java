@@ -273,7 +273,7 @@ public class ListTable extends MesquiteTable {
 			}
 			catch (NullPointerException e){
 				if (MesquiteTrunk.developmentMode)
-					System.err.println("NPE in drawMatrixCell of ListTable");
+					System.err.println("NPE in drawMatrixCell of ListTable, row " + row);
 			}
 		
 		if (assistant.useString(row) && s!=null) {

@@ -1319,9 +1319,6 @@ public class ManageTaxa extends TaxaManager {
 					return false;
 				double matches = 0.0;
 				for (int it=0; it<t.getNumTaxa(); it++){
-					if (t.getTaxonName(it).equals("Col.Ade.Bembidion_28S.orig")) {
-						matches = matches + 0.0;
-					}
 					if (taxa.getTaxon(t.getTaxonName(it))!=null)
 						matches+= 1.0;
 					//else logln("unmatched: " + t.getTaxonName(it));
