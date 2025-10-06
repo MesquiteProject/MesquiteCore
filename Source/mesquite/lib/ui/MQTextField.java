@@ -16,6 +16,8 @@ package mesquite.lib.ui;
 import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.TextField;
+//import javax.text.Normalizer;
+import java.text.Normalizer;
 
 /* �������������������� */
 /* [Search for MQLINUX] -- Intermediary class for workaround of StackOverflowError in Linux JDK 11 - 23 (at least!). 
@@ -27,9 +29,9 @@ public class MQTextField extends TextField implements MQComponent {
 		super();
 		helper = new MQComponentHelper(this);
 	}
-
+	
 	public MQTextField (String initialString, int fieldLength) {
-		super(initialString, fieldLength);
+		super(normalize(initialString), fieldLength);
 		helper = new MQComponentHelper(this);
 	}
 
@@ -38,15 +40,15 @@ public class MQTextField extends TextField implements MQComponent {
 		helper = new MQComponentHelper(this);
 	}
 	public MQTextField (String initialString) {
-		super(initialString);
+		super(normalize(initialString));
 		helper = new MQComponentHelper(this);
 	}
-/*
+	static String normalize(String s){
+		return s; //Normalizer.normalize(s, Normalizer.Form.NFC); //("@
+		}
 	public void setText(String s){
-		if (s == null)
-			s = "";
-		super.setText(s);
-	}*/
+		super.setText(normalize(s));
+	}
 
 	//###########################################################
 	/*################################################################

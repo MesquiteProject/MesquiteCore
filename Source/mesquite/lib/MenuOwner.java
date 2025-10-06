@@ -534,6 +534,12 @@ public abstract class MenuOwner implements Doomable { // EMBEDDED: extends Apple
 	public final void setUseMenubar(boolean useMenuBar) {
 		this.useMenuBar = useMenuBar;
 	}
+	/*............................................................................. */
+	/** Sets whether module has UI. */
+	boolean suppressUI = false;
+	public final void suppressUI(boolean suppress) {
+		this.suppressUI = suppress;
+	}
 
 	/*............................................................................. */
 	/**

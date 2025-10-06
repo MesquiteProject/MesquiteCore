@@ -144,6 +144,9 @@ public interface Tree extends Listable {
 	public boolean isLeftmostTerminalOfCollapsedClade(int node);
 	public boolean isVisibleEvenIfInCollapsed(int node);
 	
+	/** Is this a legal branch move? Uses same criteria as moveBranch itself. Should return false if not adjustable tree*/
+	public  boolean legalBranchMove(int branchFrom, int branchTo);
+
 	public boolean hasReticulations();
 	/** Returns whether clade has unbranched internal nodes.*/
 	public boolean hasUnbranchedInternals(int node);

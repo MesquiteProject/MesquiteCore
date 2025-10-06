@@ -1332,6 +1332,24 @@ public class MesquiteTree extends Associable implements AdjustableTree, Listable
 		if (!inBounds(node))
 			return -1;
 		return taxonNumber[node]; }
+	
+	/*-----------------------------------------*/
+	/** Returns index of single selected part */
+	public int singleSelected() {
+		if (!anySelected())
+			return -1;
+		int candidate = -1;
+		for (int i = 0; i<getNumberOfParts(); i++) {
+			if (selected.isBitOn(i) && inBounds(i)){
+				if (candidate<0) //first one found!
+					candidate = i;
+				else //oops, second found
+					return -1;
+			}
+		}
+		return candidate;
+	}
+
 	/*-----------------------------------------*/
 	private void flagNodesInTree(int node){
 		flags[node] = true;
@@ -5415,6 +5433,25 @@ and the tree has been rerooted. Properties that belong to nodes implicitly have 
 		return true;
 
 	}
+	
+	/*-----------------------------------------*/
+	/** Is this a legal branch move? Uses same criteria as moveBranch itself*/
+	public  boolean legalBranchMove(int branchFrom, int branchTo) {
+		if (branchFrom==branchTo)
+			return false;
+		else if (!nodeExists(branchFrom) || !nodeExists(branchTo))
+			return false;
+		else if  (descendantOf(branchTo,branchFrom))
+			return false;
+		else if  (branchTo == motherOfNode(branchFrom) && !nodeIsPolytomous(branchTo))
+			return false;
+		else if (nodesAreSisters(branchTo, branchFrom) && (numberOfDaughtersOfNode(motherOfNode(branchFrom))==2))
+			return false;
+		else if (numberOfDaughtersOfNode(motherOfNode(branchFrom))==1) //TODO: NOTE that you can't move a branch with 
+			return false;
+		return true;
+	}
+
 	/*-----------------------------------------*/
 	/** Inserts a new node on the branch represented by "node", and returns the number of the inserted node */
 	public  int insertNode(int node, boolean notify){

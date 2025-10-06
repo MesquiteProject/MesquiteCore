@@ -920,6 +920,12 @@ public class MesquiteNumber implements Listable, Nameable, WithStringDetails{
 		}
 		return false;
 	}
+	public boolean greaterThan(double d){
+		return isMoreThan(d);
+	}
+	public boolean greaterThan(MesquiteNumber n){
+		return isMoreThan(n);
+	}
 	/*_________________________________________________*/
 	/** Checks to see if the number value is less than min (in which case min is reset) or greater than max
 	(in which case max is reset).  If it is the first time this function is called for this particular use, 

@@ -2768,13 +2768,17 @@ public class MesquiteFile extends Listened implements HNode, Commandable, Listab
 
 		return null;
 	}
+	public static String[][] getTabDelimitedTextFile(String relativePath, boolean warn) {
+		return getTabDelimitedTextFile(relativePath, warn, false);
+	}
 	/*.................................................................................................................*/
 	/** Returns the contents of the file.  path is relative to the root of the package heirarchy; i.e. for file in
 	a module's folder, indicate "mesquite/modules/moduleFolderName/fileName" */
-	public static String[][] getTabDelimitedTextFile(String relativePath, boolean warn) {
+	public static String[][] getTabDelimitedTextFile(String relativePath, boolean warn, boolean ignoreLinesStartingPound) {
 		DataInputStream stream;
 		Vector v = new Vector();
 		String[][] s = null;
+		Parser parser = new Parser();
 		StringBuffer sBb= new StringBuffer(100);
 		MesquiteInteger remnant = new MesquiteInteger(-1);
 		if (!MesquiteTrunk.isApplet()) {
@@ -2785,8 +2789,16 @@ public class MesquiteFile extends Listened implements HNode, Commandable, Listab
 
 				while (newS != null) {
 					newS =readLine(stream, sBb, remnant);
-					if (newS != null)
+					if (newS != null){
+						if (ignoreLinesStartingPound){
+							parser.setString(newS);
+							if (parser.nextDarkChar() != '#')
+								v.addElement(newS);
+
+						}
+						else
 						v.addElement(newS);
+					}
 				}
 				if (v.size()!=0) {
 					s = new String[v.size()][];
