@@ -21,21 +21,22 @@ public interface Parallelizable {
 	/*Total possible count, for parallelizer to prepare array recording status of which items are done, being calculated, etc..
 	 *  If some items aren't appropriate, and will be filtered, that is OK, handled in getNextParallelItem.
 	 * */
-	public int getTotalPossibleParallelItemCount(); 
+	public int getTotalPossibleParallelItemCount();  //synchronized please
 	
 	
-	public int getNextParallelItem();  //return -1 if none more
+	public int getNextParallelItem();  //synchronized please; return -1 if none more
 	
 	/* Do any initiation calculations AND calculation of first item to make sure employees are warmed up.	
 Note: Parallelizable is responsible to set the status of that first item, e.g.  parallelizer.setItemStatus(firstItem, 2); 
 Item Status 2 = finished successfully. Negative number = finished with error.*/
 	public ParallelParams doFirstParallelCalculation();
 	
-	public ParallelParams cloneForParallel(ParallelParams params); //Clone and give snapshots to employee modules (Parallelizer provides one method as a service)
+	public ParallelParams cloneForParallel(ParallelParams params); //synchronized please; Clone and give snapshots to employee modules (Parallelizer provides one method as a service)
 	
 	public boolean pleaseReuseParallelThreads(); // if true, then the parallelizer doesn't call cloneParams second time if thread already has them.
 	
 	/* Do a calculation on item using employee modules and other params passed*/
-	public int doParallelCalculation(int item, ParallelParams params);
+	public int doParallelCalculation(int item, ParallelParams params); //please call parallelizer.setItemStatus(item, 1); to say calculation in progress
+
 }
 

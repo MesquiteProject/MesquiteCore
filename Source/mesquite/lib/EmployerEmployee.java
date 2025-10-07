@@ -1494,7 +1494,6 @@ public abstract class EmployerEmployee extends MenuOwner implements HNode, Lista
 			return null;
 		incrementMenuResetSuppression();
 		int numAvailable = numCompatibleModulesAvailable(dutyClass, condition, module);
-
 		// ask user for name if not scripting and explanation available
 		if (!suppressHireQueries && !MesquiteThread.isScripting() && explanation != null && numAvailable > 1) {
 			MesquiteModule mb = null;
@@ -1978,6 +1977,7 @@ public abstract class EmployerEmployee extends MenuOwner implements HNode, Lista
 		MesquiteModuleInfo mbi;
 		while (enumeration.hasMoreElements()) {
 			mbi = (MesquiteModuleInfo) enumeration.nextElement();
+			
 			if (mbi.doesDuty(dutyClass) && mbi.isCompatible(obj, proj, prospectiveEmployer)) {
 				count++;
 			}

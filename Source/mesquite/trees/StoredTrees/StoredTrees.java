@@ -552,7 +552,9 @@ public class StoredTrees extends TreeSource implements MesquiteListener {
 		return s;
 	}
 	/*.................................................................................................................*/
-	public Tree getCurrentTree(Taxa taxa) {
+	public Tree getTree(Taxa taxa, int itree) {
+		setPreferredTaxa(taxa);
+		currentTree=itree;
 		try {
 			if (laxMode)
 				return getDefaultTree(taxa);
@@ -561,18 +563,18 @@ public class StoredTrees extends TreeSource implements MesquiteListener {
 					return null;
 			}
 			if (currentTreeBlock != null && currentTreeBlock.size()>0) {
-				if (currentTree<currentTreeBlock.size()) {
-					Tree t = (Tree)currentTreeBlock.elementAt(currentTree);
+				if (itree<currentTreeBlock.size()) {
+					Tree t = (Tree)currentTreeBlock.elementAt(itree);
 					if (t == null)
 						return null;
-					t.setFileIndex(currentTree);
+					t.setFileIndex(itree);
 
 					if (t instanceof MesquiteTree)
-						((MesquiteTree)t).setAssignedNumber(currentTree);
+						((MesquiteTree)t).setAssignedNumber(itree);
 					return t;
 				}
 				else {
-					MesquiteMessage.warnUser("Tree #" + (currentTree+1) + " requested beyond number available (" + currentTreeBlock.size() + ") in tree block \"" + currentTreeBlock.getName() + "\"."); //in 1.0 returned first tree in block
+					MesquiteMessage.warnUser("Tree #" + (itree+1) + " requested beyond number available (" + currentTreeBlock.size() + ") in tree block \"" + currentTreeBlock.getName() + "\"."); //in 1.0 returned first tree in block
 					/*
 					currentTree = 0;
 	   				Tree t = (Tree)currentTreeBlock.elementAt(currentTree);
@@ -592,7 +594,7 @@ public class StoredTrees extends TreeSource implements MesquiteListener {
 							}
 						}
 						else {
-							MesquiteMessage.warnUser("Tree #" + (currentTree+1) + " requested beyond number (" + currentTreeBlock.size() + ") in tree block \"" + currentTreeBlock.getName() + "\"."); //in 1.0 returned default tree
+							MesquiteMessage.warnUser("Tree #" + (itree+1) + " requested beyond number (" + currentTreeBlock.size() + ") in tree block \"" + currentTreeBlock.getName() + "\"."); //in 1.0 returned default tree
 						}
 					}
 					else
@@ -608,6 +610,10 @@ public class StoredTrees extends TreeSource implements MesquiteListener {
 		}
 	}
 	/*.................................................................................................................*/
+	public Tree getCurrentTree(Taxa taxa) {
+		return getTree(taxa, currentTree);
+	}
+	/*.................................................................................................................*/
 	public Tree getDefaultTree(Taxa taxa) {
 		int numTaxa = taxa.getNumTaxa();
 		MesquiteTree tree = new MesquiteTree(taxa);
@@ -619,12 +625,7 @@ public class StoredTrees extends TreeSource implements MesquiteListener {
 	public Selectionable getSelectionable(){
 		return currentTreeBlock;
 	}
-	/*.................................................................................................................*/
-	public Tree getTree(Taxa taxa, int itree) {
-		setPreferredTaxa(taxa);
-		currentTree=itree;
-		return getCurrentTree(taxa);
-	}
+
 	/*.................................................................................................................*/
 	public void setEnableWeights(boolean enable){
 		if (enable == weightsEnabled.getValue())
