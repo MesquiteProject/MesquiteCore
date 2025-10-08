@@ -66,6 +66,7 @@ public class SquareLineTree extends DrawTree implements SquareTipDrawer {
 
 	MesquiteString nodeLocsName;
 	MesquiteBoolean showEdgeLines = new MesquiteBoolean(true);  //these needs to be set default true; otherwise Trace Character makes branches disappear in most common cases
+	MesquiteBoolean trianglesForCollapsed = new MesquiteBoolean(true);  //Currently fixed # space units. To do more, would need factor in treeDrawing that NodeLocsStandard has access to.
 	MesquiteBoolean showSpots = new MesquiteBoolean(false);  
 	/*.................................................................................................................*/
 	public boolean startJob(String arguments, Object condition, boolean hiredByName) {
@@ -88,6 +89,7 @@ public class SquareLineTree extends DrawTree implements SquareTipDrawer {
 		}*/
 		addMenuItem( "Line Width...", makeCommand("setEdgeWidth",  this));
 		addCheckMenuItem(null,"Show Edge Lines", makeCommand("showEdgeLines",  this), showEdgeLines);
+		addCheckMenuItem(null,"Show Triangles for Collapsed Clades", makeCommand("trianglesForCollapsed",  this), trianglesForCollapsed);
 		addMenuItem( "Circles at Nodes...", makeCommand("queryCircles",  this));
 		return true;
 
@@ -153,6 +155,7 @@ public class SquareLineTree extends DrawTree implements SquareTipDrawer {
 		temp.addLine("setSpotDiameter " + oldSpotSize); 
 		temp.addLine("colorCirclesOnly " + colorCirclesOnly); 
 		temp.addLine("showEdgeLines " + showEdgeLines.toOffOnString()); 
+		temp.addLine("trianglesForCollapsed " + trianglesForCollapsed.toOffOnString()); 
 		temp.addLine("showSpots " + showSpots.toOffOnString()); 
 		return temp;
 	}
@@ -192,6 +195,13 @@ public class SquareLineTree extends DrawTree implements SquareTipDrawer {
 			boolean current = showEdgeLines.getValue();
 			showEdgeLines.toggleValue(parser.getFirstToken(arguments));
 			if (current!=showEdgeLines.getValue()) {
+				parametersChanged();
+			}
+		}
+		else if (checker.compare(this.getClass(), "Sets whether to show triangles for collapsed clades.", "", commandName, "trianglesForCollapsed")) {
+			boolean current = trianglesForCollapsed.getValue();
+			trianglesForCollapsed.toggleValue(parser.getFirstToken(arguments));
+			if (current!=trianglesForCollapsed.getValue()) {
 				parametersChanged();
 			}
 		}
@@ -551,7 +561,13 @@ class SquareLineTreeDrawing extends TreeDrawing  {
 		}
 		return true;
 	}
+	/*_________________________________________________*/
 
+	public double triangleWidthInCollapsed(){  //drawing can override; might affect taxon spacing
+		if ( ownerModule.trianglesForCollapsed.getValue())
+			return 2;
+		return 0;
+	}
 
 	/*_________________________________________________*/
 	private   void drawClade(Tree tree, Graphics g, int node) {
@@ -561,8 +577,14 @@ class SquareLineTreeDrawing extends TreeDrawing  {
 
 			if (tree.isVisibleEvenIfInCollapsed(node)) {
 				if (tree.isLeftmostTerminalOfCollapsedClade(node)){
+					if (triangleWidthInCollapsed()>0){
+						DrawTreeUtil.drawOneTriangle(treeDisplay, x, y, useEdgeWidth(), tree, g, node);
+					
+				}
+					else {
 					DrawTreeUtil.drawOneSquareLineBranch(treeDisplay, xSolid, ySolid, useEdgeWidth(), tree, g, null, node, 0, useEdgeWidth(),0, emphasizeNodes(), nodePoly(node), defaultStroke);
 					DrawTreeUtil.drawOneSquareLineBranch(treeDisplay, xDashed, yDashed, useEdgeWidth(), tree, g, null, node, 0, useEdgeWidth(),0, emphasizeNodes(), nodePoly(node), dashedStroke);
+					}
 				}
 				else if (!tree.withinCollapsedClade(node)) {
 					DrawTreeUtil.drawOneSquareLineBranch(treeDisplay, x, y, useEdgeWidth(), tree, g, null, node, 0, useEdgeWidth(),0, emphasizeNodes(), nodePoly(node), defaultStroke);
@@ -700,8 +722,12 @@ class SquareLineTreeDrawing extends TreeDrawing  {
 					g.setColor(color);
 				if (!(showSpots() && ownerModule.colorCirclesOnly)){
 					if (tree.isLeftmostTerminalOfCollapsedClade(node)){
-						DrawTreeUtil.drawOneSquareLineBranch(treeDisplay, xSolid, ySolid, useEdgeWidth(), treeDisplay.getTree(), g, colors, node, localInset,  fillWidth, 4,emphasizeNodes(),nodePoly(node), defaultStroke);
+						if (triangleWidthInCollapsed()>0){
+						}
+						else {
+							DrawTreeUtil.drawOneSquareLineBranch(treeDisplay, xSolid, ySolid, useEdgeWidth(), treeDisplay.getTree(), g, colors, node, localInset,  fillWidth, 4,emphasizeNodes(),nodePoly(node), defaultStroke);
 						DrawTreeUtil.drawOneSquareLineBranch(treeDisplay, xDashed, yDashed, useEdgeWidth(), treeDisplay.getTree(), g, colors, node, localInset,  fillWidth, 4,emphasizeNodes(),nodePoly(node),  dashedStroke);
+						}
 					}
 					else if (!tree.withinCollapsedClade(node))
 						DrawTreeUtil.drawOneSquareLineBranch(treeDisplay,x,y,useEdgeWidth(), treeDisplay.getTree(), g, colors, node, localInset,  fillWidth, 4,emphasizeNodes(),nodePoly(node), defaultStroke) ;
@@ -718,8 +744,12 @@ class SquareLineTreeDrawing extends TreeDrawing  {
 						float thickness = fillWidth/numColors;
 						float start = i*thickness+localInset;
 						if (tree.isLeftmostTerminalOfCollapsedClade(node)){
-							DrawTreeUtil.fillOneSquareLineBranch(treeDisplay, xSolid, ySolid, useEdgeWidth(), treeDisplay.getTree(), g, colors, node, start,  thickness, localInset,emphasizeNodes(),nodePoly(node), defaultStroke);
+							if (triangleWidthInCollapsed()>0){
+							}
+							else {
+								DrawTreeUtil.fillOneSquareLineBranch(treeDisplay, xSolid, ySolid, useEdgeWidth(), treeDisplay.getTree(), g, colors, node, start,  thickness, localInset,emphasizeNodes(),nodePoly(node), defaultStroke);
 							DrawTreeUtil.fillOneSquareLineBranch(treeDisplay, xDashed, yDashed, useEdgeWidth(), treeDisplay.getTree(), g, colors, node, start,  thickness, localInset,emphasizeNodes(),nodePoly(node), dashedStroke);
+							}
 						}
 						else if (!tree.withinCollapsedClade(node))
 							DrawTreeUtil.fillOneSquareLineBranch(treeDisplay,x,y,useEdgeWidth(), treeDisplay.getTree(), g, colors, node, start,  thickness, localInset,emphasizeNodes(),nodePoly(node), defaultStroke) ;
@@ -746,8 +776,12 @@ class SquareLineTreeDrawing extends TreeDrawing  {
 				fillSpot(g,node);
 			if (!(showSpots() && ownerModule.colorCirclesOnly)){
 				if (tree.isLeftmostTerminalOfCollapsedClade(node)){
-					DrawTreeUtil.drawOneSquareLineBranch(treeDisplay, xSolid, ySolid, useEdgeWidth(), tree, g, null, node, inset, useEdgeWidth()-inset*2, 4,emphasizeNodes(),nodePoly(node), defaultStroke);
+					if (triangleWidthInCollapsed()>0){
+					}
+					else {
+						DrawTreeUtil.drawOneSquareLineBranch(treeDisplay, xSolid, ySolid, useEdgeWidth(), tree, g, null, node, inset, useEdgeWidth()-inset*2, 4,emphasizeNodes(),nodePoly(node), defaultStroke);
 					DrawTreeUtil.drawOneSquareLineBranch(treeDisplay, xDashed, yDashed, useEdgeWidth(), tree, g, null, node, inset, useEdgeWidth()-inset*2, 4,emphasizeNodes(),nodePoly(node), dashedStroke);
+					}
 				}
 				else if (!tree.withinCollapsedClade(node))
 					DrawTreeUtil.drawOneSquareLineBranch(treeDisplay,x,y,useEdgeWidth(), tree, g, null, node, inset, useEdgeWidth()-inset*2, 4,emphasizeNodes(),nodePoly(node), defaultStroke) ;

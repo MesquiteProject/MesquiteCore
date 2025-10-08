@@ -496,7 +496,7 @@ public class BasicDrawTaxonNames extends DrawNamesTreeDisplay {
 	}
 	Color bgTransparent = new Color(255,255,255,0);  //make transparent so as not to overwrite boxes and branches if font big
 	boolean nameIsVisible(TreeDisplay treeDisplay, int taxonNumber){
-		boolean vis = treeDisplay.getVisRect() == null || namePolys[taxonNumber].intersects(treeDisplay.getVisRect());
+		boolean vis = treeDisplay.getVisRect() == null || (namePolys != null && namePolys[taxonNumber].intersects(treeDisplay.getVisRect()));
 		/*if (vis){
 			if (triangleBase >=0 ){
 				Tree tree = treeDisplay.getTree();
@@ -951,7 +951,7 @@ public class BasicDrawTaxonNames extends DrawNamesTreeDisplay {
 			}
 			textRotator.assignBackground(null);
 			gL.setColor(Color.black);
-			ColorDistribution.setComposite(gL,composite);		
+			ColorDistribution.setComposite(gL,composite);
 			if (selected  && !namePolys[taxonNumber].isHidden() && treeDisplay.selectedTaxonHighlightMode == TreeDisplay.sTHM_GREYBOX){ //&& GraphicsUtil.useXORMode(gL, false)
 				GraphicsUtil.fillTransparentBorderedSelectionPolygon(gL, namePolys[taxonNumber]);
 			}
@@ -1094,6 +1094,7 @@ public class BasicDrawTaxonNames extends DrawNamesTreeDisplay {
 				namePolys[i].xpoints = new int[4];
 				namePolys[i].ypoints = new int[4];
 				namePolys[i].npoints=4;
+				namePolys[i].setB(-1,-1, 1, 1);
 			}
 		}
 		else if (oldNumTaxa<totalNumTaxa) {
@@ -1105,6 +1106,7 @@ public class BasicDrawTaxonNames extends DrawNamesTreeDisplay {
 				namePolys[i].xpoints = new int[4];
 				namePolys[i].ypoints = new int[4];
 				namePolys[i].npoints=4;
+				namePolys[i].setB(-1,-1, 1, 1);
 			}
 			oldNumTaxa=totalNumTaxa;
 		}

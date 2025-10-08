@@ -69,7 +69,7 @@ public class MesquiteFile extends Listened implements HNode, Commandable, Listab
 	public static final int LINKED = 0;
 	public static final int INCLUDED = 1;
 	public static final int HOME = -1;
-
+	public static String defaultEncoding = "ISO-8859-1";
 	public static boolean suppressReadWriteLogging = false;
 
 	private boolean local = true;
@@ -158,7 +158,7 @@ public class MesquiteFile extends Listened implements HNode, Commandable, Listab
 		nextBlockTimer = new MesquiteTimer();
 		readLineTimer = new MesquiteTimer();
 		try {
-			lineEndingBytes = StringUtil.lineEnding().getBytes("ISO-8859-1");
+			lineEndingBytes = StringUtil.lineEnding().getBytes(defaultEncoding);
 		}
 		catch (UnsupportedEncodingException e){
 			lineEndingBytes = StringUtil.lineEnding().getBytes();
@@ -1158,7 +1158,7 @@ public class MesquiteFile extends Listened implements HNode, Commandable, Listab
 		if (outStream!=null){
 			try {
 				for (int i= 0; i<s.getNumStrings(); i++){
-					byte[] sBytes = s.getBytes("ISO-8859-1", i);
+					byte[] sBytes = s.getBytes(defaultEncoding, i);
 
 					outStream.write(sBytes); 
 				}
@@ -1178,7 +1178,7 @@ public class MesquiteFile extends Listened implements HNode, Commandable, Listab
 		if (outStream!=null){
 			try {
 
-				byte[] sBytes = s.getBytes("ISO-8859-1");
+				byte[] sBytes = s.getBytes(defaultEncoding);
 
 				outStream.write(sBytes); 
 				outStream.write(lineEndingBytes); //was '\n'
@@ -1195,7 +1195,7 @@ public class MesquiteFile extends Listened implements HNode, Commandable, Listab
 	{	
 		if (outStream!=null){
 			try {
-				byte[] sBytes = s.getBytes("ISO-8859-1");
+				byte[] sBytes = s.getBytes(defaultEncoding);
 
 				outStream.write(sBytes); 
 				outStream.flush();

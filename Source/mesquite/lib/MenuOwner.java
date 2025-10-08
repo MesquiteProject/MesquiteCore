@@ -530,7 +530,7 @@ public abstract class MenuOwner implements Doomable { // EMBEDDED: extends Apple
 	}
 
 	/*............................................................................. */
-	/** Sets whether module's menu items are to appear in menubar or not. */
+	/** Sets whether module's menu items are to appear in menubar or not. Applies also to employees. */
 	public final void setUseMenubar(boolean useMenuBar) {
 		this.useMenuBar = useMenuBar;
 	}
@@ -1160,6 +1160,7 @@ public abstract class MenuOwner implements Doomable { // EMBEDDED: extends Apple
 
 	Vector embeddedMenusVector = null;
 
+	/*-------------------------------------------------------------*/
 	public Vector composeEmbeddedMenuBar(MesquiteWindow whichWindow) {
 		MesquitePopup menu;
 		Vector menuVector = new Vector();
@@ -1339,8 +1340,7 @@ public abstract class MenuOwner implements Doomable { // EMBEDDED: extends Apple
 	}
 
 	private MesquitePopup fillWindowMenu(Vector menuBar, MesquiteWindow whichWindow) {
-		MesquitePopup wMenu = MesquitePopup.getPopupMenu(new MesquiteMenuSpec(null, "Window", module),
-				whichWindow.getInfoBar());
+		MesquitePopup wMenu = MesquitePopup.getPopupMenu(new MesquiteMenuSpec(null, "Window", module),whichWindow.getInfoBar());
 		if (whichWindow != null) {
 			if (whichWindow.permitViewMode()) {
 				MesquiteSubmenu setViewModeMenu = MesquiteSubmenu.getSubmenu("View Mode", wMenu, module);
@@ -1595,7 +1595,8 @@ public abstract class MenuOwner implements Doomable { // EMBEDDED: extends Apple
 		else {
 			if (menuTracing)
 				MesquiteMessage.notifyProgrammer("Composing menu of " + module.getName());
-			addMyMenuItems(menu);
+			
+				addMyMenuItems(menu);
 			ListableVector L = module.getEmployeeVector();
 			if (L != null) {
 				int num = L.size();

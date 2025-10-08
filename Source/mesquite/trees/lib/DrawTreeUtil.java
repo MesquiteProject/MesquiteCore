@@ -275,6 +275,26 @@ public class DrawTreeUtil {
 		}
 	}
 
+	public static void drawOneTriangle(TreeDisplay treeDisplay, double[] x, double[] y, int edgewidth, Tree tree, Graphics g, int node){
+		double unitWidth = treeDisplay.getTreeDrawing().triangleWidthInCollapsed();
+		double triWidth = treeDisplay.getTaxonSpacing()*unitWidth/2.0;
+		double triOffset =edgewidth/2;
+		int mother = tree.motherOfNode(node);
+		if (treeDisplay.isUp() || treeDisplay.isDown()){
+			double xMother = x[mother] + triOffset;
+			GraphicsUtil.drawLine(g, xMother,y[mother], xMother-triWidth,y[node], edgewidth);
+			GraphicsUtil.drawLine(g, xMother,y[mother], xMother+triWidth,y[node], edgewidth);
+			GraphicsUtil.drawLine(g, xMother-triWidth,y[node], xMother+triWidth,y[node], edgewidth);
+	}
+		else {
+			double yMother = y[mother] + triOffset;
+			GraphicsUtil.drawLine(g, x[mother],yMother, x[node],yMother-triWidth, edgewidth);
+			GraphicsUtil.drawLine(g, x[mother],yMother, x[node],yMother+triWidth, edgewidth);
+			GraphicsUtil.drawLine(g, x[node],yMother-triWidth, x[node],yMother+triWidth, edgewidth);
+	}
+		
+	
+	}
 	/*_________________________________________________*/
 	public static void drawOneCurvedBranch(TreeDisplay treeDisplay, double[] x, double[] y, int edgewidth, Tree tree, Graphics g, int node, int start, int width, int adj, boolean emphasizeNodes, Path2D nodePoly, BasicStroke defaultStroke) {
 		if (tree.nodeExists(node)) {

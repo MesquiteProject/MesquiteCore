@@ -171,6 +171,11 @@ public abstract class TreeDrawing  {
 	public  boolean isInTerminalBox(Tree tree, int node, int xPos, int yPos){
 		return false;
 	}
+	
+	//returns number of taxon space units for width of triangle. Return 0 if don't use triangle.
+	public double triangleWidthInCollapsed(){  //drawing can override; might affect taxon spacing
+		return 0;
+	}
 	/* ===###################################=== */
 	/*.................................................................................................................*/
 	public void translateAll(int shiftX, int shiftY){
