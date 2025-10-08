@@ -2484,13 +2484,10 @@ class BasicTreeWindow extends MesquiteWindow implements Fittable, MesquiteListen
 
 		if (tce == null)
 			return;
-		if (tree != null)
+		treeDisplay.addExtra(tce);
+		if (tree != null) {
 			tce.setTree(tree);
-
-		if (tce != null){
-			treeDisplay.addExtra(tce);
-			if (tree != null)
-				treeDisplay.accumulateRequestsFromExtras(tree);
+			treeDisplay.accumulateRequestsFromExtras(tree);
 		}
 		checkPanelPositionsLegal();
 		treeDisplay.pleaseUpdate(false);

@@ -31,7 +31,7 @@ public class TreeDisplayLegendSimpleText extends TreeDisplayLegend {
 		setVisible(false);
 
 		setOffsetX(50);
-		setOffsetY(50);
+		setOffsetY(0);
 		setLayout(null);
 		setSize(legendWidth, legendHeight);
 		int fontsize = MesquiteInteger.maximum(MesquiteFrame.resourcesFontSize, 12);

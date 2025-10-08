@@ -36,19 +36,8 @@ public class Parallelizer {
 		this.owner = owner;
 		this.nThreads = nThreads;
 	}
-	
 
-	public boolean itemBeingCalculated(int item){
-		if (threads == null)
-			return false;
-		for (int i = 0; i < nThreads; i++) {
-			if (threads[i].running){
-				if (threads[i].itemBeingCalculated == item)
-					return true;
-			}
-		}
-		return false;
-	}
+
 	public void shutDown(){
 		if (threads == null)
 			return;
@@ -63,29 +52,89 @@ public class Parallelizer {
 		}
 		return true;
 	}
-	public boolean itemUncalculated(int item){
-		if (calcStatus == null)
-			return true;
-		return calcStatus.getValue(item)==0;
-	}
+	/* ===================================================== */
+
+	public final static int FAILURE = -1;
+	public final static int UNCALCULATED = 0;
+	public final static int BEINGCALCULATED = 1;
+	public final static int SUCCESS = 2;
+	public final static int INAPPLICABLE = 3;
+
 	public void setItemStatus(int item, int status){
 		if (calcStatus == null)
 			return;
 		calcStatus.setValue(item, status);
 	}
+
+	/* ===================================================== */
+	public String summarizeCalcStatus(){
+		int numUNCALCULATED = 0;
+		int numBEINGCALCULATED = 0;
+		int numSUCCESS = 0;
+		int numINAPPLICABLE = 0;
+		int numOTHER = 0;
+		for (int i = 0; i<calcStatus.getSize(); i++){
+			if (calcStatus.getValue(i) == UNCALCULATED)
+				numUNCALCULATED++;
+			else if (calcStatus.getValue(i) == BEINGCALCULATED)
+				numBEINGCALCULATED++;
+			else if (calcStatus.getValue(i) == SUCCESS)
+				numSUCCESS++;
+			else if (calcStatus.getValue(i) == INAPPLICABLE)
+				numINAPPLICABLE++;
+			else 
+				numOTHER++;
+		}
+		String s = "#";
+		s += " UNCALCULATED " + numUNCALCULATED;
+		s += " BEINGCALCULATED " + numBEINGCALCULATED;
+		s += " SUCCESS " + numSUCCESS;
+		s += " INAPPLICABLE " + numINAPPLICABLE;
+		s += " other " + numOTHER;
+		return s;
+	}
+	/* ===================================================== */
+	public boolean itemUncalculated(int item){
+		if (calcStatus == null)
+			return true;
+		return calcStatus.getValue(item)==UNCALCULATED;
+	}
+	/* ===================================================== */
+	public boolean itemBeingCalculated(int item){
+		if (calcStatus == null)
+			return false;
+		return calcStatus.getValue(item) == BEINGCALCULATED;
+		/*
+		if (threads == null)
+			return false;
+		for (int i = 0; i < nThreads; i++) {
+			if (threads[i].running){
+				if (threads[i].itemBeingCalculated == item)
+					return true;
+			}
+		}
+		if (calcStatus.getValue(item) == BEINGCALCULATED){
+			System.err.println("@BEINGCALCULATED but no thread claims " + item);
+			return true;
+		}
+		return false; */
+	}
+
+	/* ===================================================== */
 	public int getTotalCalculated(){
 		if (calcStatus == null)
 			return 0;
 		int count = 0;
 		for (int i= 0; i<calcStatus.getSize(); i++){
-			if (calcStatus.getValue(i)<0 || calcStatus.getValue(i)>1)
+			if (calcStatus.getValue(i) != INAPPLICABLE && (calcStatus.getValue(i)<0 || calcStatus.getValue(i)>1))
 				count++;
 		}
-		if (false && count != totalCalculated)
+		if (count != totalCalculated)
 			System.err.println("@Difference between count " + count + " and totalCalculated " + totalCalculated +" in Parallelizer");
 		return totalCalculated;
 	}
 
+	/* ===================================================== */
 	//This is an option service for cloning employees for each thread. See ParallelAlterDataMatrices for example with need to make ghost project
 	public MesquiteModule cloneEmployee(MesquiteModule employer, MesquiteModule employee, Class hiredAs) {
 		String snapshot = Snapshot.getSnapshotCommands(employee, null, "");
@@ -108,33 +157,37 @@ public class Parallelizer {
 	}
 	/* ===================================================== */
 	public synchronized void go(){ //this should be called on thread of owner, which should hold until done
-		if (verbose) System.err.println("Parallelizer: INITIALIZE ##################");
-		//Initialize
+		
+		// ################## INITIALIZE ##################
+		System.out.println("Parallelizer: calculations initializing");
 		int count = owner.getTotalPossibleParallelItemCount();
-		//x System.err.println("@Parallelizer: GO ################## " + getTotalCalculated());
+
 		if (calcStatus == null) 
 			calcStatus = new IntegerArray(count);
 		else 
 			calcStatus.resetSize(count);
 		calcStatus.zeroArray();
 		totalCalculated = 0;
-		if (verbose) System.err.println("Parallelizer: Calculation for first item ##################");
+		
+		// ################## Calculation for first item ##################
+		System.out.println("Parallelizer: first calculation");
+		owner.markInappropriateItems();		
 		//first step, do one calculation, and use its snapshot to build others
 		int firstItem = owner.getNextParallelItem();
-		//x System.err.println("@GO Parallelizer " + owner.getNextParallelItem());
-		//x System.err.println("@Parallelizer: GOING ################## " + firstItem);
-		ParallelParams ppFirst = owner.doFirstParallelCalculation();
+
+		setItemStatus(firstItem, BEINGCALCULATED);
+		ParallelParams ppFirst = owner.doFirstCalculation_Parallel(firstItem);
 		if (ppFirst == null)
-			calcStatus.setValue(firstItem, -1);
+			setItemStatus(firstItem, FAILURE);
 		else
-			calcStatus.setValue(firstItem, 2);
+			setItemStatus(firstItem, SUCCESS);
 
 		totalCalculated++;
-		//x System.err.println("@GO ParallelizerB " + owner.getNextParallelItem());
 
 		//Next, build others threads
 		if (threads == null || !owner.pleaseReuseParallelThreads()){
-			if (verbose) System.err.println("Parallelizer: Building threads ##################");
+			// ################## Building threads ##################
+			System.out.println("Parallelizer: building threads");
 			threads = new PThread[nThreads];
 			for (int i = 0; i < nThreads; i++) {
 				ParallelParams ppT = owner.cloneForParallel(ppFirst);
@@ -142,20 +195,16 @@ public class Parallelizer {
 			}
 		}
 
-		if (verbose) System.err.println("Parallelizer: Running threads ##################");
-		//try {
-			for (int i = 0; i < nThreads; i++) {
-				threads[i].done = false;
-				threads[i].running = true;
-				if (!threads[i].started)
-					threads[i].start();
-			}
-		/*}
-		catch (Exception e){
-			Debugg.printStackTrace("");
-			return;
+		// ################## Running threads ##################
+
+		System.out.println("Parallelizer: starting threads");
+		for (int i = 0; i < nThreads; i++) {
+			threads[i].done = false;
+			threads[i].running = true;  // this is how they get re-going if second time around
+			if (!threads[i].started)
+				threads[i].start();
 		}
-*/
+
 		while (!completed()){
 			try {
 				Thread.sleep(10);
@@ -164,14 +213,12 @@ public class Parallelizer {
 				e.printStackTrace();
 			}
 		}
-		//try {
-			for (int i = 0; i < nThreads; i++) 
-				threads[i].running = false;
-		/*}
-		catch (Exception e){
-			return;
-		}*/
-			//x System.err.println("@Parallelizer: GONE ##################");
+		System.out.println("Parallelizer: finished calculations");
+
+		for (int i = 0; i < nThreads; i++) 
+			threads[i].running = false;
+		
+		System.out.println("Parallelizer: " + summarizeCalcStatus());
 	}
 	/* ===================================================== */
 
@@ -200,14 +247,15 @@ public class Parallelizer {
 			int item = -1;
 			while ((item = owner.getNextParallelItem())>=0){
 				itemBeingCalculated = item;
-				int result = owner.doParallelCalculation(item, pp);
+				setItemStatus(item, BEINGCALCULATED);
+				int result = owner.doItemCalculation_Parallel(item, pp);
 				totalCalculated++;
-				itemBeingCalculated = -1;
 				//System.err.println("### finished item " + item + " on thread " + whichThread);
-				if (result > 0)
-					setItemStatus(item, 2);
+				if (result == 0)
+					setItemStatus(item, SUCCESS);
 				else
-					setItemStatus(item, -1);
+					setItemStatus(item, FAILURE);
+				itemBeingCalculated = -1;
 			}
 			done = true;
 		}
@@ -227,6 +275,7 @@ public class Parallelizer {
 				}
 			}		
 		}
+		
 		public void shutDown(){ // to be called on owner's thread
 			onCall = false;
 			while (running){
