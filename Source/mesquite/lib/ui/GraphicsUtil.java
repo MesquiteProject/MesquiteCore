@@ -103,8 +103,10 @@ public class GraphicsUtil {
 			return;
 		}
 		Graphics2D g2 = (Graphics2D)g;
+		Stroke stroke = g2.getStroke();
 		g2.setStroke(new RoundCapStroke((float)thickness));
 		drawLine(g2,fromX, fromY, toX, toY);
+		g2.setStroke(stroke);
 	}
 	/*_________________________________________________*/
 	public static void fillRoundRect(Graphics2D g2, double x, double y, double width, double height, double arcWidth,double arcHeight) {

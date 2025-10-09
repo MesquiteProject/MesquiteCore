@@ -562,8 +562,8 @@ class SquareLineTreeDrawing extends TreeDrawing  {
 		return true;
 	}
 	/*_________________________________________________*/
-
-	public double triangleWidthInCollapsed(){  //drawing can override; might affect taxon spacing
+	//overridden from TreeDrawing
+	public double triangleWidthInCollapsed(){ 
 		if ( ownerModule.trianglesForCollapsed.getValue())
 			return 2;
 		return 0;
@@ -579,15 +579,14 @@ class SquareLineTreeDrawing extends TreeDrawing  {
 				if (tree.isLeftmostTerminalOfCollapsedClade(node)){
 					if (triangleWidthInCollapsed()>0){
 						DrawTreeUtil.drawOneTriangle(treeDisplay, x, y, useEdgeWidth(), tree, g, node);
-					
-				}
+					}
 					else {
-					DrawTreeUtil.drawOneSquareLineBranch(treeDisplay, xSolid, ySolid, useEdgeWidth(), tree, g, null, node, 0, useEdgeWidth(),0, emphasizeNodes(), nodePoly(node), defaultStroke);
-					DrawTreeUtil.drawOneSquareLineBranch(treeDisplay, xDashed, yDashed, useEdgeWidth(), tree, g, null, node, 0, useEdgeWidth(),0, emphasizeNodes(), nodePoly(node), dashedStroke);
+						DrawTreeUtil.drawOneSquareLineBranch(treeDisplay, xSolid, ySolid, useEdgeWidth(), tree, g, node, 0, useEdgeWidth(),0, emphasizeNodes(), nodePoly(node), defaultStroke);
+						DrawTreeUtil.drawOneSquareLineBranch(treeDisplay, xDashed, yDashed, useEdgeWidth(), tree, g, node, 0, useEdgeWidth(),0, emphasizeNodes(), nodePoly(node), dashedStroke);
 					}
 				}
 				else if (!tree.withinCollapsedClade(node)) {
-					DrawTreeUtil.drawOneSquareLineBranch(treeDisplay, x, y, useEdgeWidth(), tree, g, null, node, 0, useEdgeWidth(),0, emphasizeNodes(), nodePoly(node), defaultStroke);
+					DrawTreeUtil.drawOneSquareLineBranch(treeDisplay, x, y, useEdgeWidth(), tree, g, node, 0, useEdgeWidth(),0, emphasizeNodes(), nodePoly(node), defaultStroke);
 				}
 				if (showSpots())
 					drawSpot( g, node);
@@ -715,22 +714,38 @@ class SquareLineTreeDrawing extends TreeDrawing  {
 			float fillWidth = useEdgeWidth()-2*localInset;
 			int numColors = colors.getNumColors();
 			recordBranchFillColors(tree, node, colors.clone());
-			
+
 			Color color;
 			if (numColors<=1) {
 				if ((color = colors.getColor(0, !tree.anySelected()|| tree.getSelected(node)))!=null)
 					g.setColor(color);
 				if (!(showSpots() && ownerModule.colorCirclesOnly)){
 					if (tree.isLeftmostTerminalOfCollapsedClade(node)){
-						if (triangleWidthInCollapsed()>0){
+						if (triangleWidthInCollapsed()>0){ //this will have to re-ask about the number of colors, since now it's the ancestor's
+								if (numColors==1){
+									g.setColor(colors.getColor(0));
+									DrawTreeUtil.fillOneTriangle(treeDisplay, x, y, useEdgeWidth(), useEdgeWidth(), localInset, tree, g, node);
+								}
+								else {
+									double thickness = 1.0*fillWidth/colors.getNumColors();
+									for (int i=0; i<numColors; i++) {
+										double start = i*thickness;
+										color = colors.getColor(i);
+										if (color != null){
+											g.setColor(color);
+											DrawTreeUtil.fillOneTriangle(treeDisplay, x, y, useEdgeWidth(), thickness, start, tree, g, node);
+										}
+									}
+								
+							}
 						}
 						else {
-							DrawTreeUtil.drawOneSquareLineBranch(treeDisplay, xSolid, ySolid, useEdgeWidth(), treeDisplay.getTree(), g, colors, node, localInset,  fillWidth, 4,emphasizeNodes(),nodePoly(node), defaultStroke);
-						DrawTreeUtil.drawOneSquareLineBranch(treeDisplay, xDashed, yDashed, useEdgeWidth(), treeDisplay.getTree(), g, colors, node, localInset,  fillWidth, 4,emphasizeNodes(),nodePoly(node),  dashedStroke);
+							DrawTreeUtil.drawOneSquareLineBranch(treeDisplay, xSolid, ySolid, useEdgeWidth(), treeDisplay.getTree(), g, node, localInset,  fillWidth, 4,emphasizeNodes(),nodePoly(node), defaultStroke);
+							DrawTreeUtil.drawOneSquareLineBranch(treeDisplay, xDashed, yDashed, useEdgeWidth(), treeDisplay.getTree(), g, node, localInset,  fillWidth, 4,emphasizeNodes(),nodePoly(node),  dashedStroke);
 						}
 					}
 					else if (!tree.withinCollapsedClade(node))
-						DrawTreeUtil.drawOneSquareLineBranch(treeDisplay,x,y,useEdgeWidth(), treeDisplay.getTree(), g, colors, node, localInset,  fillWidth, 4,emphasizeNodes(),nodePoly(node), defaultStroke) ;
+						DrawTreeUtil.drawOneSquareLineBranch(treeDisplay,x,y,useEdgeWidth(), treeDisplay.getTree(), g, node, localInset,  fillWidth, 4,emphasizeNodes(),nodePoly(node), defaultStroke) ;
 				}
 				if (showSpots())
 					fillSpot(g,node);
@@ -738,21 +753,37 @@ class SquareLineTreeDrawing extends TreeDrawing  {
 			}
 			else {
 				if (!(showSpots() && ownerModule.colorCirclesOnly))
-					for (int i=0; i<numColors; i++) {
+					if (tree.isLeftmostTerminalOfCollapsedClade(node) && triangleWidthInCollapsed()>0){
+						if (numColors==1){
+								g.setColor(colors.getColor(0));
+								DrawTreeUtil.fillOneTriangle(treeDisplay, x, y, useEdgeWidth(),useEdgeWidth(), localInset, tree, g, node);
+							}
+							else {
+								double thickness = 1.0*fillWidth/colors.getNumColors();
+								for (int i=0; i<numColors; i++) {
+									double start = i*thickness;
+									color = colors.getColor(i);
+									if (color != null){
+										g.setColor(color);
+										DrawTreeUtil.fillOneTriangle(treeDisplay, x, y, useEdgeWidth(), thickness, start, tree, g, node);
+									}
+								}
+						}
+					}
+					else
+						for (int i=0; i<numColors; i++) {
 						if ((color = colors.getColor(i, !tree.anySelected()|| tree.getSelected(node)))!=null)
 							g.setColor(color);
 						float thickness = fillWidth/numColors;
 						float start = i*thickness+localInset;
 						if (tree.isLeftmostTerminalOfCollapsedClade(node)){
-							if (triangleWidthInCollapsed()>0){
-							}
-							else {
-								DrawTreeUtil.fillOneSquareLineBranch(treeDisplay, xSolid, ySolid, useEdgeWidth(), treeDisplay.getTree(), g, colors, node, start,  thickness, localInset,emphasizeNodes(),nodePoly(node), defaultStroke);
-							DrawTreeUtil.fillOneSquareLineBranch(treeDisplay, xDashed, yDashed, useEdgeWidth(), treeDisplay.getTree(), g, colors, node, start,  thickness, localInset,emphasizeNodes(),nodePoly(node), dashedStroke);
+							if (triangleWidthInCollapsed()==0){
+								DrawTreeUtil.fillOneSquareLineBranch(treeDisplay, xSolid, ySolid, useEdgeWidth(), treeDisplay.getTree(), g, node, start,  thickness, localInset,emphasizeNodes(),nodePoly(node), defaultStroke);
+								DrawTreeUtil.fillOneSquareLineBranch(treeDisplay, xDashed, yDashed, useEdgeWidth(), treeDisplay.getTree(), g, node, start,  thickness, localInset,emphasizeNodes(),nodePoly(node), dashedStroke);
 							}
 						}
 						else if (!tree.withinCollapsedClade(node))
-							DrawTreeUtil.fillOneSquareLineBranch(treeDisplay,x,y,useEdgeWidth(), treeDisplay.getTree(), g, colors, node, start,  thickness, localInset,emphasizeNodes(),nodePoly(node), defaultStroke) ;
+							DrawTreeUtil.fillOneSquareLineBranch(treeDisplay,x,y,useEdgeWidth(), treeDisplay.getTree(), g, node, start,  thickness, localInset,emphasizeNodes(),nodePoly(node), defaultStroke) ;
 					}
 				if (showSpots()){
 					boolean select = !tree.anySelected()|| tree.getSelected(node);
@@ -779,12 +810,12 @@ class SquareLineTreeDrawing extends TreeDrawing  {
 					if (triangleWidthInCollapsed()>0){
 					}
 					else {
-						DrawTreeUtil.drawOneSquareLineBranch(treeDisplay, xSolid, ySolid, useEdgeWidth(), tree, g, null, node, inset, useEdgeWidth()-inset*2, 4,emphasizeNodes(),nodePoly(node), defaultStroke);
-					DrawTreeUtil.drawOneSquareLineBranch(treeDisplay, xDashed, yDashed, useEdgeWidth(), tree, g, null, node, inset, useEdgeWidth()-inset*2, 4,emphasizeNodes(),nodePoly(node), dashedStroke);
+						DrawTreeUtil.drawOneSquareLineBranch(treeDisplay, xSolid, ySolid, useEdgeWidth(), tree, g, node, inset, useEdgeWidth()-inset*2, 4,emphasizeNodes(),nodePoly(node), defaultStroke);
+						DrawTreeUtil.drawOneSquareLineBranch(treeDisplay, xDashed, yDashed, useEdgeWidth(), tree, g, node, inset, useEdgeWidth()-inset*2, 4,emphasizeNodes(),nodePoly(node), dashedStroke);
 					}
 				}
 				else if (!tree.withinCollapsedClade(node))
-					DrawTreeUtil.drawOneSquareLineBranch(treeDisplay,x,y,useEdgeWidth(), tree, g, null, node, inset, useEdgeWidth()-inset*2, 4,emphasizeNodes(),nodePoly(node), defaultStroke) ;
+					DrawTreeUtil.drawOneSquareLineBranch(treeDisplay,x,y,useEdgeWidth(), tree, g, node, inset, useEdgeWidth()-inset*2, 4,emphasizeNodes(),nodePoly(node), defaultStroke) ;
 			}
 		}
 	}

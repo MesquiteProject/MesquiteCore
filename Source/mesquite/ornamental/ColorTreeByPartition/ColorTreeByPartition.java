@@ -153,8 +153,6 @@ class ColorByPartitionExtra extends TreeDisplayExtra implements MesquiteListener
 	}
 	/*.................................................................................................................*/
 	public   void drawOnTree(Tree tree, int node, Graphics g) {
-		if (!tree.isVisibleEvenIfInCollapsed(node))
-			return;
 		if (showColors) {
 			if (needsReharvesting)
 				reharvest(tree);
@@ -164,10 +162,9 @@ class ColorByPartitionExtra extends TreeDisplayExtra implements MesquiteListener
 					drawOnTree(tree, d, g);
 				if (tree.isLeftmostTerminalOfCollapsedClade(node)){
 					ColorDistribution cladeColors = colorsInClade(tree, tree.deepestCollapsedAncestor(node));
-					//if (cladeColors != null && cladeColors.anyColors())  // turned this off so fillBranchWithColors can recordFillBranchColors
-						treeDisplay.getTreeDrawing().fillBranchWithColors(tree,  node, cladeColors, g);
+					treeDisplay.getTreeDrawing().fillBranchWithColors(tree,  node, cladeColors, g);
 				}
-				else //if (colors[node].anyColors())  // turned this off so fillBranchWithColors can recordFillBranchColors
+				else if (tree.isVisibleEvenIfInCollapsed(node))
 					treeDisplay.getTreeDrawing().fillBranchWithColors(tree,  node, colors[node], g);
 			}
 		}
