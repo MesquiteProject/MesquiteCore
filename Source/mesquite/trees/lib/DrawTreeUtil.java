@@ -15,8 +15,10 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
 package mesquite.trees.lib;
 import java.awt.BasicStroke;
 import java.awt.Color;
+import java.awt.Composite;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
+import java.awt.Polygon;
 import java.awt.RenderingHints;
 import java.awt.Shape;
 import java.awt.Stroke;
@@ -294,43 +296,56 @@ public class DrawTreeUtil {
 		}
 	}
 
-	public static void fillOneTriangle(TreeDisplay treeDisplay, double[] x, double[] y, double originalEdgewidth, double edgewidth, double inset, Tree tree, Graphics g, int node){
+	public static void fillOneTriangle(TreeDisplay treeDisplay, double[] x, double[] y, double originalEdgewidth, double edgewidth, double inset, int transparency, Tree tree, Graphics g, int node){
 		double unitWidth = treeDisplay.getTreeDrawing().triangleWidthInCollapsed();
 		double triWidth = treeDisplay.getTaxonSpacing()*unitWidth/2.0;
-		double triOffset =originalEdgewidth/2;
+		double triOffset =((int)originalEdgewidth)/2;
 
 		int mother = tree.motherOfNode(node);
 		double yMother = y[mother];
 		double xMother = x[mother];
 		double xNode = x[node];
 		double yNode = y[node];
+		Polygon poly = new Polygon();
+		poly.xpoints = new int[4];
+		poly.ypoints = new int[4];
+		poly.npoints=0;
 		if (treeDisplay.isUp() || treeDisplay.isDown()){
+			xMother +=  triOffset;
 			if (treeDisplay.isUp()){
-				xMother = x[mother] + triOffset;
-				yMother =y[mother]-inset;
-				yNode =y[node]+inset/2;
+				yMother -= inset;
+				yNode += inset/2;
 			}
 			else {
-				xMother = x[mother] + triOffset;
-				yMother =y[mother]+inset;
-				yNode =y[node]-inset/2;
+				yMother += inset;
+				yNode -= inset/2;
 			}
-
+			poly.addPoint((int)xMother, (int)yMother);
+			poly.addPoint((int)(xMother-triWidth+inset), (int)yNode);
+			poly.addPoint((int)(xMother+triWidth-inset), (int)yNode);
+			poly.addPoint((int)xMother, (int)yMother);
+			poly.npoints=4;
+			GraphicsUtil.fillTransparentPolygon(g, poly, g.getColor(), transparency);
 			GraphicsUtil.drawLine(g, xMother,yMother, xMother-triWidth+inset,yNode, edgewidth);
 			GraphicsUtil.drawLine(g, xMother,yMother, xMother+triWidth-inset,yNode, edgewidth);
 			GraphicsUtil.drawLine(g, xMother-triWidth+inset,yNode, xMother+triWidth-inset,yNode, edgewidth);
 		}
 		else {
+			yMother += triOffset;
 			if (treeDisplay.isRight()){
-				yMother = y[mother] + triOffset;
-				xMother = x[mother]+inset;
-				xNode = x[node]-inset/2;
+				xMother += inset;
+				xNode -= inset/2;
 			}
 			else if (treeDisplay.isLeft()){
-				yMother = y[mother] + triOffset;
-				xMother = x[mother]-inset;
-				xNode = x[node]+inset/2;
+				xMother -= inset;
+				xNode += inset/2;
 			}
+			poly.addPoint((int)xMother, (int)yMother);
+			poly.addPoint((int)xNode, (int)(yMother-triWidth+inset));
+			poly.addPoint((int)xNode, (int)(yMother+triWidth-inset));
+			poly.addPoint((int)xMother, (int)yMother);
+			poly.npoints=4;
+			GraphicsUtil.fillTransparentPolygon(g, poly, g.getColor(), transparency);
 			GraphicsUtil.drawLine(g, xMother,yMother, xNode,yMother-triWidth+inset, edgewidth);
 			GraphicsUtil.drawLine(g, xMother,yMother, xNode,yMother+triWidth-inset, edgewidth);
 			GraphicsUtil.drawLine(g, xNode,yMother-triWidth+inset, xNode,yMother+triWidth-inset, edgewidth);

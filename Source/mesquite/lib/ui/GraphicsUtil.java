@@ -763,6 +763,21 @@ public class GraphicsUtil {
 		g.setColor(transparentGray3);
 		 */
 	}
+	public static void fillTransparentPolygon (Graphics g, Polygon poly, Color color, int transparency) {
+		if (transparency == 0)
+			return;
+		Composite composite = ColorDistribution.getComposite(g);
+		if (transparency == 2)
+			ColorDistribution.setTransparentGraphics2(g);		
+		else if (transparency == 3)
+			ColorDistribution.setTransparentGraphics3(g);		
+		else if (transparency == 5)
+			ColorDistribution.setTransparentGraphics5(g);		
+		g.setColor(color);
+		g.fillPolygon(poly);
+		ColorDistribution.setComposite(g, composite);		
+	}
+
 	/* -------------------------------------------------*/
 	public static void fillTransparentSelectionPolygon (Graphics g, Polygon poly) {
 		Composite composite = ColorDistribution.getComposite(g);
