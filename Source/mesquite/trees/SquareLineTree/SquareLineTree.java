@@ -706,7 +706,7 @@ class SquareLineTreeDrawing extends TreeDrawing  {
 	}
 	
 	/*_________________________________________________*/
-	int transparency = 0; //options currently: -1 opaque; 0, don't fill, i.e. fully transparent; 2 very transparent, 3 more opaque, 5 more opaque
+	int triangleFillMode = -2; //options currently: -2 David's style; -1 opaque; 0, don't fill, i.e. fully transparent; 2 very transparent, 3 more opaque, 5 more opaque
 	/*_________________________________________________*/
 	public void fillBranchWithColors(Tree tree, int node, ColorDistribution colors, Graphics g) {
 		if (colors != null && node>0 && (tree.getRooted() || tree.getRoot()!=node)) {
@@ -727,7 +727,7 @@ class SquareLineTreeDrawing extends TreeDrawing  {
 						if (triangleWidthInCollapsed()>0){ //this will have to re-ask about the number of colors, since now it's the ancestor's
 								if (numColors==1){
 									g.setColor(colors.getColor(0));
-									DrawTreeUtil.fillOneTriangle(treeDisplay, x, y, useEdgeWidth(), useEdgeWidth(), localInset, transparency, tree, g, node);
+									DrawTreeUtil.fillOneTriangle(treeDisplay, x, y, useEdgeWidth(), useEdgeWidth(), localInset, triangleFillMode, tree, g, node);
 								}
 								else {
 									double thickness = 1.0*fillWidth/colors.getNumColors();
@@ -759,7 +759,7 @@ class SquareLineTreeDrawing extends TreeDrawing  {
 					if (tree.isLeftmostTerminalOfCollapsedClade(node) && triangleWidthInCollapsed()>0){
 						if (numColors==1){
 								g.setColor(colors.getColor(0));
-								DrawTreeUtil.fillOneTriangle(treeDisplay, x, y, useEdgeWidth(),useEdgeWidth(), localInset, transparency, tree, g, node);
+								DrawTreeUtil.fillOneTriangle(treeDisplay, x, y, useEdgeWidth(),useEdgeWidth(), localInset, triangleFillMode, tree, g, node);
 							}
 							else {
 								double thickness = 1.0*fillWidth/colors.getNumColors();
