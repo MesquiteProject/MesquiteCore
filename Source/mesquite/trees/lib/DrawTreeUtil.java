@@ -293,11 +293,14 @@ public class DrawTreeUtil {
 			GraphicsUtil.drawLine(g, x[node],yMother-triWidth, x[node],yMother+triWidth, edgewidth);
 		}
 	}
+	
+
 
 	public static void fillOneTriangle(TreeDisplay treeDisplay, double[] x, double[] y, double originalEdgewidth, double edgewidth, double inset, Tree tree, Graphics g, int node){
 		double unitWidth = treeDisplay.getTreeDrawing().triangleWidthInCollapsed();
 		double triWidth = treeDisplay.getTaxonSpacing()*unitWidth/2.0;
 		double triOffset =originalEdgewidth/2;
+		double motherOffset = edgewidth/2.0;
 
 		int mother = tree.motherOfNode(node);
 		double yMother = y[mother];
@@ -315,10 +318,12 @@ public class DrawTreeUtil {
 				yMother =y[mother]+inset;
 				yNode =y[node]-inset/2;
 			}
+			
+			GraphicsUtil.fillPolygon(g, new double[] {xMother+motherOffset, xMother-motherOffset, xMother-triWidth+inset, xMother+triWidth-inset}, new double[] {yMother,yMother, yNode, yNode});
 
-			GraphicsUtil.drawLine(g, xMother,yMother, xMother-triWidth+inset,yNode, edgewidth);
-			GraphicsUtil.drawLine(g, xMother,yMother, xMother+triWidth-inset,yNode, edgewidth);
-			GraphicsUtil.drawLine(g, xMother-triWidth+inset,yNode, xMother+triWidth-inset,yNode, edgewidth);
+//			GraphicsUtil.drawLine(g, xMother,yMother, xMother-triWidth+inset,yNode, edgewidth);
+//			GraphicsUtil.drawLine(g, xMother,yMother, xMother+triWidth-inset,yNode, edgewidth);
+//			GraphicsUtil.drawLine(g, xMother-triWidth+inset,yNode, xMother+triWidth-inset,yNode, edgewidth);
 		}
 		else {
 			if (treeDisplay.isRight()){
@@ -331,9 +336,12 @@ public class DrawTreeUtil {
 				xMother = x[mother]-inset;
 				xNode = x[node]+inset/2;
 			}
-			GraphicsUtil.drawLine(g, xMother,yMother, xNode,yMother-triWidth+inset, edgewidth);
-			GraphicsUtil.drawLine(g, xMother,yMother, xNode,yMother+triWidth-inset, edgewidth);
-			GraphicsUtil.drawLine(g, xNode,yMother-triWidth+inset, xNode,yMother+triWidth-inset, edgewidth);
+			
+			GraphicsUtil.fillPolygon(g, new double[] {xMother, xMother, xNode, xNode}, new double[] {yMother+motherOffset, yMother-motherOffset, yMother-triWidth+inset, yMother+triWidth-inset});
+
+		//	GraphicsUtil.drawLine(g, xMother,yMother, xNode,yMother-triWidth+inset, edgewidth);
+		//GraphicsUtil.drawLine(g, xMother,yMother, xNode,yMother+triWidth-inset, edgewidth);
+		//GraphicsUtil.drawLine(g, xNode,yMother-triWidth+inset, xNode,yMother+triWidth-inset, edgewidth);
 		}
 	}
 

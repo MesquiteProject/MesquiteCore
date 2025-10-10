@@ -529,6 +529,8 @@ public class BasicDrawTaxonNames extends DrawNamesTreeDisplay {
 			zapNamePolysCollapsed(tree, d);
 	}
 	MesquiteInteger pos = new MesquiteInteger();
+	
+	/*_________________________________________________*/
 	String getCladeName(int node){
 		String cc = tree.getNodeLabel(tree.deepestCollapsedAncestor(node));
 		pos.setValue(0);
