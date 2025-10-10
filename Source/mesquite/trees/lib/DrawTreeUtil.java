@@ -284,20 +284,16 @@ public class DrawTreeUtil {
 		int mother = tree.motherOfNode(node);
 		if (treeDisplay.isUp() || treeDisplay.isDown()){
 			double xMother = x[mother] + triOffset;
-			GraphicsUtil.drawLine(g, xMother,y[mother], xMother-triWidth,y[node], edgewidth);
-			GraphicsUtil.drawLine(g, xMother,y[mother], xMother+triWidth,y[node], edgewidth);
-			GraphicsUtil.drawLine(g, xMother-triWidth,y[node], xMother+triWidth,y[node], edgewidth);
+			GraphicsUtil.drawPolygon(g, new double[] {xMother, xMother-triWidth, xMother+triWidth}, new double[] {y[mother],y[node], y[node]}, edgewidth);
 		}
 		else {
 			double yMother = y[mother] + triOffset;
-			GraphicsUtil.drawLine(g, x[mother],yMother, x[node],yMother-triWidth, edgewidth);
-			GraphicsUtil.drawLine(g, x[mother],yMother, x[node],yMother+triWidth, edgewidth);
-			GraphicsUtil.drawLine(g, x[node],yMother-triWidth, x[node],yMother+triWidth, edgewidth);
+			GraphicsUtil.drawPolygon(g, new double[] {x[mother], x[node], x[node]}, new double[] {yMother,yMother-triWidth, yMother+triWidth}, edgewidth);
 		}
 	}
 
 
-	public static void fillOneTriangle(TreeDisplay treeDisplay, double[] x, double[] y, double originalEdgewidth, double edgewidth, double inset, int transparencyMode, Tree tree, Graphics g, int node){
+	public static void fillOneTriangle(TreeDisplay treeDisplay, double[] x, double[] y, double originalEdgewidth, double edgewidth, double inset, int triangleFillMode, Tree tree, Graphics g, int node){
 		double unitWidth = treeDisplay.getTreeDrawing().triangleWidthInCollapsed();
 		double triWidth = treeDisplay.getTaxonSpacing()*unitWidth/2.0;
 		double triOffset =((int)originalEdgewidth)/2;
@@ -308,10 +304,6 @@ public class DrawTreeUtil {
 		double xMother = x[mother];
 		double xNode = x[node];
 		double yNode = y[node];
-		Polygon poly = new Polygon();
-		poly.xpoints = new int[4];
-		poly.ypoints = new int[4];
-		poly.npoints=0;
 		if (treeDisplay.isUp() || treeDisplay.isDown()){
 			xMother +=  triOffset;
 			if (treeDisplay.isUp()){
@@ -322,21 +314,8 @@ public class DrawTreeUtil {
 				yMother += inset;
 				yNode -= inset/2;
 			}
-			if (transparencyMode == -2)
-				GraphicsUtil.fillPolygon(g, new double[] {xMother+motherOffset, xMother-motherOffset, xMother-triWidth+inset, xMother+triWidth-inset}, new double[] {yMother,yMother, yNode, yNode});
-			else {
-				poly.addPoint((int)xMother, (int)yMother);
-				poly.addPoint((int)(xMother-triWidth+inset), (int)yNode);
-				poly.addPoint((int)(xMother+triWidth-inset), (int)yNode);
-				poly.addPoint((int)xMother, (int)yMother);
-				poly.npoints=4;
-				GraphicsUtil.fillTransparentPolygon(g, poly, g.getColor(), transparencyMode);
-				GraphicsUtil.drawLine(g, xMother,yMother, xMother-triWidth+inset,yNode, edgewidth);
-				GraphicsUtil.drawLine(g, xMother,yMother, xMother+triWidth-inset,yNode, edgewidth);
-				GraphicsUtil.drawLine(g, xMother-triWidth+inset,yNode, xMother+triWidth-inset,yNode, edgewidth);
-			}
-
-
+			GraphicsUtil.fillPolygon(g, new double[] {xMother, xMother-triWidth+inset, xMother+triWidth-inset}, new double[] {yMother,yNode, yNode}, triangleFillMode);
+			GraphicsUtil.drawPolygon(g, new double[] {xMother, xMother-triWidth+inset, xMother+triWidth-inset}, new double[] {yMother,yNode, yNode}, edgewidth);
 		}
 		else {
 			yMother += triOffset;
@@ -348,20 +327,8 @@ public class DrawTreeUtil {
 				xMother -= inset;
 				xNode += inset/2;
 			}
-			if (transparencyMode == -2)
-
-				GraphicsUtil.fillPolygon(g, new double[] {xMother, xMother, xNode, xNode}, new double[] {yMother+motherOffset, yMother-motherOffset, yMother-triWidth+inset, yMother+triWidth-inset});
-			else {			
-				poly.addPoint((int)xMother, (int)yMother);
-				poly.addPoint((int)xNode, (int)(yMother-triWidth+inset));
-				poly.addPoint((int)xNode, (int)(yMother+triWidth-inset));
-				poly.addPoint((int)xMother, (int)yMother);
-				poly.npoints=4;
-				GraphicsUtil.fillTransparentPolygon(g, poly, g.getColor(), transparencyMode);
-				GraphicsUtil.drawLine(g, xMother,yMother, xNode,yMother-triWidth+inset, edgewidth);
-				GraphicsUtil.drawLine(g, xMother,yMother, xNode,yMother+triWidth-inset, edgewidth);
-				GraphicsUtil.drawLine(g, xNode,yMother-triWidth+inset, xNode,yMother+triWidth-inset, edgewidth);
-			}
+			GraphicsUtil.fillPolygon(g, new double[] {xMother, xNode, xNode}, new double[] {yMother, yMother-triWidth+inset, yMother+triWidth-inset}, triangleFillMode);
+			GraphicsUtil.drawPolygon(g, new double[] {xMother, xNode, xNode}, new double[] {yMother, yMother-triWidth+inset, yMother+triWidth-inset}, edgewidth);
 
 		}
 	}

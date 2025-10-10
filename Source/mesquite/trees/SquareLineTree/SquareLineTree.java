@@ -706,7 +706,7 @@ class SquareLineTreeDrawing extends TreeDrawing  {
 	}
 	
 	/*_________________________________________________*/
-	int triangleFillMode = -2; //options currently: -2 David's style; -1 opaque; 0, don't fill, i.e. fully transparent; 2 very transparent, 3 more opaque, 5 more opaque
+	int triangleFillMode = 3; //options currently: -1 opaque; 0, don't fill, i.e. fully transparent; 2 very transparent, 3 more opaque, 5 more opaque
 	/*_________________________________________________*/
 	public void fillBranchWithColors(Tree tree, int node, ColorDistribution colors, Graphics g) {
 		if (colors != null && node>0 && (tree.getRooted() || tree.getRoot()!=node)) {
