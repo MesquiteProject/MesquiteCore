@@ -90,376 +90,447 @@ public class StoredMatrices extends CharMatrixSource implements MesquiteListener
 		}
 		return true;
 	}
-	
-   	public Selectionable getSelectionable(){
-   		//Note: if there are multiple taxa blocks, then a taxa block -filtered view of the matrices will have a different numbering system than the overall list of matrices
-   		return getProject().getCharacterMatrices();
-   	}
-
-	/*.................................................................................................................*/
-	private void setDataClass(Class dataClass){
-		boolean filter = false;
-		Class matrixClassSought = null;
-		if (CharacterData.class.isAssignableFrom(dataClass)) {
-			matrixClassSought = dataClass;
-			filter = true;
+	class FilteredMatrixSelectionable implements Selectionable {
+		ListableVector rawList;
+		public FilteredMatrixSelectionable (){
+			rawList =  getProject().getCharacterMatrices();
 		}
-		else {
-			CharacterState cs=null;
-			try {
-				cs = (CharacterState)dataClass.newInstance();
-				matrixClassSought = cs.getCharacterDataClass();
+
+		public void notifyListeners(Object caller, Notification notification) {
+			rawList.notifyListeners(caller, notification);
+		}
+		public void addListener(MesquiteListener listener) {
+			rawList.addListener(listener);
+		}
+		public void addListenerHighPriority(MesquiteListener listener) {
+			rawList.addListenerHighPriority(listener);
+		}
+		public void removeListener(MesquiteListener listener) {
+			rawList.removeListener(listener);
+		}
+		public void incrementNotifySuppress() {
+			rawList.incrementNotifySuppress();
+		}
+		public void decrementNotifySuppress() {
+			rawList.decrementNotifySuppress();
+		}
+		public void listListeners() {
+			rawList.listListeners();
+		}
+		public boolean amIListening(MesquiteListener me) {
+			return rawList.amIListening(me);
+		}
+
+		int filteredToRaw(int part){
+			CharacterData data = getProject().getCharacterMatrix(null,  taxa,  dataClass, part, true);
+			return getProject().getWhichCharacterMatrixNumber(data);
+		}
+		public void setSelected(int part, boolean select) {
+			rawList.setSelected(filteredToRaw(part), select);
+		}
+		public boolean getSelected(int part) {
+			return rawList.getSelected(filteredToRaw(part));
+		}
+		public void deselectAll() {
+			for (int i = 0; i<getNumberOfSelectableParts(); i++)
+				setSelected(i, false);
+		}
+		public void selectAll() {
+			for (int i = 0; i<getNumberOfSelectableParts(); i++)
+				setSelected(i, true);
+		}
+
+		public boolean anySelected() {
+			for (int i = 0; i<getNumberOfSelectableParts(); i++)
+				if (getSelected(i))
+					return true;
+			return false;
+		}
+
+		public int numberSelected() {
+			int count = 0;
+			for (int i = 0; i<getNumberOfSelectableParts(); i++)
+				if (getSelected(i))
+					count++;
+			return count;
+		}
+
+		public int getNumberOfSelectableParts() {
+			return getProject().getNumberCharMatrices(null,  taxa,  dataClass, true);
+		}
+	}
+		public Selectionable getSelectionable(){
+			//Note: if there are multiple taxa blocks, then a taxa block -filtered view of the matrices will have a different numbering system than the overall list of matrices
+			//return getProject().getCharacterMatrices();
+
+			//new version 2025 4.02
+			return new FilteredMatrixSelectionable();
+		}
+
+		/*.................................................................................................................*/
+		private void setDataClass(Class dataClass){
+			boolean filter = false;
+			Class matrixClassSought = null;
+			if (CharacterData.class.isAssignableFrom(dataClass)) {
+				matrixClassSought = dataClass;
 				filter = true;
 			}
-			catch (IllegalAccessException e){
-				alert("iae 17m"); 
+			else {
+				CharacterState cs=null;
+				try {
+					cs = (CharacterState)dataClass.newInstance();
+					matrixClassSought = cs.getCharacterDataClass();
+					filter = true;
+				}
+				catch (IllegalAccessException e){
+					alert("iae 17m"); 
+				}
+				catch (InstantiationException e){
+					alert("ie 17m"); 
+				}
 			}
-			catch (InstantiationException e){
-				alert("ie 17m"); 
-			}
+			if (filter && mss != null)
+				mss.setListableFilter(matrixClassSought);
 		}
-		if (filter && mss != null)
-			mss.setListableFilter(matrixClassSought);
-	}
-	/*.................................................................................................................*/
-	public boolean isPrerelease(){
-		return false;
-	}
-	/*.................................................................................................................*/
-	public boolean isSubstantive(){
-		return true;
-	}
-	/*.................................................................................................................*/
-	public CompatibilityTest getCompatibilityTest() {
-		return new CSMCompatibilityTest();
-	}
-	/*.................................................................................................................*/
-	public Snapshot getSnapshot(MesquiteFile file) {
-		Snapshot temp = new Snapshot();
-		if (taxa!=null && getProject() != null && getProject().getNumberTaxas()>1)
-			temp.addLine("setTaxa " + getProject().getTaxaReferenceExternal(taxa));
-		if (data !=null && getProject() != null)
-			temp.addLine("setDataSet " + getProject().getCharMatrixReferenceExternal(data));
-		return temp;
-	}
-	/*.................................................................................................................*/
-	public Object doCommand(String commandName, String arguments, CommandChecker checker) {
-		if (checker.compare(this.getClass(), "Sets which stored data matrix to use", "[matrix reference]", commandName, "setDataSet")) { 
-			CharacterData d = getProject().getCharacterMatrixByReference(checker.getFile(), taxa, dataClass, parser.getFirstToken(arguments), true);  //31 jul '10 added true for visible only
-			if (d == null)
-				d = getProject().getCharacterMatrixByReference(checker.getFile(), taxa, dataClass, parser.getFirstToken(arguments));
-			if (d==null && CommandRecord.macro()){ //macro; at this point ask for user to choose
-				int which = queryUser(taxa);
-				if (MesquiteInteger.isCombinable(which)) {
-					d = getProject().getCharacterMatrixVisible(which);
+		/*.................................................................................................................*/
+		public boolean isPrerelease(){
+			return false;
+		}
+		/*.................................................................................................................*/
+		public boolean isSubstantive(){
+			return true;
+		}
+		/*.................................................................................................................*/
+		public CompatibilityTest getCompatibilityTest() {
+			return new CSMCompatibilityTest();
+		}
+		/*.................................................................................................................*/
+		public Snapshot getSnapshot(MesquiteFile file) {
+			Snapshot temp = new Snapshot();
+			if (taxa!=null && getProject() != null && getProject().getNumberTaxas()>1)
+				temp.addLine("setTaxa " + getProject().getTaxaReferenceExternal(taxa));
+			if (data !=null && getProject() != null)
+				temp.addLine("setDataSet " + getProject().getCharMatrixReferenceExternal(data));
+			return temp;
+		}
+		/*.................................................................................................................*/
+		public Object doCommand(String commandName, String arguments, CommandChecker checker) {
+			if (checker.compare(this.getClass(), "Sets which stored data matrix to use", "[matrix reference]", commandName, "setDataSet")) { 
+				CharacterData d = getProject().getCharacterMatrixByReference(checker.getFile(), taxa, dataClass, parser.getFirstToken(arguments), true);  //31 jul '10 added true for visible only
+				if (d == null)
+					d = getProject().getCharacterMatrixByReference(checker.getFile(), taxa, dataClass, parser.getFirstToken(arguments));
+				if (d==null && CommandRecord.macro()){ //macro; at this point ask for user to choose
+					int which = queryUser(taxa);
+					if (MesquiteInteger.isCombinable(which)) {
+						d = getProject().getCharacterMatrixVisible(which);
+						setMatrix(taxa, d);
+						parametersChanged();
+					}
+					else
+						return null;
+				}
+				else if (d !=null && d!=data) {
+					if (taxa == null)
+						taxa = d.getTaxa();
 					setMatrix(taxa, d);
 					parametersChanged();
+					resetContainingMenuBar();
 				}
-				else
-					return null;
 			}
-			else if (d !=null && d!=data) {
-				if (taxa == null)
-					taxa = d.getTaxa();
-				setMatrix(taxa, d);
-				parametersChanged();
-				resetContainingMenuBar();
-			}
-		}
-		else if (checker.compare(this.getClass(), "Sets which taxa block to use", "[block reference, number, or name]", commandName, "setTaxa")) { 
-			Taxa t = getProject().getTaxa(checker.getFile(), parser.getFirstToken(arguments));
-			if (t!=null){
-				if (taxa!=null)
-					taxa.removeListener(this);
-				taxa = t;
-				if (taxa!=null)
-					taxa.addListener(this);
-				parametersChanged();
-				resetContainingMenuBar();
-				return taxa;
-			}
-		}
-		else if (checker.compare(this.getClass(), "Sets whether or not to auto-quit when no matrices are available", "[on or off]", commandName, "autoQuit")) { 
-			autoQuit.toggleValue(parser.getFirstToken(arguments));
-		}
-		else
-			return  super.doCommand(commandName, arguments, checker);
-		return null;
-	}
-	/*.................................................................................................................*/
-	/** passes which object is being disposed (from MesquiteListener interface)*/
-	public void disposing(Object obj){
-		if (obj == data && !doomed) {
-			data.removeListener(this);
-			if (!autoQuit.getValue()) {
-				data = null;
-				return;
-			}
-
-			if (taxa !=null && taxa.isDoomed()) {
-				taxa = null;
-				if (!okToInteractWithUser(CAN_PROCEED_ANYWAY, "Taxa block that is in use has been deleted"))  
-					return;
-
-				logln("Taxa null or being disposed; StoredMatrices will quit.");
-				iQuit();
-				return;
-
-			}
-			data = null;
-			dataName.setReferentID(null);
-			dataName.setValue("No matrix is currently in use");
-			if (!okToInteractWithUser(CAN_PROCEED_ANYWAY, "Character matrix that is in use has been deleted"))  
-				return;
-
-			MesquiteModule.showLogWindow(true);
-
-			MesquiteMessage.warnUser("A character data matrix in use (" + whatIsMyPurpose() + ") has been deleted.  Another matrix will be sought.");  
-			if (dataClass!=null) {
-				if (getProject().getNumberCharMatricesVisible(taxa, dataClass)<=0) {
-					MesquiteModule.showLogWindow(true);
-					MesquiteMessage.warnUser("No compatible character matrices were found " + whatIsMyPurpose() + ", and so Stored Matrices cannot be used.");
-					iQuit(false);
-					return;
+			else if (checker.compare(this.getClass(), "Sets which taxa block to use", "[block reference, number, or name]", commandName, "setTaxa")) { 
+				Taxa t = getProject().getTaxa(checker.getFile(), parser.getFirstToken(arguments));
+				if (t!=null){
+					if (taxa!=null)
+						taxa.removeListener(this);
+					taxa = t;
+					if (taxa!=null)
+						taxa.addListener(this);
+					parametersChanged();
+					resetContainingMenuBar();
+					return taxa;
 				}
-				data = getProject().getCharacterMatrixVisible(taxa, 0, dataClass);
 			}
-			else if (getProject().getNumberCharMatricesVisible(taxa)>0)
-				data = getProject().getCharacterMatrixVisible(taxa, 0);
-			else data = null;
-			if (data==null){
-				MesquiteModule.showLogWindow(true);
-				MesquiteMessage.warnUser("No character matrices found " + whatIsMyPurpose() + ", and so Stored Matrices cannot be used.");
-				iQuit(false);
-				return;
+			else if (checker.compare(this.getClass(), "Sets whether or not to auto-quit when no matrices are available", "[on or off]", commandName, "autoQuit")) { 
+				autoQuit.toggleValue(parser.getFirstToken(arguments));
 			}
-			data.addListener(this);
-			dataName.setReferentID(Long.toString(data.getID()));
-			dataName.setValue(data.getName());
-
-			parametersChanged();
+			else
+				return  super.doCommand(commandName, arguments, checker);
+			return null;
 		}
-	}
-	/*.................................................................................................................*/
-	/** passes which object is being disposed (from MesquiteListener interface)*/
-	public boolean okToDispose(Object obj, int queryUser){
-		return true;  //Disposal prohibition not used in Mesquite yet; once used then this should return false if currently in use
-	}
-	/*.................................................................................................................*/
-	public void changed(Object caller, Object obj, Notification notification){
-		int code = Notification.getCode(notification);
-		if (obj==data && (code == AssociableWithSpecs.SPECSSET_CHANGED || code == MesquiteListener.VALUE_CHANGED ||code == MesquiteListener.DATA_CHANGED || code == MesquiteListener.PARTS_CHANGED || code == MesquiteListener.PARTS_ADDED || code == MesquiteListener.PARTS_DELETED || code == MesquiteListener.PARTS_MOVED)){
-			parametersChanged(notification);
-		}
-	}
-	/*.................................................................................................................*/
-	public  int getNumberOfMatrices(Taxa taxa){
-		if (getProject()==null)
-			return 0;
-		else if (dataClass == null)
-			return getProject().getNumberCharMatricesVisible(taxa); 
-		else
-			return getProject().getNumberCharMatricesVisible(taxa, dataClass); 
-	}
-	/*.................................................................................................................*/
-	/*.................................................................................................................*/
-	public  void setMatrix(Taxa taxa, CharacterData d){
-		checkCurrentDataSet(taxa, d,  false, true);
-		this.taxa = taxa;
-	}
-
-	private int queryUser(Taxa taxa){
-		int nd = getProject().getNumberCharMatricesVisible(taxa, dataClass);
-		String[] list = new String[nd];
-		for (int i=0; i< nd; i++)
-			list[i]=getProject().getCharacterMatrixVisible(taxa, i, dataClass).getName();
-		String purposeString = "";
-		if (!StringUtil.blank(whatIsMyPurpose()))
-			purposeString = whatIsMyPurpose() + "; ";
-		return ListDialog.queryList(containerOfModule(), "Use which matrix?", "Use which matrix? \n(" + purposeString + "for " + employer.getName() + ")", MesquiteString.helpString,list, 0);
-	}
-
-	/** Called to provoke any necessary initialization.  This helps prevent the module's intialization queries to the user from
-   	happening at inopportune times (e.g., while a long chart calculation is in mid-progress)*/
-	public void initialize(Taxa taxa){
-		checkCurrentDataSet(taxa, null, false, getHiredAs() != (CharMatrixObedSource.class));
-	}
-
-	private void setTaxa(Taxa taxa){
-		if (this.taxa != taxa && mss != null) {
-			mss.setCompatibilityCheck(taxa);
-			resetContainingMenuBar();
-		}
-		this.taxa = taxa;
-	}
-	boolean warned = false;
-	private void checkCurrentDataSet(Taxa taxa, CharacterData proposed,  boolean warn, boolean queryIfNeeded) {
-		if (iveQuit)
-			return;
-		setTaxa(taxa);
-		if (proposed != null && proposed.getTaxa() == taxa){ //new matrix being proposed
-			if (proposed == data) 
-				return;
-			dataName.setReferentID(Long.toString(proposed.getID()));
-			dataName.setValue(proposed.getName());
-			if (data !=null)
+		/*.................................................................................................................*/
+		/** passes which object is being disposed (from MesquiteListener interface)*/
+		public void disposing(Object obj){
+			if (obj == data && !doomed) {
 				data.removeListener(this);
-			proposed.addListener(this);
-
-			data = proposed;
-		}
-		if (getProject() == null)
-			return;
-		if (data == null) { // data == null && proposed == null; need to choose one
-			if (MesquiteThread.isScripting() || getHiredAs() == CharMatrixObedSource.class) 
-				data = getProject().getCharacterMatrixVisible(taxa, 0, dataClass);
-			else if (getProject().getNumberCharMatricesVisible(taxa, dataClass)<=1)
-				data = getProject().getCharacterMatrixVisible(taxa, 0, dataClass);
-			else {
-				int currentDataSet = 0;
-				if (queryIfNeeded){
-					currentDataSet = queryUser(taxa); //ListDialog.queryList(containerOfModule(), "Use which matrix?", "Use which matrix? \n(" + purposeString + "for " + employer.getName() + ")", list, 0);
-					if (!MesquiteInteger.isCombinable(currentDataSet))
-						currentDataSet = 0;
+				if (!autoQuit.getValue()) {
+					data = null;
+					return;
 				}
-				data = getProject().getCharacterMatrixVisible(taxa, currentDataSet, dataClass);
-			}
-			if (data !=null) {
-				if (taxa == null)
-					setTaxa(data.getTaxa());
-				data.addListener(this);
-			}
-			else {
-				if (!MesquiteThread.isScripting()){ //if scripting, hope that will soon be fired!
-					if (taxa == null)
-						alert("There are no appropriate stored character matrices available.");
-					else 
-						alert("There are no appropriate stored character matrices available for the block of taxa (" + taxa.getName() + ").");
-					iveQuit = true;
+
+				if (taxa !=null && taxa.isDoomed()) {
+					taxa = null;
+					if (!okToInteractWithUser(CAN_PROCEED_ANYWAY, "Taxa block that is in use has been deleted"))  
+						return;
+
+					logln("Taxa null or being disposed; StoredMatrices will quit.");
+					iQuit();
+					return;
+
+				}
+				data = null;
+				dataName.setReferentID(null);
+				dataName.setValue("No matrix is currently in use");
+				if (!okToInteractWithUser(CAN_PROCEED_ANYWAY, "Character matrix that is in use has been deleted"))  
+					return;
+
+				MesquiteModule.showLogWindow(true);
+
+				MesquiteMessage.warnUser("A character data matrix in use (" + whatIsMyPurpose() + ") has been deleted.  Another matrix will be sought.");  
+				if (dataClass!=null) {
+					if (getProject().getNumberCharMatricesVisible(taxa, dataClass)<=0) {
+						MesquiteModule.showLogWindow(true);
+						MesquiteMessage.warnUser("No compatible character matrices were found " + whatIsMyPurpose() + ", and so Stored Matrices cannot be used.");
+						iQuit(false);
+						return;
+					}
+					data = getProject().getCharacterMatrixVisible(taxa, 0, dataClass);
+				}
+				else if (getProject().getNumberCharMatricesVisible(taxa)>0)
+					data = getProject().getCharacterMatrixVisible(taxa, 0);
+				else data = null;
+				if (data==null){
+					MesquiteModule.showLogWindow(true);
+					MesquiteMessage.warnUser("No character matrices found " + whatIsMyPurpose() + ", and so Stored Matrices cannot be used.");
 					iQuit(false);
+					return;
 				}
-			}
+				data.addListener(this);
+				dataName.setReferentID(Long.toString(data.getID()));
+				dataName.setValue(data.getName());
 
+				parametersChanged();
+			}
 		}
-	}
-	/*.................................................................................................................*/
-	private MCharactersDistribution getM(Taxa taxa) {
-		setTaxa(taxa);
-		checkCurrentDataSet(taxa, null,  true, true); //just to insure that OK
-		if (data!=null) {
-			states = data.getMCharactersDistribution();
-			return states;
+		/*.................................................................................................................*/
+		/** passes which object is being disposed (from MesquiteListener interface)*/
+		public boolean okToDispose(Object obj, int queryUser){
+			return true;  //Disposal prohibition not used in Mesquite yet; once used then this should return false if currently in use
 		}
-		return null;
-	}
-	/*.................................................................................................................*/
-	public String getMatrixName(Taxa taxa, int ic) {
-		CharacterData data;
-		if (!MesquiteInteger.isCombinable(ic))
+		/*.................................................................................................................*/
+		public void changed(Object caller, Object obj, Notification notification){
+			int code = Notification.getCode(notification);
+			if (obj==data && (code == AssociableWithSpecs.SPECSSET_CHANGED || code == MesquiteListener.VALUE_CHANGED ||code == MesquiteListener.DATA_CHANGED || code == MesquiteListener.PARTS_CHANGED || code == MesquiteListener.PARTS_ADDED || code == MesquiteListener.PARTS_DELETED || code == MesquiteListener.PARTS_MOVED)){
+				parametersChanged(notification);
+			}
+		}
+		/*.................................................................................................................*/
+		public  int getNumberOfMatrices(Taxa taxa){
+			if (getProject()==null)
+				return 0;
+			else if (dataClass == null)
+				return getProject().getNumberCharMatricesVisible(taxa); 
+			else
+				return getProject().getNumberCharMatricesVisible(taxa, dataClass); 
+		}
+		/*.................................................................................................................*/
+		/*.................................................................................................................*/
+		public  void setMatrix(Taxa taxa, CharacterData d){
+			checkCurrentDataSet(taxa, d,  false, true);
+			this.taxa = taxa;
+		}
+
+		private int queryUser(Taxa taxa){
+			int nd = getProject().getNumberCharMatricesVisible(taxa, dataClass);
+			String[] list = new String[nd];
+			for (int i=0; i< nd; i++)
+				list[i]=getProject().getCharacterMatrixVisible(taxa, i, dataClass).getName();
+			String purposeString = "";
+			if (!StringUtil.blank(whatIsMyPurpose()))
+				purposeString = whatIsMyPurpose() + "; ";
+			return ListDialog.queryList(containerOfModule(), "Use which matrix?", "Use which matrix? \n(" + purposeString + "for " + employer.getName() + ")", MesquiteString.helpString,list, 0);
+		}
+
+		/** Called to provoke any necessary initialization.  This helps prevent the module's intialization queries to the user from
+   	happening at inopportune times (e.g., while a long chart calculation is in mid-progress)*/
+		public void initialize(Taxa taxa){
+			checkCurrentDataSet(taxa, null, false, getHiredAs() != (CharMatrixObedSource.class));
+		}
+
+		private void setTaxa(Taxa taxa){
+			if (this.taxa != taxa && mss != null) {
+				mss.setCompatibilityCheck(taxa);
+				resetContainingMenuBar();
+			}
+			this.taxa = taxa;
+		}
+		boolean warned = false;
+		private void checkCurrentDataSet(Taxa taxa, CharacterData proposed,  boolean warn, boolean queryIfNeeded) {
+			if (iveQuit)
+				return;
+			setTaxa(taxa);
+			if (proposed != null && proposed.getTaxa() == taxa){ //new matrix being proposed
+				if (proposed == data) 
+					return;
+				dataName.setReferentID(Long.toString(proposed.getID()));
+				dataName.setValue(proposed.getName());
+				if (data !=null)
+					data.removeListener(this);
+				proposed.addListener(this);
+
+				data = proposed;
+			}
+			if (getProject() == null)
+				return;
+			if (data == null) { // data == null && proposed == null; need to choose one
+				if (MesquiteThread.isScripting() || getHiredAs() == CharMatrixObedSource.class) 
+					data = getProject().getCharacterMatrixVisible(taxa, 0, dataClass);
+				else if (getProject().getNumberCharMatricesVisible(taxa, dataClass)<=1)
+					data = getProject().getCharacterMatrixVisible(taxa, 0, dataClass);
+				else {
+					int currentDataSet = 0;
+					if (queryIfNeeded){
+						currentDataSet = queryUser(taxa); //ListDialog.queryList(containerOfModule(), "Use which matrix?", "Use which matrix? \n(" + purposeString + "for " + employer.getName() + ")", list, 0);
+						if (!MesquiteInteger.isCombinable(currentDataSet))
+							currentDataSet = 0;
+					}
+					data = getProject().getCharacterMatrixVisible(taxa, currentDataSet, dataClass);
+				}
+				if (data !=null) {
+					if (taxa == null)
+						setTaxa(data.getTaxa());
+					data.addListener(this);
+				}
+				else {
+					if (!MesquiteThread.isScripting()){ //if scripting, hope that will soon be fired!
+						if (taxa == null)
+							alert("There are no appropriate stored character matrices available.");
+						else 
+							alert("There are no appropriate stored character matrices available for the block of taxa (" + taxa.getName() + ").");
+						iveQuit = true;
+						iQuit(false);
+					}
+				}
+
+			}
+		}
+		/*.................................................................................................................*/
+		private MCharactersDistribution getM(Taxa taxa) {
+			setTaxa(taxa);
+			checkCurrentDataSet(taxa, null,  true, true); //just to insure that OK
+			if (data!=null) {
+				states = data.getMCharactersDistribution();
+				return states;
+			}
+			return null;
+		}
+		/*.................................................................................................................*/
+		public String getMatrixName(Taxa taxa, int ic) {
+			CharacterData data;
+			if (!MesquiteInteger.isCombinable(ic))
+				return "";
+			if (dataClass == null)
+				data = getProject().getCharacterMatrixVisible(taxa, ic);
+			else
+				data =  getProject().getCharacterMatrixVisible(taxa, ic, dataClass);
+			if (data !=null)
+				return data.getName();
 			return "";
-		if (dataClass == null)
-			data = getProject().getCharacterMatrixVisible(taxa, ic);
-		else
-			data =  getProject().getCharacterMatrixVisible(taxa, ic, dataClass);
-		if (data !=null)
-			return data.getName();
-		return "";
-	}
-	/*.................................................................................................................*/
-	public  MCharactersDistribution getMatrix(Taxa taxa, int im){
-		try {
-			checkCurrentDataSet(taxa, getProject().getCharacterMatrixVisible(taxa, im, dataClass),  false, true);
-			CommandRecord.tick("Getting stored matrix " + im);
+		}
+		/*.................................................................................................................*/
+		public  MCharactersDistribution getMatrix(Taxa taxa, int im){
+			try {
+				checkCurrentDataSet(taxa, getProject().getCharacterMatrixVisible(taxa, im, dataClass),  false, true);
+				CommandRecord.tick("Getting stored matrix " + im);
+				return getM(taxa);
+			}
+			catch(NullPointerException e){
+			}
+			return null;
+		}
+		/*.................................................................................................................*/
+		/** gets the current matrix.*/
+		public MCharactersDistribution getCurrentMatrix(Taxa taxa){
+			if (taxa!=null && !taxa.equals(this.taxa, false)){//taxa==null || 
+				if (data!=null)
+					data.removeListener(this);
+				data = null;
+			}
+			checkCurrentDataSet(taxa, null,  false, true);
 			return getM(taxa);
 		}
-		catch(NullPointerException e){
+		/** returns the number of the current matrix*/
+		public int getNumberCurrentMatrix(){
+			return getProject().getMatrixNumber(data);
 		}
-		return null;
-	}
-	/*.................................................................................................................*/
-	/** gets the current matrix.*/
-	public MCharactersDistribution getCurrentMatrix(Taxa taxa){
-		if (taxa!=null && !taxa.equals(this.taxa, false)){//taxa==null || 
-			if (data!=null)
-				data.removeListener(this);
-			data = null;
+		/*.................................................................................................................*/
+		public String getName() {
+			return "Stored Matrices";  
 		}
-		checkCurrentDataSet(taxa, null,  false, true);
-		return getM(taxa);
-	}
-	/** returns the number of the current matrix*/
-	public int getNumberCurrentMatrix(){
-		return getProject().getMatrixNumber(data);
-	}
-	/*.................................................................................................................*/
-	public String getName() {
-		return "Stored Matrices";  
-	}
 
-	/*.................................................................................................................*/
-	public boolean showCitation() {
-		return true;
-	}
-	/*.................................................................................................................*/
-	/** returns whether this module is requesting to appear as a primary choice */
-	public boolean requestPrimaryChoice(){
-		return true;  
-	}
-	/*.................................................................................................................*/
-
-	/** returns an explanation of what the module does.*/
-	public String getExplanation() {
-		return "Supplies character matrices from data files (as opposed to simulated characters, for example)." ;
-	}
-	/*.................................................................................................................*/
-	/** returns current parameters, for logging etc..*/
-	public String getParameters() {
-		if (data!=null && getHiredAs() == CharMatrixOneSource.class)
-			return "Current Matrix: " + data.getName();
-		else if (getProject() != null)
-			return "Character Matrices from file: " + getProject().getName();
-		else
-			return null;
-	}
-
-	/*.................................................................................................................*/
-	/** returns current parameters, for logging etc..*/
-	public String getNameAndParameters() {
-		if (data!=null && getHiredAs() == CharMatrixOneSource.class)
-			return "Stored Matrix: " + data.getName();
-		else if (getProject() != null)
-			return "Character Matrices from file: " + getProject().getName();
-		else
-			return null;
-	}
-	public void endJob() {
-		if (data!=null) data.removeListener(this);
-		super.endJob();
-	}
-
-}
-
-class CSMCompatibilityTest extends CompatibilityTest{
-	public  boolean isCompatible(Object obj, MesquiteProject project, EmployerEmployee prospectiveEmployer){
-		return isCompatible(obj, project, prospectiveEmployer, null);
-	}
-	public  boolean isCompatible(Object obj, MesquiteProject project, EmployerEmployee prospectiveEmployer, MesquiteString report){
-		if (obj == null) {
-			boolean can = (project == null || project.getNumberCharMatricesVisible()>0);
-			if (!can && report != null)
-				report.setValue("there are no character matrices stored in the data file or project");
-			return can;
-		}
-		if (!(obj instanceof Class) || !(CharacterState.class.isAssignableFrom((Class)obj)))
+		/*.................................................................................................................*/
+		public boolean showCitation() {
 			return true;
-		if (project==null)
-			return true;
-		else {
-			boolean matricesExist = ( project.getNumberCharMatricesVisible((Class)obj)>0); //still not perfect, since data set might apply to other taxa
-			if (!matricesExist && report != null)
-				report.setValue("there are no appropriate character matrices stored in the data file or project");
-			return matricesExist;
+		}
+		/*.................................................................................................................*/
+		/** returns whether this module is requesting to appear as a primary choice */
+		public boolean requestPrimaryChoice(){
+			return true;  
+		}
+		/*.................................................................................................................*/
+
+		/** returns an explanation of what the module does.*/
+		public String getExplanation() {
+			return "Supplies character matrices from data files (as opposed to simulated characters, for example)." ;
+		}
+		/*.................................................................................................................*/
+		/** returns current parameters, for logging etc..*/
+		public String getParameters() {
+			if (data!=null && getHiredAs() == CharMatrixOneSource.class)
+				return "Current Matrix: " + data.getName();
+			else if (getProject() != null)
+				return "Character Matrices from file: " + getProject().getName();
+			else
+				return null;
+		}
+
+		/*.................................................................................................................*/
+		/** returns current parameters, for logging etc..*/
+		public String getNameAndParameters() {
+			if (data!=null && getHiredAs() == CharMatrixOneSource.class)
+				return "Stored Matrix: " + data.getName();
+			else if (getProject() != null)
+				return "Character Matrices from file: " + getProject().getName();
+			else
+				return null;
+		}
+		public void endJob() {
+			if (data!=null) data.removeListener(this);
+			super.endJob();
+		}
+
+	}
+
+	class CSMCompatibilityTest extends CompatibilityTest{
+		public  boolean isCompatible(Object obj, MesquiteProject project, EmployerEmployee prospectiveEmployer){
+			return isCompatible(obj, project, prospectiveEmployer, null);
+		}
+		public  boolean isCompatible(Object obj, MesquiteProject project, EmployerEmployee prospectiveEmployer, MesquiteString report){
+			if (obj == null) {
+				boolean can = (project == null || project.getNumberCharMatricesVisible()>0);
+				if (!can && report != null)
+					report.setValue("there are no character matrices stored in the data file or project");
+				return can;
+			}
+			if (!(obj instanceof Class) || !(CharacterState.class.isAssignableFrom((Class)obj)))
+				return true;
+			if (project==null)
+				return true;
+			else {
+				boolean matricesExist = ( project.getNumberCharMatricesVisible((Class)obj)>0); //still not perfect, since data set might apply to other taxa
+				if (!matricesExist && report != null)
+					report.setValue("there are no appropriate character matrices stored in the data file or project");
+				return matricesExist;
+			}
 		}
 	}
-}
 

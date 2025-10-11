@@ -18,6 +18,8 @@ import mesquite.lib.CommandChecker;
 import mesquite.lib.DoubleArray;
 import mesquite.lib.Listable;
 import mesquite.lib.ListableVector;
+import mesquite.lib.LongArray;
+import mesquite.lib.MesquiteBoolean;
 import mesquite.lib.MesquiteFile;
 import mesquite.lib.MesquiteInteger;
 import mesquite.lib.MesquiteString;
@@ -32,23 +34,23 @@ import mesquite.lib.tree.Tree;
 import mesquite.lib.ui.ListDialog;
 
 /* ======================================================================== */
-/**Suppliies numbers for each node of a tree.*/
+/**Supplies numbers for each node of a tree.*/
 
 public class NumForNodesAttached extends NumbersForNodes {
 	public String getName() {
-		return "Number for Nodes from Attached Values";
+		return "Values Attached to Nodes";
 	}
 	public String getExplanation() {
 		return "Supplies numbers for each node of a tree using values already attached to the nodes.";
 	}
 		/*.................................................................................................................*/
 	Taxa taxa;
-	MesquiteString valueName;
+	MesquiteBoolean currentValue;
 	ListableVector choices;
 	/*.................................................................................................................*/
 	public boolean startJob(String arguments, Object condition, boolean hiredByName){
 		choices = new ListableVector();
-		valueName = new MesquiteString();
+		currentValue = new MesquiteBoolean();  //if true, is a double; if false, is a long
 		addMenuItem( "Choose Values to Show...", makeCommand("chooseValues",  this));
 		addMenuSeparator();
 
@@ -62,8 +64,19 @@ public class NumForNodesAttached extends NumbersForNodes {
 	/*.................................................................................................................*/
 	public Snapshot getSnapshot(MesquiteFile file) { 
 		Snapshot temp = new Snapshot();
-		temp.addLine("chooseValues " + ParseUtil.tokenize(valueName.getValue()));
+		temp.addLine("chooseValues " + ParseUtil.tokenize(currentValue.getName()) + MesquiteBoolean.toTrueFalseString(currentValue.getValue()));
 		return temp;
+	}
+	
+	int whichChoice (MesquiteBoolean choice){
+		if (choice.getName() == null)
+			return -1;
+		for (int i = 0; i<choices.size(); i++){
+			MesquiteBoolean mb = (MesquiteBoolean)choices.elementAt(i);
+			if (mb.getName() != null && mb.getName().equals(choice.getName()) && mb.getValue() == choice.getValue())
+				return i;
+		}
+		return -1;
 	}
 	MesquiteInteger pos = new MesquiteInteger();
 	/*.................................................................................................................*/
@@ -71,13 +84,22 @@ public class NumForNodesAttached extends NumbersForNodes {
 		if (checker.compare(this.getClass(), "Sets or choose value to show", null, commandName, "chooseValues")) {
 			String name = parser.getFirstToken(arguments);
 			if (StringUtil.blank(name)) {
-				int current = choices.indexOfByName(valueName.getValue());
+				int current = whichChoice(currentValue);
 				if (current < 0)
 					current = 0;
 				Listable choice = ListDialog.queryList(containerOfModule(), "Choose value to show", "Choose which value to obtain for the nodes", null, choices, current);
 				if (choice != null) {
-				valueName.setName(choice.getName());
-				valueName.setValue(choice.getName());
+				currentValue.setName(choice.getName());
+				currentValue.setValue(((MesquiteBoolean)choice).getValue());
+				}
+			}
+			else {
+				String typeToken  = parser.getNextToken();
+				
+				if (typeToken!= null){
+					boolean isDouble = MesquiteBoolean.fromTrueFalseString(typeToken);
+					currentValue.setName(name);
+					currentValue.setValue(isDouble);
 				}
 			}
 			parametersChanged();
@@ -92,14 +114,26 @@ public class NumForNodesAttached extends NumbersForNodes {
 	   	clearResultAndLastResult(result);
 		rememberChoices(tree);
 	   	if (tree != null) {
-			DoubleArray da = tree.getAssociatedDoubles(NameReference.getNameReference(valueName.getValue()));
+	   		if (currentValue.getValue()){ // is double
+			DoubleArray da = tree.getAssociatedDoubles(NameReference.getNameReference(currentValue.getName()));
 			if (da == null)
 				return;
 			result.resetSize(da.getSize());
 			for (int i = 0; i<da.getSize(); i++) {
 				result.setValue(i, da.getValue(i));
 			}
-			resultString.setValue("Values of " + valueName.getValue());
+	   		}
+	   		else {
+				LongArray da = tree.getAssociatedLongs(NameReference.getNameReference(currentValue.getName()));
+				if (da == null)
+					return;
+				result.resetSize(da.getSize());
+				for (int i = 0; i<da.getSize(); i++) {
+					result.setValue(i, da.getValue(i));
+				}
+   		}
+			if (resultString != null)
+				resultString.setValue("Values of " + currentValue.getName());
 	   	}
 		saveLastResult(result);
 		saveLastResultString(resultString);
@@ -114,13 +148,19 @@ public class NumForNodesAttached extends NumbersForNodes {
 		for (int i = 0; i<tree.getNumberAssociatedDoubles(); i++) {
 			DoubleArray da = tree.getAssociatedDoubles(i);
 			if (choices.elementWithName(da.getName()) == null) {
-				choices.addElement(new MesquiteString(da.getName()), false);
+				choices.addElement(new MesquiteBoolean(da.getName(), true), false);
 			}
 		}
-		if (valueName.isBlank() && choices.size()>0) {
-			String n = choices.nameOfElementAt(0);
-			valueName.setName(n);
-			valueName.setValue(n);
+		for (int i = 0; i<tree.getNumberAssociatedLongs(); i++) {
+			LongArray da = tree.getAssociatedLongs(i);
+			if (choices.elementWithName(da.getName()) == null) {
+				choices.addElement(new MesquiteBoolean(da.getName(), false), false);
+			}
+		}
+		if (StringUtil.blank(currentValue.getName()) && choices.size()>0) {
+			MesquiteBoolean n = (MesquiteBoolean)choices.elementAt(0);
+			currentValue.setName(n.getName());
+			currentValue.setValue(n.getValue());
 		}
 	}
 	
@@ -135,11 +175,11 @@ public class NumForNodesAttached extends NumbersForNodes {
 
 	/*.................................................................................................................*/
 	public String getParameters(){
-		return "Values: " + valueName.getValue() ; 
+		return "Values: " + currentValue.getName() ; 
 	}
 	/*.................................................................................................................*/
 	public String getNameAndParameters(){
-		return valueName.getValue(); 
+		return currentValue.getName(); 
 	}
 	/*.................................................................................................................*/
 	/** returns the version number at which this module was first released.  If 0, then no version number is claimed.  If a POSITIVE integer
@@ -150,7 +190,7 @@ public class NumForNodesAttached extends NumbersForNodes {
 	}
 	/*.................................................................................................................*/
 	public boolean isPrerelease(){
-		return false;
+		return true;
 	}
 
 	/*.................................................................................................................*/

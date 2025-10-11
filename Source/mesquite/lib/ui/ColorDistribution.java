@@ -59,6 +59,7 @@ public class ColorDistribution {
 	public static StringArray standardColorNames;
 	static ObjectArray standardColors, standardColorsDimmed, standardColorsAsHex;
 	public static double dimmingConstant = 0.3;
+	public static double extraDimmingConstant = 0.1;
 	public static int NO_COLOR = 18;
 	static {
 		spinLight = new Color((float)0.3, (float)0.6, (float)0.99);
@@ -298,14 +299,6 @@ public class ColorDistribution {
 	}
 	/*--------------------------------------------------------------*/
 
-	private static float brighten(int v, double percent){
-		float b = (float)((255-(255-v)*percent)/255);
-		if (b<0)
-			b=0;
-		else if (b>1)
-			b=1;
-		return b;
-	}
 
 	public static Composite getComposite(Graphics g) {
 		if (g!=null && (g instanceof Graphics2D)) {
@@ -368,17 +361,25 @@ public class ColorDistribution {
 			((Graphics2D)g).setComposite(AlphaComposite.getInstance(AlphaComposite.SRC, 1));   
 	}
 	
+	private static float brighten(int v, double proportion){
+		float b = (float)((255-(255-v)*proportion)/255);
+		if (b<0)
+			b=0;
+		else if (b>1)
+			b=1;
+		return b;
+	}
 	
-	public static Color brighter(Color c, double percent){
+	public static Color brighter(Color c, double proportion){
 		if (c==null)
 			return null;
 		int green = c.getGreen();
 		int red = c.getRed();
 		int blue = c.getBlue();
-		return new Color(brighten(red, percent), brighten(green, percent), brighten(blue, percent));
+		return new Color(brighten(red, proportion), brighten(green, proportion), brighten(blue, proportion));
 	}
-	private static float darken(int v, double percent){
-		float b = (float)((v*percent)/255);
+	private static float darken(int v, double proportion){
+		float b = (float)((v*proportion)/255);
 		if (b<0)
 			b=0;
 		else if (b>1)
@@ -386,13 +387,13 @@ public class ColorDistribution {
 		return b;
 	}
 
-	public static Color darker(Color c, double percent){
+	public static Color darker(Color c, double proportion){
 		if (c==null)
 			return null;
 		int green = c.getGreen();
 		int red = c.getRed();
 		int blue = c.getBlue();
-		return new Color(darken(red, percent), darken(green, percent), darken(blue, percent));
+		return new Color(darken(red, proportion), darken(green, proportion), darken(blue, proportion));
 	}
 	public static Color getContrasting(boolean selected, Color background, float[] hsbBackground, Color light, Color dark){
 		if (selected){
