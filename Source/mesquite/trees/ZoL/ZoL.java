@@ -247,11 +247,14 @@ public class ZoL extends MesquiteInit {
 		return this;
 	}
 
-	NameReference synRef = NameReference.getNameReference("synapomorphies");
+	NameReference synsRef = NameReference.getNameReference("synapomorphies");
+	NameReference synRef = NameReference.getNameReference("synapomorphy");
 	String randomSynapomorphy(){
 		for (int i = 0; i<200; i++){
 			int node = tree.randomNodeInClade(tree.getRoot(), random);
-			Object syns = tree.getAssociatedObject(synRef, node);
+			Object syns = tree.getAssociatedObject(synsRef, node);
+			if (syns == null)
+				syns  = tree.getAssociatedObject(synRef, node);
 			if (syns != null && syns instanceof StringArray){
 				StringArray sA = (StringArray)syns;
 				if (sA.getSize()>0){
@@ -267,7 +270,9 @@ public class ZoL extends MesquiteInit {
 	boolean synapomorphyAtNode(int node){
 		if (StringUtil.blank(synapomorphy))
 			return false;
-		Object syns = tree.getAssociatedObject(synRef, node);
+		Object syns = tree.getAssociatedObject(synsRef, node);
+		if (syns == null)
+			syns  = tree.getAssociatedObject(synRef, node);
 		if (syns != null && syns instanceof StringArray){
 			StringArray sA = (StringArray)syns;
 			for (int i= 0; i<sA.getSize(); i++){
