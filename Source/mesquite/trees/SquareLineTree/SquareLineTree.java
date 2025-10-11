@@ -106,7 +106,9 @@ public class SquareLineTree extends DrawTree implements SquareTipDrawer {
 			dtc.recordTreeDrawTaskEdgeWidthMemory(oldEdgeWidth);
 		}
 		SquareLineTreeDrawing treeDrawing =  new SquareLineTreeDrawing (treeDisplay, numTaxa, this);
-		treeDisplay.collapsedCladeNameAtLeftmostAncestor = true;
+		treeDisplay.collapsedCladeNameAtDescendant = true; //if triangles, then act as if ancestral point
+		treeDisplay.collapsedCladeNameCenterOverAncestor =  trianglesForCollapsed.getValue();
+
 
 		drawings.addElement(treeDrawing);
 		return treeDrawing;
@@ -202,7 +204,15 @@ public class SquareLineTree extends DrawTree implements SquareTipDrawer {
 			boolean current = trianglesForCollapsed.getValue();
 			trianglesForCollapsed.toggleValue(parser.getFirstToken(arguments));
 			if (current!=trianglesForCollapsed.getValue()) {
-				parametersChanged();
+				
+				Enumeration e = drawings.elements();
+				while (e.hasMoreElements()) {
+					Object obj = e.nextElement();
+					SquareLineTreeDrawing treeDrawing = (SquareLineTreeDrawing)obj;
+					treeDrawing.treeDisplay.collapsedCladeNameAtDescendant =true;
+					treeDrawing.treeDisplay.collapsedCladeNameCenterOverAncestor =trianglesForCollapsed.getValue();
+				}
+				if ( !MesquiteThread.isScripting()) parametersChanged();
 			}
 		}
 		else if (checker.compare(this.getClass(), "Sets whether to show edge lines or not.", "", commandName, "colorCirclesOnly")) {

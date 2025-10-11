@@ -137,7 +137,8 @@ public class TreeDisplay extends TaxaTreeDisplay  {
 	private int edgewidth;
 
 	/**  whether the taxon name drawer should put the name of a collapsed clade at its leftmost ancestor (e.g. for Square Line tree) or at its MRCA (e.g., for plot tree)*/
-	public boolean collapsedCladeNameAtLeftmostAncestor = false;
+	public boolean collapsedCladeNameAtDescendant = false;
+	public boolean collapsedCladeNameCenterOverAncestor = false;
 
 	/**  Spacing in pixels between taxa*/
 	private double taxonSpacing;

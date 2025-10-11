@@ -284,11 +284,17 @@ public class DrawTreeUtil {
 		int mother = tree.motherOfNode(node);
 		if (treeDisplay.isUp() || treeDisplay.isDown()){
 			double xMother = x[mother] + triOffset;
-			GraphicsUtil.drawPolygon(g, new double[] {xMother, xMother-triWidth, xMother+triWidth}, new double[] {y[mother],y[node], y[node]}, edgewidth);
+			if (treeDisplay.isUp())
+				GraphicsUtil.drawPolygon(g, new double[] {xMother, xMother-triWidth, xMother+triWidth}, new double[] {y[mother],y[node]+edgewidth/2, y[node]+edgewidth/2}, edgewidth);
+			else
+				GraphicsUtil.drawPolygon(g, new double[] {xMother, xMother-triWidth, xMother+triWidth}, new double[] {y[mother],y[node]-edgewidth/2, y[node]-edgewidth/2}, edgewidth);
 		}
 		else {
 			double yMother = y[mother] + triOffset;
-			GraphicsUtil.drawPolygon(g, new double[] {x[mother], x[node], x[node]}, new double[] {yMother,yMother-triWidth, yMother+triWidth}, edgewidth);
+			if (treeDisplay.isRight())
+				GraphicsUtil.drawPolygon(g, new double[] {x[mother], x[node]-edgewidth/2, x[node]-edgewidth/2}, new double[] {yMother,yMother-triWidth, yMother+triWidth}, edgewidth);
+			else 
+				GraphicsUtil.drawPolygon(g, new double[] {x[mother], x[node]+edgewidth/2, x[node]+edgewidth/2}, new double[] {yMother,yMother-triWidth, yMother+triWidth}, edgewidth);
 		}
 	}
 
@@ -307,12 +313,12 @@ public class DrawTreeUtil {
 		if (treeDisplay.isUp() || treeDisplay.isDown()){
 			xMother +=  triOffset;
 			if (treeDisplay.isUp()){
-				yMother -= inset;
-				yNode += inset/2;
+				yMother += -inset;
+				yNode += inset/2+ originalEdgewidth/2;
 			}
 			else {
 				yMother += inset;
-				yNode -= inset/2;
+				yNode -= inset/2+ originalEdgewidth/2;
 			}
 			GraphicsUtil.fillPolygon(g, new double[] {xMother, xMother-triWidth+inset, xMother+triWidth-inset}, new double[] {yMother,yNode, yNode}, triangleFillMode);
 			GraphicsUtil.drawPolygon(g, new double[] {xMother, xMother-triWidth+inset, xMother+triWidth-inset}, new double[] {yMother,yNode, yNode}, edgewidth);
@@ -321,11 +327,11 @@ public class DrawTreeUtil {
 			yMother += triOffset;
 			if (treeDisplay.isRight()){
 				xMother += inset;
-				xNode -= inset/2;
+				xNode -= inset/2+ originalEdgewidth/2;
 			}
 			else if (treeDisplay.isLeft()){
 				xMother -= inset;
-				xNode += inset/2;
+				xNode += inset/2+ originalEdgewidth/2;
 			}
 			GraphicsUtil.fillPolygon(g, new double[] {xMother, xNode, xNode}, new double[] {yMother, yMother-triWidth+inset, yMother+triWidth-inset}, triangleFillMode);
 			GraphicsUtil.drawPolygon(g, new double[] {xMother, xNode, xNode}, new double[] {yMother, yMother-triWidth+inset, yMother+triWidth-inset}, edgewidth);

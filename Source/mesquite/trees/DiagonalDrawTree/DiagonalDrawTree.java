@@ -78,7 +78,7 @@ public class DiagonalDrawTree extends DrawTree implements DiagonalRootDrawer {
 
 	public   TreeDrawing createTreeDrawing(TreeDisplay treeDisplay, int numTaxa) {
 		DiagonalTreeDrawing treeDrawing =  new DiagonalTreeDrawing (treeDisplay, numTaxa, this);
-		treeDisplay.collapsedCladeNameAtLeftmostAncestor = true;
+		treeDisplay.collapsedCladeNameAtDescendant = true;
 		drawings.addElement(treeDrawing);
 		//treeDisplay.inhibitStretchByDefault = false;
 		return treeDrawing;

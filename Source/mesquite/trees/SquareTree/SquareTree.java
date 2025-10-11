@@ -105,7 +105,7 @@ public class SquareTree extends DrawTree implements SquareTipDrawer {
 	}
 	public   TreeDrawing createTreeDrawing(TreeDisplay treeDisplay, int numTaxa) {
 		SquareTreeDrawing treeDrawing =  new SquareTreeDrawing (treeDisplay, numTaxa, this);
-		treeDisplay.collapsedCladeNameAtLeftmostAncestor = true;
+		treeDisplay.collapsedCladeNameAtDescendant = true;
 	
 		//treeDisplay.inhibitStretchByDefault = true;
 		drawings.addElement(treeDrawing);

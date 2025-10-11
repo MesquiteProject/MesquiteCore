@@ -73,7 +73,7 @@ public class PlotTree3D extends AnalyticalDrawTree {
 	/*.................................................................................................................*/
 	public   TreeDrawing createTreeDrawing(TreeDisplay treeDisplay, int numTaxa) {
 		PlotTreeDrawing treeDrawing =  new PlotTreeDrawing (treeDisplay, numTaxa, this, spotSize);
-		treeDisplay.collapsedCladeNameAtLeftmostAncestor = false;
+		treeDisplay.collapsedCladeNameAtDescendant = false;
 		drawings.addElement(treeDrawing);
 		return treeDrawing;
 	}

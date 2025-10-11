@@ -165,7 +165,8 @@ public class GraphicsUtil {
 	}
 	/*_________________________________________________*/
 	public static void fillPolygon(Graphics g, double[] x, double[] y, int fillPolyMode) {
-		
+		if (fillPolyMode == 0)
+			return;
 		if (!(g instanceof Graphics2D)){
 			Composite composite = ColorDistribution.getComposite(g);
 			setTransparentGraphics(g, fillPolyMode);
@@ -190,8 +191,10 @@ public class GraphicsUtil {
 			poly.lineTo(x[i],y[i]);
 		poly.lineTo(x[0],y[0]);
 		g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+		Stroke stroke = g2.getStroke();
 		g2.setStroke(new RoundJoinStroke((float)thickness));
 		g2.draw(poly);
+		g2.setStroke(stroke);
 	}
 	/*_________________________________________________*/
 	public static void drawPolygon(Graphics g, double[] x, double[] y, double thickness) {
@@ -1106,6 +1109,9 @@ class RoundJoinStroke extends BasicStroke  {
 	}
 	public int getLineJoin() {
 		return BasicStroke.JOIN_ROUND;
+	}
+	public int getEndCap() {
+		return BasicStroke.CAP_ROUND;
 	}
 
 
