@@ -18,10 +18,13 @@ import java.util.Vector;
 
 import mesquite.lib.CommandRecord;
 import mesquite.lib.Debugg;
+import mesquite.lib.FileElement;
 import mesquite.lib.ListableVector;
+import mesquite.lib.Listened;
 import mesquite.lib.MesquiteBoolean;
 import mesquite.lib.MesquiteInteger;
 import mesquite.lib.MesquiteListener;
+import mesquite.lib.MesquiteModule;
 import mesquite.lib.MesquiteTimer;
 import mesquite.lib.Notification;
 import mesquite.lib.StringUtil;
@@ -29,6 +32,7 @@ import mesquite.lib.characters.CharacterData;
 import mesquite.lib.characters.CharacterPartition;
 import mesquite.lib.characters.CharactersGroup;
 import mesquite.lib.characters.CharactersGroupVector;
+import mesquite.lib.duties.ElementManager;
 import mesquite.lib.table.MesquiteTable;
 import mesquite.lib.ui.ExtensibleDialog;
 import mesquite.lib.ui.ProgressIndicator;
@@ -89,6 +93,8 @@ public class CharMatricesListDeconcatenate extends CharMatricesListUtility {
 			getProject().incrementProjectWindowSuppression();
 		if (!queryOptions(datas))
 			return false;
+		incrementMenuResetSuppression();
+		incrementNEXUSBlockSortSuppression();
 		Vector v = pauseAllPausables();
 		ProgressIndicator progIndicator = null;
 		CharactersGroupVector groups = (CharactersGroupVector)getProject().getFileElement(CharactersGroupVector.class, 0);
@@ -97,14 +103,33 @@ public class CharMatricesListDeconcatenate extends CharMatricesListUtility {
 		int progI = 0;
 		int countParts = 0;
 		getProject().setNotificationsOnOff(false);
+		getProject().getCentralModelListener().setNotificationsOnOff(false);
 		boolean abort = false;
 		for (int im = 0; im < datas.size() && !abort; im++){
 			CharacterData data = (CharacterData)datas.elementAt(im);
 			data.setNotificationsOnOff(false);
 			CharacterPartition partition = (CharacterPartition)data.getCurrentSpecsSet(CharacterPartition.class);
+			/* Multiple timings.
+			 * 
+			 * Example
+			 * MesquiteTimer[] timers = MesquiteTimer.makeTimers(4);
+			 * int currentTimer = MesquiteTimer.startMultipleTimings(timers, "First part");
+			 * //first part of code to be timed
+			 * currentTimer = MesquiteTimer.nextTimingPart(timers, currentTimer, "Second part");
+			 * //second part of code to be timed
+			 * currentTimer = MesquiteTimer.nextTimingPart(timers, currentTimer, "Third part");
+			 * //third part of code to be timed
+			 * currentTimer = MesquiteTimer.nextTimingPart(timers, currentTimer, "Fourth part");
+			 * //third part of code to be timed
+			 * MesquiteTimer.finishTimingParts(timers, currentTimer);
+			 * if (iterations % 100 == 0)
+			 * 		MesquiteTimer.summarize(timers);
+			 */
 
+		//	MesquiteTimer[] timers = MesquiteTimer.makeTimers(6);
 			boolean partitonFound = false;
 			boolean deleteLast = false;
+			ElementManager charManager = findElementManager(CharacterData.class);
 			if (partition != null){
 				if (groups != null){
 					progIndicator.start();
@@ -118,7 +143,7 @@ public class CharMatricesListDeconcatenate extends CharMatricesListUtility {
 							partData.setNotificationsOnOff(false);
 
 							partData.addCharacters(0, numCharsInGroup, false);  //will trim later						}
-							partData.addToFile(getProject().getHomeFile(), getProject(),  findElementManager(CharacterData.class)); 
+							partData.addToFile(getProject().getHomeFile(), getProject(),  charManager); 
 							partData.setName(datas.getUniqueName(group.getName()), false);
 							int icPart = 0;
 							for (int icOrig = 0; icOrig<data.getNumChars() && icPart<numCharsInGroup; icOrig++) {
@@ -139,6 +164,7 @@ public class CharMatricesListDeconcatenate extends CharMatricesListUtility {
 							}
 							if (abort)
 								break;
+							
 
 						}
 					}
@@ -178,12 +204,15 @@ public class CharMatricesListDeconcatenate extends CharMatricesListUtility {
 
 		}
 		getProject().setNotificationsOnOff(true);
+		getProject().getCentralModelListener().setNotificationsOnOff(true);
 		getProject().notifyListeners(this, new Notification(MesquiteListener.PARTS_ADDED));
 		getProject().notifyListenersAllVectors();
 
 		unpauseAllPausables(v);
 		if (getProject() != null)
 			getProject().decrementProjectWindowSuppression();
+		decrementNEXUSBlockSortSuppression();
+		decrementMenuResetSuppression();
 		resetAllMenuBars();
 		return true;
 	}

@@ -16,13 +16,14 @@ package mesquite.lib;
 
 /*=======================*/
 /** A timer for profiling.*/
-public class MesquiteTimer {
+public class MesquiteTimer implements Nameable {
 	long accumulatedTime = 0;
 	long currentBout = 0;
 	long lastCheckedTime = 0;
 	long veryStart = 0;
 	int timesStarted = 0;
 	String id = "";
+	String name = "";
 	public MesquiteTimer(){
 		veryStart = System.currentTimeMillis();
 	}
@@ -30,6 +31,29 @@ public class MesquiteTimer {
 		veryStart = System.currentTimeMillis();
 	}
 
+	public void setName(String n){
+		this.name = n;
+	}
+	public String getName(){
+		return name;
+	}
+	
+	/* Multiple timings.
+	 * 
+	 * Example
+	 * MesquiteTimer[] timers = MesquiteTimer.makeTimers(4);
+	 * int currentTimer = MesquiteTimer.startMultipleTimings(timers, "First part");
+	 * //first part of code to be timed
+	 * currentTimer = MesquiteTimer.nextTimingPart(timers, currentTimer, "Second part");
+	 * //second part of code to be timed
+	 * currentTimer = MesquiteTimer.nextTimingPart(timers, currentTimer, "Third part");
+	 * //third part of code to be timed
+	 * currentTimer = MesquiteTimer.nextTimingPart(timers, currentTimer, "Fourth part");
+	 * //third part of code to be timed
+	 * MesquiteTimer.finishTimingParts(timers, currentTimer);
+	 * if (iterations % 100 == 0)
+	 * 		MesquiteTimer.summarize(timers);
+	 */
 	public static MesquiteTimer[] makeTimers(int num){
 		MesquiteTimer[] timers = new MesquiteTimer[num];
 		for (int i = 0; i< num; i++)
@@ -37,10 +61,57 @@ public class MesquiteTimer {
 		return timers;
 	}
 	public static String summarize(MesquiteTimer[] timers){
+		if (timers == null)
+			return "";
 		String s = "";
 		for (int i = 0; i< timers.length; i++)
-			s += "[" + i + "] " + timers[i].getAccumulatedTime();
+			s += "[" + timers[i].getName() + "] " + timers[i].getAccumulatedTime() + "  ";
 		return s;
+	}
+	public static void fullReset(MesquiteTimer[] timers){
+		if (timers == null)
+			return;
+		for (int i = 0; i< timers.length; i++)
+			timers[i].fullReset();
+	}
+	public static int startMultipleTimings(MesquiteTimer[] timers, String name){
+		return startMultipleTimings(timers, 0, name);
+
+	}
+	public static int startMultipleTimings(MesquiteTimer[] timers, int startingTimer, String name){
+		if (timers == null)
+			return -1;
+		if (name == null)
+			name = Integer.toString(startingTimer);
+		timers[startingTimer].setName(name);
+		timers[startingTimer].start();
+		return startingTimer;
+
+	}
+	public static int nextTimingPart(MesquiteTimer[] timers, int whichTimerPrevious, String name){
+		if (timers == null)
+			return -1;
+		if (whichTimerPrevious < timers.length)
+			timers[whichTimerPrevious].end();
+		int nextTimer = whichTimerPrevious+1;
+		if (nextTimer < timers.length){
+			if (name == null)
+				name = Integer.toString(nextTimer);
+			timers[nextTimer].setName(name);
+			timers[nextTimer].start();
+		}
+		return nextTimer;
+	}
+	public static int endLastTimingPart(MesquiteTimer[] timers, int whichTimerPrevious){
+		if (timers == null)
+			return -1;
+		if (whichTimerPrevious < timers.length)
+			timers[whichTimerPrevious].end();
+		return whichTimerPrevious;
+	}
+	public static void finishTimingParts(MesquiteTimer[] timers, int whichTimerPrevious){
+		if (whichTimerPrevious < timers.length)
+			timers[whichTimerPrevious].end();
 	}
 	public void start() {
 		if (timesStarted==0) // set veryStart to first call to start.

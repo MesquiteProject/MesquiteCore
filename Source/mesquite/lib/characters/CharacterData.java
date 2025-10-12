@@ -48,6 +48,7 @@ import mesquite.lib.MesquiteProject;
 import mesquite.lib.MesquiteString;
 import mesquite.lib.MesquiteStringBuffer;
 import mesquite.lib.MesquiteThread;
+import mesquite.lib.MesquiteTimer;
 import mesquite.lib.MesquiteTrunk;
 import mesquite.lib.NameReference;
 import mesquite.lib.NameableWithNotify;
@@ -1800,7 +1801,6 @@ public abstract class CharacterData extends FileElement implements MesquiteListe
 			characterNames[ic] = oData.characterNames[oic];
 			notifyOfChangeLowLevel(MesquiteListener.NAMES_CHANGED, ic, -1, 0);  
 		}
-
 		for (int it = 0; it<getNumTaxa(); it++){
 			incrementSuppressHistoryStamp();
 			int oit = oData.getTaxa().findEquivalentTaxon(getTaxa(), it);
@@ -1816,6 +1816,7 @@ public abstract class CharacterData extends FileElement implements MesquiteListe
 					setCellObject(historyNameRef, ic, it, h2.cloneHistory());
 			}
 		}
+		
 		equalizeParts(oData, oic, ic);
 		decrementSuppressHistoryStamp();
 		setAnnotation(ic, oData.getAnnotation(oic));

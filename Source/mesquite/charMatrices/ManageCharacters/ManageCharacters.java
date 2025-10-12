@@ -44,6 +44,7 @@ import mesquite.lib.MesquiteProject;
 import mesquite.lib.MesquiteString;
 import mesquite.lib.MesquiteStringExplainable;
 import mesquite.lib.MesquiteThread;
+import mesquite.lib.MesquiteTimer;
 import mesquite.lib.MesquiteTrunk;
 import mesquite.lib.NEXUSFileParser;
 import mesquite.lib.NameReference;
@@ -460,7 +461,7 @@ public class ManageCharacters extends CharactersManager {
 			return null;
 		resetAllMenuBars();
 		NexusBlock nb = findNEXUSBlock(data);
-	if (nb==null) {
+		if (nb==null) {
 			CharactersBlock cb = new CharactersBlock(data.getFile(), this);
 			cb.setData((CharacterData)data);
 			addNEXUSBlock(cb);

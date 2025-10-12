@@ -342,6 +342,7 @@ public class FileElement extends AssociableWithSpecs implements Identifiable, Li
 	}
 	
 
+	public static MesquiteTimer[] reusableTimers;
 	/*.................................................................................................................*/
 	/** Adds the element to the given file and project, and assigns it the given manager.  Also takes care of 
  	notifying the manager that it has been added using elementAdded(). */
@@ -522,7 +523,6 @@ public class FileElement extends AssociableWithSpecs implements Identifiable, Li
   		}
 	}
 	/*-------------------------------------------------------*/
-	public static MesquiteTimer[] timers = new MesquiteTimer[]{new MesquiteTimer(), new MesquiteTimer(), new MesquiteTimer(), new MesquiteTimer(), new MesquiteTimer(), new MesquiteTimer(), new MesquiteTimer()};
 	/** Deletes the file element. Should typically be called via close()  to make sure that the file element is not in use etc. */
 	public void dispose() {
 		/* Subrclasses: should deassign storage to help catch post-deletion use */
@@ -535,24 +535,17 @@ public class FileElement extends AssociableWithSpecs implements Identifiable, Li
 		}
 		 */
 		//Notify file
-		timers[0].start();
 		if (file != null) 
 			file.removeFileElement(this);
 		//Notify project
-		timers[0].end();
-		timers[1].start();
 		if (project !=null) {
 			project.removeFileElement(this);
 			if (nexusBlock !=null)
 				project.removeNexusBlock(nexusBlock);
 		}
-		timers[1].end();
-		timers[2].start();
 		if (nexusBlock !=null)
 			nexusBlock.dispose();
 		//Notify manager (which could then remove from its lists, delete NEXUS blocks, etc.)
-		timers[2].end();
-		timers[3].start();
 		if (getManager()!=null) {
 			getManager().elementDisposed(this);
 			FileCoordinator coord = ((MesquiteModule)getManager()).getFileCoordinator();
@@ -560,13 +553,9 @@ public class FileElement extends AssociableWithSpecs implements Identifiable, Li
 				coord.elementDisposed(this);
 		}
 			
-		timers[3].end();
-		timers[4].start();
 		if (!projectClosing)
 			if (getProject() != null)
 				getProject().refreshProjectWindow();
-		timers[4].end();
-		timers[5].start();
 		disposed = true;
 		if (MesquiteTrunk.checkMemory && classesCreated.indexOf(getClass())>=0) {
 			MesquiteInteger c = (MesquiteInteger)countsOfClassesDisposed.elementAt(classesCreated.indexOf(getClass()));
@@ -579,7 +568,6 @@ public class FileElement extends AssociableWithSpecs implements Identifiable, Li
 		nexusBlock = null;
 		elementManager = null;
 		super.dispose();
-		timers[5].end();
 	}
 	/*-------------------------------------------------------*/
 	public void finalize() throws Throwable {
