@@ -560,6 +560,25 @@ public class BasicDrawTaxonNames extends DrawNamesTreeDisplay {
 		}
 		return furthest;
 	}
+	/*.................................................................................................................*/
+	public Color getCladeNamesColor(Tree tree, int node) {
+		if(tree.nodeIsTerminal(node)){
+			int taxon = tree.taxonNumberOfNode(node);
+			return colorerTask.getTaxonNameColor(tree.getTaxa(), taxon);
+		}
+		Color color = null;
+		for (int d = tree.firstDaughterOfNode(node); tree.nodeExists(d); d = tree.nextSisterOfNode(d)) {
+			Color dColor = getCladeNamesColor(tree, d);
+			if (color == null)
+				color = dColor;
+			else if (dColor == null)
+				return null;
+			else if (!dColor.equals(color))
+				return null;
+
+		}
+		return color;
+	}
 
 	/*.................................................................................................................*/
 	protected void drawNamesOnTree(Tree tree, int drawnRoot, int N, TreeDisplay treeDisplay, TaxaPartition partitions) {
@@ -581,9 +600,23 @@ public class BasicDrawTaxonNames extends DrawNamesTreeDisplay {
 				else
 					horiz = furthestT;
 			}
-			else if (!treeDisplay.collapsedCladeNameAtLeftmostAncestor && tree.isLeftmostTerminalOfCollapsedClade(N)){
+			else if (tree.isLeftmostTerminalOfCollapsedClade(N)){
+				if (!treeDisplay.collapsedCladeNameAtDescendant){
 				horiz = treeDrawing.x[tree.deepestCollapsedAncestor(N)];
 				vert = treeDrawing.y[tree.deepestCollapsedAncestor(N)];
+			}
+				else {
+					if (treeDisplay.isUp() || treeDisplay.isDown()){
+						horiz = treeDrawing.x[tree.deepestCollapsedAncestor(N)];
+					}
+					else if (treeDisplay.isRight() || treeDisplay.isLeft()){
+							vert = treeDrawing.y[tree.deepestCollapsedAncestor(N)];
+					}
+					else {
+						horiz = treeDrawing.x[tree.deepestCollapsedAncestor(N)];
+						vert = treeDrawing.y[tree.deepestCollapsedAncestor(N)];
+				}
+				}
 			}
 			int lengthString;
 			boolean warn = true;
@@ -632,6 +665,8 @@ public class BasicDrawTaxonNames extends DrawNamesTreeDisplay {
 			Color tempColor = Color.black;
 			if (!tree.isLeftmostTerminalOfCollapsedClade(N))
 				tempColor = colorerTask.getTaxonNameColor(taxa, taxonNumber);
+			else
+				tempColor = getCladeNamesColor(tree, tree.deepestCollapsedAncestor(N));
 			if (tempColor != null){
 				taxonColor = tempColor;
 			}

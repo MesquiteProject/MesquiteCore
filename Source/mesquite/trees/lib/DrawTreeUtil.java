@@ -15,8 +15,10 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
 package mesquite.trees.lib;
 import java.awt.BasicStroke;
 import java.awt.Color;
+import java.awt.Composite;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
+import java.awt.Polygon;
 import java.awt.RenderingHints;
 import java.awt.Shape;
 import java.awt.Stroke;
@@ -282,24 +284,25 @@ public class DrawTreeUtil {
 		int mother = tree.motherOfNode(node);
 		if (treeDisplay.isUp() || treeDisplay.isDown()){
 			double xMother = x[mother] + triOffset;
-			GraphicsUtil.drawLine(g, xMother,y[mother], xMother-triWidth,y[node], edgewidth);
-			GraphicsUtil.drawLine(g, xMother,y[mother], xMother+triWidth,y[node], edgewidth);
-			GraphicsUtil.drawLine(g, xMother-triWidth,y[node], xMother+triWidth,y[node], edgewidth);
+			if (treeDisplay.isUp())
+				GraphicsUtil.drawPolygon(g, new double[] {xMother, xMother-triWidth, xMother+triWidth}, new double[] {y[mother],y[node]+edgewidth/2, y[node]+edgewidth/2}, edgewidth);
+			else
+				GraphicsUtil.drawPolygon(g, new double[] {xMother, xMother-triWidth, xMother+triWidth}, new double[] {y[mother],y[node]-edgewidth/2, y[node]-edgewidth/2}, edgewidth);
 		}
 		else {
 			double yMother = y[mother] + triOffset;
-			GraphicsUtil.drawLine(g, x[mother],yMother, x[node],yMother-triWidth, edgewidth);
-			GraphicsUtil.drawLine(g, x[mother],yMother, x[node],yMother+triWidth, edgewidth);
-			GraphicsUtil.drawLine(g, x[node],yMother-triWidth, x[node],yMother+triWidth, edgewidth);
+			if (treeDisplay.isRight())
+				GraphicsUtil.drawPolygon(g, new double[] {x[mother], x[node]-edgewidth/2, x[node]-edgewidth/2}, new double[] {yMother,yMother-triWidth, yMother+triWidth}, edgewidth);
+			else 
+				GraphicsUtil.drawPolygon(g, new double[] {x[mother], x[node]+edgewidth/2, x[node]+edgewidth/2}, new double[] {yMother,yMother-triWidth, yMother+triWidth}, edgewidth);
 		}
 	}
-	
 
 
-	public static void fillOneTriangle(TreeDisplay treeDisplay, double[] x, double[] y, double originalEdgewidth, double edgewidth, double inset, Tree tree, Graphics g, int node){
+	public static void fillOneTriangle(TreeDisplay treeDisplay, double[] x, double[] y, double originalEdgewidth, double edgewidth, double inset, int triangleFillMode, Tree tree, Graphics g, int node){
 		double unitWidth = treeDisplay.getTreeDrawing().triangleWidthInCollapsed();
 		double triWidth = treeDisplay.getTaxonSpacing()*unitWidth/2.0;
-		double triOffset =originalEdgewidth/2;
+		double triOffset =((int)originalEdgewidth)/2;
 		double motherOffset = edgewidth/2.0;
 
 		int mother = tree.motherOfNode(node);
@@ -308,40 +311,31 @@ public class DrawTreeUtil {
 		double xNode = x[node];
 		double yNode = y[node];
 		if (treeDisplay.isUp() || treeDisplay.isDown()){
+			xMother +=  triOffset;
 			if (treeDisplay.isUp()){
-				xMother = x[mother] + triOffset;
-				yMother =y[mother]-inset;
-				yNode =y[node]+inset/2;
+				yMother += -inset;
+				yNode += inset/2+ originalEdgewidth/2;
 			}
 			else {
-				xMother = x[mother] + triOffset;
-				yMother =y[mother]+inset;
-				yNode =y[node]-inset/2;
+				yMother += inset;
+				yNode -= inset/2+ originalEdgewidth/2;
 			}
-			
-			GraphicsUtil.fillPolygon(g, new double[] {xMother+motherOffset, xMother-motherOffset, xMother-triWidth+inset, xMother+triWidth-inset}, new double[] {yMother,yMother, yNode, yNode});
-
-//			GraphicsUtil.drawLine(g, xMother,yMother, xMother-triWidth+inset,yNode, edgewidth);
-//			GraphicsUtil.drawLine(g, xMother,yMother, xMother+triWidth-inset,yNode, edgewidth);
-//			GraphicsUtil.drawLine(g, xMother-triWidth+inset,yNode, xMother+triWidth-inset,yNode, edgewidth);
+			GraphicsUtil.fillPolygon(g, new double[] {xMother, xMother-triWidth+inset, xMother+triWidth-inset}, new double[] {yMother,yNode, yNode}, triangleFillMode);
+			GraphicsUtil.drawPolygon(g, new double[] {xMother, xMother-triWidth+inset, xMother+triWidth-inset}, new double[] {yMother,yNode, yNode}, edgewidth);
 		}
 		else {
+			yMother += triOffset;
 			if (treeDisplay.isRight()){
-				yMother = y[mother] + triOffset;
-				xMother = x[mother]+inset;
-				xNode = x[node]-inset/2;
+				xMother += inset;
+				xNode -= inset/2+ originalEdgewidth/2;
 			}
 			else if (treeDisplay.isLeft()){
-				yMother = y[mother] + triOffset;
-				xMother = x[mother]-inset;
-				xNode = x[node]+inset/2;
+				xMother -= inset;
+				xNode += inset/2+ originalEdgewidth/2;
 			}
-			
-			GraphicsUtil.fillPolygon(g, new double[] {xMother, xMother, xNode, xNode}, new double[] {yMother+motherOffset, yMother-motherOffset, yMother-triWidth+inset, yMother+triWidth-inset});
+			GraphicsUtil.fillPolygon(g, new double[] {xMother, xNode, xNode}, new double[] {yMother, yMother-triWidth+inset, yMother+triWidth-inset}, triangleFillMode);
+			GraphicsUtil.drawPolygon(g, new double[] {xMother, xNode, xNode}, new double[] {yMother, yMother-triWidth+inset, yMother+triWidth-inset}, edgewidth);
 
-		//	GraphicsUtil.drawLine(g, xMother,yMother, xNode,yMother-triWidth+inset, edgewidth);
-		//GraphicsUtil.drawLine(g, xMother,yMother, xNode,yMother+triWidth-inset, edgewidth);
-		//GraphicsUtil.drawLine(g, xNode,yMother-triWidth+inset, xNode,yMother+triWidth-inset, edgewidth);
 		}
 	}
 

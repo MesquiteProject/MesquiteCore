@@ -216,7 +216,7 @@ public class ContainedAssociates extends AnalyticalDrawTree {
 	}
 	/*.................................................................................................................*/
 	public   TreeDrawing createTreeDrawing(TreeDisplay treeDisplay, int numTaxa) { //TODO: should be passed scripting
-		treeDisplay.collapsedCladeNameAtLeftmostAncestor = false;
+		treeDisplay.collapsedCladeNameAtDescendant = false;
 		if (treeDisplay.getEdgeWidth()<minimalEdgeWidth) {
 			treeDisplay.setEdgeWidth(minimalEdgeWidth);
 		}

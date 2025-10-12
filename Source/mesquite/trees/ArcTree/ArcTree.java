@@ -87,7 +87,7 @@ public class ArcTree extends DrawTree implements DiagonalRootDrawer, SquareTipDr
 	}
 	public   TreeDrawing createTreeDrawing(TreeDisplay treeDisplay, int numTaxa) {
 		ArcTreeDrawing treeDrawing =  new ArcTreeDrawing (treeDisplay, numTaxa, this);
-		treeDisplay.collapsedCladeNameAtLeftmostAncestor = true;
+		treeDisplay.collapsedCladeNameAtDescendant = true;
 		drawings.addElement(treeDrawing);
 		return treeDrawing;
 	}

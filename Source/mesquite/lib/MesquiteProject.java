@@ -2247,6 +2247,10 @@ public class MesquiteProject extends Attachable implements Listable, MesquiteLis
 		return count;
 	}
 
+	// a synonym of the following!
+	public int getWhichCharacterMatrixNumber(CharacterData data){
+		return getMatrixNumber(data);
+	}
 	/*.................................................................................................................*/
 	/** gets the number (index position) of the data set. */
 	public int getMatrixNumber(mesquite.lib.characters.CharacterData data) {   //core

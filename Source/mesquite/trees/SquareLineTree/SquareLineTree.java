@@ -106,7 +106,9 @@ public class SquareLineTree extends DrawTree implements SquareTipDrawer {
 			dtc.recordTreeDrawTaskEdgeWidthMemory(oldEdgeWidth);
 		}
 		SquareLineTreeDrawing treeDrawing =  new SquareLineTreeDrawing (treeDisplay, numTaxa, this);
-		treeDisplay.collapsedCladeNameAtLeftmostAncestor = true;
+		treeDisplay.collapsedCladeNameAtDescendant = true; //if triangles, then act as if ancestral point
+		treeDisplay.collapsedCladeNameCenterOverAncestor =  trianglesForCollapsed.getValue();
+
 
 		drawings.addElement(treeDrawing);
 		return treeDrawing;
@@ -202,7 +204,15 @@ public class SquareLineTree extends DrawTree implements SquareTipDrawer {
 			boolean current = trianglesForCollapsed.getValue();
 			trianglesForCollapsed.toggleValue(parser.getFirstToken(arguments));
 			if (current!=trianglesForCollapsed.getValue()) {
-				parametersChanged();
+				
+				Enumeration e = drawings.elements();
+				while (e.hasMoreElements()) {
+					Object obj = e.nextElement();
+					SquareLineTreeDrawing treeDrawing = (SquareLineTreeDrawing)obj;
+					treeDrawing.treeDisplay.collapsedCladeNameAtDescendant =true;
+					treeDrawing.treeDisplay.collapsedCladeNameCenterOverAncestor =trianglesForCollapsed.getValue();
+				}
+				if ( !MesquiteThread.isScripting()) parametersChanged();
 			}
 		}
 		else if (checker.compare(this.getClass(), "Sets whether to show edge lines or not.", "", commandName, "colorCirclesOnly")) {
@@ -704,6 +714,9 @@ class SquareLineTreeDrawing extends TreeDrawing  {
 		//		return true;
 		return ownerModule.showSpots.getValue();
 	}
+	
+	/*_________________________________________________*/
+	int triangleFillMode = 3; //options currently: -1 opaque; 0, don't fill, i.e. fully transparent; 2 very transparent, 3 more opaque, 5 more opaque
 	/*_________________________________________________*/
 	public void fillBranchWithColors(Tree tree, int node, ColorDistribution colors, Graphics g) {
 		if (colors != null && node>0 && (tree.getRooted() || tree.getRoot()!=node)) {
@@ -724,7 +737,7 @@ class SquareLineTreeDrawing extends TreeDrawing  {
 						if (triangleWidthInCollapsed()>0){ //this will have to re-ask about the number of colors, since now it's the ancestor's
 								if (numColors==1){
 									g.setColor(colors.getColor(0));
-									DrawTreeUtil.fillOneTriangle(treeDisplay, x, y, useEdgeWidth(), useEdgeWidth(), localInset, tree, g, node);
+									DrawTreeUtil.fillOneTriangle(treeDisplay, x, y, useEdgeWidth(), useEdgeWidth(), localInset, triangleFillMode, tree, g, node);
 								}
 								else {
 									double thickness = 1.0*fillWidth/colors.getNumColors();
@@ -733,7 +746,7 @@ class SquareLineTreeDrawing extends TreeDrawing  {
 										color = colors.getColor(i);
 										if (color != null){
 											g.setColor(color);
-											DrawTreeUtil.fillOneTriangle(treeDisplay, x, y, useEdgeWidth(), thickness, start, tree, g, node);
+											DrawTreeUtil.fillOneTriangle(treeDisplay, x, y, useEdgeWidth(), thickness, start, 0, tree, g, node);
 										}
 									}
 								
@@ -756,7 +769,7 @@ class SquareLineTreeDrawing extends TreeDrawing  {
 					if (tree.isLeftmostTerminalOfCollapsedClade(node) && triangleWidthInCollapsed()>0){
 						if (numColors==1){
 								g.setColor(colors.getColor(0));
-								DrawTreeUtil.fillOneTriangle(treeDisplay, x, y, useEdgeWidth(),useEdgeWidth(), localInset, tree, g, node);
+								DrawTreeUtil.fillOneTriangle(treeDisplay, x, y, useEdgeWidth(),useEdgeWidth(), localInset, triangleFillMode, tree, g, node);
 							}
 							else {
 								double thickness = 1.0*fillWidth/colors.getNumColors();
@@ -765,7 +778,7 @@ class SquareLineTreeDrawing extends TreeDrawing  {
 									color = colors.getColor(i);
 									if (color != null){
 										g.setColor(color);
-										DrawTreeUtil.fillOneTriangle(treeDisplay, x, y, useEdgeWidth(), thickness, start, tree, g, node);
+										DrawTreeUtil.fillOneTriangle(treeDisplay, x, y, useEdgeWidth(), thickness, start, 0, tree, g, node);
 									}
 								}
 						}

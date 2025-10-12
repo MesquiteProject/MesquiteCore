@@ -77,7 +77,7 @@ public class CircularTree extends DrawTree {
 	/*----------------------------------------------------------------------------*/
 	public   TreeDrawing createTreeDrawing(TreeDisplay treeDisplay, int numTaxa) {
 		CircleTreeDrawing treeDrawing =  new CircleTreeDrawing (treeDisplay, numTaxa, this);
-		treeDisplay.collapsedCladeNameAtLeftmostAncestor = true;
+		treeDisplay.collapsedCladeNameAtDescendant = true;
 		drawings.addElement(treeDrawing);
 		return treeDrawing;
 	}

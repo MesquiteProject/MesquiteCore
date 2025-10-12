@@ -101,7 +101,7 @@ public class BallsNSticks extends DrawTree {
 	}
 	public   TreeDrawing createTreeDrawing(TreeDisplay treeDisplay, int numTaxa) {
 		BallsNSticksDrawing treeDrawing =  new BallsNSticksDrawing (treeDisplay, numTaxa, this);
-		treeDisplay.collapsedCladeNameAtLeftmostAncestor = true;
+		treeDisplay.collapsedCladeNameAtDescendant = true;
 		drawings.addElement(treeDrawing);
 		//	treeDisplay.inhibitStretchByDefault = false;
 		return treeDrawing;

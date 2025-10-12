@@ -395,7 +395,7 @@ public class BasicTreeDrawCoordinator extends DrawTreeCoordinator {
 					treeDisplay.setTreeDrawing(null);
 					treeDrawName.setValue(treeDrawTask.getName());
 					treeDrawTask.setHiringCommand(tdC);
-					treeDisplay.collapsedCladeNameAtLeftmostAncestor = false;
+					treeDisplay.collapsedCladeNameAtDescendant = false;
 					treeDisplay.setTreeDrawing(treeDrawTask.createTreeDrawing(treeDisplay, treeDisplay.getTaxa().getNumTaxa()));
 					treeDisplay.suppressDrawing(suppression);
 					if (temp.allowsReorientation())
@@ -435,7 +435,7 @@ public class BasicTreeDrawCoordinator extends DrawTreeCoordinator {
 					treeDrawTask.setHiringCommand(tdC);
 				}
 				for (int i=0; i<numDisplays; i++) {
-					treeDisplays[i].collapsedCladeNameAtLeftmostAncestor = false;
+					treeDisplays[i].collapsedCladeNameAtDescendant = false;
 					treeDisplays[i].setTreeDrawing(treeDrawTask.createTreeDrawing(treeDisplays[i], treeDisplays[i].getTaxa().getNumTaxa()));
 				}
 				for (int i=0; i<numDisplays; i++) {
