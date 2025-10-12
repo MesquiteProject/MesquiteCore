@@ -10,10 +10,10 @@ Mesquite's web site is http://mesquiteproject.org
 
 This source code and its compiled class files are free and modifiable under the terms of 
 GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
-*/
+ */
 package mesquite.lib;
 
- 
+
 /*=======================*/
 /** A timer for profiling.*/
 public class MesquiteTimer {
@@ -29,6 +29,19 @@ public class MesquiteTimer {
 	public MesquiteTimer(boolean startNow){
 		veryStart = System.currentTimeMillis();
 	}
+
+	public static MesquiteTimer[] makeTimers(int num){
+		MesquiteTimer[] timers = new MesquiteTimer[num];
+		for (int i = 0; i< num; i++)
+			timers[i] = new MesquiteTimer();
+		return timers;
+	}
+	public static String summarize(MesquiteTimer[] timers){
+		String s = "";
+		for (int i = 0; i< timers.length; i++)
+			s += "[" + i + "] " + timers[i].getAccumulatedTime();
+		return s;
+	}
 	public void start() {
 		if (timesStarted==0) // set veryStart to first call to start.
 			veryStart = System.currentTimeMillis();
@@ -36,13 +49,14 @@ public class MesquiteTimer {
 		currentBout = System.currentTimeMillis();
 		lastCheckedTime = currentBout;
 	}
+
 	public void reset() {
 		currentBout = 0;
 		accumulatedTime = 0;
 	}
 	public void setID(String id) {
 		this.id = id;
-	
+
 	}
 	public String getID() {
 		return id;

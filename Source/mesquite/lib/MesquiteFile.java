@@ -587,8 +587,6 @@ public class MesquiteFile extends Listened implements HNode, Commandable, Listab
 		boolean dirty = false;
 		long t = System.currentTimeMillis();
 		try {
-			//Debugg.println("@
-			MesquiteTimer[] timers = new MesquiteTimer[]{new MesquiteTimer(), new MesquiteTimer(), new MesquiteTimer(), new MesquiteTimer(), new MesquiteTimer(), new MesquiteTimer(), new MesquiteTimer()};
 			if (fileElements!=null){
 				project.incrementProjectWindowSuppression();
 				int numElements = fileElements.size();
@@ -600,9 +598,7 @@ public class MesquiteFile extends Listened implements HNode, Commandable, Listab
 				
 				while (numToDispose>0 /*&& lastNumToDispose != numToDispose*/) {
 					didOne=false;
-					timers[0].start();
 					numToDispose = calcNumToDispose();
-					timers[0].end();
 					if (numToDispose>0){
 						Enumeration eDd = fileElements.elements();
 						while (eDd.hasMoreElements()) {
@@ -610,15 +606,11 @@ public class MesquiteFile extends Listened implements HNode, Commandable, Listab
 							elem.projectClosing = projectClosing;
 							if (projectClosing)
 								elem.incrementNotifySuppress();
-							timers[1].start();
 							elem.dispose();
-							timers[1].end();
 							if (!elem.isDoomed())
 								MesquiteMessage.warnProgrammer("oops, deleted element not marked as doomed");
 							numDisposed++;
-							timers[2].start();
 							project.removeFileElement(elem);
-							timers[2].end();
 						numToDispose--;
 							didOne = true;
 						}

@@ -31,7 +31,7 @@ public class MQTextField extends TextField implements MQComponent {
 	}
 	
 	public MQTextField (String initialString, int fieldLength) {
-		super(normalize(initialString), fieldLength);
+		super(initialString, fieldLength);
 		helper = new MQComponentHelper(this);
 	}
 
@@ -40,14 +40,8 @@ public class MQTextField extends TextField implements MQComponent {
 		helper = new MQComponentHelper(this);
 	}
 	public MQTextField (String initialString) {
-		super(normalize(initialString));
+		super(initialString);
 		helper = new MQComponentHelper(this);
-	}
-	static String normalize(String s){
-		return s; //Normalizer.normalize(s, Normalizer.Form.NFC); //("@
-		}
-	public void setText(String s){
-		super.setText(normalize(s));
 	}
 
 	//###########################################################

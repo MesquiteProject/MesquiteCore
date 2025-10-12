@@ -19,6 +19,7 @@ import mesquite.lib.IntegerArray;
 import mesquite.lib.MesquiteInteger;
 import mesquite.lib.MesquiteModule;
 import mesquite.lib.MesquiteThread;
+import mesquite.lib.MesquiteTrunk;
 import mesquite.lib.Puppeteer;
 import mesquite.lib.Snapshot;
 
@@ -114,7 +115,7 @@ public class Parallelizer {
 			}
 		}
 		if (calcStatus.getValue(item) == BEINGCALCULATED){
-			System.err.println("@BEINGCALCULATED but no thread claims " + item);
+			System.err.printlnBEINGCALCULATED but no thread claims " + item);
 			return true;
 		}
 		return false; */
@@ -125,12 +126,13 @@ public class Parallelizer {
 		if (calcStatus == null)
 			return 0;
 		int count = 0;
+		int wasTotalCalculated = totalCalculated;
 		for (int i= 0; i<calcStatus.getSize(); i++){
 			if (calcStatus.getValue(i) != INAPPLICABLE && (calcStatus.getValue(i)<0 || calcStatus.getValue(i)>1))
 				count++;
 		}
-		if (count != totalCalculated)
-			System.err.println("@Difference between count " + count + " and totalCalculated " + totalCalculated +" in Parallelizer");
+		if (count != wasTotalCalculated && MesquiteTrunk.developmentMode)
+			System.err.println("Difference between count " + count + " and totalCalculated " + wasTotalCalculated +" in Parallelizer");
 		return totalCalculated;
 	}
 

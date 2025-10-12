@@ -111,6 +111,9 @@ public class NumForCharMatrixList extends CharMatricesListAssistant implements M
 	boolean okToCalc() {
 		return !paused;
 	}
+	public boolean isPaused(){
+		return paused;
+	}
 
 	public void setTableAndObject(MesquiteTable table, Object obj){
 		if (datas !=null)

@@ -1210,7 +1210,7 @@ public abstract class CharacterData extends FileElement implements MesquiteListe
 			return false;
 		if (starting<0)
 			return false;
-		else if (starting>numChars)
+		else if (starting>=numChars)
 			return false;
 		if (!checkThread(false))
 			return false;

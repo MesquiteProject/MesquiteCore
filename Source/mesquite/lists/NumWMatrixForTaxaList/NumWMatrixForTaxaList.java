@@ -182,6 +182,9 @@ public class NumWMatrixForTaxaList extends TaxonListAssistant implements Mesquit
 	}
 	/*.................................................................................................................*/
 	boolean paused = false;
+	public boolean isPaused(){
+		return paused;
+	}
 	/*.................................................................................................................*/
 	boolean okToCalc() {
 		return !suppressedByScript && !paused;

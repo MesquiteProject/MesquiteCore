@@ -1910,7 +1910,7 @@ class NodeLocsExtra extends TreeDisplayExtra implements TreeDisplayBkgdExtra {
 		if (treeDisplay.getTreeDrawing().recordsBranchColors()){
 			Color bc = treeDisplay.getTreeDrawing().getBranchColor(drawnRoot);
 			ColorDistribution bcd = treeDisplay.getTreeDrawing().getBranchFillColors(drawnRoot);
-			System.err.println("@  color " + bc + " cd " + bcd);
+			System.err.println("color " + bc + " cd " + bcd);
 		}
 		 */
 		if (showRectangles){  //rectangles
