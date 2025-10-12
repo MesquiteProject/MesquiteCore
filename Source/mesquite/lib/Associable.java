@@ -2377,7 +2377,6 @@ public ListableVector getAssociatesOfKind(int kind){
 			//but first check to see if there are longs.  If so, and if doubles hadn't existed before, then transfer
 			LongArray longs = getAssociatedLongs(nRef);
 			if (longs != null){
-				System.err.println("@ removing longs " + nRef);
 				//There is an array of longs of the same name.  It's therefore assumed that they should all be upgraded to doubles!
 				longs.copyTo(b);
 				removeAssociatedLongs(nRef);   //delete longs as no longer needed

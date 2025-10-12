@@ -543,6 +543,18 @@ public abstract class EmployerEmployee extends MenuOwner implements HNode, Lista
 
 		}
 	}
+	/* ................................................................................................................. */
+	/** Returns whether one of hte module's employers is paused. */
+	public boolean isEmployerPaused() {
+		if (employer == null)
+			return false;
+		else {
+			if (employer instanceof Pausable && ((Pausable)employer).isPaused())
+				return true;
+			return employer.isEmployerPaused();
+		}
+	}
+
 
 	/* ................................................................................................................. */
 	void doomAll() {

@@ -890,41 +890,51 @@ public class MesquiteProject extends Attachable implements Listable, MesquiteLis
 		return true;
 	}
 	/*.................................................................................................................*/
+	/** special case notification.  */
+	public void notifyListenersAllVectors() {
+			taxas.notifyListeners(this, new Notification(MesquiteListener.PARTS_ADDED));
+			datas.notifyListeners(this, new Notification(MesquiteListener.PARTS_ADDED));
+			treeVectors.notifyListeners(this, new Notification(MesquiteListener.PARTS_ADDED));
+			charModels.notifyListeners(this, new Notification(MesquiteListener.PARTS_ADDED));
+			otherElements.notifyListeners(this, new Notification(MesquiteListener.PARTS_ADDED));
+	}
+	/*.................................................................................................................*/
 	/** Adds the passed element to the project.  */
 	public void addFileElement(FileElement element) {
 		if (element==null)
 			return;
-
+		boolean notify = notifyFileElementsAdded && getNotificationsOnOff();
 		if (element instanceof Taxa) {
 			if (taxas.indexOf(element)<0){
-				taxas.addElement(element, notifyFileElementsAdded);
+				taxas.addElement(element, notify);
 				element.addListener(taxas);
 			}
 		}
 		else if (element instanceof mesquite.lib.characters.CharacterData){
 			if (datas.indexOf(element)<0){
-				datas.addElement(element, notifyFileElementsAdded);
+				datas.addElement(element, notify);
 				element.addListener(datas);
 			}
 		}
 		else if (element instanceof TreeVector) {
 			if (treeVectors.indexOf(element)<0){
-				treeVectors.addElement(element, notifyFileElementsAdded);
+				treeVectors.addElement(element, notify);
 			}
 		}
 		else if (element instanceof CharacterModel) {
 			if (charModels.indexOf(element)<0){
-				charModels.addElement(element, notifyFileElementsAdded);
+				charModels.addElement(element, notify);
 				modelListener.addModel((CharacterModel)element);
 			}
 		}
 		else {
 			if (otherElements.indexOf(element)<0)
-				otherElements.addElement(element, notifyFileElementsAdded);
+				otherElements.addElement(element, notify);
 		}
 		element.addListener(this);
 		broadcastAddFileElement(ownerModule, element);
-		notifyListeners(this, new Notification(MesquiteListener.PARTS_ADDED));
+		if (notify)
+			notifyListeners(this, new Notification(MesquiteListener.PARTS_ADDED));
 	}
 	/*.................................................................................................................*/
 	/** DOCUMENT */
@@ -935,40 +945,41 @@ public class MesquiteProject extends Attachable implements Listable, MesquiteLis
 		if (element==null)
 			return;
 		element.removeListener(this);
+		boolean notifyN = (notify || notifyFileElementsAdded) && getNotificationsOnOff();
 		if (element instanceof Taxa) {
 			if (taxas != null) {
-				taxas.removeElement(element, notifyFileElementsAdded);
+				taxas.removeElement(element, notifyN);
 				element.removeListener(taxas);
 			}
 			//taxas.notifyListenersOfDisposed(element);
 		}
 		else if (element instanceof mesquite.lib.characters.CharacterData) {
 			if (datas != null) {
-				datas.removeElement(element, notifyFileElementsAdded);
+				datas.removeElement(element, notifyN);
 				element.removeListener(datas);
 			}
 			//datas.notifyListenersOfDisposed(element);
 		}
 		else if (element instanceof TreeVector) {
 			if (treeVectors != null) {
-				treeVectors.removeElement(element, notifyFileElementsAdded);
+				treeVectors.removeElement(element, notifyN);
 				element.removeListener(treeVectors);
 			}
 			//datas.notifyListenersOfDisposed(element);
 		}
 		else if (element instanceof CharacterModel) {
 			if (charModels != null)
-				charModels.removeElement(element, notifyFileElementsAdded);
+				charModels.removeElement(element, notifyN);
 			//charModels.notifyListenersOfDisposed(element);
 			if (modelListener != null)
 				modelListener.removeModel((CharacterModel)element);
 		}
 		else {
 			if (otherElements != null)
-				otherElements.removeElement(element, notifyFileElementsAdded);
+				otherElements.removeElement(element, notifyN);
 			//otherElements.notifyListenersOfDisposed(element);
 		}
-		if (notify)
+		if (notify && getNotificationsOnOff())
 			notifyListeners(this, new Notification(MesquiteListener.PARTS_DELETED));
 		//TODO: shouldn't broadcase of deletion be here?
 	}

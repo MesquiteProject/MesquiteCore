@@ -285,7 +285,8 @@ public class StoredMatrices extends CharMatrixSource implements MesquiteListener
 
 				MesquiteModule.showLogWindow(true);
 
-				MesquiteMessage.warnUser("A character data matrix in use (" + whatIsMyPurpose() + ") has been deleted.  Another matrix will be sought.");  
+				if (!isEmployerPaused())
+					MesquiteMessage.warnUser("A character data matrix in use (" + whatIsMyPurpose() + ") has been deleted.  Another matrix will be sought.");  
 				if (dataClass!=null) {
 					if (getProject().getNumberCharMatricesVisible(taxa, dataClass)<=0) {
 						MesquiteModule.showLogWindow(true);
