@@ -13,6 +13,7 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
  */
 package mesquite.molec.NCBIBlaster;
 
+import mesquite.lib.MesquiteString;
 import mesquite.lib.MesquiteTimer;
 import mesquite.molec.lib.BLASTResults;
 import mesquite.molec.lib.Blaster;
@@ -46,7 +47,7 @@ public class NCBIBlaster extends Blaster {
 		logln("BLAST completed in " +timer.timeSinceLastInSeconds()+" seconds");
 	}
 
-	public String getFastaFromIDs(String queryTaxonName, String[] idList, boolean isNucleotides, StringBuffer fastaBlastResults, int databaseNumber) {
+	public String getFastaFromIDs(String queryTaxonName, String[] idList, boolean isNucleotides, StringBuffer fastaBlastResults, int databaseNumber, MesquiteString foundTaxonName) {
 		return NCBIUtil.fetchGenBankSequencesFromIDs(idList,  isNucleotides, null, false,  fastaBlastResults,  null);
 	}
 	

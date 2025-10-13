@@ -91,11 +91,12 @@ public abstract class DataSearcher extends MesquiteModule  {
  	
  			while (table.nextSingleRowBlockSelected(row, firstColumn, lastColumn)) { 
  				if (searchOneTaxon(data,row.getValue(), firstColumn.getValue(), lastColumn.getValue())){
- 					boolean resetColumns = false;
- 					for (int i=0; i<getNumberOfProcessingPassesPerSearch(); i++) 
+					boolean resetColumns = false;
+ 					for (int i=0; i<getNumberOfProcessingPassesPerSearch(); i++) {
  						if (processAfterEachTaxonSearch(data, row.getValue(), i))
  							resetColumns=true;
- 					if (resetColumns){  //
+ 					}
+					if (resetColumns){  //
  						lastColumn.setValue(data.getNumChars());
  						firstColumn.setValue(0);
  					}

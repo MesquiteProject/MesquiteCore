@@ -36,6 +36,7 @@ import mesquite.lib.MesquiteFileUtil;
 import mesquite.lib.MesquiteInteger;
 import mesquite.lib.MesquiteListener;
 import mesquite.lib.MesquiteMessage;
+import mesquite.lib.MesquiteString;
 import mesquite.lib.MesquiteStringBuffer;
 import mesquite.lib.Notification;
 import mesquite.lib.Parser;
@@ -332,18 +333,20 @@ public class TopBlastMatches extends CategDataSearcher implements ItemListener {
 				//	logln("****AFTER NucToProt IDs: " +StringArray.toString(ID)); 
 			}
 			//String newSequencesAsFasta = NCBIUtil.fetchGenBankSequencesFromIDs(ID, data instanceof DNAData, this, true, report);	
-
+			MesquiteString foundTaxonName = new MesquiteString();
 			StringBuffer blastResponse = new StringBuffer();
-			String newSequencesAsFasta = blasterTask.getFastaFromIDs(data.getTaxa().getTaxonName(it), localID,  data instanceof DNAData, blastResponse, passNumber);
-
+			String newSequencesAsFasta = blasterTask.getFastaFromIDs(data.getTaxa().getTaxonName(it), localID,  data instanceof DNAData, blastResponse, passNumber, foundTaxonName);
+		
 			String appendToTaxonName = "";
+			String prependToTaxonName = "";
 			if (appendQueryName)
 				appendToTaxonName = " ["+data.getTaxa().getTaxonName(it)+"]";
-
+			if (!foundTaxonName.isBlank())
+				prependToTaxonName = foundTaxonName.getValue();
 
 			numTaxaAdded = data.getNumTaxa();
 			if (StringUtil.notEmpty(newSequencesAsFasta))
-				NCBIUtil.importFASTASequences(data, newSequencesAsFasta, this, results, insertAfterTaxon, it, adjustSequences, addInternalGaps, appendToTaxonName);
+				NCBIUtil.importFASTASequences(data, newSequencesAsFasta, this, results, insertAfterTaxon, it, adjustSequences, addInternalGaps, prependToTaxonName, appendToTaxonName);
 			else
 				logln("BLAST database returned no sequences in response to query.");
 			data.notifyListeners(this, new Notification(MesquiteListener.PARTS_ADDED));
