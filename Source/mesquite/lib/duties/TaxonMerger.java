@@ -35,7 +35,7 @@ public abstract class TaxonMerger extends MesquiteModule  {
    	
 	/*.................................................................................................................*/
    	/** A stub method for the employer to ask to query the user about options.*/
-	public abstract boolean queryOptions(Taxa taxa, boolean[] toBeMerged, boolean formTaxonName, String dialogTitle, boolean permitRetainOriginals);
+	public abstract boolean queryOptions(Taxa taxa, boolean[] toBeMerged, boolean formTaxonName, String dialogTitle, boolean permitRetainOriginals, boolean permitRefuse);
 
 	/*.................................................................................................................*/
    	/** Called to merge the set of taxa indicated by the boolean array. If a bit is set, that is one of the taxa to be merged.  */

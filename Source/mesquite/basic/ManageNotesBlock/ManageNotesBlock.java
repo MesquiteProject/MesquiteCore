@@ -150,8 +150,11 @@ End;
 		while (enumeration.hasMoreElements()){
 			Object obj = enumeration.nextElement();
 			employee = (MesquiteModule)obj;
-			written = employee.writeNexusCommands(mf, "NOTES", pending) || written;
-			employeesWriteCommands(employee, mf, pending);
+			
+			boolean thisWritten = employee.writeNexusCommands(mf, "NOTES", pending);
+			written = thisWritten || written;
+			thisWritten = employeesWriteCommands(employee, mf, pending);
+			written = thisWritten || written;
 		}
 		return written;
 	}
@@ -201,15 +204,11 @@ class NotesBlock extends NexusBlock {
 		MesquiteTrunk.mesquiteTrunk.logln("      Writing " + getName());
 		MesquiteString pending = new MesquiteString("BEGIN NOTES;" + StringUtil.lineEnding());
 		boolean written = ((ManageNotesBlock)getManager()).employeesWriteCommands(getManager().getFileCoordinator(), file, pending);
-
 		String unrec =getUnrecognizedCommands();
 		if (!StringUtil.blank(unrec)){
-			if (!pending.isBlank()){
+			if (!pending.isBlank())
 				file.writeLine(pending.toString());
-
-			}
 			file.writeLine(unrec + StringUtil.lineEnding() + "END;" + StringUtil.lineEnding());
-
 		}
 		else if (written)
 			file.writeLine("END;" + StringUtil.lineEnding());

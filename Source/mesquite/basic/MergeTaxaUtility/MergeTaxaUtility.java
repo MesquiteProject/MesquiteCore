@@ -69,7 +69,7 @@ public class MergeTaxaUtility extends TaxonUtility {
 			selected[it] = taxa.getSelected(it);
 		}
 		StringBuffer report = new StringBuffer();
-		boolean ok = mergeTask.queryOptions(taxa, selected, true, "Merge Selected Taxa", true);
+		boolean ok = mergeTask.queryOptions(taxa, selected, true, "Merge Selected Taxa", true, true);
 		if (!ok)
 			return false;
 		int result = mergeTask.mergeTaxa(taxa, selected, null, report);

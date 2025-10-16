@@ -178,7 +178,7 @@ public class TopBlastMatches extends CategDataSearcher implements ItemListener {
 		fetchTaxonomyCheckBox = dialog.addCheckBox("fetch taxonomic lineage",fetchTaxonomy);
 		importCheckBox = dialog.addCheckBox("import top matches into matrix",importTopMatches);
 		interleaveResultsCheckBox = dialog.addCheckBox("insert hits after sequence that was BLASTed",interleaveResults);
-		adjustSequencesCheckBox = dialog.addCheckBox("reverse complement in needed and align imported sequences",adjustSequences);
+		adjustSequencesCheckBox = dialog.addCheckBox("reverse complement if needed and align imported sequences",adjustSequences);
 		addInternalGapsCheckBox = dialog.addCheckBox("allow new internal gaps during alignment",addInternalGaps);
 		appendQueryNameCheckBox = dialog.addCheckBox("append query name to hit name",appendQueryName);
 

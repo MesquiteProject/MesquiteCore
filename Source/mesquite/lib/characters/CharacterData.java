@@ -4498,6 +4498,37 @@ public abstract class CharacterData extends FileElement implements MesquiteListe
 		else
 			return null;
 	}
+	public boolean conflictingStatesIfMerged(int receivingTaxon, boolean[]taxaToMerge) {
+		if (!(MesquiteInteger.isCombinable(receivingTaxon)) || receivingTaxon<0 || receivingTaxon>=getNumTaxa() || taxaToMerge==null)
+			return false;
+		for (int it=0; it<getNumTaxa() && it<taxaToMerge.length; it++) {
+			if (it!=receivingTaxon && taxaToMerge[it]){
+				if (conflictingStatesIfMerged(receivingTaxon, it))
+					return true;
+			}
+		}
+		return false;
+	}
+	/*..........................................CharacterData.....................................*/
+	/**Returns whether, if these taxa were merged, their states would conflict*/
+	public  boolean conflictingStatesIfMerged(int it1, int it2) {
+		if ( it1<0 || it1>=getNumTaxa() || it2<0 || it2>=getNumTaxa() )
+			return false;
+		if (!hasDataForTaxon(it1))
+			return false;
+		if (!hasDataForTaxon(it2))
+			return false;
+
+			CharacterState cs1= null;
+			CharacterState cs2= null;
+			for (int ic=0; ic<getNumChars(); ic++) {
+				cs1 = getCharacterState(cs1, ic,it1);
+				cs2 = getCharacterState(cs2, ic,it2);
+				if (cs1.isCombinable() && cs2.isCombinable() && !cs1.equals(cs2))
+							return true;
+			}
+			return false;
+	}
 
 	/*..........................................CharacterData.....................................*/
 	/**merges the states for the taxa recorded in taxaToMerge into taxon it  within this Data object.  

@@ -18,6 +18,7 @@ import java.util.Vector;
 import mesquite.categ.lib.CategoricalData;
 import mesquite.categ.lib.CategoricalState;
 import mesquite.lib.CommandRecord;
+import mesquite.lib.Debugg;
 import mesquite.lib.MesquiteFile;
 import mesquite.lib.MesquiteInteger;
 import mesquite.lib.MesquiteProject;

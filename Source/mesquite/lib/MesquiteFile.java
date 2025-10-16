@@ -1165,8 +1165,7 @@ public class MesquiteFile extends Listened implements HNode, Commandable, Listab
 	}
 	/*-------------------------------------------------------*/
 	/** Write string to file and add newline character. */
-	public void writeLine(String s)
-	{	
+	public void writeLine(String s) {	
 		if (outStream!=null){
 			try {
 
