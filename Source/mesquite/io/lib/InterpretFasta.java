@@ -123,7 +123,7 @@ public abstract class InterpretFasta extends FileInterpreterI implements ReadFil
 	public abstract CharacterData createData(CharactersManager charTask, Taxa taxa);
 	/*.................................................................................................................*/
 	//NOTE: it is the responsibility of the caller to notify listeners of taxa and data that taxa & possibly characters have been added!
-	public void readString(CharacterData data, String s, int insertAfterTaxon, String appendToTaxonName) {
+	public void readString(CharacterData data, String s, int insertAfterTaxon, String prependToTaxonName, String appendToTaxonName) {
 		Taxa taxa = data.getTaxa();
 		//int numTaxa = taxa.getNumTaxa();
 		int newTaxon = insertAfterTaxon+1;
@@ -145,7 +145,7 @@ public abstract class InterpretFasta extends FileInterpreterI implements ReadFil
 			Taxon t = taxa.getTaxon(newTaxon);
 
 			if (t!=null) {
-				t.setName(token+appendToTaxonName);
+				t.setName(prependToTaxonName+token+appendToTaxonName);
 				line = parser.getRemainingUntilChar('>');
 				line=StringUtil.stripWhitespace(line);
 				if (line==null) break;

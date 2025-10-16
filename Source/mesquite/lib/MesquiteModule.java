@@ -911,8 +911,11 @@ public abstract class MesquiteModule extends EmployerEmployee implements Command
 		return createSupportDirectory(null);
 	}
 
+	public static boolean retainSupportDirectories = true;
 	/*.................................................................................................................*/
 	public void deleteSupportDirectory(){
+	if (MesquiteTrunk.developmentMode && retainSupportDirectories)
+	return;
 		String directoryPath = supportDirectoryPath();
 		MesquiteFile.deleteDirectory(directoryPath);
 	}
