@@ -528,7 +528,7 @@ public class LocalBlaster extends Blaster implements ActionListener,  AppUser, P
 		else {
 			String arguments = blastArguments;
 			arguments=StringUtil.stripBoundingWhitespace(arguments);
-			externalProcessManager = new ExternalProcessManager(this, rootDir, programPath, arguments, getName(), outputFilePaths, this, this, true);
+			externalProcessManager = new ExternalProcessManager(this, rootDir, programPath, arguments, "BLAST (local)", outputFilePaths, this, this, true);
 			if (useDefaultStdOutFileName())
 				externalProcessManager.setStdOutFileName(ShellScriptRunner.stOutFileName);
 			else

@@ -234,6 +234,7 @@ public class ManageCharPartitions extends CharSpecsSetManager {
 				MesquiteFile fileToRead = new MesquiteFile(directoryName.getValue(), fileName.getValue());
 				proj.addFile(fileToRead);
 				fileToRead.setProject(proj);
+				fileToRead.setReadCategory(MesquiteFile.INCLUDED);
 				NexusFileInterpreter mb = (NexusFileInterpreter)findNearestColleagueWithDuty(NexusFileInterpreter.class);
 				mb.readFile(getProject(), fileToRead, " @noWarnMissingReferent  @noWarnUnrecognized @justTheseBlocks.LABELS");
 

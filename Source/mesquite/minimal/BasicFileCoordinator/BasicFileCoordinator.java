@@ -852,14 +852,14 @@ public class BasicFileCoordinator extends FileCoordinator implements PackageIntr
 	public MesquiteFile readLinkedFile(String pathName, String importer, String arguments, int fileType, String fileDescriptionText){ //make new/read new linked file
 		if (MesquiteThread.isScripting()) {
 			ObjectContainer f = new ObjectContainer();
-			FileRead pt = new FileRead(pathName, importer, arguments, fileType,   this, 0, f, fileDescriptionText);
+			FileRead pt = new FileRead(pathName, importer, arguments, fileType,   this, MesquiteFile.LINKED, f, fileDescriptionText);
 			pt.run();
 			MesquiteFile mf = (MesquiteFile)f.getObject();
 			f.setObject(null);
 			return mf;
 		}
 		else {
-			FileRead fr = new FileRead(pathName, importer, arguments, fileType,   this, 0, null, fileDescriptionText);
+			FileRead fr = new FileRead(pathName, importer, arguments, fileType,   this, MesquiteFile.LINKED, null, fileDescriptionText);
 
 			MesquiteThread pt = new MesquiteThread(fr);
 
@@ -871,7 +871,7 @@ public class BasicFileCoordinator extends FileCoordinator implements PackageIntr
 	/*.................................................................................................................*/
 	/*.................................................................................................................*/
 	public void includeFile(String pathName, Class importer, String arguments, int fileType, String fileDescriptionText){ //make new/read new linked file
-		FileRead pt = new FileRead(pathName, null, arguments, fileType,   this, 1, null, fileDescriptionText);
+		FileRead pt = new FileRead(pathName, null, arguments, fileType,   this, MesquiteFile.INCLUDED, null, fileDescriptionText);
 		pt.setFileInterpreter(importer);
 		if (MesquiteThread.isScripting()) {
 			pt.run();
@@ -883,7 +883,7 @@ public class BasicFileCoordinator extends FileCoordinator implements PackageIntr
 	}
 	/*.................................................................................................................*/
 	public void includeFile(String pathName, String importer, String arguments, int fileType, String fileDescriptionText){ //make new/read new linked file
-		FileRead pt = new FileRead(pathName, importer, arguments, fileType,   this, 1, null, fileDescriptionText);
+		FileRead pt = new FileRead(pathName, importer, arguments, fileType,   this, MesquiteFile.INCLUDED, null, fileDescriptionText);
 		if (MesquiteThread.isScripting()) {
 			pt.run();
 		}
@@ -895,7 +895,7 @@ public class BasicFileCoordinator extends FileCoordinator implements PackageIntr
 	/*.................................................................................................................*/
 	public void includeFileFuse(String pathName, String importer, String arguments, int fileType, String fileDescriptionText){ //make new/read new linked file  DONE special to put on same thread
 		getProject().incrementProjectWindowSuppression();
-		FileRead pt = new FileRead(pathName, importer, arguments, fileType,   this, 1, null, fileDescriptionText);
+		FileRead pt = new FileRead(pathName, importer, arguments, fileType,   this, MesquiteFile.INCLUDED, null, fileDescriptionText);
 		pt.run();
 		cleanFusedReadingSuppressions();
 		getProject().decrementProjectWindowSuppression();

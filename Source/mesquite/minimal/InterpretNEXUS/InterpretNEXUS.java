@@ -316,6 +316,11 @@ public class InterpretNEXUS extends NexusFileInterpreter implements NEXUSInterpr
 
 	/*.................................................................................................................*/
 	MesquiteInteger pos = new MesquiteInteger();
+	boolean permittedBlock(String blockName, String[] justTheseBlocks){
+		if (justTheseBlocks == null)
+			return true;
+		return StringArray.indexOfIgnoreCase(justTheseBlocks, blockName)>=0;
+	}
 	/*.................................................................................................................*/
 	public void readFile(MesquiteProject mProj, MesquiteFile mNF, String arguments) {
 		incrementMenuResetSuppression();
@@ -368,7 +373,7 @@ public class InterpretNEXUS extends NexusFileInterpreter implements NEXUSInterpr
 						int buttonMode = progIndicator.getButtonMode();
 						String buttonName = progIndicator.getStopButtonName();
 						while (!abort && !StringUtil.blank(block = mNF.getNextBlock( blockName, fileComments, blockComments))) {
-							if (justTheseBlocks == null || StringArray.indexOfIgnoreCase(justTheseBlocks, blockName.getValue())>=0){
+							if (permittedBlock(blockName.getValue(), justTheseBlocks)){
 								CommandRecord.tick("Reading block " + blockName);
 
 								if ("Mesquite".equalsIgnoreCase(blockName.getValue())) {
@@ -423,8 +428,10 @@ public class InterpretNEXUS extends NexusFileInterpreter implements NEXUSInterpr
 								mNF.setAnnotation(fileComments.toString(), false);
 						}
 
-						if (mesquiteBlockFound && (mNF == mProj.getHomeFile()))
+				if (mesquiteBlockFound && (mNF == mProj.getHomeFile()))
 							mProj.openedWithoutMesquiteBlock = false;
+				else	if (!permittedBlock("MESQUITE", justTheseBlocks))  //treated as if opened with Mesquite block so nothing silly attempted later
+					mProj.openedWithoutMesquiteBlock = false;
 
 						progIndicator.goAway();
 						fileReadTimer.end();

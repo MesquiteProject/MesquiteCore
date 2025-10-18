@@ -31,7 +31,7 @@ public class ExternalProcessManager implements Commandable  {
 	Process proc;
 	String directoryPath;  // this is directory path for folder containing working files
 	String[] programCommands;
-	//String programCommand;
+	String originalProgramCommand;
 	//String programOptions;
 	String name;
 	String[] outputFilePaths; //reconnect
@@ -61,7 +61,7 @@ public class ExternalProcessManager implements Commandable  {
 		this.outputFilePaths = outputFilePaths;
 		this.outputFileProcessor = outputFileProcessor;
 		this.ownerModule = ownerModule;
-	//	this.programCommand = programCommand;
+		this.originalProgramCommand = programCommand;
 	//	this.programOptions = programOptions;
 		this.programCommands = getStringArrayWithSplitting(programCommand, programOptions);
 		stdOutFilePath = MesquiteFile.getDirectoryPathFromFilePath(directoryPath) + MesquiteFile.fileSeparator + stdOutFileName;
@@ -78,7 +78,7 @@ public class ExternalProcessManager implements Commandable  {
 		this.removeQuotes = removeQuotes;
 		this.removeQuotesStart = removeQuotesStart;
 		this.setNoQuoteChar =  setNoQuoteChar;
-	//	this.programCommand = programCommand;
+		this.originalProgramCommand = programCommand;
 	//	this.programOptions = programOptions;
 		this.programCommands = getStringArrayWithSplitting(programCommand, programOptions);
 		stdOutFilePath = MesquiteFile.getDirectoryPathFromFilePath(directoryPath)  + stdOutFileName;
@@ -489,6 +489,10 @@ public class ExternalProcessManager implements Commandable  {
 				boolean goodValue = goodExitValue(proc.exitValue(), true);
 				if (!goodValue && !ownerModule.isDoomed() && (watcher==null || !watcher.userAborted()) && (watcher==null || watcher.warnIfError())) {
 					String message = name + " quit, possibly because of an error ("+proc.exitValue()+"). Please examine StandardOutputFile and StandardErrorFile in the analysis folder for information." +getBasicProcessInformation();
+					message += "\nMake sure the program being used runs successfully on your machine.";
+					if (originalProgramCommand != null){
+						message += "\nThis is how the program was requested: " + originalProgramCommand;
+					}
 					if (ownerModule.okToInteractWithUser(MesquiteModule.CAN_PROCEED_ANYWAY, "Error in execution")){
 						AlertWithLinkToDirectory alert = new AlertWithLinkToDirectory(ownerModule.containerOfModule(),"Error in executing "+name, message, directoryPath);
 					}

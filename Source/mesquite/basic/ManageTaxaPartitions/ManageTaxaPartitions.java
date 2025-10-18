@@ -303,6 +303,7 @@ public class ManageTaxaPartitions extends SpecsSetManager {
 				MesquiteFile fileToRead = new MesquiteFile(directoryName.getValue(), fileName.getValue());
 				proj.addFile(fileToRead);
 				fileToRead.setProject(proj);
+				fileToRead.setReadCategory(MesquiteFile.INCLUDED);
 				NexusFileInterpreter mb = (NexusFileInterpreter)findNearestColleagueWithDuty(NexusFileInterpreter.class);
 				mb.readFile(getProject(), fileToRead, " @noWarnMissingReferent  @noWarnUnrecognized @justTheseBlocks.LABELS");
 
@@ -342,6 +343,7 @@ public class ManageTaxaPartitions extends SpecsSetManager {
 					MesquiteFile fileToRead = new MesquiteFile(directoryName.getValue(), fileName.getValue());
 					proj.addFile(fileToRead);
 					fileToRead.setProject(proj);
+					fileToRead.setReadCategory(MesquiteFile.INCLUDED);
 					NexusFileInterpreter mb = (NexusFileInterpreter)findNearestColleagueWithDuty(NexusFileInterpreter.class);
 					mb.readFile(getProject(), fileToRead, " @noWarnDupTaxaBlock @noWarnMissingReferent @noWarnUnrecognized @justTheseBlocks.TAXA.SETS.LABELS");
 					Listable[] currentTaxas = proj.getTaxas().getElementArray();

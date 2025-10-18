@@ -56,11 +56,12 @@ public class Mesquite {
 		m.startMesquite(args);
 	}
 	
-	Vector startupNotices = new Vector();
+	Vector startupNotices;
 	void startMesquite(String args[]){
+		System.out.println("Starting Mesquite with Java: " + System.getProperty("java.version"));
+		startupNotices = new Vector();
 		ClassLoader cl = start.Mesquite.class.getClassLoader();
 		String loc = cl.getResource("start/Mesquite.class").getPath();
-		System.out.println("Starting Mesquite with Java: " + System.getProperty("java.version"));
 
 		startupNotices.addElement("start.Mesquite: Location of executable start class: " + loc);
 		
