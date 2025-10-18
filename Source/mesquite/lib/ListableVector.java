@@ -297,8 +297,8 @@ public class ListableVector extends FileElement implements StringLister, Command
 	
 	public String toString() {
 		String first = "";
-			if (objects!= null & objects.size()>0)
-				first = " (elem.0 of class " + objects.elementAt(0).getClass() + ")";
+			if (vec!= null & vec.size()>0)
+				first = " (elem.0 of class " + vec.elementAt(0).getClass() + ")";
 		return super.toString() + first;
 	}
 	/*-------------ListableVector----------------*/

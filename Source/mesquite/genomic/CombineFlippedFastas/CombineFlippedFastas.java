@@ -239,6 +239,8 @@ public class CombineFlippedFastas extends GeneralFileMakerMultiple {
 		overallTime.start();
 		if (directory!=null) {
 			if (directory.exists() && directory.isDirectory()) {
+				getProject().setNotificationsOnOff(false);
+				getProject().getCentralModelListener().setNotificationsOnOff(false);
 				int countWarnings = 0;
 				//If taxa is not passed, need to establish new project
 				if (taxa == null){
@@ -450,10 +452,12 @@ public class CombineFlippedFastas extends GeneralFileMakerMultiple {
 				}
 				else
 					logln("Single-Taxon Fastas read for " + files.length + " taxa; " + lociAdded + " different loci found. [" + overallTime.timeSinceLastInSeconds() + " sec.]" );
-
 				MesquiteMessage.beep();
 				progIndicator.goAway();
 				project.developing = false;  //so the coordinator knows it's OK to dispose
+
+				getProject().setNotificationsOnOff(true);
+				getProject().getCentralModelListener().setNotificationsOnOff(true);
 				if (!taxaNew)
 					taxa.notifyListeners(this, new Notification(MesquiteListener.PARTS_ADDED));
 			}
