@@ -142,13 +142,18 @@ class ColorByPartitionExtra extends TreeDisplayExtra implements MesquiteListener
 		if (tree.nodeIsTerminal(node))
 			return colors[node];
 		ColorDistribution cladeColor = null;
+		boolean nullDaughter = false;
 		for (int d = tree.firstDaughterOfNode(node); tree.nodeExists(d); d = tree.nextSisterOfNode(d)){
 			ColorDistribution dsColor = colorsInClade(tree, d);
-			if (cladeColor == null)
+			if (dsColor == null || dsColor.getNumColors()== 0)
+				nullDaughter = true;
+			else if (cladeColor == null)
 				cladeColor = dsColor;
 			else
 				cladeColor.concatenate(dsColor);
 		}
+		if (cladeColor != null && nullDaughter)
+			return null;
 		return cladeColor;
 	}
 	/*.................................................................................................................*/
