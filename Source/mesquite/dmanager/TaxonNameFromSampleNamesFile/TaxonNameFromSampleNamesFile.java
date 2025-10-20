@@ -41,7 +41,8 @@ public class TaxonNameFromSampleNamesFile extends TaxonNameAlterer  {
 //	String[] nameCategories = new String[]{"<choose column>"};
 	//String sampleCodeListPath = null;
 	MesquiteTabDelimitedFileProcessor mesquiteTabbedFile;
-	
+	boolean verboseReport = true;
+
 	//TODO: note that the sample code in the names file CANNOT contain "/" 
 
 	public boolean startJob(String arguments, Object condition, boolean hiredByName) {
@@ -159,6 +160,9 @@ public class TaxonNameFromSampleNamesFile extends TaxonNameAlterer  {
 			chosenNameCategory = MesquiteInteger.fromString(content);
 		}
 		*/
+		if ("verboseReport".equalsIgnoreCase(tag)){
+			verboseReport = MesquiteBoolean.fromTrueFalseString(content);
+		}
 		if ("matchCurrentTaxonName".equalsIgnoreCase(tag)){
 			matchCurrentTaxonName.setValue(content);
 		}
@@ -173,6 +177,7 @@ public class TaxonNameFromSampleNamesFile extends TaxonNameAlterer  {
 		StringBuffer buffer = new StringBuffer(200);
 	//StringUtil.appendXMLTag(buffer, 2, "sampleCodeListPath", sampleCodeListPath);  
 		//StringUtil.appendXMLTag(buffer, 2, "chosenNameCategory", chosenNameCategory);  
+		StringUtil.appendXMLTag(buffer, 2, "verboseReport",verboseReport);
 		StringUtil.appendXMLTag(buffer, 2, "matchCurrentTaxonName", matchCurrentTaxonName);  
 		StringUtil.appendXMLTag(buffer, 2, "changeColor", changeColor);  
 		mesquiteTabbedFile.preparePreferencesForXML(buffer);
@@ -180,6 +185,7 @@ public class TaxonNameFromSampleNamesFile extends TaxonNameAlterer  {
 		return buffer.toString();
 	}
 	Choice categoryChoice ;
+	
 
 	/*.................................................................................................................*/
 	public boolean queryOptions() {
@@ -191,6 +197,7 @@ public class TaxonNameFromSampleNamesFile extends TaxonNameAlterer  {
 		dialog.addHorizontalLine(1);
 		Checkbox matchTaxonName = dialog.addCheckBox("Match Current Taxon Name (otherwise Taxon ID code)", matchCurrentTaxonName.getValue());
 		Checkbox colorChanged = dialog.addCheckBox("Color changed taxa", changeColor.getValue());
+		Checkbox verboseReportCheckBox = dialog.addCheckBox("verbose report", verboseReport);
 				
 		
 		String s = "This file must contain in its first line the titles of each of the columns, delimited by tabs.  The first column must be the target to match (current taxon name or Taxon ID code), ";
@@ -209,7 +216,6 @@ public class TaxonNameFromSampleNamesFile extends TaxonNameAlterer  {
 		s+= "004  &lt;tab&gt;  Lion_chintimini_004 &lt;tab&gt;  Lionepha chintimini  &lt;tab&gt;  Lionepha chintimini 004  &lt;tab&gt;  Lionepha chintimini OR:Marys Peak <br><br>\n";
 		s+= "You will need to choose which of the later columns is to be used as the source of the new name for each taxon.\n\n";
 		
-		
 
 		dialog.appendToHelpString(s);
 		dialog.setHelpSize(1100, 400);
@@ -223,6 +229,7 @@ public class TaxonNameFromSampleNamesFile extends TaxonNameAlterer  {
 			mesquiteTabbedFile.processNameCategories();
 			sampleCodeList = mesquiteTabbedFile.getSampleCodeList();
 			chosenNameCategory = mesquiteTabbedFile.getChosenNameCategory();
+			verboseReport = verboseReportCheckBox.getState();
 
 			//sampleCodeListPath = sampleCodeFilePathField.getText();
 			//chosenNameCategory = categoryChoice.getSelectedIndex();
@@ -314,8 +321,10 @@ public class TaxonNameFromSampleNamesFile extends TaxonNameAlterer  {
 			}*/
 			String newName = getSeqNamesFromTabDelimitedFile(new MesquiteString(vc), taxa.getTaxonName(it));
 			if (StringUtil.notEmpty(newName)){
-				if (newName.equalsIgnoreCase(taxa.getTaxonName(it)))
-					logln(""+it+". Taxon \"" + taxa.getTaxonName(it) +"\" kept current name");
+				if (newName.equalsIgnoreCase(taxa.getTaxonName(it))) {
+					if (verboseReport) 
+						logln(""+it+". Taxon \"" + taxa.getTaxonName(it) +"\" kept current name");
+				}
 				else
 					logln(""+it+". Taxon \"" + taxa.getTaxonName(it) +"\" renamed to \"" + newName + "\"");
 				taxa.setTaxonName(it, newName, false);

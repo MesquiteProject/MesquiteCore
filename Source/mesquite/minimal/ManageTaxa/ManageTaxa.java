@@ -1164,12 +1164,17 @@ public class ManageTaxa extends TaxaManager {
 					readUnrecognizedCommand(file, tBlock, name, block, commandName, s, blockComments, null,  fileReadingArguments);
 				}
 			}
-			if (almostExistsInOtherFile(newTaxa, file) && !noWarnDupTaxaBlock) {
+			StringBuffer mismatchedTaxa = new StringBuffer("");
+			if (!noWarnDupTaxaBlock && almostExistsInOtherFile(newTaxa, file, mismatchedTaxa)) {
 				String ftn = "";
 				if (newTaxa.getTaxon(0)!=null)
 					ftn = "; name of first taxon: " + newTaxa.getTaxon(0).getName();
-				message("A taxa block (\"" + newTaxa.getName() + "\"" + ftn + ") has been found that has more than 80% overlap in taxon names with another taxa block.  If you had intended them to be the same, review them to see that they contain the same number of taxa, and that their taxon names are identical.");
-
+				ftn="A taxa block (\"" + newTaxa.getName() + "\"" + ftn + ") has been found that has more than 80% overlap in taxon names with another taxa block. "; 
+				String examples =mismatchedTaxa.toString();
+				if (StringUtil.notEmpty(examples))
+					ftn+= " (Example incoming taxa not in current taxa block: " + examples + ".)";
+				ftn+=" If you had intended them to be the same, review them to see that they contain the same number of taxa, and that their taxon names are identical.";
+				message (ftn);
 			}
 
 			if (!fuse) 
@@ -1309,11 +1314,12 @@ public class ManageTaxa extends TaxaManager {
 		return null;
 	}
 	/*.................................................................................................................*/
-	boolean almostExistsInOtherFile (Taxa taxa, MesquiteFile file){
+	boolean almostExistsInOtherFile (Taxa taxa, MesquiteFile file, StringBuffer mismatchedTaxa){   // taxa is taxa block
 		if (taxa == null || taxa.getNumTaxa()==0)
 			return false;
+		int count=0;
 		for (int i =0; i<getProject().getNumberTaxas(); i++){
-			Taxa t = getProject().getTaxa(i);
+			Taxa t = getProject().getTaxa(i);   // t is taxa block in file
 			if (t!=taxa && t.getFile()!=file){
 				if (t == null || t.getNumTaxa()==0)
 					return false;
@@ -1321,14 +1327,20 @@ public class ManageTaxa extends TaxaManager {
 				for (int it=0; it<t.getNumTaxa(); it++){
 					if (taxa.getTaxon(t.getTaxonName(it))!=null)
 						matches+= 1.0;
-					//else logln("unmatched: " + t.getTaxonName(it));
+					else if (count<10 && mismatchedTaxa!=null) {
+						mismatchedTaxa.append(" " + t.getTaxonName(it)+ " ");
+						count++;
+					}
 				}
 				double avg = matches/t.getNumTaxa();
 				double matches2 = 0.0;
 				for (int it=0; it<taxa.getNumTaxa(); it++)
 					if (t.getTaxon(taxa.getTaxonName(it))!=null)
 						matches2+= 1.0;
-				//else logln("unmatched: " + t.getTaxonName(it));
+					//else if (count<10 && mismatchedTaxa!=null) {
+					//	mismatchedTaxa.append(" taxa: " + taxa.getTaxonName(613) + " existing: " + t.getTaxonName(it)+ " ");
+					//	count++;
+					//}
 				double avg2 = matches2/t.getNumTaxa();
 				if (MesquiteDouble.minimum( avg2, avg) > 0.8)
 					return true;
