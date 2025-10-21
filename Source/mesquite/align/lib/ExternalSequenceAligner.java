@@ -476,9 +476,9 @@ public abstract class ExternalSequenceAligner extends MultipleSequenceAligner im
 		MesquiteString message = new MesquiteString();
 		if (!dData.allSequencesMultiplesOfThree(message)) {
 			if (message.isBlank())
-				MesquiteMessage.discreetNotifyUser("Codon alignment cannot be performed as the number of nucleotides in some sequences is not divisible by 3.");
+				MesquiteMessage.discreetNotifyUser("Codon alignment cannot be performed on matrix " + data.getName() + " as the number of nucleotides in some sequences is not divisible by 3.");
 			else
-				MesquiteMessage.discreetNotifyUser("Codon alignment cannot be performed as the number of nucleotides in " + message.getValue() + " (and possibly others) is not divisible by 3.");
+				MesquiteMessage.discreetNotifyUser("Codon alignment cannot be performed on matrix " + data.getName() + " as the number of nucleotides in " + message.getValue() + " (and possibly others) is not divisible by 3.");
 			return false;
 		}
 		return true;
