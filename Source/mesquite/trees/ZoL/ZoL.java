@@ -181,9 +181,16 @@ public class ZoL extends MesquiteInit {
 			where();
 			printSeparatorLine("");			
 		}
-		else if (checker.compare(this.getClass(), "", "", commandName, "commands")) {
+		else if (checker.compare(this.getClass(), "", "", commandName, "commands") || checker.compare(this.getClass(), "", "", commandName, "help")) {
 			printSeparatorLine("");			
 			listCommands();
+			printSeparatorLine("");			
+		}
+		else if ( checker.compare(this.getClass(), "", "", commandName, "about")) {
+			printSeparatorLine("");			
+			println("ZoL is inspired by Zork I, one of the earliest text-based adventure games.\n");
+			println("It uses a tree file stored in Mesquite_Folder/settings/trees/ZoL, in the file tree.phy.\n");
+			println("If you want to build your own adventure with a different phylogenetic tree, following the instructions in Mesquite_Folder/settings/trees/ZoL/Instructions.txt.");
 			printSeparatorLine("");			
 		}
 		else if (checker.compare(this.getClass(), "", "", commandName, "ancestor") || checker.compare(this.getClass(), "", "", commandName, "anc")) {
@@ -295,6 +302,7 @@ public class ZoL extends MesquiteInit {
 		println("   goal — says the taxon you are trying to get to.");
 		println("   reset — start again.");
 		println("   commands — list commands.");
+		println("   about — explain ZoL.");
 	}
 	void where(){
 		if (!synapomorphyFound && synapomorphyAtNode(currentNode)){

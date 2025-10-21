@@ -19,11 +19,14 @@ import java.util.Vector;
 import mesquite.lib.CommandChecker;
 import mesquite.lib.Commandable;
 import mesquite.lib.FunctionExplanation;
+import mesquite.lib.MesquiteCommand;
 import mesquite.lib.MesquiteFile;
 import mesquite.lib.MesquiteInteger;
 import mesquite.lib.MesquiteListener;
 import mesquite.lib.MesquiteModule;
 import mesquite.lib.Notification;
+import mesquite.lib.ParseUtil;
+import mesquite.lib.Parser;
 import mesquite.lib.Snapshot;
 import mesquite.lib.duties.TreeDisplayAssistantI;
 import mesquite.lib.taxa.Taxa;
@@ -32,6 +35,9 @@ import mesquite.lib.tree.Tree;
 import mesquite.lib.tree.TreeDisplay;
 import mesquite.lib.tree.TreeDisplayExtra;
 import mesquite.lib.tree.TreeTool;
+import mesquite.lib.ui.MesquiteMenu;
+import mesquite.lib.ui.MesquiteMenuItem;
+import mesquite.lib.ui.MesquitePopup;
 import mesquite.lib.ui.MesquiteWindow;
 
 /* ======================================================================== */
@@ -124,6 +130,16 @@ class SelectTaxaToolExtra extends TreeDisplayExtra implements Commandable  {
 		//remember which selected
 		return null;
 	}
+	/*.................................................................................................................*/
+	/**Add any desired menu items to the right click popup*/
+	public void addToRightClickPopup(MesquitePopup popup, MesquiteTree tree, int branchFound){
+		if (branchFound>0){
+			this.tree = tree;
+			Taxa taxa = tree.getTaxa();
+			popup.addItem("Select All Taxa in Clade", ownerModule, new MesquiteCommand("selectTaxaInClade", this), MesquiteInteger.toString(branchFound));
+			popup.addItem("Deselect All Taxa in Clade", ownerModule, new MesquiteCommand("deselectTaxaInClade", this), MesquiteInteger.toString(branchFound));
+	}
+	}
 	MesquiteInteger pos = new MesquiteInteger();
 	/*.................................................................................................................*/
 	public Object doCommand(String commandName, String arguments, CommandChecker checker) { 
@@ -192,7 +208,28 @@ class SelectTaxaToolExtra extends TreeDisplayExtra implements Commandable  {
 			treeDisplay.pleaseUpdate(false);
 
 		}
-		return null;
+		else if (checker.compare(this.getClass(), "Selects taxa in clade", "[branch number]", commandName, "selectTaxaInClade")) {
+			if (tree == null)
+				return null;
+			Parser parser = new Parser();
+			int branch = MesquiteInteger.fromString(parser.getFirstToken(arguments));
+			if (MesquiteInteger.isCombinable(branch)){
+				selectClade(tree, branch, true);
+				tree.getTaxa().notifyListeners(this, new Notification(MesquiteListener.SELECTION_CHANGED));
+			}
+		}
+		else if (checker.compare(this.getClass(), "Deselects taxa in clade", "[branch number][taxon number]", commandName, "deselectTaxaInClade")) {
+			if (tree == null)
+				return null;
+			Parser parser = new Parser();
+			int branch = MesquiteInteger.fromString(parser.getFirstToken(arguments));
+			if (MesquiteInteger.isCombinable(branch)){
+				selectClade(tree, branch, false);
+				tree.getTaxa().notifyListeners(this, new Notification(MesquiteListener.SELECTION_CHANGED));
+			
+			}
+		}
+	return null;
 	}
 	/*-----------------------------------------*/
 	/** Selects or deselects all nodes in the clade */

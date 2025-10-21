@@ -4122,7 +4122,7 @@ class BasicTreeWindow extends MesquiteWindow implements Fittable, MesquiteListen
 		taxonTouched = -1;
 		MesquiteDouble fraction = new MesquiteDouble();
 		int branchFound = findBranch(x, y, fraction);
-		if (branchFound != 0) { // in a branch
+	if (branchFound != 0) { // in a branch
 			branchFrom = branchFound;
 			if (currentTreeTool.informTransfer()) {
 				// branchFrom=branchFound;
@@ -4530,7 +4530,13 @@ class BasicTreeWindow extends MesquiteWindow implements Fittable, MesquiteListen
 		boolean commandDown = MesquiteEvent.commandOrControlKeyDown(modifiers);
 		if (!shiftDown && !commandDown)
 			taxa.deselectAll();
-		if (commandDown)
+		int node = tree.nodeOfTaxonNumber(taxon);
+		if (tree.isLeftmostTerminalOfCollapsedClade(node)){
+			// clade is collapsed; operate on whole clade
+				taxa.setSelected(taxon, true);
+				selectAllTaxaInClade(tree, node);
+		}
+		else if (commandDown)
 			taxa.setSelected(taxon, !taxa.getSelected(taxon));
 		else
 			taxa.setSelected(taxon, true);

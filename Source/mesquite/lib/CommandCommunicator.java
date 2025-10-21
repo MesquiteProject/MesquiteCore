@@ -306,7 +306,7 @@ public class CommandCommunicator {
 			setObjectCommanded(result, useQueue, false);
 		}
 		else if ("xyzzy".equalsIgnoreCase(command)) {
-			MesquiteMessage.println("\nDo you seek to wander phylogeny along the paths of ZoL?");
+			MesquiteMessage.println("\nDo you seek to wander phylogeny along the paths of ZoL? If so, then you may want to request it directly.");
 		}
 		else if ("zol".equalsIgnoreCase(command)) {
 			MesquiteModule mb = MesquiteTrunk.mesquiteTrunk.findEmployeeWithName("ZoL");

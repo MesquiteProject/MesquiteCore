@@ -339,12 +339,15 @@ public class MergeTaxa extends TaxonMerger {
 						else
 							report += "For matrix \"" + data.getName() + "\", states of the following taxa may have been discarded when merging with taxon \"" + originalTaxonName + "\":\n";
 					}
+					else if (mergeRule == CharacterData.MERGE_useNeither) {
+						report += "For matrix \"" + data.getName() + "\", taxon \"" + originalTaxonName + "\" and also the following taxa had data, and thus the merged taxon was given a blank sequence.\n";
+					}
 					else {
-						report += "For matrix \"" + data.getName() + "\", taxon \"" + originalTaxonName + "\" and also the following taxa had data, and thus a choice of one or the other was made:\n";
+						report += "For matrix \"" + data.getName() + "\", taxon \"" + originalTaxonName + "\" and also the following taxa had data, and thus a choice of one or the other was made.\n";
 					}
 					for (int it = 0; it< ma.length; it++){
 						if (ma[it])
-							report += "  " + taxa.getTaxonName(it) + "\n";
+							report += "  " + taxa.getTaxonName(it) + "\n\n";
 					}
 				}
 				else {

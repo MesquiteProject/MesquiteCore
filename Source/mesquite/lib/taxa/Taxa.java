@@ -1389,7 +1389,6 @@ public class Taxa extends FileElement implements NameableWithNotify {
 					&&  s.equals(otherTaxon.getName())
 					) 
 			{ 
-				//Debugg.printStackTrace();
 				return "The taxon name \"" + s + "\" for taxon " + (it + 1) + " is illegal because another taxon (#" + (i + 1) + ") already has it.  This may cause various problems and should be fixed.";
 			}
 		}
