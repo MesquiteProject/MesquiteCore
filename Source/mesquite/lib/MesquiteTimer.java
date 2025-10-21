@@ -37,7 +37,7 @@ public class MesquiteTimer implements Nameable {
 	public String getName(){
 		return name;
 	}
-	
+
 	/* Multiple timings.
 	 * 
 	 * Example
@@ -64,8 +64,12 @@ public class MesquiteTimer implements Nameable {
 		if (timers == null)
 			return "";
 		String s = "";
-		for (int i = 0; i< timers.length; i++)
-			s += "[" + timers[i].getName() + "] " + timers[i].getAccumulatedTime() + "  ";
+		for (int i = 0; i< timers.length; i++){
+			String timerName = timers[i].getName();
+			if (StringUtil.blank(timerName))
+				timerName = Integer.toString(i);
+			s += "[" + timerName + "] " + timers[i].getAccumulatedTime() + "  ";
+		}
 		return s;
 	}
 	public static void fullReset(MesquiteTimer[] timers){
