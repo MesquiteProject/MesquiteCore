@@ -3190,7 +3190,7 @@ public abstract class MesquiteWindow implements Listable, Commandable, OwnedByMo
 		else {
 			//AFTERDEMO:
 			if (commandName!=null && !checker.getAccumulateMode() && checker.warnIfNoResponse) {
-				MesquiteMessage.warnProgrammer("Window " + getName() + " did not respond to command " + commandName + " with arguments (" + arguments + ")");
+				MesquiteMessage.warnProgrammer(" Window " + getName() + " did not respond to command " + commandName + " with arguments (" + arguments + ")");
 			}
 		}
 		return null;

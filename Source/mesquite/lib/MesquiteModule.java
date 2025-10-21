@@ -911,7 +911,7 @@ public abstract class MesquiteModule extends EmployerEmployee implements Command
 		return createSupportDirectory(null);
 	}
 
-	public static boolean retainSupportDirectories = true;
+	public static boolean retainSupportDirectories = false;
 	/*.................................................................................................................*/
 	public void deleteSupportDirectory(){
 	if (MesquiteTrunk.developmentMode && retainSupportDirectories)
@@ -1998,7 +1998,7 @@ public abstract class MesquiteModule extends EmployerEmployee implements Command
 		else {
 			//AFTERDEMO:
 			if (commandName!=null && !checker.getAccumulateMode() && checker.warnIfNoResponse) {
-				MesquiteMessage.warnProgrammer("Module " + getName() + " (" + (getClass().getName()) + ") did not respond to command " + commandName + " with arguments (" + arguments + ")");
+				MesquiteMessage.warnProgrammer(" Module " + getName() + " (" + (getClass().getName()) + ") did not respond to command " + commandName + " with arguments (" + arguments + ")");
 			}
 		}
 		/* // the following should be place so that superclasses can respond to command, at least where latter is commandable

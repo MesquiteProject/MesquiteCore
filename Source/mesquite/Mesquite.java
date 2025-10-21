@@ -454,6 +454,7 @@ public class Mesquite extends MesquiteTrunk
 		addToStartupNotices("==================================\n");
 
 		if (verboseStartup) System.out.println("main init 6h");
+		
 		setSuggestedDirectory(mesquiteDirectoryPath + "examples");
 		if (prefsFile.exists() || prefsFileXML.exists()) {
 			loadPreferences();
@@ -465,7 +466,7 @@ public class Mesquite extends MesquiteTrunk
 		if (verboseStartup) System.out.println("main init 7");
 
 
-		String logPath = supportFilesPath + sep + MesquiteTrunk.logFileName; 
+	String logPath = supportFilesPath + sep + MesquiteTrunk.logFileName; 
 		File logFile = new File(logPath);
 
 		boolean logFileExistsButCantWrite = (logFile.exists() &&!logFile.canWrite());
@@ -1222,7 +1223,6 @@ public class Mesquite extends MesquiteTrunk
 		}
 		else if ("suggestedDirectory".equalsIgnoreCase(tag)){
 			MesquiteTrunk.setSuggestedDirectory(StringUtil.cleanXMLEscapeCharacters(content));
-			System.err.println("getSuggestedDirectory " + MesquiteTrunk.getSuggestedDirectory());
 		}
 
 		/* EMBEDDED disable if embedded */

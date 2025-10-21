@@ -119,6 +119,7 @@ public class MergeTaxa extends TaxonMerger {
 	public static final int MERGE_useLongest = 2;
 	public static final int MERGE_preferReceiving = 3;
 	public static final int MERGE_preferIncoming = 4;
+	public static final int MERGE_useNeither = 5;
 
 	 * */
 	int mergeRule = CharacterData.MERGE_useLongest;
@@ -194,7 +195,7 @@ public class MergeTaxa extends TaxonMerger {
 			queryDialog.addHorizontalLine(1);
 		}
 		queryDialog.addLabel("If multiple merged taxa have data for a matrix:",Label.LEFT);
-		RadioButtons mergeRulesRB = queryDialog.addRadioButtons(new String[]{"Blend data; treat multiple states as polymorphism", "Blend data; treat multiple states as uncertainty", "Use states of taxon with most data (e.g., longest sequence)", "Prefer states of first selected taxon", "Prefer states of taxa merged into it"}, mergeRule);
+		RadioButtons mergeRulesRB = queryDialog.addRadioButtons(new String[]{"Blend data; treat multiple states as polymorphism", "Blend data; treat multiple states as uncertainty", "Use states of taxon with most data (e.g., longest sequence)", "Prefer states of first selected taxon", "Prefer states of taxa merged into it", "Use none (i.e., merged taxon has blank sequence)"}, mergeRule);
 		if (permitRefuse){
 			refuseIfConflictBox = queryDialog.addCheckBox("Refuse to merge taxa if they have conflicting states in some matrices", refuseIfConflict);
 		}

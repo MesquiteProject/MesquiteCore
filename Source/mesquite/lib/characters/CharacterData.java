@@ -1816,7 +1816,7 @@ public abstract class CharacterData extends FileElement implements MesquiteListe
 					setCellObject(historyNameRef, ic, it, h2.cloneHistory());
 			}
 		}
-		
+
 		equalizeParts(oData, oic, ic);
 		decrementSuppressHistoryStamp();
 		setAnnotation(ic, oData.getAnnotation(oic));
@@ -4409,6 +4409,7 @@ public abstract class CharacterData extends FileElement implements MesquiteListe
 			return false;
 		boolean receivingHasData = hasDataForTaxon(it1);
 		boolean bothHadStates = true;
+
 		if (!receivingHasData){
 			mergeRule = MERGE_preferIncoming;
 			bothHadStates = false;
@@ -4417,13 +4418,26 @@ public abstract class CharacterData extends FileElement implements MesquiteListe
 			int n1 =  numNotInapplicableNotUnassigned(it1);
 			int n2 =  numNotInapplicableNotUnassigned(it2);
 			if (n2>n1)
-				mergeRule = MERGE_preferIncoming;
+				mergeRule = MERGE_preferIncoming;	
 			else
 				mergeRule = MERGE_preferReceiving;
 		}
+		else if (mergeRule == MERGE_useNeither){
+			//both have data, so zap and return
+			CharacterState cs2= null;
+			for (int ic=0; ic<getNumChars(); ic++) {
+				setToUnassigned(ic, it1);
+			}
+			Associable tAssociableForMatrix = getTaxaInfo(false);
+			if (tAssociableForMatrix != null)
+				tAssociableForMatrix.deassignAssociated(it1);
+			return bothHadStates;
+
+		}
+
 
 		Associable tAssociableForMatrix = getTaxaInfo(false);
-		
+
 		if (mergeRule == MERGE_preferReceiving){
 		}
 		else if (mergeRule == MERGE_preferIncoming){
@@ -4434,7 +4448,7 @@ public abstract class CharacterData extends FileElement implements MesquiteListe
 			}
 			if (tAssociableForMatrix != null)
 				tAssociableForMatrix.copyParts(it1, it2);
-				
+
 		}
 		else if (mergeRule == MERGE_blendMultistateAsUncertainty || mergeRule == MERGE_blendMultistateAsPolymorphism){
 			boolean mergedAssigned = false;
@@ -4461,8 +4475,8 @@ public abstract class CharacterData extends FileElement implements MesquiteListe
 			if (tAssociableForMatrix != null)
 				tAssociableForMatrix.mergeParts(it1, it2);
 		}
-	
-	return bothHadStates;
+
+		return bothHadStates;
 	}
 	/*..........................................CharacterData.....................................*/
 	/**merges the states for taxon it2 into it1  within this Data object *
@@ -4478,7 +4492,8 @@ public abstract class CharacterData extends FileElement implements MesquiteListe
 	public static final int MERGE_useLongest = 2;
 	public static final int MERGE_preferReceiving = 3;
 	public static final int MERGE_preferIncoming = 4;
-	
+	public static final int MERGE_useNeither = 5;
+
 	public boolean[] mergeTaxa(int receivingTaxon, boolean[]taxaToMerge, int mergeRule) {
 		if (!(MesquiteInteger.isCombinable(receivingTaxon)) || receivingTaxon<0 || receivingTaxon>=getNumTaxa() || taxaToMerge==null)
 			return null;
@@ -4519,15 +4534,15 @@ public abstract class CharacterData extends FileElement implements MesquiteListe
 		if (!hasDataForTaxon(it2))
 			return false;
 
-			CharacterState cs1= null;
-			CharacterState cs2= null;
-			for (int ic=0; ic<getNumChars(); ic++) {
-				cs1 = getCharacterState(cs1, ic,it1);
-				cs2 = getCharacterState(cs2, ic,it2);
-				if (cs1.isCombinable() && cs2.isCombinable() && !cs1.equals(cs2))
-							return true;
-			}
-			return false;
+		CharacterState cs1= null;
+		CharacterState cs2= null;
+		for (int ic=0; ic<getNumChars(); ic++) {
+			cs1 = getCharacterState(cs1, ic,it1);
+			cs2 = getCharacterState(cs2, ic,it2);
+			if (cs1.isCombinable() && cs2.isCombinable() && !cs1.equals(cs2))
+				return true;
+		}
+		return false;
 	}
 
 	/*..........................................CharacterData.....................................*/

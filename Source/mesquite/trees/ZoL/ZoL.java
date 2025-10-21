@@ -93,7 +93,7 @@ public class ZoL extends MesquiteInit {
 		if (!file.fileExists())
 			return false;
 		taxa = new Taxa(0);
-		trees = TreeUtil.readNewickTreeFile (file, null, taxa, true, false, null, null, null);
+		trees = TreeUtil.readNewickTreeFile (file, null, taxa, true, false, null, null, null, false);
 		tree = (MesquiteTree)trees.elementAt(0);
 		if (tree == null)
 			return false;
