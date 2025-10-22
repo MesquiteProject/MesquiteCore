@@ -409,12 +409,14 @@ public class ParallelAlterMatrixAsUtility extends CharMatricesListProcessorUtili
 		int numSections = 8;
 		MesquiteTimer[] sectionTimers = MesquiteTimer.makeTimers(numSections);
 		int currentTimer = 0;
+		int lastTimer = 0;
 		
 		int numDone = 0;
 		// checking on all of the threads
 		while (!allDone && !aborted) {
 			try {
 				sectionTimers[currentTimer].start();
+				lastTimer = currentTimer;
 				Thread.sleep(SLEEPTIME);
 				allDone = true;
 				boolean waiting = false;
@@ -429,6 +431,7 @@ public class ParallelAlterMatrixAsUtility extends CharMatricesListProcessorUtili
 				
 				numDone = numMatricesDone();
 				currentTimer = numDone*numSections/numMatricesTotal;
+
 				if (System.currentTimeMillis() - lastReportTime > REPORTDELAY) {
 					reportFailures();
 					double parallelTimePerMatrix = (1.0 * System.currentTimeMillis() - startParallel) / numDone;
@@ -477,6 +480,34 @@ public class ParallelAlterMatrixAsUtility extends CharMatricesListProcessorUtili
 				e.printStackTrace();
 			}
 
+		}
+		
+		//harvesting timings of matrices
+		double[] sectionMatrixTimings = new double[numMatricesTotal/100+1];
+		int[] sectionMatrixCount = new int[numMatricesTotal/100+1];
+		boolean done = false;
+		int countS = 0;
+		while (!done){
+			int earliestThread = -1;
+			long earliestTime = -1;
+			for (int i = 0; i<numThreads; i++){
+				if (threads[i].matrixTimings.size()>0){
+					long[] mt = (long[])threads[i].matrixTimings.elementAt(0);
+					if (earliestTime <0 ||  mt[0]< earliestTime){
+						earliestTime = mt[0];
+						earliestThread = i;
+					}
+				}
+			}
+			if (earliestThread<0)
+				done = true;
+			else {
+				long[] mt = (long[])threads[earliestThread].matrixTimings.elementAt(0);
+				threads[earliestThread].matrixTimings.removeElementAt(0);
+				sectionMatrixTimings[countS/100]+= mt[1];
+				sectionMatrixCount[countS/100]++;
+				countS++;
+			}
 		}
 
 		for (int i = 0; i < numThreads; i++) {
@@ -536,6 +567,16 @@ public class ParallelAlterMatrixAsUtility extends CharMatricesListProcessorUtili
 			failed = " Failed or incompatible: " + numFailed + " matrices.";
 		String sectionSummary = MesquiteTimer.summarize(sectionTimers);
 		logln("Altered: " + (numMatricesSuccessful()) + " matrices." + failed + " (Finished " + StringUtil.getDateTime(new Date(finishTime)) + ", after " + ((finishTime- startTime)/1000.0) + " seconds. Sections: " + sectionSummary + ")");
+		
+		if (MesquiteTrunk.developmentMode){
+			String mTimings = "Average times of blocks of 100 matrices in sequence of starting: ";
+			for (int i= 0; i< sectionMatrixTimings.length; i++){
+				if (sectionMatrixCount[i]>0)
+				mTimings += "   " + (1.0*sectionMatrixTimings[i]/sectionMatrixCount[i]);
+			}
+			logln(mTimings);
+	}
+		
 		/*
 			if (numMatricesDone()>100 && ((System.currentTimeMillis()- startTime)/1000.0)>20){
 				logln("Timings, milliseconds: ");
@@ -637,6 +678,11 @@ public class ParallelAlterMatrixAsUtility extends CharMatricesListProcessorUtili
 
 }
 
+/* ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~*/
+/* ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~*/
+/* add vector of timings. Time each alteration, and make long[2] with timestamp of start and timestamp of duration, and add to vector
+ * Later, after all done, harvest timings in order (removing element each time) from all threads, and build average per 100 */
+
 class AlterThread extends MesquiteThread {
 	ParallelAlterMatrixAsUtility ownerModule;
 	ListableVector datas;
@@ -651,6 +697,7 @@ class AlterThread extends MesquiteThread {
 	long longWait = 10000;
 	int whichThreadAmI = 0;
 	int numAssignedFinished = 0;
+	Vector matrixTimings;
 
 	public AlterThread(ParallelAlterMatrixAsUtility ownerModule, ListableVector datas, int startWindow, int endWindow, CompatibilityTest test, long longWait, int whichThreadAmI) {
 		this.datas = datas;
@@ -661,6 +708,7 @@ class AlterThread extends MesquiteThread {
 		alterTask = ownerModule.cloneFirstAlterTask(this);
 		this.longWait = longWait;
 		this.whichThreadAmI =  whichThreadAmI;
+		matrixTimings = new Vector();
 	}
 	public void shutDown(){
 		fileCoordinator.fireEmployee(alterTask);
@@ -696,7 +744,11 @@ class AlterThread extends MesquiteThread {
 				ownerModule.matricesDone[im] =1; //in progress
 				int result = -10;
 				try {
+					long[] matrixTime = new long[2];
+					matrixTime[0] = System.currentTimeMillis();
 					result = alterTask.alterData(data, null, null, alteredDataParameters);
+					matrixTime[1] = System.currentTimeMillis() - matrixTime[0];
+					matrixTimings.addElement(matrixTime);
 				} catch (Exception e) {
 					ownerModule.logln("Exception in Parallel Alter Matrices -- " + e);
 					e.printStackTrace();

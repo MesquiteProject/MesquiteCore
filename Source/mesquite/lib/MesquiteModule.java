@@ -739,6 +739,22 @@ public abstract class MesquiteModule extends EmployerEmployee implements Command
 			}
 		}
 	}
+	/*.................................................................................................................*/
+	/** A method an employee can call to know how many cores it can use. */
+	public int howManyCoresMayIUse() {
+		if (doomed)
+			return 0;
+		if (employer == null)
+			return MesquiteInteger.infinite;
+		int upstream = employer.howManyCoresMayIUse();
+		int mine = getMaxCoresForEmployee();
+		return MesquiteInteger.minimum(upstream, mine);
+	}
+
+	/**Override to limit employee core use */
+	public int getMaxCoresForEmployee() {
+		return MesquiteInteger.infinite;
+	} 
 
 	/*.................................................................................................................*/
 	/** A generic call to ask employer whether to handle something myself as employee */
@@ -914,8 +930,8 @@ public abstract class MesquiteModule extends EmployerEmployee implements Command
 	public static boolean retainSupportDirectories = false;
 	/*.................................................................................................................*/
 	public void deleteSupportDirectory(){
-	if (MesquiteTrunk.developmentMode && retainSupportDirectories)
-	return;
+		if (MesquiteTrunk.developmentMode && retainSupportDirectories)
+			return;
 		String directoryPath = supportDirectoryPath();
 		MesquiteFile.deleteDirectory(directoryPath);
 	}
