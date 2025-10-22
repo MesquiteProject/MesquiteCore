@@ -627,6 +627,11 @@ public class ParallelAlterMatrixAsUtility extends CharMatricesListProcessorUtili
 	public boolean okToInteractWithUser(int howImportant, String messageToUser) {
 		return firstTime;
 	}
+	/* ................................................................................................................. */
+	/**Override to limit employee core use */
+	public int getMaxCoresForEmployee() {
+		return 1;
+	} 
 
 	/* ................................................................................................................. */
 	DataAlterer cloneFirstAlterTask(AlterThread thread) {
