@@ -280,7 +280,9 @@ public class MesquiteInteger implements Listable, Nameable{
 		/*--------------------------------MIN-MAX--------------------------*/
 	/** Returns maximum of two integers.  Accounts for infinite, unassigned, etc. */
 	public static int maximum(int a, int b) {
-		if (a == unassigned || a == inapplicable || a == negInfinite || a == impossible || a == finite) {
+		if (a == negInfinite && b== negInfinite)
+			return negInfinite;
+		else if (a == unassigned || a == inapplicable || a == negInfinite || a == impossible || a == finite) {
 			if (b==unassigned || b == inapplicable || b== negInfinite || b == impossible || b == finite)
 				return unassigned;
 			else
@@ -300,7 +302,9 @@ public class MesquiteInteger implements Listable, Nameable{
 	}
 	/** Returns minimum of two integers.  Accounts for infinite, unassigned, etc. */
 	public static int minimum(int a, int b) {
-		if (a == unassigned || a == inapplicable || a == infinite || a == impossible || a == finite){
+		if (a == infinite && b== infinite)
+			return infinite;
+		else if (a == unassigned || a == inapplicable || a == infinite || a == impossible || a == finite){
 			if (b==unassigned || b == inapplicable || b== infinite || b == impossible || b == finite)
 				return unassigned;
 			else
