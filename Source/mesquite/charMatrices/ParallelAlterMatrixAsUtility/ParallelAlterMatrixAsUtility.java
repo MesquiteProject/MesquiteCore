@@ -394,7 +394,7 @@ public class ParallelAlterMatrixAsUtility extends CharMatricesListProcessorUtili
 		logln("");
 		//if (thisIsFirstChunk){
 		progIndicator.setText("Starting threads");
-		logln("About to start " + numThreads + " threads to alter the matrices");
+		logln("Starting " + numThreads + " threads to alter the matrices");
 		/*	}
 			else {
 				progIndicator.setText("Restarting threads after first chunk of " + numMatricesInChunk + " matrices");
@@ -454,6 +454,7 @@ public class ParallelAlterMatrixAsUtility extends CharMatricesListProcessorUtili
 					logln(report);
 					logln("");
 				}
+				
 
 				progIndicator.setText("Number of matrices completed " + numMatricesDone());
 				progIndicator.setCurrentValue(numMatricesDone());
@@ -481,7 +482,7 @@ public class ParallelAlterMatrixAsUtility extends CharMatricesListProcessorUtili
 			}
 
 		}
-		
+		logln("\nCompleted Parallel Alter Matrices.");
 		//harvesting timings of matrices
 		double[] sectionMatrixTimings = new double[numMatricesTotal/100+1];
 		int[] sectionMatrixCount = new int[numMatricesTotal/100+1];
@@ -752,6 +753,8 @@ class AlterThread extends MesquiteThread {
 					long[] matrixTime = new long[2];
 					matrixTime[0] = System.currentTimeMillis();
 					result = alterTask.alterData(data, null, null, alteredDataParameters);
+					ownerModule.log(".");
+
 					matrixTime[1] = System.currentTimeMillis() - matrixTime[0];
 					matrixTimings.addElement(matrixTime);
 				} catch (Exception e) {
@@ -781,16 +784,15 @@ class AlterThread extends MesquiteThread {
 			setThreadMaxLogLevel(MesquiteMessage.HIGH_PRIORITY);
 			for (im = firstMatrix; im <= lastMatrix && !ownerModule.aborted; im++) {
 				lastTimeChanged = System.currentTimeMillis() / 1000 * 1000; // truncating it to the second
-				System.err.println("@                         " + whichThreadAmI + " on matrix " + im);
 				alterData(im);
 				numAssignedFinished++;
 			}
-			if (MesquiteTrunk.developmentMode)
-				ownerModule.logln("~~~ " + getThreadName() + ", has completed its assigned tasks. ~~~");
+			//if (MesquiteTrunk.developmentMode)
+			//	ownerModule.logln("~~~ " + getThreadName() + ", has completed its assigned tasks. ~~~");
 			int imOthers = -1;
 			while ((imOthers = ownerModule.giveMeAMatrixToDo(whichThreadAmI))>=0){
-				if (MesquiteTrunk.developmentMode)
-					ownerModule.logln("~~> Thread #" + whichThreadAmI + " working to help with matrix " + (imOthers+1));
+				//if (MesquiteTrunk.developmentMode)
+				//	ownerModule.logln("~~> Thread #" + whichThreadAmI + " working to help with matrix " + (imOthers+1));
 				lastTimeChanged = System.currentTimeMillis() / 1000 * 1000; // truncating it to the second
 				alterData(imOthers);
 			}

@@ -88,6 +88,7 @@ public abstract class MesquiteModule extends EmployerEmployee implements Command
 	public final static String getBuildDate() {
 		return "21 October 2025";
 	}
+	//############ make sure RunningOptions files in Resources are user ones #########
 	/*.................................................................................................................*/
 	/** returns version of the Mesquite system */
 	public final static String getMesquiteVersion() {

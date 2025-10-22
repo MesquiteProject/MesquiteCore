@@ -836,8 +836,11 @@ public class Mesquite extends MesquiteTrunk
 		logln("====================================");
 		if (!isApplet()){
 			//setModuleWindow(null);
-			BrowseHierarchy projectHierarchyTask= (BrowseHierarchy)hireEmployee(BrowseHierarchy.class, "Hierarchy browser");
+			/* As of 4.02 this was deleted, as it's probably rarely used, and is an updating nightmare at times.
+			 * BrowseHierarchy projectHierarchyTask= (BrowseHierarchy)hireEmployee(BrowseHierarchy.class, "Hierarchy browser");
 			projectsWindow = new ProjectTreeWindow(this, projectHierarchyTask);
+			*/
+			
 			//setModuleWindow(projectsWindow);
 			//projectsWindow.setVisible(true);
 			showLogWindow();

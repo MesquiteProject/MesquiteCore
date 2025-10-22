@@ -641,7 +641,7 @@ public abstract class ExternalSequenceAligner extends MultipleSequenceAligner im
 			logln(" Blah blah blah blah"); 
 		 */
 
-		logln("Matrix being aligned: " + data.getName()); 
+		logln("Matrix being aligned: " + data.getName(), MesquiteMessage.LOW_PRIORITY); 
 		MesquiteTimer timer = new MesquiteTimer();
 		timer.start();
 		ProgressIndicator progressIndicator = null;
