@@ -410,7 +410,7 @@ public class ParallelAlterMatrixAsUtility extends CharMatricesListProcessorUtili
 		MesquiteTimer[] sectionTimers = MesquiteTimer.makeTimers(numSections);
 		int currentTimer = 0;
 		int lastTimer = 0;
-		
+		long lastReportAtMatrixTime = System.currentTimeMillis();
 		int numDone = 0;
 		// checking on all of the threads
 		while (!allDone && !aborted) {
@@ -466,8 +466,9 @@ public class ParallelAlterMatrixAsUtility extends CharMatricesListProcessorUtili
 				
 				if ((numMatricesTotal <= 1000 && numDone % 10 == 0) || (numMatricesTotal > 1000 && numDone % (numMatricesTotal / 100) == 0)) { // do every 1% of matrices
 					CommandRecord.tick("Completed " + numDone + " of " + numMatricesTotal + " matrices.");
-					if (numDone > reportAtMatrix && (System.currentTimeMillis() - startParallel > 100000)) { // run has been longer than 100 seconds; worth reporting every so often what timing will be
+					if (numDone > reportAtMatrix && (System.currentTimeMillis() - startParallel > 100000) && System.currentTimeMillis()- lastReportAtMatrixTime > 30000) { // run has been longer than 100 seconds; worth reporting every so often what timing will be
 						reportAtMatrix = numDone;
+						lastReportAtMatrixTime = System.currentTimeMillis() ;
 						double parallelTimePerMatrix = (1.0 * System.currentTimeMillis() - startParallel) / numDone;
 						long timeAtCompletion = System.currentTimeMillis() + (long) (parallelTimePerMatrix * (numMatricesTotal - numDone));
 						logln("\nCompleted " + numDone + " of " + numMatricesTotal + " matrices. Expected completion of all matrices: " + StringUtil.getDateTime(new Date(timeAtCompletion)));
