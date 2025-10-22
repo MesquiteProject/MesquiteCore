@@ -206,13 +206,6 @@ public abstract class ExternalSequenceAligner extends MultipleSequenceAligner im
 		}
 		return false;
 	}
-
-
-	/*.................................................................................................................*/
-	public int maximumNumberOfCores(){
-		return employer.maximumNumberOfCoresUsedByEmployee();  
-	}
-
 	/*.................................................................................................................*/
 	/** returns whether this module is requesting to appear as a primary choice */
 	public boolean requestPrimaryChoice(){
