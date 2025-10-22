@@ -86,7 +86,7 @@ public abstract class MesquiteModule extends EmployerEmployee implements Command
 	/*.................................................................................................................*/
 	/** returns build date of the Mesquite system (e.g., "22 September 2003") */
 	public final static String getBuildDate() {
-		return "16 October 2025";
+		return "21 October 2025";
 	}
 	/*.................................................................................................................*/
 	/** returns version of the Mesquite system */
@@ -104,7 +104,7 @@ public abstract class MesquiteModule extends EmployerEmployee implements Command
 	public final static int getBuildNumber() {
 		//as of 26 Dec 08, build naming changed from letter + number to just number.  Accordingly j105 became 473, based on
 		// highest build numbers of d51+e81+g97+h66+i69+j105 + 3 for a, b, c
-		return 1106;  
+		return 1107;  
 	}
 	//0.95.80    14 Mar 01 - first beta release 
 	//0.96  2 April 01 beta  - second beta release
@@ -825,6 +825,11 @@ public abstract class MesquiteModule extends EmployerEmployee implements Command
 	/** Returns whether this module is to remain one of the last employees of its employers. */
 	public boolean getIfLastEmployee(){
 		return lastEmployee;
+	}
+	/* ................................................................................................................. */
+	/** Returns the number of cores an employee can use.  */
+	public int maximumNumberOfCoresUsedByEmployee() {
+		return MesquiteInteger.infinite;
 	}
 	/*.................................................................................................................*/
 	/** Sets whether module has requested to enable auto-save of macros. */
