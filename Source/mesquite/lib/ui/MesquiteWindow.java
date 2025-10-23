@@ -1297,6 +1297,10 @@ public abstract class MesquiteWindow implements Listable, Commandable, OwnedByMo
 	@param fitToPage int no longer used; PDF will always fit to one page; user can edit the file if necessary 
 	 */
 	protected void pdfWindow(int fitToPage) {
+		if (MesquiteTrunk.isJavaVersionLessThan(17)){
+			MesquiteTrunk.mesquiteTrunk.discreetAlert("Your version of Java is too old for saving PDFs within Mesquite. We strongly recommend you upgrade to Java 21 or later. See https://www.mesquiteproject.org/Installation.html.");
+			return;
+		}
 		MainThread.incrementSuppressWaitWindow();
 		pdfFile = MesquitePDFFile.getPDFFile(this, "Save Window to PDF");
 		if (pdfFile != null) {
