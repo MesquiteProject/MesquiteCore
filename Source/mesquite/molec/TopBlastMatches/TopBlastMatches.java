@@ -165,8 +165,8 @@ public class TopBlastMatches extends CategDataSearcher implements ItemListener {
 	/*.................................................................................................................*/
 	public boolean queryOptions() {
 		MesquiteInteger buttonPressed = new MesquiteInteger(1);
-		ExtensibleDialog dialog = new ExtensibleDialog(containerOfModule(), "Top BLAST Matches",buttonPressed);  //MesquiteTrunk.mesquiteTrunk.containerOfModule()
-		dialog.addLabel("Options for Top BLAST Matches");
+		ExtensibleDialog dialog = new ExtensibleDialog(containerOfModule(), "Acquire (BLAST) Sequences from Database",buttonPressed);  //MesquiteTrunk.mesquiteTrunk.containerOfModule()
+		dialog.addLabel("Options for Acquire Sequences from Database");
 		int oldBlastType = blastType;
 		dialog.appendToHelpString("For the \"Reject hits with eValues greater than\" field, use values of the from \"1E-100\"");
 
@@ -488,11 +488,11 @@ public class TopBlastMatches extends CategDataSearcher implements ItemListener {
 	}
 	/*.................................................................................................................*/
 	public String getNameForMenuItem() {
-		return "Top BLAST Matches...";
+		return "Acquire (BLAST) Sequences from Database...";
 	}
 	/*.................................................................................................................*/
 	public String getName() {
-		return "Top BLAST Matches";
+		return "Acquire (BLAST) Sequences from Database";
 	}
 	/*.................................................................................................................*/
 	public boolean showCitation() {
@@ -501,7 +501,7 @@ public class TopBlastMatches extends CategDataSearcher implements ItemListener {
 
 	/*.................................................................................................................*/
 	public String getExplanation() {
-		return "Does a BLAST search against GenBank on selected data and returns the top BLAST matches for each sequence selected.";
+		return "Does a BLAST search using selected sequences as queries against either a local database or GenBank and returns the top BLAST matches for each sequence selected.";
 	}
 }
 

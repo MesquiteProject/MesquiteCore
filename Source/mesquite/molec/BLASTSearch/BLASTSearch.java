@@ -100,7 +100,7 @@ public class BLASTSearch extends CategDataSearcher {
    	}
    	/*.................................................................................................................*/
    	public String getName() {
-   		return "BLAST in Web Browser";
+   		return "BLAST GenBank via Web Browser";
    	}
    	/*.................................................................................................................*/
    	/** message once search has been fully invoked.  */
