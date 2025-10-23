@@ -632,7 +632,6 @@ class BasicDataWindow extends TableWindow implements MesquiteListener {
 		ownerModule.hireNamedEmployee(DataWindowAssistantI.class, "#AlignSequences");
 		ownerModule.hireNamedEmployee(DataWindowAssistantI.class, "#AlignSequencesCodon");
 		ownerModule.hireNamedEmployee(DataWindowAssistantI.class, "#AddDeleteData");
-		ownerModule.hireNamedEmployee(DataWindowAssistantI.class, "#SearchData");
 		// ownerModule.addMenuSeparator();
 		ownerModule.hireNamedEmployee(DataWindowAssistantI.class, "#DefaultCellColor");
 		ownerModule.hireNamedEmployee(DataWindowAssistantI.class, "#NoColor");

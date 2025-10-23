@@ -15,6 +15,7 @@ package mesquite.molec.BLASTSearch;
 
 import mesquite.categ.lib.CategDataSearcher;
 import mesquite.categ.lib.DNAData;
+import mesquite.categ.lib.MolecDataSearcher;
 import mesquite.categ.lib.ProteinData;
 import mesquite.categ.lib.RequiresAnyMolecularData;
 import mesquite.lib.CompatibilityTest;
@@ -27,7 +28,7 @@ import mesquite.lib.table.MesquiteTable;
 import mesquite.molec.lib.NCBIUtil;
 
 /* ======================================================================== */
-public class BLASTSearch extends CategDataSearcher { 
+public class BLASTSearch extends MolecDataSearcher { 
 	MesquiteTable table;
 	CharacterData data;
 	/*.................................................................................................................*/

@@ -10,84 +10,95 @@ Mesquite's web site is http://mesquiteproject.org
 
 This source code and its compiled class files are free and modifiable under the terms of 
 GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
-*/
-package mesquite.charMatrices.SearchData; 
+ */
+package mesquite.charMatrices.FindSimilarSequencesInDB; 
 
+import mesquite.categ.lib.MolecDataSearcher;
+import mesquite.categ.lib.RequiresAnyMolecularData;
 import mesquite.lib.CommandChecker;
+import mesquite.lib.CompatibilityTest;
 import mesquite.lib.EmployeeNeed;
 import mesquite.lib.MesquiteListener;
 import mesquite.lib.Notification;
 import mesquite.lib.characters.CharacterData;
-import mesquite.lib.duties.DataSearcher;
 import mesquite.lib.duties.DataWindowAssistantI;
 import mesquite.lib.table.MesquiteTable;
 import mesquite.lib.ui.MesquiteSubmenuSpec;
 
 /* ======================================================================== */
-public class SearchData extends DataWindowAssistantI {
+public class FindSimilarSequencesInDB extends DataWindowAssistantI {
 	public void getEmployeeNeeds(){  //This gets called on startup to harvest information; override this and inside, call registerEmployeeNeed
-		EmployeeNeed e = registerEmployeeNeed(DataSearcher.class, getName() + " needs a method to search, for instance to find best matches in GenBank to a selected sequence.",
-				"You can request a search using the Search submenu of the Matrix menu of the Character Matrix Editor.  This menu may not be available for some data types.");
+		EmployeeNeed e = registerEmployeeNeed(MolecDataSearcher.class, getName() + " needs a method to search, for instance to find best matches in GenBank to a selected sequence.",
+				"You can request a search using the submenu of the Matrix menu of the Character Matrix Editor.  This menu may not be available for some data types.");
 	}
 	MesquiteTable table;
 	CharacterData data;
 	MesquiteSubmenuSpec mss= null;
 	/*.................................................................................................................*/
 	public boolean startJob(String arguments, Object condition, boolean hiredByName) {
-		 mss = addSubmenu(null, "Search", makeCommand("doSearch",  this));
-		mss.setList(DataSearcher.class);
+		mss = addSubmenu(null, "Find Similar Sequences in Database", makeCommand("doSearch",  this));
+		mss.setList(MolecDataSearcher.class);
 		return true;
 	}
 	/*.................................................................................................................*/
 	/** returns whether this module is requesting to appear as a primary choice */
-   	public boolean requestPrimaryChoice(){
-   		return true;  
-   	}
+	public boolean requestPrimaryChoice(){
+		return true;  
+	}
 	/*.................................................................................................................*/
-   	 public boolean isPrerelease(){
-   	 	return false;
-   	 }
+	public boolean isPrerelease(){
+		return false;
+	}
 	/*.................................................................................................................*/
 	public void setTableAndData(MesquiteTable table, CharacterData data){
 		this.table = table;
 		this.data = data;
 		mss.setCompatibilityCheck(data.getStateClass());
 		resetContainingMenuBar();
-		
+
 	}
 	/*.................................................................................................................*/
-   	 public boolean isSubstantive(){
-   	 	return false;
-   	 }
+	public boolean isSubstantive(){
+		return false;
+	}
 	/*.................................................................................................................*/
-    	 public Object doCommand(String commandName, String arguments, CommandChecker checker) {
-    	 	if (checker.compare(this.getClass(), "Chooses the module to search the data matrix", "[name of module]", commandName, "doSearch")) {
-   	 		if (table!=null && data !=null){
-	    	 		DataSearcher tda= (DataSearcher)hireNamedEmployee(DataSearcher.class, arguments);
+	public Object doCommand(String commandName, String arguments, CommandChecker checker) {
+		if (checker.compare(this.getClass(), "Chooses the module to search for sequences", "[name of module]", commandName, "doSearch")) {
+			if (table!=null && data !=null){
+				if (!table.anyRowSelected() && !table.anyCellSelected()){
+					discreetAlert("Sorry, you need to have a row or a stretch of sequence selected. Then, the database will be searched for sequences similar to the one(s) you have selected.");
+					return null;
+				}
+				MolecDataSearcher tda= (MolecDataSearcher)hireNamedEmployee(MolecDataSearcher.class, arguments);
 				if (tda!=null) {
 					boolean a = tda.searchData(data, table);
-	 	   			if (a) {
-	 	   				table.repaintAll();
+					if (a) {
+						table.repaintAll();
 						data.notifyListeners(this, new Notification(MesquiteListener.DATA_CHANGED));
 					}
 					fireEmployee(tda);
 				}
 			}
-    	 	}
-    	 	else
-    	 		return  super.doCommand(commandName, arguments, checker);
-	return null;
-   	 }
+		}
+		else
+			return  super.doCommand(commandName, arguments, checker);
+		return null;
+	}
 	/*.................................................................................................................*/
-    	 public String getName() {
-		return "Search Data";
-   	 }
+	public String getName() {
+		return "Find Similar in Database";
+	}
 	/*.................................................................................................................*/
- 	/** returns an explanation of what the module does.*/
- 	public String getExplanation() {
- 		return "Manages data-searching modules." ;
-   	 }
-   	 
+	/** returns an explanation of what the module does.*/
+	public String getExplanation() {
+		return "Manages modules that find similar sequences in data base." ;
+	}
+	/*.................................................................................................................*/
+	/** Returns CompatibilityTest so other modules know if this is compatible with some object. */
+	public CompatibilityTest getCompatibilityTest(){
+		return new RequiresAnyMolecularData();
+	}
+
 }
 
 

@@ -20,14 +20,14 @@ import mesquite.lib.duties.DataSearcher;
 /* ======================================================================== */
 /**This is superclass of modules to alter a data matrix.*/
 
-public abstract class DNADataSearcher extends DataSearcher  {
+public abstract class MolecDataSearcher extends CategDataSearcher  {
    	 public Class getDutyClass() {
-   	 	return DNADataSearcher.class;
+   	 	return MolecDataSearcher.class;
    	 }
 	/*.................................................................................................................*/
 	/** Returns CompatibilityTest so other modules know if this is compatible with some object. */
 	public CompatibilityTest getCompatibilityTest(){
-		return new RequiresAnyDNAData();
+		return new RequiresAnyMolecularData();
 	}
 
 }

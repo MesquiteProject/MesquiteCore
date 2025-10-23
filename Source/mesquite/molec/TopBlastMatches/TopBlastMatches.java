@@ -23,6 +23,7 @@ import java.net.URL;
 
 import mesquite.categ.lib.CategDataSearcher;
 import mesquite.categ.lib.DNAData;
+import mesquite.categ.lib.MolecDataSearcher;
 import mesquite.categ.lib.ProteinData;
 import mesquite.categ.lib.RequiresAnyMolecularData;
 import mesquite.lib.CompatibilityTest;
@@ -52,7 +53,7 @@ import mesquite.molec.lib.NCBIUtil;
 
 
 /* ======================================================================== */
-public class TopBlastMatches extends CategDataSearcher implements ItemListener { 
+public class TopBlastMatches extends MolecDataSearcher implements ItemListener { 
 	MesquiteTable table;
 	CharacterData data;
 	StringBuffer results;
