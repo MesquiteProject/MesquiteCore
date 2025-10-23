@@ -3340,8 +3340,12 @@ public abstract class MenuOwner implements Doomable { // EMBEDDED: extends Apple
 			}
 
 		} catch (Exception e) {
-			MesquiteMessage.warnProgrammer("Exception in surveySpecs of MenuOwner");
+			if (MesquiteTrunk.developmentMode)
+				MesquiteMessage.printStackTrace("Exception in surveySpecs of MenuOwner");
+			else {
+				MesquiteMessage.warnProgrammer("Exception in surveySpecs of MenuOwner");
 			e.printStackTrace();
+			}
 		}
 
 	}

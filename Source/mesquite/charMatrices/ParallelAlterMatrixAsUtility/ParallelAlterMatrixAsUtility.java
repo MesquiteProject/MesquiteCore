@@ -92,10 +92,6 @@ public class ParallelAlterMatrixAsUtility extends CharMatricesListProcessorUtili
 			fireEmployee(firstAlterTask);
 			return false;
 		}
-		if (!beaned){
-			postBean("ParallelAlterMatrixAsUtility-started");
-			beaned = true;
-		}
 		return true;
 	}
 
@@ -266,8 +262,11 @@ public class ParallelAlterMatrixAsUtility extends CharMatricesListProcessorUtili
 
 		incrementMenuResetSuppression(numThreads + 1);
 		DrawHierarchy.suppressNodeRepaints = true;
-		CompatibilityTest test = firstAlterTask.getCompatibilityTest();
-		Debugg.println("test " + test);
+		CompatibilityTest compatibilityTest = firstAlterTask.getCompatibilityTest();
+		if (!beaned){
+			postBean("ParallelAlterMatrixAsUtility-started-with-" + firstAlterTask.getName());
+			beaned = true;
+		}
 		MesquiteProject project = getProject();
 		if (project != null) {
 			project.getCoordinatorModule().setWhomToAskIfOKToInteractWithUser(this);
@@ -282,7 +281,7 @@ public class ParallelAlterMatrixAsUtility extends CharMatricesListProcessorUtili
 		logln("Parallel Alter Matrices started at " + StringUtil.getDateTime(new Date(startTime)));
 		//	for (int im = 0; im < datas.size() && !doneFirstMatrix; im++) {
 		CharacterData data = (CharacterData) datas.elementAt(0);
-		if (test.isCompatible(data, project, this)) {
+		if (compatibilityTest.isCompatible(data, project, this)) {
 			if (datas.size() > 1)
 				logln("\nAltering first matrix \"" + data.getName() + "\"");
 			AlteredDataParameters alteredDataParameters = new AlteredDataParameters();
@@ -388,7 +387,7 @@ public class ParallelAlterMatrixAsUtility extends CharMatricesListProcessorUtili
 				lastMatrix = numMatricesTotal -1;
 			if (lastMatrix > numMatricesTotal - 1)
 				lastMatrix = numMatricesTotal - 1;
-			threads[i] = new AlterThread(this, datas, firstMatrix, lastMatrix, test, longWait, i);
+			threads[i] = new AlterThread(this, datas, firstMatrix, lastMatrix, compatibilityTest, longWait, i);
 			//logln("Thread #" + i + " will be assigned matrices # " + (firstMatrix+1) + " to " + (lastMatrix+1));
 		}
 		logln("");

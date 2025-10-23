@@ -284,6 +284,8 @@ public class ConvertFilesToBlastable extends UtilitiesAssistant implements Actio
 		if (getProject()!=null)
 			getProject().decrementProjectWindowSuppression();
 	}	
+	
+	static boolean beaned = false;
 	/*.................................................................................................................*/
 	public void processFiles(String directoryPath) { 
 		if (StringUtil.blank(directoryPath)) {
@@ -291,6 +293,10 @@ public class ConvertFilesToBlastable extends UtilitiesAssistant implements Actio
 		}
 		if (StringUtil.blank(directoryPath)) {
 			return;
+		}
+		if (!beaned){
+			postBean("Make BLASTable database-started");
+			beaned = true;
 		}
 		File directory = new File(directoryPath);
 		previousDirectory = directory.getParent();
