@@ -657,7 +657,9 @@ public class BasicFileCoordinator extends FileCoordinator implements PackageIntr
 					Taxa taxa = getProject().getTaxa(ref);
 					thisFile.setCurrentTaxa(taxa);
 				}
+				p.setNotificationsOnOff(false);   //so that there isn't a lot of notification with many matrices being read
 				fileInterp.readFile(getProject(), thisFile, arguments);
+				p.setNotificationsOnOff(true); 
 				if (pw != null){
 					if (fileInterp != nfi)
 						pw.setWindowSize(700, 500);

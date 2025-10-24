@@ -324,7 +324,6 @@ public class InterpretNEXUS extends NexusFileInterpreter implements NEXUSInterpr
 	/*.................................................................................................................*/
 	public void readFile(MesquiteProject mProj, MesquiteFile mNF, String arguments) {
 		incrementMenuResetSuppression();
-		mProj.setNotificationsOnOff(false); //Debugg.println move this to BFC open project in case this is link
 		int length = (int)mNF.existingLength();
 		int readToNow = 0;
 		ProgressIndicator progIndicator = null;
@@ -418,7 +417,6 @@ public class InterpretNEXUS extends NexusFileInterpreter implements NEXUSInterpr
 							decrementMenuResetSuppression();
 							fileReadTimer.end();
 							decrementNEXUSBlockSortSuppression();
-							mProj.setNotificationsOnOff(true);
 							return;
 						}
 						if (fileComments.length()>0) {
@@ -510,7 +508,6 @@ public class InterpretNEXUS extends NexusFileInterpreter implements NEXUSInterpr
 		}
 		MesquiteTrunk.recentFileRecord(mNF, true);  //updating that it's ok to reread in REcent
 		decrementMenuResetSuppression();
-		mProj.setNotificationsOnOff(true);
 
 	}
 	/*.................................................................................................................*/

@@ -36,7 +36,6 @@ import mesquite.lib.ui.RadioButtons;
 /* ============  a file interpreter for DNA/RNA  Fasta files ============*/
 
 public class InterpretFlippedFastaDNA extends InterpretFastaDNA {
-	//Debugg.println: Rewording incomplete, and options should be different, e.g. should allow longest sequence
 	protected int queryOptionsDuplicate() {
 		treatmentOfIncomingDuplicates = USELONGEST;
 		
