@@ -629,8 +629,11 @@ class BasicDataWindow extends TableWindow implements MesquiteListener {
 
 		ownerModule.hireNamedEmployee(DataWindowAssistantI.class, "#AlterData");
 
-		ownerModule.hireNamedEmployee(DataWindowAssistantI.class, "#AlignSequences");
+		if (data instanceof MolecularData)
+			ownerModule.hireNamedEmployee(DataWindowAssistantI.class, "#AlignSequences");
+		if (data instanceof DNAData)
 		ownerModule.hireNamedEmployee(DataWindowAssistantI.class, "#AlignSequencesCodon");
+		
 		ownerModule.hireNamedEmployee(DataWindowAssistantI.class, "#AddDeleteData");
 		// ownerModule.addMenuSeparator();
 		ownerModule.hireNamedEmployee(DataWindowAssistantI.class, "#DefaultCellColor");

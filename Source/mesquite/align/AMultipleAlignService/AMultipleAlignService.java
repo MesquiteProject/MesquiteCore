@@ -6,6 +6,7 @@ import mesquite.align.lib.AlignMultipleSequencesMachine;
 import mesquite.align.lib.MultipleSequenceAligner;
 import mesquite.categ.lib.MolecularData;
 import mesquite.categ.lib.MolecularDataAlterer;
+import mesquite.categ.lib.RequiresAnyMolecularData;
 import mesquite.lib.CommandChecker;
 import mesquite.lib.EmployeeNeed;
 import mesquite.lib.MesquiteFile;
@@ -83,7 +84,11 @@ public class AMultipleAlignService extends AMultipleAlignServiceLib{
  	public String getExplanation() {
  		return "Performs multiple sequence alignment using an available aligner." ;
    	 }
-   	 
+	/*.................................................................................................................*/
+	 public CompatibilityTest getCompatibilityTest() {
+	return new RequiresAnyMolecularData();
+	 }
+
 }
 
 

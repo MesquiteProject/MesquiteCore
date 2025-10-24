@@ -60,30 +60,10 @@ public class CombineFlippedFastas extends GeneralFileMakerMultiple {
 
 	/*.................................................................................................................*/
 	public boolean startJob(String arguments, Object condition, boolean hiredByName){
-		//Debugg.println rebuild as Extensible dialog to put the caution about "taxon" into a separate label after radio buttons
+		loadPreferences();
 		boolean goAhead = introductoryOptions();
-		/*int result = QueryDialogs.queryTwoRadioButtons(containerOfModule(), "Combining single-taxon FASTA files", 
-				"This imports all of the single-taxon FASTA files in a folder. (Touch the help (?) button for an explanation "
-						+ "of what a single-taxon FASTA file is.)"
-						+ "\n\nDo you want to alter or adjust the names of loci (e.g., by deleting part of the name) "
-						+"as the single-taxon FASTA files are being read?\n\nNote: If you choose to alter the locus names, some of the choices in the "
-						+"subsequent dialog box refer to \"taxon names\", but it's actually the locus names that are getting altered."
-						+" The reason for this misnaming is that Mesquite is set to interpret rows "
-						+"in a file as taxa, but in these single-taxon fasta files, the rows are loci.", 
-						"What is a single-taxon FASTA file? "
-								+"A FASTA file is often in one of two orentations, single-locus or single-taxon:"
-								+"<ul><li>A <b>single-locus FASTA file</b> concerns data for a single locus for each of many taxa.</li>"
-								+ "<li>A <b>single-taxon FASTA file</b> concerns data for a single taxon, listing the sequences in each of many loci.</li></ul>"
-								+"A genome assembly file for a single taxon is usually a single-taxon FASTA file, "
-								+"each sequence being a contig. However, single-taxon FASTA files can be compiled by this feature only if homologs have been"
-								+" identified and named as such in each file. "
-								+"A locus appearing in different files needs to have a name that is at least partially consistent from file to file.", 
-								"Don't alter locus names", "Alter locus names");
-		/*
-			\n\nIf you choose to alter the names, note that some of the choices in the next dialog will 	*/
 		if (!goAhead)
 			return false;
-		loadPreferences();
 		if (alterNames == 1) {
 			nameAlterer = (TaxonNameAlterer)hireEmployee(TaxonNameAlterer.class, "How to alter locus names (even though some say \"taxon names\")");
 			if (nameAlterer == null)
