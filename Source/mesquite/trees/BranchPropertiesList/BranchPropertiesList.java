@@ -492,7 +492,7 @@ public class BranchPropertiesList extends ListModule implements Annotatable {
 			else if (objContainer.getName().equalsIgnoreCase(MesquiteTree.nodeLabelName))
 				builtIn = true;
 			if (row <2 && !builtIn && MesquiteTrunk.developmentMode)
-				System.err.println("Row doesn't match built-in in " + getClass());
+				MesquiteMessage.sys_err_println("Row doesn't match built-in in " + getClass());
 			return builtIn;
 		}*/
 		return false;

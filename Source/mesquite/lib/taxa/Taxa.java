@@ -126,7 +126,7 @@ public class Taxa extends FileElement implements NameableWithNotify {
 			setCurrentSpecsSet(specsSet, type);
 		}
 		catch (Exception e){
-			System.err.println("ERROR: Exception " + e.getClass() + " in making " + type + "\n");
+			MesquiteMessage.sys_err_println("ERROR: Exception " + e.getClass() + " in making " + type + "\n");
 			if (MesquiteTrunk.developmentMode)
 				MesquiteMessage.printStackTrace(e);
 		}

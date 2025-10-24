@@ -37,6 +37,12 @@ public class MesquiteMessage extends Debugg {
 			System.out.println(s);
 		MesquiteThread.resumeThreadLogging();
 	}
+	public static void sys_err_println(String s) {
+		System.err.println(s);
+	}
+	public static void sys_err_print(String s) {
+		System.err.print(s);
+	}
 	public static void notifyProgrammer(String s) {
 		MesquiteThread.suspendThreadLogging();
 		MesquiteModule.showLogWindow(true);

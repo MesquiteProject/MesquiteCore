@@ -331,7 +331,7 @@ public abstract class MesquiteTrunk extends MesquiteModule
 		MesquiteFile stored = findRecentFile(file, true);
 		if (stored==null) {
 			if (developmentMode)
-				System.err.println("Recent File changed but not found!!!");
+				MesquiteMessage.sys_err_println("Recent File changed but not found!!!");
 		}
 		else {
 			if (stored != null)

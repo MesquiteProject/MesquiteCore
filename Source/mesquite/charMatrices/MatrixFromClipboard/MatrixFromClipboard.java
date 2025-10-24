@@ -88,6 +88,7 @@ public class MatrixFromClipboard extends CharMatrixFiller implements MesquiteLis
 			Transferable t = clip.getContents(this);
 			try {
 				String s = (String)t.getTransferData(DataFlavor.stringFlavor);
+				s = StringUtil.replace(s, "\r\n", "\n"); //just in case this is from Excel
 	   			int[] lines = MesquiteTable.getTabbedLinesCount(s);
 	   			boolean columnNamesPresent = true;
 	   			boolean rowNamesPresent = false;

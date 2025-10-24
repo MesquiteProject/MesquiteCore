@@ -1064,7 +1064,7 @@ public class ExtensibleDialog extends MesquiteDialog implements ActionListener, 
 			doLayout();
 		}
 		catch (Throwable t){
-			System.err.println("Throwable in ExtensibleDialog: " + t);
+			MesquiteMessage.sys_err_println("Throwable in ExtensibleDialog: " + t);
 		}
 		MesquiteWindow.centerWindow(getParentDialog());
 		if (MesquiteTrunk.isMacOSXJaguar())
@@ -1286,7 +1286,7 @@ public class ExtensibleDialog extends MesquiteDialog implements ActionListener, 
 		if (justUpdateNames){  //this took some fiddling so as not to mess up the selection!
 			if (listables!=null){
 				if (MesquiteTrunk.developmentMode && listables.length != list.getItemCount())
-					System.err.println("ExtensibleDialog: resetList update with different array sizes (listables)");
+					MesquiteMessage.sys_err_println("ExtensibleDialog: resetList update with different array sizes (listables)");
 				for (int i = 0; i<listables.length && i< list.getItemCount(); i++)
 					if ( list.getItem(i)== null || !list.getItem(i).equals(listables[i].getName())){
 						list.add(listables[i].getName(), i);
@@ -1295,7 +1295,7 @@ public class ExtensibleDialog extends MesquiteDialog implements ActionListener, 
 			}
 			else if (strings!=null){
 				if (MesquiteTrunk.developmentMode && strings.length != list.getItemCount())
-					System.err.println("ExtensibleDialog: resetList update with different array sizes (strings)");
+					MesquiteMessage.sys_err_println("ExtensibleDialog: resetList update with different array sizes (strings)");
 				for (int i = 0; i<strings.length && i< list.getItemCount(); i++)
 					if ( list.getItem(i)== null || !list.getItem(i).equals(strings[i])){
 						list.add(strings[i], i);
@@ -1764,7 +1764,7 @@ public class ExtensibleDialog extends MesquiteDialog implements ActionListener, 
 				textField.setCaretPosition(0);
 		}
 		catch (Exception e){
-			System.err.println("Throwable in ExtensibleDialog: " + e);
+			MesquiteMessage.sys_err_println("Throwable in ExtensibleDialog: " + e);
 		}
 		constraints.fill=GridBagConstraints.BOTH;
 		return textField;
@@ -1800,7 +1800,7 @@ public class ExtensibleDialog extends MesquiteDialog implements ActionListener, 
 				textField.setCaretPosition(0);
 		}
 		catch (Exception e){
-			System.err.println("Throwable in ExtensibleDialog: " + e);
+			MesquiteMessage.sys_err_println("Throwable in ExtensibleDialog: " + e);
 		}
 		constraints.fill=GridBagConstraints.BOTH;
 		return textField;

@@ -17,6 +17,7 @@ import mesquite.lib.CommandChecker;
 import mesquite.lib.CommandRecord;
 import mesquite.lib.IntegerArray;
 import mesquite.lib.MesquiteInteger;
+import mesquite.lib.MesquiteMessage;
 import mesquite.lib.MesquiteModule;
 import mesquite.lib.MesquiteThread;
 import mesquite.lib.MesquiteTrunk;
@@ -115,7 +116,7 @@ public class Parallelizer {
 			}
 		}
 		if (calcStatus.getValue(item) == BEINGCALCULATED){
-			System.err.printlnBEINGCALCULATED but no thread claims " + item);
+			MesquiteMessage.sys_err_println(BEINGCALCULATED but no thread claims " + item);
 			return true;
 		}
 		return false; */
@@ -132,7 +133,7 @@ public class Parallelizer {
 				count++;
 		}
 		if (count != wasTotalCalculated && MesquiteTrunk.developmentMode)
-			System.err.println("Difference between count " + count + " and totalCalculated " + wasTotalCalculated +" in Parallelizer");
+			MesquiteMessage.sys_err_println("Difference between count " + count + " and totalCalculated " + wasTotalCalculated +" in Parallelizer");
 		return totalCalculated;
 	}
 
@@ -252,7 +253,7 @@ public class Parallelizer {
 				setItemStatus(item, BEINGCALCULATED);
 				int result = owner.doItemCalculation_Parallel(item, pp);
 				totalCalculated++;
-				//System.err.println("### finished item " + item + " on thread " + whichThread);
+				//MesquiteMessage.sys_err_println("### finished item " + item + " on thread " + whichThread);
 				if (result == 0)
 					setItemStatus(item, SUCCESS);
 				else
@@ -267,7 +268,7 @@ public class Parallelizer {
 				try {
 					Thread.sleep(10); 
 					if (running){
-						//x System.err.println("RERUNNING " + owner.getNextParallelItem() + "-");
+						//x MesquiteMessage.sys_err_println("RERUNNING " + owner.getNextParallelItem() + "-");
 						doJob();
 						running = false;
 					}

@@ -985,7 +985,6 @@ public class NCBIUtil {
 						}
 						in.close();
 						response = responseBuffer.toString();
-						//System.err.println("@ response\n" + response);
 						count++;
 						totalTime +=checkInterval;
 					}

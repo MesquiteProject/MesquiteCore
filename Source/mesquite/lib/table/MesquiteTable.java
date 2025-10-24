@@ -858,7 +858,7 @@ public class MesquiteTable extends MesquitePanel implements KeyListener, MouseWh
 				if (t != null && rowNamesEditable && rowNamesCopyPaste && (rowNamesCopyPasteWithRowSelection || isRowNameSelected(j))){
 					returnedRowNameText(j, t, false);
 					if ((count+1) % 10 == 0)
-						System.err.print(".");
+						MesquiteMessage.sys_err_print(".");
 					rowNamesChanged = true;
 				}
 				count++;

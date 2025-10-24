@@ -17,6 +17,7 @@ import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.Scrollbar;
 
+import mesquite.lib.MesquiteMessage;
 import mesquite.lib.MesquiteTrunk;
 
 /* �������������������� */
@@ -42,7 +43,7 @@ public class MQScrollbar extends Scrollbar implements MQComponent {
 	public void setVisibleAmount (int a){
 		if (touchingSVA != null && touchingSVA != Thread.currentThread()){
 			if (verboseTW && MesquiteTrunk.developmentMode)
-				System.err.println("Warning: thread clash in MQScrollbar avoided (setVisibleAmount). This thread: " + Thread.currentThread() + "; also touching " + touchingSVA);
+				MesquiteMessage.sys_err_println("Warning: thread clash in MQScrollbar avoided (setVisibleAmount). This thread: " + Thread.currentThread() + "; also touching " + touchingSVA);
 			return;
 		}
 		touchingSVA = Thread.currentThread();
@@ -54,7 +55,7 @@ public class MQScrollbar extends Scrollbar implements MQComponent {
 	public void setBlockIncrement (int a){
 		if (touchingSBO != null && touchingSBO != Thread.currentThread()){
 			if (verboseTW && MesquiteTrunk.developmentMode)
-				System.err.println("Warning: thread clash in MQScrollbar avoided (setBlockIncrement). This thread: " + Thread.currentThread() + "; also touching " + touchingSBO);
+				MesquiteMessage.sys_err_println("Warning: thread clash in MQScrollbar avoided (setBlockIncrement). This thread: " + Thread.currentThread() + "; also touching " + touchingSBO);
 			return;
 		}
 		touchingSBO = Thread.currentThread();

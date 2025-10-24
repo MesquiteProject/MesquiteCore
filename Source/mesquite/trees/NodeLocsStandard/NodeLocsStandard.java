@@ -29,6 +29,7 @@ import mesquite.lib.MesquiteCommand;
 import mesquite.lib.MesquiteDouble;
 import mesquite.lib.MesquiteFile;
 import mesquite.lib.MesquiteInteger;
+import mesquite.lib.MesquiteMessage;
 import mesquite.lib.MesquiteModule;
 import mesquite.lib.MesquiteNumber;
 import mesquite.lib.MesquiteThread;
@@ -723,24 +724,30 @@ public class NodeLocsStandard extends NodeLocsVH {
 	/*....................................................................................................*/
 	private void UPCalcTerminalLocs(TreeDisplay treeDisplay, TreeDrawing treeDrawing, Tree tree, int N) {
 		if  (tree.nodeIsTerminal(N)) {   //terminal
-						
+
 			double triangleSpacer = 0.0;
 			if (tree.withinCollapsedClade(N)){
 				int dCA = tree.deepestCollapsedAncestor(N);
-				if (treeDisplay.getTreeDrawing().triangleWidthInCollapsed()>0)
+				if (treeDisplay.getTreeDrawing().triangleWidthInCollapsed()>0) {
 					triangleSpacer = treeDisplay.getTaxonSpacing()*(treeDisplay.getTreeDrawing().triangleWidthInCollapsed())/2; 
-				if (tree.leftmostTerminalOfNode(dCA)==N){
-					lastleft+= getSpacing(treeDisplay, tree, N)/2.0 + triangleSpacer; 
+					if (tree.leftmostTerminalOfNode(dCA)==N)
+						lastleft+= getSpacing(treeDisplay, tree, N)/2.0 + triangleSpacer; 
+					else {
+						lastleft= treeDrawing.x[tree.leftmostTerminalOfNode(dCA)] + triangleSpacer;
+						triangleSpacer -= treeDisplay.getTaxonSpacing()/2;
+					}
 				}
 				else {
-					lastleft= treeDrawing.x[tree.leftmostTerminalOfNode(dCA)] + triangleSpacer;
-					triangleSpacer -= treeDisplay.getTaxonSpacing()/2;
+					if (tree.leftmostTerminalOfNode(dCA)==N)
+						lastleft+= getSpacing(treeDisplay, tree, N); 
+					else 
+						lastleft= treeDrawing.x[tree.leftmostTerminalOfNode(dCA)];
 				}
 			}
 			else
 				lastleft+= getSpacing(treeDisplay, tree, N);
 
-			
+
 			treeDrawing.y[N] = treeDisplay.getTipsMargin();
 			treeDrawing.x[N] = lastleft;
 			lastleft += triangleSpacer;
@@ -808,25 +815,31 @@ public class NodeLocsStandard extends NodeLocsVH {
 	/*....................................................................................................*/
 	private void DOWNCalcTerminalLocs(TreeDisplay treeDisplay, TreeDrawing treeDrawing, Tree tree, int N, double margin) {
 		if  (tree.nodeIsTerminal(N)) {   //terminal
-			
-			
+
+
 			double triangleSpacer = 0.0;
 			if (tree.withinCollapsedClade(N)){
 				int dCA = tree.deepestCollapsedAncestor(N);
-				if (treeDisplay.getTreeDrawing().triangleWidthInCollapsed()>0)
+				if (treeDisplay.getTreeDrawing().triangleWidthInCollapsed()>0){
 					triangleSpacer = treeDisplay.getTaxonSpacing()*(treeDisplay.getTreeDrawing().triangleWidthInCollapsed())/2; 
-				if (tree.leftmostTerminalOfNode(dCA)==N){
-					lastleft+= getSpacing(treeDisplay, tree, N)/2.0 + triangleSpacer; 
+					if (tree.leftmostTerminalOfNode(dCA)==N)
+						lastleft+= getSpacing(treeDisplay, tree, N)/2.0 + triangleSpacer; 
+					else {
+						lastleft= treeDrawing.x[tree.leftmostTerminalOfNode(dCA)] + triangleSpacer;
+						triangleSpacer -= treeDisplay.getTaxonSpacing()/2;
+					}
 				}
 				else {
-					lastleft= treeDrawing.x[tree.leftmostTerminalOfNode(dCA)] + triangleSpacer;
-					triangleSpacer -= treeDisplay.getTaxonSpacing()/2;
-			}
+					if (tree.leftmostTerminalOfNode(dCA)==N)
+						lastleft+= getSpacing(treeDisplay, tree, N); 
+					else 
+						lastleft= treeDrawing.x[tree.leftmostTerminalOfNode(dCA)];
+				}
 			}
 			else
 				lastleft+= getSpacing(treeDisplay, tree, N);
 
-			
+
 			treeDrawing.y[N] = margin;
 			treeDrawing.x[N] = lastleft;
 			lastleft += triangleSpacer;
@@ -909,15 +922,21 @@ public class NodeLocsStandard extends NodeLocsVH {
 			double triangleSpacer = 0.0;
 			if (tree.withinCollapsedClade(N)){
 				int dCA = tree.deepestCollapsedAncestor(N);
-				if (treeDisplay.getTreeDrawing().triangleWidthInCollapsed()>0)
+				if (treeDisplay.getTreeDrawing().triangleWidthInCollapsed()>0){
 					triangleSpacer = treeDisplay.getTaxonSpacing()*(treeDisplay.getTreeDrawing().triangleWidthInCollapsed())/2; 
-				//triangleSpacer = getSpacing(treeDisplay, tree, N)*(treeDisplay.getTreeDrawing().usingTriangleForCollapsed())/2; 
-				if (tree.leftmostTerminalOfNode(dCA)==N){
-					lastleft+= getSpacing(treeDisplay, tree, N)/2.0 + triangleSpacer; 
+					//triangleSpacer = getSpacing(treeDisplay, tree, N)*(treeDisplay.getTreeDrawing().usingTriangleForCollapsed())/2; 
+					if (tree.leftmostTerminalOfNode(dCA)==N)
+						lastleft+= getSpacing(treeDisplay, tree, N)/2.0 + triangleSpacer; 
+					else {
+						lastleft= treeDrawing.y[tree.leftmostTerminalOfNode(dCA)] + triangleSpacer;
+						triangleSpacer -= treeDisplay.getTaxonSpacing()/2;
+					}
 				}
 				else {
-					lastleft= treeDrawing.y[tree.leftmostTerminalOfNode(dCA)] + triangleSpacer;
-					triangleSpacer -= treeDisplay.getTaxonSpacing()/2;
+					if (tree.leftmostTerminalOfNode(dCA)==N)
+						lastleft+= getSpacing(treeDisplay, tree, N); 
+					else 
+						lastleft= treeDrawing.y[tree.leftmostTerminalOfNode(dCA)];
 				}
 			}
 			else
@@ -1002,14 +1021,20 @@ public class NodeLocsStandard extends NodeLocsVH {
 			double triangleSpacer = 0.0;
 			if (tree.withinCollapsedClade(N)){
 				int dCA = tree.deepestCollapsedAncestor(N);
-				if (treeDisplay.getTreeDrawing().triangleWidthInCollapsed()>0)
+				if (treeDisplay.getTreeDrawing().triangleWidthInCollapsed()>0){
 					triangleSpacer = treeDisplay.getTaxonSpacing()*(treeDisplay.getTreeDrawing().triangleWidthInCollapsed())/2; 
-				if (tree.leftmostTerminalOfNode(dCA)==N){
-					lastleft+= getSpacing(treeDisplay, tree, N)/2.0 + triangleSpacer; 
+					if (tree.leftmostTerminalOfNode(dCA)==N)
+						lastleft+= getSpacing(treeDisplay, tree, N)/2.0 + triangleSpacer; 
+					else {
+						lastleft= treeDrawing.y[tree.leftmostTerminalOfNode(dCA)] + triangleSpacer;
+						triangleSpacer -= treeDisplay.getTaxonSpacing()/2;
+					}
 				}
 				else {
-					lastleft= treeDrawing.y[tree.leftmostTerminalOfNode(dCA)] + triangleSpacer;
-					triangleSpacer -= treeDisplay.getTaxonSpacing()/2;
+					if (tree.leftmostTerminalOfNode(dCA)==N)
+						lastleft+= getSpacing(treeDisplay, tree, N); 
+					else 
+						lastleft= treeDrawing.y[tree.leftmostTerminalOfNode(dCA)];
 				}
 			}
 			else
@@ -1910,7 +1935,7 @@ class NodeLocsExtra extends TreeDisplayExtra implements TreeDisplayBkgdExtra {
 		if (treeDisplay.getTreeDrawing().recordsBranchColors()){
 			Color bc = treeDisplay.getTreeDrawing().getBranchColor(drawnRoot);
 			ColorDistribution bcd = treeDisplay.getTreeDrawing().getBranchFillColors(drawnRoot);
-			System.err.println("color " + bc + " cd " + bcd);
+			MesquiteMessage.sys_err_println("color " + bc + " cd " + bcd);
 		}
 		 */
 		if (showRectangles){  //rectangles

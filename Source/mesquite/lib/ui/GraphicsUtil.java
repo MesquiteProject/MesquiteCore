@@ -556,7 +556,7 @@ public class GraphicsUtil {
 
 		}
 		catch (Throwable e){
-			System.err.println("Throwable in GraphicsUtil: " + e);
+			MesquiteMessage.sys_err_println("Throwable in GraphicsUtil: " + e);
 			//workaround to sun InternalError
 		}
 	}
@@ -625,7 +625,7 @@ public class GraphicsUtil {
 
 		}
 		catch (Throwable e){
-			System.err.println("Throwable in GraphicsUtil: " + e);
+			MesquiteMessage.sys_err_println("Throwable in GraphicsUtil: " + e);
 			//workaround to sun InternalError
 		}
 	}

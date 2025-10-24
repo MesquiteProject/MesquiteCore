@@ -524,7 +524,7 @@ public class StoredTrees extends TreeSource implements MesquiteListener {
 			
 			
 			if (getProject() != null && getProject().getNumberTaxas()==1 && !MesquiteThread.isScripting() && !laxMode){
-				System.err.println("No current tree block for taxa " + taxa.getName() + "(Module: Stored Trees). This may be innocent.");
+				MesquiteMessage.sys_err_println("No current tree block for taxa " + taxa.getName() + "(Module: Stored Trees). This may be innocent.");
 			}
 			if (!MesquiteThread.isScripting())
 				iQuit();

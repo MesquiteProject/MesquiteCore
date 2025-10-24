@@ -416,7 +416,7 @@ public class ManageCharacters extends CharactersManager {
 		CharMatrixManager manager = findCharacterTypeManager(dataType);
 		if (manager == null ){
 			if (MesquiteTrunk.developmentMode)
-				System.err.println("No manager for matrices of type " + dataType  + " found");
+				MesquiteMessage.sys_err_println("No manager for matrices of type " + dataType  + " found");
 			return null;
 		}
 		return manager.getNewData(taxa, numChars);

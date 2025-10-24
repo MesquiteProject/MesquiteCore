@@ -115,7 +115,7 @@ public class PhoneHomeThread extends Thread {
 					url = MesquiteModule.devVersionReportURL;
 				BaseHttpRequestMaker.contactServer(contactMessage, "", url, response);
 				String r = response.toString();
-				System.err.println(r);
+				MesquiteMessage.sys_err_println(r);
 
 				if (!StringUtil.blank(r) && (r.indexOf("mq4v")>=0 || r.indexOf("Version")>=0)){
 					PhoneHomeUtil.phoneHomeSuccessful = true;
@@ -186,7 +186,7 @@ public class PhoneHomeThread extends Thread {
 			String note = ("<h2>Notices from the websites of Mesquite and installed packages</h2><hr>" + notices.toString() + "<br><h4>(You can ask Mesquite not to check for messages on its websites using the menu item in the Defaults submenu of the File menu)</h4>");
 			if (!MesquiteThread.isScripting()){
 				if (MesquiteTrunk.developmentMode)
-					System.err.println("Notice:\n" + notices);
+					MesquiteMessage.sys_err_println("Notice:\n" + notices);
 			AlertDialog.noticeHTML(MesquiteTrunk.mesquiteTrunk.containerOfModule(),"Note", note, 600, 400, PhoneHomeUtil.getPhoneHomeDialogLinkCommand(), true);
 		}
 			else

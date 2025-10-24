@@ -27,6 +27,7 @@ import mesquite.lib.Annotatable;
 import mesquite.lib.Listened;
 import mesquite.lib.MesquiteEvent;
 import mesquite.lib.MesquiteListener;
+import mesquite.lib.MesquiteMessage;
 import mesquite.lib.MesquiteTrunk;
 import mesquite.lib.Notification;
 /* ======================================================================== */
@@ -234,7 +235,7 @@ public class ExplanationArea extends MousePanel implements TextListener, Mesquit
 			}
 		}
 		catch (Exception q){
-			System.err.println("Exception in ExplanationArea: " + q);
+			MesquiteMessage.sys_err_println("Exception in ExplanationArea: " + q);
 		}
 	}
 	public void setFocusSuppression(boolean suppress){
@@ -593,7 +594,7 @@ class ExplTextArea extends MQPanel {
 			}
 		}
 		catch (Throwable e){
-			System.err.println("Throwable in ExplanationArea (2): " + e);
+			MesquiteMessage.sys_err_println("Throwable in ExplanationArea (2): " + e);
 			//This is to catch ClassCastExceptions on Linux deep in java 1.8 code
 		}
 	}

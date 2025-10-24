@@ -75,15 +75,15 @@ public class MesquiteInteger implements Listable, Nameable{
 			b.setValue(value);
 	}
 	public static void listConstants() { //so that setting can be done in line whether or not null
-		System.err.println("MesquiteInteger constants:");
-		System.err.println("  unassigned " + unassigned);
-		System.err.println("  impossible " + impossible);
-		System.err.println("  finite " + finite);
-		System.err.println("  infinite " + infinite);
-		System.err.println("  negInfinite " + negInfinite);
-		System.err.println("  inapplicable " + inapplicable);
-		System.err.println("  disallowed1 " + disallowed1);
-		System.err.println("  disallowed2 " + disallowed2);
+		MesquiteMessage.sys_err_println("MesquiteInteger constants:");
+		MesquiteMessage.sys_err_println("  unassigned " + unassigned);
+		MesquiteMessage.sys_err_println("  impossible " + impossible);
+		MesquiteMessage.sys_err_println("  finite " + finite);
+		MesquiteMessage.sys_err_println("  infinite " + infinite);
+		MesquiteMessage.sys_err_println("  negInfinite " + negInfinite);
+		MesquiteMessage.sys_err_println("  inapplicable " + inapplicable);
+		MesquiteMessage.sys_err_println("  disallowed1 " + disallowed1);
+		MesquiteMessage.sys_err_println("  disallowed2 " + disallowed2);
 		
 	}
 	public static long toLong(int value) { //so that setting can be done in line whether or not null

@@ -345,7 +345,7 @@ public abstract class MesquiteModule extends EmployerEmployee implements Command
 			try {
 				menuItemsSpecs.dispose(true);
 			} catch (Exception e) {
-				System.err.println("exception in endJob");
+				MesquiteMessage.sys_err_println("exception in endJob");
 			}
 		}
 		menuItemsSpecs = null;
@@ -1345,7 +1345,7 @@ public abstract class MesquiteModule extends EmployerEmployee implements Command
 		if (!okToReportErrors()){
 			if (StringUtil.notEmpty(incompatibilityMessage))
 				discreetAlert(incompatibilityMessage + "\n" + rep);
-			System.err.println(origS);
+			MesquiteMessage.sys_err_println(origS);
 			if (!MesquiteThread.isScripting() && !AlertDialog.query(containerOfModule(), "Crash", s, "OK", "Force Quit"))
 				MesquiteTrunk.mesquiteTrunk.exit(true, 0);
 			return;
@@ -1367,7 +1367,7 @@ public abstract class MesquiteModule extends EmployerEmployee implements Command
 			if (reportErrorsAutomatically()) {
 				reportCrashToHome(e, s);
 			}
-			System.err.println(origS);
+			MesquiteMessage.sys_err_println(origS);
 
 			if (!MesquiteThread.isScripting() && !AlertDialog.query(containerOfModule(), "Crash", s, "OK", "Force Quit"))
 				MesquiteTrunk.mesquiteTrunk.exit(true, 0);

@@ -706,9 +706,23 @@ public abstract class ExternalSequenceAligner extends MultipleSequenceAligner im
 			MesquiteThread.setCurrentCommandRecord(oldCR);
 			CharacterData alignedData = getProject().getCharacterMatrix(tempDataFile,  0);
 			alignedData.setName("Temp matrix for alignment");
-			alignedData.removeTaxaThatAreEntirelyGaps(); 
-			//DAVIDCHECK: Debugg.println: the above will delete the taxa even if they have data in other matrices. Is this OK? 
-			//Also, this is the only call to that method. Perhaps move the code here?
+
+			//Deleting all-gaps taxa. This should be deleting only from the temporary taxa block, not from the recipient original block.
+			int numT = alignedData.getNumTaxa();  
+			for (int it = numT; it>=0; it--){
+				if (alignedData.entirelyInapplicableTaxon(it)) {
+					int numToDelete = 1;
+					int firstToDelete = it;
+					for (int it2 =it-1; it2>=0; it2--){
+						if (alignedData.entirelyInapplicableTaxon(it2)) {
+							numToDelete++;
+							firstToDelete= it2;
+						} else break;
+					}
+					alignedData.getTaxa().deleteTaxa(firstToDelete, numToDelete, true);  //used to be deleteTaxa( , )
+					it=it-numToDelete+1;
+				}
+			}
 
 			long[][] aligned = null;
 			Taxa alignedTaxa =  alignedData.getTaxa();

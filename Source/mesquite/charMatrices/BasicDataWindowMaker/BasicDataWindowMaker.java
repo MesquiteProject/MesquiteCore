@@ -3405,6 +3405,7 @@ class MatrixTable extends mesquite.lib.table.CMTable implements MesquiteDroppedF
 
 				String s = (String) t.getTransferData(DataFlavor.stringFlavor);
 				if (s != null) {
+					s = StringUtil.replace(s, "\r\n", "\n"); //just in case this is from Excel
 					if (matrix.getEditing() || rowNames.getEditing() || columnNames.getEditing()) {
 						TextField edit = null;
 						if (matrix.getEditing())

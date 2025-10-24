@@ -3236,7 +3236,7 @@ public class MesquiteTree extends Associable implements AdjustableTree, Listable
 		if (c == null)
 			System.out.println("\nNULL at " + place);
 		else
-			System.err.print(c);
+			MesquiteMessage.sys_err_print(c);
 	}
 
 	private boolean predefinedDouble(String TreeDescription, MesquiteInteger stringLoc){

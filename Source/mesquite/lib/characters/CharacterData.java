@@ -2483,26 +2483,6 @@ public abstract class CharacterData extends FileElement implements MesquiteListe
 		return false;
 	}
 
-	public boolean removeTaxaThatAreEntirelyGaps(){
-		boolean removedSome = false;
-		int numT = getNumTaxa();
-		for (int it = numT; it>=0; it--){
-			if (entirelyInapplicableTaxon(it)) {
-				int numToDelete = 1;
-				int firstToDelete = it;
-				for (int it2 =it-1; it2>=0; it2--){
-					if (entirelyInapplicableTaxon(it2)) {
-						numToDelete++;
-						firstToDelete= it2;
-					} else break;
-				}
-				taxa.deleteTaxa(firstToDelete, numToDelete, true);  //used to be deleteTaxa( , )
-				it=it-numToDelete+1;
-				removedSome=true;
-			}
-		}
-		return removedSome;
-	}
 
 
 
