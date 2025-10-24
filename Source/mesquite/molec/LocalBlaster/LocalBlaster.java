@@ -382,6 +382,7 @@ public class LocalBlaster extends Blaster implements ActionListener,  AppUser, P
 
 		AppChooser appChooser = new AppChooser(this, this, useDefaultExecutablePath, blastExecutableFolderPath);
 		appChooser.addToDialog(dialog);
+		dialog.addLargeOrSmallTextLabel("If the built-in BLAST quits with an error, try installing NCBI BLAST separately on your OS, which may fix it by adding the necessary libraries.");
 		IntegerField numThreadsField = dialog.addIntegerField("Number of processor threads to use:", numThreads,4, 1, Integer.MAX_VALUE);
 
 /*		if (getDefaultExecutablePathAllowed()) {
