@@ -214,6 +214,7 @@ public class PhoneHomeUtil {
 			PhoneHomeRecord phoneHomeRecord, Vector osVector, 
 			int forBuildNumberEqualOrGreater, int forBuildNumberEqualOrLess, int forBuildNumberExactly, 
 			int forPackageVersionEqualOrGreater, int forPackageVersionEqualOrLess, int forPackageVersionExactly, ListableVector v, boolean adHoc) {
+		System.err.println("@processSingleNotice " + noticeNumber);
 		boolean pleaseDeleteFromUpdates = false;
 		if (!MesquiteInteger.isCombinable(forMesquiteVersionLessOrEqual))
 			forMesquiteVersionLessOrEqual = MesquiteInteger.infinite;
@@ -232,6 +233,7 @@ public class PhoneHomeUtil {
 					}
 				}
 			}
+			System.err.println("@mmi " + mmi);
 
 			boolean appliesToBuild = true;
 			if (mmi == null || mmi.getName().equals("Mesquite") || mmi.getName().equals("Installer") || mmi.getName().equals("Defaults")){
@@ -491,8 +493,10 @@ public class PhoneHomeUtil {
 			return null;
 		String noticesFromHome = null;
 		try{
+			System.err.println("@retrieveMessagesFromHome " + mmi.getName() + " " + url);
 			noticesFromHome = MesquiteFile.getURLContentsAsString(url, -1, false);
-			if (MesquiteTrunk.debugMode)
+			System.err.println("@noticesFromHome " + noticesFromHome);
+		if (MesquiteTrunk.debugMode)
 				MesquiteMessage.warnProgrammer("Phone home to " + url + " successful ");
 
 		} catch (Exception e) {
@@ -533,6 +537,7 @@ public class PhoneHomeUtil {
 		if (root==null)
 			return null;
 		Element messagesFromHome = root.element("MessagesFromHome");
+		System.err.println("@messagesFromHome " + messagesFromHome);
 		if (messagesFromHome != null) {
 			Element versionElement = messagesFromHome.element("version");
 			if (versionElement == null || !versionElement.getText().equals("1")) { 
