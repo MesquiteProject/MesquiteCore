@@ -176,7 +176,7 @@ public class Mesquite extends MesquiteTrunk
 			if (!isPrerelease() && !debugMode)
 			return "http://www.mesquiteproject.org/noticesAndUpdates/notices.xml";   
 		else
-			return "https://raw.githubusercontent.com/MesquiteProject/MesquiteCore/development/noticesAndUpdates/noticesPrerelease.xml";   
+			return "https://raw.githubusercontent.com/MesquiteProject/MesquiteCore/development/noticesAndUpdatesForPrerelease/notices.xml";   
 
 
 		/* Version 3.2 through 3.4 

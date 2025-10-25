@@ -235,12 +235,16 @@ public class PhoneHomeUtil {
 
 			boolean appliesToBuild = true;
 			if (mmi == null || mmi.getName().equals("Mesquite") || mmi.getName().equals("Installer") || mmi.getName().equals("Defaults")){
+				System.err.println("@appliesToBuild-a " + appliesToBuild);
 				if (MesquiteInteger.isCombinable(forBuildNumberExactly)) 
 					appliesToBuild =  appliesToBuild && (forBuildNumberExactly == MesquiteModule.getBuildNumber());
+				System.err.println("@appliesToBuild-b " + appliesToBuild);
 				if (MesquiteInteger.isCombinable(forBuildNumberEqualOrGreater)) 
 					appliesToBuild =  appliesToBuild && (forBuildNumberEqualOrGreater <= MesquiteModule.getBuildNumber());
+				System.err.println("@appliesToBuild-c " + appliesToBuild);
 				if (MesquiteInteger.isCombinable(forBuildNumberEqualOrLess))  
 					appliesToBuild =  appliesToBuild && (forBuildNumberEqualOrLess >= MesquiteModule.getBuildNumber());
+				System.err.println("@appliesToBuild-d " + appliesToBuild);
 			}
 			else {
 				if (MesquiteInteger.isCombinable(forBuildNumberExactly)) 
@@ -285,15 +289,19 @@ public class PhoneHomeUtil {
 
 			if (mmi == null || mmi.getName().equals("Mesquite") || mmi.getName().equals("Installer") || mmi.getName().equals("Defaults")){  //a Mesquite update
 				seenBefore = seenBefore || !adHoc && (forMesquiteVersionLessOrEqual < currentMesquiteVersion);  //e.g., notice is version 2.0
+				System.err.println("@seenBefore-a " + seenBefore);
 
 				//or if Mesquite's version is same as notice's, but notice number is already seen for this version than last one noticed.
 				seenBefore = seenBefore || (forMesquiteVersionLessOrEqual ==  currentMesquiteVersion && noticeNumber <= lastNoticeForMyVersion);  //e.g., notice is 2. 01; notice number has already been seen
+				System.err.println("@seenBefore-b " + seenBefore);
 
 				//or if Mesquite's version is less than notice's, and notice's is same as lastVersion noticed, but notice is already seen.
 				seenBefore = seenBefore || (currentMesquiteVersion<forMesquiteVersionLessOrEqual && lastVersionNoticed == forMesquiteVersionLessOrEqual && noticeNumber <= lastNotice);  //e.g., notice is 2.02; 2.02 notices previously read; notice already seen
+				System.err.println("@seenBefore-c " + seenBefore);
 
 				//or if Mesquite's version is less than notice's, and notice's is less than as lastVersion noticed, but notice is already seen.
 				seenBefore = seenBefore || (currentMesquiteVersion<forMesquiteVersionLessOrEqual && lastVersionNoticed> forMesquiteVersionLessOrEqual);  //e.g., notice is 2.02; 2.03 notices previously read
+				System.err.println("@seenBefore-d " + seenBefore);
 			}
 			else {  //third party update
 				seenBefore = seenBefore || (noticeNumber <= lastNoticeForMyVersion);  //e.g., notice is 2. 01; notice number has already been seen
