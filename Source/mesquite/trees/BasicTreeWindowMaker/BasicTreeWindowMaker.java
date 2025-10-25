@@ -1530,6 +1530,7 @@ class BasicTreeWindow extends MesquiteWindow implements Fittable, MesquiteListen
 			MesquiteModule mb = (MesquiteModule) obj;
 			if (mb instanceof TreeWindowAssistant) {
 				addWindowAssistant((TreeWindowAssistant)mb);
+				((TreeWindowAssistant)mb).setTree(tree);
 			}
 		}
 		setShowExplanation(true);
@@ -5031,7 +5032,7 @@ class BasicTreeWindow extends MesquiteWindow implements Fittable, MesquiteListen
 	Tree setTree(String TreeDescription, String name) {
 		if (ownerModule == null || ownerModule.isDoomed())
 			return null;
-		if (taxa != null && taxa.isDoomed()) {
+	if (taxa != null && taxa.isDoomed()) {
 			ownerModule.iQuit();
 			return null;
 		}
@@ -5089,7 +5090,7 @@ class BasicTreeWindow extends MesquiteWindow implements Fittable, MesquiteListen
 
 	/* ................................................................................................................. */
 	Tree setCloneOfTree(Tree treeToClone, boolean resetOriginal, MesquiteBoolean editStatusToSet) { // displays copy for editing
-		if (taxa != null && taxa.isDoomed()) {
+	if (taxa != null && taxa.isDoomed()) {
 			ownerModule.iQuit();
 			return null;
 		}

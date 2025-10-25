@@ -242,8 +242,8 @@ public class Listened implements Listenable {
 								timer.timeSinceLast();
 								ls[m].changed(caller, this, notification);
 								notificationsMadeTotal++;
-								if (MesquiteTrunk.developmentMode && (notificationsMadeTotal)% 100000 == 0 && notificationsMadeTotal> 100 && MesquiteTrunk.developmentMode) 
-									MesquiteMessage.println(Long.toString(notificationsMadeTotal) +  " notifications (" + this + ") " + Notification.getCode(notification));
+								if (MesquiteTrunk.developmentMode && (notificationsMadeTotal)% 10000 == 0 && notificationsMadeTotal> 100) 
+									MesquiteMessage.sys_err_println(Long.toString(notificationsMadeTotal) +  " notifications (" + this + ") " + Notification.getCode(notification));
 
 								long time = timer.timeSinceLast();
 								if (time>20)
@@ -252,8 +252,8 @@ public class Listened implements Listenable {
 								try {
 									ls[m].changed(caller, this, notification); // >>>>> NOTIFICATION IS HERE <<<<<
 									notificationsMadeTotal++;
-									if (MesquiteTrunk.developmentMode && (notificationsMadeTotal)% 100000 == 0 && notificationsMadeTotal> 100 && MesquiteTrunk.developmentMode) 
-										MesquiteMessage.printStackTrace(Long.toString(notificationsMadeTotal) +  " notifications (" + this + ") " + Notification.getCode(notification));
+									if (MesquiteTrunk.developmentMode && (notificationsMadeTotal)% 10000 == 0 && notificationsMadeTotal> 100) 
+										MesquiteMessage.sys_err_println(Long.toString(notificationsMadeTotal) +  " notifications (" + this + ") " + Notification.getCode(notification));
 						}
 								catch (Throwable e){  //added 2. 72 to avoid crash in changed from stopping all other listeners from hearing
 									try {
