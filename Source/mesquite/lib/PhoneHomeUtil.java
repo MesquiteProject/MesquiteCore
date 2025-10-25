@@ -214,7 +214,6 @@ public class PhoneHomeUtil {
 			PhoneHomeRecord phoneHomeRecord, Vector osVector, 
 			int forBuildNumberEqualOrGreater, int forBuildNumberEqualOrLess, int forBuildNumberExactly, 
 			int forPackageVersionEqualOrGreater, int forPackageVersionEqualOrLess, int forPackageVersionExactly, ListableVector v, boolean adHoc) {
-		System.err.println("@processSingleNotice " + noticeNumber);
 		boolean pleaseDeleteFromUpdates = false;
 		if (!MesquiteInteger.isCombinable(forMesquiteVersionLessOrEqual))
 			forMesquiteVersionLessOrEqual = MesquiteInteger.infinite;
@@ -233,20 +232,15 @@ public class PhoneHomeUtil {
 					}
 				}
 			}
-			System.err.println("@mmi " + mmi);
 
 			boolean appliesToBuild = true;
 			if (mmi == null || mmi.getName().equals("Mesquite") || mmi.getName().equals("Installer") || mmi.getName().equals("Defaults")){
-				System.err.println("@appliesToBuild-a " + appliesToBuild);
 				if (MesquiteInteger.isCombinable(forBuildNumberExactly)) 
 					appliesToBuild =  appliesToBuild && (forBuildNumberExactly == MesquiteModule.getBuildNumber());
-				System.err.println("@appliesToBuild-b " + appliesToBuild);
 				if (MesquiteInteger.isCombinable(forBuildNumberEqualOrGreater)) 
 					appliesToBuild =  appliesToBuild && (forBuildNumberEqualOrGreater <= MesquiteModule.getBuildNumber());
-				System.err.println("@appliesToBuild-c " + appliesToBuild);
 				if (MesquiteInteger.isCombinable(forBuildNumberEqualOrLess))  
 					appliesToBuild =  appliesToBuild && (forBuildNumberEqualOrLess >= MesquiteModule.getBuildNumber());
-				System.err.println("@appliesToBuild-d " + appliesToBuild);
 			}
 			else {
 				if (MesquiteInteger.isCombinable(forBuildNumberExactly)) 
@@ -291,19 +285,15 @@ public class PhoneHomeUtil {
 
 			if (mmi == null || mmi.getName().equals("Mesquite") || mmi.getName().equals("Installer") || mmi.getName().equals("Defaults")){  //a Mesquite update
 				seenBefore = seenBefore || !adHoc && (forMesquiteVersionLessOrEqual < currentMesquiteVersion);  //e.g., notice is version 2.0
-				System.err.println("@seenBefore-a " + seenBefore);
 
 				//or if Mesquite's version is same as notice's, but notice number is already seen for this version than last one noticed.
 				seenBefore = seenBefore || (forMesquiteVersionLessOrEqual ==  currentMesquiteVersion && noticeNumber <= lastNoticeForMyVersion);  //e.g., notice is 2. 01; notice number has already been seen
-				System.err.println("@seenBefore-b " + seenBefore);
 
 				//or if Mesquite's version is less than notice's, and notice's is same as lastVersion noticed, but notice is already seen.
 				seenBefore = seenBefore || (currentMesquiteVersion<forMesquiteVersionLessOrEqual && lastVersionNoticed == forMesquiteVersionLessOrEqual && noticeNumber <= lastNotice);  //e.g., notice is 2.02; 2.02 notices previously read; notice already seen
-				System.err.println("@seenBefore-c " + seenBefore);
 
 				//or if Mesquite's version is less than notice's, and notice's is less than as lastVersion noticed, but notice is already seen.
 				seenBefore = seenBefore || (currentMesquiteVersion<forMesquiteVersionLessOrEqual && lastVersionNoticed> forMesquiteVersionLessOrEqual);  //e.g., notice is 2.02; 2.03 notices previously read
-				System.err.println("@seenBefore-d " + seenBefore);
 			}
 			else {  //third party update
 				seenBefore = seenBefore || (noticeNumber <= lastNoticeForMyVersion);  //e.g., notice is 2. 01; notice number has already been seen
@@ -493,9 +483,7 @@ public class PhoneHomeUtil {
 			return null;
 		String noticesFromHome = null;
 		try{
-			System.err.println("@retrieveMessagesFromHome " + mmi.getName() + " " + url);
 			noticesFromHome = MesquiteFile.getURLContentsAsString(url, -1, false);
-			System.err.println("@noticesFromHome " + noticesFromHome);
 		if (MesquiteTrunk.debugMode)
 				MesquiteMessage.warnProgrammer("Phone home to " + url + " successful ");
 
@@ -537,7 +525,6 @@ public class PhoneHomeUtil {
 		if (root==null)
 			return null;
 		Element messagesFromHome = root.element("MessagesFromHome");
-		System.err.println("@messagesFromHome " + messagesFromHome);
 		if (messagesFromHome != null) {
 			Element versionElement = messagesFromHome.element("version");
 			if (versionElement == null || !versionElement.getText().equals("1")) { 
@@ -586,7 +573,7 @@ public class PhoneHomeUtil {
 				//INSTALLER: recording update record for later use in dialog and in menu items.
 				//vvvvvvvvvvvvvvvvvvvv====INSTALL/UPDATE SYSTEM ====vvvvvvvvvvvvvvvvvvvv
 				ListableVector v = null;
-				if (messageType.equalsIgnoreCase("update")){
+				if (messageType != null && messageType.equalsIgnoreCase("update")){
 					v = new ListableVector();
 					String packageName = messageElement.elementText("packageName");
 					String versionNum = messageElement.elementText("updateVersion");

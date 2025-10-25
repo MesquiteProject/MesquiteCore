@@ -169,11 +169,7 @@ public class Mesquite extends MesquiteTrunk
 		//See MesquiteModule for version reporter and error reporter URLs
 		//See Installer for updates.xml URLs
 
-		/*if (true)
-			return "https://raw.githubusercontent.com/wmaddisn/Tuatara/refs/heads/master/docs/notices.xml";   
-
-		else */
-			if (!isPrerelease() && !debugMode)
+		if (!isPrerelease() && !debugMode)
 			return "http://www.mesquiteproject.org/noticesAndUpdates/notices.xml";   
 		else
 			return "https://raw.githubusercontent.com/MesquiteProject/MesquiteCore/development/noticesAndUpdatesForPrerelease/notices.xml";   
