@@ -140,8 +140,9 @@ public class Mesquite extends MesquiteTrunk
 		return "Maddison, W.P. & D.R. Maddison. 2025. Mesquite: A modular system for evolutionary analysis.  Version " + getVersion() + ".  https://www.mesquiteproject.org";
 	}
 	/*.................................................................................................................*/
+	//RELEASEPROTOCOL
 	public String getVersion() {
-		return "4.02";
+		return "4.02+";
 	}
 
 	/*.................................................................................................................*/
@@ -157,8 +158,9 @@ public class Mesquite extends MesquiteTrunk
 		return "October 2025"; //"April 2007";
 	}
 	/*.................................................................................................................*/
+	//RELEASEPROTOCOL
 	public boolean isPrerelease(){
-		return false;
+		return true;
 	}
 
 	/*.................................................................................................................*/
@@ -501,6 +503,7 @@ public class Mesquite extends MesquiteTrunk
 		logInitString += "https://www.mesquiteproject.org\n";
 		if (StringUtil.notEmpty(MesquiteModule.getSpecialVersion()))
 			logInitString  +="  " + MesquiteModule.getSpecialVersion()+ "\n";
+		//RELEASEPROTOCOL
 		logInitString  += ("\nCopyright (c) 1997-2025 W. Maddison and D. Maddison\n");
 		logInitString  += "The basic Mesquite package (class library and basic modules) is free software; you can redistribute it and/or modify it under the terms of the GNU Lesser General Public License. "
 				+ "  Mesquite is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY.  For details on license and "

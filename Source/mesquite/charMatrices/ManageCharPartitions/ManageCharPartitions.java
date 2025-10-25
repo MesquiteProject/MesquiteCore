@@ -193,7 +193,7 @@ public class ManageCharPartitions extends CharSpecsSetManager {
 	ManagerAssistant lister = null;
 	/*.................................................................................................................*/
 	public ManagerAssistant showCharacterGroupList(Object obj, String listerName){
-		
+
 		if (lister == null)
 			lister= (ManagerAssistant)hireNamedEmployee(ManagerAssistant.class, StringUtil.tokenize(listerName));
 		if (lister!=null) {
@@ -236,6 +236,7 @@ public class ManageCharPartitions extends CharSpecsSetManager {
 				fileToRead.setProject(proj);
 				fileToRead.setReadCategory(MesquiteFile.INCLUDED);
 				NexusFileInterpreter mb = (NexusFileInterpreter)findNearestColleagueWithDuty(NexusFileInterpreter.class);
+				proj.setNotificationsOnOff(false);
 				mb.readFile(getProject(), fileToRead, " @noWarnMissingReferent  @noWarnUnrecognized @justTheseBlocks.LABELS");
 
 				Listable[] combinedGroups = groupsVector.getElementArray();
@@ -257,6 +258,7 @@ public class ManageCharPartitions extends CharSpecsSetManager {
 
 				//***************
 				proj.getCoordinatorModule().closeFile(fileToRead, true);
+				proj.setNotificationsOnOff(true);
 
 			}
 		}
@@ -377,15 +379,15 @@ public class ManageCharPartitions extends CharSpecsSetManager {
 		else 
 			return super.readNexusCommand(file, nBlock, blockName, command, comment,  fileReadingArguments);
 	}
-	
+
 	public String getGroupLabelNexusCommand(CharactersGroup cg){
 		String s = "";
-			s += "\tCHARGROUPLABEL " + ParseUtil.tokenize(cg.getName());
-			if (cg.colorSet()){
-				Color c = cg.getColor();
-				s += " COLOR = (RGB " + MesquiteDouble.toString(c.getRed()/255.0) + " " + MesquiteDouble.toString(c.getGreen()/255.0) + " " + MesquiteDouble.toString(c.getBlue()/255.0) + ") ";
-			}
-			s += ";" + StringUtil.lineEnding();
+		s += "\tCHARGROUPLABEL " + ParseUtil.tokenize(cg.getName());
+		if (cg.colorSet()){
+			Color c = cg.getColor();
+			s += " COLOR = (RGB " + MesquiteDouble.toString(c.getRed()/255.0) + " " + MesquiteDouble.toString(c.getGreen()/255.0) + " " + MesquiteDouble.toString(c.getBlue()/255.0) + ") ";
+		}
+		s += ";" + StringUtil.lineEnding();
 		return s;
 	}
 

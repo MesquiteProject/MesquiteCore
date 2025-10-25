@@ -80,7 +80,9 @@ public class AppendTaxaAndSequences extends FileAssistantFM {
 			fileToRead.setReadCategory(MesquiteFile.INCLUDED);
 			//only do this if there's a set of taxa; ask user to choose if there are more than one
 			NexusFileInterpreter mb = (NexusFileInterpreter)findNearestColleagueWithDuty(NexusFileInterpreter.class);
+			proj.setNotificationsOnOff(false);
 			mb.readFile(getProject(), fileToRead, " @noWarnMissingReferent  @noWarnUnrecognized @noWarnDupTaxaBlock @readOneTaxaBlockOnly @justTheseBlocks.TAXA.CHARACTERS.DATA.SETS.LABELS");
+			proj.setNotificationsOnOff(true);
 
 			CharactersManager charactersManager = (CharactersManager)proj.getCoordinatorModule().findElementManager(CharacterData.class);
 			Taxa incomingTaxa = proj.getTaxa(fileToRead, 0);

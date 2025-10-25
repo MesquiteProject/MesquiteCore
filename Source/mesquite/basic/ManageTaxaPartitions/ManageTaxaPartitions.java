@@ -257,19 +257,19 @@ public class ManageTaxaPartitions extends SpecsSetManager {
 				return null;
 			}
 			TaxaGroupVector groups = (TaxaGroupVector)getProject().getFileElement(TaxaGroupVector.class, 0);
-			
+
 			String s = "#NEXUS\n";
-			
+
 			TaxaManager taxaManager = (TaxaManager)findElementManager(Taxa.class);
 			s += taxaManager.getTaxaBlock(taxa, null, null);
 			s += "\n";
 			if (groups != null){
-					s+= "BEGIN LABELS;\n\n";
-			for (int ig = 0; ig<groups.size(); ig++){
-				TaxaGroup group = (TaxaGroup)groups.elementAt(ig);
-				s += getGroupLabelNexusCommand(group) + "\n";
-			}
-			s += "END;";
+				s+= "BEGIN LABELS;\n\n";
+				for (int ig = 0; ig<groups.size(); ig++){
+					TaxaGroup group = (TaxaGroup)groups.elementAt(ig);
+					s += getGroupLabelNexusCommand(group) + "\n";
+				}
+				s += "END;";
 			}
 			s += "\nBEGIN SETS;\n";
 			s += nexusStringForSpecsSet(partition, taxa, checker.getFile(), true);
@@ -305,6 +305,7 @@ public class ManageTaxaPartitions extends SpecsSetManager {
 				fileToRead.setProject(proj);
 				fileToRead.setReadCategory(MesquiteFile.INCLUDED);
 				NexusFileInterpreter mb = (NexusFileInterpreter)findNearestColleagueWithDuty(NexusFileInterpreter.class);
+				proj.setNotificationsOnOff(false);
 				mb.readFile(getProject(), fileToRead, " @noWarnMissingReferent  @noWarnUnrecognized @justTheseBlocks.LABELS");
 
 				Listable[] combinedGroups = groupsVector.getElementArray();
@@ -326,6 +327,7 @@ public class ManageTaxaPartitions extends SpecsSetManager {
 
 				//***************
 				proj.getCoordinatorModule().closeFile(fileToRead, true);
+				proj.setNotificationsOnOff(true);
 
 			}
 		}
@@ -345,17 +347,21 @@ public class ManageTaxaPartitions extends SpecsSetManager {
 					fileToRead.setProject(proj);
 					fileToRead.setReadCategory(MesquiteFile.INCLUDED);
 					NexusFileInterpreter mb = (NexusFileInterpreter)findNearestColleagueWithDuty(NexusFileInterpreter.class);
+					proj.setNotificationsOnOff(false);
 					mb.readFile(getProject(), fileToRead, " @noWarnDupTaxaBlock @noWarnMissingReferent @noWarnUnrecognized @justTheseBlocks.TAXA.SETS.LABELS");
 					Listable[] currentTaxas = proj.getTaxas().getElementArray();
-					if (currentTaxas.length == previousTaxas.length)
+					if (currentTaxas.length == previousTaxas.length){
+						proj.setNotificationsOnOff(true);
 						return null;
-					
+					}
+
 					//***************
 					transferCurrentPartitionAndGroups( proj, previousTaxas, currentTaxas, taxaToReceive, previousGroups);
 
 					//***************
 					///*/
 					proj.getCoordinatorModule().closeFile(fileToRead, true);
+					proj.setNotificationsOnOff(true);
 
 				}
 				taxaToReceive.notifyListeners(this, new Notification(AssociableWithSpecs.SPECSSET_CHANGED));  
@@ -365,7 +371,7 @@ public class ManageTaxaPartitions extends SpecsSetManager {
 			return  super.doCommand(commandName, arguments, checker);
 		return null;
 	}
-	
+
 	public void transferCurrentPartitionAndGroups(MesquiteProject proj, Listable[] previousTaxas, Listable[] currentTaxas, Taxa taxaToReceive, Listable[] previousGroups){
 		ListableVector newlyAddedGroups = new ListableVector();
 		TaxaPartition currentPartition = (TaxaPartition)taxaToReceive.getOrMakeCurrentSpecsSet(TaxaPartition.class);
@@ -407,7 +413,7 @@ public class ManageTaxaPartitions extends SpecsSetManager {
 			}
 		}
 
-}
+	}
 
 	private TaxaGroup findGroup(String token){ 
 		if (token ==null)

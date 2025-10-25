@@ -83,15 +83,17 @@ MesquiteModule objects.<p>
 
 
 public abstract class MesquiteModule extends EmployerEmployee implements Commandable, Showable, Logger, FunctionExplainable,  Identifiable, FileDirtier, MesquiteListener, XMLPreferencesProcessor, ObjectCommenter {
-	/*.................................................................................................................*/
+
+	//RELEASEPROTOCOL
+/*.................................................................................................................*/
 	/** returns build date of the Mesquite system (e.g., "22 September 2003") */
 	public final static String getBuildDate() {
-		return "24 October 2025";
+		return "25 October 2025";
 	}
 	/*.................................................................................................................*/
 	/** returns version of the Mesquite system */
 	public final static String getMesquiteVersion() {
-		return "4.02";
+		return "4.02+";
 	}
 	/*.................................................................................................................*/
 	/** returns letter in the build number of the Mesquite system (e.g., "e" of "e58") */
@@ -104,7 +106,7 @@ public abstract class MesquiteModule extends EmployerEmployee implements Command
 	public final static int getBuildNumber() {
 		//as of 26 Dec 08, build naming changed from letter + number to just number.  Accordingly j105 became 473, based on
 		// highest build numbers of d51+e81+g97+h66+i69+j105 + 3 for a, b, c
-		return 1109;  
+		return 1110;  
 	}
 	//0.95.80    14 Mar 01 - first beta release 
 	//0.96  2 April 01 beta  - second beta release
@@ -176,6 +178,7 @@ public abstract class MesquiteModule extends EmployerEmployee implements Command
 	/*.................................................................................................................*/
 	//URLs for phoneHome phoning home
 	/*.................................................................................................................*/
+	//RELEASEPROTOCOL
 	//As of 4.0, new URLs)
 	public static String versionReportURL =  "http://startup.mesquiteproject.org/mesquite/mesquiteStartup.php"; //(see PhoneHomeThread, checkForMessagesFromAllHomes)
 	public static String devVersionReportURL =  "http://startup.mesquiteproject.org/mesquite/mesquiteDevStartup.php"; //(see PhoneHomeThread, checkForMessagesFromAllHomes)

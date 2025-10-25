@@ -164,14 +164,11 @@ public abstract class MesquiteTrunk extends MesquiteModule
 
 	public static ConsoleThread consoleThread = null;
 
-
 	public static boolean consoleListenSuppressed = false;
 	public static boolean suppressVersionReporting = false;
 	public static boolean suppressErrorReporting = false;
-	public static boolean noBeans = false;
 	public static boolean startedFromExecutable = false;
 	public static boolean startedFromFlex2 = false;
-	public static boolean debugMode = false;
 	public static boolean developmentMode = false;
 	public static boolean reportUnregisteredNeeds = false;
 	public static boolean mesquiteExiting = false;
@@ -181,9 +178,12 @@ public abstract class MesquiteTrunk extends MesquiteModule
 	public static String recentFilesFileName = "RecentFiles.txt";
 	public static int maxNumRecentFiles = 20;
 
-	//true if Mesquite should check website for notices
-	public static boolean phoneHome = true;
+	//RELEASEPROTOCOL
+	public static boolean debugMode = false;
 	public static boolean reportUse = true; 
+	public static boolean noBeans = false;
+	
+	public static boolean phoneHome = true;//true if Mesquite should check website for notices
 	public static PhoneHomeThread phoneHomeThread;
 	public static LinuxGWAThread linuxGWAThread;
 
