@@ -24,6 +24,7 @@ import mesquite.lib.MesquiteFile;
 import mesquite.lib.MesquiteInteger;
 import mesquite.lib.MesquiteListener;
 import mesquite.lib.MesquiteModule;
+import mesquite.lib.NameReference;
 import mesquite.lib.Notification;
 import mesquite.lib.Snapshot;
 import mesquite.lib.StringUtil;
@@ -245,11 +246,13 @@ class ColorToolExtra extends TreeDisplayExtra implements Commandable  {
 		return null;
 	}
 	MesquiteInteger pos = new MesquiteInteger();
+	NameReference 	palenessRef = NameReference.getNameReference("drawPale");
 	/*.................................................................................................................*/
 	void removeAllColor(){
 		if (tree == null)
 			return;
 		removeColorClade(tree, tree.getRoot());
+		tree.removeAssociatedStrings(palenessRef);
 		tree.notifyListeners(this, new Notification(MesquiteListener.ANNOTATION_CHANGED));
 		treeDisplay.pleaseUpdate(false);
 

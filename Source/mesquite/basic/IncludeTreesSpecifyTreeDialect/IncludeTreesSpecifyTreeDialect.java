@@ -26,6 +26,7 @@ public class IncludeTreesSpecifyTreeDialect extends FileAssistantTM {
 		if (importerTask == null)
 			return false;
 		importerTask.readFileWTreeDialect(getProject(), false, true);
+		iQuit();
 		return true;
 	}
 

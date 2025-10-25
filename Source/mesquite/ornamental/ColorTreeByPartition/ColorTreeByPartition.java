@@ -142,19 +142,22 @@ class ColorByPartitionExtra extends TreeDisplayExtra implements MesquiteListener
 		if (tree.nodeIsTerminal(node))
 			return colors[node];
 		ColorDistribution cladeColor = null;
+		boolean nullDaughter = false;
 		for (int d = tree.firstDaughterOfNode(node); tree.nodeExists(d); d = tree.nextSisterOfNode(d)){
 			ColorDistribution dsColor = colorsInClade(tree, d);
-			if (cladeColor == null)
+			if (dsColor == null || dsColor.getNumColors()== 0)
+				nullDaughter = true;
+			else if (cladeColor == null)
 				cladeColor = dsColor;
 			else
 				cladeColor.concatenate(dsColor);
 		}
+		if (cladeColor != null && nullDaughter)
+			return null;
 		return cladeColor;
 	}
 	/*.................................................................................................................*/
 	public   void drawOnTree(Tree tree, int node, Graphics g) {
-		if (!tree.isVisibleEvenIfInCollapsed(node))
-			return;
 		if (showColors) {
 			if (needsReharvesting)
 				reharvest(tree);
@@ -164,10 +167,9 @@ class ColorByPartitionExtra extends TreeDisplayExtra implements MesquiteListener
 					drawOnTree(tree, d, g);
 				if (tree.isLeftmostTerminalOfCollapsedClade(node)){
 					ColorDistribution cladeColors = colorsInClade(tree, tree.deepestCollapsedAncestor(node));
-					if (cladeColors != null && cladeColors.anyColors())
-						treeDisplay.getTreeDrawing().fillBranchWithColors(tree,  node, cladeColors, g);
+					treeDisplay.getTreeDrawing().fillBranchWithColors(tree,  node, cladeColors, g);
 				}
-				else if (colors[node].anyColors())
+				else if (tree.isVisibleEvenIfInCollapsed(node))
 					treeDisplay.getTreeDrawing().fillBranchWithColors(tree,  node, colors[node], g);
 			}
 		}

@@ -103,8 +103,10 @@ public class GraphicsUtil {
 			return;
 		}
 		Graphics2D g2 = (Graphics2D)g;
+		Stroke stroke = g2.getStroke();
 		g2.setStroke(new RoundCapStroke((float)thickness));
 		drawLine(g2,fromX, fromY, toX, toY);
+		g2.setStroke(stroke);
 	}
 	/*_________________________________________________*/
 	public static void fillRoundRect(Graphics2D g2, double x, double y, double width, double height, double arcWidth,double arcHeight) {
@@ -147,6 +149,67 @@ public class GraphicsUtil {
 		}
 		Graphics2D g2 = (Graphics2D)g;
 		fillRect(g2,x,y,width,height);
+	}
+	/*_________________________________________________*/
+	public static void fillPolygon(Graphics2D g2, double[] x, double [] y, int fillPolyMode) {
+		Composite composite = ColorDistribution.getComposite(g2);
+		setTransparentGraphics(g2, fillPolyMode);
+
+		Path2D.Double poly = new Path2D.Double();
+		poly.moveTo(x[0],y[0]);
+		for (int i=1; i<x.length; i++) 
+			poly.lineTo(x[i],y[i]);
+		g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+		g2.fill(poly);
+		ColorDistribution.setComposite(g2, composite);		
+	}
+	/*_________________________________________________*/
+	public static void fillPolygon(Graphics g, double[] x, double[] y, int fillPolyMode) {
+		if (fillPolyMode == 0)
+			return;
+		if (!(g instanceof Graphics2D)){
+			Composite composite = ColorDistribution.getComposite(g);
+			setTransparentGraphics(g, fillPolyMode);
+			int[] xInt = new int[x.length];
+			int[] yInt = new int[x.length];
+			for (int i=0; i<x.length; i++) {
+				xInt[i]=(int)x[i];
+				yInt[i]=(int)y[i];
+			}
+			g.fillPolygon(xInt, yInt, xInt.length);
+			ColorDistribution.setComposite(g, composite);		
+			return;
+		}
+		Graphics2D g2 = (Graphics2D)g;
+		fillPolygon(g2,x,y, fillPolyMode);
+	}
+	/*_________________________________________________*/
+	public static void drawPolygon(Graphics2D g2, double[] x, double [] y, double thickness) {
+		Path2D.Double poly = new Path2D.Double();
+		poly.moveTo(x[0],y[0]);
+		for (int i=1; i<x.length; i++) 
+			poly.lineTo(x[i],y[i]);
+		poly.lineTo(x[0],y[0]);
+		g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+		Stroke stroke = g2.getStroke();
+		g2.setStroke(new RoundJoinStroke((float)thickness));
+		g2.draw(poly);
+		g2.setStroke(stroke);
+	}
+	/*_________________________________________________*/
+	public static void drawPolygon(Graphics g, double[] x, double[] y, double thickness) {
+		if (!(g instanceof Graphics2D)){
+			int[] xInt = new int[x.length];
+			int[] yInt = new int[x.length];
+			for (int i=0; i<x.length; i++) {
+				xInt[i]=(int)x[i];
+				yInt[i]=(int)y[i];
+			}
+			g.drawPolygon(xInt, yInt, xInt.length);
+			return;
+		}
+		Graphics2D g2 = (Graphics2D)g;
+		drawPolygon(g2,x,y, thickness);
 	}
 	/*_________________________________________________*/
 	public static void drawRect(Graphics2D g2, double x, double y, double width, double height) {
@@ -215,6 +278,29 @@ public class GraphicsUtil {
 			return;
 		Graphics2D g2 = (Graphics2D)g;
 		drawArc(g2,x,y,width,height,startingAngle, angleExtent);
+	}
+	/*_________________________________________________*/
+	public static void drawPie(Graphics g, ColorDistribution colors, double x, double y, double dia, boolean select, boolean cosmic){
+		int numColors = colors.getNumColors();
+		double startAngle=90;//was 270
+		double totalFreq=0;
+		for (int i=0; i<numColors; i++) totalFreq += colors.getWeight(i);
+		double suppl = 0;
+		if (totalFreq == 0){
+			totalFreq = 1.0;
+			suppl = 1.0/numColors;
+		}
+		double arcAngle = 0;
+		for (int i=0; i<numColors; i++) {
+			Color color;
+			if ((color = colors.getColor(i, select))!=null)
+				g.setColor(color);
+
+			arcAngle = (((colors.getWeight(i)+suppl)/totalFreq)*360.0);
+			//GraphicsUtil.fillArc(g, x[node]- spotSize/2.0 + 2, y[node]- spotSize/2.0 + 2, spotSize - 4, spotSize - 4, startAngle, arcAngle, ownerModule.cosmic.getValue());
+			GraphicsUtil.fillArc(g, x, y, dia, dia, startAngle, arcAngle, cosmic);
+			startAngle+=arcAngle; 
+		}
 	}
 	/*_________________________________________________*/
 	public static void fill(Graphics g, Shape shape) {
@@ -470,7 +556,7 @@ public class GraphicsUtil {
 
 		}
 		catch (Throwable e){
-			System.err.println("Throwable in GraphicsUtil: " + e);
+			MesquiteMessage.sys_err_println("Throwable in GraphicsUtil: " + e);
 			//workaround to sun InternalError
 		}
 	}
@@ -539,7 +625,7 @@ public class GraphicsUtil {
 
 		}
 		catch (Throwable e){
-			System.err.println("Throwable in GraphicsUtil: " + e);
+			MesquiteMessage.sys_err_println("Throwable in GraphicsUtil: " + e);
 			//workaround to sun InternalError
 		}
 	}
@@ -738,6 +824,29 @@ public class GraphicsUtil {
 		g.setColor(transparentGray3);
 		 */
 	}
+	public static void fillTransparentPolygon (Graphics2D g, Path2D poly, Color color, int transparency) {
+		if (transparency == 0)
+			return;
+		Composite composite = ColorDistribution.getComposite(g);
+		if (transparency == 2)
+			ColorDistribution.setTransparentGraphics2(g);		
+		else if (transparency == 3)
+			ColorDistribution.setTransparentGraphics3(g);		
+		else if (transparency == 5)
+			ColorDistribution.setTransparentGraphics5(g);		
+		g.setColor(color);
+		g.fill(poly);
+		ColorDistribution.setComposite(g, composite);		
+	}
+	public static void setTransparentGraphics (Graphics g, int transparency) {
+		if (transparency == 2)
+			ColorDistribution.setTransparentGraphics2(g);		
+		else if (transparency == 3)
+			ColorDistribution.setTransparentGraphics3(g);		
+		else if (transparency == 5)
+			ColorDistribution.setTransparentGraphics5(g);		
+	}
+
 	/* -------------------------------------------------*/
 	public static void fillTransparentSelectionPolygon (Graphics g, Polygon poly) {
 		Composite composite = ColorDistribution.getComposite(g);
@@ -994,4 +1103,16 @@ class RoundCapStroke extends BasicStroke  {
 
 }
 
+class RoundJoinStroke extends BasicStroke  {
+	public RoundJoinStroke (float width) {
+		super(width);
+	}
+	public int getLineJoin() {
+		return BasicStroke.JOIN_ROUND;
+	}
+	public int getEndCap() {
+		return BasicStroke.CAP_ROUND;
+	}
 
+
+}

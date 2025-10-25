@@ -18,6 +18,7 @@ import java.awt.Container;
 import java.awt.Dimension;
 import java.awt.Font;
 
+import mesquite.lib.MesquiteMessage;
 import mesquite.lib.MesquiteTrunk;
 
 /* �������������������� */
@@ -37,7 +38,7 @@ public class MQComponentHelper {
 
 	void report(String s) {
 		if (verboseTW && MesquiteTrunk.developmentMode)
-			System.err.println(s);
+			MesquiteMessage.sys_err_println(s);
 	}
 	
 	public boolean touchingAnything(){

@@ -22,6 +22,7 @@ import java.lang.reflect.Method;
 import javax.accessibility.AccessibleContext;
 
 import mesquite.lib.MesquiteInteger;
+import mesquite.lib.MesquiteMessage;
 import mesquite.lib.MesquiteTrunk;
 
 
@@ -105,7 +106,7 @@ public class DoubleClickList extends List implements MouseListener {
 			return true;
 		}
 		catch(Exception e){
-			System.err.println("Exception in DoubleClickList: " + e);
+			MesquiteMessage.sys_err_println("Exception in DoubleClickList: " + e);
 		}
 		return false;
 	}

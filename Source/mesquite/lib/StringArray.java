@@ -357,7 +357,8 @@ public class StringArray implements StringLister, Listable, Nameable {
 		return newD;
 	}
 	/*...........................................................*/
-	public static String[][] deleteColumnsFlagged(String[][] d, Bits toDelete) {
+	//NOTE: this assumes that the incoming matrix is complete, i.e. all d[i].length is the same for all i's
+	public static String[][] deleteColumnsFlaggedOLD(String[][] d, Bits toDelete) {
 		if (d == null)
 			return null;
 		if (d.length <= 0)
@@ -377,8 +378,14 @@ public class StringArray implements StringLister, Listable, Nameable {
 		int source = flags.nextBit(toFill, false); //find source to move into it
 		int highestFilled = toFill-1; //
 		while (source >=0 && source < d.length && toFill >=0 && toFill<d.length) { //First, compact storage toward the start of the array.
-			for (int it=0; it<numRows; it++)
-				d[toFill][it] = d[source][it]; //move content from source to place
+			for (int it=0; it<numRows; it++){
+				String ss = null;
+				if (d[source] != null)
+					ss = d[source][it];
+				if (d[toFill] != null)
+					d[toFill][it] = ss; //move content from source to place
+
+			}
 			highestFilled = toFill;
 			flags.setBit(source, true); // set to available to receive
 			toFill =flags.nextBit(++toFill, true);
@@ -392,6 +399,46 @@ public class StringArray implements StringLister, Listable, Nameable {
 				newMatrix[ic][it] = d[ic][it];
 		return newMatrix;
 	}
+	/*/////////////////////*/
+	/*...........................................................*/
+	public static String[][] deleteColumnsFlagged(String[][] d, Bits toDelete) {
+		if (d == null)
+			return null;
+		if (d.length <= 0)
+			return d;
+		//Columns are the first index in d, which may seem like rows, but they are columns
+		
+		//First, count how many columns are going to get deleted
+		int numToBeDeleted = 0;
+		for (int i = 0; i< d.length && i<toDelete.getSize(); i++){
+			if (toDelete.isBitOn(i))
+				numToBeDeleted++;
+		}
+		if (numToBeDeleted == 0)
+			return d;
+		
+		//Make new array with the new number of columns
+		String[][] newD = new String[d.length-numToBeDeleted][];
+		
+		// go through d; if row is to be kept, transfer it across to newD; otherwise, skip
+		int newI = 0;
+		for (int i=0; i<d.length; i++){
+			if (!toDelete.isBitOn(i)){ //to be kept; transfer
+				String[] copyDI;
+				if (d[i] == null)
+					copyDI = null;
+				else {
+					copyDI = new String[d[i].length];
+					for (int k = 0; k<d[i].length; k++)
+						copyDI[k] = d[i][k];
+				}
+				newD[newI++] = copyDI;
+			}
+		}
+		
+		return newD;
+	}
+
 	/*...........................................................*
 	public void deletePartsBy Blocks(int[][] blocks) {
 		values = deletePartsBy Blocks(values, blocks);
@@ -430,7 +477,7 @@ public class StringArray implements StringLister, Listable, Nameable {
 			return d;
 		if (blocks == null || blocks.length == 0)
 			return d;
-		
+
 		int numRows= d[0].length;
 		int availableSlot = blocks[0][0];
 
@@ -720,8 +767,11 @@ public class StringArray implements StringLister, Listable, Nameable {
 		String r = "";
 		for (int i=0; i<s.length; i++) {
 			r += "[";
-			for (int j=0;j<s[i].length; j++)
-				r += "(" +s[i][j] + ") ";
+			if (s[i] == null)
+				r += "NULL ";
+			else
+				for (int j=0;j<s[i].length; j++)
+					r += "(" +s[i][j] + ") ";
 			r += "]\n";
 		}
 		return r;

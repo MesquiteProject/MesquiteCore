@@ -14,15 +14,20 @@
 
 package mesquite.genomic.CombineFlippedFastas;
 
+import java.awt.Checkbox;
+import java.awt.Label;
 import java.io.File;
 
 import mesquite.categ.lib.DNAData;
 import mesquite.categ.lib.DNAState;
 import mesquite.io.InterpretFastaDNA.InterpretFastaDNA;
+import mesquite.io.InterpretFlippedFastaDNA.InterpretFlippedFastaDNA;
 import mesquite.lib.CommandRecord;
 import mesquite.lib.Listable;
 import mesquite.lib.ListableVector;
+import mesquite.lib.MesquiteBoolean;
 import mesquite.lib.MesquiteFile;
+import mesquite.lib.MesquiteInteger;
 import mesquite.lib.MesquiteListener;
 import mesquite.lib.MesquiteMessage;
 import mesquite.lib.MesquiteProject;
@@ -39,36 +44,149 @@ import mesquite.lib.duties.TaxaManager;
 import mesquite.lib.duties.TaxonNameAlterer;
 import mesquite.lib.taxa.Taxa;
 import mesquite.lib.taxa.Taxon;
+import mesquite.lib.ui.ExtensibleDialog;
 import mesquite.lib.ui.ListDialog;
 import mesquite.lib.ui.MesquiteWindow;
 import mesquite.lib.ui.ProgressIndicator;
 import mesquite.lib.ui.QueryDialogs;
+import mesquite.lib.ui.RadioButtons;
 
 /* ======================================================================== */
 public class CombineFlippedFastas extends GeneralFileMakerMultiple {
 	TaxonNameAlterer nameAlterer;
+	int alterNames = 0; //don't alter; 1 = alter
+	int replacementRule = CharacterData.MERGE_useLongest; 
+	public boolean queryReplacementRules = false;
+
 	/*.................................................................................................................*/
 	public boolean startJob(String arguments, Object condition, boolean hiredByName){
-		int result = QueryDialogs.queryTwoRadioButtons(containerOfModule(), "Alter names?", "Do you want to alter or adjust the names of loci (e.g., by deleting part of the name) "
-				+"as the flipped FASTA files are being read?\n\nTouch the help (?) button for an explanation of what a flipped FASTA file is.", "What is a flipped FASTA file? "
-				+"A typical phylogenetic data file includes one or more matrices with each row being a taxon, and each column a character (or site in a sequence)."
-				+ " A flipped FASTA has the opposite orientation — each row has the sequence for a separate locus, and the file as a whole concerns a single taxon.<p>This feature imports all of the flipped FASTA files in a folder."
-						+"<p>Note: If you choose to alter the locus names, some of the choices in the subsequent dialog box refer to \"taxon names\", but it's actually the locus names that are getting altered."
-				+" The reason for this misnaming is that Mesquite is set to interpret rows in a file as taxa, but in these flipped fasta files, the rows are loci.", "Don't alter locus names", "Alter locus names");
-		/*
-			\n\nIf you choose to alter the names, note that some of the choices in the next dialog will 	*/
-		if (result ==1) {
+		loadPreferences();
+		boolean goAhead = introductoryOptions();
+		if (!goAhead)
+			return false;
+		if (alterNames == 1) {
 			nameAlterer = (TaxonNameAlterer)hireEmployee(TaxonNameAlterer.class, "How to alter locus names (even though some say \"taxon names\")");
 			if (nameAlterer == null)
 				return false;
 		}
-		return result >=0;
+		return true;
 	}
+
+	/*.................................................................................................................*/
+	public void processSingleXMLPreference (String tag, String content) {
+		if ("alterNames".equalsIgnoreCase(tag))
+			alterNames = MesquiteInteger.fromString(content);
+	}
+
+	/*.................................................................................................................*/
+	public String preparePreferencesForXML () {
+		StringBuffer buffer = new StringBuffer(200);
+		StringUtil.appendXMLTag(buffer, 2, "alterNames", alterNames);  
+		return buffer.toString();
+	}
+
 	
+	
+	boolean introductoryOptions() {
+		MesquiteInteger buttonPressed = new MesquiteInteger(1);
+		ExtensibleDialog id = new ExtensibleDialog(containerOfModule(), "Combining Single-Taxon (Mulit-locus) FASTA files",buttonPressed);
+		id.addLabel("This imports all of the Single-Taxon (Mulit-locus) FASTA files in a folder.");
+		id.addBlankLine();
+		id.addLargeTextLabel("A Single-Taxon (Mulit-locus) FASTA file concerns a single taxon, "
+				+ "and contains sequences for various loci. Touch the help (?) button for more explanation.");
+		id.addBlankLine();
+		id.addHorizontalLine(2);
+		id.addLabel("Adjust names of incoming loci?");
+		id.addBlankLine();
+		id.addLabel("Do you want to alter or adjust the names of loci", Label.LEFT);
+		id.addLabel("(e.g., by deleting part of the name)", Label.LEFT);
+		id.addLabel("as the single-taxon FASTA files are being read?", Label.LEFT);
+
+
+		String helpString = "<h3>What is a Single-Taxon (Mulit-locus) FASTA file?</h3>"
+				+"A FASTA file is often in one of two orentations, single-locus or single-taxon:"
+				+"<ul><li>A <b>single-locus FASTA file</b> concerns data for a single locus for each of many taxa.</li>"
+				+ "<li>A <b>single-taxon FASTA file</b> concerns data for a single taxon, listing the sequences in each of many loci.</li></ul>"
+				+"An example of a single-locus FASTA file is a genome assembly file for a single taxon, "
+				+"each sequence being a contig. However, single-taxon FASTA files can be compiled by this feature only if homologs have been"
+				+" identified and named as such in each file. "
+				+"A locus appearing in different files needs to have a name that is at least partially consistent from file to file, "
+				+"so that Mesquite can recognize them as belonging to the same locus, and thus be compiled into a single matrix "
+				+"(and eventually alignment).";
+		id.appendToHelpString(helpString);
+
+
+
+		id.addBlankLine();
+		RadioButtons radio = id.addRadioButtons(new String[] {"Don't alter locus names", "Alter locus names"},alterNames);
+		id.addBlankLine();
+		id.addLargeOrSmallTextLabel("Note: If you choose to alter the locus names, some of the subsequent choices "
+				+"refer to \"taxon names\", but it's actually the locus names that are getting altered."
+				+" The reason for this misnaming is that Mesquite is set to interpret rows "
+				+"in a file as taxa, but in these single-taxon FASTA files, the rows are loci.");
+
+		id.completeAndShowDialog(true);
+
+		if (buttonPressed.getValue()==0)  {
+			alterNames = radio.getValue();
+			storePreferences();
+		}
+		id.dispose();
+		return buttonPressed.getValue()==0;
+	}
+	void duplicateLocusNamesOptions() {
+		if (queryReplacementRules) //default is to not query and use MERGE_useLongest
+			return;
+		MesquiteInteger buttonPressed = new MesquiteInteger(1);
+		ExtensibleDialog id = new ExtensibleDialog(containerOfModule(), "Duplicate locus names",buttonPressed);
+		id.addLargeTextLabel("An incoming sequence appears to belong to a locus that already has data for this taxon.");
+		id.addBlankLine();
+		RadioButtons radio = id.addRadioButtons(new String[] {"Use the longest sequence", 
+				"Retain the existing sequence", "Replace existing by incoming sequence"},alterNames);
+		id.addBlankLine();
+
+		id.completeAndShowDialog("OK",null,null,"OK");
+
+		if (buttonPressed.getValue()==0)  {
+			int v = radio.getValue();
+			if (v == 0)
+				replacementRule = CharacterData.MERGE_useLongest;
+			else if (v == 1)
+				replacementRule = CharacterData.MERGE_preferReceiving;
+			else if (v == 2)
+				replacementRule = CharacterData.MERGE_preferIncoming;
+			
+		}
+		id.dispose();
+	}
+
 	boolean firstFile = true;
 	public boolean okToInteractWithUser(int howImportant, String messageToUser){
 		return firstFile;
 	}/**/
+	
+	String[] acceptableFileExtensions = new String[]{".fas", ".fasta", ".fna"};
+	/*.................................................................................................................*/
+	
+	public String getAcceptableFileExtensions () {
+		String s="";
+		for (int i=0; i<acceptableFileExtensions.length; i++) {
+			if (i>0)
+				s+= " or ";
+			s+=acceptableFileExtensions[i];
+		}
+		return s;
+
+	}
+	/*.................................................................................................................*/
+	
+	public boolean acceptableFileName (String fileName) {
+		for (int i=0; i<acceptableFileExtensions.length; i++)
+			if (StringUtil.endsWithIgnoreCase(fileName, acceptableFileExtensions[i]))
+					return true;
+		return false;
+	}
+	
 	/*.................................................................................................................*/
 	public void processDirectory(String directoryPath, MesquiteProject project){
 		if (StringUtil.blank(directoryPath) || project == null)
@@ -89,7 +207,7 @@ public class CombineFlippedFastas extends GeneralFileMakerMultiple {
 			if (taxa == null)
 				return;
 		}
-
+		boolean replacementQueried = false;
 		File directory = new File(directoryPath);
 		boolean abort = false;
 		String path = "";
@@ -101,6 +219,8 @@ public class CombineFlippedFastas extends GeneralFileMakerMultiple {
 		overallTime.start();
 		if (directory!=null) {
 			if (directory.exists() && directory.isDirectory()) {
+				getProject().setNotificationsOnOff(false);
+				getProject().getCentralModelListener().setNotificationsOnOff(false);
 				int countWarnings = 0;
 				//If taxa is not passed, need to establish new project
 				if (taxa == null){
@@ -114,15 +234,15 @@ public class CombineFlippedFastas extends GeneralFileMakerMultiple {
 				//-----
 				if (!taxaNew)
 					logln("Adding taxa to block " + taxa.getName() + " in file " + taxa.getFile().getFileName());
-				InterpretFastaDNA importer = (InterpretFastaDNA)findNearestColleagueWithDuty(InterpretFastaDNA.class);
+				InterpretFlippedFastaDNA importer = (InterpretFlippedFastaDNA)findNearestColleagueWithDuty(InterpretFlippedFastaDNA.class);
 				String[] files = directory.list();
 				if (files == null || files.length ==0)
 					return;
-					
+
 				String message = null; //"Looking for acceptable files";
 				int iF = 0;
 				while (message == null && iF<files.length){
-					if (StringUtil.endsWithIgnoreCase(files[iF], ".fas") || StringUtil.endsWithIgnoreCase(files[iF], ".fasta"))
+					if (acceptableFileName(files[iF]))
 						message = "Reading file: " + files[iF];
 					iF++;
 				}
@@ -134,7 +254,7 @@ public class CombineFlippedFastas extends GeneralFileMakerMultiple {
 				DNAState state = new DNAState();
 
 				int lociAdded = 0;
-				
+
 				// ============ GOING THROUGH DIRECTORY OF FILES, each representing a taxon, within which each "taxon" represents a locus ===========
 				for (int i=0; i<files.length; i++) {
 					progIndicator.setCurrentValue(i);
@@ -145,31 +265,31 @@ public class CombineFlippedFastas extends GeneralFileMakerMultiple {
 					if (abort)
 						break;
 					if (files[i]!=null) {
-						
-						boolean acceptableFile = (StringUtil.endsWithIgnoreCase(files[i], ".fas") || StringUtil.endsWithIgnoreCase(files[i], ".fasta"));   
+
+						boolean acceptableFile = acceptableFileName(files[i]);   
 						if (acceptableFile){
 							path = directoryPath + MesquiteFile.fileSeparator + files[i];
 							File cFile = new File(path);
 
 							if (cFile.exists() && !cFile.isDirectory() && (!files[i].startsWith("."))) {
-								progIndicator.setText("Reading flipped FASTA file: " + files[i]);
+								progIndicator.setText("Reading single-taxon FASTA file: " + files[i]);
 								MesquiteFile file = new MesquiteFile();
 								file.setPath(path);
 								project.addFile(file);
 								file.setProject(project);
 								if (files.length<20)
-									logln("Reading flipped FASTA file " + files[i]);
+									logln("Reading single-taxon FASTA file " + files[i]);
 								else if (i == 0)
 									log(" [File " + (i+1) + "]");
 								else
 									log(" [" + (i+1) + "]");
-								
+
 								//===================================================
 								/*
-								Here the taxon file (i.e. the flipped fasta file) for a single taxon is read. 
+								Here the taxon file (i.e. the single-taxon fasta file) for a single taxon is read. 
 								The sequences within it will be interpreted as taxa by Mesquite, but in fact 
 								each is the sequence for a particular locus.
-								*/
+								 */
 								MesquiteThread.setHintToSuppressProgressIndicatorCurrentThread(true);
 								importer.readFile(project, file, null);
 								MesquiteThread.setHintToSuppressProgressIndicatorCurrentThread(false);
@@ -180,10 +300,10 @@ public class CombineFlippedFastas extends GeneralFileMakerMultiple {
 
 								//Now let's look at the "taxa", i.e. loci, in this file
 								Taxa loci = project.getTaxa(file, 0);
-								
-								
+
+
 								if (loci != null){
-									
+
 									//First, alter the names of the loci if requested <<<<======= NEW 4.01 Altering the name of the loci
 									if (nameAlterer != null)
 										nameAlterer.alterTaxonNames(loci, null);
@@ -192,7 +312,7 @@ public class CombineFlippedFastas extends GeneralFileMakerMultiple {
 									CharacterData incomingFlippedMatrix = project.getCharacterMatrix(file, loci, null, 0, false);
 									if (incomingFlippedMatrix != null){
 										progIndicator.setSecondaryMessage("Taxon: " + taxonName + " with " + loci.getNumTaxa() + " loci");
-										
+
 										//OK, ready to go. Have matrix. Will add new taxon based on the name of the file, and transfer over its sequences
 										boolean existingTaxon = true;
 										int receivingTaxonNumber = taxa.whichTaxonNumber(taxonName);
@@ -207,15 +327,15 @@ public class CombineFlippedFastas extends GeneralFileMakerMultiple {
 										for (int iLocus = 0; iLocus < loci.getNumTaxa(); iLocus++){
 
 											CommandRecord.tick("For taxon " + taxonName + ", recovering sequence #" + (iLocus+1));
-											
-											//Get the name of the iLocus'th locus in the flipped fasta file
+
+											//Get the name of the iLocus'th locus in the single-taxon fasta file
 											String locusName = loci.getTaxonName(iLocus);
-											
+
 											//Can we find a matrix by this name already in the project?
 											CharacterData locusMatrix = recProject.getCharacterMatrixByReference(null,  taxa, null, locusName);
 											if (!(locusMatrix instanceof DNAData))
 												locusMatrix = null;
-											
+
 											if (locusMatrix == null) { //This must be a new locus. Establish a new matrix for it
 												locusMatrix = charactersManager.newCharacterData(taxa, 0, DNAData.DATATYPENAME); //this is manager of receiving project
 												locusMatrix.setName(locusName, false);
@@ -233,26 +353,61 @@ public class CombineFlippedFastas extends GeneralFileMakerMultiple {
 											 * Next, pull sequence into locus matrix 
 											 * Sequence on row iLocus of incomingFlippedMatrix corresponds to sequence for newTaxon in locusMatrix
 											 */
-											int incomingSeqLeng = incomingFlippedMatrix.lastApplicable(iLocus) + 1;
-											if (incomingSeqLeng>locusMatrix.getNumChars())
-												locusMatrix.addCharacters(locusMatrix.getNumChars(), incomingSeqLeng-locusMatrix.getNumChars(), false);
-											boolean doTransfer = true; //for now, always overwrite
+
+											/*
+											CharacterData.MERGE_useLongest
+											CharacterData.MERGE_preferReceiving
+											CharacterData.MERGE_preferIncoming
+											 */
+
 											if (existingTaxon){
-												if (incomingSeqLeng == 0)
-													doTransfer = false;
-												else {
-													for (int ic = 0; ic< locusMatrix.getNumChars(); ic++) //delete existing sequence to prepare to receive other
-														locusMatrix.setToInapplicable(ic, receivingTaxonNumber);
-													if (++countWarnings <10)
-														logln("Data in matrix " + locusMatrix.getName() + " replaced for taxon " + taxa.getTaxonName(receivingTaxonNumber));
-													else if (countWarnings == 10)
-														logln("Data replaced for other matrices or taxa as well");
+												int incomingSeqLeng = incomingFlippedMatrix.getTotalNumApplicable(iLocus, false);
+												if (incomingSeqLeng > 0){ 
+
+													int existingSeqLeng = locusMatrix.getTotalNumApplicable(receivingTaxonNumber, false);
+													boolean doTransfer = false;
+													if (existingSeqLeng>0 && !replacementQueried){
+														duplicateLocusNamesOptions();
+														replacementQueried = true;
+													}
+													
+													if (replacementRule == CharacterData.MERGE_preferReceiving) {
+														doTransfer = existingSeqLeng == 0 && incomingSeqLeng > 0;
+													}
+													else if (replacementRule == CharacterData.MERGE_preferIncoming){
+														doTransfer = incomingSeqLeng > 0;
+													}
+													else if (replacementRule == CharacterData.MERGE_useLongest)
+														doTransfer = existingSeqLeng < incomingSeqLeng;
+
+													if (doTransfer){
+														int incomingSeqLengNeeded = incomingFlippedMatrix.lastApplicable(iLocus) + 1;
+														if (incomingSeqLengNeeded>locusMatrix.getNumChars())
+															locusMatrix.addCharacters(locusMatrix.getNumChars(), incomingSeqLengNeeded-locusMatrix.getNumChars(), false);
+														for (int ic = 0; ic< locusMatrix.getNumChars(); ic++) //*%* delete existing sequence to prepare to receive other
+															locusMatrix.setToInapplicable(ic, receivingTaxonNumber);
+														for (int ic = 0; ic< locusMatrix.getNumChars() && ic< incomingFlippedMatrix.getNumChars(); ic++){
+															state = (DNAState)incomingFlippedMatrix.getCharacterState(state, ic, iLocus);
+															locusMatrix.setState(ic, receivingTaxonNumber, state);
+														}
+														if (existingSeqLeng>0){
+															if (++countWarnings <10)
+																logln("Data in matrix " + locusMatrix.getName() + " replaced for taxon " + taxa.getTaxonName(receivingTaxonNumber));
+															else if (countWarnings == 10)
+																logln("Data replaced for other matrices or taxa as well");
+														}
+													}
 												}
 											}
-											for (int ic = 0; ic< locusMatrix.getNumChars() && ic< incomingFlippedMatrix.getNumChars(); ic++){
-												state = (DNAState)incomingFlippedMatrix.getCharacterState(state, ic, iLocus);
-												locusMatrix.setState(ic, receivingTaxonNumber, state);
+											else {
+												int incomingSeqLengNeeded = incomingFlippedMatrix.lastApplicable(iLocus) + 1;
+												if (incomingSeqLengNeeded>locusMatrix.getNumChars())
+													locusMatrix.addCharacters(locusMatrix.getNumChars(), incomingSeqLengNeeded-locusMatrix.getNumChars(), false);
+												for (int ic = 0; ic< locusMatrix.getNumChars() && ic< incomingFlippedMatrix.getNumChars(); ic++){
+													state = (DNAState)incomingFlippedMatrix.getCharacterState(state, ic, iLocus);
+													locusMatrix.setState(ic, receivingTaxonNumber, state);
 
+												}
 											}
 										}
 										if (files.length<20)
@@ -271,16 +426,18 @@ public class CombineFlippedFastas extends GeneralFileMakerMultiple {
 				overallTime.end();
 				if (filesFound == 0){
 					if (okToInteractWithUser(CAN_PROCEED_ANYWAY, "No files found"))  
-						alert("No appropriate files with extensions (.fas or .fasta) were found in folder.");
+						alert("No appropriate files with extensions (" + getAcceptableFileExtensions() + ") were found in folder.");
 					else
-						discreetAlert("No appropriate files with extensions (.fas or .fasta) were found in folder.");
+						discreetAlert("No appropriate files with extensions (" + getAcceptableFileExtensions() + ") were found in folder.");
 				}
 				else
-					logln("Flipped Fastas read for " + files.length + " taxa; " + lociAdded + " different loci found. [" + overallTime.timeSinceLastInSeconds() + " sec.]" );
-
+					logln("Single-Taxon Fastas read for " + files.length + " taxa; " + lociAdded + " different loci found. [" + overallTime.timeSinceLastInSeconds() + " sec.]" );
 				MesquiteMessage.beep();
 				progIndicator.goAway();
 				project.developing = false;  //so the coordinator knows it's OK to dispose
+
+				getProject().setNotificationsOnOff(true);
+				getProject().getCentralModelListener().setNotificationsOnOff(true);
 				if (!taxaNew)
 					taxa.notifyListeners(this, new Notification(MesquiteListener.PARTS_ADDED));
 			}
@@ -324,7 +481,8 @@ public class CombineFlippedFastas extends GeneralFileMakerMultiple {
 			}
 			else
 				proj = null;
-			proj.developing = false;
+			if (proj !=null)
+				proj.developing = false;
 		}
 		decrementMenuResetSuppression();
 		return proj;
@@ -352,18 +510,23 @@ public class CombineFlippedFastas extends GeneralFileMakerMultiple {
 
 	/*.................................................................................................................*/
 	public String getName() {
-		return "Combine Flipped FASTA Files";
+		return "Combine Single-Taxon (Multi-Locus) FASTA Files";
 	}
 	/*.................................................................................................................*/
 	public String getNameForMenuItem() {
-		return "Combine Flipped FASTA Files (One per Taxon)";
+		return "Combine Single-Taxon (Multi-Locus) FASTA Files...";
 	}
 	/*.................................................................................................................*/
 	public String getExplanation() {
-		return "Reads taxa & sequences. Imports all \"flipped\" FASTA files in a folder, each containing the sequences of many loci for a single taxon, to establish and build a file with with all of the taxa and a matrix for each of those loci."
-				+" Each input file should be named by the taxon name, and each sequence should be named for its locus. As each file is read, sequences are matched by name to the locus matrices being accumulated."
-				+" Tuned for phylogenomics workflows that maintain a library of flipped fasta files that can be combined for varied studies with different taxon sampling. "
-				+" Flipped FASTA files can be produced using File, Export, Flipped FASTA files (One per taxon). (Note: to add to existing matrices, use Include Flipped FASTA Files in the Include & Merge submenu.)" ;
+		return "Reads taxa & sequences. Imports all single-taxon FASTA files in a folder. "
+				+"Each single-taxon FASTA file contains the sequences of many loci for a single taxon."
+				+" This import will compile a single file with all of the taxa and a matrix for each of those loci."
+				+" Each input file should be named by the taxon name, and each sequence within the file should be named for its locus. "
+				+" As each file is read, sequences are matched by name to the locus among those being accumulated."
+				+" Tuned for phylogenomics workflows that maintain a library of single-taxon fasta files that "
+				+"can be combined for varied studies with different taxon sampling. "
+				+" Single-taxon (multi-locus) FASTA files can be produced using File, Export, Single-Taxon (Multi-Locus) FASTA files."
+				+" (Note: to add to existing matrices, use Include Data from Single-Taxon (Multi-Locus) FASTAs in the Include & Merge submenu.)" ;
 	}
 
 

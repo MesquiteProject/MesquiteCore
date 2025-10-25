@@ -19,10 +19,7 @@ import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.Image;
 import java.awt.TextArea;
-import java.awt.event.FocusEvent;
-import java.awt.event.FocusListener;
-import java.awt.event.TextEvent;
-import java.awt.event.TextListener;
+import java.awt.event.*;
 
 import mesquite.assoc.lib.AssociationSource;
 import mesquite.assoc.lib.AssociationsManager;

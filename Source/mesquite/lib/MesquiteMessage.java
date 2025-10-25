@@ -24,6 +24,10 @@ These methods currently all call System.out.println, but will be differentiable 
 go only to the console, while others will bring up dialog boxes).*/
 public class MesquiteMessage extends Debugg {
 	
+	public static final int HIGH_PRIORITY = 0;
+	public static final int LOW_PRIORITY = 1;
+	public static final int VERY_LOW_PRIORITY = 2;
+
 	public static void warnProgrammer(String s) {
 		MesquiteThread.suspendThreadLogging();
 		MesquiteModule.showLogWindow(true);
@@ -32,6 +36,12 @@ public class MesquiteMessage extends Debugg {
 		else
 			System.out.println(s);
 		MesquiteThread.resumeThreadLogging();
+	}
+	public static void sys_err_println(String s) {
+		System.err.println(s);
+	}
+	public static void sys_err_print(String s) {
+		System.err.print(s);
 	}
 	public static void notifyProgrammer(String s) {
 		MesquiteThread.suspendThreadLogging();

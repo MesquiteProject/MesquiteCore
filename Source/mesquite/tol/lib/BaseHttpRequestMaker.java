@@ -42,6 +42,7 @@ import org.apache.commons.lang3.StringEscapeUtils;
 import org.dom4j.Document;
 import org.dom4j.io.SAXReader;
 
+import mesquite.lib.MesquiteMessage;
 import mesquite.lib.MesquiteTrunk;
 import mesquite.lib.StringUtil;
 
@@ -130,7 +131,7 @@ public class BaseHttpRequestMaker {
 			int statusCode = client.executeMethod(method);
 
 			if (statusCode != HttpStatus.SC_OK) {
-				System.err.println("Method failed: " + method.getStatusLine());
+				MesquiteMessage.sys_err_println("Method failed: " + method.getStatusLine());
 			}
 
 			// Read the response body.
@@ -144,11 +145,11 @@ public class BaseHttpRequestMaker {
 				System.out.println(new String(responseBody));
 
 		} catch (HttpException e) {
-			//  System.err.println("Fatal protocol violation: " + e.getMessage());
+			//  MesquiteMessage.sys_err_println("Fatal protocol violation: " + e.getMessage());
 			// e.printStackTrace();
 			success = false;
 		} catch (IOException e) {
-			//  System.err.println("Fatal transport error: " + e.getMessage());
+			//  MesquiteMessage.sys_err_println("Fatal transport error: " + e.getMessage());
 			//  e.printStackTrace();
 			success = false;
 		} finally {
@@ -324,7 +325,7 @@ public class BaseHttpRequestMaker {
 			doc = new SAXReader().read(new ByteArrayInputStream(bytes));
 			return doc;
 		} catch (Exception e) {
-			System.err.println(" bad bytes are: " + new String(bytes));
+			MesquiteMessage.sys_err_println(" bad bytes are: " + new String(bytes));
 			return null;
 		}    	
 	}
@@ -381,9 +382,9 @@ public class BaseHttpRequestMaker {
 					// execute the method.
 					statusCode = client.executeMethod(getMethod);
 				} catch (HttpRecoverableException e) {
-					System.err.println("A recoverable exception occurred, retrying.  " + e.getMessage());
+					MesquiteMessage.sys_err_println("A recoverable exception occurred, retrying.  " + e.getMessage());
 				} catch (IOException e) {
-					System.err.println("Failed to download file.");
+					MesquiteMessage.sys_err_println("Failed to download file.");
 					e.printStackTrace();
 					break;
 				}
@@ -424,7 +425,7 @@ public class BaseHttpRequestMaker {
 					returnValue = new Object[] {stream, getMethod};
 				}
 			} else {
-				System.err.println("bad status code is: " + statusCode);
+				MesquiteMessage.sys_err_println("bad status code is: " + statusCode);
 				returnValue = null;
 			}
 		} catch (Exception e) {

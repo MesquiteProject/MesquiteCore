@@ -128,7 +128,7 @@ public class DNACharacterHistory extends CategoricalHistory {
 	}
 	/*..........................................  DNACharacterHistory  ..................................................*/
 	public int getLegendStates(Color[] cs, String[] stateNames, Point[] tableMappings, MesquiteColorTable stateColors) {
-		if (cs==null || stateNames == null)
+		if (cs==null || stateNames == null || stateColors == null)
 			return 0;
 		int colorCount=0;
 		long s = allStates;

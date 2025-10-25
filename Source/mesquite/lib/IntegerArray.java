@@ -103,6 +103,20 @@ public class IntegerArray  implements Listable  {
 		}
 	}
 	/*...........................................................*/
+	public void increment(int index) {
+		if (legalIndex(index)){
+			if (MesquiteInteger.isCombinable(values[index]))
+				values[index]++;
+		}
+	}
+	/*...........................................................*/
+	public void decrement(int index) {
+		if (legalIndex(index)){
+			if (MesquiteInteger.isCombinable(values[index]))
+				values[index]--;
+		}
+	}
+	/*...........................................................*/
 	public void setValues(int[] values) {
 		if (values==null)
 			this.values = new int[0];

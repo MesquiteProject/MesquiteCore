@@ -74,6 +74,11 @@ public class NEXUSFileParser {
 			}
 		}
 	}
+	/*  -------------------------------------------------------------  */
+	/* gets the local parser */
+	public Parser getParser() {
+		return parser;
+	}
 
 	/*  -------------------------------------------------------------  */
 	/* gets the local parser, including at least current in the file, at current position */

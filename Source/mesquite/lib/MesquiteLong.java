@@ -80,12 +80,12 @@ public class MesquiteLong implements Listable, Nameable {
 	}
 	
 	public static void listConstants() { //so that setting can be done in line whether or not null
-		System.err.println("MesquiteLong constants:");
-		System.err.println("  unassigned " + unassigned);
-		System.err.println("  impossible " + impossible);
-		System.err.println("  infinite " + infinite);
-		System.err.println("  negInfinite " + negInfinite);
-		System.err.println("  inapplicable " + inapplicable);
+		MesquiteMessage.sys_err_println("MesquiteLong constants:");
+		MesquiteMessage.sys_err_println("  unassigned " + unassigned);
+		MesquiteMessage.sys_err_println("  impossible " + impossible);
+		MesquiteMessage.sys_err_println("  infinite " + infinite);
+		MesquiteMessage.sys_err_println("  negInfinite " + negInfinite);
+		MesquiteMessage.sys_err_println("  inapplicable " + inapplicable);
 		
 	}
 

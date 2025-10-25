@@ -28,6 +28,7 @@ import mesquite.lib.MesquiteInteger;
 import mesquite.lib.MesquiteMessage;
 import mesquite.lib.MesquiteModule;
 import mesquite.lib.MesquiteString;
+import mesquite.lib.MesquiteTrunk;
 import mesquite.lib.NameReference;
 import mesquite.lib.Parser;
 import mesquite.lib.StringUtil;
@@ -242,6 +243,11 @@ public class TreeUtil {
 	/*.................................................................................................................*/
 	//reading arguments can include dialect hints, e.g. @newickDialect.MrBayes, @newickDialect.ASTRAL, @newickDialect.DELINEATE, etc.
 	public static TreeVector readNewickTreeFile (MesquiteFile file, String line, Taxa taxa, boolean permitTaxaBlockEnlarge, boolean enableT0Names, TaxonNamer namer, String arguments, String treeNameBase) {
+		return readNewickTreeFile(file, line, taxa, permitTaxaBlockEnlarge, enableT0Names, namer,arguments, treeNameBase, true);
+	}
+	/*.................................................................................................................*/
+	//reading arguments can include dialect hints, e.g. @newickDialect.MrBayes, @newickDialect.ASTRAL, @newickDialect.DELINEATE, etc.
+	public static TreeVector readNewickTreeFile (MesquiteFile file, String line, Taxa taxa, boolean permitTaxaBlockEnlarge, boolean enableT0Names, TaxonNamer namer, String arguments, String treeNameBase, boolean logIfDialect) {
 		TreeVector trees = null;
 
 		Parser parser = new Parser(arguments);
@@ -249,7 +255,7 @@ public class TreeUtil {
 		if (dialect == null)
 			dialect = "Default";
 
-		if (dialect != null)
+		if (dialect != null && logIfDialect)
 			MesquiteMessage.println("Trees read assuming Newick dialect: " + dialect);
 		Parser treeParser = new Parser();
 		treeParser.setQuoteCharacter((char)0);

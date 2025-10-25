@@ -210,6 +210,8 @@ public abstract class TreeInferer extends TreeBlockFiller {
 		listened.removeListener(listener);
 	}
 	
+	//FOR CONSENSUS intermediate tree window, see ZephyrRunner.prepareConsensusWindow
+	
 	boolean needToSizeDisplay = true;
 	protected void newResultsAvailable(TaxaSelectionSet outgroupSet){
 		MesquiteString title = new MesquiteString();

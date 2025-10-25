@@ -695,7 +695,7 @@ public class PhoneHomeUtil {
 
 			}
 			if (MesquiteTrunk.developmentMode)
-				if (StringUtil.notEmpty(notices.toString())) System.err.println("Notice from server:\n" + notices);
+				if (StringUtil.notEmpty(notices.toString())) MesquiteMessage.sys_err_println("Notice from server:\n" + notices);
 			// process other tags if they are there
 			return notices.toString();
 

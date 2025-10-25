@@ -54,6 +54,7 @@ public class MesquiteThread extends Thread implements CommandRecordHolder {
 	public static int numFilesBeingRead =0;
 	boolean readingThread = false;
 	public boolean resetUIOnMe = true;
+	
 	public static String SEPARATETHREADHELPMESSAGE = "If you use a separate thread, you will then regain control of Mesquite once the process starts."+
 			" This has the advantage that it will allow you to continue to use Mesquite.  However, it is dangerous, as you can alter aspects of your data that will eventually cause problems for the separate process.";
 	static int numInst = 1;
@@ -61,6 +62,8 @@ public class MesquiteThread extends Thread implements CommandRecordHolder {
 		threads = new Vector(10);
 		doomedIndicators = new ListableVector(10);
 	}
+	public String statusMessage = ""; //this can be used to record where execution is etc., in case helpful for debugging
+	
 	public MesquiteThread () {
 		super();
 		threads.addElement(this);
@@ -86,6 +89,27 @@ public class MesquiteThread extends Thread implements CommandRecordHolder {
 		String c = t.getClass().getName();
 		return (c.indexOf("mesquite.")>=0);
 	}
+	
+	int logLevel = Integer.MAX_VALUE;
+	public static void releaseThreadMaxLogLevel(){
+		if (Thread.currentThread() instanceof MesquiteThread){
+			MesquiteThread thread = (MesquiteThread)Thread.currentThread();
+			thread.logLevel = Integer.MAX_VALUE;
+		}
+	}
+	public static void setThreadMaxLogLevel(int maxLevel){
+		if (Thread.currentThread() instanceof MesquiteThread){
+			MesquiteThread thread = (MesquiteThread)Thread.currentThread();
+			thread.logLevel = maxLevel;
+		}
+	}
+	public static int getThreadMaxLogLevel(){
+		if (Thread.currentThread() instanceof MesquiteThread){
+			MesquiteThread thread = (MesquiteThread)Thread.currentThread();
+			return thread.logLevel;
+		}
+		return Integer.MAX_VALUE;
+	}
 
 	public static void shouldBeOnMesquiteThread(boolean enable) {
 		if (!acceptNonMesquiteThreads && enable && !isThreadBelongingToMesquite() && (MesquiteTrunk.developmentMode || MesquiteTrunk.debugMode))
@@ -100,6 +124,18 @@ public class MesquiteThread extends Thread implements CommandRecordHolder {
 	public String toString(){
 		return getClass().getName() + " = " + super.toString();
 	}
+	public String getThreadName(){
+		return toString();
+	}
+	public static String getCurrentThreadName(){
+		Thread t = Thread.currentThread();
+		if (t instanceof MesquiteThread){
+			MesquiteThread mt = ((MesquiteThread)t);
+			return mt.getThreadName();
+		}
+		return t.toString();
+	}
+	
 	public static boolean okToResetUI(){
 		Thread thread = Thread.currentThread();
 		if (!(thread instanceof MesquiteThread))

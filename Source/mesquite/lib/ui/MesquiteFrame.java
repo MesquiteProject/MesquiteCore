@@ -41,6 +41,7 @@ import java.util.Vector;
 
 import mesquite.lib.CommandChecker;
 import mesquite.lib.Commandable;
+import mesquite.lib.Debugg;
 import mesquite.lib.MesquiteCommand;
 import mesquite.lib.MesquiteEvent;
 import mesquite.lib.MesquiteFile;

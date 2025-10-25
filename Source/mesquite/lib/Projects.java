@@ -108,9 +108,12 @@ public class Projects implements HNode {
 	}
 	/** Remove project from list of projects.  The File Coordinator is responsible for disposing of the files within the project. */
 	public void removeProject(MesquiteProject project) {
+		long t = System.currentTimeMillis();
 		projects.removeElement(project, false);
+		t = System.currentTimeMillis();
 		projectsRemoved++;
 		resetColorsAvailable();
+		t = System.currentTimeMillis();
 		MesquiteTrunk.mesquiteTrunk.refreshBrowser(MesquiteProject.class);
 	}
 	/** For HNode interface; returns projects themselves */

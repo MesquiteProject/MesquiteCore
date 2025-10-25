@@ -69,7 +69,7 @@ public class MesquiteFile extends Listened implements HNode, Commandable, Listab
 	public static final int LINKED = 0;
 	public static final int INCLUDED = 1;
 	public static final int HOME = -1;
-
+	public static String defaultEncoding = "ISO-8859-1";
 	public static boolean suppressReadWriteLogging = false;
 
 	private boolean local = true;
@@ -158,7 +158,7 @@ public class MesquiteFile extends Listened implements HNode, Commandable, Listab
 		nextBlockTimer = new MesquiteTimer();
 		readLineTimer = new MesquiteTimer();
 		try {
-			lineEndingBytes = StringUtil.lineEnding().getBytes("ISO-8859-1");
+			lineEndingBytes = StringUtil.lineEnding().getBytes(defaultEncoding);
 		}
 		catch (UnsupportedEncodingException e){
 			lineEndingBytes = StringUtil.lineEnding().getBytes();
@@ -585,6 +585,7 @@ public class MesquiteFile extends Listened implements HNode, Commandable, Listab
 		}
 		catch(InterruptedException e){}
 		boolean dirty = false;
+		long t = System.currentTimeMillis();
 		try {
 			if (fileElements!=null){
 				project.incrementProjectWindowSuppression();
@@ -593,6 +594,8 @@ public class MesquiteFile extends Listened implements HNode, Commandable, Listab
 				int numDisposed=0;
 				int numToDispose = calcNumToDispose();
 				boolean didOne;
+				t = System.currentTimeMillis();
+				
 				while (numToDispose>0 /*&& lastNumToDispose != numToDispose*/) {
 					didOne=false;
 					numToDispose = calcNumToDispose();
@@ -608,13 +611,14 @@ public class MesquiteFile extends Listened implements HNode, Commandable, Listab
 								MesquiteMessage.warnProgrammer("oops, deleted element not marked as doomed");
 							numDisposed++;
 							project.removeFileElement(elem);
-							numToDispose--;
+						numToDispose--;
 							didOne = true;
 						}
 						if (!didOne)
 							MesquiteMessage.warnProgrammer("oops, cycle none disposed");
 					}
 				}
+				t = System.currentTimeMillis();
 				if (numElements!= numDisposed && fileElements.size()>0) {
 					MesquiteMessage.warnProgrammer("Number elements disposed (" + numDisposed + ") not same as number reference (" + numElements + ") in file " + getName());
 					Enumeration eDe = fileElements.elements();
@@ -624,20 +628,28 @@ public class MesquiteFile extends Listened implements HNode, Commandable, Listab
 							MesquiteMessage.warnProgrammer("    Not disposed: " + elem.getName() + " of class " + elem.getClass().getName());
 					}
 				}
+				t = System.currentTimeMillis();
 				fileElements.removeAllElements(false);
 				fileElements.dispose();
 				fileElements = null;
 				project.decrementProjectWindowSuppression();
+				t = System.currentTimeMillis();
 			}
-		}
+		
+	}
 		catch (NullPointerException e){
+
 		}
-		project.removeFile(this);
+		
+		if (project != null)
+			project.removeFile(this);
+		t = System.currentTimeMillis();
 		closed = true;
 		project = null;
 		MesquiteTrunk.mesquiteTrunk.resetAllMenuBars();
 		totalDisposed++;
 		dispose();
+		t = System.currentTimeMillis();
 		return true;
 	}
 
@@ -971,6 +983,8 @@ public class MesquiteFile extends Listened implements HNode, Commandable, Listab
 		return project;
 	}
 	/*-------------------------------------------------------*/
+	public static int filesOpenTotal = 0;
+	/*-------------------------------------------------------*/
 	/** Opens the file for reading.*/
 	public boolean openReading(boolean warn) {
 		remnantString.setLength(0);
@@ -980,6 +994,7 @@ public class MesquiteFile extends Listened implements HNode, Commandable, Listab
 				filePos = 0;
 				currentByte = 0;
 				bytesAvailable = 0;
+				filesOpenTotal++;
 				return true;
 			}
 			catch( FileNotFoundException e ) {
@@ -1002,6 +1017,7 @@ public class MesquiteFile extends Listened implements HNode, Commandable, Listab
 					filePos = 0;
 					currentByte = 0;
 					bytesAvailable = 0;
+					filesOpenTotal++;
 					return true;
 				}
 				catch( IOException e ) {
@@ -1022,6 +1038,7 @@ public class MesquiteFile extends Listened implements HNode, Commandable, Listab
 			}*/
 
 		}
+		closeReading();
 		return false;
 	}
 	/*-------------------------------------------------------*/
@@ -1040,6 +1057,7 @@ public class MesquiteFile extends Listened implements HNode, Commandable, Listab
 			progIndicator = null;
 			if (inStream!=null){
 				inStream.close();
+				filesOpenTotal--;
 			}
 			inStream = null;
 			filePos = 0;
@@ -1111,6 +1129,7 @@ public class MesquiteFile extends Listened implements HNode, Commandable, Listab
 			else
 			 */
 			outStream = new FileOutputStream(new File(tempFileName));  //PrintWriter
+			filesOpenTotal++;
 			return true;
 		}
 		catch( FileNotFoundException e ) {
@@ -1131,7 +1150,7 @@ public class MesquiteFile extends Listened implements HNode, Commandable, Listab
 		if (outStream!=null){
 			try {
 				for (int i= 0; i<s.getNumStrings(); i++){
-					byte[] sBytes = s.getBytes("ISO-8859-1", i);
+					byte[] sBytes = s.getBytes(defaultEncoding, i);
 
 					outStream.write(sBytes); 
 				}
@@ -1146,12 +1165,11 @@ public class MesquiteFile extends Listened implements HNode, Commandable, Listab
 	}
 	/*-------------------------------------------------------*/
 	/** Write string to file and add newline character. */
-	public void writeLine(String s)
-	{	
+	public void writeLine(String s) {	
 		if (outStream!=null){
 			try {
 
-				byte[] sBytes = s.getBytes("ISO-8859-1");
+				byte[] sBytes = s.getBytes(defaultEncoding);
 
 				outStream.write(sBytes); 
 				outStream.write(lineEndingBytes); //was '\n'
@@ -1168,7 +1186,7 @@ public class MesquiteFile extends Listened implements HNode, Commandable, Listab
 	{	
 		if (outStream!=null){
 			try {
-				byte[] sBytes = s.getBytes("ISO-8859-1");
+				byte[] sBytes = s.getBytes(defaultEncoding);
 
 				outStream.write(sBytes); 
 				outStream.flush();
@@ -1190,6 +1208,7 @@ public class MesquiteFile extends Listened implements HNode, Commandable, Listab
 		if (outStream!=null){
 			try {
 				outStream.close();
+				filesOpenTotal--;
 				if (writingFileName == null)
 					return;
 				File writingFile = new File(writingFileName);
@@ -2168,6 +2187,7 @@ public class MesquiteFile extends Listened implements HNode, Commandable, Listab
 		}
 		return null;
 	}
+	
 	/*.................................................................................................................*/
 	/** Adds the passed FileElement to the file. */
 	public void addFileElement(FileElement element) {
@@ -2739,24 +2759,37 @@ public class MesquiteFile extends Listened implements HNode, Commandable, Listab
 
 		return null;
 	}
+	public static String[][] getTabDelimitedTextFile(String relativePath, boolean warn) {
+		return getTabDelimitedTextFile(relativePath, warn, false);
+	}
 	/*.................................................................................................................*/
 	/** Returns the contents of the file.  path is relative to the root of the package heirarchy; i.e. for file in
 	a module's folder, indicate "mesquite/modules/moduleFolderName/fileName" */
-	public static String[][] getTabDelimitedTextFile(String relativePath, boolean warn) {
+	public static String[][] getTabDelimitedTextFile(String relativePath, boolean warn, boolean ignoreLinesStartingPound) {
 		DataInputStream stream;
 		Vector v = new Vector();
 		String[][] s = null;
+		Parser parser = new Parser();
 		StringBuffer sBb= new StringBuffer(100);
 		MesquiteInteger remnant = new MesquiteInteger(-1);
 		if (!MesquiteTrunk.isApplet()) {
 			try {
 				stream = new DataInputStream(new FileInputStream(relativePath));
 				String newS = " ";
+				filesOpenTotal++;
 
 				while (newS != null) {
 					newS =readLine(stream, sBb, remnant);
-					if (newS != null)
+					if (newS != null){
+						if (ignoreLinesStartingPound){
+							parser.setString(newS);
+							if (parser.nextDarkChar() != '#')
+								v.addElement(newS);
+
+						}
+						else
 						v.addElement(newS);
+					}
 				}
 				if (v.size()!=0) {
 					s = new String[v.size()][];
@@ -2769,6 +2802,7 @@ public class MesquiteFile extends Listened implements HNode, Commandable, Listab
 					}
 				}
 				stream.close();
+				filesOpenTotal--;
 			}
 			catch( FileNotFoundException e ) {
 				if (warn) MesquiteMessage.warnProgrammer("File Busy or Not Found (z5) : " + relativePath);

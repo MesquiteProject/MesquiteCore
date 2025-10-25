@@ -11,24 +11,17 @@ Mesquite's web site is http://mesquiteproject.org
 This source code and its compiled class files are free and modifiable under the terms of 
 GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
 */
-package mesquite.categ.lib;
+package mesquite.lib.parallel;
 
-import mesquite.lib.CompatibilityTest;
-import mesquite.lib.duties.DataSearcher;
-
+import mesquite.lib.MesquiteModule;
 
 /* ======================================================================== */
-/**This is superclass of modules to alter a data matrix.*/
-
-public abstract class DNADataSearcher extends DataSearcher  {
-   	 public Class getDutyClass() {
-   	 	return DNADataSearcher.class;
-   	 }
-	/*.................................................................................................................*/
-	/** Returns CompatibilityTest so other modules know if this is compatible with some object. */
-	public CompatibilityTest getCompatibilityTest(){
-		return new RequiresAnyDNAData();
-	}
+/** */
+public class ParallelParams {
+	public MesquiteModule responsibleEmployer;
+	public MesquiteModule[] employees; //employees hired just for one thread
+	public Object[] ownerObjects; //For various objects, e.g. the base set of values to compare with those from each item. Could also contain parameter settings for item, but owner Parallelizable can simply use constant params throughout
+	public Object[] threadObjects; //For various objects the thread wants to keep distinct for it, e.g. a tree that that thread object is using
 
 }
 

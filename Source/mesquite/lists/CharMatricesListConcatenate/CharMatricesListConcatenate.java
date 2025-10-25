@@ -61,7 +61,7 @@ public class CharMatricesListConcatenate extends CharMatricesListProcessorUtilit
 		}
 		return true;
 	}
-	
+
 	/*.................................................................................................................*/
 	public void processSingleXMLPreference(String tag, String content) {
 		if ("prefixGroupLabelNames".equalsIgnoreCase(tag))
@@ -94,21 +94,21 @@ public class CharMatricesListConcatenate extends CharMatricesListProcessorUtilit
 	}
 	/*.................................................................................................................*/
 	public Object doCommand(String commandName, String arguments, CommandChecker checker) {
-		 if (checker.compare(this.getClass(), "Sets whether or not to remove concatenated matrices.", "[on or off]", commandName, "setRemoveConcatenated")) {
+		if (checker.compare(this.getClass(), "Sets whether or not to remove concatenated matrices.", "[on or off]", commandName, "setRemoveConcatenated")) {
 			boolean current = removeConcatenated.getValue();
 			removeConcatenated.toggleValue(parser.getFirstToken(arguments));
 			if (current!=removeConcatenated.getValue()) {
 				parametersChanged();
 			}
 		}
-		 else if (checker.compare(this.getClass(), "Sets whether or not to remove concatenated matrices.", "[on or off]", commandName, "setPrefixGroupLabelNames")) {
+		else if (checker.compare(this.getClass(), "Sets whether or not to previx group label names.", "[on or off]", commandName, "setPrefixGroupLabelNames")) {
 			boolean current = prefixGroupLabelNames.getValue();
 			prefixGroupLabelNames.toggleValue(parser.getFirstToken(arguments));
 			if (current!=prefixGroupLabelNames.getValue()) {
 				parametersChanged();
 			}
 		}
-		 else if (checker.compare(this.getClass(), "Sets whether or not to remove concatenated matrices.", "[on or off]", commandName, "setConcatExcludedCharacters")) {
+		else if (checker.compare(this.getClass(), "Sets whether or not to remove excluded characters.", "[on or off]", commandName, "setConcatExcludedCharacters")) {
 			boolean current = concatExcludedCharacters.getValue();
 			concatExcludedCharacters.toggleValue(parser.getFirstToken(arguments));
 			if (current!=concatExcludedCharacters.getValue()) {
@@ -219,8 +219,8 @@ public class CharMatricesListConcatenate extends CharMatricesListProcessorUtilit
 						name = name + "+";
 					name = name + "(" + data.getName() + ")";
 					if (removeConcatenated.getValue()){
-							data.deleteMe(false);
-							deleted++;
+						data.deleteMe(false);
+						deleted++;
 					}
 				}
 				else 
@@ -229,10 +229,10 @@ public class CharMatricesListConcatenate extends CharMatricesListProcessorUtilit
 
 			for (int im = 0; im < chunks.size(); im++){
 				CharacterData ch = (CharacterData)chunks.elementAt(im);
-			boolean success = starter.concatenate(ch, false, concatExcludedCharacters.getValue(), true, false, false, false);
-			ch.deleteMe(false);
+				boolean success = starter.concatenate(ch, false, concatExcludedCharacters.getValue(), true, false, false, false);
+				ch.deleteMe(false);
 			}
-			
+
 		}
 		else for (int im = 0; im < datas.size(); im++){
 			found = true;
@@ -251,8 +251,8 @@ public class CharMatricesListConcatenate extends CharMatricesListProcessorUtilit
 					name = name + "+";
 				name = name + "(" + data.getName() + ")";
 				if (removeConcatenated.getValue()){
-						data.deleteMe(false);
-						deleted++;
+					data.deleteMe(false);
+					deleted++;
 				}
 			}
 			else 
@@ -260,7 +260,7 @@ public class CharMatricesListConcatenate extends CharMatricesListProcessorUtilit
 
 		}
 		if (numMatrices>10)
-				name = "Concat. (" + count +")";
+			name = "Concat. (" + count +")";
 		logln("Total matrices concatenated: " + count);
 		if (starter != null)
 			starter.setName(name);

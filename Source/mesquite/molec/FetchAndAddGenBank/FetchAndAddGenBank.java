@@ -120,7 +120,7 @@ public class FetchAndAddGenBank extends DataUtility {
 	}
 	/*.................................................................................................................*/
 	public String getNameForMenuItem() {
-		return "Fetch & Add GenBank Sequences...";
+		return "Fetch & Add GenBank Sequences via Accession Numbers...";
 	}
 	/*.................................................................................................................*/
 	public String getName() {

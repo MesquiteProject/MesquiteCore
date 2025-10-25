@@ -1,0 +1,10 @@
+<?xml version="1.0"?>
+<mesquite>
+	<humanName>mcmctree (PAML)</humanName> <!-- required -->
+	<internalName>mcmctree</internalName> <!-- required -->
+	<replacement> 
+		<before>95%HPD</before>
+		<after>height_95%_HPD</after>
+	</replacement> 
+</mesquite>
+

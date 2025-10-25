@@ -33,6 +33,7 @@ public class IncludeTreeFilePartial extends FileAssistantTM {
 	/*.................................................................................................................*/
 	public boolean startJob(String arguments, Object condition, boolean hiredByName) {
 		includePartialTreeFile();
+		iQuit();
 		return true;
 	}
 	/*-----------------------------------------------------------------*/

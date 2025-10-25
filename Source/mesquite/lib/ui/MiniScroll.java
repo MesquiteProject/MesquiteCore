@@ -391,7 +391,10 @@ public class MiniScroll extends MousePanel implements MiniControl, Explainable, 
 	public void setCurrentValue (int i) {  
 		if (i<=maxValue && (i>=minValue)) {
 			currentValue=MesquiteInteger.toLong(i);
-			tf.setText(Integer.toString((int)currentValue));
+			if (!MesquiteInteger.isCombinable(i))
+				tf.setText("***");
+			else
+				tf.setText(Integer.toString((int)currentValue));
 			if (lockedDisabled)
 				return;
 			decrementButton.setEnabled(currentValue>minValue);
@@ -404,6 +407,9 @@ public class MiniScroll extends MousePanel implements MiniControl, Explainable, 
 	public void setCurrentValueLong (long i) {  
 		if (i<=maxValue && (i>=minValue)) {
 			currentValue=i;
+			if (!MesquiteLong.isCombinable(i))
+				tf.setText("***");
+			else
 			tf.setText(Long.toString(currentValue));
 			if (lockedDisabled)
 				return;
@@ -497,7 +503,13 @@ public class MiniScroll extends MousePanel implements MiniControl, Explainable, 
 		if (command!=null) {
 			currentValue=maxValue;
 			command.doItMainThread(Long.toString(currentValue), CommandChecker.getQueryModeString("Mini scroll", command, this), this);
-			tf.setText(Long.toString(currentValue));
+			if (!MesquiteLong.isCombinable(currentValue))
+				tf.setText("***");
+			else
+				if (!MesquiteInteger.isCombinable((int)currentValue))
+					tf.setText("***");
+				else
+					tf.setText(Long.toString(currentValue));
 			if (lockedDisabled)
 				return;
 			decrementButton.setEnabled(currentValue>minValue);

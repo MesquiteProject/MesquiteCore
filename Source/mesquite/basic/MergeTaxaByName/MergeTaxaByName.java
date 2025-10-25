@@ -93,7 +93,7 @@ public class MergeTaxaByName extends TaxonUtility {
 
 		boolean atLeastOneMerger = false;
 		StringBuffer report = new StringBuffer();
-		boolean ok = mergeTask.queryOptions(taxa, null, false, "Merge Taxa With Matching Name Components", false);
+		boolean ok = mergeTask.queryOptions(taxa, null, false, "Merge Taxa With Matching Name Components", false, true);
 		if (!ok)
 			return false;
 		boolean[] selected = new boolean[taxa.getNumTaxa()];
@@ -126,8 +126,8 @@ public class MergeTaxaByName extends TaxonUtility {
 					//======================
 					if (result == ResultCodes.SUCCEEDED) {
 						atLeastOneMerger = true;
-						logln(report.toString());
 					}
+					logln(report.toString());
 				}
 			}
 

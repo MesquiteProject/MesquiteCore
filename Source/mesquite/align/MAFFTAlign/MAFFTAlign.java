@@ -8,6 +8,7 @@ import java.awt.event.ItemListener;
 import mesquite.align.lib.ExternalSequenceAligner;
 import mesquite.categ.lib.MolecularData;
 import mesquite.lib.CommandChecker;
+import mesquite.lib.Debugg;
 import mesquite.lib.MesquiteBoolean;
 import mesquite.lib.MesquiteFile;
 import mesquite.lib.MesquiteInteger;
@@ -69,7 +70,7 @@ public class MAFFTAlign extends ExternalSequenceAligner implements ItemListener{
 			temp = new Snapshot();
 		temp.addLine("setAlignmentMethod " + alignmentMethod);  
 		temp.addLine("setAlignmentMethodText " + ParseUtil.tokenize(alignmentMethodText));  
-		temp.addLine("setUseMaxCores " + useMaxCores);
+		temp.addLine("setUseMaxCores " + letMAFFTChooseCores);
 		temp.addLine("optionsSet");
 		return temp;
 	}
@@ -84,7 +85,7 @@ public class MAFFTAlign extends ExternalSequenceAligner implements ItemListener{
 				alignmentMethodText = temp;
 		}
 		else if (checker.compare(this.getClass(), "Sets whether to use maximum number of cores", "[true or false]", commandName, "setUseMaxCores")) {
-			useMaxCores = MesquiteBoolean.fromTrueFalseString(parser.getFirstToken(arguments));
+			letMAFFTChooseCores = MesquiteBoolean.fromTrueFalseString(parser.getFirstToken(arguments));
 		}
 		else if (checker.compare(this.getClass(), "Records that options set", "", commandName, "optionsSet")) {
 			optionsAlreadySet = true;
@@ -103,7 +104,7 @@ public class MAFFTAlign extends ExternalSequenceAligner implements ItemListener{
 			alignmentMethodText = StringUtil.cleanXMLEscapeCharacters(content);
 		}
 		else if ("useMaxCores".equalsIgnoreCase(tag))
-			useMaxCores = MesquiteBoolean.fromTrueFalseString(content);
+			letMAFFTChooseCores = MesquiteBoolean.fromTrueFalseString(content);
 
 		super.processSingleXMLPreference(tag, content);
 	}
@@ -112,7 +113,7 @@ public class MAFFTAlign extends ExternalSequenceAligner implements ItemListener{
 		StringBuffer buffer = new StringBuffer(200);
 		StringUtil.appendXMLTag(buffer, 2, "alignmentMethod", alignmentMethod);  
 		StringUtil.appendXMLTag(buffer, 2, "alignmentMethodText", alignmentMethodText);  
-		StringUtil.appendXMLTag(buffer, 2, "useMaxCores", useMaxCores);  
+		StringUtil.appendXMLTag(buffer, 2, "useMaxCores", letMAFFTChooseCores);  
 
 		return super.preparePreferencesForXML()+buffer.toString();
 	}
@@ -144,10 +145,10 @@ public class MAFFTAlign extends ExternalSequenceAligner implements ItemListener{
 	static final int NWNSI = 8; 
 	static final int NWNS2 = 9; 
 	static final int NWNSPT1 = 10; 
-	boolean useMaxCores = true;
+	boolean letMAFFTChooseCores = true;
 	int alignmentMethod = DEFAULTSUGGESTEDMETHOD;
 	String alignmentMethodText = "";
-	Checkbox useMaxThreadsCheckBox;
+	Checkbox letMAFFTChooseCoresCheckBox;
 	Choice alignmentMethodChoice;
 	SingleLineTextField alignmentTextField;
 
@@ -204,7 +205,8 @@ public class MAFFTAlign extends ExternalSequenceAligner implements ItemListener{
 	}
 /*.................................................................................................................*/
 	public void queryProgramOptions(ExtensibleDialog dialog) {
-		useMaxThreadsCheckBox = dialog.addCheckBox("let MAFFT choose number of computer cores to use", useMaxCores);
+		if (howManyCoresMayIUse()>1)
+			letMAFFTChooseCoresCheckBox = dialog.addCheckBox("let MAFFT choose number of computer cores to use", letMAFFTChooseCores);
 		
 		alignmentMethodChoice = dialog.addPopUpMenu("Suggested Methods", new String[] {"Default",  "L-INS-i", "G-INSI-i", "E-INS-i", "FFT-NS-i 2", "FFT-NS-i 1000", "FFT-NS-2", "FFT-NS-1", "NW-NS-i", "NW-NS-2", "NW-NS-PartTree-1"}, alignmentMethod);
 		alignmentTextField = dialog.addTextField("Basic alignment method", alignmentMethodText, 40);
@@ -224,7 +226,8 @@ public class MAFFTAlign extends ExternalSequenceAligner implements ItemListener{
 	}
 	/*.................................................................................................................*/
 	public void processQueryProgramOptions(ExtensibleDialog dialog) {
-		useMaxCores = useMaxThreadsCheckBox.getState();
+		if (letMAFFTChooseCoresCheckBox!=null)
+			letMAFFTChooseCores = letMAFFTChooseCoresCheckBox.getState();
 		int temp = alignmentMethodChoice.getSelectedIndex();
 		if (temp>=0)
 			alignmentMethod = temp;
@@ -236,7 +239,7 @@ public class MAFFTAlign extends ExternalSequenceAligner implements ItemListener{
 	/*.................................................................................................................*/
 	public String getQueryProgramOptions() {
 		String options = "";
-		if (useMaxCores)
+		if (letMAFFTChooseCores)
 			options+=" --thread -1 ";
 		if (alignmentMethodText == null)
 			options += " ";

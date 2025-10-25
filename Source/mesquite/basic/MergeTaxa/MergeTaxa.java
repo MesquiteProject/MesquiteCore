@@ -47,9 +47,11 @@ public class MergeTaxa extends TaxonMerger {
 	int endLengthToKeep = 4;
 	boolean preferencesSet = false;
 
+	boolean refuseIfConflict = false;  //this is the one saved to preferences
 	boolean keepUnmergedTaxa = false;  //this is the one saved to preferences
 	boolean retainOriginals = false; //this is the temporary one sorted out during querying
 	boolean addMergedToName = true;
+	boolean addFootnoteWithOriginalNames = true;
 	boolean verboseReport = false;
 	/*.................................................................................................................*/
 	public boolean startJob(String arguments, Object condition, boolean hiredByName){
@@ -80,12 +82,16 @@ public class MergeTaxa extends TaxonMerger {
 				mergeRule = CharacterData.MERGE_blendMultistateAsPolymorphism;
 		} else  if ("addMergedToName".equalsIgnoreCase(tag)) {
 			addMergedToName = MesquiteBoolean.fromTrueFalseString(content);
+		} else  if ("addFootnoteWithOriginalNames".equalsIgnoreCase(tag)) {
+			addFootnoteWithOriginalNames = MesquiteBoolean.fromTrueFalseString(content);
 		} else  if ("verboseReport".equalsIgnoreCase(tag)) {
 			verboseReport = MesquiteBoolean.fromTrueFalseString(content);
 		}  else  if ("keepUnmergedTaxa".equalsIgnoreCase(tag)) {
 			keepUnmergedTaxa = MesquiteBoolean.fromTrueFalseString(content);
 		}  
-
+		else  if ("refuseIfConflict".equalsIgnoreCase(tag)) {
+			refuseIfConflict = MesquiteBoolean.fromTrueFalseString(content);
+		}  
 		preferencesSet = true;
 	}
 	/*.................................................................................................................*/
@@ -96,8 +102,10 @@ public class MergeTaxa extends TaxonMerger {
 		StringUtil.appendXMLTag(buffer, 2, "keepMode", keepMode);  
 		StringUtil.appendXMLTag(buffer, 2, "mergeRule", mergeRule);  
 		StringUtil.appendXMLTag(buffer, 2, "addMergedToName", addMergedToName);  
+		StringUtil.appendXMLTag(buffer, 2, "addFootnoteWithOriginalNames", addFootnoteWithOriginalNames);  
 		StringUtil.appendXMLTag(buffer, 2, "verboseReport", verboseReport);  
 		StringUtil.appendXMLTag(buffer, 2, "keepUnmergedTaxa", keepUnmergedTaxa);  
+		StringUtil.appendXMLTag(buffer, 2, "refuseIfConflict", refuseIfConflict);  
 
 		preferencesSet = true;
 		return buffer.toString();
@@ -111,11 +119,12 @@ public class MergeTaxa extends TaxonMerger {
 	public static final int MERGE_useLongest = 2;
 	public static final int MERGE_preferReceiving = 3;
 	public static final int MERGE_preferIncoming = 4;
+	public static final int MERGE_useNeither = 5;
 
 	 * */
 	int mergeRule = CharacterData.MERGE_useLongest;
 	/*.................................................................................................................*/
-	public boolean queryOptions(Taxa taxa, boolean[] toBeMerged, boolean formTaxonName, String dialogTitle, boolean permitRetainOriginals) {
+	public boolean queryOptions(Taxa taxa, boolean[] toBeMerged, boolean formTaxonName, String dialogTitle, boolean permitRetainOriginals, boolean permitRefuse) {
 
 		boolean nonCategFound = false;
 		int numMatricesWithMultiple = 0;
@@ -169,6 +178,7 @@ public class MergeTaxa extends TaxonMerger {
 		IntegerField startLengthToKeepField = null;
 		IntegerField endLengthToKeepField = null;
 		Checkbox addMergedToNameBox = null;
+		Checkbox refuseIfConflictBox = null;
 		if (formTaxonName){
 			queryDialog.addLabel("Name of merged taxon", Label.CENTER, true, true);
 			choices = queryDialog.addRadioButtons (new String[]{"Use first taxon's name", "Merge taxon names, retaining full length", "Merge taxon names, retaining partial names:"}, keepMode);
@@ -177,7 +187,7 @@ public class MergeTaxa extends TaxonMerger {
 
 			addMergedToNameBox = queryDialog.addCheckBox("Add \"merged\" to name if not done automatically", addMergedToName);
 		}
-
+		Checkbox addFootnoteWithOriginalNamesBox = queryDialog.addCheckBox("Record original names in footnote to taxa", addFootnoteWithOriginalNames);
 		queryDialog.addHorizontalLine(1);
 		Checkbox keepUnmergedTaxaBox = null;
 		if (permitRetainOriginals) {
@@ -185,8 +195,10 @@ public class MergeTaxa extends TaxonMerger {
 			queryDialog.addHorizontalLine(1);
 		}
 		queryDialog.addLabel("If multiple merged taxa have data for a matrix:",Label.LEFT);
-		RadioButtons mergeRulesRB = queryDialog.addRadioButtons(new String[]{"Blend data; treat multiple states as polymorphism", "Blend data; treat multiple states as uncertainty", "Use states of taxon with most data (e.g., longest sequence)", "Prefer states of first selected taxon", "Prefer states of taxa merged into it"}, mergeRule);
-
+		RadioButtons mergeRulesRB = queryDialog.addRadioButtons(new String[]{"Blend data; treat multiple states as polymorphism", "Blend data; treat multiple states as uncertainty", "Use states of taxon with most data (e.g., longest sequence)", "Prefer states of first selected taxon", "Prefer states of taxa merged into it", "Use none (i.e., merged taxon has blank sequence)"}, mergeRule);
+		if (permitRefuse){
+			refuseIfConflictBox = queryDialog.addCheckBox("Refuse to merge taxa if they have conflicting states in some matrices", refuseIfConflict);
+		}
 		if (StringUtil.notEmpty(matrixList)){
 			queryDialog.addHorizontalLine(1);
 			if (numMatricesWithMultiple>1)
@@ -215,10 +227,13 @@ public class MergeTaxa extends TaxonMerger {
 				endLengthToKeep = endLengthToKeepField.getValue();
 				addMergedToName = addMergedToNameBox.getState();
 			}
+			addFootnoteWithOriginalNames = addFootnoteWithOriginalNamesBox.getState();
 			mergeRule = mergeRulesRB.getValue();
 			verboseReport = verboseCB.getState();
 			if (permitRetainOriginals)
 				keepUnmergedTaxa = keepUnmergedTaxaBox.getState();
+			if (permitRefuse)
+				refuseIfConflict = refuseIfConflictBox.getState();
 			storePreferences();
 		}
 		retainOriginals = keepUnmergedTaxa && permitRetainOriginals;
@@ -246,15 +261,27 @@ public class MergeTaxa extends TaxonMerger {
 			}
 		String originalTaxonName = taxa.getTaxonName(firstSelected);
 
-		StringBuffer sb = new StringBuffer();
-		String mergedNames = "Merger of " + numSelected +":";
+		String mergedNames = "";
 		for (int it = 0; it<taxa.getNumTaxa(); it++) 
 			if (selected[it]) {
 				if (it != firstSelected)
 					mergedNames += ",";
 				mergedNames += " " + taxa.getTaxonName(it);
 			}
-		
+		if (refuseIfConflict){
+			for (int iM = 0; iM < numMatrices; iM++){
+				CharacterData data = getProject().getCharacterMatrix(taxa, iM);
+				boolean conflict = data.conflictingStatesIfMerged(firstSelected, selected);
+				if (conflict && reportRecord!=null){
+					reportRecord.append("Conflict in matrix \"" + data.getName() + "\" prevented merging of " + mergedNames);
+					return false;
+				}
+			}
+		}
+
+		StringBuffer sb = new StringBuffer();
+		mergedNames = "Merger of " + numSelected +":" + mergedNames;
+
 		if (taxonName == null){
 			//now let's merge the taxon names
 			int count=0;
@@ -312,12 +339,15 @@ public class MergeTaxa extends TaxonMerger {
 						else
 							report += "For matrix \"" + data.getName() + "\", states of the following taxa may have been discarded when merging with taxon \"" + originalTaxonName + "\":\n";
 					}
+					else if (mergeRule == CharacterData.MERGE_useNeither) {
+						report += "For matrix \"" + data.getName() + "\", taxon \"" + originalTaxonName + "\" and also the following taxa had data, and thus the merged taxon was given a blank sequence.\n";
+					}
 					else {
-						report += "For matrix \"" + data.getName() + "\", taxon \"" + originalTaxonName + "\" and also the following taxa had data, and thus a choice of one or the other was made:\n";
+						report += "For matrix \"" + data.getName() + "\", taxon \"" + originalTaxonName + "\" and also the following taxa had data, and thus a choice of one or the other was made.\n";
 					}
 					for (int it = 0; it< ma.length; it++){
 						if (ma[it])
-							report += "  " + taxa.getTaxonName(it) + "\n";
+							report += "  " + taxa.getTaxonName(it) + "\n\n";
 					}
 				}
 				else {
@@ -336,7 +366,8 @@ public class MergeTaxa extends TaxonMerger {
 
 		}
 		taxa.setTaxonName(destinationTaxon, sb.toString());
-		taxa.setAnnotation(destinationTaxon, mergedNames);
+		if (addFootnoteWithOriginalNames)
+			taxa.setAnnotation(destinationTaxon, mergedNames);
 		if (reportRecord != null && !StringUtil.blank(report)){
 			if (!verboseReport)
 				reportRecord.append("Matrices with data in multiple merged taxa: ");

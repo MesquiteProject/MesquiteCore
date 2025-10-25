@@ -1748,7 +1748,71 @@ public ListableVector getAssociatesOfKind(int kind){
 		incrementVersion(MesquiteListener.ASSOCIATED_CHANGED, false);
 		return true;
 	}
-	/* ---------------------Default Order -----------------------*/
+	public boolean copyParts(int first, int second){
+		if (first>numParts || first<0) 
+			return false;
+		if (second>numParts || second<0) 
+			return false;
+		if (bits!=null) {
+			for (int i=0; i< bits.size(); i++) {
+				Bits b = (Bits)bits.elementAt(i);
+				b.setBit(first, b.isBitOn(second));
+			}
+		}
+		if (longs!=null) {
+			for (int i=0; i< longs.size(); i++) {
+				LongArray b = (LongArray)longs.elementAt(i);
+				b.setValue(first, b.getValue(second));
+			}
+		}
+		if (doubles!=null)
+			for (int i=0; i< doubles.size(); i++) {
+				DoubleArray b = (DoubleArray)doubles.elementAt(i);
+				b.setValue(first, b.getValue(second));
+			}
+		if (strings!=null)
+			for (int i=0; i< strings.size(); i++) {
+				StringArray b = (StringArray)strings.elementAt(i);
+				b.setValue(first, b.getValue(second));
+			}
+		if (objects!=null)
+			for (int i=0; i< objects.size(); i++) {
+				ObjectArray b = (ObjectArray)objects.elementAt(i);
+				b.setValue(first, b.getValue(second));
+			}
+
+		incrementVersion(MesquiteListener.ASSOCIATED_CHANGED, false);
+		return true;
+	}	
+	
+	public boolean mergeParts (int into, int from){  //THIS deals with merging strings ONLY; for others, there isn't an obvious sense of merging 
+		if (into>numParts || into<0) 
+			return false;
+		if (from>numParts || from<0) 
+			return false;
+		if (strings!=null)
+			for (int i=0; i< strings.size(); i++) {
+				StringArray b = (StringArray)strings.elementAt(i);
+				String sInto = b.getValue(into);
+				String sFrom = b.getValue(from);
+				String merged = "";
+				if (StringUtil.blank(sInto)){
+					if (!StringUtil.blank(sFrom))
+						merged = sFrom;
+					else
+						merged = null;
+				}
+				else if (StringUtil.blank(sFrom)){
+						merged = sInto;
+				}
+				else
+					merged = sInto + "; " + sFrom;
+				b.setValue(into, merged);
+			}
+
+		incrementVersion(MesquiteListener.ASSOCIATED_CHANGED, false);
+		return true;
+	}	/* ---------------------Default Order -----------------------*/
 	public int getDefaultPosition(int part){
 		if (!inBounds(part) || defaultOrder == null)
 			return -1;
@@ -1891,6 +1955,22 @@ public ListableVector getAssociatesOfKind(int kind){
 				return i;
 		}
 		return -1;
+	}
+	/*-----------------------------------------*/
+	/** Returns index of single selected part */
+	public int singleSelected() {
+		if (!anySelected())
+			return -1;
+		int candidate = -1;
+		for (int i = 0; i<getNumberOfParts(); i++) {
+			if (selected.isBitOn(i)){
+				if (candidate<0) //first one found!
+					candidate = i;
+				else //oops, second found
+					return -1;
+			}
+		}
+		return candidate;
 	}
 	/*-----------------------------------------*/
 	/** Returns index of i'th selected part if any are selected, otherwise returns i.
@@ -2289,6 +2369,26 @@ public ListableVector getAssociatesOfKind(int kind){
 			incrementVersion(MesquiteListener.ASSOCIATED_CHANGED, false);
 		}
 	}
+	public void setAssociatedDoubleUpgradeIfNeeded(NameReference nRef, int index, double value){
+		if (doubles!=null && nRef!=null) {
+			NameReference nr = makeAssociatedDoubles(nRef.getValue());
+			DoubleArray b = getAssociatedDoubles(nRef);
+
+			//but first check to see if there are longs.  If so, and if doubles hadn't existed before, then transfer
+			LongArray longs = getAssociatedLongs(nRef);
+			if (longs != null){
+				//There is an array of longs of the same name.  It's therefore assumed that they should all be upgraded to doubles!
+				longs.copyTo(b);
+				removeAssociatedLongs(nRef);   //delete longs as no longer needed
+			}
+
+			
+			if (b==null)
+				return;
+			b.setValue(index, value);
+			incrementVersion(MesquiteListener.ASSOCIATED_CHANGED, false);
+		}
+	}
 	public double getAssociatedDouble(NameReference nRef, int index){
 		if (doubles==null || nRef==null)
 			return MesquiteDouble.unassigned;
@@ -2552,6 +2652,22 @@ public ListableVector getAssociatesOfKind(int kind){
 		return null;
 	}
 
+	/** Returns an example associated object of that name, not necessarily of same part */
+	public Object exampleAssociatedObject(NameReference nRef){
+		if (objects==null || nRef==null)
+			return null;
+		for (int i=0; i<objects.size(); i++) {
+			ObjectArray b = (ObjectArray)objects.elementAt(i);
+			if (b !=null && nRef.equals(b.getNameReference())) {
+				for (int p = 0; p<getNumberOfParts(); p++){
+					Object obj = b.getValue(p);
+					if (obj != null)
+						return obj; 
+				}
+			}
+		}
+		return null;
+	}
 	/** Returns true iff there is at least one associate object of type nRef */
 	public boolean anyAssociatedObject(NameReference nRef){
 		if (objects==null || nRef==null)

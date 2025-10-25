@@ -28,6 +28,7 @@ public class FuseTaxaMatrices extends FileAssistantFM {
 	/*.................................................................................................................*/
 	public boolean startJob(String arguments, Object condition, boolean hiredByName) {
 		includeFuse();
+		iQuit();
 		return true;
 	}
 

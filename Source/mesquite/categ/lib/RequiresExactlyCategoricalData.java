@@ -29,6 +29,8 @@ public class RequiresExactlyCategoricalData extends CompatibilityTest {
 			return true;
 		if (obj instanceof RequiresExactlyCategoricalData)
 			return true;
+		if (obj instanceof CharacterData || obj instanceof CharacterState)
+		return (obj.getClass() == CategoricalState.class || obj.getClass() == CategoricalData.class);
 		if (obj instanceof CompatibilityTest)
 			return false;
 		if (!(obj instanceof Class))

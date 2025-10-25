@@ -38,6 +38,7 @@ public class AppendTaxaAndSequences extends FileAssistantFM {
 	/*.................................................................................................................*/
 	public boolean startJob(String arguments, Object condition, boolean hiredByName) {
 		findAndAppend();
+		iQuit();
 		return true;
 	}
 
@@ -76,6 +77,7 @@ public class AppendTaxaAndSequences extends FileAssistantFM {
 			MesquiteFile fileToRead = new MesquiteFile(directoryName.getValue(), fileName.getValue());
 			proj.addFile(fileToRead);
 			fileToRead.setProject(proj);
+			fileToRead.setReadCategory(MesquiteFile.INCLUDED);
 			//only do this if there's a set of taxa; ask user to choose if there are more than one
 			NexusFileInterpreter mb = (NexusFileInterpreter)findNearestColleagueWithDuty(NexusFileInterpreter.class);
 			mb.readFile(getProject(), fileToRead, " @noWarnMissingReferent  @noWarnUnrecognized @noWarnDupTaxaBlock @readOneTaxaBlockOnly @justTheseBlocks.TAXA.CHARACTERS.DATA.SETS.LABELS");

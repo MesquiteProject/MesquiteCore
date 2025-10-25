@@ -24,6 +24,7 @@ import mesquite.lib.CommandChecker;
 import mesquite.lib.CommandRecord;
 import mesquite.lib.CommandRecordHolder;
 import mesquite.lib.Commandable;
+import mesquite.lib.Debugg;
 import mesquite.lib.EmployeeNeed;
 import mesquite.lib.EmployeeVector;
 import mesquite.lib.FileBlock;
@@ -188,8 +189,10 @@ public class BasicFileCoordinator extends FileCoordinator implements PackageIntr
 	public void endJob() {
 		doomed = true;
 		incrementMenuResetSuppression();
+		incrementEmployeeBrowserRefreshSuppression(MesquiteProject.class);
 		disposeMenuSpecifications();
 		MesquiteProject p=getProject();
+		
 		if (p!=null) {	
 			p.isDoomed = true;
 			int count = 0;
@@ -210,7 +213,8 @@ public class BasicFileCoordinator extends FileCoordinator implements PackageIntr
 			doomEmployees(this);
 			p.dispose();
 			MesquiteTrunk.mesquiteTrunk.removeProject(p);
-		}
+	}
+		decrementEmployeeBrowserRefreshSuppression(MesquiteProject.class);
 		decrementMenuResetSuppression();
 		setProject(null);
 		super.endJob();
@@ -653,7 +657,9 @@ public class BasicFileCoordinator extends FileCoordinator implements PackageIntr
 					Taxa taxa = getProject().getTaxa(ref);
 					thisFile.setCurrentTaxa(taxa);
 				}
+				p.setNotificationsOnOff(false);   //so that there isn't a lot of notification with many matrices being read
 				fileInterp.readFile(getProject(), thisFile, arguments);
+				p.setNotificationsOnOff(true); 
 				if (pw != null){
 					if (fileInterp != nfi)
 						pw.setWindowSize(700, 500);
@@ -848,14 +854,14 @@ public class BasicFileCoordinator extends FileCoordinator implements PackageIntr
 	public MesquiteFile readLinkedFile(String pathName, String importer, String arguments, int fileType, String fileDescriptionText){ //make new/read new linked file
 		if (MesquiteThread.isScripting()) {
 			ObjectContainer f = new ObjectContainer();
-			FileRead pt = new FileRead(pathName, importer, arguments, fileType,   this, 0, f, fileDescriptionText);
+			FileRead pt = new FileRead(pathName, importer, arguments, fileType,   this, MesquiteFile.LINKED, f, fileDescriptionText);
 			pt.run();
 			MesquiteFile mf = (MesquiteFile)f.getObject();
 			f.setObject(null);
 			return mf;
 		}
 		else {
-			FileRead fr = new FileRead(pathName, importer, arguments, fileType,   this, 0, null, fileDescriptionText);
+			FileRead fr = new FileRead(pathName, importer, arguments, fileType,   this, MesquiteFile.LINKED, null, fileDescriptionText);
 
 			MesquiteThread pt = new MesquiteThread(fr);
 
@@ -867,7 +873,7 @@ public class BasicFileCoordinator extends FileCoordinator implements PackageIntr
 	/*.................................................................................................................*/
 	/*.................................................................................................................*/
 	public void includeFile(String pathName, Class importer, String arguments, int fileType, String fileDescriptionText){ //make new/read new linked file
-		FileRead pt = new FileRead(pathName, null, arguments, fileType,   this, 1, null, fileDescriptionText);
+		FileRead pt = new FileRead(pathName, null, arguments, fileType,   this, MesquiteFile.INCLUDED, null, fileDescriptionText);
 		pt.setFileInterpreter(importer);
 		if (MesquiteThread.isScripting()) {
 			pt.run();
@@ -879,7 +885,7 @@ public class BasicFileCoordinator extends FileCoordinator implements PackageIntr
 	}
 	/*.................................................................................................................*/
 	public void includeFile(String pathName, String importer, String arguments, int fileType, String fileDescriptionText){ //make new/read new linked file
-		FileRead pt = new FileRead(pathName, importer, arguments, fileType,   this, 1, null, fileDescriptionText);
+		FileRead pt = new FileRead(pathName, importer, arguments, fileType,   this, MesquiteFile.INCLUDED, null, fileDescriptionText);
 		if (MesquiteThread.isScripting()) {
 			pt.run();
 		}
@@ -891,7 +897,7 @@ public class BasicFileCoordinator extends FileCoordinator implements PackageIntr
 	/*.................................................................................................................*/
 	public void includeFileFuse(String pathName, String importer, String arguments, int fileType, String fileDescriptionText){ //make new/read new linked file  DONE special to put on same thread
 		getProject().incrementProjectWindowSuppression();
-		FileRead pt = new FileRead(pathName, importer, arguments, fileType,   this, 1, null, fileDescriptionText);
+		FileRead pt = new FileRead(pathName, importer, arguments, fileType,   this, MesquiteFile.INCLUDED, null, fileDescriptionText);
 		pt.run();
 		cleanFusedReadingSuppressions();
 		getProject().decrementProjectWindowSuppression();
@@ -1168,8 +1174,9 @@ public class BasicFileCoordinator extends FileCoordinator implements PackageIntr
 							}
 						}
 						logln("Closing " + getProject().getName());
-						iQuit();
-					}
+						long bfQ = System.currentTimeMillis();
+					iQuit();
+				}
 				}
 			}
 			else {
@@ -1179,7 +1186,7 @@ public class BasicFileCoordinator extends FileCoordinator implements PackageIntr
 				}
 				else if (fi.isLocal()){
 					fileCloseRequested();
-					String message = "Do you want to save changes to \"" + fi.getName() + "\" before closing?";
+				String message = "Do you want to save changes to \"" + fi.getName() + "\" before closing?";
 					int q = AlertDialog.query(containerOfModule(), "Save changes?",  message, "Save", "Cancel", "Don't Save");
 					if (q==0) 
 						writeFile(fi);
@@ -1513,7 +1520,7 @@ public class BasicFileCoordinator extends FileCoordinator implements PackageIntr
 		int count = 0;
 		for (int i=0; i<fInterpreters.length; i++){
 			boolean stateOK = (stateClass==null || ((FileInterpreterI)fInterpreters[i]).canImport(stateClass));
-			if (((FileInterpreterI)fInterpreters[i]).canImport(arguments) && (fInterpreters[i] instanceof ReadFileFromString || !mustReadFromString) && stateOK)
+			if (((FileInterpreterI)fInterpreters[i]).getUserChooseable() && ((FileInterpreterI)fInterpreters[i]).canImport(arguments) && (fInterpreters[i] instanceof ReadFileFromString || !mustReadFromString) && stateOK)
 				count++;
 		}
 		if (count == 0 ){
@@ -1523,7 +1530,7 @@ public class BasicFileCoordinator extends FileCoordinator implements PackageIntr
 		count = 0;
 		for (int i=0; i<fInterpreters.length; i++){
 			boolean stateOK = (stateClass==null || ((FileInterpreterI)fInterpreters[i]).canImport(stateClass));
-			if (((FileInterpreterI)fInterpreters[i]).canImport(arguments) && (fInterpreters[i] instanceof ReadFileFromString || !mustReadFromString) && stateOK)
+			if (((FileInterpreterI)fInterpreters[i]).getUserChooseable() && ((FileInterpreterI)fInterpreters[i]).canImport(arguments) && (fInterpreters[i] instanceof ReadFileFromString || !mustReadFromString) && stateOK)
 				fInterpretersCanImport[count++] = fInterpreters[i];
 		}
 		if (fInterpretersCanImport.length == 1)
@@ -1789,6 +1796,9 @@ public class BasicFileCoordinator extends FileCoordinator implements PackageIntr
 		}
 		else if (checker.compare(this.getClass(), "Hires new file assistant module", "[name of module]", commandName, "newAssistant")) {
 			return (FileAssistant)hireNamedEmployee(FileAssistant.class, arguments);
+		}
+		else if (checker.compare(this.getClass(), "Hires new file assistant module", "[name of module]", commandName, "newAssistantTM")) {
+			return (FileAssistantTM)hireNamedEmployee(FileAssistantTM.class, arguments);
 		}
 		else if (checker.compare(this.getClass(), "Explains the Include & Merge menu items", "[]", commandName, "explainIncludeChoices")) {
 			String explanation = "<h3>Including &amp; Merging Other Files</h3>These menu items allow you to bring information — e.g., taxa, matrices and trees — from other files "
@@ -2361,7 +2371,8 @@ class FileRead implements CommandRecordHolder, Runnable {
 			}
 			else {
 				ownerModule.alert("Sorry, an interpreter was not found for this file");
-				ownerModule.getProject().removeFile(linkedFile);
+				if (ownerModule.getProject()!=null)
+					ownerModule.getProject().removeFile(linkedFile);
 				ownerModule.decrementMenuResetSuppression();
 				MesquiteTrunk.mesquiteTrunk.refreshBrowser(MesquiteProject.class);
 				linkedFile.fileReadingArguments = null;

@@ -305,6 +305,16 @@ public class CommandCommunicator {
 		else if ("tellIt".equalsIgnoreCase(command)) {
 			setObjectCommanded(result, useQueue, false);
 		}
+		else if ("xyzzy".equalsIgnoreCase(command)) {
+			MesquiteMessage.println("\nDo you seek to wander phylogeny along the paths of ZoL? If so, then you may want to request it directly.");
+		}
+		else if ("zol".equalsIgnoreCase(command)) {
+			MesquiteModule mb = MesquiteTrunk.mesquiteTrunk.findEmployeeWithName("ZoL");
+			if (mb != null){
+				mb.doCommand("reset", arguments,CommandChecker.defaultChecker);
+				setObjectCommanded(mb, useQueue, false);
+			}
+		}
 		else if ("jw".equalsIgnoreCase(command)) {
 			int i = MesquiteInteger.fromString(arguments);
 			ListableVector w = MesquiteTrunk.windowVector;

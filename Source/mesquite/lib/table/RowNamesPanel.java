@@ -176,7 +176,7 @@ public class RowNamesPanel extends EditorPanel implements FocusListener  {
 			g.setClip(0+table.getRowGrabberWidth(),topSide, width-table.getRowGrabberWidth(),rowHeight(row));
 			table.setRowNameColor(g, row);
 			table.drawRowNameCell(g, 0+table.getRowGrabberWidth(),topSide, width-table.getRowGrabberWidth(),rowHeight(row), row);
-	}
+		}
 		else {
 			g.setClip(0,topSide, width,rowHeight(row));
 			table.setRowNameColor(g, row);
@@ -279,7 +279,7 @@ public class RowNamesPanel extends EditorPanel implements FocusListener  {
 		int lineY = 0;
 		int oldLineY=lineY;
 		Shape clip = g.getClip();
-		
+
 		g.setClip(0,0, getBounds().width, getBounds().height);
 		for (int r=0; (r<table.numRowsTotal); r++) {
 			lineY += table.rowHeights[r];
@@ -353,50 +353,50 @@ public class RowNamesPanel extends EditorPanel implements FocusListener  {
 			table.shimmerVerticalOn(this, x);
 		}
 		else
-		if (possibleTouch>=0 && possibleTouch<table.numRowsTotal) {
-			table.startAutoScrollThread(this);
-			if (tool != null && isArrowEquivalent && table.getUserMoveRow() && table.isRowSelected(possibleTouch) && !MesquiteEvent.shiftKeyDown(modifiers) && !MesquiteEvent.commandOrControlKeyDown(modifiers)) {
-				touchY=y;
-				lastY = y;
-				touchRow=possibleTouch;
-				table.shimmerHorizontalOn(touchY);
-				shimmerRow = touchRow;
-			}
-			else if ((table.showRowGrabbers) && (x<table.getRowGrabberWidth())) {
-				if (((TableTool)tool).getIsBetweenRowColumnTool() && !isArrowEquivalent)
-					possibleTouch = findRowBeforeBetween(x, y);
-				table.rowTouched(isArrowEquivalent, possibleTouch,this, x, y,modifiers);
+			if (possibleTouch>=0 && possibleTouch<table.numRowsTotal) {
+				table.startAutoScrollThread(this);
 				if (tool != null && isArrowEquivalent && table.getUserMoveRow() && table.isRowSelected(possibleTouch) && !MesquiteEvent.shiftKeyDown(modifiers) && !MesquiteEvent.commandOrControlKeyDown(modifiers)) {
 					touchY=y;
-					lastY = MesquiteInteger.unassigned;;
-					touchRow=possibleTouch; 
+					lastY = y;
+					touchRow=possibleTouch;
+					table.shimmerHorizontalOn(touchY);
+					shimmerRow = touchRow;
 				}
+				else if ((table.showRowGrabbers) && (x<table.getRowGrabberWidth())) {
+					if (((TableTool)tool).getIsBetweenRowColumnTool() && !isArrowEquivalent)
+						possibleTouch = findRowBeforeBetween(x, y);
+					table.rowTouched(isArrowEquivalent, possibleTouch,this, x, y,modifiers);
+					if (tool != null && isArrowEquivalent && table.getUserMoveRow() && table.isRowSelected(possibleTouch) && !MesquiteEvent.shiftKeyDown(modifiers) && !MesquiteEvent.commandOrControlKeyDown(modifiers)) {
+						touchY=y;
+						lastY = MesquiteInteger.unassigned;;
+						touchRow=possibleTouch; 
+					}
 
+				}
+				else if (isArrowEquivalent) {
+					table.rowNameTouched(possibleTouch,this, x, y, modifiers,clickCount);
+				}
+				else if (tool!=null && ((TableTool)tool).getWorksOnRowNames()) {
+					if (((TableTool)tool).getIsBetweenRowColumnTool())
+						possibleTouch = findRowBeforeBetween(x, y);
+					touchY=y;
+					lastY = y;
+					touchRow=possibleTouch;
+					table.rowNameTouched(possibleTouch,this, x, y, modifiers,clickCount);
+				}
 			}
-			else if (isArrowEquivalent) {
-				table.rowNameTouched(possibleTouch,this, x, y, modifiers,clickCount);
+			else if (possibleTouch==-2 && ((TableTool)tool).getWorksBeyondLastRow())
+				table.rowTouched(isArrowEquivalent,possibleTouch,this, x, y,modifiers);
+			else if (tool != null && tool.isArrowTool()){
+				table.offAllEdits();
+				table.outOfBoundsTouched(modifiers, clickCount);
+				if (table.anythingSelected()) {
+					table.deselectAllNotify();
+					table.repaintAll();
+				}
 			}
-			else if (tool!=null && ((TableTool)tool).getWorksOnRowNames()) {
-				if (((TableTool)tool).getIsBetweenRowColumnTool())
-					possibleTouch = findRowBeforeBetween(x, y);
-				touchY=y;
-				lastY = y;
-				touchRow=possibleTouch;
-				table.rowNameTouched(possibleTouch,this, x, y, modifiers,clickCount);
-			}
-		}
-		else if (possibleTouch==-2 && ((TableTool)tool).getWorksBeyondLastRow())
-			table.rowTouched(isArrowEquivalent,possibleTouch,this, x, y,modifiers);
-		else if (tool != null && tool.isArrowTool()){
-			table.offAllEdits();
-			table.outOfBoundsTouched(modifiers, clickCount);
-			if (table.anythingSelected()) {
-				table.deselectAllNotify();
-				table.repaintAll();
-			}
-		}
-		else
-			table.outOfBoundsTouched(modifiers, clickCount);
+			else
+				table.outOfBoundsTouched(modifiers, clickCount);
 
 	}
 	/*...............................................................................................................*/
@@ -473,7 +473,7 @@ public class RowNamesPanel extends EditorPanel implements FocusListener  {
 						int dropRow = findRowBeforeBetween(x, y);
 						if (dropRow == -2)
 							dropRow = table.getNumRows()-1;
-						if (dropRow != touchRow && (dropRow != touchRow-1) && !table.isRowSelected(dropRow)) { //don't move dropped on row included in selection {
+						if (table.discontiguousRowsSelected() || (dropRow != touchRow && (dropRow != touchRow-1) && !table.isRowSelected(dropRow))) { //don't move dropped on row included in selection unless selection discontinuous
 							table.selectedRowsDropped(dropRow);
 						}
 					}
@@ -487,7 +487,7 @@ public class RowNamesPanel extends EditorPanel implements FocusListener  {
 			}
 
 	}
-	
+
 
 	/*...............................................................................................................*/
 	public void mouseExited(int modifiers, int x, int y, MesquiteTool tool) {
@@ -504,10 +504,10 @@ public class RowNamesPanel extends EditorPanel implements FocusListener  {
 			setCursor(getDisabledCursor());
 		else if (row>=0 && row<table.numRowsTotal) {
 			if (((TableTool)tool).isArrowKeyOnRow(x,table)) {
-					if (x>getBounds().width-8) 
-						setCursor(table.getEResizeCursor());
-					else
-						setCursor(table.getHandCursor());
+				if (x>getBounds().width-8) 
+					setCursor(table.getEResizeCursor());
+				else
+					setCursor(table.getHandCursor());
 
 				if (!(table.getUserMoveRow() && table.isRowSelected(row) && !MesquiteEvent.shiftKeyDown(modifiers) && !MesquiteEvent.controlKeyDown(modifiers))) {
 					if (!(table.editingAnything() || table.singleTableCellSelected())) {

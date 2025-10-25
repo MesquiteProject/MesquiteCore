@@ -184,7 +184,7 @@ class BranchInfoExtra extends TreeDisplayExtra implements Commandable  {
 		if (branchFound>0){
 			this.tree = tree;
 			Taxa taxa = tree.getTaxa();
-			if (tree.numberOfTerminalsInClade(tree.getRoot()) < taxa.getNumTaxa()){
+		if (tree.numberOfTerminalsInClade(tree.getRoot()) < taxa.getNumTaxa()){
 			MesquiteMenu addTaxaSubmenu = new MesquiteMenu("Add Taxon Here");
 			for (int i=0; i< taxa.getNumTaxa(); i++){
 				if (!tree.taxonInTree(i)) {
@@ -208,7 +208,7 @@ class BranchInfoExtra extends TreeDisplayExtra implements Commandable  {
 						+"Some properties associated with the branches/nodes imply a direction (i.e., polarity) of time, but this rerooting violated the polarity by turning branches upside down. These properties are:\n\n" + v.getList());
 			}
 		}
-		else if (checker.compare(this.getClass(), "Adds taxon to branch", "[branch number][taxon number]", commandName, "addTaxon")) {
+	else if (checker.compare(this.getClass(), "Adds taxon to branch", "[branch number][taxon number]", commandName, "addTaxon")) {
 			if (tree == null)
 				return null;
 			Parser parser = new Parser();

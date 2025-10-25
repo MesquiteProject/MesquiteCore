@@ -58,7 +58,7 @@ public class AlignSequences extends MolecDataEditorInit { //implements Calculati
 	public boolean requestPrimaryChoice(){
 		return true;  
 	}
-	/*.................................................................................................................*/
+	/*.......................................d..........................................................................*/
 	public void setTableAndData(MesquiteTable table, CharacterData data){
 		if (!(data instanceof MolecularData)){
 			mss.setEnabled(false);

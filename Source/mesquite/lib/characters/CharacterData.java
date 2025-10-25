@@ -48,6 +48,7 @@ import mesquite.lib.MesquiteProject;
 import mesquite.lib.MesquiteString;
 import mesquite.lib.MesquiteStringBuffer;
 import mesquite.lib.MesquiteThread;
+import mesquite.lib.MesquiteTimer;
 import mesquite.lib.MesquiteTrunk;
 import mesquite.lib.NameReference;
 import mesquite.lib.NameableWithNotify;
@@ -1210,7 +1211,7 @@ public abstract class CharacterData extends FileElement implements MesquiteListe
 			return false;
 		if (starting<0)
 			return false;
-		else if (starting>numChars)
+		else if (starting>=numChars)
 			return false;
 		if (!checkThread(false))
 			return false;
@@ -1800,7 +1801,6 @@ public abstract class CharacterData extends FileElement implements MesquiteListe
 			characterNames[ic] = oData.characterNames[oic];
 			notifyOfChangeLowLevel(MesquiteListener.NAMES_CHANGED, ic, -1, 0);  
 		}
-
 		for (int it = 0; it<getNumTaxa(); it++){
 			incrementSuppressHistoryStamp();
 			int oit = oData.getTaxa().findEquivalentTaxon(getTaxa(), it);
@@ -1816,6 +1816,7 @@ public abstract class CharacterData extends FileElement implements MesquiteListe
 					setCellObject(historyNameRef, ic, it, h2.cloneHistory());
 			}
 		}
+
 		equalizeParts(oData, oic, ic);
 		decrementSuppressHistoryStamp();
 		setAnnotation(ic, oData.getAnnotation(oic));
@@ -2482,26 +2483,6 @@ public abstract class CharacterData extends FileElement implements MesquiteListe
 		return false;
 	}
 
-	public boolean removeTaxaThatAreEntirelyGaps(){
-		boolean removedSome = false;
-		int numT = getNumTaxa();
-		for (int it = numT; it>=0; it--){
-			if (entirelyInapplicableTaxon(it)) {
-				int numToDelete = 1;
-				int firstToDelete = it;
-				for (int it2 =it-1; it2>=0; it2--){
-					if (entirelyInapplicableTaxon(it2)) {
-						numToDelete++;
-						firstToDelete= it2;
-					} else break;
-				}
-				taxa.deleteTaxa(firstToDelete, numToDelete, true);  //used to be deleteTaxa( , )
-				it=it-numToDelete+1;
-				removedSome=true;
-			}
-		}
-		return removedSome;
-	}
 
 
 
@@ -4408,6 +4389,7 @@ public abstract class CharacterData extends FileElement implements MesquiteListe
 			return false;
 		boolean receivingHasData = hasDataForTaxon(it1);
 		boolean bothHadStates = true;
+
 		if (!receivingHasData){
 			mergeRule = MERGE_preferIncoming;
 			bothHadStates = false;
@@ -4416,11 +4398,26 @@ public abstract class CharacterData extends FileElement implements MesquiteListe
 			int n1 =  numNotInapplicableNotUnassigned(it1);
 			int n2 =  numNotInapplicableNotUnassigned(it2);
 			if (n2>n1)
-				mergeRule = MERGE_preferIncoming;
+				mergeRule = MERGE_preferIncoming;	
 			else
 				mergeRule = MERGE_preferReceiving;
 		}
-		
+		else if (mergeRule == MERGE_useNeither){
+			//both have data, so zap and return
+			CharacterState cs2= null;
+			for (int ic=0; ic<getNumChars(); ic++) {
+				setToUnassigned(ic, it1);
+			}
+			Associable tAssociableForMatrix = getTaxaInfo(false);
+			if (tAssociableForMatrix != null)
+				tAssociableForMatrix.deassignAssociated(it1);
+			return bothHadStates;
+
+		}
+
+
+		Associable tAssociableForMatrix = getTaxaInfo(false);
+
 		if (mergeRule == MERGE_preferReceiving){
 		}
 		else if (mergeRule == MERGE_preferIncoming){
@@ -4429,6 +4426,9 @@ public abstract class CharacterData extends FileElement implements MesquiteListe
 				cs2 = getCharacterState(cs2, ic,it2);
 				setState( ic, it1, cs2);
 			}
+			if (tAssociableForMatrix != null)
+				tAssociableForMatrix.copyParts(it1, it2);
+
 		}
 		else if (mergeRule == MERGE_blendMultistateAsUncertainty || mergeRule == MERGE_blendMultistateAsPolymorphism){
 			boolean mergedAssigned = false;
@@ -4452,15 +4452,11 @@ public abstract class CharacterData extends FileElement implements MesquiteListe
 					setToUnassigned( ic, it1);
 				}
 			}
-			//return mergedAssigned;
+			if (tAssociableForMatrix != null)
+				tAssociableForMatrix.mergeParts(it1, it2);
 		}
-		if (!receivingHasData){
-			//in this case tInfo brought in from merging.  This isn't ideal, as should fuse tInfo if both have data
-			Associable a = getTaxaInfo(false);
-			if (a != null)
-				a.swapParts(it1, it2, true);
-		}
-	return bothHadStates;
+
+		return bothHadStates;
 	}
 	/*..........................................CharacterData.....................................*/
 	/**merges the states for taxon it2 into it1  within this Data object *
@@ -4476,7 +4472,8 @@ public abstract class CharacterData extends FileElement implements MesquiteListe
 	public static final int MERGE_useLongest = 2;
 	public static final int MERGE_preferReceiving = 3;
 	public static final int MERGE_preferIncoming = 4;
-	
+	public static final int MERGE_useNeither = 5;
+
 	public boolean[] mergeTaxa(int receivingTaxon, boolean[]taxaToMerge, int mergeRule) {
 		if (!(MesquiteInteger.isCombinable(receivingTaxon)) || receivingTaxon<0 || receivingTaxon>=getNumTaxa() || taxaToMerge==null)
 			return null;
@@ -4495,6 +4492,37 @@ public abstract class CharacterData extends FileElement implements MesquiteListe
 			return mA;
 		else
 			return null;
+	}
+	public boolean conflictingStatesIfMerged(int receivingTaxon, boolean[]taxaToMerge) {
+		if (!(MesquiteInteger.isCombinable(receivingTaxon)) || receivingTaxon<0 || receivingTaxon>=getNumTaxa() || taxaToMerge==null)
+			return false;
+		for (int it=0; it<getNumTaxa() && it<taxaToMerge.length; it++) {
+			if (it!=receivingTaxon && taxaToMerge[it]){
+				if (conflictingStatesIfMerged(receivingTaxon, it))
+					return true;
+			}
+		}
+		return false;
+	}
+	/*..........................................CharacterData.....................................*/
+	/**Returns whether, if these taxa were merged, their states would conflict*/
+	public  boolean conflictingStatesIfMerged(int it1, int it2) {
+		if ( it1<0 || it1>=getNumTaxa() || it2<0 || it2>=getNumTaxa() )
+			return false;
+		if (!hasDataForTaxon(it1))
+			return false;
+		if (!hasDataForTaxon(it2))
+			return false;
+
+		CharacterState cs1= null;
+		CharacterState cs2= null;
+		for (int ic=0; ic<getNumChars(); ic++) {
+			cs1 = getCharacterState(cs1, ic,it1);
+			cs2 = getCharacterState(cs2, ic,it2);
+			if (cs1.isCombinable() && cs2.isCombinable() && !cs1.equals(cs2))
+				return true;
+		}
+		return false;
 	}
 
 	/*..........................................CharacterData.....................................*/

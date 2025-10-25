@@ -816,18 +816,35 @@ public class ListDialog extends ExtensibleDialog implements ItemListener{
 		}
 		return indices;
 	}
-	private int findListable(Listable[] lArray, Listable target){
+	private int findListable(Listable[] lArray, Listable target, int whichOccurrence){
 		if (lArray==null)
 			return -1;
-		for (int i=0; i< lArray.length; i++)
-			if (target == lArray[i])
-				return i;
+		int count = 0;
+		for (int i=0; i< lArray.length; i++){
+			if (target == lArray[i]){
+				if (whichOccurrence== count)
+					return i;
+				count++;
+			}
+		}
 		return -1;
+	}
+	private int numPreviousOccurrences(Listable[] lArray, int start){
+		if (lArray==null)
+			return 0;
+		Listable target = lArray[start];
+		int count = 0;
+		for (int i=start-1; i>=0; i--)
+			if (target == lArray[i])
+				count++;
+		return count;
 	}
 	private int translateIndexUsedToOriginal(int index){
 		if (listablesUsed !=null && listablesUsed != originalListables && index>0 && index < originalListables.length && index < listablesUsed.length){
 			Listable listable = listablesUsed[index];
-			int which = findListable(originalListables, listable);
+			int whichOccurrence = numPreviousOccurrences(listablesUsed, index);
+			
+			int which = findListable(originalListables, listable, whichOccurrence);
 			return which;
 		}
 		return index;

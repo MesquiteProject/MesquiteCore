@@ -73,7 +73,7 @@ public class PlotTree3D extends AnalyticalDrawTree {
 	/*.................................................................................................................*/
 	public   TreeDrawing createTreeDrawing(TreeDisplay treeDisplay, int numTaxa) {
 		PlotTreeDrawing treeDrawing =  new PlotTreeDrawing (treeDisplay, numTaxa, this, spotSize);
-		treeDisplay.collapsedCladeNameAtLeftmostAncestor = false;
+		treeDisplay.collapsedCladeNameAtDescendant = false;
 		drawings.addElement(treeDrawing);
 		return treeDrawing;
 	}
@@ -398,6 +398,7 @@ class PlotTreeDrawing extends TreeDrawing  {
 			for (int i=0; i<nodes.length; i++) {
 				if (tree.nodeExists(nodes[i])) {
 					g.setColor(applyFog(treeDisplay.branchColor, nodes[i]));
+					recordBranchColor(tree, nodes[i], g.getColor());
 					if (ownerModule.showTree.getValue())
 						drawLine(tree, g, nodes[i]);
 					if (getDrawNode(tree,nodes[i])){
@@ -458,7 +459,8 @@ class PlotTreeDrawing extends TreeDrawing  {
 	}
 	/*_________________________________________________*/
 	public void fillBranchWithColors(Tree tree, int node, ColorDistribution colors, Graphics g) {
-		if (node>0 && (tree.getRooted() || tree.getRoot()!=node) && (getDrawNode(tree,node))) {
+		if (colors!=null && node>0 && (tree.getRooted() || tree.getRoot()!=node) && (getDrawNode(tree,node))) {
+			recordBranchFillColors(tree, node, colors.clone());
 			if (MesquiteDouble.isCombinable(x[node]) && MesquiteDouble.isCombinable(y[node])) {
 				Color c = g.getColor();
 				int numColors = colors.getNumColors();
@@ -490,9 +492,14 @@ class PlotTreeDrawing extends TreeDrawing  {
 
 	/*_________________________________________________*/
 	public   void fillBranch(Tree tree, int node, Graphics g) {
+		recordBranchFillColors(tree, node, g.getColor());
 		if (node>0 && (tree.getRooted() || node != tree.getRoot()) && (getDrawNode(tree,node))) {
 			fillSpot(g,node);
 		}
+	}
+	/*.................................................................................................................*/
+	public boolean recordsBranchColors(){
+		return true;
 	}
 
 	/*_________________________________________________*/

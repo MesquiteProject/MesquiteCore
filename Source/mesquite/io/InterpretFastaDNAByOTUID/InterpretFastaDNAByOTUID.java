@@ -8,6 +8,10 @@ import mesquite.lib.taxa.Taxa;
 
 public class InterpretFastaDNAByOTUID extends InterpretFastaDNA {
 
+	/*.................................................................................................................*/
+	 public boolean requestPrimaryChoice() {
+	return false;
+	 }
 
 	/*.................................................................................................................*/
 	public boolean codesMatch(String OTUIDCode, String taxonName) {

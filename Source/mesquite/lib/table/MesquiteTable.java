@@ -858,7 +858,7 @@ public class MesquiteTable extends MesquitePanel implements KeyListener, MouseWh
 				if (t != null && rowNamesEditable && rowNamesCopyPaste && (rowNamesCopyPasteWithRowSelection || isRowNameSelected(j))){
 					returnedRowNameText(j, t, false);
 					if ((count+1) % 10 == 0)
-						System.err.print(".");
+						MesquiteMessage.sys_err_print(".");
 					rowNamesChanged = true;
 				}
 				count++;
@@ -5341,6 +5341,11 @@ public class MesquiteTable extends MesquitePanel implements KeyListener, MouseWh
 	}
 
 	/* ............................................................................................................... */
+	/** returns whether a set of discontiguous rows is selected. */
+	public boolean discontiguousRowsSelected() {
+		return rowsSelected[0].discontiguousBitsOn();
+	}
+	/* ............................................................................................................... */
 	/** returns whether row is selected. */
 	public boolean isRowSelected(int row) {
 		if (rowLegal(row)) {
@@ -5356,6 +5361,11 @@ public class MesquiteTable extends MesquitePanel implements KeyListener, MouseWh
 		return rowsSelected[0].cloneBits();
 	}
 
+	/* ............................................................................................................... */
+	/** returns whether a set of discontiguous columns is selected. */
+	public boolean discontiguousColumnsSelected() {
+		return columnsSelected[0].discontiguousBitsOn();
+	}
 	/* ............................................................................................................... */
 	/** returns whether column is selected. */
 	public boolean isColumnSelected(int column) {

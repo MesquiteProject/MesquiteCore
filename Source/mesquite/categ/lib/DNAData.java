@@ -18,12 +18,17 @@ import java.util.Vector;
 
 import mesquite.lib.Associable;
 import mesquite.lib.AssociableWithSpecs;
+import mesquite.lib.*;
 import mesquite.lib.MesquiteInteger;
 import mesquite.lib.MesquiteMessage;
+import mesquite.lib.MesquiteModule;
+import mesquite.lib.MesquiteNumber;
 import mesquite.lib.MesquiteStringBuffer;
 import mesquite.lib.NameReference;
+import mesquite.lib.NexusBlock;
 import mesquite.lib.Notification;
-import mesquite.lib.characters.CharacterData;
+import mesquite.categ.lib.*;
+import mesquite.lib.characters.*;
 import mesquite.lib.characters.CharacterDistribution;
 import mesquite.lib.characters.CharacterModel;
 import mesquite.lib.characters.CharacterState;
@@ -31,9 +36,11 @@ import mesquite.lib.characters.CodonPositionsSet;
 import mesquite.lib.characters.DefaultReference;
 import mesquite.lib.characters.MCharactersDistribution;
 import mesquite.lib.duties.CharMatrixManager;
+import mesquite.lib.duties.*;
 import mesquite.lib.duties.CharactersManager;
 import mesquite.lib.taxa.Taxa;
 import mesquite.lib.ui.ColorDistribution;
+import mesquite.lists.lib.ListModule;
 import mesquite.molec.lib.GeneticCode;
 
 /* ======================================================================== */
@@ -416,13 +423,44 @@ public class DNAData extends MolecularData {
 		return  (position >= 1 && position <= 3);
 
 	}
+
+	/*.................................................................................................................*/
+	public synchronized void setAllCodonPositions(MesquiteModule module, int position,  boolean calc, boolean notify){
+		boolean changed=false;
+		MesquiteNumber num = new MesquiteNumber();
+		num.setValue(position);
+		int numChars = getNumChars();
+		CodonPositionsSet modelSet = (CodonPositionsSet) getCurrentSpecsSet(CodonPositionsSet.class);
+		if (modelSet == null) {
+			modelSet= new CodonPositionsSet("Codon Positions", numChars, this);
+			modelSet.addToFile(getFile(), getProject(), module.findElementManager(CodonPositionsSet.class)); //THIS
+			setCurrentSpecsSet(modelSet, CodonPositionsSet.class);
+		}
+		if (modelSet != null) {
+			for (int i=0; i<numChars; i++) {
+				modelSet.setValue(i, num);
+				 if (calc) {
+					 num.setValue(num.getIntValue()+1);
+					 if (num.getIntValue()>3)
+						 num.setValue(1);
+				 }
+				 changed = true;
+			}
+		}
+		if (notify) {
+			if (changed)
+				notifyListeners(this, new Notification(AssociableWithSpecs.SPECSSET_CHANGED));  //not quite kosher; HOW TO HAVE MODEL SET LISTENERS??? -- modelSource
+		}
+	}
+
+
 	/*.................................................................................................................*/
 	public void setCodonPosition(int ic,  int pos, boolean canCreateCodPosSet, boolean notify){
 		boolean changed=false;
 		CodonPositionsSet modelSet = (CodonPositionsSet) getCurrentSpecsSet(CodonPositionsSet.class);
 		if (modelSet == null && canCreateCodPosSet) {
 			modelSet= new CodonPositionsSet("Codon Positions", getNumChars(), this);
-			modelSet.addToFile(getFile(), getProject(), (CharactersManager) getMatrixManager().findElementManager(CodonPositionsSet.class)); //THIS
+			modelSet.addToFile(getFile(), getProject(), (CharSpecsSetManager) getMatrixManager().findElementManager(CodonPositionsSet.class)); //THIS
 			setCurrentSpecsSet(modelSet, CodonPositionsSet.class);
 		}
 		if (modelSet != null) {
@@ -757,6 +795,27 @@ public class DNAData extends MolecularData {
 			return isInPartialTriplet(ic,it,matchLength);
 		}
 		return false;
+	}
+	/*.................................................................................................................*/
+	public boolean allSequencesMultiplesOfThree(){
+		for (int it=0; it<numChars; it++) {
+			int num = getNumberApplicableInTaxon(it, true);
+			if (num % 3 != 0)
+				return false;
+		}
+		return true;
+	}
+	/*.................................................................................................................*/
+	public boolean allSequencesMultiplesOfThree(MesquiteString message){
+		for (int it=0; it<numChars; it++) {
+			int num = getNumberApplicableInTaxon(it, true);
+			if (num % 3 != 0) {
+				if (message!=null) 
+					message.setValue("taxon " + (it+1) + ", " + getTaxa().getTaxonName(it));
+				return false;
+			}
+		}
+		return true;
 	}
 
 	/* ................................................................................................................. */

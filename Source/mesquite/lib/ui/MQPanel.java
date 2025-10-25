@@ -24,12 +24,16 @@ import mesquite.lib.MesquiteTrunk;
  * These classes intercept validate and resize components on another thread in hopes of avoiding stack overflow error */
 /* ======================================================================== */
 public class MQPanel extends Panel implements MQComponent {
+	public static long repaintRequestsTotal =0;
 
 	public MQPanel () {
 		super();
 		helper = new MQComponentHelper(this);
 	}
-
+	public void repaint(){
+		super.repaint();
+		repaintRequestsTotal++;
+	}
 	//###########################################################
 	/*################################################################
 	 *  The following overrides were built to avoid the frequent StackOverflowErrors on Linux Java post-1.8, 

@@ -629,9 +629,12 @@ class BasicDataWindow extends TableWindow implements MesquiteListener {
 
 		ownerModule.hireNamedEmployee(DataWindowAssistantI.class, "#AlterData");
 
-		ownerModule.hireNamedEmployee(DataWindowAssistantI.class, "#AlignSequences");
+		if (data instanceof MolecularData)
+			ownerModule.hireNamedEmployee(DataWindowAssistantI.class, "#AlignSequences");
+		if (data instanceof DNAData)
+		ownerModule.hireNamedEmployee(DataWindowAssistantI.class, "#AlignSequencesCodon");
+		
 		ownerModule.hireNamedEmployee(DataWindowAssistantI.class, "#AddDeleteData");
-		ownerModule.hireNamedEmployee(DataWindowAssistantI.class, "#SearchData");
 		// ownerModule.addMenuSeparator();
 		ownerModule.hireNamedEmployee(DataWindowAssistantI.class, "#DefaultCellColor");
 		ownerModule.hireNamedEmployee(DataWindowAssistantI.class, "#NoColor");
@@ -651,7 +654,6 @@ class BasicDataWindow extends TableWindow implements MesquiteListener {
 				DataWindowAssistantI init = (DataWindowAssistantI) obj;
 				if (init instanceof DataWindowAssistantID || init instanceof CategDataEditorInitD)
 					init.setMenuToUse(ownerModule.displayMenu);
-
 				init.setTableAndData(table, data);
 			}
 		}
@@ -3403,6 +3405,7 @@ class MatrixTable extends mesquite.lib.table.CMTable implements MesquiteDroppedF
 
 				String s = (String) t.getTransferData(DataFlavor.stringFlavor);
 				if (s != null) {
+					s = StringUtil.replace(s, "\r\n", "\n"); //just in case this is from Excel
 					if (matrix.getEditing() || rowNames.getEditing() || columnNames.getEditing()) {
 						TextField edit = null;
 						if (matrix.getEditing())

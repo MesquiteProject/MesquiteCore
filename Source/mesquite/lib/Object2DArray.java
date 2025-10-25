@@ -173,6 +173,7 @@ public class Object2DArray implements Listable {
 		return d;
 	}
 	/*...........................................................*/
+	//NOTE: this assumes, probably, that the incoming matrix is complete, i.e. all d[i].length is the same for all i's
 	public static Object[][] deleteColumnsFlagged(Object[][] d, Bits toDelete) {
 		if (d == null)
 			return null;

@@ -29,8 +29,9 @@ public class MesquiteInteger implements Listable, Nameable{
 	public static final int impossible = Integer.MAX_VALUE - 1;
 	public static final int inapplicable = Integer.MAX_VALUE -2;
 	public static final int finite = Integer.MAX_VALUE-3;
-	public static final int disallowed1 = Integer.MAX_VALUE-4;  //in case calculation took an uncombinable and subtracted 1 or 2, still uncombinable
-	public static final int disallowed2 = Integer.MAX_VALUE-5;  //in case calculation took an uncombinable and subtracted 1 or 2, still uncombinable
+	public static final int uncombinable = Integer.MAX_VALUE-4;
+	public static final int disallowed1 = Integer.MAX_VALUE-5;  //in case calculation took an uncombinable and subtracted 1 or 2, still uncombinable
+	public static final int disallowed2 = Integer.MAX_VALUE-6;  //in case calculation took an uncombinable and subtracted 1 or 2, still uncombinable
 	private int value;
 	public static long totalCreated = 0;
 	private boolean unanimous = true;
@@ -74,13 +75,15 @@ public class MesquiteInteger implements Listable, Nameable{
 			b.setValue(value);
 	}
 	public static void listConstants() { //so that setting can be done in line whether or not null
-		System.err.println("MesquiteInteger constants:");
-		System.err.println("  unassigned " + unassigned);
-		System.err.println("  impossible " + impossible);
-		System.err.println("  finite " + finite);
-		System.err.println("  infinite " + infinite);
-		System.err.println("  negInfinite " + negInfinite);
-		System.err.println("  inapplicable " + inapplicable);
+		MesquiteMessage.sys_err_println("MesquiteInteger constants:");
+		MesquiteMessage.sys_err_println("  unassigned " + unassigned);
+		MesquiteMessage.sys_err_println("  impossible " + impossible);
+		MesquiteMessage.sys_err_println("  finite " + finite);
+		MesquiteMessage.sys_err_println("  infinite " + infinite);
+		MesquiteMessage.sys_err_println("  negInfinite " + negInfinite);
+		MesquiteMessage.sys_err_println("  inapplicable " + inapplicable);
+		MesquiteMessage.sys_err_println("  disallowed1 " + disallowed1);
+		MesquiteMessage.sys_err_println("  disallowed2 " + disallowed2);
 		
 	}
 	public static long toLong(int value) { //so that setting can be done in line whether or not null
@@ -188,11 +191,11 @@ public class MesquiteInteger implements Listable, Nameable{
 	}
 	/** Returns whether value is a regular number (NOT unassigned, infinite, inapplicable, impossible) */
 	public boolean isCombinable() {
-		return (value!=unassigned && value!=infinite && value!=impossible&& value!=inapplicable && value != finite && value != negInfinite && value != disallowed1 && value != disallowed2);
+		return (value!=unassigned && value!=infinite && value!=impossible&& value!=inapplicable && value != finite && value != negInfinite && value != uncombinable && value != disallowed1 && value != disallowed2);
 	}
 	/** Returns whether value is a regular number (NOT unassigned, infinite, inapplicable, impossible) */
 	public static boolean isCombinable(int i) {
-		return (i!=unassigned && i!=infinite && i!=impossible&& i!=inapplicable && i != finite && i != negInfinite && i != disallowed1 && i != disallowed2);
+		return (i!=unassigned && i!=infinite && i!=impossible&& i!=inapplicable && i != finite && i != negInfinite  && i != uncombinable && i != disallowed1 && i != disallowed2);
 	}
 	/** Returns whether value is a regular number (NOT unassigned, infinite, inapplicable, impossible) and greater than zero */
 	public static boolean isPositive(int i) {
@@ -277,7 +280,9 @@ public class MesquiteInteger implements Listable, Nameable{
 		/*--------------------------------MIN-MAX--------------------------*/
 	/** Returns maximum of two integers.  Accounts for infinite, unassigned, etc. */
 	public static int maximum(int a, int b) {
-		if (a == unassigned || a == inapplicable || a == negInfinite || a == impossible || a == finite) {
+		if (a == negInfinite && b== negInfinite)
+			return negInfinite;
+		else if (a == unassigned || a == inapplicable || a == negInfinite || a == impossible || a == finite) {
 			if (b==unassigned || b == inapplicable || b== negInfinite || b == impossible || b == finite)
 				return unassigned;
 			else
@@ -297,7 +302,9 @@ public class MesquiteInteger implements Listable, Nameable{
 	}
 	/** Returns minimum of two integers.  Accounts for infinite, unassigned, etc. */
 	public static int minimum(int a, int b) {
-		if (a == unassigned || a == inapplicable || a == infinite || a == impossible || a == finite){
+		if (a == infinite && b== infinite)
+			return infinite;
+		else if (a == unassigned || a == inapplicable || a == infinite || a == impossible || a == finite){
 			if (b==unassigned || b == inapplicable || b== infinite || b == impossible || b == finite)
 				return unassigned;
 			else
@@ -523,6 +530,10 @@ public class MesquiteInteger implements Listable, Nameable{
 			return "inapplicable"; 
 		else if (v==finite)
 			return "finite"; 
+		else if (v==disallowed1)
+			return "disallowed1"; 
+		else if (v==disallowed2)
+			return "disallowed2"; 
 		else {
 			try {
 				return Integer.toString(v);
@@ -547,6 +558,10 @@ public class MesquiteInteger implements Listable, Nameable{
 			return "inapplicable"; 
 		else if (v==finite)
 			return "finite"; 
+		else if (v==disallowed1)
+			return "disallowed1"; 
+		else if (v==disallowed2)
+			return "disallowed2"; 
 		else {
 			try {
 				String s = "";

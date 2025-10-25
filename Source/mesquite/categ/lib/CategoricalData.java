@@ -17,6 +17,7 @@ import java.awt.Color;
 import java.util.Vector;
 import java.util.zip.CRC32;
 
+import mesquite.lib.Associable;
 import mesquite.lib.Bits;
 import mesquite.lib.IntegerArray;
 import mesquite.lib.Long2DArray;
@@ -401,7 +402,7 @@ public class CategoricalData extends CharacterData {
 			}
 		for (int ic=icStart; ic<=icEnd; ic++){
 			if (characterHasName(ic))
-			data.setCharacterName(ic-icStart, getCharacterName(ic));
+				data.setCharacterName(ic-icStart, getCharacterName(ic));
 			if (hasStateNames())
 				for (int i = 0; i <= CategoricalState.maxCategoricalState; i++)
 					data.setStateName(ic-icStart,i,getStateName(ic,i));
@@ -1582,13 +1583,15 @@ public class CategoricalData extends CharacterData {
 		for (int ic = 0; ic<numChars; ic++)
 			for (int it=0; it<numTaxa; it++) {
 				state =(CategoricalState)getCharacterState(state, ic, it);
-				long st = state.getValue();
-				sumSquares += st * st;
-				if (!CategoricalState.isUnassigned(st) && !CategoricalState.isInapplicable(st)){
-					allData |= st;
-					st = st & CategoricalState.statesBitsMask;
-					sumSquaresStatesOnly += st * st;
-					allstates |= st;
+				if (state != null){
+					long st = state.getValue();
+					sumSquares += st * st;
+					if (!CategoricalState.isUnassigned(st) && !CategoricalState.isInapplicable(st)){
+						allData |= st;
+						st = st & CategoricalState.statesBitsMask;
+						sumSquaresStatesOnly += st * st;
+						allstates |= st;
+					}
 				}
 			}
 		return "getNumChars " + getNumChars()+ " numChars " + numChars  + " getNumTaxa " + getNumTaxa()  + " numTaxa " + numTaxa + "   short " + usingShortMatrix() + "   bits " + allData + "   states " + allstates + "   sumSquaresStatesOnly " +  sumSquaresStatesOnly + " sumSquares " + sumSquares + " longCompressibleToShort " + longCompressibleToShort() + " usingShortMatrix " + usingShortMatrix();
@@ -2854,6 +2857,9 @@ public class CategoricalData extends CharacterData {
 			}
 			setState(ic,it1,sMerged);
 		}
+		Associable tAssociableForMatrix = getTaxaInfo(false);
+		if (tAssociableForMatrix != null)
+			tAssociableForMatrix.mergeParts(it1, it2);
 		return mergedAssigned;
 	}
 

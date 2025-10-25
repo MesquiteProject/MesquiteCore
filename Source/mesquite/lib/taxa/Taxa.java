@@ -108,33 +108,33 @@ public class Taxa extends FileElement implements NameableWithNotify {
 			}
 		}
 	}
- 	/*.................................................................................................................*/
- 	/** returns the given specs set from the list of specs sets; if there isn't one, make one*/
-  	public SpecsSet getOrMakeCurrentSpecsSet(Class type){  
-  		SpecsSet specsSet = (SpecsSet)getCurrentSpecsSet(type);
-  		if (specsSet != null)
-  			return specsSet;
+	/*.................................................................................................................*/
+	/** returns the given specs set from the list of specs sets; if there isn't one, make one*/
+	public SpecsSet getOrMakeCurrentSpecsSet(Class type){  
+		SpecsSet specsSet = (SpecsSet)getCurrentSpecsSet(type);
+		if (specsSet != null)
+			return specsSet;
 		try {
 			if (ObjectSpecsSet.class.isAssignableFrom(type))
 				specsSet = (SpecsSet)type.getDeclaredConstructor(String.class, int.class, Object.class).newInstance("Untitled", getNumberOfParts(), null);
 			else if (BitsSpecsSet.class.isAssignableFrom(type))
 				specsSet = (SpecsSet)type.getDeclaredConstructor(String.class, int.class).newInstance("Untitled", getNumberOfParts());
-		if (specsSet instanceof TaxaSpecsSet){
-			((TaxaSpecsSet)specsSet).setTaxa(this);
-		}
-		specsSet.addToFile(getFile(), getProject(), getProject().getCoordinatorModule().findElementManager(type));
-		setCurrentSpecsSet(specsSet, type);
+			if (specsSet instanceof TaxaSpecsSet){
+				((TaxaSpecsSet)specsSet).setTaxa(this);
+			}
+			specsSet.addToFile(getFile(), getProject(), getProject().getCoordinatorModule().findElementManager(type));
+			setCurrentSpecsSet(specsSet, type);
 		}
 		catch (Exception e){
-			System.err.println("ERROR: Exception " + e.getClass() + " in making " + type + "\n");
+			MesquiteMessage.sys_err_println("ERROR: Exception " + e.getClass() + " in making " + type + "\n");
 			if (MesquiteTrunk.developmentMode)
 				MesquiteMessage.printStackTrace(e);
 		}
 		return specsSet;
-		
+
 	}
 
-/* ................................................................................................................. */
+	/* ................................................................................................................. */
 	public String searchData(String s, MesquiteString commandResult) {
 		if (commandResult != null)
 			commandResult.setValue((String) null);
@@ -558,7 +558,7 @@ public class Taxa extends FileElement implements NameableWithNotify {
 						return i;
 				}
 			}
-	}
+		}
 		for (int i = 0; i < numTaxa; i++){  //check UniqueID's
 			String uniqueID = taxon[i].getUniqueID();
 			if (uniqueID != null && taxonName.equals(uniqueID))
@@ -753,8 +753,8 @@ public class Taxa extends FileElement implements NameableWithNotify {
 	public void setName(String name) {
 		setName(name, true);
 	}
-	
-	
+
+
 	/* ................................................................................................................. */
 	public String getName() {
 		if (name == null)
@@ -988,7 +988,7 @@ public class Taxa extends FileElement implements NameableWithNotify {
 		return true;
 	}
 
-	
+
 	/* ................................................................................................................. */
 	/**
 	 * An equivalent to deleteParts but with notification added. Final because
@@ -1116,7 +1116,6 @@ public class Taxa extends FileElement implements NameableWithNotify {
 		if (inhibitEdit>0)
 			return false;
 		inFlux = true;
-
 		if (justAfter >= taxon.length)
 			justAfter = taxon.length - 1;
 		if (justAfter < 0)
@@ -1388,7 +1387,8 @@ public class Taxa extends FileElement implements NameableWithNotify {
 					&&  sChecksum == otherTaxon.getNameChecksum() 
 					&&  !otherTaxon.isNameNull() //(i < it || !otherTaxon.isNameDefault()) &&
 					&&  s.equals(otherTaxon.getName())
-					) { 
+					) 
+			{ 
 				return "The taxon name \"" + s + "\" for taxon " + (it + 1) + " is illegal because another taxon (#" + (i + 1) + ") already has it.  This may cause various problems and should be fixed.";
 			}
 		}

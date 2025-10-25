@@ -14,6 +14,7 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
 package mesquite.molec.lib;
 
 import mesquite.lib.MesquiteModule;
+import mesquite.lib.MesquiteString;
 
 
 /* ======================================================================== */
@@ -57,7 +58,7 @@ public abstract class Blaster extends MesquiteModule   {
 
 	public abstract void blastForMatches(String database, String blastType, String sequenceName, String sequence, boolean isNucleotides, int numHits, int maxTime, double eValueCutoff, int wordSize, StringBuffer blastResponse, boolean writeTime);
 
-	public abstract String getFastaFromIDs(String queryTaxonName, String[] idList,  boolean isNucleotides, StringBuffer fastaBlastResults, int databaseNumber);
+	public abstract String getFastaFromIDs(String queryTaxonName, String[] idList,  boolean isNucleotides, StringBuffer fastaBlastResults, int databaseNumber, MesquiteString foundTaxonName);
 
 	public abstract String getTaxonomyFromID(String id, boolean isNucleotides, boolean writeLog, StringBuffer report);
 

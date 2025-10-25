@@ -187,7 +187,7 @@ class ShadeNumbersDecorator extends TreeDecorator {
  		colors = new ColorDistribution();
 	}
 	public boolean requestTraceMode(){
-		return true;
+		return ownerModule.getShadeBranches();
 	}
 	/*.................................................................................................................*/
 	private void writeAtNode(NumberArray numbers,Graphics g, FontMetrics fm, int N,  Tree tree) {

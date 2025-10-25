@@ -183,7 +183,7 @@ public abstract class MesquiteTrunk extends MesquiteModule
 
 	//true if Mesquite should check website for notices
 	public static boolean phoneHome = true;
-	public static boolean reportUse = true;
+	public static boolean reportUse = true; 
 	public static PhoneHomeThread phoneHomeThread;
 	public static LinuxGWAThread linuxGWAThread;
 
@@ -331,7 +331,7 @@ public abstract class MesquiteTrunk extends MesquiteModule
 		MesquiteFile stored = findRecentFile(file, true);
 		if (stored==null) {
 			if (developmentMode)
-				System.err.println("Recent File changed but not found!!!");
+				MesquiteMessage.sys_err_println("Recent File changed but not found!!!");
 		}
 		else {
 			if (stored != null)

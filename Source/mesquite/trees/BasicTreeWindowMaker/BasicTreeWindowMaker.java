@@ -104,6 +104,7 @@ import mesquite.lib.duties.TreeDisplayAssistantAO;
 import mesquite.lib.duties.TreeDisplayAssistantD;
 import mesquite.lib.duties.TreeDisplayAssistantDI;
 import mesquite.lib.duties.TreeDisplayAssistantI;
+import mesquite.lib.duties.TreeDisplayAsstShowToggleable;
 import mesquite.lib.duties.TreeInfoPanelAssistant;
 import mesquite.lib.duties.TreeSource;
 import mesquite.lib.duties.TreeWDIAssistant;
@@ -544,7 +545,7 @@ public class BasicTreeWindowMaker extends TreeWindowMaker implements Commandable
 			}
 			for (int i = 0; i < getNumberOfEmployees(); i++) {
 				Object e = getEmployeeVector().elementAt(i);
-				if (e instanceof TreeWindowAssistantC || e instanceof TreeWindowAssistantN || e instanceof TreeWindowAssistantA) {
+				if (e instanceof TreeWindowAssistantC || e instanceof TreeWindowAssistantN || e instanceof TreeWindowAssistantA || e instanceof TreeWindowAssistantSGA) {
 					if (((TreeWindowAssistant)e).rehireMeInSnapshot())   
 						temp.addLine("\tnewWindowAssistant ", ((MesquiteModule) e));
 				}
@@ -738,6 +739,25 @@ public class BasicTreeWindowMaker extends TreeWindowMaker implements Commandable
 		else if (checker.compare(this.getClass(), "Hires a tree window assistant module", "[name of assistant module]", commandName, "newWindowAssistant")) {
 			return basicTreeWindow.doCommand(commandName, arguments, checker);
 		}
+		else if (checker.compare(this.getClass(), "Controls whether to show/hide", "[name of assistant module]", commandName, "showExtra")) {
+			int which = MesquiteInteger.fromString(arguments);
+			if (MesquiteInteger.isCombinable(which)){
+				ListableVector emp = getEmployeeVector();
+				int count = 0;
+				for (int i = 0; i<emp.size(); i++){
+					Object mb = emp.elementAt(i);
+					if (mb instanceof TreeDisplayAsstShowToggleable){
+						if (count == which){
+							TreeDisplayAsstShowToggleable tdawsc = (TreeDisplayAsstShowToggleable)mb;
+							tdawsc.toggleShowExtras();
+							return null;
+							
+						}
+						count++;
+					}
+				}
+			}
+		}
 		else
 			return super.doCommand(commandName, arguments, checker);
 		return null;
@@ -899,6 +919,11 @@ public class BasicTreeWindowMaker extends TreeWindowMaker implements Commandable
 				basicTreeWindow.addAssistant(tca);
 			}
 		}
+		
+		//println("@
+		MesquiteSubmenuSpec showHideSM = addSubmenu(null, "Show/Hide", new MesquiteCommand("showExtra", this), getEmployeeVector());
+		showHideSM.setListableFilter(TreeDisplayAsstShowToggleable.class);
+		
 		btw.sizeDisplay();
 		MesquiteMenuSpec aux = addAuxiliaryMenu("Analysis:Tree");
 		MesquiteCommand mC = makeCommand("newWindowAssistant", basicTreeWindow);
@@ -2459,13 +2484,10 @@ class BasicTreeWindow extends MesquiteWindow implements Fittable, MesquiteListen
 
 		if (tce == null)
 			return;
-		if (tree != null)
+		treeDisplay.addExtra(tce);
+		if (tree != null) {
 			tce.setTree(tree);
-
-		if (tce != null){
-			treeDisplay.addExtra(tce);
-			if (tree != null)
-				treeDisplay.accumulateRequestsFromExtras(tree);
+			treeDisplay.accumulateRequestsFromExtras(tree);
 		}
 		checkPanelPositionsLegal();
 		treeDisplay.pleaseUpdate(false);
@@ -3007,6 +3029,9 @@ class BasicTreeWindow extends MesquiteWindow implements Fittable, MesquiteListen
 				int numTrees = treeSourceTask.getNumberOfTrees(taxa);
 				goToTreeNumber(numTrees-1, true);
 			}
+			else
+				goToTreeNumber(0, true);
+				
 			setScrollEnabled(!windowModule.pinToLastTree.getValue());
 		}
 		else if (checker.compare(this.getClass(), "Goes to the next tree in the tree source.", null, commandName, "goToNextTree")) {
@@ -4097,7 +4122,7 @@ class BasicTreeWindow extends MesquiteWindow implements Fittable, MesquiteListen
 		taxonTouched = -1;
 		MesquiteDouble fraction = new MesquiteDouble();
 		int branchFound = findBranch(x, y, fraction);
-		if (branchFound != 0) { // in a branch
+	if (branchFound != 0) { // in a branch
 			branchFrom = branchFound;
 			if (currentTreeTool.informTransfer()) {
 				// branchFrom=branchFound;
@@ -4505,7 +4530,13 @@ class BasicTreeWindow extends MesquiteWindow implements Fittable, MesquiteListen
 		boolean commandDown = MesquiteEvent.commandOrControlKeyDown(modifiers);
 		if (!shiftDown && !commandDown)
 			taxa.deselectAll();
-		if (commandDown)
+		int node = tree.nodeOfTaxonNumber(taxon);
+		if (tree.isLeftmostTerminalOfCollapsedClade(node)){
+			// clade is collapsed; operate on whole clade
+				taxa.setSelected(taxon, true);
+				selectAllTaxaInClade(tree, node);
+		}
+		else if (commandDown)
 			taxa.setSelected(taxon, !taxa.getSelected(taxon));
 		else
 			taxa.setSelected(taxon, true);

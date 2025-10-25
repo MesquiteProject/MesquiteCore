@@ -12,6 +12,8 @@ This source code and its compiled class files are free and modifiable under the 
 GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
  */package mesquite.meristic.lib;
 
+import mesquite.categ.lib.CategoricalData;
+import mesquite.categ.lib.CategoricalState;
 import mesquite.lib.CompatibilityTest;
 import mesquite.lib.EmployerEmployee;
 import mesquite.lib.MesquiteProject;
@@ -28,6 +30,8 @@ public class RequiresExactlyMeristicData extends CompatibilityTest {
 			return true;
 		if (obj instanceof RequiresExactlyMeristicData)
 			return true;
+		if (obj instanceof CharacterData || obj instanceof CharacterState)
+			return (obj.getClass() == MeristicState.class || obj.getClass() == MeristicData.class);
 		if (obj instanceof CompatibilityTest)
 			return false;
 		if (!(obj instanceof Class))

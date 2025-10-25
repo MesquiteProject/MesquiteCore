@@ -141,20 +141,20 @@ public class Mesquite extends MesquiteTrunk
 	}
 	/*.................................................................................................................*/
 	public String getVersion() {
-		return "4.01";
+		return "4.02";
 	}
 
 	/*.................................................................................................................*/
 	public int getVersionInt() {
-		return 401;
+		return 402;
 	}
 	/*.................................................................................................................*/
 	public double getMesquiteVersionNumber(){
-		return 4.01;
+		return 4.02;
 	}
 	/*.................................................................................................................*/
 	public String getDateReleased() {
-		return "July 2025"; //"April 2007";
+		return "October 2025"; //"April 2007";
 	}
 	/*.................................................................................................................*/
 	public boolean isPrerelease(){
@@ -454,6 +454,7 @@ public class Mesquite extends MesquiteTrunk
 		addToStartupNotices("==================================\n");
 
 		if (verboseStartup) System.out.println("main init 6h");
+		
 		setSuggestedDirectory(mesquiteDirectoryPath + "examples");
 		if (prefsFile.exists() || prefsFileXML.exists()) {
 			loadPreferences();
@@ -465,7 +466,7 @@ public class Mesquite extends MesquiteTrunk
 		if (verboseStartup) System.out.println("main init 7");
 
 
-		String logPath = supportFilesPath + sep + MesquiteTrunk.logFileName; 
+	String logPath = supportFilesPath + sep + MesquiteTrunk.logFileName; 
 		File logFile = new File(logPath);
 
 		boolean logFileExistsButCantWrite = (logFile.exists() &&!logFile.canWrite());
@@ -835,8 +836,11 @@ public class Mesquite extends MesquiteTrunk
 		logln("====================================");
 		if (!isApplet()){
 			//setModuleWindow(null);
-			BrowseHierarchy projectHierarchyTask= (BrowseHierarchy)hireEmployee(BrowseHierarchy.class, "Hierarchy browser");
+			/* As of 4.02 this was deleted, as it's probably rarely used, and is an updating nightmare at times.
+			 * BrowseHierarchy projectHierarchyTask= (BrowseHierarchy)hireEmployee(BrowseHierarchy.class, "Hierarchy browser");
 			projectsWindow = new ProjectTreeWindow(this, projectHierarchyTask);
+			*/
+			
 			//setModuleWindow(projectsWindow);
 			//projectsWindow.setVisible(true);
 			showLogWindow();
@@ -1222,7 +1226,6 @@ public class Mesquite extends MesquiteTrunk
 		}
 		else if ("suggestedDirectory".equalsIgnoreCase(tag)){
 			MesquiteTrunk.setSuggestedDirectory(StringUtil.cleanXMLEscapeCharacters(content));
-			System.err.println("getSuggestedDirectory " + MesquiteTrunk.getSuggestedDirectory());
 		}
 
 		/* EMBEDDED disable if embedded */

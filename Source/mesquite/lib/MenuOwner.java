@@ -289,7 +289,7 @@ public abstract class MenuOwner implements Doomable { // EMBEDDED: extends Apple
 			resetWindowsMenuPending = true; // set this so will later know that full reset is needed
 	}
 
-	static int allMenuBarRests = 0;
+	public static long allMenuBarResetsTotal = 0;
 
 	/*............................................................................. */
 	/** This requests that ALL menu bars be recomposed. */
@@ -298,7 +298,7 @@ public abstract class MenuOwner implements Doomable { // EMBEDDED: extends Apple
 			return;
 		resetWindowsMenuPending = false;
 		if (menuSuppression == 0) {
-			allMenuBarRests++;
+			allMenuBarResetsTotal++;
 			MesquiteTimer timer = new MesquiteTimer();
 			if (MesquiteTrunk.debugMode)
 				timer.start();
@@ -319,7 +319,7 @@ public abstract class MenuOwner implements Doomable { // EMBEDDED: extends Apple
 			}
 			MesquiteTrunk.resumeResetCheckMenuItems();
 			if (MesquiteTrunk.debugMode) {
-				MesquiteModule.mesquiteTrunk.logln("\n>>>- All Menus Reset (" + allMenuBarRests
+				MesquiteModule.mesquiteTrunk.logln("\n>>>- All Menus Reset (" + allMenuBarResetsTotal
 						+ " times). This reset took " + timer.timeSinceLastInSeconds() + " seconds -<<< \n"); // temporary;
 				// to
 				// check
@@ -530,9 +530,15 @@ public abstract class MenuOwner implements Doomable { // EMBEDDED: extends Apple
 	}
 
 	/*............................................................................. */
-	/** Sets whether module's menu items are to appear in menubar or not. */
+	/** Sets whether module's menu items are to appear in menubar or not. Applies also to employees. */
 	public final void setUseMenubar(boolean useMenuBar) {
 		this.useMenuBar = useMenuBar;
+	}
+	/*............................................................................. */
+	/** Sets whether module has UI. */
+	boolean suppressUI = false;
+	public final void suppressUI(boolean suppress) {
+		this.suppressUI = suppress;
 	}
 
 	/*............................................................................. */
@@ -1154,6 +1160,7 @@ public abstract class MenuOwner implements Doomable { // EMBEDDED: extends Apple
 
 	Vector embeddedMenusVector = null;
 
+	/*-------------------------------------------------------------*/
 	public Vector composeEmbeddedMenuBar(MesquiteWindow whichWindow) {
 		MesquitePopup menu;
 		Vector menuVector = new Vector();
@@ -1333,8 +1340,7 @@ public abstract class MenuOwner implements Doomable { // EMBEDDED: extends Apple
 	}
 
 	private MesquitePopup fillWindowMenu(Vector menuBar, MesquiteWindow whichWindow) {
-		MesquitePopup wMenu = MesquitePopup.getPopupMenu(new MesquiteMenuSpec(null, "Window", module),
-				whichWindow.getInfoBar());
+		MesquitePopup wMenu = MesquitePopup.getPopupMenu(new MesquiteMenuSpec(null, "Window", module),whichWindow.getInfoBar());
 		if (whichWindow != null) {
 			if (whichWindow.permitViewMode()) {
 				MesquiteSubmenu setViewModeMenu = MesquiteSubmenu.getSubmenu("View Mode", wMenu, module);
@@ -1589,7 +1595,8 @@ public abstract class MenuOwner implements Doomable { // EMBEDDED: extends Apple
 		else {
 			if (menuTracing)
 				MesquiteMessage.notifyProgrammer("Composing menu of " + module.getName());
-			addMyMenuItems(menu);
+			
+				addMyMenuItems(menu);
 			ListableVector L = module.getEmployeeVector();
 			if (L != null) {
 				int num = L.size();
@@ -3333,7 +3340,12 @@ public abstract class MenuOwner implements Doomable { // EMBEDDED: extends Apple
 			}
 
 		} catch (Exception e) {
-			MesquiteMessage.warnProgrammer("Exception in ListableVector");
+			if (MesquiteTrunk.developmentMode)
+				MesquiteMessage.printStackTrace("Exception in surveySpecs of MenuOwner");
+			else {
+				MesquiteMessage.warnProgrammer("Exception in surveySpecs of MenuOwner");
+			e.printStackTrace();
+			}
 		}
 
 	}

@@ -18,6 +18,8 @@ import java.awt.Font;
 
 import javax.swing.JEditorPane;
 
+import mesquite.lib.MesquiteMessage;
+
 //workaround for crashes on OS X && Linux  [Search for MQLINUX]
 public class MQJEditorPane extends JEditorPane implements MQComponent{
 	public MQJEditorPane(String a, String b){
@@ -39,7 +41,7 @@ public class MQJEditorPane extends JEditorPane implements MQComponent{
 			return super.getScrollableTracksViewportWidth();
 		}
 		catch(Exception e){
-			System.err.println("Throwable in " + getClass() + ": " + e);
+			MesquiteMessage.sys_err_println("Throwable in " + getClass() + ": " + e);
 		}
 		return true;
 	}
@@ -48,7 +50,7 @@ public class MQJEditorPane extends JEditorPane implements MQComponent{
 			return super.getScrollableTracksViewportHeight();
 		}
 		catch(Exception e){
-			System.err.println("Throwable in " + getClass() + ": " + e);
+			MesquiteMessage.sys_err_println("Throwable in " + getClass() + ": " + e);
 	}
 
 		return true;

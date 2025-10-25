@@ -171,6 +171,11 @@ public abstract class TreeDrawing  {
 	public  boolean isInTerminalBox(Tree tree, int node, int xPos, int yPos){
 		return false;
 	}
+	
+	//returns number of taxon space units for width of triangle. Return 0 if don't use triangle.
+	public double triangleWidthInCollapsed(){  //drawing can override; might affect taxon spacing
+		return 0;
+	}
 	/* ===###################################=== */
 	/*.................................................................................................................*/
 	public void translateAll(int shiftX, int shiftY){
@@ -251,6 +256,39 @@ public abstract class TreeDrawing  {
 	/** Draw tree in graphics context */
 	public abstract void drawTree(Tree tree, int drawnRoot, Graphics g) ;
 
+	/*.................................................................................................................*/
+	//to record branch colors, a TreeDrawing needs just override recordsBranchColors to return true, then call the record methods when colors are drawn
+	
+	public boolean recordsBranchColors(){
+		return false;
+	}
+	
+	Color[] recordedBranchColors;
+	public void recordBranchColor(Tree tree, int N, Color c){
+		if (recordedBranchColors == null || recordedBranchColors.length<tree.getNumNodeSpaces())
+			recordedBranchColors = new Color[tree.getNumNodeSpaces()];
+		recordedBranchColors[N] = c;
+	}
+	public Color getBranchColor(int N){
+		if (recordedBranchColors == null || N<0 || N>= recordedBranchColors.length)
+			return null;
+		return recordedBranchColors[N];
+	}
+	ColorDistribution[] recordedBranchFillColors;
+	public void recordBranchFillColors(Tree tree, int N, ColorDistribution c){
+		if (recordedBranchFillColors == null || recordedBranchFillColors.length<tree.getNumNodeSpaces())
+			recordedBranchFillColors = new ColorDistribution[tree.getNumNodeSpaces()];
+		recordedBranchFillColors[N] = c;
+	}
+	public void recordBranchFillColors(Tree tree, int N, Color c){
+		recordBranchFillColors(tree, N, new ColorDistribution(c));
+	}
+	public ColorDistribution getBranchFillColors(int N){
+		if (recordedBranchFillColors == null || N<0 || N>= recordedBranchFillColors.length)
+			return null;
+		return recordedBranchFillColors[N];
+	}
+	/*.................................................................................................................*/
 	/** Fill branch N with current color of graphics context */
 	public abstract void fillBranch(Tree tree, int N, Graphics g);
 
@@ -303,6 +341,7 @@ public abstract class TreeDrawing  {
 		}
 		else
 			g.setColor(Color.lightGray);
+		recordBranchFillColors(tree, N, Color.lightGray);
 		fillBranch(tree, N, g);
 		if (c!=null) g.setColor(c);
 	}

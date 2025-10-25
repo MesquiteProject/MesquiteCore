@@ -497,7 +497,7 @@ public class ExtensibleDialog extends MesquiteDialog implements ActionListener, 
 			g.drawLine(x1,y1,x2, y2);
 		}
 	}
-	
+
 	/*.................................................................................................................*/
 	public int getButtonNumber (String buttonLabel) {
 		if (buttonLabel == null)
@@ -580,7 +580,7 @@ public class ExtensibleDialog extends MesquiteDialog implements ActionListener, 
 	public void setCheckTextEdge(boolean cte){
 		checkTextEdge = cte;
 	}
-	
+
 	public void resetPrimaryButtonLabel(int buttonNumber, String label){
 		if (label == null)
 			return;
@@ -600,7 +600,7 @@ public class ExtensibleDialog extends MesquiteDialog implements ActionListener, 
 			if (button2 != null){
 				button2.setLabel(label);
 				buttonLabel2 = label;
-		}
+			}
 		}
 	}
 	public String getPrimaryButtonLabel(int buttonNumber){
@@ -617,7 +617,7 @@ public class ExtensibleDialog extends MesquiteDialog implements ActionListener, 
 		else if (buttonNumber == 2){
 			if (button2 != null){
 				return buttonLabel2;
-		}
+			}
 		}
 		return null;
 	}
@@ -1057,7 +1057,6 @@ public class ExtensibleDialog extends MesquiteDialog implements ActionListener, 
 		else
 			d.width += 20;
 
-
 		setDialogSize(d);
 		try {
 			outerContents.invalidate();
@@ -1065,7 +1064,7 @@ public class ExtensibleDialog extends MesquiteDialog implements ActionListener, 
 			doLayout();
 		}
 		catch (Throwable t){
-			System.err.println("Throwable in ExtensibleDialog: " + t);
+			MesquiteMessage.sys_err_println("Throwable in ExtensibleDialog: " + t);
 		}
 		MesquiteWindow.centerWindow(getParentDialog());
 		if (MesquiteTrunk.isMacOSXJaguar())
@@ -1287,7 +1286,7 @@ public class ExtensibleDialog extends MesquiteDialog implements ActionListener, 
 		if (justUpdateNames){  //this took some fiddling so as not to mess up the selection!
 			if (listables!=null){
 				if (MesquiteTrunk.developmentMode && listables.length != list.getItemCount())
-					System.err.println("ExtensibleDialog: resetList update with different array sizes (listables)");
+					MesquiteMessage.sys_err_println("ExtensibleDialog: resetList update with different array sizes (listables)");
 				for (int i = 0; i<listables.length && i< list.getItemCount(); i++)
 					if ( list.getItem(i)== null || !list.getItem(i).equals(listables[i].getName())){
 						list.add(listables[i].getName(), i);
@@ -1296,7 +1295,7 @@ public class ExtensibleDialog extends MesquiteDialog implements ActionListener, 
 			}
 			else if (strings!=null){
 				if (MesquiteTrunk.developmentMode && strings.length != list.getItemCount())
-					System.err.println("ExtensibleDialog: resetList update with different array sizes (strings)");
+					MesquiteMessage.sys_err_println("ExtensibleDialog: resetList update with different array sizes (strings)");
 				for (int i = 0; i<strings.length && i< list.getItemCount(); i++)
 					if ( list.getItem(i)== null || !list.getItem(i).equals(strings[i])){
 						list.add(strings[i], i);
@@ -1741,13 +1740,13 @@ public class ExtensibleDialog extends MesquiteDialog implements ActionListener, 
 		if (fieldLength>=1) {
 			if (MesquiteTrunk.isLinux())
 				newPanel.setLayout(new GridLayout(1,1));
-				
+
 			textField =new MesquitePasswordField(initialString,fieldLength);
 			if (MesquiteTrunk.isLinux()) {
 				textField.setSize(new Dimension(dialogWidth-sideBuffer*2, textField.getSize().height));
 				newPanel.setSize(textField.getSize());
 			}
-			
+
 		}
 		else {
 			newPanel.setLayout(new GridLayout(1,1));
@@ -1765,7 +1764,7 @@ public class ExtensibleDialog extends MesquiteDialog implements ActionListener, 
 				textField.setCaretPosition(0);
 		}
 		catch (Exception e){
-			System.err.println("Throwable in ExtensibleDialog: " + e);
+			MesquiteMessage.sys_err_println("Throwable in ExtensibleDialog: " + e);
 		}
 		constraints.fill=GridBagConstraints.BOTH;
 		return textField;
@@ -1801,7 +1800,7 @@ public class ExtensibleDialog extends MesquiteDialog implements ActionListener, 
 				textField.setCaretPosition(0);
 		}
 		catch (Exception e){
-			System.err.println("Throwable in ExtensibleDialog: " + e);
+			MesquiteMessage.sys_err_println("Throwable in ExtensibleDialog: " + e);
 		}
 		constraints.fill=GridBagConstraints.BOTH;
 		return textField;
@@ -2099,10 +2098,12 @@ public class ExtensibleDialog extends MesquiteDialog implements ActionListener, 
 			pack();
 			Dimension d = getPreferredSize();
 			dialogWidth = d.width;
+
 			if (dialogWidth<minDialogWidthWithCanvas) //this had been hardcoded at 240
 				dialogWidth = minDialogWidthWithCanvas;
 			else if (dialogWidth> maxDialogWidthWithCanvas) 
 				dialogWidth =maxDialogWidthWithCanvas;
+
 			if (font==null)
 				font = getFont();
 			MesquiteTextCanvas textCanvas = MesquiteTextCanvas.getTextCanvas(dialogWidth-sideBuffer*2, font, message);
@@ -2321,7 +2322,7 @@ public class ExtensibleDialog extends MesquiteDialog implements ActionListener, 
 	/** This displays the help note.  If you override this, make sure you call super.actionPerformed(e) at the end of your method so that the help system still works */
 	public  void actionPerformed(ActionEvent e) {
 		if   ("?".equals(e.getActionCommand())) {
-			
+
 			MesquiteTrunk.mesquiteTrunk.alertHTML(getParentDialog(), getHelpString(),"Mesquite Help", null, helpWidth, helpHeight);
 			toFront();
 		}

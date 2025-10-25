@@ -17,6 +17,7 @@ package mesquite.genomic.IncludeFlippedFastaFiles;
 import mesquite.genomic.CombineFlippedFastas.CombineFlippedFastas;
 import mesquite.lib.MesquiteFile;
 import mesquite.lib.StringUtil;
+import mesquite.lib.characters.CharacterData;
 import mesquite.lib.duties.FileAssistantFM;
 
 /* ======================================================================== */
@@ -24,13 +25,15 @@ public class IncludeFlippedFastaFiles extends FileAssistantFM {
 	
 	/*.................................................................................................................*/
 	public boolean startJob(String arguments, Object condition, boolean hiredByName) {
-		String directoryPath = MesquiteFile.chooseDirectory("Choose folder containing FASTA files, one per taxon:", null); 
+		String directoryPath = MesquiteFile.chooseDirectory("Choose folder containing multi-locus FASTA files, one per taxon:", null); 
 		if (StringUtil.blank(directoryPath))
 			return false;
-		CombineFlippedFastas importerTask = (CombineFlippedFastas)hireNamedEmployee(CombineFlippedFastas.class, "#ImportByTaxonFastas");
+		CombineFlippedFastas importerTask = (CombineFlippedFastas)hireNamedEmployee(CombineFlippedFastas.class, "#CombineFlippedFastas");
 		if (importerTask == null)
 			return false;
+		//importerTask.queryReplacementRules = true;
 		importerTask.processDirectory(directoryPath, getProject());
+		iQuit();
 		return true;
 	}
 
@@ -40,11 +43,11 @@ public class IncludeFlippedFastaFiles extends FileAssistantFM {
 	}
 	/*.................................................................................................................*/
 	public String getNameForMenuItem() {
-		return "Include Data from Flipped FASTAs (One per Taxon)...";
+		return "Include Data from Single-Taxon (Multi-Locus) FASTAs...";
 	}
 	/*.................................................................................................................*/
 	public String getName() {
-		return "Include Data from Flipped FASTAs";
+		return "Include Data from Single-Taxon (Multi-Locus) FASTAs";
 	}
 	/*.................................................................................................................*/
 	/** returns the version number at which this module was first released.  If 0, then no version number is claimed.  If a POSITIVE integer
@@ -56,10 +59,13 @@ public class IncludeFlippedFastaFiles extends FileAssistantFM {
 	/*.................................................................................................................*/
 	/** returns an explanation of what the module does.*/
 	public String getExplanation() {
-		return "Imports all \"flipped\" FASTA files in a folder, each containing the sequences of many loci for a single taxon, to merge them into the current project, matching the taxa and sequences by name to current taxa and matrices."
-				+" Each input file should be named by the taxon name, and each sequence should be named for its locus. "
-				+" Tuned for phylogenomics workflows that maintain a library of flipped fasta files that can be combined for varied studies with different taxon sampling. "
-				+" Flipped FASTA files can be produced using File, Export, Flipped FASTA files (One per taxon). (Note: To establish a new project rather than merge into an existing, use Combine Flipped FASTA Files in the Open Special submenu.)" ;
+		return "Imports all single-taxon FASTA files in a folder, to merge their taxa and sequences into the current project. "
+		+"Each single-taxon FASTA file contains the sequences of many loci for a single taxon."
+		+" Each input file should be named by the taxon name, and each sequence within the file should be named for its locus. "
+		+" As each file is read, sequences are matched by name to the locus among those already present."
+		+" Tuned for phylogenomics workflows that maintain a library of single-taxon fasta files that "
+		+"can be combined for varied studies with different taxon sampling. "
+		+" Single-Taxon FASTA files can be produced using File, Export, Single-Taxon (Multi-Locus) FASTA files.";
 	}
 
 }

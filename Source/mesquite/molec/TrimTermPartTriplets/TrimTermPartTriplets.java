@@ -112,7 +112,7 @@ public class TrimTermPartTriplets extends DNADataAlterer  implements AltererDNAC
    	}
 	/*.................................................................................................................*/
 	public String getName() {
-		return "Remove Terminal Incomplete Codons";
+		return "Trim Terminal Incomplete Codons";
 	}
 	/*.................................................................................................................*/
 	/** returns an explanation of what the module does.*/

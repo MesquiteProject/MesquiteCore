@@ -26,5 +26,7 @@ public interface Pausable {
 	public void pause();
 	/** to ask a Pausable to unpause (i.e. to resume regular activity)*/
 	public void unpause();
+	/** to ask a Pausable whether it's paused.*/
+	public boolean isPaused();
 }
 

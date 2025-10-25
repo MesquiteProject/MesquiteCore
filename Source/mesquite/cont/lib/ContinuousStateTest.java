@@ -16,6 +16,8 @@ package mesquite.cont.lib;
 import mesquite.lib.CompatibilityTest;
 import mesquite.lib.EmployerEmployee;
 import mesquite.lib.MesquiteProject;
+import mesquite.lib.characters.CharacterData;
+import mesquite.lib.characters.CharacterState;
 /* ======================================================================== */
 /** An object a module can create and pass back to store in module info.  Tests whether module will be compatible with
 passed object.  Classes of modules will have known ways of responding to particular classes of objects, e.g. character sources
@@ -26,6 +28,8 @@ public class ContinuousStateTest extends CompatibilityTest {
 			return true;
 		if (obj instanceof ContinuousStateTest)
 			return true;
+		if (obj instanceof CharacterData || obj instanceof CharacterState)
+			return (obj instanceof ContinuousState || obj instanceof ContinuousData);
 		if (obj instanceof CompatibilityTest)
 			return false;
 		if (!(obj instanceof Class))

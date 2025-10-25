@@ -293,12 +293,14 @@ public class AlignUtil {
 		}
 	}
 	
+	
+	
 	/** This takes the original data matrix "origData", and re-aligns the block from icOrigStart, icOrigEnd, itOrigStart, and itOrigEnd 
 	 * according to the alignment present in alignedSequences.   Note that alignedData need not be exactly the same same size as the block.  
 	 * In particular, sometimes there will be more sequences in alignedSequences than in origData.  The sequences to which origData should be
 	 * matched should start within alignedSequences at itAlignedStart.
 	 * */
-	public Rectangle forceAlignment(MolecularData origData, int icOrigStart, int icOrigEnd, int itOrigStart, int itOrigEnd, int itAlignedStart, Object alignedSequences){
+	public Rectangle forceAlignment(MolecularData origData, int icOrigStart, int icOrigEnd, int itOrigStart, int itOrigEnd, int itAlignedStart, Object alignedSequences, boolean checkForMismatch){
 		if (!MesquiteInteger.isCombinable(icOrigStart) || icOrigStart<0)
 			icOrigStart = 0;
 		if (!MesquiteInteger.isCombinable(icOrigEnd) || icOrigEnd<0)
@@ -401,16 +403,17 @@ public class AlignUtil {
 						}
 					}
 				}
-				for (int ic = 0; ic < numCharsAligned; ic++)
-					if (!sameState(origData, ic+icOrigStart, itOrig, alignedSequences, ic, itAligned)) {
-						if (!failed){ //firsttime
-							rect = new Rectangle(ic+icOrigStart, itOrig , ic, itAligned);
+				if (checkForMismatch)
+					for (int ic = 0; ic < numCharsAligned; ic++)
+						if (!sameState(origData, ic+icOrigStart, itOrig, alignedSequences, ic, itAligned)) {
+							if (!failed){ //firsttime
+								rect = new Rectangle(ic+icOrigStart, itOrig , ic, itAligned);
+							}
+							failed = true;
+							failedReportString = "At least one site has had its character state changed (site " + (ic+1) + " of taxon " + (itOrig+1) + "). ";
+							break;
 						}
-						failed = true;
-						failedReportString = "At least one site has had its character state changed (site " + (ic+1) + " of taxon " + (itOrig+1) + "). ";
-						break;
-					}
-				
+
 				
 			}
 		}
@@ -575,7 +578,7 @@ public class AlignUtil {
 		return (buttonPressed.getValue()==0);
 	}
 	/*.................................................................................................................*/
-	public static boolean integrateAlignment(long[][] alignedMatrix, MolecularData data, int icStart, int icEnd, int itStart, int itEnd){
+	public static boolean integrateAlignment(long[][] alignedMatrix, MolecularData data, int icStart, int icEnd, int itStart, int itEnd, boolean checkForMismatch){
 		if (alignedMatrix == null || data == null)
 			return false;
 		AlignUtil util = new AlignUtil();
@@ -588,8 +591,8 @@ public class AlignUtil {
 		else {
 			wasSel = false;
 		}
-		MesquiteTrunk.mesquiteTrunk.logln("Alignment for " + (icEnd-icStart+1) + " sites; aligned to " + alignedMatrix.length + " sites.");
-		problem = util.forceAlignment(data, icStart, icEnd, itStart, itEnd, 0, alignedMatrix);
+		MesquiteTrunk.mesquiteTrunk.logln("Alignment for " + (icEnd-icStart+1) + " sites; aligned to " + alignedMatrix.length + " sites.", MesquiteMessage.LOW_PRIORITY);
+		problem = util.forceAlignment(data, icStart, icEnd, itStart, itEnd, 0, alignedMatrix, checkForMismatch);
 		if (wasSel) {
 			data.deselectAll();
 			int numCharsOrig = icEnd-icStart+1;
@@ -599,8 +602,8 @@ public class AlignUtil {
 				data.setSelected(i, true);
 
 		}
-		MesquiteTrunk.mesquiteTrunk.logln("Alignment completed for " + data.getName());
-		data.removeCharactersThatAreEntirelyGaps(icStart, icEnd, true);  // added 1 June 2016
+		MesquiteTrunk.mesquiteTrunk.logln("Alignment completed for " + data.getName(), MesquiteMessage.LOW_PRIORITY);
+		data.removeCharactersThatAreEntirelyGaps(icStart, icEnd, true);  // added 1 June 2016 
 
 		return true;
 	}	

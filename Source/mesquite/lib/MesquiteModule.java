@@ -86,12 +86,12 @@ public abstract class MesquiteModule extends EmployerEmployee implements Command
 	/*.................................................................................................................*/
 	/** returns build date of the Mesquite system (e.g., "22 September 2003") */
 	public final static String getBuildDate() {
-		return "9 July 2025";
+		return "24 October 2025";
 	}
 	/*.................................................................................................................*/
 	/** returns version of the Mesquite system */
 	public final static String getMesquiteVersion() {
-		return "4.01";
+		return "4.02";
 	}
 	/*.................................................................................................................*/
 	/** returns letter in the build number of the Mesquite system (e.g., "e" of "e58") */
@@ -104,7 +104,7 @@ public abstract class MesquiteModule extends EmployerEmployee implements Command
 	public final static int getBuildNumber() {
 		//as of 26 Dec 08, build naming changed from letter + number to just number.  Accordingly j105 became 473, based on
 		// highest build numbers of d51+e81+g97+h66+i69+j105 + 3 for a, b, c
-		return 1092;  
+		return 1109;  
 	}
 	//0.95.80    14 Mar 01 - first beta release 
 	//0.96  2 April 01 beta  - second beta release
@@ -161,7 +161,8 @@ public abstract class MesquiteModule extends EmployerEmployee implements Command
 	//3.80  = 950 released 10 Apr 2023
 	//3.81  = 955 released 20 Apr 2023
 	//4.0  = 1086 released 27 June 2025
-	// build 1000 1 October 2024
+	//4.01  = 1092 released 9 July 2025
+	//4.02  = 1109 released 24 October 2025
 
 	/*.................................................................................................................*/
 	/** returns a string if this is a special version of Mesquite */
@@ -190,6 +191,7 @@ public abstract class MesquiteModule extends EmployerEmployee implements Command
 	public static String beansReportURL = "http://mesquiteproject.org/pyMesquiteBeans";
 	/*.................................................................................................................*/
 
+	public static MesquiteTimer[] reusableTimers;
 
 	LeakFinder leakFinder = MesquiteTrunk.leakFinderObject;
 	/** Static storage so that everyone can find the trunk MesquiteModule object*/
@@ -341,9 +343,9 @@ public abstract class MesquiteModule extends EmployerEmployee implements Command
 	public void endJob() {
 		if (menuItemsSpecs != null) {
 			try {
-			menuItemsSpecs.dispose(true);
+				menuItemsSpecs.dispose(true);
 			} catch (Exception e) {
-				System.err.println("exception in endJob");
+				MesquiteMessage.sys_err_println("exception in endJob");
 			}
 		}
 		menuItemsSpecs = null;
@@ -434,6 +436,7 @@ public abstract class MesquiteModule extends EmployerEmployee implements Command
 		iQuit(true);
 	}
 
+	//protected MesquiteTimer[] timers = new MesquiteTimer[]{new MesquiteTimer(), new MesquiteTimer(), new MesquiteTimer(), new MesquiteTimer(), new MesquiteTimer(), new MesquiteTimer(), new MesquiteTimer(), new MesquiteTimer(), new MesquiteTimer(), new MesquiteTimer(), new MesquiteTimer(), new MesquiteTimer(), new MesquiteTimer()};
 
 	public final void iQuit(boolean giveMessage){
 		incrementMenuResetSuppression();
@@ -459,7 +462,6 @@ public abstract class MesquiteModule extends EmployerEmployee implements Command
 			}
 			System.out.println("Development mode; attempting formal exit as a stress test.");
 		}
-
 
 		dispose();
 		resetAllWindowsMenus();
@@ -504,7 +506,6 @@ public abstract class MesquiteModule extends EmployerEmployee implements Command
 					if (!employerDoomed) localRefEmployer.decrementEmployeeBrowserRefreshSuppression(MesquiteModule.class);
 					return;
 				}
-
 
 				MesquiteModuleInfo prevC = null;
 				while ((c = MesquiteTrunk.mesquiteModulesInfoVector.findNextModule(getHiredAs(), c)) != null) {  // if wasn't successful, find first that works.
@@ -738,6 +739,22 @@ public abstract class MesquiteModule extends EmployerEmployee implements Command
 			}
 		}
 	}
+	/*.................................................................................................................*/
+	/** A method an employee can call to know how many cores it can use. */
+	public int howManyCoresMayIUse() {
+		if (doomed)
+			return 0;
+		if (employer == null)
+			return MesquiteInteger.infinite;
+		int upstream = employer.howManyCoresMayIUse();
+		int mine = getMaxCoresForEmployee();
+		return MesquiteInteger.minimum(upstream, mine);
+	}
+
+	/**Override to limit employee core use */
+	public int getMaxCoresForEmployee() {
+		return MesquiteInteger.infinite;
+	} 
 
 	/*.................................................................................................................*/
 	/** A generic call to ask employer whether to handle something myself as employee */
@@ -808,6 +825,11 @@ public abstract class MesquiteModule extends EmployerEmployee implements Command
 	/** Returns whether this module is to remain one of the last employees of its employers. */
 	public boolean getIfLastEmployee(){
 		return lastEmployee;
+	}
+	/* ................................................................................................................. */
+	/** Returns the number of cores an employee can use.  */
+	public int maximumNumberOfCoresUsedByEmployee() {
+		return MesquiteInteger.infinite;
 	}
 	/*.................................................................................................................*/
 	/** Sets whether module has requested to enable auto-save of macros. */
@@ -910,8 +932,11 @@ public abstract class MesquiteModule extends EmployerEmployee implements Command
 		return createSupportDirectory(null);
 	}
 
+	public static boolean retainSupportDirectories = false;
 	/*.................................................................................................................*/
 	public void deleteSupportDirectory(){
+		if (MesquiteTrunk.developmentMode && retainSupportDirectories)
+			return;
 		String directoryPath = supportDirectoryPath();
 		MesquiteFile.deleteDirectory(directoryPath);
 	}
@@ -1320,7 +1345,7 @@ public abstract class MesquiteModule extends EmployerEmployee implements Command
 		if (!okToReportErrors()){
 			if (StringUtil.notEmpty(incompatibilityMessage))
 				discreetAlert(incompatibilityMessage + "\n" + rep);
-			System.err.println(origS);
+			MesquiteMessage.sys_err_println(origS);
 			if (!MesquiteThread.isScripting() && !AlertDialog.query(containerOfModule(), "Crash", s, "OK", "Force Quit"))
 				MesquiteTrunk.mesquiteTrunk.exit(true, 0);
 			return;
@@ -1342,7 +1367,7 @@ public abstract class MesquiteModule extends EmployerEmployee implements Command
 			if (reportErrorsAutomatically()) {
 				reportCrashToHome(e, s);
 			}
-			System.err.println(origS);
+			MesquiteMessage.sys_err_println(origS);
 
 			if (!MesquiteThread.isScripting() && !AlertDialog.query(containerOfModule(), "Crash", s, "OK", "Force Quit"))
 				MesquiteTrunk.mesquiteTrunk.exit(true, 0);
@@ -1433,7 +1458,7 @@ public abstract class MesquiteModule extends EmployerEmployee implements Command
 	}
 	/*.................................................................................................................*/
 
-	
+
 	/** posts a Bean to the bean log on the MesquiteServer*/
 	public void postBean(String notes, boolean notifyUser) {
 		if (!MesquiteTrunk.reportUse){
@@ -1548,6 +1573,15 @@ public abstract class MesquiteModule extends EmployerEmployee implements Command
 	/*.................................................................................................................*/
 	/** Places string in log AND in System.out.println.*/
 	public void log(String s) {
+		log(s, 0);
+	}
+	/*.................................................................................................................*/
+	/*.................................................................................................................*/
+	/** Places string in log AND in System.out.println.*/
+	public void log(String s, int level) {
+		int maxLevel = MesquiteThread.getThreadMaxLogLevel();
+		if (level > maxLevel)
+			return;
 		logNoEcho(s);
 		if (useSysOut())
 			System.out.print(s);
@@ -1571,11 +1605,19 @@ public abstract class MesquiteModule extends EmployerEmployee implements Command
 	}
 	/*.................................................................................................................*/
 	/** Places string and newline character in log AND in System.out.println.*/
-	public void logln(String s) {
+	public void logln(String s, int level) {
+		int maxLevel = MesquiteThread.getThreadMaxLogLevel();
+		if (level > maxLevel)
+			return;
 		loglnNoEcho(s);
 		MesquiteThread.loglnToThreadLogger(s);
 		if (useSysOut())
 			System.out.println(s);
+	}
+	/*.................................................................................................................*/
+	/** Places string and newline character in log AND in System.out.println.*/
+	public void logln(String s) {
+		logln(s, 0);
 	}
 	/*.................................................................................................................*/
 	/** Places string in log.*/
@@ -1977,7 +2019,7 @@ public abstract class MesquiteModule extends EmployerEmployee implements Command
 		else {
 			//AFTERDEMO:
 			if (commandName!=null && !checker.getAccumulateMode() && checker.warnIfNoResponse) {
-				MesquiteMessage.warnProgrammer("Module " + getName() + " (" + (getClass().getName()) + ") did not respond to command " + commandName + " with arguments (" + arguments + ")");
+				MesquiteMessage.warnProgrammer(" Module " + getName() + " (" + (getClass().getName()) + ") did not respond to command " + commandName + " with arguments (" + arguments + ")");
 			}
 		}
 		/* // the following should be place so that superclasses can respond to command, at least where latter is commandable

@@ -216,7 +216,7 @@ public class ContainedAssociates extends AnalyticalDrawTree {
 	}
 	/*.................................................................................................................*/
 	public   TreeDrawing createTreeDrawing(TreeDisplay treeDisplay, int numTaxa) { //TODO: should be passed scripting
-		treeDisplay.collapsedCladeNameAtLeftmostAncestor = false;
+		treeDisplay.collapsedCladeNameAtDescendant = false;
 		if (treeDisplay.getEdgeWidth()<minimalEdgeWidth) {
 			treeDisplay.setEdgeWidth(minimalEdgeWidth);
 		}
@@ -829,6 +829,7 @@ class WideTreeDrawing extends TreeDrawing  {
 		if (tree.withinCollapsedClade(node))
 			return;
 		if (tree.nodeExists(node)) {
+			recordBranchColor(tree, node, g.getColor());
 			if ((tree.getRooted() || tree.getRoot()!=node) && branchPoly[node]!=null) {
 				GraphicsUtil.fill(g,branchPoly[node]);
 
@@ -1568,6 +1569,10 @@ class WideTreeDrawing extends TreeDrawing  {
 		}
 	}
 
+	/*.................................................................................................................*/
+	public boolean recordsBranchColors(){
+		return true;
+	}
 
 	/*_________________________________________________*/
 	public  void fillTerminalBoxWithColors(Tree tree, int node, ColorDistribution colors, Graphics g){
@@ -1588,8 +1593,9 @@ class WideTreeDrawing extends TreeDrawing  {
 	}
 	/*_________________________________________________*/
 	public void fillBranchWithColors(Tree tree, int node, ColorDistribution colors, Graphics g) {
-		if (node>0 && (tree.getRooted() || tree.getRoot()!=node)) {
+		if (colors!=null && node>0 && (tree.getRooted() || tree.getRoot()!=node)) {
 			int numColors = colors.getNumColors();
+			recordBranchFillColors(tree, node, colors.clone());
 
 			for (int i=0; i<numColors; i++) {
 				UPdefineFillPoly(node, utilityPolygon, tree.nodeIsInternal(node), x[node], y[node], x[tree.motherOfNode(node)], y[tree.motherOfNode(node)], i+1, colors.getNumColors());
@@ -1603,6 +1609,7 @@ class WideTreeDrawing extends TreeDrawing  {
 	}
 	/*_________________________________________________*/
 	public   void fillBranch(Tree tree, int node, Graphics g) {
+		recordBranchFillColors(tree, node, g.getColor());
 		if (fillBranchPoly[node] !=null && node>0 && (tree.getRooted() || tree.getRoot()!=node)) {
 			GraphicsUtil.fill(g, fillBranchPoly[node]);
 		}

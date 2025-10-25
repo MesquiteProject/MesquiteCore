@@ -342,6 +342,7 @@ public class FileElement extends AssociableWithSpecs implements Identifiable, Li
 	}
 	
 
+	public static MesquiteTimer[] reusableTimers;
 	/*.................................................................................................................*/
 	/** Adds the element to the given file and project, and assigns it the given manager.  Also takes care of 
  	notifying the manager that it has been added using elementAdded(). */

@@ -9,7 +9,7 @@ Mesquite's web site is http://mesquiteproject.org
 
 This source code and its compiled class files are free and modifiable under the terms of 
 GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
-*/
+ */
 package mesquite.io.lib;
 /*~~  */
 
@@ -24,6 +24,7 @@ import mesquite.lib.duties.TaxaManager;
 import mesquite.lib.duties.TreesManager;
 import mesquite.lib.taxa.Taxa;
 import mesquite.lib.tree.Tree;
+import mesquite.lib.tree.TreeContext;
 import mesquite.lib.tree.TreeUtil;
 import mesquite.lib.tree.TreeVector;
 
@@ -31,44 +32,46 @@ import mesquite.lib.tree.TreeVector;
 /* ============  a file interpreter for phylip trees ============*/
 
 public abstract class InterpretPhylipTrees extends InterpretPhylip  {
-/*.................................................................................................................*/
+	/*.................................................................................................................*/
 	public void setPhylipState(CharacterData data, int ic, int it, char c){
 		//only deals with trees
 	}
 	public void readFile(MesquiteProject mf, MesquiteFile file, String arguments) {
 		readTreeFile( mf,  file,  arguments);
 	}
-/*........................../*.................................................................................................................*/
+	/*........................../*.................................................................................................................*/
 	public boolean canExportEver() {  
-		 return true;  //
+		return true;  //
 	}
-/*.................................................................................................................*/
+	/*.................................................................................................................*/
 	public boolean canExportProject(MesquiteProject project) {  
-		 return project.getNumberOfFileElements(TreeVector.class) > 0;  //
+		if (project.getNumberOfFileElements(TreeVector.class) > 0)
+			return true;
+		return false;
 	}
-/*.................................................................................................................*/
+	/*.................................................................................................................*/
 	public boolean canExportData(Class dataClass) {  
 		return false;
 	}
-/*.................................................................................................................*/
+	/*.................................................................................................................*/
 	public CharacterData createData(CharactersManager charTask, Taxa taxa) {  
-		 return null;  //
+		return null;  //
 	}
-/*.................................................................................................................*/
+	/*.................................................................................................................*/
 	public void appendPhylipStateToBuffer(CharacterData data, int ic, int it, MesquiteStringBuffer outputBuffer){
 		//
 	}
-/*.................................................................................................................*/
+	/*.................................................................................................................*/
 	public boolean getExportOptions(boolean dataSelected, boolean taxaSelected){
 		return true;
 	}	
-/*.................................................................................................................*/
+	/*.................................................................................................................*/
 	public CharacterData findDataToExport(MesquiteFile file, String arguments) { 
 		return null;
 	}
 	/*.................................................................................................................*/
 	public boolean importExtraFiles(MesquiteFile file, Taxa taxa, TreeVector trees) {  
-		 return true;
+		return true;
 	}
 	/*.................................................................................................................*/
 	/** returns whether this module is requesting to appear as a primary choice */
@@ -76,7 +79,7 @@ public abstract class InterpretPhylipTrees extends InterpretPhylip  {
 		return false;  
 	}
 
-/*.................................................................................................................*/
+	/*.................................................................................................................*/
 	public void readTreeFile(MesquiteProject mf, MesquiteFile file, String arguments) {
 		boolean enlargeTaxaBlock = false;
 		Taxa taxa = getProject().chooseTaxa(containerOfModule(), "From what taxa are these trees composed?");
@@ -93,7 +96,7 @@ public abstract class InterpretPhylipTrees extends InterpretPhylip  {
 			initializeTreeImport(file, taxa);
 			if (StringUtil.notEmpty(arguments) && arguments.indexOf("useStandardizedTaxonNames")>=0)
 				taxonNamer = new SimpleNamesTaxonNamer();
-				
+
 			TreeVector trees = TreeUtil.readNewickTreeFile(file, null, taxa, enlargeTaxaBlock, taxonNamer,arguments, getTreeNameBase());
 			if (trees != null)
 				trees.addToFile(file,mf,(TreesManager)findElementManager(TreeVector.class));
@@ -115,7 +118,7 @@ public abstract class InterpretPhylipTrees extends InterpretPhylip  {
 		}
 	}
 
- 	 
+
 }
-	
+
 

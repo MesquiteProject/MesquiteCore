@@ -90,6 +90,7 @@ public interface AdjustableTree extends Tree {
 	/** Move branch so as to excise branchFrom from its current position, and attach it to branch beneath
 	node branchTo.  If successful, rename as given (to ensure renamed before notified).*/
 	public boolean moveBranch(int branchFrom, int branchTo, boolean notify) ;
+	/*-----------------------------------------*/
 	/** Inserts a new node on the branch represented by "node", and returns the number of the inserted node */
 	public int insertNode(int node, boolean notify);
 	/** reroot the clade below node atNode.*/

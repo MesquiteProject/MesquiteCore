@@ -292,10 +292,15 @@ public class RecAncestralStates extends CharHistorySource {
 		return getHistoryName(tree, ic);
 	}
 	/** returns the name of histories for menu items, e.g. if each history represents a character, return "Character"*/
-	public  String getHistoryTypeName(){
+	public  String getHistorySubjectName(){
 		return "Character";
 	}
-	/*.................................................................................................................*/
+   	/** returns the name of method for histories, e.g. "Parsimony Reconstruction"*/
+   	public String getHistoryMethodName(){
+   		return assignTask.getName();
+   	}
+
+   	/*.................................................................................................................*/
 	public void employeeParametersChanged(MesquiteModule employee, MesquiteModule source, Notification notification) {
 		if (employee==characterSourceTask || employee == assignTask) {
 			currentObservedStates = null;  // to force retrieval of new observedStates

@@ -126,6 +126,20 @@ public class MatrixFlags {
 					return true;
 		return false;
 	}
+	public long numCharacterFlagsSet(){
+		return characterFlags.numBitsOn();
+	}
+	public long numTaxonFlagsSet(){
+		return taxonFlags.numBitsOn();
+	}
+	public long numCellFlagsSet(){
+		long count = 0;
+		for (int ic = 0; ic<cellFlags.length; ic++)
+			for (int it = 0; it<cellFlags[ic].length; it++)
+				if (cellFlags[ic][it])
+					count++;
+		return count;
+	}
 	public boolean anyFlagsSet(){
 		if (characterFlags.anyBitsOn())
 			return true;

@@ -44,6 +44,7 @@ import mesquite.lib.MesquiteProject;
 import mesquite.lib.MesquiteString;
 import mesquite.lib.MesquiteStringExplainable;
 import mesquite.lib.MesquiteThread;
+import mesquite.lib.MesquiteTimer;
 import mesquite.lib.MesquiteTrunk;
 import mesquite.lib.NEXUSFileParser;
 import mesquite.lib.NameReference;
@@ -415,7 +416,7 @@ public class ManageCharacters extends CharactersManager {
 		CharMatrixManager manager = findCharacterTypeManager(dataType);
 		if (manager == null ){
 			if (MesquiteTrunk.developmentMode)
-				System.err.println("No manager for matrices of type " + dataType  + " found");
+				MesquiteMessage.sys_err_println("No manager for matrices of type " + dataType  + " found");
 			return null;
 		}
 		return manager.getNewData(taxa, numChars);
@@ -460,7 +461,7 @@ public class ManageCharacters extends CharactersManager {
 			return null;
 		resetAllMenuBars();
 		NexusBlock nb = findNEXUSBlock(data);
-	if (nb==null) {
+		if (nb==null) {
 			CharactersBlock cb = new CharactersBlock(data.getFile(), this);
 			cb.setData((CharacterData)data);
 			addNEXUSBlock(cb);
@@ -2079,8 +2080,10 @@ public class ManageCharacters extends CharactersManager {
 		 else
 			 title = getProject().getCharacterMatrices().getUniqueName("Matrix in file \"" + file.getName() + "\"");
 		 boolean fuse = parser.hasFileReadingArgument(fileReadingArguments, "fuseTaxaCharBlocks");
-
-
+		int previousNumMatrices = getProject().getNumberCharMatrices(file);
+		 boolean verbose =  (previousNumMatrices<20);
+		 if (previousNumMatrices== 20)
+			 logln("Reading more CHARACTERS blocks (matrices) ");
 		 boolean taxaLinkFound = false;
 		 boolean newTaxaFlag = false;
 
@@ -2107,13 +2110,18 @@ public class ManageCharacters extends CharactersManager {
 						 return null;
 					 }
 				 }
-				 log("   " + MesquiteInteger.toString(numChars) + " characters");
+				 if (verbose) log("   " + MesquiteInteger.toString(numChars) + " characters");
 				 //numChars = MesquiteInteger.fromString(parser.getTokenNumber(4));
 			 }
 			 else if (commandName.equalsIgnoreCase("TITLE")) {
 				 parser.setString(commandParser.getNextCommand()); 
 				 title = parser.getTokenNumber(2);
-				 logln("Reading CHARACTERS block " + title);
+				 if (verbose)
+					 logln("Reading CHARACTERS block " + title);
+				 else if (previousNumMatrices != 0 && previousNumMatrices % 100 == 0)
+					 log("" + (previousNumMatrices) + "\n");
+				 else
+					 log(".");
 
 			 }
 			 else if (commandName.equalsIgnoreCase("LINK")) {
@@ -2144,7 +2152,7 @@ public class ManageCharacters extends CharactersManager {
 					 return null;
 				 }
 
-				 logln(" for taxa block " + taxa.getName());
+				 if(verbose) logln(" for taxa block " + taxa.getName());
 				 data = processFormat(file, taxa, commandParser.getNextCommand(), numChars, title, fileReadingArguments);
 				 if (data==null) {
 					 alert("Sorry, the CHARACTERS block could not be read, possibly because it is of an unrecognized format.  You may need to activate or install other modules that would allow you to read the data block");

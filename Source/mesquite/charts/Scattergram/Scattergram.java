@@ -1279,7 +1279,7 @@ class ScattergramCharter extends Charter {
 			if (!chart.getSelected().anyBitsOn()|| chart.getSelected().isBitOn(i))
 				return (c);
 			else
-				return (ColorDistribution.brighter(c, ColorDistribution.dimmingConstant));
+				return (ColorDistribution.brighter(c, ColorDistribution.extraDimmingConstant));
 
 		}
 		else if (chart.colorsExist() && chart.getColor(i)!=null){
@@ -1287,7 +1287,7 @@ class ScattergramCharter extends Charter {
 			if (!chart.getSelected().anyBitsOn()|| chart.getSelected().isBitOn(i))
 				return (c);
 			else
-				return (ColorDistribution.brighter(c, ColorDistribution.dimmingConstant));
+				return (ColorDistribution.brighter(c, ColorDistribution.extraDimmingConstant));
 		}
 		else {
 			//the following is not used as categories are not assigned anywhere
@@ -1296,7 +1296,7 @@ class ScattergramCharter extends Charter {
 				if (!chart.getSelected().anyBitsOn()|| chart.getSelected().isBitOn(i))
 					return (Color.blue);
 				else
-					return (ColorDistribution.veryLightBlue);
+					return (ColorDistribution.veryVeryVeryLightGray);
 			}
 			else{
 				if (!chart.getSelected().anyBitsOn()|| chart.getSelected().isBitOn(i))
@@ -1311,7 +1311,7 @@ class ScattergramCharter extends Charter {
 		if (!chart.getSelected().anyBitsOn() || chart.getSelected().isBitOn(i))
 			return (Color.black);
 		else
-			return (Color.lightGray);
+			return (ColorDistribution.veryLightGray);
 
 	}
 	// redraws data point i.  Used currently only for march selection (to avoid entire redraw)

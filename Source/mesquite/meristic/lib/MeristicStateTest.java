@@ -13,9 +13,11 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
 */
 package mesquite.meristic.lib;
 
+import mesquite.cont.lib.ContinuousState;
 import mesquite.lib.CompatibilityTest;
 import mesquite.lib.EmployerEmployee;
 import mesquite.lib.MesquiteProject;
+import mesquite.lib.characters.CharacterData;
 import mesquite.lib.characters.CharacterState;
 /* ======================================================================== */
 /** An object a module can create and pass back to store in module info.  Tests whether module will be compatible with
@@ -27,6 +29,8 @@ public class MeristicStateTest extends CompatibilityTest {
 			return true;
 		if (obj instanceof MeristicStateTest)
 			return true;
+		if (obj instanceof CharacterData || obj instanceof CharacterState)
+			return (obj instanceof MeristicState || obj instanceof MeristicData);
 		if (obj instanceof CompatibilityTest)
 			return false;
 		if (!CharacterState.class.isAssignableFrom((Class)obj))

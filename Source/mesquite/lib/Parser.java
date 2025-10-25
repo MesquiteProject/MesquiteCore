@@ -658,6 +658,41 @@ public class Parser extends StringUtil {
 	}
 	/*............................................  ....................................................*/
 	/** returns token from line starting at pos; excluding square bracket comments*/
+	Parser nonconsumingParser ;
+	public String getNextTokenWithoutConsuming() {
+		if (nonconsumingParser == null)
+			nonconsumingParser = new Parser();
+		nonconsumingParser.setBuffer(line);
+		nonconsumingParser.setPosition( pos.getValue());
+		nonconsumingParser.whitespaceString = whitespaceString;
+		nonconsumingParser.lineEndingsDark = lineEndingsDark;
+		String token = nonconsumingParser.getNextToken();
+		return token;
+	}
+	/*............................................  ....................................................*/
+	/** returns token from line starting at pos; excluding square bracket comments*/
+	public char getNextDarkCharacterWithoutConsuming() {
+		if (storageNull())
+			return '\0';
+		else if (storageZeroLength())
+			return '\0';
+		if (pos.getValue() >= line.length())
+			return '\0';
+		char c;
+		char toReturn = '\0';
+		long currentPos = pos.getValue();
+		try {
+			while (whitespace(c=getNextChar(), whitespaceString))
+				;
+			if (!(lineEndCharacter(c) || c == '\0'))
+				toReturn = c;
+		}
+		catch (StringIndexOutOfBoundsException e) {
+		}
+		pos.setValue(currentPos);
+		return toReturn;
+	}	/*............................................  ....................................................*/
+	/** returns token from line starting at pos; excluding square bracket comments*/
 	public String getNextToken() {
 		startOfToken = MesquiteLong.unassigned;
 		if (storageNull())

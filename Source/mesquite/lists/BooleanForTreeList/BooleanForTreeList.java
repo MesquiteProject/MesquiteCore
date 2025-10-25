@@ -153,6 +153,9 @@ public class BooleanForTreeList extends TreeListAssistant implements MesquiteLis
 	boolean okToCalc() {
 		return  !paused;
 	}
+	public boolean isPaused(){
+		return paused;
+	}
 	/*.................................................................................................................*/
 	/** passes which object is being disposed (from MesquiteListener interface)*/
 	public void disposing(Object obj){

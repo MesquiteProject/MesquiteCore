@@ -254,6 +254,7 @@ public class Short2DArray {
 		return newMatrix;
 	}
 	/*...........................................................*/
+	//NOTE: this assumes, probably, that the incoming matrix is complete, i.e. all d[i].length is the same for all i's
 	public static short[][] deleteColumnsFlagged(short[][] d, Bits toDelete) {
 		if (d == null)
 			return null;

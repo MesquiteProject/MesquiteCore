@@ -40,6 +40,7 @@ import mesquite.lib.ui.MesquiteWindow;
 Projects & Files window). */
 
 public class DrawHierarchy extends BrowseHierarchy  {
+	public static boolean suppressNodeRepaints = false; //crude, but then the DrawHierarchy system is crude
 	/*.................................................................................................................*/
 	 public String getName() {
 	return "DrawHierarchy";
@@ -96,6 +97,21 @@ class HierarchyPanel extends HPanel {
 	public void showTypes(boolean s){
 		ePane.setShowTypes(s);
 	}
+	public void validateTree(){
+		if (!MesquiteWindow.itemIsShown(this))
+		return;
+		super.validateTree();
+	}
+	public void validate(){
+		if (!MesquiteWindow.itemIsShown(this))
+		return;
+		super.validate();
+	}
+	public void repaint(){
+		if (!MesquiteWindow.itemIsShown(this))
+		return;
+		super.repaint();
+	}
 }
 
 /* ======================================================================== */
@@ -122,6 +138,21 @@ class FieldPanel extends MQPanel {
 		setBackground(Color.yellow);
 		pane.repaint();
 		repaint();
+	}
+	public void repaint(){
+		if (!MesquiteWindow.itemIsShown(this))
+		return;
+		super.repaint();
+	}
+	public void validateTree(){
+		if (!MesquiteWindow.itemIsShown(this))
+		return;
+		super.validateTree();
+	}
+	public void validate(){
+		if (!MesquiteWindow.itemIsShown(this))
+		return;
+		super.validate();
 	}
 	public void setTitle(String title) {
 		this.title = title;
@@ -497,7 +528,11 @@ class NodeLabel extends MesquiteLabel implements HNode {
 				setText(node.getName());
 		}
 	}
-	
+	public void repaint(){
+		if (!DrawHierarchy.suppressNodeRepaints){
+			super.repaint();
+		}
+	}
 	public NodeLabel setDaughter(HNode node) {
 		NodeLabel eL = new NodeLabel(MesquiteTrunk.mesquiteTrunk, panel, node, motherNode);
 		if (daughterVector!=null)

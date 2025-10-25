@@ -73,6 +73,7 @@ public class MesquiteProject extends Attachable implements Listable, MesquiteLis
 	protected ListableVector nexusBlocks; 
 	/** */
 	CentralModelListener modelListener;
+	public boolean notifyFileElementsAdded = true;
 	
 	
 	public ListableVector knownBranchProperties = new ListableVector();
@@ -168,11 +169,17 @@ public class MesquiteProject extends Attachable implements Listable, MesquiteLis
 		ownerModule.addItemToSubmenu(MesquiteTrunk.fileMenu, includeMergeSubmenuSpec,"-", null);
 		mmis = ownerModule.addItemToSubmenu(MesquiteTrunk.fileMenu, includeMergeSubmenuSpec,"Trees", null);
 		mmis.setEnabled(false); //just in case
-		ownerModule.addModuleMenuItemsSeparatelyToSubmenu(MesquiteTrunk.fileMenu, includeMergeSubmenuSpec, new MesquiteCommand("newAssistant", ownerModule), FileAssistantTM.class);
+		ownerModule.addModuleMenuItemsSeparatelyToSubmenu(MesquiteTrunk.fileMenu, includeMergeSubmenuSpec, new MesquiteCommand("newAssistantTM", ownerModule), FileAssistantTM.class);
 		ownerModule.addItemToSubmenu(MesquiteTrunk.fileMenu, includeMergeSubmenuSpec,"-", null);
 		MesquiteCommand eICC =   new MesquiteCommand("explainIncludeChoices", ownerModule);
 		eICC.bypassQueue = true;
 		ownerModule.addItemToSubmenu(MesquiteTrunk.fileMenu, includeMergeSubmenuSpec,"Explain These Choices...",  eICC);
+	}
+
+	public String elementsReport(){
+
+		String s = "Files " + files.size() + "; "+ " taxas " + taxas.size() + "; "+ "datas " + datas.size() + "; "+ "treeVectors " + treeVectors.size() + "; "+ "otherElements " + otherElements.size() + "; "+ "nexusBlocks " + nexusBlocks.size() + "; "+ "charModels " + charModels.size() + "; ";
+		return s;
 	}
 
 	public void refreshProjectWindow(){
@@ -473,12 +480,12 @@ public class MesquiteProject extends Attachable implements Listable, MesquiteLis
 	/** Disposes of the components of the project. */
 	public void dispose(){  //TODO: should all the dispose methods be renamed to something  else???
 		isDoomed = true;
-
-
+		long t = System.currentTimeMillis();
 		for (int i=0; i< files.size(); i++) {
 			((MesquiteFile)files.elementAt(i)).projectClosing = true;
 			((MesquiteFile)files.elementAt(i)).close();
 		}
+		t = System.currentTimeMillis();
 		windowToActivate = null;
 		activeWindowOfProject = null;
 
@@ -489,6 +496,7 @@ public class MesquiteProject extends Attachable implements Listable, MesquiteLis
 		treeVectors.dispose(true);
 		otherElements.dispose(true);
 		nexusBlocks.dispose(true);
+		t = System.currentTimeMillis();
 		files = null;
 		taxas = null;
 		datas = null;
@@ -665,7 +673,7 @@ public class MesquiteProject extends Attachable implements Listable, MesquiteLis
 	/*.................................................................................................................*/
 	/** add a file to list of currently linked files */
 	public void addFile(MesquiteFile file){
-		files.addElement(file, true);
+		files.addElement(file, notifyFileElementsAdded);
 		refreshProjectWindow();
 	}
 	/*.................................................................................................................*/
@@ -882,85 +890,96 @@ public class MesquiteProject extends Attachable implements Listable, MesquiteLis
 		return true;
 	}
 	/*.................................................................................................................*/
+	/** special case notification.  */
+	public void notifyListenersAllVectors() {
+			taxas.notifyListeners(this, new Notification(MesquiteListener.PARTS_ADDED));
+			datas.notifyListeners(this, new Notification(MesquiteListener.PARTS_ADDED));
+			treeVectors.notifyListeners(this, new Notification(MesquiteListener.PARTS_ADDED));
+			charModels.notifyListeners(this, new Notification(MesquiteListener.PARTS_ADDED));
+			otherElements.notifyListeners(this, new Notification(MesquiteListener.PARTS_ADDED));
+	}
+	/*.................................................................................................................*/
 	/** Adds the passed element to the project.  */
 	public void addFileElement(FileElement element) {
 		if (element==null)
 			return;
-
+		boolean notify = notifyFileElementsAdded && getNotificationsOnOff();
 		if (element instanceof Taxa) {
 			if (taxas.indexOf(element)<0){
-				taxas.addElement(element, true);
+				taxas.addElement(element, notify);
 				element.addListener(taxas);
 			}
 		}
 		else if (element instanceof mesquite.lib.characters.CharacterData){
 			if (datas.indexOf(element)<0){
-				datas.addElement(element, true);
+				datas.addElement(element, notify);
 				element.addListener(datas);
 			}
 		}
 		else if (element instanceof TreeVector) {
 			if (treeVectors.indexOf(element)<0){
-				treeVectors.addElement(element, true);
+				treeVectors.addElement(element, notify);
 			}
 		}
 		else if (element instanceof CharacterModel) {
 			if (charModels.indexOf(element)<0){
-				charModels.addElement(element, true);
+				charModels.addElement(element, notify);
 				modelListener.addModel((CharacterModel)element);
 			}
 		}
 		else {
 			if (otherElements.indexOf(element)<0)
-				otherElements.addElement(element, true);
+				otherElements.addElement(element, notify);
 		}
 		element.addListener(this);
 		broadcastAddFileElement(ownerModule, element);
-		notifyListeners(this, new Notification(MesquiteListener.PARTS_ADDED));
+		if (notify)
+			notifyListeners(this, new Notification(MesquiteListener.PARTS_ADDED));
 	}
 	/*.................................................................................................................*/
 	/** DOCUMENT */
 	public void removeFileElement(FileElement element) {
-		removeFileElement(element, true);
+		removeFileElement(element, notifyFileElementsAdded);
 	}
 	public void removeFileElement(FileElement element, boolean notify) {
 		if (element==null)
 			return;
 		element.removeListener(this);
+		boolean notifyN = (notify || notifyFileElementsAdded) && getNotificationsOnOff();
 		if (element instanceof Taxa) {
 			if (taxas != null) {
-				taxas.removeElement(element, true);
+				taxas.removeElement(element, notifyN);
 				element.removeListener(taxas);
 			}
 			//taxas.notifyListenersOfDisposed(element);
 		}
 		else if (element instanceof mesquite.lib.characters.CharacterData) {
 			if (datas != null) {
-				datas.removeElement(element, true);
+				datas.removeElement(element, notifyN);
 				element.removeListener(datas);
 			}
 			//datas.notifyListenersOfDisposed(element);
 		}
 		else if (element instanceof TreeVector) {
 			if (treeVectors != null) {
-				treeVectors.removeElement(element, true);
+				treeVectors.removeElement(element, notifyN);
 				element.removeListener(treeVectors);
 			}
 			//datas.notifyListenersOfDisposed(element);
 		}
 		else if (element instanceof CharacterModel) {
 			if (charModels != null)
-				charModels.removeElement(element, true);
+				charModels.removeElement(element, notifyN);
 			//charModels.notifyListenersOfDisposed(element);
 			if (modelListener != null)
 				modelListener.removeModel((CharacterModel)element);
 		}
 		else {
 			if (otherElements != null)
-				otherElements.removeElement(element, true);
+				otherElements.removeElement(element, notifyN);
 			//otherElements.notifyListenersOfDisposed(element);
 		}
-		if (notify)
+		if (notify && getNotificationsOnOff())
 			notifyListeners(this, new Notification(MesquiteListener.PARTS_DELETED));
 		//TODO: shouldn't broadcase of deletion be here?
 	}
@@ -2228,6 +2247,10 @@ public class MesquiteProject extends Attachable implements Listable, MesquiteLis
 		return count;
 	}
 
+	// a synonym of the following!
+	public int getWhichCharacterMatrixNumber(CharacterData data){
+		return getMatrixNumber(data);
+	}
 	/*.................................................................................................................*/
 	/** gets the number (index position) of the data set. */
 	public int getMatrixNumber(mesquite.lib.characters.CharacterData data) {   //core

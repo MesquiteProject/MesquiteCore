@@ -41,8 +41,8 @@
     <td width="51%"><strong id="PackageTitle">Mesquite</strong></td>
     <td width="33%" align="right"><div id="subtitle"><!-- InstanceBeginEditable name="subtitle" -->History of New Features<!-- InstanceEndEditable --></div></td>
     <td width="2%">&nbsp;</td>
-    <td width="14%">Version 4.01<br />
-      July 2025<br /></td>
+    <td width="14%">Version 4.02<br />
+      October 2025<br /></td>
   </tr>
 </table>
 
@@ -208,11 +208,33 @@
    There is also a list of <a  href="Release%20Dates.html">release dates.</a><br />
   <br />
   <a name="New Features, Bugs, and History of Features and Bug Fixes--Features in the next release version of Mesquite; the latest source code in the development branch of the MesquiteProject/MesquiteCore repository on GitHub contains these changes" id="New Features, Bugs, and History of Features and Bug Fixes--Features in the next release version of Mesquite; the latest source code in the development branch of the MesquiteProject/MesquiteCore repository on GitHub contains these changes"></a>Features to come in the next release version of Mesquite are listed <a href="https://github.com/MesquiteProject/MesquiteCore/wiki/New-features-and-bug-fixes-in-the-development-version">on this web page</a>. These new features and bug fixes are already contained in latest source code in the development branch of the MesquiteProject/MesquiteCore repository on GitHub.</p>
- <p>&nbsp;</p>
- <p>&nbsp;</p>
 	  <p></p>
  <hr />
- <h3>Version 4.01</h3>
+ <h3>Version 4.02</h3>
+	  
+	  <h4 id="toc186">New Features </h4>
+ <ul>
+   <li><strong>Codon alignment</strong> of entire matrix. There is now an option to do a codon-based alignment of a nucleotide matrix using MAFFT, MUSCLE, or Clustal. This requires a matrix in which the number of nucleotides in each taxon is divisible by 3, and that the first nucleotide of each matrix is a first position. If you do a codon alignment, Mesquite will translate the entire nucleotide matrix to amino acids, send the amino acid matrix to the alignment program, harvest the results, and align the nucleotides to match the amino acid alignment.</li>
+   <li><strong>Much greater speed</strong> for some operations with data files with 1000s of loci (file reading, Parallel Alter Matrices, deconcatenation of large concatenated alignment).&nbsp;</li>
+   <li><strong>Collapsed clades</strong> are now better drawn and by default shown as triangles when displayed in the Square Line Tree form.</li>
+   <li>Genomics data files arranged by taxon (i.e. each file is about one taxon, and each of its sequences are different genes for that taxon) used to be called "Flipped FASTA files". They are now referred to as "<strong>Single Taxon (Multi-Locus) FASTA files</strong>". Thus, various menu items for reading and writing files have changed names (e.g. "Combine Flipped FASTA Files (One per taxon)"). </li>
+   <li>There is a new <strong>adventure game</strong>, which you may be able to find if you say the correct magic word. </li>
+	
+ </ul>
+ <h4 id="toc187">Bug Fixes, Workarounds, and Improvements</h4>
+ <ul>
+   <li>The following bugs were fixed:</li>
+   <ul><li>
+     If you were running the recommended version of Java (Java 17 or later), then <strong>saving trees as PDFs</strong> produced an improperly written PDF that could not read by some programs such as Adobe Illustrator.  If you were running an old version of Java, then asking Mesquite to save a PDF caused a crash.</li>
+	   <li>When <strong>characters were deleted in morphological matrices with state names assigned</strong>, Mesquite would often crash. [Thanks to Jakob Jilg for reporting this bug!]</li>
+<li>The inclusion/exclusion column in the List of Characters window was missing its menu items to <strong>include and exclude</strong>. [Thanks to Rebecca Fish for reporting this bug!]</li>
+
+   </ul>
+<li>Various other bug fixes and small improvements were done.</li>
+ </ul>
+ <p>&nbsp;</p>
+  <hr />
+	  <h3>Version 4.01</h3>
 	  
 	  <h4 id="toc86">New Features </h4>
  <ul>

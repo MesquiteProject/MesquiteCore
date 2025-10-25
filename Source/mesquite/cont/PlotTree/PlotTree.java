@@ -99,7 +99,7 @@ public class PlotTree extends AnalyticalDrawTree {
 	/*.................................................................................................................*/
 	public   TreeDrawing createTreeDrawing(TreeDisplay treeDisplay, int numTaxa) {
 		PlotTreeDrawing treeDrawing =  new PlotTreeDrawing (treeDisplay, numTaxa, this, spotSize);
-		treeDisplay.collapsedCladeNameAtLeftmostAncestor = false;
+		treeDisplay.collapsedCladeNameAtDescendant = false;
 		drawings.addElement(treeDrawing);
 		return treeDrawing;
 	}
@@ -288,6 +288,7 @@ class PlotTreeDrawing extends TreeDrawing  {
 			return;
 		if (tree.nodeExists(node)) {
 			g.setColor(treeDisplay.getBranchColor(node));
+			recordBranchColor(tree, node, g.getColor());
 			Composite composite = 	treeDisplay.setBranchTransparency(g, node);
 	
 			if (node == tree.getRoot()) {
@@ -422,9 +423,10 @@ class PlotTreeDrawing extends TreeDrawing  {
 	}
 	/*_________________________________________________*/
 	public void fillBranchWithColors(Tree tree, int node, ColorDistribution colors, Graphics g) {
-		if (node>0 && (tree.getRooted() || tree.getRoot()!=node) && (getDrawNode(tree,node))) {
+		if (colors!=null && node>0 && (tree.getRooted() || tree.getRoot()!=node) && (getDrawNode(tree,node))) {
 			if (MesquiteDouble.isCombinable(x[node]) && MesquiteDouble.isCombinable(y[node])) {
 				Color c = g.getColor();
+				recordBranchFillColors(tree, node, colors.clone());
 				int numColors = colors.getNumColors();
 				if (numColors==1){
 					g.setColor(colors.getColor(0, !tree.anySelected()|| tree.getSelected(node)));
@@ -454,9 +456,14 @@ class PlotTreeDrawing extends TreeDrawing  {
 
 	/*_________________________________________________*/
 	public   void fillBranch(Tree tree, int node, Graphics g) {
+		recordBranchFillColors(tree, node, g.getColor());
 		if (node>0 && (tree.getRooted() || node != tree.getRoot()) && (getDrawNode(tree,node))) {
 			fillSpot(g,node);
 		}
+	}
+	/*.................................................................................................................*/
+	public boolean recordsBranchColors(){
+		return true;
 	}
 	   
 	/*_________________________________________________*/

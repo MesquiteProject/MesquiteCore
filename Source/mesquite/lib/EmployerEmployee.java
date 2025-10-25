@@ -543,6 +543,18 @@ public abstract class EmployerEmployee extends MenuOwner implements HNode, Lista
 
 		}
 	}
+	/* ................................................................................................................. */
+	/** Returns whether one of hte module's employers is paused. */
+	public boolean isEmployerPaused() {
+		if (employer == null)
+			return false;
+		else {
+			if (employer instanceof Pausable && ((Pausable)employer).isPaused())
+				return true;
+			return employer.isEmployerPaused();
+		}
+	}
+
 
 	/* ................................................................................................................. */
 	void doomAll() {
@@ -576,6 +588,22 @@ public abstract class EmployerEmployee extends MenuOwner implements HNode, Lista
 		}
 		return closed;
 	}
+	
+	/* ................................................................................................................. */
+	/**
+	 * Suppresses use of UI for all employees. E.g., for parallelization. Currently affects only menu bars	 */
+	public void noUIForEmployeeBranch() {
+		setUseMenubar(false);
+		if (employees == null)
+			return ;
+		Enumeration enumeration = employees.elements();
+		while (enumeration.hasMoreElements()) {
+			MesquiteModule mb = (MesquiteModule) enumeration.nextElement();
+			mb.noUIForEmployeeBranch();
+		}
+		
+	}
+
 	/* ................................................................................................................. */
 	/** Moves the employee to first in the vector. */
 	public void moveEmployeeToFirst(MesquiteModule mb) {
@@ -1478,7 +1506,6 @@ public abstract class EmployerEmployee extends MenuOwner implements HNode, Lista
 			return null;
 		incrementMenuResetSuppression();
 		int numAvailable = numCompatibleModulesAvailable(dutyClass, condition, module);
-
 		// ask user for name if not scripting and explanation available
 		if (!suppressHireQueries && !MesquiteThread.isScripting() && explanation != null && numAvailable > 1) {
 			MesquiteModule mb = null;
@@ -1962,6 +1989,7 @@ public abstract class EmployerEmployee extends MenuOwner implements HNode, Lista
 		MesquiteModuleInfo mbi;
 		while (enumeration.hasMoreElements()) {
 			mbi = (MesquiteModuleInfo) enumeration.nextElement();
+			
 			if (mbi.doesDuty(dutyClass) && mbi.isCompatible(obj, proj, prospectiveEmployer)) {
 				count++;
 			}

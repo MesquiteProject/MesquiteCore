@@ -184,6 +184,13 @@ public abstract class ListAssistant extends MesquiteModule  {
 	protected MesquiteTable findTable(){
 		return ((TableWindow)findEmployerWithDuty(ListModule.class).getModuleWindow()).getTable();
 	}
+	
+	protected int findMyColumn(){
+		ListWindow window = (ListWindow)findEmployerWithDuty(ListModule.class).getModuleWindow();
+		if (window != null)
+			return window.findAssistant(this);
+		return -1;
+	}
 	/** Draw cell for row ic */
 	public void drawInCell(int ic, Graphics g, int x, int y,  int w, int h, boolean selected){
 	}

@@ -46,6 +46,7 @@ public class ProjPanelPanel extends ClosablePanel implements MesquiteListener, C
 	protected MesquitePopup popup=null;
 	protected FileCoordinator bfc;
 	protected StringInABox notes, commandBox;
+	public static long refreshRequestsTotal =0;
 	protected int notesWidth = 560;
 	protected int notesLeft = 10;
 	protected int commandBoxWidth = 64;
@@ -91,7 +92,8 @@ public void resetTitle(){
 	protected int getFontSize(){
 		return MesquiteFrame.resourcesFontSize;
 	}
-	public void refreshGraphics(){
+	public synchronized void refreshGraphics(){
+		refreshRequestsTotal++; 
 		if (getBold())
 			setFont(new Font("SansSerif", Font.BOLD, getFontSize()));
 		else

@@ -23,6 +23,7 @@ import java.net.URL;
 
 import mesquite.categ.lib.CategDataSearcher;
 import mesquite.categ.lib.DNAData;
+import mesquite.categ.lib.MolecDataSearcher;
 import mesquite.categ.lib.ProteinData;
 import mesquite.categ.lib.RequiresAnyMolecularData;
 import mesquite.lib.CompatibilityTest;
@@ -36,6 +37,7 @@ import mesquite.lib.MesquiteFileUtil;
 import mesquite.lib.MesquiteInteger;
 import mesquite.lib.MesquiteListener;
 import mesquite.lib.MesquiteMessage;
+import mesquite.lib.MesquiteString;
 import mesquite.lib.MesquiteStringBuffer;
 import mesquite.lib.Notification;
 import mesquite.lib.Parser;
@@ -51,7 +53,7 @@ import mesquite.molec.lib.NCBIUtil;
 
 
 /* ======================================================================== */
-public class TopBlastMatches extends CategDataSearcher implements ItemListener { 
+public class TopBlastMatches extends MolecDataSearcher implements ItemListener { 
 	MesquiteTable table;
 	CharacterData data;
 	StringBuffer results;
@@ -164,8 +166,8 @@ public class TopBlastMatches extends CategDataSearcher implements ItemListener {
 	/*.................................................................................................................*/
 	public boolean queryOptions() {
 		MesquiteInteger buttonPressed = new MesquiteInteger(1);
-		ExtensibleDialog dialog = new ExtensibleDialog(containerOfModule(), "Top BLAST Matches",buttonPressed);  //MesquiteTrunk.mesquiteTrunk.containerOfModule()
-		dialog.addLabel("Options for Top BLAST Matches");
+		ExtensibleDialog dialog = new ExtensibleDialog(containerOfModule(), "Acquire (BLAST) Sequences from Database",buttonPressed);  //MesquiteTrunk.mesquiteTrunk.containerOfModule()
+		dialog.addLabel("Options for Acquire Sequences from Database");
 		int oldBlastType = blastType;
 		dialog.appendToHelpString("For the \"Reject hits with eValues greater than\" field, use values of the from \"1E-100\"");
 
@@ -178,7 +180,7 @@ public class TopBlastMatches extends CategDataSearcher implements ItemListener {
 		fetchTaxonomyCheckBox = dialog.addCheckBox("fetch taxonomic lineage",fetchTaxonomy);
 		importCheckBox = dialog.addCheckBox("import top matches into matrix",importTopMatches);
 		interleaveResultsCheckBox = dialog.addCheckBox("insert hits after sequence that was BLASTed",interleaveResults);
-		adjustSequencesCheckBox = dialog.addCheckBox("reverse complement in needed and align imported sequences",adjustSequences);
+		adjustSequencesCheckBox = dialog.addCheckBox("reverse complement if needed and align imported sequences",adjustSequences);
 		addInternalGapsCheckBox = dialog.addCheckBox("allow new internal gaps during alignment",addInternalGaps);
 		appendQueryNameCheckBox = dialog.addCheckBox("append query name to hit name",appendQueryName);
 
@@ -332,18 +334,20 @@ public class TopBlastMatches extends CategDataSearcher implements ItemListener {
 				//	logln("****AFTER NucToProt IDs: " +StringArray.toString(ID)); 
 			}
 			//String newSequencesAsFasta = NCBIUtil.fetchGenBankSequencesFromIDs(ID, data instanceof DNAData, this, true, report);	
-
+			MesquiteString foundTaxonName = new MesquiteString();
 			StringBuffer blastResponse = new StringBuffer();
-			String newSequencesAsFasta = blasterTask.getFastaFromIDs(data.getTaxa().getTaxonName(it), localID,  data instanceof DNAData, blastResponse, passNumber);
-
+			String newSequencesAsFasta = blasterTask.getFastaFromIDs(data.getTaxa().getTaxonName(it), localID,  data instanceof DNAData, blastResponse, passNumber, foundTaxonName);
+		
 			String appendToTaxonName = "";
+			String prependToTaxonName = "";
 			if (appendQueryName)
 				appendToTaxonName = " ["+data.getTaxa().getTaxonName(it)+"]";
-
+			if (!foundTaxonName.isBlank())
+				prependToTaxonName = foundTaxonName.getValue();
 
 			numTaxaAdded = data.getNumTaxa();
 			if (StringUtil.notEmpty(newSequencesAsFasta))
-				NCBIUtil.importFASTASequences(data, newSequencesAsFasta, this, results, insertAfterTaxon, it, adjustSequences, addInternalGaps, appendToTaxonName);
+				NCBIUtil.importFASTASequences(data, newSequencesAsFasta, this, results, insertAfterTaxon, it, adjustSequences, addInternalGaps, prependToTaxonName, appendToTaxonName);
 			else
 				logln("BLAST database returned no sequences in response to query.");
 			data.notifyListeners(this, new Notification(MesquiteListener.PARTS_ADDED));
@@ -485,11 +489,11 @@ public class TopBlastMatches extends CategDataSearcher implements ItemListener {
 	}
 	/*.................................................................................................................*/
 	public String getNameForMenuItem() {
-		return "Top BLAST Matches...";
+		return "Acquire (BLAST) Sequences from Database...";
 	}
 	/*.................................................................................................................*/
 	public String getName() {
-		return "Top BLAST Matches";
+		return "Acquire (BLAST) Sequences from Database";
 	}
 	/*.................................................................................................................*/
 	public boolean showCitation() {
@@ -498,7 +502,7 @@ public class TopBlastMatches extends CategDataSearcher implements ItemListener {
 
 	/*.................................................................................................................*/
 	public String getExplanation() {
-		return "Does a BLAST search against GenBank on selected data and returns the top BLAST matches for each sequence selected.";
+		return "Does a BLAST search using selected sequences as queries against either a local database or GenBank and returns the top BLAST matches for each sequence selected.";
 	}
 }
 

@@ -10,12 +10,13 @@ Mesquite's web site is http://mesquiteproject.org
 
 This source code and its compiled class files are free and modifiable under the terms of 
 GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
-*/
+ */
 package mesquite.cont.lib;
 
 import mesquite.lib.CompatibilityTest;
 import mesquite.lib.EmployerEmployee;
 import mesquite.lib.MesquiteProject;
+import mesquite.lib.characters.CharacterData;
 import mesquite.lib.characters.CharacterState;
 /* ======================================================================== */
 /** An object a module can create and pass back to store in module info.  Tests whether module will be compatible with
@@ -27,13 +28,16 @@ public class GeographicStateTest extends CompatibilityTest {
 			return true;
 		if (obj instanceof GeographicStateTest)
 			return true;
+		if (obj instanceof CharacterData || obj instanceof CharacterState)
+			return (obj instanceof GeographicState || obj instanceof GeographicData);
 		if (obj instanceof CompatibilityTest)
 			return false;
 		if (!CharacterState.class.isAssignableFrom((Class)obj))
 			return true;
 		if (!(obj instanceof Class))
 			return true;
-		return ((((Class)obj).isAssignableFrom(GeographicData.class)) || (((Class)obj).isAssignableFrom(GeographicState.class)));
+		return ((GeographicData.class.isAssignableFrom((Class)obj)) || (GeographicState.class.isAssignableFrom((Class)obj)));
+		//return ((((Class)obj).isAssignableFrom(GeographicData.class)) || (((Class)obj).isAssignableFrom(GeographicState.class)));
 	}
 	public Class getAcceptedClass(){
 		return GeographicState.class;

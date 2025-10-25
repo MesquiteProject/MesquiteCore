@@ -260,7 +260,7 @@ public class MesquiteMenuItem extends MenuItem implements ActionListener {
 	}
 	public void chooseItem(String arg) {
 		if (traceChoice)
-			System.err.println("Menu item chosen " + 	constructorUsed); //more details?
+			MesquiteMessage.sys_err_println("Menu item chosen " + 	constructorUsed); //more details?
 
 		if (command == null || !command.isExecutable() || MesquiteTrunk.suppressMenuResponse)
 			return;

@@ -94,6 +94,7 @@ public class BasicDrawTaxonNames extends DrawNamesTreeDisplay {
 	public TaxonPolygon[] namePolys;
 	protected TextRotator textRotator;
 	protected Tree tree;
+	protected TaxaPartition partitions;
 	protected Graphics gL;
 	protected int separation = 10;
 
@@ -164,7 +165,7 @@ public class BasicDrawTaxonNames extends DrawNamesTreeDisplay {
 		MesquiteSubmenuSpec namesMenu = addSubmenu(null, "Taxon Names");
 		shadePartition = new MesquiteBoolean(false);
 		addCheckMenuItem(colorMenu, "Taxon Background Color by Group", makeCommand("toggleShadePartition", this), shadePartition);
-		showFootnotes = new MesquiteBoolean(true);
+		showFootnotes = new MesquiteBoolean(false);
 		addCheckMenuItemToSubmenu(textMenu, namesMenu, "Mark Footnotes in Taxon Name", makeCommand("toggleShowFootnotes", this), showFootnotes);
 		showNodeLabels = new MesquiteBoolean(true);
 
@@ -496,7 +497,7 @@ public class BasicDrawTaxonNames extends DrawNamesTreeDisplay {
 	}
 	Color bgTransparent = new Color(255,255,255,0);  //make transparent so as not to overwrite boxes and branches if font big
 	boolean nameIsVisible(TreeDisplay treeDisplay, int taxonNumber){
-		boolean vis = treeDisplay.getVisRect() == null || namePolys[taxonNumber].intersects(treeDisplay.getVisRect());
+		boolean vis = treeDisplay.getVisRect() == null || (namePolys != null && namePolys[taxonNumber].intersects(treeDisplay.getVisRect()));
 		/*if (vis){
 			if (triangleBase >=0 ){
 				Tree tree = treeDisplay.getTree();
@@ -529,16 +530,6 @@ public class BasicDrawTaxonNames extends DrawNamesTreeDisplay {
 			zapNamePolysCollapsed(tree, d);
 	}
 	MesquiteInteger pos = new MesquiteInteger();
-	String getCladeName(int node){
-		String cc = tree.getNodeLabel(tree.deepestCollapsedAncestor(node));
-		pos.setValue(0);
-		if (StringUtil.blank(cc) || MesquiteDouble.interpretableAsDouble(cc, pos)){  //if labels is, say, consensusfrequency stored as node label, don't use it
-			int taxonNumber = tree.taxonNumberOfNode(node);
-			return "Clade of " + tree.getTaxa().getName(taxonNumber);
-		}
-		else
-			return cc;
-	}
 	
 	/*_________________________________________________*/
 	double furthestTip(Tree tree, int node){
@@ -557,6 +548,89 @@ public class BasicDrawTaxonNames extends DrawNamesTreeDisplay {
 			furthest = MesquiteDouble.maximum(f, furthest);
 		}
 		return furthest;
+	}
+	/*_________________________________________________*/
+	String getCladeName(int node, TaxaPartition partition){
+		String cc = tree.getNodeLabel(tree.deepestCollapsedAncestor(node));
+		pos.setValue(0);
+		if (StringUtil.blank(cc) || MesquiteDouble.interpretableAsDouble(cc, pos)){  //if labels is, say, consensusfrequency stored as node label, don't use it
+			if (partitions != null){
+				TaxaGroup commonGroupInClade = getCladeNameGroup(tree, tree.deepestCollapsedAncestor(node), partition);
+				if (commonGroupInClade != null){
+					boolean foundElsewhere = groupElsewhere(tree, tree.getRoot(), tree.deepestCollapsedAncestor(node), commonGroupInClade, partition);
+					if (!foundElsewhere)
+						return commonGroupInClade.getName();
+				}
+			}
+			int taxonNumber = tree.taxonNumberOfNode(node);
+			return "Clade of " + tree.getTaxa().getName(taxonNumber);
+		}
+		else
+			return cc;
+	}
+	
+	/*.................................................................................................................*/
+	TaxaGroup getCladeNameGroup(Tree tree, int node, TaxaPartition partition) {
+		if (partition == null)
+			return null;
+		if(tree.nodeIsTerminal(node)){
+			int taxon = tree.taxonNumberOfNode(node);
+			TaxaGroup group = (TaxaGroup)partition.getProperty(taxon);
+			if (group != null)
+				return group;
+		}
+		TaxaGroup commonGroup = null;
+		boolean nullDaughters = false;
+		for (int d = tree.firstDaughterOfNode(node); tree.nodeExists(d); d = tree.nextSisterOfNode(d)) {
+			TaxaGroup dGroup = getCladeNameGroup(tree, d, partition);
+			if (dGroup == null)
+				nullDaughters = true;
+			if (commonGroup == null)
+					commonGroup = dGroup;
+			else if (dGroup != commonGroup)
+				return null;
+		}
+		if (commonGroup != null && nullDaughters)
+			return null;
+		return commonGroup;
+	}
+	/*.................................................................................................................*/
+	boolean groupElsewhere(Tree tree, int node, int stopNode, TaxaGroup targetGroup, TaxaPartition partition) {
+		if (node == stopNode)
+			return false;
+		if(tree.nodeIsTerminal(node)){
+			int taxon = tree.taxonNumberOfNode(node);
+			TaxaGroup group = (TaxaGroup)partition.getProperty(taxon);
+			return group == targetGroup;
+		}
+		for (int d = tree.firstDaughterOfNode(node); tree.nodeExists(d); d = tree.nextSisterOfNode(d)) {
+			boolean found = groupElsewhere(tree, d, stopNode, targetGroup, partition);
+			if (found)
+				return true;
+		}
+		return false;
+	}
+	/*.................................................................................................................*/
+	public Color getCladeNamesColor(Tree tree, int node) {
+		if(tree.nodeIsTerminal(node)){
+			int taxon = tree.taxonNumberOfNode(node);
+			return colorerTask.getTaxonNameColor(tree.getTaxa(), taxon);
+		}
+		Color color = null;
+		boolean nullDaughters = false;
+		for (int d = tree.firstDaughterOfNode(node); tree.nodeExists(d); d = tree.nextSisterOfNode(d)) {
+			Color dColor = getCladeNamesColor(tree, d);
+			if (dColor == null)
+				nullDaughters = true;
+			else if (color == null)
+				color = dColor;
+			else if (!dColor.equals(color))
+				return null;
+
+		}
+		if (color != null && nullDaughters)
+			return null;
+		return color;
 	}
 
 	/*.................................................................................................................*/
@@ -579,9 +653,23 @@ public class BasicDrawTaxonNames extends DrawNamesTreeDisplay {
 				else
 					horiz = furthestT;
 			}
-			else if (!treeDisplay.collapsedCladeNameAtLeftmostAncestor && tree.isLeftmostTerminalOfCollapsedClade(N)){
+			else if (tree.isLeftmostTerminalOfCollapsedClade(N)){
+				if (!treeDisplay.collapsedCladeNameAtDescendant){
 				horiz = treeDrawing.x[tree.deepestCollapsedAncestor(N)];
 				vert = treeDrawing.y[tree.deepestCollapsedAncestor(N)];
+			}
+				else {
+					if (treeDisplay.isUp() || treeDisplay.isDown()){
+						horiz = treeDrawing.x[tree.deepestCollapsedAncestor(N)];
+					}
+					else if (treeDisplay.isRight() || treeDisplay.isLeft()){
+							vert = treeDrawing.y[tree.deepestCollapsedAncestor(N)];
+					}
+					else {
+						horiz = treeDrawing.x[tree.deepestCollapsedAncestor(N)];
+						vert = treeDrawing.y[tree.deepestCollapsedAncestor(N)];
+				}
+				}
 			}
 			int lengthString;
 			boolean warn = true;
@@ -604,7 +692,7 @@ public class BasicDrawTaxonNames extends DrawNamesTreeDisplay {
 			}
 			String s=taxa.getName(taxonNumber);
 			if (tree.isLeftmostTerminalOfCollapsedClade(N)){
-				s = getCladeName(N);
+				s = getCladeName(N, partitions);
 			}
 			if (s== null){
 				if (warn)
@@ -630,6 +718,8 @@ public class BasicDrawTaxonNames extends DrawNamesTreeDisplay {
 			Color tempColor = Color.black;
 			if (!tree.isLeftmostTerminalOfCollapsedClade(N))
 				tempColor = colorerTask.getTaxonNameColor(taxa, taxonNumber);
+			else
+				tempColor = getCladeNamesColor(tree, tree.deepestCollapsedAncestor(N));
 			if (tempColor != null){
 				taxonColor = tempColor;
 			}
@@ -951,7 +1041,7 @@ public class BasicDrawTaxonNames extends DrawNamesTreeDisplay {
 			}
 			textRotator.assignBackground(null);
 			gL.setColor(Color.black);
-			ColorDistribution.setComposite(gL,composite);		
+			ColorDistribution.setComposite(gL,composite);
 			if (selected  && !namePolys[taxonNumber].isHidden() && treeDisplay.selectedTaxonHighlightMode == TreeDisplay.sTHM_GREYBOX){ //&& GraphicsUtil.useXORMode(gL, false)
 				GraphicsUtil.fillTransparentBorderedSelectionPolygon(gL, namePolys[taxonNumber]);
 			}
@@ -1094,6 +1184,7 @@ public class BasicDrawTaxonNames extends DrawNamesTreeDisplay {
 				namePolys[i].xpoints = new int[4];
 				namePolys[i].ypoints = new int[4];
 				namePolys[i].npoints=4;
+				namePolys[i].setB(-1,-1, 1, 1);
 			}
 		}
 		else if (oldNumTaxa<totalNumTaxa) {
@@ -1105,6 +1196,7 @@ public class BasicDrawTaxonNames extends DrawNamesTreeDisplay {
 				namePolys[i].xpoints = new int[4];
 				namePolys[i].ypoints = new int[4];
 				namePolys[i].npoints=4;
+				namePolys[i].setB(-1,-1, 1, 1);
 			}
 			oldNumTaxa=totalNumTaxa;
 		}
@@ -1142,17 +1234,15 @@ public class BasicDrawTaxonNames extends DrawNamesTreeDisplay {
 				descent = fm.getMaxDescent();
 				separation = treeDisplay.getTaxonNameDistanceFromTip();
 
-				TaxaPartition part = null;
-				if (shadePartition.getValue())
-					part = (TaxaPartition)tree.getTaxa().getCurrentSpecsSet(TaxaPartition.class);
+				partitions = (TaxaPartition)tree.getTaxa().getCurrentSpecsSet(TaxaPartition.class);
 				if (treeDisplay.centerNames) {
 					longestString = 0;
-					findLongestString(tree, drawnRoot);
+					findLongestString(tree, drawnRoot, partitions);
 				}
 				if (colorerTask !=null)
 					colorerTask.prepareToStyle(tree.getTaxa());
 				zapNamePolysCollapsed(tree, drawnRoot);
-				drawNamesOnTree(tree, drawnRoot, drawnRoot, treeDisplay, part);
+				drawNamesOnTree(tree, drawnRoot, drawnRoot, treeDisplay, partitions);
 
 				g.setFont(tempFont);
 			}
@@ -1164,14 +1254,14 @@ public class BasicDrawTaxonNames extends DrawNamesTreeDisplay {
 	}
 
 	/*.................................................................................................................*/
-	private void findLongestString(Tree tree,  int N) {
+	private void findLongestString(Tree tree,  int N, TaxaPartition partitions) {
 		if  (tree.nodeIsTerminal(N)) {   //terminal
 			int taxonNumber = tree.taxonNumberOfNode(N);
 			if (taxonNumber<0 || taxonNumber>=tree.getTaxa().getNumTaxa()) 
 				return;
 			String s = tree.getTaxa().getTaxonName(taxonNumber);
 			if (tree.isLeftmostTerminalOfCollapsedClade(N)){
-				s = getCladeName(N);
+				s = getCladeName(N, partitions);
 			}
 
 			int lengthString = fm.stringWidth(s); 
@@ -1180,7 +1270,7 @@ public class BasicDrawTaxonNames extends DrawNamesTreeDisplay {
 		}
 		else {
 			for (int d = tree.firstDaughterOfNode(N); tree.nodeExists(d); d = tree.nextSisterOfNode(d))
-				findLongestString(tree, d);
+				findLongestString(tree, d, partitions);
 		}
 	}
 	/*.................................................................................................................*/

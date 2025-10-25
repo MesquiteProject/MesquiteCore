@@ -395,7 +395,7 @@ public class BasicTreeDrawCoordinator extends DrawTreeCoordinator {
 					treeDisplay.setTreeDrawing(null);
 					treeDrawName.setValue(treeDrawTask.getName());
 					treeDrawTask.setHiringCommand(tdC);
-					treeDisplay.collapsedCladeNameAtLeftmostAncestor = false;
+					treeDisplay.collapsedCladeNameAtDescendant = false;
 					treeDisplay.setTreeDrawing(treeDrawTask.createTreeDrawing(treeDisplay, treeDisplay.getTaxa().getNumTaxa()));
 					treeDisplay.suppressDrawing(suppression);
 					if (temp.allowsReorientation())
@@ -435,7 +435,7 @@ public class BasicTreeDrawCoordinator extends DrawTreeCoordinator {
 					treeDrawTask.setHiringCommand(tdC);
 				}
 				for (int i=0; i<numDisplays; i++) {
-					treeDisplays[i].collapsedCladeNameAtLeftmostAncestor = false;
+					treeDisplays[i].collapsedCladeNameAtDescendant = false;
 					treeDisplays[i].setTreeDrawing(treeDrawTask.createTreeDrawing(treeDisplays[i], treeDisplays[i].getTaxa().getNumTaxa()));
 				}
 				for (int i=0; i<numDisplays; i++) {
@@ -929,7 +929,7 @@ class BasicTreeDisplay extends TreeDisplay  implements KeyListener {
 			repaintsPending  = 0;
 			repaint();
 			if (MesquiteTrunk.debugMode)
-				System.err.println("bail out [repaintsPending>initialPending] " + (repaintsPending>initialPending));
+				MesquiteMessage.sys_err_println("bail out [repaintsPending>initialPending] " + (repaintsPending>initialPending));
 			return true;
 		}
 		return false;
@@ -949,6 +949,7 @@ class BasicTreeDisplay extends TreeDisplay  implements KeyListener {
 	public void print(Graphics g) {
 		printAll(g);
 	}
+	
 	/*_________________________________________________*/
 	public void printAll(Graphics g) {
 		if (g == null)
@@ -962,8 +963,8 @@ class BasicTreeDisplay extends TreeDisplay  implements KeyListener {
 		setSize(getFieldWidth(), getFieldHeight());
 		//super.paint(g);
 		if (tree==null) {
-			if (MesquiteTrunk.developmentMode)
-				MesquiteMessage.warnProgrammer("tree NULL in tree draw coord printing. Probably not a problem!");
+			if (getWidth()>0 && MesquiteTrunk.developmentMode)  //Why is there an extra tree display with no size?
+				MesquiteMessage.printStackTrace("tree NULL in tree draw coord printing. ");
 		}
 		else if ((!suppress) && (!tree.isLocked())) {
 			repaintsPending = 0;
@@ -986,7 +987,7 @@ class BasicTreeDisplay extends TreeDisplay  implements KeyListener {
 				printComponentsPDF(g);		//headless:  comment out
 			else										//headless:  comment out
 				printComponents(g);
-		} 
+			} 
 		else MesquiteMessage.warnProgrammer("tree drawing suppressed");
 		setSize(ww, hh);
 		setPrintingInProcess(false);

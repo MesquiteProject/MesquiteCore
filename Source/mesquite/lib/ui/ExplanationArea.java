@@ -27,6 +27,7 @@ import mesquite.lib.Annotatable;
 import mesquite.lib.Listened;
 import mesquite.lib.MesquiteEvent;
 import mesquite.lib.MesquiteListener;
+import mesquite.lib.MesquiteMessage;
 import mesquite.lib.MesquiteTrunk;
 import mesquite.lib.Notification;
 /* ======================================================================== */
@@ -43,6 +44,7 @@ public class ExplanationArea extends MousePanel implements TextListener, Mesquit
 	public static final int minimumHeightExplanation = 30;
 	public static final int minimumHeightAnnotation = 20;
 	boolean focusSuppressed = false;
+	public static boolean suppressExplanationRepaints = false; 
 	boolean hasFocus = false;
 	int fontIncrement = 0;
 	public static Image plusImage, minusImage, minusOffImage;
@@ -233,7 +235,7 @@ public class ExplanationArea extends MousePanel implements TextListener, Mesquit
 			}
 		}
 		catch (Exception q){
-			System.err.println("Exception in ExplanationArea: " + q);
+			MesquiteMessage.sys_err_println("Exception in ExplanationArea: " + q);
 		}
 	}
 	public void setFocusSuppression(boolean suppress){
@@ -374,6 +376,11 @@ class ExplanationControl extends MousePanel {
 	}
 	public void dispose(){
 		super.dispose();
+	}
+	public void repaint(){
+		if (!ExplanationArea.suppressExplanationRepaints)
+			super.repaint();
+
 	}
 	public void paint(Graphics g){
 		if (MesquiteWindow.checkDoomed(this))
@@ -587,7 +594,7 @@ class ExplTextArea extends MQPanel {
 			}
 		}
 		catch (Throwable e){
-			System.err.println("Throwable in ExplanationArea (2): " + e);
+			MesquiteMessage.sys_err_println("Throwable in ExplanationArea (2): " + e);
 			//This is to catch ClassCastExceptions on Linux deep in java 1.8 code
 		}
 	}

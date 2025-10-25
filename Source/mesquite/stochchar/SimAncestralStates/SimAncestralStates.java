@@ -207,9 +207,13 @@ public class SimAncestralStates extends CharHistorySource {
 		return getHistoryName(tree, ic);
 	}
 	/** returns the name of histories for menu items, e.g. if each history represents a character, return "Character"*/
-	public  String getHistoryTypeName(){
+	public  String getHistorySubjectName(){
 		return "Character";
 	}
+   	/** returns the name of method for histories, e.g. "Parsimony Reconstruction"*/
+   	public String getHistoryMethodName(){
+   		return simulatorTask.getName();
+   	}
 	/*.................................................................................................................*/
 	public String getName() {
 		return "Simulate Ancestral States";

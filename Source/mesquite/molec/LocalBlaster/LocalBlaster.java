@@ -31,6 +31,7 @@ import mesquite.lib.MesquiteBoolean;
 import mesquite.lib.MesquiteFile;
 import mesquite.lib.MesquiteInteger;
 import mesquite.lib.MesquiteMessage;
+import mesquite.lib.MesquiteString;
 import mesquite.lib.MesquiteThread;
 import mesquite.lib.MesquiteTimer;
 import mesquite.lib.MesquiteTrunk;
@@ -65,7 +66,7 @@ public class LocalBlaster extends Blaster implements ActionListener,  AppUser, P
 	String blastDatabaseFolderPath = "";
 	boolean pathWithSpaces = false;
 
-	
+	boolean prependDatabaseName = true;
 	boolean hasApp=false;
 	boolean useDefaultExecutablePath = true;  //newApp
 	String blastExecutableFolderPath = "";
@@ -186,6 +187,8 @@ public class LocalBlaster extends Blaster implements ActionListener,  AppUser, P
 			blastDatabaseFolderPath = StringUtil.cleanXMLEscapeCharacters(content);
 		else if ("useDefaultExecutablePath".equalsIgnoreCase(tag))
 			useDefaultExecutablePath = MesquiteBoolean.fromTrueFalseString(content);
+		else if ("prependDatabaseName".equalsIgnoreCase(tag))
+			prependDatabaseName = MesquiteBoolean.fromTrueFalseString(content);
 		else if ("databasesInDefaultLocation".equalsIgnoreCase(tag))
 			databasesInDefaultLocation = MesquiteBoolean.fromTrueFalseString(content);
 		
@@ -205,6 +208,7 @@ public class LocalBlaster extends Blaster implements ActionListener,  AppUser, P
 		StringUtil.appendXMLTag(buffer, 2, "useDefaultExecutablePath", useDefaultExecutablePath);  
 		StringUtil.appendXMLTag(buffer, 2, "databasesInDefaultLocation", databasesInDefaultLocation);  
 
+		StringUtil.appendXMLTag(buffer, 2, "prependDatabaseName", prependDatabaseName);  
 		preferencesSet = true;
 		return buffer.toString();
 	}
@@ -378,6 +382,7 @@ public class LocalBlaster extends Blaster implements ActionListener,  AppUser, P
 
 		AppChooser appChooser = new AppChooser(this, this, useDefaultExecutablePath, blastExecutableFolderPath);
 		appChooser.addToDialog(dialog);
+		dialog.addLargeOrSmallTextLabel("If the built-in BLAST quits with an error, try installing NCBI BLAST separately on your OS, which may fix it by adding the necessary libraries.");
 		IntegerField numThreadsField = dialog.addIntegerField("Number of processor threads to use:", numThreads,4, 1, Integer.MAX_VALUE);
 
 /*		if (getDefaultExecutablePathAllowed()) {
@@ -405,7 +410,8 @@ public class LocalBlaster extends Blaster implements ActionListener,  AppUser, P
 		dialog.addLabel("Databases to search (separate by commas):");
 		TextArea databasesField = dialog.addTextAreaSmallFont(databaseString, 5, 50);
 
-		
+		Checkbox prependDatabaseNameCheckBox = dialog.addCheckBox("Prepend database name to hit names",prependDatabaseName);
+		dialog.addBlankLine();
 		
 		
 
@@ -420,7 +426,7 @@ public class LocalBlaster extends Blaster implements ActionListener,  AppUser, P
 			
 			useDefaultExecutablePath = appChooser.useBuiltInExecutable(); //for preference writing
 			blastExecutableFolderPath = appChooser.getManualPath(); //for preference writing
-
+			prependDatabaseName = prependDatabaseNameCheckBox.getState();
 /*			if (defaultExecutablePathCheckBox!=null)
 				useDefaultExecutablePath = defaultExecutablePathCheckBox.getState();
 			String tempPath = executablePathField.getText();
@@ -523,7 +529,7 @@ public class LocalBlaster extends Blaster implements ActionListener,  AppUser, P
 		else {
 			String arguments = blastArguments;
 			arguments=StringUtil.stripBoundingWhitespace(arguments);
-			externalProcessManager = new ExternalProcessManager(this, rootDir, programPath, arguments, getName(), outputFilePaths, this, this, true);
+			externalProcessManager = new ExternalProcessManager(this, rootDir, programPath, arguments, "BLAST (local)", outputFilePaths, this, this, true);
 			if (useDefaultStdOutFileName())
 				externalProcessManager.setStdOutFileName(ShellScriptRunner.stOutFileName);
 			else
@@ -553,7 +559,7 @@ public class LocalBlaster extends Blaster implements ActionListener,  AppUser, P
 	}	
 
 	/*.................................................................................................................*/
-	public String getFastaFromIDs(String queryTaxonName, String[] idList, boolean isNucleotides, StringBuffer blastResponse, int databaseNumber) {
+	public String getFastaFromIDs(String queryTaxonName, String[] idList, boolean isNucleotides, StringBuffer blastResponse, int databaseNumber, MesquiteString foundTaxonName) {
 		int count = 0;
 		for (int i=0; i<idList.length; i++) 
 			if (StringUtil.notEmpty(idList[i]))
@@ -593,6 +599,12 @@ public class LocalBlaster extends Blaster implements ActionListener,  AppUser, P
 
 		String blastArguments = "  -entry "+queryString + " -outfmt %f";
 		blastArguments+= " -db "+databaseArray[databaseNumber];
+		if (prependDatabaseName && foundTaxonName != null){
+			String nameFromDatabaseName = StringUtil.getLastItem(databaseArray[databaseNumber], MesquiteFile.fileSeparator);
+			nameFromDatabaseName = StringUtil.getAllButLastItem(nameFromDatabaseName, ".");
+			foundTaxonName.setValue(nameFromDatabaseName + "||");
+			
+		}
 		//blastArguments+= " -db "+NCBIUtil.getBLASTFileInputName(databaseArray[databaseNumber]);
 		blastArguments+=" -out " + outFileName;		
 

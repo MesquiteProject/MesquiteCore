@@ -16,14 +16,23 @@ package mesquite.lists.CharMatricesListDeconcatenate;
 import java.awt.Checkbox;
 import java.util.Vector;
 
+import mesquite.lib.CommandRecord;
+import mesquite.lib.Debugg;
+import mesquite.lib.FileElement;
 import mesquite.lib.ListableVector;
+import mesquite.lib.Listened;
 import mesquite.lib.MesquiteBoolean;
 import mesquite.lib.MesquiteInteger;
+import mesquite.lib.MesquiteListener;
+import mesquite.lib.MesquiteModule;
+import mesquite.lib.MesquiteTimer;
+import mesquite.lib.Notification;
 import mesquite.lib.StringUtil;
 import mesquite.lib.characters.CharacterData;
 import mesquite.lib.characters.CharacterPartition;
 import mesquite.lib.characters.CharactersGroup;
 import mesquite.lib.characters.CharactersGroupVector;
+import mesquite.lib.duties.ElementManager;
 import mesquite.lib.table.MesquiteTable;
 import mesquite.lib.ui.ExtensibleDialog;
 import mesquite.lib.ui.ProgressIndicator;
@@ -48,7 +57,7 @@ public class CharMatricesListDeconcatenate extends CharMatricesListUtility {
 	public boolean pleaseLeaveMeOn(){
 		return false;
 	}
-	
+
 	MesquiteBoolean deleteOriginalMatrices = new MesquiteBoolean(true);
 	/*.................................................................................................................*/
 	public boolean queryOptions(ListableVector datas) {
@@ -84,53 +93,79 @@ public class CharMatricesListDeconcatenate extends CharMatricesListUtility {
 			getProject().incrementProjectWindowSuppression();
 		if (!queryOptions(datas))
 			return false;
+		incrementMenuResetSuppression();
+		incrementNEXUSBlockSortSuppression();
 		Vector v = pauseAllPausables();
 		ProgressIndicator progIndicator = null;
 		CharactersGroupVector groups = (CharactersGroupVector)getProject().getFileElement(CharactersGroupVector.class, 0);
 		progIndicator = new ProgressIndicator(getProject(),"Deconcatenating partitions", datas.size()*groups.size());
 		progIndicator.setStopButtonName("Stop");
 		int progI = 0;
+		int countParts = 0;
+		getProject().setNotificationsOnOff(false);
+		getProject().getCentralModelListener().setNotificationsOnOff(false);
 		boolean abort = false;
 		for (int im = 0; im < datas.size() && !abort; im++){
 			CharacterData data = (CharacterData)datas.elementAt(im);
+			data.setNotificationsOnOff(false);
 			CharacterPartition partition = (CharacterPartition)data.getCurrentSpecsSet(CharacterPartition.class);
+			/* Multiple timings.
+			 * 
+			 * Example
+			 * MesquiteTimer[] timers = MesquiteTimer.makeTimers(4);
+			 * int currentTimer = MesquiteTimer.startMultipleTimings(timers, "First part");
+			 * //first part of code to be timed
+			 * currentTimer = MesquiteTimer.nextTimingPart(timers, currentTimer, "Second part");
+			 * //second part of code to be timed
+			 * currentTimer = MesquiteTimer.nextTimingPart(timers, currentTimer, "Third part");
+			 * //third part of code to be timed
+			 * currentTimer = MesquiteTimer.nextTimingPart(timers, currentTimer, "Fourth part");
+			 * //third part of code to be timed
+			 * MesquiteTimer.finishTimingParts(timers, currentTimer);
+			 * if (iterations % 100 == 0)
+			 * 		MesquiteTimer.summarize(timers);
+			 */
 
+		//	MesquiteTimer[] timers = MesquiteTimer.makeTimers(6);
 			boolean partitonFound = false;
 			boolean deleteLast = false;
+			ElementManager charManager = findElementManager(CharacterData.class);
 			if (partition != null){
 				if (groups != null){
-					CharacterData partData = data.makeCharacterData(data.getMatrixManager(), data.getTaxa());
-					partData.addCharacters(0, data.getNumChars(), false);  //will trim later
-					partData.addToFile(getProject().getHomeFile(), getProject(),  findElementManager(CharacterData.class));  
-					deleteLast = true;
 					progIndicator.start();
 					for (int i=0; i< groups.size(); i++){
 						CharactersGroup group = (CharactersGroup)groups.elementAt(i);
-						int icPart = 0;
-						for (int icOrig = 0; icOrig<data.getNumChars(); icOrig++) {
-							if (partition.getProperty(icOrig) == group){
-								partData.equalizeCharacter(data, icOrig, icPart++);
-								progI = (i+1)*(im+1);
-							}
-						}
-						if (icPart>0){
+						int numCharsInGroup = countInGroup(partition, group, data.getNumChars());
+						if (numCharsInGroup>0){
 							partitonFound = true;
 							String name = group.getName();
-							partData.setName(datas.getUniqueName(group.getName()));
-							partData.deleteCharacters(icPart, partData.getNumChars()-icPart, false);
-							partData = data.makeCharacterData(data.getMatrixManager(), data.getTaxa());
-							partData.addCharacters(0, data.getNumChars(), false);  //will trim later						}
-							partData.addToFile(getProject().getHomeFile(), getProject(),  findElementManager(CharacterData.class));  
-							deleteLast = true;
+							CharacterData partData = data.makeCharacterData(data.getMatrixManager(), data.getTaxa());
+							partData.setNotificationsOnOff(false);
 
+							partData.addCharacters(0, numCharsInGroup, false);  //will trim later						}
+							partData.addToFile(getProject().getHomeFile(), getProject(),  charManager); 
+							partData.setName(datas.getUniqueName(group.getName()), false);
+							int icPart = 0;
+							for (int icOrig = 0; icOrig<data.getNumChars() && icPart<numCharsInGroup; icOrig++) {
+								if (partition.getProperty(icOrig) == group){
+									partData.equalizeCharacter(data, icOrig, icPart++);
+									progI = (i+1)*(im+1);
+								}
+							}
+							partData.setNotificationsOnOff(true);
+							countParts++;
+							deleteLast = true;
+							CommandRecord.tick(Integer.toString(countParts) + " partitions deconcatenated (e.g., " + name+ ")");
 							if (progIndicator!=null){
 								progIndicator.setCurrentValue(progI);
-								progIndicator.setText("Partitions deconcatenated: " + name);
+								progIndicator.setText("Partition deconcatenated: " + name);
 								if (progIndicator.isAborted())
 									abort = true;
 							}
 							if (abort)
 								break;
+							
+
 						}
 					}
 
@@ -138,22 +173,24 @@ public class CharMatricesListDeconcatenate extends CharMatricesListUtility {
 						progIndicator.spin();
 					}
 					if (!abort && partitonFound){  //some were found, therefore OK to write leftovers
-						int icPart = 0;
-						for (int icOrig = 0; icOrig<data.getNumChars(); icOrig++) {
-							if (partition.getProperty(icOrig) == null)
-								partData.equalizeCharacter(data, icOrig, icPart++);
-						}
-						if (icPart>0){
-							partitonFound = true;
-							partData.setName(datas.getUniqueName("Unassigned"));
-							partData.deleteCharacters(icPart, partData.getNumChars()-icPart, false);
-							deleteLast = false;
-						}
+						int numCharsWithoutGroup = countInGroup(partition, null, data.getNumChars());
+						if (numCharsWithoutGroup>0){
+							CharacterData partData = data.makeCharacterData(data.getMatrixManager(), data.getTaxa());
+							partData.setNotificationsOnOff(false);
 
+							partData.addCharacters(0, numCharsWithoutGroup, false);  //will trim later						}
+							partData.addToFile(getProject().getHomeFile(), getProject(),  findElementManager(CharacterData.class)); 
+							partData.setName(datas.getUniqueName("Not assigned to group"), false);
+							int icPart = 0;
+							for (int icOrig = 0; icOrig<data.getNumChars() && icPart<numCharsWithoutGroup; icOrig++) {
+								if (partition.getProperty(icOrig) == null)
+									partData.equalizeCharacter(data, icOrig, icPart++);
+							}
+
+							partData.setNotificationsOnOff(true);
+						}
 
 					}
-					if (deleteLast)
-						partData.deleteMe(false);  //last one was not used
 					if (progIndicator!=null)
 						progIndicator.goAway();
 					if (!partitonFound && !abort)
@@ -161,15 +198,34 @@ public class CharMatricesListDeconcatenate extends CharMatricesListUtility {
 
 				}
 			}
+			data.setNotificationsOnOff(true);
 			if (partitonFound && deleteOriginalMatrices.getValue())
 				data.deleteMe(false);
-				
+
 		}
+		getProject().setNotificationsOnOff(true);
+		getProject().getCentralModelListener().setNotificationsOnOff(true);
+		getProject().notifyListeners(this, new Notification(MesquiteListener.PARTS_ADDED));
+		getProject().notifyListenersAllVectors();
+
 		unpauseAllPausables(v);
 		if (getProject() != null)
 			getProject().decrementProjectWindowSuppression();
+		decrementNEXUSBlockSortSuppression();
+		decrementMenuResetSuppression();
 		resetAllMenuBars();
 		return true;
+	}
+	/*-----------------------------*/
+	int countInGroup(CharacterPartition partition, CharactersGroup group, int numChars){
+		int count = 0; 
+		for (int icOrig = 0; icOrig<numChars; icOrig++) {
+			if (partition.getProperty(icOrig) == group){
+				count++;
+			}
+		}
+		return count;
+
 	}
 	/*.................................................................................................................*/
 	/** returns whether this module is requesting to appear as a primary choice */
