@@ -10,8 +10,10 @@ Mesquite's web site is http://mesquiteproject.org
 
 This source code and its compiled class files are free and modifiable under the terms of 
 GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
-*/
+ */
 package mesquite.lib;
+
+import java.util.Vector;
 
 /* ======================================================================== */
 public class Object2DArray implements Listable {
@@ -114,6 +116,24 @@ public class Object2DArray implements Listable {
 		d[first][k]=d[second][k];
 		d[second][k] = temp;
 	}
+
+	public static void moveRowsToDestinations(Object[][] d, int[] destinations){
+		if (d == null || d.length == 0 || destinations == null)
+			return;
+		int numRows = d[0].length;
+		Object[] newValues = new Object[numRows];
+		for (int column = 0; column<d.length; column++){
+			for (int i=0; i<numRows; i++) {
+				if (i<destinations.length)
+					newValues[destinations[i]]=d[column][i];
+				else 
+					newValues[i]=d[column][i];
+			}
+			for (int i=0; i<numRows; i++)
+				d[column][i]=newValues[i];
+		}
+	}
+
 	/*...........................................................*/
 	public static void moveRows(Object[][] d, int starting, int num, int justAfter) {
 		if (num<=0 || d==null || d.length == 0)
@@ -131,7 +151,7 @@ public class Object2DArray implements Listable {
 				int count =0;
 				for (int i=0; i<=justAfter; i++)
 					newValues[count++]=d[column][i];
-				
+
 				for (int i=starting; i<=starting+num-1; i++)
 					newValues[count++]=d[column][i];
 				for (int i=justAfter+1; i<=starting-1; i++)
@@ -143,7 +163,7 @@ public class Object2DArray implements Listable {
 				int count =0;
 				for (int i=0; i<=starting-1; i++)
 					newValues[count++]=d[column][i];
-				
+
 				for (int i=starting+num; i<=justAfter; i++)
 					newValues[count++]=d[column][i];
 				for (int i=starting; i<=starting+num-1; i++)
@@ -158,7 +178,7 @@ public class Object2DArray implements Listable {
 	public static Object[][] addRows(Object[][] d, int starting, int num) {
 		if (num==0 || d == null || d.length == 0)
 			return d;
-		
+
 		for (int column = 0; column<d.length; column++){
 			d[column]=ObjectArray.addParts(d[column], starting, num);
 		}
@@ -214,7 +234,7 @@ public class Object2DArray implements Listable {
 			return d;
 		if (blocks == null || blocks.length == 0)
 			return d;
-		
+
 		int numRows= d[0].length;
 		int availableSlot = blocks[0][0];
 

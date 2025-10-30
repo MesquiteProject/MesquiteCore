@@ -222,7 +222,7 @@ public class MkModel extends ProbPhenCategCharModel implements CModelEstimator, 
 		return result;
 	}
 	public String toString () {
-		return "Mk1 model (" + getID() + ") " + getParameters();
+		return "Mk1 model (" + getParameters() + ")";
 	}
 	MesquiteNumber[] forExport;
 	/* --------------------------------------------- */

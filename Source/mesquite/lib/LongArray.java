@@ -368,6 +368,41 @@ public class LongArray implements Listable, Nameable {
 		d[second] = temp;
 	}
 	/*...........................................................*/
+	public static void moveRowsToDestinations(long[][] d, int[] destinations) {
+		if (d == null || d.length == 0 || destinations == null)
+			return;
+		int numRows = d[0].length;
+		long[] newValues = new long[numRows];
+		for (int column = 0; column<d.length; column++){
+			for (int i=0; i<numRows; i++) {
+				if (i<destinations.length)
+					newValues[destinations[i]]=d[column][i];
+				else 
+					newValues[i]=d[column][i];
+			}
+			for (int i=0; i<numRows; i++)
+				d[column][i]=newValues[i];
+		}
+	}
+	/*...........................................................*/
+	public void movePartsToDestinations( int[] destinations) {
+		movePartsToDestinations(values,destinations);
+	}
+	/*...........................................................*/
+	public static void movePartsToDestinations(long[] d, int[] destinations) {
+		if (d == null || destinations == null)
+			return;
+		long[] newValues = new long[d.length];
+		for (int i=0; i<d.length; i++) {
+			if (i<destinations.length)
+				newValues[destinations[i]]=d[i];
+			else 
+				newValues[i]=d[i];
+		}
+		for (int i=0; i<d.length; i++)
+			d[i]=newValues[i];
+	}
+	/*...........................................................*/
 	public static void moveParts(long[] d, int starting, int num, int justAfter) {
 		if (num<=0 || d==null || starting>=d.length || (justAfter>=starting && justAfter<=starting+num-1)) //starting???
 			return;

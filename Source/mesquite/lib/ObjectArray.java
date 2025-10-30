@@ -13,6 +13,8 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
  */
 package mesquite.lib;
 
+import java.util.Vector;
+
 /* ======================================================================== */
 public class ObjectArray implements Listable, Nameable {
 	Object[] values;
@@ -295,6 +297,38 @@ public class ObjectArray implements Listable, Nameable {
 		values[first] = values[second];
 		values[second] = temp;
 		return true;
+	}
+	/*...........................................................*/
+	public static void movePartsToDestinations(Vector[] d, int[] destinations){
+		if (d == null || destinations == null)
+			return;
+		Vector[] newValues = new Vector[d.length];
+		for (int i=0; i<d.length; i++) {
+			if (i<destinations.length)
+				newValues[destinations[i]]=d[i];
+			else 
+				newValues[i]=d[i];
+		}
+		for (int i=0; i<d.length; i++)
+			d[i]=newValues[i];
+	}
+	/*...........................................................*/
+	public void movePartsToDestinations( int[] destinations) {
+		movePartsToDestinations(values,destinations);
+	}
+	/*...........................................................*/
+	public static void movePartsToDestinations(Object[] d, int[] destinations) {
+		if (d == null || destinations == null)
+			return;
+		Object[] newValues = new Object[d.length];
+		for (int i=0; i<d.length; i++) {
+			if (i<destinations.length)
+				newValues[destinations[i]]=d[i];
+			else 
+				newValues[i]=d[i];
+		}
+		for (int i=0; i<d.length; i++)
+			d[i]=newValues[i];
 	}
 	/*...........................................................*/
 	public boolean moveParts(int starting, int num, int justAfter){

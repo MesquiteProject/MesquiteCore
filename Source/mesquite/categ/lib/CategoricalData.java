@@ -19,6 +19,8 @@ import java.util.zip.CRC32;
 
 import mesquite.lib.Associable;
 import mesquite.lib.Bits;
+import mesquite.lib.Double2DArray;
+import mesquite.lib.DoubleArray;
 import mesquite.lib.IntegerArray;
 import mesquite.lib.Long2DArray;
 import mesquite.lib.LongArray;
@@ -836,6 +838,17 @@ public class CategoricalData extends CharacterData {
 
 		numTaxa = newNumTaxa; 
 		return super.deleteTaxa(starting, num);
+	}
+	/*..........................................  CategoricalData  ..................................................*/
+	public boolean moveTaxaToDestinations(int[] destinations){
+		setDirty(true);
+		if (usingShortMatrix()) 
+			ShortArray.moveRowsToDestinations(matrixShort, destinations);
+		else
+			LongArray.moveRowsToDestinations(matrix, destinations);
+
+		incrementStatesVersion();
+		return super.moveTaxaToDestinations(destinations);
 	}
 	/*..........................................  CategoricalData  ..................................................*/
 	/**moves num taxa from position "starting" to just after position "justAfter"; returns true iff successful.*/

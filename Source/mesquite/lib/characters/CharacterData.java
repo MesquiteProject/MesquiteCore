@@ -1905,6 +1905,44 @@ public abstract class CharacterData extends FileElement implements MesquiteListe
 		return true;
 	}
 
+	public boolean moveTaxaToDestinations(int[] destinations){
+		if (!checkThread(false))
+			return false;
+		if (footnotes !=null) {
+			StringArray.moveRowsToDestinations(footnotes, destinations);
+		}
+		if (cellObjectsDisplay !=null) {
+			Bits.moveRowsToDestinations(cellObjectsDisplay, destinations);
+		}
+		if (changedSinceSave !=null) {
+			Bits.moveRowsToDestinations(changedSinceSave, destinations);
+		}
+		if (firstApplicable !=null) {
+			IntegerArray.movePartsToDestinations(firstApplicable, destinations);
+		}
+		if (lastApplicable !=null) {
+			IntegerArray.movePartsToDestinations(lastApplicable, destinations);
+		}
+
+
+		if (cellObjects != null && cellObjects.size()>0){//Vector of arrays of objects that are attached to cells
+			for (int k =0; k<cellObjects.size(); k++){
+				Object2DArray objArray = (Object2DArray)cellObjects.elementAt(k);
+				Object[][] objects = objArray.getMatrix();
+				Object2DArray.moveRowsToDestinations(objects, destinations);
+				objArray.setMatrix(objects);
+			}
+		}
+		LongArray.movePartsToDestinations(taxaIDs, destinations);
+		LongArray.movePartsToDestinations(doubleCheckTaxaIDs, destinations);
+
+		if (taxaInfo != null)
+			taxaInfo.movePartsToDestinations(destinations);
+		uncheckThread();
+		return true;
+
+	}
+
 	/**moves num taxa from position "starting" to just after position "justAfter"; returns true iff successful.*/
 	public boolean moveTaxa(int starting, int num, int justAfter){
 		if (!checkThread(false))
@@ -2060,6 +2098,7 @@ public abstract class CharacterData extends FileElement implements MesquiteListe
 		MesquiteMessage.println("in taxa " + s + "]");
 	}
 	 */
+
 	private void reconcileTaxa(int code){
 		if (taxa == null)
 			return;
@@ -2068,21 +2107,40 @@ public abstract class CharacterData extends FileElement implements MesquiteListe
 		int newNumTaxa = taxa.getNumTaxa();
 		if (newNumTaxa == numTaxa) {
 			if (code== MesquiteListener.PARTS_CHANGED || code== MesquiteListener.PARTS_MOVED) {
-				/*go through list of taxa.  If any taxon is not in sequence expected from Taxa then find where it is in the list of taxaID's
-				and move it into place*/
-				for (int i = 0; i<taxa.getNumTaxa(); i++){ //!!!!! && taxa.getTaxon(i) != null; i++){ //go through list of taxa
+				int[] destinations = new int[numTaxa];
+				for (int i = 0; i<numTaxa; i++){ //!!!!! && taxa.getTaxon(i) != null; i++){ //go through list of taxa
 					if (taxa.getTaxon(i).getID() != taxaIDs[i]){ //taxon i is not in sequence expected from Taxa
 						int loc = LongArray.indexOf(taxaIDs, taxa.getTaxon(i).getID());
 						if (loc <0) {
 							MesquiteTrunk.mesquiteTrunk.discreetAlert( "Error in CharacterData: taxaID's cannot be reconciled with current Taxa");
 							return;
 						}
-						else {
-							//move taxon that should be here into this place
-							moveTaxa(loc, 1, i-1);
+						else 
+							destinations[loc] = i;
+					}
+					else destinations[i] = i;
+				}
+				moveTaxaToDestinations(destinations);
+
+				/*old style reconcilation
+
+					/*go through list of taxa.  If any taxon is not in sequence expected from Taxa then find where it is in the list of taxaID's
+					and move it into place*
+					for (int i = 0; i<taxa.getNumTaxa(); i++){ //!!!!! && taxa.getTaxon(i) != null; i++){ //go through list of taxa
+						if (taxa.getTaxon(i).getID() != taxaIDs[i]){ //taxon i is not in sequence expected from Taxa
+							int loc = LongArray.indexOf(taxaIDs, taxa.getTaxon(i).getID());
+							if (loc <0) {
+								MesquiteTrunk.mesquiteTrunk.discreetAlert( "Error in CharacterData: taxaID's cannot be reconciled with current Taxa");
+								return;
+							}
+							else {
+								//move taxon that should be here into this place
+								moveTaxa(loc, 1, i-1);
+							}
 						}
 					}
 				}
+				 */
 				Notification notification = new Notification(MesquiteListener.PARTS_CHANGED);
 				notification.setSubcodes(new int[] {MesquiteListener.TAXA_CHANGED});
 				notifyListeners(this, notification);

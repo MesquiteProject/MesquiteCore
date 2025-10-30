@@ -565,6 +565,17 @@ public class MeristicData extends CharacterData implements ItemContainer {
 		incrementStatesVersion();
 		return super.deleteTaxa(starting, num);
 	}
+	public boolean moveTaxaToDestinations(int[] destinations){
+		setDirty(true);
+		for (int item = 0; item<getNumItems(); item++){
+			Integer2DArray matrixA = ((Integer2DArray)matrices.elementAt(item));
+			int[][] matrix = matrixA.getMatrix();
+			for (int ic=0; ic<numChars; ic++)
+				IntegerArray.movePartsToDestinations(matrix[ic], destinations);
+		}
+		incrementStatesVersion();
+		return super.moveTaxaToDestinations(destinations);
+	}
 	/*..........................................MeristicData................*/
 	/**moves num taxa from position "starting" to just after position "justAfter"; returns true iff successful.*/
 	public boolean moveTaxa(int starting, int num, int justAfter){

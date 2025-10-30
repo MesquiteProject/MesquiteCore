@@ -17,6 +17,7 @@ package mesquite.trees.ZoL;
 import java.util.Random;
 
 import mesquite.lib.CommandChecker;
+import mesquite.lib.Debugg;
 import mesquite.lib.MesquiteBoolean;
 import mesquite.lib.MesquiteDouble;
 import mesquite.lib.MesquiteFile;
@@ -40,7 +41,7 @@ import mesquite.lib.tree.TreeVector;
 public class ZoL extends MesquiteInit {
 	MesquiteTree tree = null;
 	int startNode = 0;
-	int currentNode = 0;
+	int currentNode = -1;
 	int endNode = 0;
 	Random random = new Random();
 	Taxa taxa;
@@ -54,7 +55,7 @@ public class ZoL extends MesquiteInit {
 	TreeVector trees = null;
 	int whichTree = 0;
 	int level = 1;
-	
+
 	/* IDEAS
 	 * 
 	 * Allow restart level (and go back to number of moves?)
@@ -75,17 +76,17 @@ public class ZoL extends MesquiteInit {
 	    -- seed
 	    -- trait that allowed land plants (following which, tetrapods could evolve?)
 	    -- coming on land for tetrapods
-	  *
-	  * Such tasks can be protrayred all as you acting as a bit of luck.
-	  *
-	  * Possible gameplay: 
-	  * -- some regions of the tree are unavailable until teh conditions for their emergence are met, e.g.
-	  * 	eukaryotes aren't available until mitochondrion arrives; green plants need chloroplast; land plants need luck;
-	  *    tetrapods need land plants and luck; etc.
-	  * -- above tasks could be chained, e.g. once mitochondrion arrives, allows euk to diversify, 
-	  * 	and then the next task given takes you into the eukaryotes.
-	  * 
-	  */
+	 *
+	 * Such tasks can be protrayred all as you acting as a bit of luck.
+	 *
+	 * Possible gameplay: 
+	 * -- some regions of the tree are unavailable until teh conditions for their emergence are met, e.g.
+	 * 	eukaryotes aren't available until mitochondrion arrives; green plants need chloroplast; land plants need luck;
+	 *    tetrapods need land plants and luck; etc.
+	 * -- above tasks could be chained, e.g. once mitochondrion arrives, allows euk to diversify, 
+	 * 	and then the next task given takes you into the eukaryotes.
+	 * 
+	 */
 	/*.................................................................................................................*/
 	public boolean startJob(String arguments, Object condition, boolean hiredByName) {
 		String settingsdir = getInstallationSettingsPath();
@@ -115,7 +116,8 @@ public class ZoL extends MesquiteInit {
 	}
 	/*.................................................................................................................*/
 	public Object doCommand(String commandName, String arguments, CommandChecker checker) {
-		println("");
+		if (!checker.getAccumulateMode())
+			println("");
 		if (finished)
 			commandName = "reset";
 		if (checker.compare(this.getClass(), "", "", commandName, "reset")) {
@@ -137,8 +139,8 @@ public class ZoL extends MesquiteInit {
 			}
 			mailboxOpen = false;
 			initiated = true;
-			
-			
+
+
 			println("\n\n************************************************");
 			println("ZoL: The Great Phylogenetic Adventure!");
 			println("Level 1");
@@ -240,11 +242,11 @@ public class ZoL extends MesquiteInit {
 		}
 		else if (currentNode == startNode && ("pick".equalsIgnoreCase(commandName) || "take".equalsIgnoreCase(commandName) || "get".equalsIgnoreCase(commandName))){
 			println("Sorry, you can't do that.");
-		
+
 		}
 		else if (!initiated)
 			return  super.doCommand(commandName, arguments, checker);
-		else {
+		else if (!checker.getAccumulateMode()){
 			printSeparatorLine("\n");			
 			println("Sorry, that is not a command that ZoL understands.\n");
 			listCommands();
@@ -305,6 +307,10 @@ public class ZoL extends MesquiteInit {
 		println("   about — explain ZoL.");
 	}
 	void where(){
+		if (!initiated){
+			println("You seem to have climbed into ZoL through the window. If you are trying to play ZoL, please initiated it by typing ZoL in the log window or command line terminal.");
+
+		}
 		if (!synapomorphyFound && synapomorphyAtNode(currentNode)){
 			println("*****Congratulations!***** You have found the synapomorphy: " + synapomorphy + "!");
 			println("");
@@ -321,7 +327,7 @@ public class ZoL extends MesquiteInit {
 				println("CONGRATULATIONS! You have arrived to your destination.");
 				if (StringUtil.notEmpty(synapomorphy))
 					println("You have also found the synapomorphy!");
-				
+
 				whichTree++;
 				if (whichTree>=trees.size()){
 					println("Your journey is over. There are no more levels. " + moves());
@@ -331,7 +337,7 @@ public class ZoL extends MesquiteInit {
 				}
 				println("!!!@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@!!!");
 				level++;
-				
+
 				println("\n\nYour journey continues to the next level...");
 				println("Level " + level + "\n");
 
@@ -339,15 +345,15 @@ public class ZoL extends MesquiteInit {
 				println("You blink, and suddenly find yourself standing beside a " +taxonNameOfNode(currentNode)+ ".\n");
 				println("Your goal is now to get to the taxon " + taxonNameOfNode(endNode));
 				if (StringUtil.notEmpty(synapomorphy)){
-						println(" and to pick up the following synapomorphy along the way: " + synapomorphy);
+					println(" and to pick up the following synapomorphy along the way: " + synapomorphy);
 				}
 				println("");
 				println(moves());
-				
+
 				//("@ reset with whichTree+1 if there are more
-				
-				
-				
+
+
+
 				}
 			}
 			else {

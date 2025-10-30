@@ -47,14 +47,14 @@ public class ManageArchivedTaxonNames extends SpecsSetManager {
 
 
 	/*.................................................................................................................*/
-	/** A method called immediately after the file has been read in.*/
+	/** A method called immediately after the file has been read in.*
 	public void projectEstablished() {
 		MesquiteSubmenuSpec mmis = getFileCoordinator().addSubmenu(MesquiteTrunk.treesMenu,listOfAlternativeNameSetsName, makeCommand("showAlternativeNamesList",  this), (ListableVector)getProject().taxas);
 		mmis.setOwnerModuleID(getID());
 		mmis.setBehaviorIfNoChoice(MesquiteSubmenuSpec.ONEMENUITEM_ZERODISABLE);
 		super.projectEstablished();
 	}
-	/*.................................................................................................................*/
+	/*.................................................................................................................*
 	public Snapshot getSnapshot(MesquiteFile file) { 
 		Snapshot temp = new Snapshot();
 		for (int i = 0; i<getNumberOfEmployees(); i++) {
@@ -72,6 +72,7 @@ public class ManageArchivedTaxonNames extends SpecsSetManager {
 		}
 		return temp;
 	}
+	*/
 	public void elementsReordered(ListableVector v){
 	}
 	/*.................................................................................................................*/
@@ -123,9 +124,10 @@ public class ManageArchivedTaxonNames extends SpecsSetManager {
 	public Class getElementClass(){
 		return TaxaStringsSet.class;
 	}
-	/*.................................................................................................................*/
+	/*.................................................................................................................*
 	public Object doCommand(String commandName, String arguments, CommandChecker checker) {
 		if (checker.compare(this.getClass(), "Shows lists of the alternative name sets", null, commandName, "showAlternativeNamesList")) {
+			System.err.println("@showAlternativeNamesList " + arguments);
 			if (StringUtil.blank(arguments)) {
 				for (int i = 0; i< getProject().getNumberTaxas(checker.getFile()); i++) {
 					showSpecsSets(getProject().getTaxa(checker.getFile(), i), listOfAlternativeNameSetsName);

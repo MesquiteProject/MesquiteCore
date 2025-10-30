@@ -16,6 +16,7 @@ package mesquite.charMatrices.SortTaxa;
 
 import mesquite.lib.CommandChecker;
 import mesquite.lib.CommandRecord;
+import mesquite.lib.LongArray;
 import mesquite.lib.MesquiteInteger;
 import mesquite.lib.MesquiteListener;
 import mesquite.lib.MesquiteModule;
@@ -122,7 +123,7 @@ public class SortTaxa extends DataWindowAssistantI {
 	   			UndoInstructions undoInstructions = new UndoInstructions(UndoInstructions.PARTS_MOVED,taxa);
 	   			undoInstructions.recordPreviousOrder(taxa);
 	   			UndoReference undoReference = new UndoReference(undoInstructions, this);
-				
+			
 				if (column>=0 && row >=0) {
 					String[] text = new String[taxa.getNumTaxa()];
 					for (int i=0; i<taxa.getNumTaxa(); i++)

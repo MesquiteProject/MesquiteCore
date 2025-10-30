@@ -819,7 +819,7 @@ public class AsymmModel extends ProbPhenCategCharModel implements CModelEstimato
 
 	/* --------------------------------------------- */
 	public String toString() {
-		return "AsymmMk model (id " + getID() + ") " + getParameters();
+		return "AsymmMk model (" +  getParameters() + ")";
 	}
 
 	/* --------------------------------------------- */

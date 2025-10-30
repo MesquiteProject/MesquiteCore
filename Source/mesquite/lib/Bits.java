@@ -319,6 +319,20 @@ public static boolean[][] deleteColumnsFlagged(boolean[][] d, Bits toDelete) {
 		setBit(second, firstOn);
 	}
 
+	/*...........................................................*/
+	public void movePartsToDestinations( int[] destinations) {
+		if (destinations == null)
+			return;
+		Bits newBits = new Bits(numBits);
+		for (int i=0; i<numBits; i++) {
+			if (i<destinations.length)
+				newBits.setBit(destinations[i], isBitOn(i));
+			else 
+				newBits.setBit(i, isBitOn(i));
+		}
+		for (int i = 0; i < numBits; i++)
+			setBit(i, newBits.isBitOn(i));
+	}
 	/* ........................................................... */
 	public void moveParts(int starting, int num, int justAfter) {
 		if (num <= 0 || starting >= numBits || (justAfter >= starting && justAfter <= starting + num - 1)) // starting???
@@ -1012,6 +1026,23 @@ public static boolean[][] deleteColumnsFlagged(boolean[][] d, Bits toDelete) {
 		}
 	}
 
+	/*...........................................................*/
+	public static void moveRowsToDestinations(boolean[][] d, int[] destinations){
+		if (d == null || d.length == 0 || destinations == null)
+			return;
+		int numRows = d[0].length;
+		boolean[] newValues = new boolean[numRows];
+		for (int column = 0; column<d.length; column++){
+			for (int i=0; i<numRows; i++) {
+				if (i<destinations.length)
+					newValues[destinations[i]]=d[column][i];
+				else 
+					newValues[i]=d[column][i];
+			}
+			for (int i=0; i<numRows; i++)
+				d[column][i]=newValues[i];
+		}
+	}
 	/* ........................................................... */
 	public static void moveRows(boolean[][] d, int starting, int num, int justAfter) { // DRM: new
 		if (num <= 0 || d == null || d.length == 0)
