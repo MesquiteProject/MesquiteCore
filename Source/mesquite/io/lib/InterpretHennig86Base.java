@@ -80,6 +80,7 @@ public abstract class InterpretHennig86Base extends FileInterpreterITree {
 	HennigNonaCommand[] availableCommands;
 	int treeNumber = 0;
 	boolean convertGapsToMissing = false;
+	boolean includeCNames = false;
 	boolean includeQuotes = true;
 	Class futureDataClass = null;
 	
@@ -423,6 +424,7 @@ public abstract class InterpretHennig86Base extends FileInterpreterITree {
 		ExporterDialog exportDialog = new ExporterDialog(this,containerOfModule(), "Export TNT/Nona/Hennig86 Options", buttonPressed);
 		
 		Checkbox convertGapsBox = exportDialog.addCheckBox("convert gaps to missing", convertGapsToMissing);
+		Checkbox includeCNamesCheckBox = exportDialog.addCheckBox("include cnames command in file", includeCNames);
 
 
 		exportDialog.completeAndShowDialog(dataSelected, taxaSelected);
@@ -430,6 +432,7 @@ public abstract class InterpretHennig86Base extends FileInterpreterITree {
 		boolean ok = (exportDialog.query(dataSelected, taxaSelected)==0);
 		if (ok)  {
 			convertGapsToMissing = convertGapsBox.getState();
+			includeCNames = includeCNamesCheckBox.getState();
 			//storePreferences();
 		}
 
@@ -491,7 +494,7 @@ public abstract class InterpretHennig86Base extends FileInterpreterITree {
 		if (file != null){
 			writeTaxaWithAllMissing = file.writeTaxaWithAllMissing;
 			writeExcludedCharacters = file.writeExcludedCharacters;
-			writeCharLabels = file.writeCharLabelInfo;
+			writeCharLabels = file.writeCharLabelInfo && includeCNames;
 		}
 
 
