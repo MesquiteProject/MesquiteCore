@@ -26,8 +26,10 @@ import mesquite.categ.lib.ProteinData;
 import mesquite.categ.lib.ProteinState;
 import mesquite.cont.lib.ContinuousData;
 import mesquite.lib.Arguments;
+import mesquite.lib.CommandChecker;
 import mesquite.lib.ExporterDialog;
 import mesquite.lib.Listable;
+import mesquite.lib.MesquiteBoolean;
 import mesquite.lib.MesquiteFile;
 import mesquite.lib.MesquiteInteger;
 import mesquite.lib.MesquiteMessage;
@@ -37,7 +39,9 @@ import mesquite.lib.MesquiteStringBuffer;
 import mesquite.lib.MesquiteThread;
 import mesquite.lib.MesquiteTrunk;
 import mesquite.lib.NameReference;
+import mesquite.lib.ParseUtil;
 import mesquite.lib.Parser;
+import mesquite.lib.Snapshot;
 import mesquite.lib.StringUtil;
 import mesquite.lib.characters.CharInclusionSet;
 import mesquite.lib.characters.CharWeightSet;
@@ -90,6 +94,7 @@ public abstract class InterpretHennig86Base extends FileInterpreterITree {
 	public boolean startJob(String arguments, Object condition, boolean hiredByName) {
 		availableCommands = new HennigNonaCommand[numCommands];
 		acceptedClasses = getAcceptedClasses();
+		loadPreferences();
 		initializeCommands();
 		return true;  //make this depend on taxa reader being found?)
 	}
@@ -162,6 +167,47 @@ public abstract class InterpretHennig86Base extends FileInterpreterITree {
 		return convertGapsToMissing;
 	}
 
+	/*.................................................................................................................*/
+	public String preparePreferencesForXML () {
+		StringBuffer buffer = new StringBuffer(200);
+		StringUtil.appendXMLTag(buffer, 2, "convertGapsToMissing", convertGapsToMissing);  
+		StringUtil.appendXMLTag(buffer, 2, "includeCNames", includeCNames);  
+		StringUtil.appendXMLTag(buffer, 2, "includeQuotes", includeQuotes);  
+		return buffer.toString();
+	}
+
+	/*.................................................................................................................*/
+	public void processSingleXMLPreference (String tag, String content) {
+		if ("convertGapsToMissing".equalsIgnoreCase(tag))
+			convertGapsToMissing = MesquiteBoolean.fromTrueFalseString(content);
+		if ("includeCNames".equalsIgnoreCase(tag))
+			includeCNames = MesquiteBoolean.fromTrueFalseString(content);
+		if ("includeQuotes".equalsIgnoreCase(tag))
+			includeQuotes = MesquiteBoolean.fromTrueFalseString(content);
+	}
+	/*.................................................................................................................*/
+	public Snapshot getSnapshot(MesquiteFile file) { 
+		Snapshot temp = new Snapshot();
+		temp.addLine("convertGapsToMissing " + convertGapsToMissing);
+		temp.addLine("includeCNames " + includeCNames);
+		temp.addLine("includeQuotes " + includeQuotes);
+		return temp;
+	}
+	/*.................................................................................................................*/
+	public Object doCommand(String commandName, String arguments, CommandChecker checker) {
+		if (checker.compare(this.getClass(), "Sets whether or not to convert gaps to missing.", "[true or false]", commandName, "convertGapsToMissing")) {
+			convertGapsToMissing = MesquiteBoolean.fromTrueFalseString(parser.getFirstToken(arguments));
+		}
+		else if (checker.compare(this.getClass(), "Sets whether or not to include cnames.", "[true or false]", commandName, "includeCNames")) {
+			includeCNames = MesquiteBoolean.fromTrueFalseString(parser.getFirstToken(arguments));
+		}
+		else if (checker.compare(this.getClass(), "Sets whether or not to include quotes.", "[true or false]", commandName, "includeQuotes")) {
+			includeQuotes = MesquiteBoolean.fromTrueFalseString(parser.getFirstToken(arguments));
+		}
+		else
+			return  super.doCommand(commandName, arguments, checker);
+		return null;
+	}
 	/*.................................................................................................................*/
 	static final int numCommands = 8;   // number of available commands
 	static final int cnamesElement = 7;
@@ -433,7 +479,7 @@ public abstract class InterpretHennig86Base extends FileInterpreterITree {
 		if (ok)  {
 			convertGapsToMissing = convertGapsBox.getState();
 			includeCNames = includeCNamesCheckBox.getState();
-			//storePreferences();
+			storePreferences();
 		}
 
 		exportDialog.dispose();
