@@ -1123,6 +1123,13 @@ class HennigCNAMES extends HennigNonaCommand {
 		return true;
 	}
 	/*.................................................................................................................*/
+	public String cleanStringForHennig(String s) {
+		String cleaned = StringUtil.replace(s, ";",".");
+		cleaned = StringUtil.replace(cleaned, ",",".");
+		cleaned = StringUtil.cleanseStringOfFancyChars(cleaned);
+		return cleaned;
+	}
+	/*.................................................................................................................*/
 	public void appendCommandToStringBuffer(MesquiteStringBuffer outputBuffer, Taxa taxa, CharacterData charData, ProgressIndicator progIndicator){
 		CategoricalData catData = null;
 		if (charData instanceof CategoricalData)
@@ -1137,14 +1144,14 @@ class HennigCNAMES extends HennigNonaCommand {
 				incrementAndUpdateProgIndicator(progIndicator,"Exporting character and state names");
 				outputBuffer.append("{"+counter+" ");
 				if (charData.characterHasName(ic))
-					outputBuffer.append(StringUtil.tokenize(charData.getCharacterName(ic),";"));
+					outputBuffer.append(cleanStringForHennig(charData.getCharacterName(ic)));
 				else if (catData!=null && catData.hasStateNames(ic))
 					outputBuffer.append(StringUtil.tokenize("Character_" + (ic+1),";"));
 
 				if (catData!=null && catData.hasStateNames(ic)) {
 					for (int stateNumber = 0; stateNumber<=catData.maxStateWithName(ic); stateNumber++) {
 						if (catData.hasStateName(ic,stateNumber))
-							outputBuffer.append(" " + StringUtil.tokenize(catData.getStateName(ic,stateNumber),";"));
+							outputBuffer.append(" " + cleanStringForHennig(catData.getStateName(ic,stateNumber)));
 						else
 							outputBuffer.append(" " + "_");
 					}
