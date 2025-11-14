@@ -166,6 +166,14 @@ public class MatrixFlags {
 	public boolean isCharacterFlagOn(int ic) {
 		return characterFlags.isBitOn(ic);
 	}
+	public boolean anyFlagInCharacterSet(int ic){
+		if ( characterFlags.isBitOn(ic))
+			return true;
+			for (int it = 0; it<cellFlags[ic].length; it++)
+				if (cellFlags[ic][it])
+					return true;
+		return false;
+	}
 	public void setTaxonFlag(int ic, boolean value) {
 		taxonFlags.setBit(ic, value);
 	}
