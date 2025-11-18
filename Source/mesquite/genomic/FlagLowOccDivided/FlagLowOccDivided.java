@@ -46,7 +46,7 @@ public class FlagLowOccDivided extends MatrixFlaggerForTrimmingSites implements 
 
 	/*TO DO:
 	Explain that enter 0 to permit any gappiness
-	*/
+	 */
 	/*Gappiness assessment parameters =================================*/
 	static double siteOccupancyThresholdDEFAULT = 0.5; // A site is considered good (for gappiness) if it has at least this many non-gaps
 	static boolean ignoreDatalessDEFAULT = false;
@@ -148,7 +148,7 @@ public class FlagLowOccDivided extends MatrixFlaggerForTrimmingSites implements 
 			if (ignoreDatalessCB!=null){
 				ignoreDataless = ignoreDatalessCB.getState();
 			}
-			
+
 
 			storePreferences();
 		}
@@ -181,12 +181,12 @@ public class FlagLowOccDivided extends MatrixFlaggerForTrimmingSites implements 
 		}
 		else if (checker.compare(this.getClass(), "Sets whether to count taxa with no data.", "[true or false]", commandName, "ignoreDataless")) {
 			boolean s = MesquiteBoolean.fromTrueFalseString(parser.getFirstToken(arguments));
-				ignoreDataless = s;
-				if (!MesquiteThread.isScripting())
-					parametersChanged(); 
-			
+			ignoreDataless = s;
+			if (!MesquiteThread.isScripting())
+				parametersChanged(); 
+
 		}
-		
+
 		else if (checker.compare(this.getClass(), "Sets proportion of selected taxa with gaps above which site is considered gappy.", "[proportion]", commandName, "siteOccupancyThresholdSEL")) {
 			double s = MesquiteDouble.fromString(parser.getFirstToken(arguments));
 			if (MesquiteDouble.isCombinable(s)){
@@ -239,6 +239,7 @@ public class FlagLowOccDivided extends MatrixFlaggerForTrimmingSites implements 
 	int numNegWarnings = 0;
 	/*======================================================*/
 	public MatrixFlags flagMatrix(CharacterData data, MatrixFlags flags) {
+		
 		if (data!=null && data.getNumChars()>0 && data instanceof CategoricalData){
 			if (flags == null)
 				flags = new MatrixFlags(data);
@@ -272,18 +273,18 @@ public class FlagLowOccDivided extends MatrixFlaggerForTrimmingSites implements 
 						if (data.getTaxa().isSelected(it))
 							numTaxaCountedSEL++;
 						else
-							
+
 							numTaxaCountedUNSEL++;
 					}
 				}
 			}
 			else {
 				for (int it=0; it<numTaxa; it++){
-						if (data.getTaxa().isSelected(it))
-							numTaxaCountedSEL++;
-						else
-							
-							numTaxaCountedUNSEL++;
+					if (data.getTaxa().isSelected(it))
+						numTaxaCountedSEL++;
+					else
+
+						numTaxaCountedUNSEL++;
 				}
 
 			}
@@ -297,13 +298,22 @@ public class FlagLowOccDivided extends MatrixFlaggerForTrimmingSites implements 
 				int gapCountUNSEL = 0;
 				siteGappinessSEL[ic] = 0;
 				siteGappinessUNSEL[ic] = 0;
-				
+				boolean dataInSEL = false;
+				boolean dataInUNSEL = false;
 				for (int it = 0; it<numTaxa; it++) {
-					if (countTaxon(it) && data.isInapplicable(ic,it)) {
-						if (data.getTaxa().isSelected(it))
-							gapCountSEL++;
-						else
-							gapCountUNSEL++;
+					if (countTaxon(it)){
+						if (data.isInapplicable(ic,it)) {
+							if (data.getTaxa().isSelected(it))
+								gapCountSEL++;
+							else
+								gapCountUNSEL++;
+						}
+						else {
+							if (data.getTaxa().isSelected(it))
+								dataInSEL = true;
+							else
+								dataInUNSEL = true;
+						}
 					}
 				}
 				if (numTaxaCountedSEL == 0)
@@ -315,7 +325,18 @@ public class FlagLowOccDivided extends MatrixFlaggerForTrimmingSites implements 
 				else
 					siteGappinessUNSEL[ic] = 1.0*gapCountUNSEL/numTaxaCountedUNSEL;
 
-				if ((gapCountSEL>0 && gapCountSEL == numTaxaCountedSEL) || (gapCountUNSEL>0 && gapCountUNSEL == numTaxaCountedUNSEL))//if all gaps, delete regardless 
+				if (numTaxaCountedSEL == 0){ //effectively none selected, therefore depend only on gappySiteUNSEL
+					if (gappySiteUNSEL(ic))
+						charFlags.setBit(ic, true);
+				}
+				else if (numTaxaCountedUNSEL == 0){//effectively none selected, therefore depend only on gappySiteSEL
+					if (gappySiteSEL(ic))
+						charFlags.setBit(ic, true);
+						
+				}
+				else if (!dataInUNSEL && gappySiteSEL(ic))
+					charFlags.setBit(ic, true);
+				else if (!dataInSEL && gappySiteUNSEL(ic))
 					charFlags.setBit(ic, true);
 				else if (gappySiteSEL(ic) && gappySiteUNSEL(ic))
 					charFlags.setBit(ic, true); 				
