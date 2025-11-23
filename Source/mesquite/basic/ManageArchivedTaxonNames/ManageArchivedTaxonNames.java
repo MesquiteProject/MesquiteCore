@@ -127,7 +127,6 @@ public class ManageArchivedTaxonNames extends SpecsSetManager {
 	/*.................................................................................................................*
 	public Object doCommand(String commandName, String arguments, CommandChecker checker) {
 		if (checker.compare(this.getClass(), "Shows lists of the alternative name sets", null, commandName, "showAlternativeNamesList")) {
-			System.err.println("@showAlternativeNamesList " + arguments);
 			if (StringUtil.blank(arguments)) {
 				for (int i = 0; i< getProject().getNumberTaxas(checker.getFile()); i++) {
 					showSpecsSets(getProject().getTaxa(checker.getFile(), i), listOfAlternativeNameSetsName);

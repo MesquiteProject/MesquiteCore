@@ -19,6 +19,7 @@ import java.util.zip.CRC32;
 
 import mesquite.lib.Associable;
 import mesquite.lib.Bits;
+import mesquite.lib.Debugg;
 import mesquite.lib.Double2DArray;
 import mesquite.lib.DoubleArray;
 import mesquite.lib.IntegerArray;

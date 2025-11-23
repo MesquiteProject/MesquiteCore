@@ -63,13 +63,11 @@ public abstract class SpecsSetManager extends FileInit implements ElementManager
 				Object e=getEmployeeVector().elementAt(i);
 				if (e instanceof ManagerAssistant)
 					if (((ManagerAssistant)e).showing(obj)) {
-System.err.println("@ setVisible");
 						((ManagerAssistant)e).getModuleWindow().setVisible(true);
 						return ((ManagerAssistant)e);
 					}
 			}
 			ManagerAssistant lister= (ManagerAssistant)hireNamedEmployee(ManagerAssistant.class, StringUtil.tokenize(listerName));
-			System.err.println("@ hire " + lister + " " + listerName);
  			if (lister!=null) {
 	 				lister.showListWindow(obj);
     	 			if (!MesquiteThread.isScripting() && lister.getModuleWindow()!=null)

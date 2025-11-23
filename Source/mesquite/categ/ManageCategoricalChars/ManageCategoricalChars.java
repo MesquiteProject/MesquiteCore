@@ -80,7 +80,7 @@ public class ManageCategoricalChars extends CharMatrixManager {
 		//@@@@@@@@@@@@@@@@@@@@
 		boolean fuse = parser.hasFileReadingArgument(fileReadingArguments, "fuseTaxaCharBlocks");
 		boolean merging = false;
-
+		
 		if (fuse){
 			String message = "In the file being imported, there is a matrix called \"" + title + "\". Mesquite will either fuse this matrix into the matrix you select below, or it will import that matrix as a new, separate matrix.";
 			data = (CategoricalData)getProject().chooseData(containerOfModule(), null, taxa, CategoricalState.class, message,  true, "Fuse with Selected Matrix", "Add as New Matrix");
