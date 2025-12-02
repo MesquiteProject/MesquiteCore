@@ -320,9 +320,15 @@ public abstract class MesquiteModule extends EmployerEmployee implements Command
 		getModuleInfo().incrementNumStarts();
 	}
 	/*.................................................................................................................*/
-	/** superStartJob is called automatically when an employee is hired.  This is intended for use by superclasses of modules that need
+	/** superStartJob is called automatically when an employee is hired, BEFORE startJob.  This is intended for use by superclasses of modules that need
 	their own constructor-like call, without relying on the subclass to be polite enough to call super.startJob().*/
 	public boolean superStartJob(String arguments, Object condition, boolean hiredByName){
+		return true;
+	}
+	/*.................................................................................................................*/
+	/** superStartJobAfter is called automatically when an employee is hired, AFTER startJob.  This is intended for use by superclasses of modules that need
+	their own constructor-like call, without relying on the subclass to be polite enough to call super.startJob().*/
+	public boolean superStartJobAfter(String arguments, Object condition, boolean hiredByName){
 		return true;
 	}
 	/*.................................................................................................................*/
@@ -2954,6 +2960,24 @@ public abstract class MesquiteModule extends EmployerEmployee implements Command
 	/** returns whether this module is requesting to appear as a primary choice */
 	public boolean requestPrimaryChoice(){
 		return false;  
+	}
+	/*.................................................................................................................*
+	//DEFAULTASSISTANTS
+	// system currently (2025) used only in list windows.
+	boolean factoryDefault = false; //can be made default
+	
+	public final void setAsFactoryDefault(boolean d){
+		factoryDefault = d;
+	}
+	
+	// To be called by list module to see whether can be set/unset as default
+	public final boolean isDefaultable() {
+		return !factoryDefault && iCanBeADefault();
+	}
+	// used to indicate that module does not have settings and therefore can be used as a default e.g. as an assistant in list windows.
+	
+	public boolean iCanBeADefault() {
+		return false;
 	}
 	/*.................................................................................................................*/
 	public boolean getHideable() {

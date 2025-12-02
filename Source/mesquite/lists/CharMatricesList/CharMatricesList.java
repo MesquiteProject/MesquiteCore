@@ -98,21 +98,26 @@ public class CharMatricesList extends ListLVModule {
 			if (assistant!= null){
 				((ListableVectorWindow)getModuleWindow()).addListAssistant(assistant);
 				assistant.setUseMenubar(false);
+		
+				//DEFAULTASSISTANTS assistant.setAsFactoryDefault(true);
 			}
 			assistant = (CharMatricesListAssistant)hireNamedEmployee(CharMatricesListAssistant.class, StringUtil.tokenize("Number of characters of data matrix"));
 			if (assistant!= null){
 				((ListableVectorWindow)getModuleWindow()).addListAssistant(assistant);
 				assistant.setUseMenubar(false);
+				//DEFAULTASSISTANTS assistant.setAsFactoryDefault(true);
 			}
 			assistant = (CharMatricesListAssistant)hireNamedEmployee(CharMatricesListAssistant.class, "#CharMatricesListClass");
 			if (assistant!= null){
 				((ListableVectorWindow)getModuleWindow()).addListAssistant(assistant);
 				assistant.setUseMenubar(false);
+				//DEFAULTASSISTANTS assistant.setAsFactoryDefault(true);
 			}
 			assistant = (CharMatricesListAssistant)hireNamedEmployee(CharMatricesListAssistant.class, "#MatrixListVisible");
 			if (assistant!= null){
 				((ListableVectorWindow)getModuleWindow()).addListAssistant(assistant);
 				assistant.setUseMenubar(false);
+				//DEFAULTASSISTANTS assistant.setAsFactoryDefault(true);
 			}
 
 		}

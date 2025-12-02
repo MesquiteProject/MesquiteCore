@@ -43,7 +43,7 @@ public class Parallelizer {
 	public void shutDown(){
 		if (threads == null)
 			return;
-		for (int i = 0; i < nThreads; i++) {
+		for (int i = 0; i < nThreads  && i<threads.length; i++) {
 			threads[i].shutDown();
 		}
 	}
@@ -53,6 +53,9 @@ public class Parallelizer {
 				return false;
 		}
 		return true;
+	}
+	public void setNumThreads(int n){
+		nThreads = n;
 	}
 	/* ===================================================== */
 
@@ -188,9 +191,9 @@ public class Parallelizer {
 		totalCalculated++;
 
 		//Next, build others threads
-		if (threads == null || !owner.pleaseReuseParallelThreads()){
+		if (threads == null || threads.length != nThreads || !owner.pleaseReuseParallelThreads()){
 			// ################## Building threads ##################
-			System.out.println("Parallelizer: building threads");
+			System.out.println("Parallelizer: building " + nThreads + " threads");
 			threads = new PThread[nThreads];
 			for (int i = 0; i < nThreads; i++) {
 				ParallelParams ppT = owner.cloneForParallel(ppFirst);
@@ -222,6 +225,13 @@ public class Parallelizer {
 			threads[i].running = false;
 		
 		System.out.println("Parallelizer: " + summarizeCalcStatus());
+	}
+	public void reset(){ // to be called on owner's thread
+		
+		for (int i = 0; i < nThreads; i++) {
+			threads[i].fireParallelEmployees();
+		}
+		threads = null;
 	}
 	/* ===================================================== */
 
@@ -279,6 +289,12 @@ public class Parallelizer {
 			}		
 		}
 		
+		public void fireParallelEmployees(){ // to be called on owner's thread
+	
+			MesquiteModule employer = pp.responsibleEmployer;
+			for (int i = 0; i<pp.employees.length; i++)
+				employer.fireEmployee(pp.employees[i]);
+		}
 		public void shutDown(){ // to be called on owner's thread
 			onCall = false;
 			while (running){
@@ -289,9 +305,7 @@ public class Parallelizer {
 					e.printStackTrace();
 				}
 			}		
-			MesquiteModule employer = pp.responsibleEmployer;
-			for (int i = 0; i<pp.employees.length; i++)
-				employer.fireEmployee(pp.employees[i]);
+			fireParallelEmployees();
 		}
 
 	}

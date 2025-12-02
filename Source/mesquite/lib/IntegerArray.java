@@ -272,6 +272,15 @@ public class IntegerArray  implements Listable  {
 		return index;
 	}
 	/*...........................................................*/
+	public int maximum(){
+		if (values==null)
+			return MesquiteInteger.unassigned;
+		MesquiteNumber d = new MesquiteNumber(MesquiteInteger.unassigned);
+		for (int i=0; i<values.length; i++)
+			d.setMeIfIAmLessThan(values[i]);
+		return d.getIntValue();
+	}
+	/*...........................................................*/
 	public static int maximum(int[] values){
 		if (values==null)
 			return MesquiteInteger.unassigned;
@@ -541,18 +550,26 @@ public class IntegerArray  implements Listable  {
 	}
 	/*...........................................................*/
 	public static String toString(int[] vector){
+		return toString(vector, " ", true);
+	}
+	/*...........................................................*/
+	public String toString(String spacer, boolean brackets){
+		return toString(values, spacer, brackets);
+	}
+	/*...........................................................*/
+	public static String toString(int[] vector, String spacer, boolean brackets){
 		if (vector==null ||  vector.length==0)
 			return null;  
 		StringBuffer result = new StringBuffer(vector.length*2);
-		result.append('[');
+		if (brackets) result.append('[');
 		for (int i=0; i<vector.length; i++) {
 			if (vector[i] == MesquiteInteger.unassigned)
 				result.append('?');
 			else
 				result.append(Integer.toString(vector[i]));
-			result.append(' ');
+			result.append(spacer);
 		}
-		result.append(']');
+		if (brackets) result.append(']');
 		return result.toString();
 	}
 	/** returns a string listing the elements of the array that are equal to the passed number.  In the format

@@ -75,7 +75,8 @@ public class ConsoleWindow extends MesquiteTextWindow implements KeyListener {
 				typed = "";
 			}
 			else if ((new Character(e.getKeyChar()).hashCode())==8) {
-				typed = typed.substring(0, typed.length()-1);
+				if (typed.length()>1)
+					typed = typed.substring(0, typed.length()-1);
 				consume(1);
 				tA.requestFocus();
 				tA.requestFocusInWindow();

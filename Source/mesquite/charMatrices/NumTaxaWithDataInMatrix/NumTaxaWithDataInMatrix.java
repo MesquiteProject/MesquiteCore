@@ -19,7 +19,11 @@ public class NumTaxaWithDataInMatrix extends NumberForMatrix {
 	/** Called to provoke any necessary initialization.  This helps prevent the module's initialization queries to the user from happening at inopportune times (e.p., while a long chart calculation is in mid-progress*/
 	public void initialize(MCharactersDistribution data) {
 	} 
-
+/* DEFAULTASSISTANTS
+	public boolean iCanBeADefault(){
+		return true;
+	}
+	*/
 	public void calculateNumber(MCharactersDistribution data, MesquiteNumber result, MesquiteString resultString) {
 		if (result == null || data == null)
 			return;

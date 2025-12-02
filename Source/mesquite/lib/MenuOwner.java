@@ -1160,6 +1160,14 @@ public abstract class MenuOwner implements Doomable { // EMBEDDED: extends Apple
 
 	Vector embeddedMenusVector = null;
 
+	/* debugging 2025 void dumpMV(Vector menuVector, String pre){
+		String bar = "";
+		for (int i=0; i<menuVector.size(); i++){
+			Menu m = (Menu)menuVector.elementAt(i);
+			bar += m.getLabel() + " ";
+		}
+		System.err.println(pre + bar);
+	}
 	/*-------------------------------------------------------------*/
 	public Vector composeEmbeddedMenuBar(MesquiteWindow whichWindow) {
 		MesquitePopup menu;
@@ -1167,22 +1175,27 @@ public abstract class MenuOwner implements Doomable { // EMBEDDED: extends Apple
 
 		if (moduleMenuSpec != null) {
 			menu = MesquitePopup.getPopupMenu(moduleMenuSpec, whichWindow.getInfoBar());
+			menu.inEmbeddedMenuForWindow = true;
+
 		} else
 			menu = null;
 		MesquitePopup ancestralMenu = null;
 		if (module.isDoomed())
 			return null;
-		if (!suppressMenuAncestors() && module.getEmployer() != null)
+		if (!suppressMenuAncestors() && module.getEmployer() != null){
 			ancestralMenu = module.getEmployer().composeMenuAncestors(menuVector);
+			if (ancestralMenu !=null)
+				ancestralMenu.inEmbeddedMenuForWindow = true;
+		}
 
 		MesquitePopup menuToUse = menu;
-
 		if (menuToUse != null && !module.isDoomed())
 			addMyMenuItems(menuToUse);
 		if (menu != null) { // why is this menu and not menuToUse????
 			menuVector.add(menu);
 		}
-
+		
+		
 		if (auxiliaryMenusHighPriority != null) {
 			int num = auxiliaryMenusHighPriority.size();
 			for (int i = 0; i < num; i++) {
@@ -1193,6 +1206,8 @@ public abstract class MenuOwner implements Doomable { // EMBEDDED: extends Apple
 				}
 			}
 		}
+		
+	
 		ListableVector L = module.getEmployeeVector();
 		if (L != null) {
 			int num = L.size();
@@ -1212,7 +1227,7 @@ public abstract class MenuOwner implements Doomable { // EMBEDDED: extends Apple
 
 		if (module.isDoomed())
 			return null;
-		composeMenusOfDescendants(menuVector);
+		composeMenusOfDescendantsEmbedded(menuVector);
 
 		if (module.isDoomed())
 			return null;
@@ -1571,12 +1586,19 @@ public abstract class MenuOwner implements Doomable { // EMBEDDED: extends Apple
 	final boolean inMenuBar(Menu menu) {
 		if (menu == null)
 			return false;
-		if (menu instanceof MesquitePopup)
+		if (menu instanceof MesquitePopup){
+			if (((MesquitePopup)menu).inEmbeddedMenuForWindow)
+				return true;
+
 			return false;
+		}
 		MenuContainer p = menu.getParent();
 		while (p != null) {
-			if (p instanceof MesquitePopup)
+			if (p instanceof MesquitePopup){
+				if (((MesquitePopup)p).inEmbeddedMenuForWindow)
+					return true;
 				return false;
+			}
 			else if (p instanceof MenuBar)
 				return true;
 			else if (p instanceof MenuComponent)
@@ -1613,7 +1635,7 @@ public abstract class MenuOwner implements Doomable { // EMBEDDED: extends Apple
 	}
 
 	/*............................................................................. */
-	final void composeMenusOfDescendants(Vector menuBar) {
+	final void composeMenusOfDescendantsEmbedded(Vector menuBar) {
 		if (doomed)
 			;// MesquiteMessage.println("Error: composing menu of module that has been turned
 		// off: " + getName());
@@ -1629,6 +1651,7 @@ public abstract class MenuOwner implements Doomable { // EMBEDDED: extends Apple
 					if (mb.getUseMenubar() && !mb.usingGuestMenu && mb.window == null) {
 						if (mb.moduleMenuSpec != null) {
 							MesquitePopup menu = MesquitePopup.getPopupMenu(mb.moduleMenuSpec, null);
+							menu.inEmbeddedMenuForWindow = true;
 							mb.composeMenuDescendants(menu);
 							addBottom(menu, mb, "@");
 							if (menu.getItemCount() > 0) {
@@ -1655,7 +1678,7 @@ public abstract class MenuOwner implements Doomable { // EMBEDDED: extends Apple
 								}
 							}
 						}
-						mb.composeMenusOfDescendants(menuBar);
+						mb.composeMenusOfDescendantsEmbedded(menuBar);
 					}
 				}
 			}

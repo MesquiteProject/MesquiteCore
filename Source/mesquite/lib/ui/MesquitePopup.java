@@ -26,6 +26,8 @@ public class MesquitePopup extends PopupMenu {
 	int id = 0;
 	MesquiteMenuSpec spec;
 	protected boolean filterable = true;
+	public boolean inEmbeddedMenuForWindow = false;
+	
 	public MesquitePopup(Container c){
 		super();
 		this.c = c;
@@ -54,6 +56,7 @@ public class MesquitePopup extends PopupMenu {
 	public MesquiteMenuSpec getSpecification(){
 		return spec;
 	}
+	
 	
 	public static Polygon getDropDownTriangle(){
 		Polygon dropDownTriangle=new Polygon();

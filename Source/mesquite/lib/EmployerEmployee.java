@@ -1132,12 +1132,16 @@ public abstract class EmployerEmployee extends MenuOwner implements HNode, Lista
 				if (started)
 					started = mb.startJob(null, null, false);
 				if (started)
+					started = mb.superStartJobAfter(null, null, false);
+				if (started)
 					mb.incrementNumStarts();
 			}
 			else {
 				started = mb.superStartJob(arguments, condition, false);
 				if (started)
 					started = mb.startJob(arguments, condition, false);
+				if (started)
+					started = mb.superStartJobAfter(null, null, false);
 				if (started)
 					mb.incrementNumStarts();
 			}

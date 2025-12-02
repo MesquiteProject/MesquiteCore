@@ -252,7 +252,7 @@ public class NumberArray {
 	/** Places the value at array element "index" into
 	the MesquiteNumber n.  Used instead of a simple getValue to avoid having to create
 	a MesquiteNumber object. */
-	public void placeValue(int index, MesquiteNumber n) {
+	public synchronized void placeValue(int index, MesquiteNumber n) {
 		if (!legalIndex(index)) {
 			MesquiteMessage.printStackTrace("NumberArray index out of bounds (a4) " + index + "  max: " + length);
 			return;
@@ -696,6 +696,21 @@ public class NumberArray {
 				doubleValues[index] = doubleValues[index]/n.getDoubleValue();
 		}
 	}
+	/*--------------------------------ARITHMETRIC-----------------------------*/
+	/**Gives sum of array!*/
+	public MesquiteNumber sum() {
+		MesquiteNumber n = new MesquiteNumber(0);
+		for (int index = 0; legalIndex(index); index++){
+			if (valueClass==INT)
+				n.add(intValues[index]);
+			else if (valueClass == LONG)
+				n.add(longValues[index]);
+			else if (valueClass == DOUBLE)
+			
+				n.add(doubleValues[index]);
+		}
+		return n;
+	}
 	/*--------------------------------ARITHMETRIC, COMPARISON-----------------------------*/
 	/**Divides all by the value in the passed MesquiteNumber*/
 	public void divideAllBy(MesquiteNumber n) {
@@ -703,6 +718,7 @@ public class NumberArray {
 				divideBy(i,n);
 		}
 	}
+
 	/*--------------------------------ARITHMETRIC, COMPARISON-----------------------------*/
 	/**Add the value in the passed MesquiteNumber to that of element "index".  
 	NOTE: the sum will be returned in the MesquiteNumber passed!*/
@@ -1173,6 +1189,26 @@ public class NumberArray {
 		}
 		else return "";
 		s += "]";
+		return s;
+	}
+	/** DOCUMENT */
+	public String toString(String spacer, boolean brackets) {
+		String s = "";
+		if (brackets) s += "[ ";
+		if (valueClass==INT) {
+			for (int i=0; i<length; i++)
+				s += MesquiteInteger.toString(intValues[i]) + spacer;
+		}
+		else if (valueClass == LONG) {
+			for (int i=0; i<length; i++)
+				s +=  MesquiteLong.toString(longValues[i]) +  spacer;
+		}
+		else if (valueClass == DOUBLE) {
+			for (int i=0; i<length; i++)
+				s +=  MesquiteDouble.toString(doubleValues[i]) + spacer;
+		}
+		else return "";
+		if (brackets) s += " ]";
 		return s;
 	}
 	/*...........................................................*/

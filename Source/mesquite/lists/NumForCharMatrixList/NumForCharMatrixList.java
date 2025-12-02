@@ -39,6 +39,7 @@ import mesquite.lib.duties.NumberForMatrix;
 import mesquite.lib.table.MesquiteTable;
 import mesquite.lib.ui.ExtensibleDialog;
 import mesquite.lib.ui.MesquiteColorTable;
+import mesquite.lib.ui.MesquiteMenuItemSpec;
 import mesquite.lib.ui.SingleLineTextField;
 import mesquite.lists.lib.CharMatricesListAssistant;
 
@@ -81,7 +82,13 @@ public class NumForCharMatrixList extends CharMatricesListAssistant implements M
 		addMenuItem(null, "Select based on value...", makeCommand("selectBasedOnValue",  this));
 		return true;
 	}
-
+	
+	/*
+	//DEFAULTASSISTANTS
+	public boolean iCanBeADefault(){
+		return numberTask.iCanBeADefault();
+	}
+	*/
 	/** Returns whether or not it's appropriate for an employer to hire more than one instance of this module.  
  	If false then is hired only once; second attempt fails.*/
 	public boolean canHireMoreThanOnce(){
