@@ -20,6 +20,7 @@ import mesquite.lib.CommandChecker;
 import mesquite.lib.Commandable;
 import mesquite.lib.FunctionExplanation;
 import mesquite.lib.MesquiteCommand;
+import mesquite.lib.MesquiteEvent;
 import mesquite.lib.MesquiteFile;
 import mesquite.lib.MesquiteInteger;
 import mesquite.lib.MesquiteListener;
@@ -38,6 +39,7 @@ import mesquite.lib.tree.TreeTool;
 import mesquite.lib.ui.MesquiteMenu;
 import mesquite.lib.ui.MesquiteMenuItem;
 import mesquite.lib.ui.MesquitePopup;
+import mesquite.lib.ui.MesquiteTool;
 import mesquite.lib.ui.MesquiteWindow;
 
 /* ======================================================================== */
@@ -100,6 +102,7 @@ class SelectTaxaToolExtra extends TreeDisplayExtra implements Commandable  {
 		selectCladeTool = new TreeTool(this, "SelectTaxaInClade", ownerModule.getPath(), "selectTaxaInClade.gif", 8,6,"Select Taxa In Clade", "This tool is used to select terminal taxa within clades.  By holding down the Control key as you click, selection will accumulate.  By holding down the Shift key, the taxa in the smallest clade containing the touched branch and already-selected taxa will be selected.");
 		selectCladeTool.setTouchedCommand(MesquiteModule.makeCommand("selectTaxaInClade",  this));
 		selectCladeTool.setTouchedFieldCommand(MesquiteModule.makeCommand("deselectAllTaxa",  this));
+		selectCladeTool.setOptionImageFileName("optionSelectTaxaInClade.gif", 13, 13);
 		if (ownerModule.containerOfModule() instanceof MesquiteWindow) {
 			//((MesquiteWindow)ownerModule.containerOfModule()).addTool(selectTool);
 			((MesquiteWindow)ownerModule.containerOfModule()).addTool(selectCladeTool);
@@ -136,7 +139,7 @@ class SelectTaxaToolExtra extends TreeDisplayExtra implements Commandable  {
 		if (branchFound>0){
 			this.tree = tree;
 			Taxa taxa = tree.getTaxa();
-			popup.addItem("Select All Taxa in Clade", ownerModule, new MesquiteCommand("selectTaxaInClade", this), MesquiteInteger.toString(branchFound));
+			popup.addItem("Select All Taxa in Clade", ownerModule, new MesquiteCommand("selectTaxaInCladeP", this), MesquiteInteger.toString(branchFound));
 			popup.addItem("Deselect All Taxa in Clade", ownerModule, new MesquiteCommand("deselectTaxaInClade", this), MesquiteInteger.toString(branchFound));
 	}
 	}
@@ -149,29 +152,45 @@ class SelectTaxaToolExtra extends TreeDisplayExtra implements Commandable  {
 				return null;
 			Taxa taxa = tree.getTaxa();
 			int branchFound= MesquiteInteger.fromFirstToken(arguments, pos);
+			boolean selectBelow =  (arguments.indexOf("option") >= 0);
 			if (arguments.indexOf("shift")>=0) {  //select smallest containing clade
-				selectClade(tree, branchFound, true);
-				shrinkWrapSelections(tree, tree.getRoot());
+				if (selectBelow)
+					selectClade(tree, tree.getRoot(), true);
+				else{
+					selectClade(tree, branchFound, true);
+					shrinkWrapSelections(tree, tree.getRoot());
+				}
 				taxa.notifyListeners(this, new Notification(MesquiteListener.SELECTION_CHANGED));
 				treeDisplay.pleaseUpdate(false);
 			}
 			else if (arguments.indexOf("control")>=0) {  //single accumulate selection
-				if (allSelected(tree, branchFound))
-					selectClade(tree, branchFound, false);
-				else
-					selectClade(tree, branchFound, true);
+				if (selectBelow){
+					if (allSelectedBelow(tree, tree.getRoot(), branchFound))
+						selectUnClade(tree, tree.getRoot(), branchFound, false);
+					else
+						selectUnClade(tree, tree.getRoot(), branchFound, true);
+				}
+				else {
+					if (allSelected(tree, branchFound))
+						selectClade(tree, branchFound, false);
+					else
+						selectClade(tree, branchFound, true);
+				}
 				taxa.notifyListeners(this, new Notification(MesquiteListener.SELECTION_CHANGED));
 				treeDisplay.pleaseUpdate(false);
 			}
 			else if (branchFound >0) {
 				taxa.deselectAll();
-				selectClade(tree, branchFound, true);
+				if (selectBelow)
+					selectUnClade(tree, tree.getRoot(), branchFound, true);
+				else
+					selectClade(tree, branchFound, true);
 				taxa.notifyListeners(this, new Notification(MesquiteListener.SELECTION_CHANGED));
 
 				treeDisplay.pleaseUpdate(false);
 			}
 		}
-		else if (checker.compare(this.getClass(), "Selects taxa (selection accumulates if control or shift modifiers passed)",  "[taxon number][x coordinate][y coordinate][modifiers]", commandName, "selectTaxa")) {
+	/*	else if (checker.compare(this.getClass(), "Selects taxa (selection accumulates if control or shift modifiers passed)",  "[taxon number][x coordinate][y coordinate][modifiers]", commandName, "selectTaxa")) {
 			if (tree == null)
 				return null;
 			Taxa taxa = tree.getTaxa();
@@ -198,6 +217,7 @@ class SelectTaxaToolExtra extends TreeDisplayExtra implements Commandable  {
 				treeDisplay.pleaseUpdate(false);
 			}
 		}
+	*/
 		else if (checker.compare(this.getClass(), "Deselects all taxa",  null, commandName, "deselectAllTaxa")) {
 			if (tree == null)
 				return null;
@@ -208,7 +228,7 @@ class SelectTaxaToolExtra extends TreeDisplayExtra implements Commandable  {
 			treeDisplay.pleaseUpdate(false);
 
 		}
-		else if (checker.compare(this.getClass(), "Selects taxa in clade", "[branch number]", commandName, "selectTaxaInClade")) {
+		else if (checker.compare(this.getClass(), "Selects taxa in clade", "[branch number]", commandName, "selectTaxaInCladeP")) {
 			if (tree == null)
 				return null;
 			Parser parser = new Parser();
@@ -248,6 +268,17 @@ class SelectTaxaToolExtra extends TreeDisplayExtra implements Commandable  {
 		}
 	}
 	/*-----------------------------------------*/
+	/** Selects or deselects all nodes outside the clade */
+	private void selectUnClade(MesquiteTree tree, int node, int targetNode, boolean select) {
+		if (tree.nodeIsTerminal(node)){
+			int t = tree.taxonNumberOfNode(node);
+			tree.getTaxa().setSelected(t, select);
+		}
+		for (int d = tree.firstDaughterOfNode(node); tree.nodeExists(d) && d != targetNode; d = tree.nextSisterOfNode(d)) {
+			selectUnClade(tree, d, targetNode, select);
+		}
+	}
+	/*-----------------------------------------*/
 	/** Returns whether all nodes in clade selected */
 	private boolean allSelected(MesquiteTree tree, int node) {
 		if (tree.nodeIsTerminal(node)){
@@ -256,6 +287,19 @@ class SelectTaxaToolExtra extends TreeDisplayExtra implements Commandable  {
 		}
 		for (int d = tree.firstDaughterOfNode(node); tree.nodeExists(d); d = tree.nextSisterOfNode(d)) {
 			if (!allSelected(tree, d))
+				return false;
+		}
+		return true;
+	}
+	/*-----------------------------------------*/
+	/** Returns whether all nodes in clade selected */
+	private boolean allSelectedBelow(MesquiteTree tree, int node, int targetNode) {
+		if (tree.nodeIsTerminal(node)){
+			int t = tree.taxonNumberOfNode(node);
+			return (tree.getTaxa().getSelected(t));
+		}
+		for (int d = tree.firstDaughterOfNode(node); tree.nodeExists(d) && d!= targetNode; d = tree.nextSisterOfNode(d)) {
+			if (!allSelectedBelow(tree, d, targetNode))
 				return false;
 		}
 		return true;
@@ -304,6 +348,29 @@ class SelectTaxaToolExtra extends TreeDisplayExtra implements Commandable  {
 	private void shrinkWrapSelections(MesquiteTree tree, int node){
 		wrapSelections(tree, node, false);
 	}
+	
+	public void cursorEnterBranch(Tree tree, int N, Graphics g, int modifiers, MesquiteTool tool){
+		if (tool == selectCladeTool && MesquiteEvent.commandKeyDown(modifiers)){ 
+		tree.getTaxa().deselectAll();
+		selectClade((MesquiteTree)tree, N, true);
+		tree.getTaxa().notifyListeners(this, new Notification(MesquiteListener.SELECTION_CHANGED));
+
+		treeDisplay.pleaseUpdate(false);
+
+		}
+	}
+	/**to inform TreeDisplayExtra that cursor has just exited branch N*/
+	public void cursorExitBranch(Tree tree, int N, Graphics g, int modifiers, MesquiteTool tool){
+		if (tool == selectCladeTool && MesquiteEvent.commandKeyDown(modifiers)){ 
+		tree.getTaxa().deselectAll();
+		tree.getTaxa().notifyListeners(this, new Notification(MesquiteListener.SELECTION_CHANGED));
+
+		treeDisplay.pleaseUpdate(false);
+
+		}
+
+	}
+
 	public void turnOff() {
 		selectModule.extras.removeElement(this);
 		super.turnOff();

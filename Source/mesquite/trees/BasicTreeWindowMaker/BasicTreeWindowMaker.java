@@ -1496,6 +1496,7 @@ class BasicTreeWindow extends MesquiteWindow implements Fittable, MesquiteListen
 
 		TreeTool tool5 = new TreeTool(this, "scissors", ownerModule.getPath(), "scissors.gif", 6, 5, "Prune clade", "This tool deletes the clade of the node touched.  Only the tree being operated on is affected (that is, the terminal taxa are not deleted from the data file).");
 		tool5.setTouchedCommand(MesquiteModule.makeCommand("cutClade", this));
+		tool4.setOptionImageFileName("scissorsBelow.gif", 6, 5);
 		addTool(tool5);
 
 		TreeTool tool7 = new TreeTool(this, "ladderize", ownerModule.getPath(), "ladderize.gif", 3, 13, "Ladderize clade", "This tool ladderizes a clade by rotating branches until largest of sister clades on right (except if option key is held down, in which case, left).");
@@ -3461,7 +3462,11 @@ class BasicTreeWindow extends MesquiteWindow implements Fittable, MesquiteListen
 		else if (checker.compare(this.getClass(), "Cut clade descendant from node", "[node number]", commandName, "cutClade")) {
 			int branchFound = MesquiteInteger.fromFirstToken(arguments, pos);
 			if (branchFound > 0) {
-				if (tree.deleteClade(branchFound, true)) {
+				if ((arguments.indexOf("option") >= 0)){
+					if (tree.pruneTaxaOutsideClade(branchFound, true))
+						treeEdited(false);
+				}
+				else if (tree.deleteClade(branchFound, true)) {
 					treeEdited(false);
 				}
 			}
@@ -4019,7 +4024,7 @@ class BasicTreeWindow extends MesquiteWindow implements Fittable, MesquiteListen
 			int wasHighlighted = highlightedBranch.getValue();
 			if (branchFound == 0) {
 				UnhighlightBranch(g, highlightedBranch);
-				notifyExtrasOfBranchExit(g, wasHighlighted);
+				notifyExtrasOfBranchExit(g, wasHighlighted, modifiers, currentTreeTool);
 
 				setTreeName(tree);
 				setExplanation(baseExplanation, false);
@@ -4027,13 +4032,13 @@ class BasicTreeWindow extends MesquiteWindow implements Fittable, MesquiteListen
 			else if (branchFound != highlightedBranch.getValue()) {
 				UnhighlightBranch(g, highlightedBranch);
 				HighlightBranch(g, branchFound, highlightedBranch, true);
-				notifyExtrasOfBranchExit(g, wasHighlighted);
-				notifyExtrasOfBranchEnter(g, branchFound);
+				notifyExtrasOfBranchExit(g, wasHighlighted, modifiers, currentTreeTool);
+				notifyExtrasOfBranchEnter(g, branchFound, modifiers, currentTreeTool);
 			}
 		}
 		else if (branchFound != 0) { // we weren't in a branch, but now we found one
 			HighlightBranch(g, branchFound, highlightedBranch, true);
-			notifyExtrasOfBranchEnter(g, branchFound);
+			notifyExtrasOfBranchEnter(g, branchFound, modifiers, currentTreeTool);
 			if (tree.nodeIsTerminal(branchFound)) {
 				Taxon t = tree.getTaxa().getTaxon(tree.taxonNumberOfNode(branchFound));
 				if (t != null)
@@ -4136,7 +4141,7 @@ class BasicTreeWindow extends MesquiteWindow implements Fittable, MesquiteListen
 			}
 			else {
 				if (highlightedBranch.getValue() != 0) {
-					notifyExtrasOfBranchExit(g, highlightedBranch.getValue());
+					notifyExtrasOfBranchExit(g, highlightedBranch.getValue(), modifiers, currentTreeTool);
 					UnhighlightBranch(g, highlightedBranch);
 				}
 				currentTreeTool.branchTouched(branchFound, x, y, tree, modifiers);
@@ -4146,7 +4151,7 @@ class BasicTreeWindow extends MesquiteWindow implements Fittable, MesquiteListen
 				showTreePopup(x, y, tree, branchFound); 
 			}
 			else
-				notifyExtrasOfBranchTouch(g, branchFound, modifiers, currentTreeTool.isArrowTool());
+				notifyExtrasOfBranchTouch(g, branchFound, modifiers, currentTreeTool);
 			return true;
 		}
 		else { // not in a branch
@@ -4154,7 +4159,7 @@ class BasicTreeWindow extends MesquiteWindow implements Fittable, MesquiteListen
 			if (nameFound != -1) { // it is in a taxon
 				currentTreeTool.taxonTouched(nameFound, tree, modifiers);
 				taxonTouched = nameFound;
-				notifyExtrasOfTaxonTouch(g, nameFound, modifiers, currentTreeTool.isArrowTool());
+				notifyExtrasOfTaxonTouch(g, nameFound, modifiers, currentTreeTool);
 				if (highlightedTaxon >= 0)
 					RevertTaxon(g, highlightedTaxon);
 				return true;
@@ -4274,7 +4279,7 @@ class BasicTreeWindow extends MesquiteWindow implements Fittable, MesquiteListen
 
 			}
 			if (highlightedBranch.getValue() != 0) {
-				notifyExtrasOfBranchExit(g, highlightedBranch.getValue());
+				notifyExtrasOfBranchExit(g, highlightedBranch.getValue(), modifiers, currentTreeTool);
 				UnhighlightBranch(g, highlightedBranch);
 			}
 			else if (highlightedTaxon >= 0)
@@ -4305,7 +4310,7 @@ class BasicTreeWindow extends MesquiteWindow implements Fittable, MesquiteListen
 				if (taxonTouched == nameFound && currentTreeTool.isArrowTool())
 					selectTaxon(modifiers, taxonTouched);
 				currentTreeTool.taxonMouseUp(nameFound, x, y, tree, modifiers);
-				notifyExtrasOfTaxonTouch(g, nameFound, modifiers, currentTreeTool.isArrowTool());
+				notifyExtrasOfTaxonTouch(g, nameFound, modifiers, currentTreeTool);
 				if (highlightedTaxon >= 0)
 					RevertTaxon(g, highlightedTaxon);
 				taxonTouched = -1;
@@ -4593,14 +4598,14 @@ class BasicTreeWindow extends MesquiteWindow implements Fittable, MesquiteListen
 	}
 
 	/* ................................................................................................ */
-	void notifyExtrasOfTaxonTouch(Graphics g, int M, int modifiers, boolean isTreeTool) {
+	void notifyExtrasOfTaxonTouch(Graphics g, int M, int modifiers, MesquiteTool tool) {
 		if (treeDisplay.getExtras() != null) {
 			Enumeration e = treeDisplay.getExtras().elements();
 			while (e.hasMoreElements()) {
 				Object obj = e.nextElement();
 				if (obj instanceof TreeDisplayExtra) {
 					TreeDisplayExtra tce = (TreeDisplayExtra) obj;
-					tce.cursorTouchTaxon(tree, M, g, modifiers, isTreeTool);
+					tce.cursorTouchTaxon(tree, M, g, modifiers, tool);
 				}
 			}
 		}
@@ -4609,14 +4614,14 @@ class BasicTreeWindow extends MesquiteWindow implements Fittable, MesquiteListen
 	}
 
 	/* ................................................................................................ */
-	void notifyExtrasOfBranchEnter(Graphics g, int N) {
+	void notifyExtrasOfBranchEnter(Graphics g, int N, int modifiers, MesquiteTool tool) {
 		if (treeDisplay.getExtras() != null) {
 			Enumeration e = treeDisplay.getExtras().elements();
 			while (e.hasMoreElements()) {
 				Object obj = e.nextElement();
 				if (obj instanceof TreeDisplayExtra) {
 					TreeDisplayExtra tce = (TreeDisplayExtra) obj;
-					tce.cursorEnterBranch(tree, N, g);
+					tce.cursorEnterBranch(tree, N, g, modifiers, tool);
 				}
 			}
 		}
@@ -4625,14 +4630,14 @@ class BasicTreeWindow extends MesquiteWindow implements Fittable, MesquiteListen
 	}
 
 	/* ................................................................................................ */
-	void notifyExtrasOfBranchExit(Graphics g, int N) {
+	void notifyExtrasOfBranchExit(Graphics g, int N, int modifiers, MesquiteTool tool) {
 		if (treeDisplay.getExtras() != null) {
 			Enumeration e = treeDisplay.getExtras().elements();
 			while (e.hasMoreElements()) {
 				Object obj = e.nextElement();
 				if (obj instanceof TreeDisplayExtra) {
 					TreeDisplayExtra tce = (TreeDisplayExtra) obj;
-					tce.cursorExitBranch(tree, N, g);
+					tce.cursorExitBranch(tree, N, g, modifiers, tool);
 				}
 			}
 		}
@@ -4641,14 +4646,14 @@ class BasicTreeWindow extends MesquiteWindow implements Fittable, MesquiteListen
 	}
 
 	/* ................................................................................................ */
-	void notifyExtrasOfBranchTouch(Graphics g, int N, int modifiers, boolean isTreeTool) {
+	void notifyExtrasOfBranchTouch(Graphics g, int N, int modifiers, MesquiteTool tool) {
 		if (treeDisplay.getExtras() != null) {
 			Enumeration e = treeDisplay.getExtras().elements();
 			while (e.hasMoreElements()) {
 				Object obj = e.nextElement();
 				if (obj instanceof TreeDisplayExtra) {
 					TreeDisplayExtra tce = (TreeDisplayExtra) obj;
-					tce.cursorTouchBranch(tree, N, g, modifiers, isTreeTool);
+					tce.cursorTouchBranch(tree, N, g, modifiers, tool);
 				}
 			}
 		}

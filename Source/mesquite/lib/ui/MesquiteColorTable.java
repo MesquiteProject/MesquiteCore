@@ -33,12 +33,14 @@ public  class MesquiteColorTable  {
 	public static final int PURPLESCALE = 8;
 	public static MesquiteColorTable DEFAULTGRAYTABLE = null;
 	public static MesquiteColorTable DEFAULTCOLORTABLE = null;
+	public static MesquiteColorTable DEFAULTALLCOLORTABLE = null;
 	public static MesquiteColorTable DEFAULTREDTABLE = null;
 	public static MesquiteColorTable DEFAULTGREENTABLE = null;
 	public static MesquiteColorTable DEFAULTBLUETABLE = null;
 	public static MesquiteColorTable DEFAULTORANGETABLE = null;
 	public static MesquiteColorTable DEFAULTPURPLETABLE = null;
 	private static Color[][] defaultColorTable = null;
+	private static Color[][] defaultAllColorTable = null;
 	private static Color[] defaultBIGColorTable = null;
 	private static Color[][] defaultGrayTable = null;
 	private static Color[][] defaultGreenTable = null;
@@ -85,6 +87,33 @@ public  class MesquiteColorTable  {
 		for (int theState=0; theState<1000; theState++) {
 			defaultBIGColorTable[theState] = new Color(Color.HSBtoRGB((float)((1000-theState) * 0.8 /1000),(float)1.0,(float)1.0));
 		}
+
+		defaultAllColorTable = new Color[maxNumStates][maxNumStates];
+		for (int i=0; i<maxNumStates; i++) {
+			for (int j=0; j<maxNumStates; j++) {
+				defaultAllColorTable[i][j] = Color.white;
+			}
+		}
+		for (int maxState=1; maxState<maxNumStates; maxState++) {
+			for (int theState=0; theState<=maxState; theState++) {
+				int adjust = 0;
+				if (maxState>4) adjust=1;
+				defaultAllColorTable[maxState][theState] = new Color(Color.HSBtoRGB((float)((maxState-theState-adjust) * 0.8 /maxState),(float)1.0,(float)1.0));
+				//defaultColorTable[maxState][theState] = new Color(Color.HSBtoRGB((float)(theState * 0.8 /maxState),(float)1.0,(float)1.0));
+			}
+			if (maxState==9 || maxState == 8) {
+				defaultAllColorTable[maxState][4] = new Color(Color.HSBtoRGB((float)((3) * 0.8 /maxState),(float)0.7,(float)0.7));
+			} else if (maxState==7) {
+				defaultAllColorTable[maxState][4] = new Color(Color.HSBtoRGB((float)(0.17),(float)1.0,(float)1.0));
+			}  else if (maxState==6) {
+				defaultAllColorTable[maxState][3] = new Color(Color.HSBtoRGB((float)(0.17),(float)1.0,(float)1.0));
+			}  else if (maxState==4) {
+				defaultAllColorTable[maxState][3] = new Color(Color.HSBtoRGB((float)(0.17),(float)1.0,(float)1.0));
+			}
+
+		}
+		DEFAULTALLCOLORTABLE = new MesquiteColorTable();
+		DEFAULTALLCOLORTABLE.colorTable = defaultAllColorTable;
 
 		defaultGrayTable = new Color[maxNumStates][maxNumStates];
 		for (int i=0; i<maxNumStates; i++) {

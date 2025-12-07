@@ -24,6 +24,7 @@ import mesquite.lib.OwnedByModule;
 import mesquite.lib.StringUtil;
 import mesquite.lib.taxa.Taxon;
 import mesquite.lib.ui.MesquitePopup;
+import mesquite.lib.ui.MesquiteTool;
 import mesquite.lib.ui.MesquiteWindow;
 
 
@@ -238,10 +239,16 @@ public abstract class TreeDisplayExtra implements Listable, OwnedByModule {
 	public  int findBranch(Tree tree, int drawnRoot, int x, int y){return -1;} // should be renamed; need method to tell assistant to react to mousedown that might be in its node picture etc.
 	/**to inform TreeDisplayExtra that cursor has just entered branch N*/
 	public void cursorEnterBranch(Tree tree, int N, Graphics g){}
+	public void cursorEnterBranch(Tree tree, int N, Graphics g, int modifiers, MesquiteTool tool){
+		cursorEnterBranch(tree, N, g);
+	}
 	/**to inform TreeDisplayExtra that cursor has just exited branch N*/
 	public void cursorExitBranch(Tree tree, int N, Graphics g){}
+	public void cursorExitBranch(Tree tree, int N, Graphics g, int modifiers, MesquiteTool tool){
+	cursorExitBranch(tree, N, g);
+}
 	/**to inform TreeDisplayExtra that cursor has just touched branch N*/
-	public void cursorTouchBranch(Tree tree, int N, Graphics g, int modifiers, boolean isArrowTool){
+	public void cursorTouchBranch(Tree tree, int N, Graphics g, int modifiers, MesquiteTool tool){ //$%$%$%
 		cursorTouchBranch(tree, N, g);
 	}
 	/**to inform TreeDisplayExtra that cursor has just touched branch N*/
@@ -259,7 +266,7 @@ public abstract class TreeDisplayExtra implements Listable, OwnedByModule {
 	/**to inform TreeDisplayExtra that cursor has just exited name of terminal taxon M*/
 	public void cursorExitTaxon(Tree tree, int M, Graphics g){}
 	/**to inform TreeDisplayExtra that cursor has just touched name of terminal taxon M*/
-	public void cursorTouchTaxon(Tree tree, int M, Graphics g, int modifiers, boolean isArrowTool){
+	public void cursorTouchTaxon(Tree tree, int M, Graphics g, int modifiers, MesquiteTool tool){ //$%$%$%
 		cursorTouchTaxon(tree, M, g);
 	}
 	/**to inform TreeDisplayExtra that cursor has just touched name of terminal taxon M*/

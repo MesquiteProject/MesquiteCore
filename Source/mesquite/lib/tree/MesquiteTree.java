@@ -5201,6 +5201,28 @@ and the tree has been rerooted. Properties that belong to nodes implicitly have 
 				tree2.deleteClade(tree2.nodeOfTaxonNumber(it), notify);
 		}
 	}
+	/** Excise node and clade above it from tree, zeroing information at each node in clade.*/
+	private void taxaInCladeForPrune(int node, boolean[] tIC) {
+		for (int d = firstDaughterOfNode(node); nodeExists(d); d=nextSisterOfNode(d))
+			taxaInCladeForPrune(d, tIC);
+		if (nodeIsTerminal(node))
+			tIC[taxonNumberOfNode(node)] = true;
+
+	}
+	public boolean pruneTaxaOutsideClade(int targetNode, boolean notify) {
+		boolean[] taxonInClade = new boolean[taxa.getNumTaxa()];
+		taxaInCladeForPrune(targetNode, taxonInClade);
+		boolean pruned = false;
+		for (int it=0; it<getNumTaxa(); it++) {
+			if (!taxonInClade[it]){
+				pruned = deleteClade(nodeOfTaxonNumber(it), false) || pruned;
+			}
+		}
+		if (notify)
+			incrementVersion(MesquiteListener.BRANCHES_REARRANGED,notify);
+		return pruned;
+
+	}
 	/*-----------------------------------------*/
 	/** Excise node and clade above it from tree but leave the clade intact, in case it is to be attached elsewhere.*/
 	public  boolean snipClade(int node, boolean notify) {   

@@ -748,12 +748,7 @@ class NodeAssocDisplayExtra extends TreeDisplayExtra implements Commandable, Tre
 		}
 		popup.addItem("Control Display of Properties on Tree...", ownerModule, new MesquiteCommand("showDialog", ownerModule));
 	}
-	/*.................................................................................................................*
-	public void cursorTouchBranch(Tree tree, int N, Graphics g, int modifiers, boolean isArrowTool){
-		if (MesquiteEvent.rightClick(modifiers) && isArrowTool){
-			showPopup(N);
-		}
-	}
+	
 	/*...........................................*/
 	MesquitePopup myPopup;
 	ListableVector popupKeys = new ListableVector();
