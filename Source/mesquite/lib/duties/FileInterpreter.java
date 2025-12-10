@@ -213,6 +213,10 @@ public abstract class FileInterpreter extends MesquiteModule  {
 		taxa.clearAllAssociatedBits(previousTaxaNameRef);
 	}
 
+	public void doCommandToNewTreeWindow(MesquiteModule treeWindowModule){
+	}
+	public void doCommandToNewMatrixWindow(MesquiteModule matrixEditorModule){
+	}
 
 	/*.................................................................................................................*/
 	protected String stripNex(String name) {

@@ -227,8 +227,10 @@ public class Parallelizer {
 		System.out.println("Parallelizer: " + summarizeCalcStatus());
 	}
 	public void reset(){ // to be called on owner's thread
-		
+		if (threads == null)
+			return;
 		for (int i = 0; i < nThreads; i++) {
+			if (threads[i] !=null)
 			threads[i].fireParallelEmployees();
 		}
 		threads = null;

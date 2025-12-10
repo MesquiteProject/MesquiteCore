@@ -19,6 +19,7 @@ import mesquite.lib.MesquiteDouble;
 import mesquite.lib.MesquiteMessage;
 import mesquite.lib.MesquiteThread;
 import mesquite.lib.MesquiteTrunk;
+import mesquite.lib.NumberArray;
 import mesquite.lib.tree.Tree;
 /*=========================================================================*/
 /** This class reconstructs ancestral states by squared change parsimony for a matrix of observed data and a tree.
@@ -128,6 +129,17 @@ public class SquaredReconstructor {
 		}
 		return null;
 	}
+	public void placeReconstructedStates(NumberArray statesAtNodes){
+		if (statesAtNodes==null)
+			return;
+		if (tree == null || !reconstructed){
+			statesAtNodes.deassignArray();
+			return;
+		}
+		for (int item = 0; item<  numItems; item++) {
+			transferStatesAtNode(tree.getRoot(deleted), tree, statesAtNodes);
+		}
+	}
 	public void placeReconstructedStates(ContinuousHistory statesAtNodes){
 		if (statesAtNodes==null)
 			return;
@@ -144,6 +156,11 @@ public class SquaredReconstructor {
 		for (int d = tree.firstDaughterOfNode(N, deleted); tree.nodeExists(d); d = tree.nextSisterOfNode(d, deleted))
 			transferStatesAtNode(d, tree, statesAtNodes, item);
 		statesAtNodes.setState(N, item, finalC[item][0][N]);
+	}
+	public   void transferStatesAtNode(int N, Tree tree, NumberArray statesAtNodes) {
+		for (int d = tree.firstDaughterOfNode(N, deleted); tree.nodeExists(d); d = tree.nextSisterOfNode(d, deleted))
+			transferStatesAtNode(d, tree, statesAtNodes);
+		statesAtNodes.setValue(N, finalC[item][0][N]);
 	}
 	public boolean statesLegal(Tree tree, int node) {
 		if (tree.nodeIsTerminal(node)) {

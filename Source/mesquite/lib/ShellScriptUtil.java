@@ -414,6 +414,7 @@ public class ShellScriptUtil  {
 		String runningFilePath = null;
 		if (!StringUtil.blank(scriptPath))
 			runningFilePath=getDefaultRunningFilePath();
+		
 		return executeAndWaitForShell(scriptPath, runningFilePath, null, true, name);
 	}
 

@@ -67,7 +67,9 @@ public class SimpleNamesTaxonNamer extends TaxonNamer {
 		if (StringUtil.notEmpty(name) && name.length()>=2) {
 			if (name.charAt(0)=='t' || name.charAt(0)=='T') {
 				String s = name.substring(1);
-				return MesquiteInteger.fromString(s);
+				int num= MesquiteInteger.fromString(s);
+				if (num>=0 && num < taxa.getNumTaxa())
+					return num;
 			}
 		}
 		return -1;
@@ -82,7 +84,7 @@ public class SimpleNamesTaxonNamer extends TaxonNamer {
 			number = whichTaxonNumberFromNumberTranslationTable(taxa, MesquiteInteger.fromString(name));
 		if (number<0 || !MesquiteInteger.isCombinable(number))
 			number = whichTaxonNumberDefault(taxa, name);
-		if (!MesquiteInteger.isCombinable(number))
+		if (number<0 || number >= taxa.getNumTaxa() || !MesquiteInteger.isCombinable(number))
 			return -1;
 		return number;
 

@@ -6,6 +6,14 @@
 	<punctuation>,={}&gt;&lt;</punctuation> 
 	<!-- replacements in sequence -->
 	<replacement> 
+		<before>)1:</before>
+		<after>)1.0:</after>
+	</replacement> 
+	<replacement> 
+		<before>)0:</before>
+		<after>)0.0:</after>
+	</replacement> 
+	<replacement> 
 		<before>;</before>
 		<after>,</after>
 	</replacement> 

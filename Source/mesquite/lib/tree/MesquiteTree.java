@@ -3161,7 +3161,7 @@ public class MesquiteTree extends Associable implements AdjustableTree, Listable
 			int taxon = taxa.whichTaxonNumber(c, false, permitTruncTaxNames && !permitTaxaBlockEnlargement);
 
 			if (taxon>=0){
-				System.out.println("Observed taxon " + c + " in ancestral position; not yet allowed by Mesquite.  Tree will not be read in properly");
+				System.out.println("Observed taxon " + c + " in ancestral position; not yet allowed by Mesquite.  Tree will not be read in properly. ");
 			}
 
 			setNodeLabel(c, sN); 

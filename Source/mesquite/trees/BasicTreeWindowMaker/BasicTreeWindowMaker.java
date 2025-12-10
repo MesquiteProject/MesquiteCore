@@ -1496,7 +1496,7 @@ class BasicTreeWindow extends MesquiteWindow implements Fittable, MesquiteListen
 
 		TreeTool tool5 = new TreeTool(this, "scissors", ownerModule.getPath(), "scissors.gif", 6, 5, "Prune clade", "This tool deletes the clade of the node touched.  Only the tree being operated on is affected (that is, the terminal taxa are not deleted from the data file).");
 		tool5.setTouchedCommand(MesquiteModule.makeCommand("cutClade", this));
-		tool4.setOptionImageFileName("scissorsBelow.gif", 6, 5);
+		tool5.setOptionImageFileName("scissorsBelow.gif", 6, 5);
 		addTool(tool5);
 
 		TreeTool tool7 = new TreeTool(this, "ladderize", ownerModule.getPath(), "ladderize.gif", 3, 13, "Ladderize clade", "This tool ladderizes a clade by rotating branches until largest of sister clades on right (except if option key is held down, in which case, left).");

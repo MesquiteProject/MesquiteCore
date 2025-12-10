@@ -624,13 +624,13 @@ public class BasicFileCoordinator extends FileCoordinator implements PackageIntr
 		MesquiteTrunk.mesquiteTrunk.refreshBrowser(MesquiteProject.class);
 
 		boolean importing = false; //was it imported???
+		FileInterpreter fileInterp= null;
 
 		if (thisFile!=null && !StringUtil.blank(thisFile.getFileName())) {
 
 			logln("Location: " + thisFile.getDirectoryName() + thisFile.getFileName());
 			logln("");
 
-			FileInterpreter fileInterp= null;
 
 			//first try nexus.  If can't be read, then make list and query user...
 			NexusFileInterpreter nfi = (NexusFileInterpreter)findImmediateEmployeeWithDuty(NexusFileInterpreter.class);
@@ -681,7 +681,7 @@ public class BasicFileCoordinator extends FileCoordinator implements PackageIntr
 					// behaviour: autosave or not
 
 					if (p.openedWithoutMesquiteBlock)
-						showBasicWindows();
+						showBasicWindows(fileInterp);
 					p.openedWithoutMesquiteBlock = false;
 					p.fileSaved(thisFile);  // If used import system, then doesn't add extension or save file if it was some type of NEXUS file 
 					if (importing && (!(fileInterp instanceof NEXUSInterpreter)) && local && parser.tokenIndexOfIgnoreCase(arguments, "suppressImportFileSave")<0){//was imported; change name
@@ -718,7 +718,7 @@ public class BasicFileCoordinator extends FileCoordinator implements PackageIntr
 		if (noWindowsShowing()){
 			doCommand("showWindow", null, CommandChecker.defaultChecker); //TODO: will this always be non-scripting???
 			if (importing){
-				showBasicWindows();
+				showBasicWindows(fileInterp);
 			}
 		}
 
@@ -730,8 +730,9 @@ public class BasicFileCoordinator extends FileCoordinator implements PackageIntr
 		MesquiteTrunk.mesquiteTrunk.refreshBrowser(MesquiteProject.class);
 		return thisFile;
 	}
-
-	public void showBasicWindows(){
+/*============================================================*/
+	public void showBasicWindows(FileInterpreter fInterp){
+		System.err.println("@##### showBasicWindow " + fInterp);
 		MesquiteWindow mw = getModuleWindow();
 		if (mw != null)
 			mw.setWindowSize(1000, 800);
@@ -748,8 +749,12 @@ public class BasicFileCoordinator extends FileCoordinator implements PackageIntr
 		else if (getProject().getNumberCharMatrices()>0){
 			mbb = findEmployeeWithName("#BasicDataWindowCoord");
 			if (mbb != null) {
-				for (int im = 0; im< getProject().getNumberCharMatrices(); im++)
-					mbb.doCommand("showDataWindow", "" + im, CommandChecker.defaultChecker);
+				for (int im = 0; im< getProject().getNumberCharMatrices(); im++) {
+					Object obj = mbb.doCommand("showDataWindow", "" + im, CommandChecker.defaultChecker);
+					if (fInterp != null && obj != null && obj instanceof MesquiteModule)
+						fInterp.doCommandToNewTreeWindow((MesquiteModule)obj);
+
+				}
 			}
 		}
 		else {
@@ -757,6 +762,7 @@ public class BasicFileCoordinator extends FileCoordinator implements PackageIntr
 			if (mbb != null) {
 				if (getProject().getNumberTreeVectors()==1) {
 					Object obj = mbb.doCommand("showTreesInWindow", "" + 0 + " \'autoShowPropertiesList;\'", CommandChecker.defaultChecker);
+					System.err.println("@##### showBasicWindow Making window");
 					if (obj != null && obj instanceof MesquiteModule){
 						TreeVector trees = getProject().getTreesByNumber(0);
 						if (trees.size()>0){
@@ -768,6 +774,9 @@ public class BasicFileCoordinator extends FileCoordinator implements PackageIntr
 								}
 							}
 						}
+						if (fInterp != null)
+							fInterp.doCommandToNewTreeWindow((MesquiteModule)obj);
+
 					}
 					//					newAssistant  #mesquite.trees.ChronogramDisplay.ChronogramDisplay;
 				}
@@ -778,6 +787,7 @@ public class BasicFileCoordinator extends FileCoordinator implements PackageIntr
 			}
 		}
 	}
+	/*============================================================*/
 	/*.................................................................................................................*/
 	public MesquiteFile readProjectGeneral(String arguments) { 
 		if (getProject()!=null) { 
@@ -823,7 +833,7 @@ public class BasicFileCoordinator extends FileCoordinator implements PackageIntr
 		MesquiteFile thisFile = p.getHomeFile();
 		if (noWindowsShowing()){
 			doCommand("showWindow", null, CommandChecker.defaultChecker); //TODO: will this always be non-scripting???
-			showBasicWindows();
+			showBasicWindows(null);
 		}
 		fireEmployee((MesquiteModule)e);
 		if (thisFile != null && thisFile.getCloseAfterReading()){
