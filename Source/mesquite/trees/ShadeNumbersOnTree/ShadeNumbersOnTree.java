@@ -191,6 +191,8 @@ class ShadeNumbersDecorator extends TreeDecorator {
 	}
 	/*.................................................................................................................*/
 	private void writeAtNode(NumberArray numbers,Graphics g, FontMetrics fm, int N,  Tree tree) {
+		if (tree.withinCollapsedClade(N))
+			return;
 		for (int d = tree.firstDaughterOfNode(N); tree.nodeExists(d); d = tree.nextSisterOfNode(d))
 			writeAtNode(numbers, g, fm, d, tree);
 		if ((tree.nodeIsInternal(N) || ownerModule.getLabelTerminals()) && !numbers.isUnassigned(N)) {
