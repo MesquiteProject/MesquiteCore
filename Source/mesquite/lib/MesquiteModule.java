@@ -949,6 +949,11 @@ public abstract class MesquiteModule extends EmployerEmployee implements Command
 		String directoryPath = supportDirectoryPath();
 		MesquiteFile.deleteDirectory(directoryPath);
 	}
+	/*.................................................................................................................*/
+	public void showSupportDirectory(){
+		String directoryPath = supportDirectoryPath();
+		MesquiteFile.showDirectory(directoryPath);
+	}
 
 
 	/* XMLPreferencesDocumentation

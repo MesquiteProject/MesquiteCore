@@ -555,6 +555,7 @@ public abstract class InterpretFasta extends FileInterpreterI implements ReadFil
 	protected boolean simplifyTaxonName = simplifyTaxonNameDEFAULT;
 	protected boolean convertMultStateToMissing = convertMultStateToMissingDEFAULT;
 	protected String uniqueSuffix = "";
+	protected boolean exportT0T1TaxonNames = false;  //accessible only by doCommand
 	/*.................................................................................................................*/
 	public String preparePreferencesForXML () {
 		StringBuffer buffer = new StringBuffer(200);
@@ -605,6 +606,9 @@ public abstract class InterpretFasta extends FileInterpreterI implements ReadFil
 		}
 		else if (checker.compare(this.getClass(), "Sets whether or not to simplify taxon names.", "[true or false]", commandName, "simplifyTaxonName")) {
 			simplifyTaxonName = MesquiteBoolean.fromTrueFalseString(parser.getFirstToken(arguments));
+		}
+		else if (checker.compare(this.getClass(), "Sets whether or not to export to t0 t1 taxon names.", "[true or false]", commandName, "exportT0T1TaxonNames")) {
+			exportT0T1TaxonNames = MesquiteBoolean.fromTrueFalseString(parser.getFirstToken(arguments));
 		}
 		else if (checker.compare(this.getClass(), "Sets whether or not to convert multistate to missing.", "[true or false]", commandName, "convertMultStateToMissing")) {
 			convertMultStateToMissing = MesquiteBoolean.fromTrueFalseString(parser.getFirstToken(arguments));
@@ -676,7 +680,10 @@ public abstract class InterpretFasta extends FileInterpreterI implements ReadFil
 		return getTaxonName(taxa, it, null);
 	}
 	protected String getTaxonName(Taxa taxa, int it, CharacterData data){
-		if (simplifyTaxonName)
+		if (exportT0T1TaxonNames){
+			return "t" + it;
+		}
+		else if (simplifyTaxonName)
 			return StringUtil.cleanseStringOfFancyChars(taxa.getTaxonName(it)+uniqueSuffix,false,true);
 		else 
 			return taxa.getTaxonName(it)+uniqueSuffix;
@@ -735,6 +742,7 @@ public abstract class InterpretFasta extends FileInterpreterI implements ReadFil
 				counter = 1;
 				outputBuffer.append(">");
 				outputBuffer.append(getTaxonName(taxa,it, data));
+				System.err.println("@ getTaxonName " + getTaxonName(taxa,it, data));
 				String sup = getSupplementForTaxon(taxa, it);
 				if (StringUtil.notEmpty(sup))
 					outputBuffer.append(sup);

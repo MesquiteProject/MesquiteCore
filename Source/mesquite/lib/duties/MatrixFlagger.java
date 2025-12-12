@@ -65,12 +65,17 @@ public abstract class MatrixFlagger extends MesquiteModule  {
 	/* As a service to flaggers that call programs to run of fasta files*/
 	FileInterpreterI exporter;	
 
-	protected boolean saveFastaFile(CharacterData data, String path, String fileName){
+	protected boolean saveFastaFile(CharacterData data, String path, String fileName, int taxonNameHandling){
 		
 			if (exporter == null)
 				exporter = (FileInterpreterI)hireNamedEmployee(FileInterpreterI.class, "#InterpretFastaDNA");
 			exporter.doCommand("includeGaps","true", CommandChecker.defaultChecker);
-			exporter.doCommand("simplifyTaxonName","true", CommandChecker.defaultChecker);
+			if (taxonNameHandling == 0)
+				exporter.doCommand("simplifyTaxonName","false", CommandChecker.defaultChecker);
+			else if (taxonNameHandling == 1)
+				exporter.doCommand("simplifyTaxonName","true", CommandChecker.defaultChecker);
+			else if (taxonNameHandling == 2)
+				exporter.doCommand("exportT0T1TaxonNames","true", CommandChecker.defaultChecker);
 			exporter.doCommand("writeExcludedCharacters","false", CommandChecker.defaultChecker);
 			boolean success = false;
 			if (exporter!=null) {
@@ -78,6 +83,8 @@ public abstract class MatrixFlagger extends MesquiteModule  {
 				//coord.export(exporter, tempDataFile, s);
 				success = exporter.writeMatrixToFile(data, path + fileName ); 
 			}
+			if (taxonNameHandling == 2)
+				exporter.doCommand("exportT0T1TaxonNames","false", CommandChecker.defaultChecker);
 			return success;
 		/* oldStyle
 			getProject().incrementProjectWindowSuppression();
