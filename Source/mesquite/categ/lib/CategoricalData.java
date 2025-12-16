@@ -1343,6 +1343,12 @@ public class CategoricalData extends CharacterData {
 	}
 	/*..........................................  CategoricalData  ..................................................*/
 	/** returns whether the state of character ic is missing in taxon it*/
+	public  boolean isPolymorphic(int ic, int it){
+		long s = getStateRaw(ic,it);
+		return (!CategoricalState.isUncertain(s) && CategoricalState.hasMultipleStates(s));
+	}
+	/*..........................................  CategoricalData  ..................................................*/
+	/** returns whether the state of character ic is missing in taxon it*/
 	public  boolean isMultistateUncertainty(int ic, int it){
 		long s = getStateRaw(ic,it);
 		return (CategoricalState.isUncertain(s) && CategoricalState.hasMultipleStates(s));

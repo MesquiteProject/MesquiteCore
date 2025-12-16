@@ -207,7 +207,7 @@ public class FlagByTrimAl extends MatrixFlaggerForTrimming {
 			String rootDir = createSupportDirectory() + MesquiteFile.fileSeparator;  
 			String unique = MesquiteFile.massageStringToFilePathSafe(MesquiteTrunk.getUniqueIDBase() + Math.abs((new Random(System.currentTimeMillis())).nextInt()));
 			status = "savingFasta";
-			boolean successSaving = saveFastaFile(data, rootDir, unique + "input.fas", 1);
+			boolean successSaving = saveFastaFile(data, rootDir, unique + "input.fas", 1, 1);
 			status = "fastaSaved";
 			String scriptPath = rootDir + "trimAlScript" + unique + ".bat";
 
@@ -267,6 +267,7 @@ public class FlagByTrimAl extends MatrixFlaggerForTrimming {
 								count++;
 						}
 					}
+					if (!MesquiteTrunk.developmentMode)
 					deleteSupportDirectory(); 
 				}
 				else {

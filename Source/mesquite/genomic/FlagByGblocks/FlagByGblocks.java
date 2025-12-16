@@ -345,7 +345,7 @@ public class FlagByGblocks extends MatrixFlaggerForTrimming implements ActionLis
 				flags.reset(data);
 			String rootDir = createSupportDirectory() + MesquiteFile.fileSeparator;  
 			String unique = MesquiteFile.massageStringToFilePathSafe(MesquiteTrunk.getUniqueIDBase() + Math.abs((new Random(System.currentTimeMillis())).nextInt()));
-			boolean successSaving = saveFastaFile(data, rootDir, unique + "alignment.fas", 2);
+			boolean successSaving = saveFastaFile(data, rootDir, unique + "alignment.fas", 2, 0);
 			String scriptPath = rootDir + "GblocksScript" + unique + ".bat";
 
 
