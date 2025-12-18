@@ -113,7 +113,7 @@ public class CharMatricesList extends ListLVModule {
 				assistant.setUseMenubar(false);
 				//DEFAULTASSISTANTS assistant.setAsFactoryDefault(true);
 			}
-			assistant = (CharMatricesListAssistant)hireNamedEmployee(CharMatricesListAssistant.class, "#MatrixListVisible");
+			assistant = (CharMatricesListAssistant)hireNamedEmployee(CharMatricesListAssistant.class, "#CharMatricesListPartition");
 			if (assistant!= null){
 				((ListableVectorWindow)getModuleWindow()).addListAssistant(assistant);
 				assistant.setUseMenubar(false);
