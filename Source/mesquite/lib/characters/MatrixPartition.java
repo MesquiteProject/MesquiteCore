@@ -20,18 +20,19 @@ import mesquite.lib.ObjectSpecsSet;
 import mesquite.lib.SpecsSet;
 
 /* ======================================================================== */
-/**A CharacterPartition is a specification of which property applies to each matrix (MATRIXPARTITION in NEXUS file format).
+/**A MatrixPartition is a specification of which property applies to each matrix (MATRIXPARTITION in NEXUS file format).
   */
+//"@MATRIXGROUP
 
 public class MatrixPartition  extends ObjectSpecsSet {
 	ListableVector datas;
-	public MatrixPartition (String name, int numChars, Object defaultProperty, ListableVector datas) {
-		super(name, numChars, defaultProperty);
+	public MatrixPartition (String name, Object defaultProperty, ListableVector datas) {
+		super(name, datas.size(), defaultProperty);
 		this.datas = datas;
 	}
 	
 	public SpecsSet cloneSpecsSet(){
-		MatrixPartition ms = new MatrixPartition(new String(name), getNumberOfParts(), (MatricesGroup)getDefaultProperty(), datas);
+		MatrixPartition ms = new MatrixPartition(new String(name), (MatricesGroup)getDefaultProperty(), datas);
 		for (int i=0; i<getNumberOfParts(); i++)
 			ms.setProperty(getProperty(i), i);
 		return ms;
@@ -39,7 +40,7 @@ public class MatrixPartition  extends ObjectSpecsSet {
 	public SpecsSet makeSpecsSet(AssociableWithSpecs parent, int numParts){
 		if (!(parent instanceof ListableVector))
 			return null;
-		return new MatrixPartition("Partition", numParts, getDefaultProperty(), (ListableVector)parent);
+		return new MatrixPartition("Partition", getDefaultProperty(), (ListableVector)parent);
 	}
 	public String getTypeName(){
 		return "Matrix partition";

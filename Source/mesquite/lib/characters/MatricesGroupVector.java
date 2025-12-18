@@ -13,15 +13,28 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
 */
 package mesquite.lib.characters; 
 
-import mesquite.lib.GroupLabel;
+import mesquite.lib.ListableVector;
 
 	
 /* ======================================================================== */
-/** A group to which characters may belong.*/
-public class MatricesGroup extends GroupLabel {
+/** Stores a list of matrix groups (partitions).*/
+public class MatricesGroupVector extends ListableVector {
 	//"@MATRIXGROUP
-	public static boolean supportsSymbols() {
-		return false;
+	public MatricesGroupVector(){
+		super();
+		setName("Matrix Groups");
+
+	}
+	public MatricesGroup findGroup(String token){ 
+		if (token ==null)
+			return null;
+		for (int i = 0; i< size(); i++){
+			MatricesGroup cg = (MatricesGroup)elementAt(i);
+			if (token.equalsIgnoreCase(cg.getName())){
+				return cg;
+			}
+		}
+		return null;
 	}
 
 }

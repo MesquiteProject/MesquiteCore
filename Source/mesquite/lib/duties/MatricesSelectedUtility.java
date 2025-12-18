@@ -11,18 +11,25 @@ Mesquite's web site is http://mesquiteproject.org
 This source code and its compiled class files are free and modifiable under the terms of 
 GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
 */
-package mesquite.lib.characters; 
+package mesquite.lib.duties;
 
-import mesquite.lib.GroupLabel;
+import mesquite.lib.MesquiteModule;
+import mesquite.lib.SelectionInformer;
 
-	
+
 /* ======================================================================== */
-/** A group to which characters may belong.*/
-public class MatricesGroup extends GroupLabel {
-	//"@MATRIXGROUP
-	public static boolean supportsSymbols() {
-		return false;
-	}
+/***/
+
+public abstract class MatricesSelectedUtility extends MesquiteModule  {
+
+   	 public Class getDutyClass() {
+   	 	return MatricesSelectedUtility.class;
+   	 }
+ 	public String getDutyName() {
+ 		return "Utility to act give selected matrices";
+   	}
+ 	public abstract void setSelectionInformer(SelectionInformer informer);
+ 	public abstract void matrixTouched(int ic);
 
 }
 

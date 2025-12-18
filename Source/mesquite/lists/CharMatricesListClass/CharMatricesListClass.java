@@ -74,6 +74,8 @@ public class CharMatricesListClass extends CharMatricesListAssistant implements 
 			return "";
 		}
 	}
+	
+	
 	public String getWidestString(){
 		String best = " 888888 ";
 		if (datas==null)

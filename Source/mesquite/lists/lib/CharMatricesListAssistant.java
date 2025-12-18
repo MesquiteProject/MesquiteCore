@@ -42,32 +42,6 @@ public abstract class CharMatricesListAssistant extends ListAssistant  {
 	 	 	return new String[] {"#NumForCharMatrixList"};
 	 	 }
 	
-		/*======================================*
-		 //DEFAULTASSISTANTS
-	MesquiteCMenuItemSpec setAsDefaultMMI;
-	MesquiteBoolean setAsDefaultColumn = new MesquiteBoolean(false);
-	public boolean superStartJobAfter(String arguments, Object condition, boolean hiredByName){
-		
-		if (isDefaultable())
-			setAsDefaultMMI = super.addCheckMenuItem(null, "Set as default column", new MesquiteCommand("setAsDefault", this), setAsDefaultColumn);
-		return super.superStartJobAfter(arguments, condition, hiredByName);
-	 }
-	
-	
-	
-	   public Object doCommand(String commandName, String arguments, CommandChecker checker) {
-	
-		if (checker.compare(this.getClass(), "Sets column as default", "[on or off]", commandName, "setAsDefault")) {
-			setAsDefaultColumn.toggleValue(parser.getFirstToken(arguments));
-			System.err.println("@ oops");
-			//tell list window to use as default
-			// call its method makeMeDefault(this). 
-			//List window will maintain vector of default modules, and each time set save script to set up, saved and recovered via prefs
-		}
-		else
-			return  super.doCommand(commandName, arguments, checker);
-		return null;
-	}
 	/*======================================*/
 	
 	public void drawInCell(int ic, Graphics g, int x, int y,  int w, int h, boolean selected){
