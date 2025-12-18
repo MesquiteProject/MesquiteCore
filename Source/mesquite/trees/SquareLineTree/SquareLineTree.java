@@ -736,7 +736,7 @@ class SquareLineTreeDrawing extends TreeDrawing  {
 					if (tree.isLeftmostTerminalOfCollapsedClade(node)){
 						if (triangleWidthInCollapsed()>0){ //this will have to re-ask about the number of colors, since now it's the ancestor's
 								if (numColors==1){
-									g.setColor(colors.getColor(0));
+									g.setColor(colors.getColor(0, !tree.anySelected()|| tree.getSelected(node)));
 									DrawTreeUtil.fillOneTriangle(treeDisplay, x, y, useEdgeWidth(), useEdgeWidth(), localInset, triangleFillMode, tree, g, node);
 								}
 								else {
