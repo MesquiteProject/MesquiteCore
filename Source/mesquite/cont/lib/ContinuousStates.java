@@ -75,14 +75,12 @@ public abstract class ContinuousStates  extends CharacterStates implements ItemC
    	}
 	/*..........................................ContinuousStates................*/
 	public void logStates(){
-		System.err.println("@ getNumNodes() " + getNumNodes() + " getNumItems() " + getNumItems());
 		MesquiteModule.mesquiteTrunk.logln("States ");
 		String statesString="";
 		for (int ic=0; ic<getNumNodes(); ic++) {
 			for (int iitems=0; iitems<getNumItems(); iitems++)
 				statesString+=toString(ic, " ") + " ";
 		}
-		System.err.println("@ statesString " + statesString);
 		statesString+= '\r';
 		MesquiteModule.mesquiteTrunk.logln(statesString);
 	}
