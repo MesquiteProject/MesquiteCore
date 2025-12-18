@@ -18,7 +18,7 @@ import mesquite.lib.GroupLabel;
 	
 /* ======================================================================== */
 /** A group to which characters may belong.*/
-public class CharactersGroup extends GroupLabel {
+public class MatricesGroup extends GroupLabel {
 	public static boolean supportsSymbols() {
 		return false;
 	}
