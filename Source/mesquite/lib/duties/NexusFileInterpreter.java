@@ -35,6 +35,7 @@ public abstract class NexusFileInterpreter extends FileInterpreterI  {
 	@readOneTaxaBlockOnly
 	@readOneMatrixOnly
 	@justTheseBlocks.TAXA.TREES.CHARACTERS  (or whatever blocks are to be read
+	@justTheseCommands.CHARGROUPLABEL (or whatever commands are to be read
 	 */
 
 	

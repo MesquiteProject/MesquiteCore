@@ -22,6 +22,7 @@ import mesquite.charMatrices.ManageMatrixPartitions.ManageMatrixPartitions;
 import mesquite.lib.AssociableWithSpecs;
 import mesquite.lib.CommandChecker;
 import mesquite.lib.ListableVector;
+import mesquite.lib.MesquiteCommand;
 import mesquite.lib.MesquiteFile;
 import mesquite.lib.MesquiteInteger;
 import mesquite.lib.MesquiteListener;
@@ -264,9 +265,11 @@ public class MatrixPartitionHelper extends MatricesSelectedUtility {
 		addMenuItem("Replace stored partition by current", makeCommand("replaceWithCurrent",  this));
 		if (datas !=null)
 			addSubmenu(null, "Load set", makeCommand("loadToCurrent",  this), datas.getSpecSetsVector(MatrixPartition.class));
-		ManageMatrixPartitions manageCharPart = (ManageMatrixPartitions)findElementManager(MatrixPartition.class);
-		addMenuItem("Import Group Labels & Colors Only from File...", MesquiteModule.makeCommand("importLabels",  manageCharPart));
-		addMenuItem("Export Group Labels & Colors to File...", MesquiteModule.makeCommand("exportLabels",  manageCharPart));
+		ManageMatrixPartitions manageMatrixPart = (ManageMatrixPartitions)findElementManager(MatrixPartition.class);
+		addMenuItem("Import Partition (Groups) from File...", new MesquiteCommand("importPartitions",  null, manageMatrixPart));
+		addMenuItem("Export Current Partition and Group Labels/Colors to File...", new MesquiteCommand("exportPartitionAndLabels", null, manageMatrixPart));
+		addMenuItem("Import Group Labels & Colors Only from File...", MesquiteModule.makeCommand("importLabels",  manageMatrixPart));
+		addMenuItem("Export Group Labels & Colors to File...", MesquiteModule.makeCommand("exportLabels",  manageMatrixPart));
 		//mScsPF = addMenuItem("Create Partition Based upon RAxML Format...", makeCommand("createByRAxML",  this));
 		this.selectionInformer = informer;
 	}

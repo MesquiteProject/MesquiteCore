@@ -237,7 +237,7 @@ public class ManageCharPartitions extends CharSpecsSetManager {
 				fileToRead.setReadCategory(MesquiteFile.INCLUDED);
 				NexusFileInterpreter mb = (NexusFileInterpreter)findNearestColleagueWithDuty(NexusFileInterpreter.class);
 				proj.setNotificationsOnOff(false);
-				mb.readFile(getProject(), fileToRead, " @noWarnMissingReferent  @noWarnUnrecognized @justTheseBlocks.LABELS");
+				mb.readFile(getProject(), fileToRead, " @noWarnMissingReferent  @noWarnUnrecognized @justTheseBlocks.LABELS  @justTheseCommands.CHARGROUPLABEL");
 
 				Listable[] combinedGroups = groupsVector.getElementArray();
 				for (int i = 0; i<combinedGroups.length; i++){

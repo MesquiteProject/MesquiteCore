@@ -46,6 +46,11 @@ import mesquite.lib.characters.MatrixPartition;
 import mesquite.lib.duties.ManagerAssistant;
 import mesquite.lib.duties.MatrixSpecsSetManager;
 import mesquite.lib.duties.NexusFileInterpreter;
+import mesquite.lib.duties.TaxaManager;
+import mesquite.lib.taxa.Taxa;
+import mesquite.lib.taxa.TaxaGroup;
+import mesquite.lib.taxa.TaxaGroupVector;
+import mesquite.lib.taxa.TaxaPartition;
 import mesquite.lists.lib.GroupDialog;
 
 /** Manages specifications of character partitions, including reading and writing from NEXUS files */
@@ -232,7 +237,7 @@ public class ManageMatrixPartitions extends MatrixSpecsSetManager {
 				fileToRead.setReadCategory(MesquiteFile.INCLUDED);
 				NexusFileInterpreter mb = (NexusFileInterpreter)findNearestColleagueWithDuty(NexusFileInterpreter.class);
 				proj.setNotificationsOnOff(false);
-				mb.readFile(getProject(), fileToRead, " @noWarnMissingReferent  @noWarnUnrecognized @justTheseBlocks.LABELS");
+				mb.readFile(getProject(), fileToRead, " @noWarnMissingReferent  @noWarnUnrecognized @justTheseBlocks.LABELS  @justTheseCommands.MATRIXGROUPLABEL"); 
 
 				Listable[] combinedGroups = groupsVector.getElementArray();
 				for (int i = 0; i<combinedGroups.length; i++){
@@ -250,17 +255,95 @@ public class ManageMatrixPartitions extends MatrixSpecsSetManager {
 						}
 					}
 				}
-
+				
 				//***************
 				proj.getCoordinatorModule().closeFile(fileToRead, true);
 				proj.setNotificationsOnOff(true);
-
+				groupsVector.notifyListeners(this, new Notification(AssociableWithSpecs.SPECSSET_CHANGED));
 			}
 		}
-		else
+		else if (checker.compare(this.getClass(), "Imports groups and their labels from a NEXUS file.", "[]", commandName, "importPartitions")) {
+			MesquiteProject proj = getProject();
+			MatricesGroupVector groupsVector = (MatricesGroupVector)proj.getFileElement(MatricesGroupVector.class, 0);
+			Listable[] previousGroups = groupsVector.getElementArray();
+			ListableVector datas = getProject().getCharacterMatrices();
+			if (datas != null){
+				MesquiteString directoryName = new MesquiteString();
+				MesquiteString fileName = new MesquiteString();
+				MesquiteFile.openFileDialog("Please select the NEXUS file with a partition (groups) of matrices.", directoryName, fileName);
+				if (!fileName.isBlank()){
+					MesquiteFile fileToRead = new MesquiteFile(directoryName.getValue(), fileName.getValue());
+					proj.addFile(fileToRead);
+					fileToRead.setProject(proj);
+					fileToRead.setReadCategory(MesquiteFile.INCLUDED);
+					NexusFileInterpreter mb = (NexusFileInterpreter)findNearestColleagueWithDuty(NexusFileInterpreter.class);
+					proj.setNotificationsOnOff(false);
+					mb.readFile(getProject(), fileToRead, " @noWarnUnrecognized @justTheseBlocks.SETS.LABELS  @justTheseCommands.MATRIXGROUPLABEL.MATRIXPARTITION");
+					
+					//***************
+					MatrixPartition partition = (MatrixPartition)datas.getCurrentSpecsSet(MatrixPartition.class);
+					for (int im = 0; im<datas.size(); im++){
+						MatricesGroup group = (MatricesGroup)partition.getProperty(im);
+						MatricesGroup useGroup;
+						if (group.getFile() == fileToRead){
+							int previousI = ListableVector.indexOf(previousGroups, group.getName());
+							if (previousI>=0){
+								useGroup = (MatricesGroup)previousGroups[previousI];
+								useGroup.equalizeAs(group);
+							}
+							else {
+								useGroup = new MatricesGroup();
+								useGroup.equalizeAs(group);
+								useGroup.addToFile(getProject().getHomeFile(), proj, null);
+						}
+							for (int imK= im; imK<datas.size(); imK++){
+								MatricesGroup currgroup = (MatricesGroup)partition.getProperty(imK);
+								if (currgroup.getName().equals(useGroup.getName()))
+									partition.setProperty(useGroup, imK);
+							}
+						}
+					}
+					partition.addToFile(proj.getHomeFile(), proj, null);
+					
+					proj.getCoordinatorModule().closeFile(fileToRead, true);
+				proj.setNotificationsOnOff(true);
+
+				}
+				datas.notifyListeners(this, new Notification(AssociableWithSpecs.SPECSSET_CHANGED));  
+				groupsVector.notifyListeners(this, new Notification(AssociableWithSpecs.SPECSSET_CHANGED));
+			}
+		}
+		else if (checker.compare(this.getClass(), "Exports current groups and group labels/colors to a NEXUS file for later import.", "[]", commandName, "exportPartitionAndLabels")) {
+			ListableVector datas = getProject().getCharacterMatrices();
+			MatrixPartition partition = (MatrixPartition)datas.getCurrentSpecsSet(MatrixPartition.class);
+			if (partition == null){
+				discreetAlert("Sorry, there isn't a current partition to export");
+				return null;
+			}
+			MatricesGroupVector groups = (MatricesGroupVector)getProject().getFileElement(MatricesGroupVector.class, 0);
+
+			String s = "#NEXUS\n";
+
+			if (groups != null){
+				s+= "BEGIN LABELS;\n\n";
+				for (int ig = 0; ig<groups.size(); ig++){
+					MatricesGroup group = (MatricesGroup)groups.elementAt(ig);
+					s += getGroupLabelNexusCommand(group) + "\n";
+				}
+				s += "END;";
+			}
+			s += "\nBEGIN SETS;\n";
+			s += nexusStringForSpecsSet(partition, checker.getFile(), true);
+			s += "\nEND;";
+			if (!StringUtil.blank(s)){
+				MesquiteFile.putFileContentsQuery("Exported NEXUS file of current partition and group labels/colors, for later import into other files", s, true);
+			}
+		}		else
 			return  super.doCommand(commandName, arguments, checker);
 		return null;
 	}
+	
+
 	public Class getElementClass(){
 		return MatrixPartition.class;
 	}

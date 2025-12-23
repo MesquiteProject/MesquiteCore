@@ -23,6 +23,7 @@ import mesquite.lib.MesquiteModule;
 import mesquite.lib.MesquiteString;
 import mesquite.lib.NexusBlock;
 import mesquite.lib.NexusBlockTest;
+import mesquite.lib.StringArray;
 import mesquite.lib.StringUtil;
 import mesquite.lib.duties.FileInit;
 
@@ -66,7 +67,11 @@ public class ManageSetsBlock extends FileInit {
 		else
 			sB= (SETSBlock)bs[0];
 		
-		int numChars=0;
+		String[] justTheseCommands = null;
+		if (parser.hasFileReadingArgument(fileReadingArguments, "justTheseCommands")){
+			String whichCommands = parser.getFileReadingArgumentSubtype(fileReadingArguments, "justTheseCommands");
+			justTheseCommands = StringUtil.delimitedTokensToStrings(whichCommands, '.', false);
+		}
 		MesquiteString comment = new MesquiteString();
 		while (!StringUtil.blank(s=block.getNextFileCommand(comment))) {
 			String commandName = parser.getFirstToken(s);
@@ -74,8 +79,9 @@ public class ManageSetsBlock extends FileInit {
 				if (commandName.equalsIgnoreCase("LINK")){
 					sB.processLinkCTCommand( s, getProject(), parser);
 				}
-				else
+				else if (justTheseCommands == null || StringArray.indexOfIgnoreCase(justTheseCommands, commandName)>=0) {
 					readUnrecognizedCommand(file, sB, "SETS", block, commandName, s, blockComments, comment,  fileReadingArguments);
+				}
 			}
 		}
 		return sB;
