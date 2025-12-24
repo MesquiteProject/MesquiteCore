@@ -54,10 +54,18 @@ public class NumForCharMatrixList extends CharMatricesListAssistant implements M
 	public String getName() {
 		return "Number for Matrix (in List of Character Matrices window)";
 	}
+	public String getNameAndParameters() {
+		if (numberTask != null)
+			return numberTask.getNameAndParameters();
+		return getName();
+	}
 	public String getNameForMenuItem() {
 		return "Number for Matrix";
 	}
 	public String getExplanation() {
+		if (numberTask != null)
+			return numberTask.getName() + ": " + numberTask.getExplanation();
+		
 		return "Supplies numbers for character matrcies for a character matrices list window." ;
 	}
 	public void getEmployeeNeeds(){  //This gets called on startup to harvest information; override this and inside, call registerEmployeeNeed

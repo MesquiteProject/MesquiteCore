@@ -16,6 +16,7 @@ package mesquite.genomic.TreesFromSelMatrices;
 
 import java.util.Vector;
 
+import mesquite.lib.CommandChecker;
 import mesquite.lib.ListableVector;
 import mesquite.lib.MesquiteBoolean;
 import mesquite.lib.MesquiteString;
@@ -115,6 +116,8 @@ public class TreesFromSelMatrices extends CharMatricesListUtility {
 			storePreferences();
 		}
 */
+		//mesquite.lib.Commandable runner = (mesquite.lib.Commandable)inferenceTask.doCommand("getRunner", null, CommandChecker.defaultChecker);  //Debugg.println("@
+		//runner.doCommand("optionsHaveBeenSet", "true", CommandChecker.defaultChecker);  //Debugg.println("@
 		inferenceTask.initialize(taxa);
 		inferenceTask.setMultipleMatrixMode(true);
 		TreeInferer inferer = inferenceTask.getTreeInferer();

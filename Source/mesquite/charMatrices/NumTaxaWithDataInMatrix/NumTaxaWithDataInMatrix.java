@@ -74,6 +74,9 @@ public class NumTaxaWithDataInMatrix extends NumberForMatrix {
 	public String getName() {
 		return "Number of Taxa with Data in Matrix";
 	} 
+	public String getVeryShortName() {
+		return "Num. Taxa w/Data in Matrix";
+	} 
 
 	public String getExplanation(){
 		return "Counts the number of taxa with data (not ? and not gaps) the matrix.";

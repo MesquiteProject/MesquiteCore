@@ -62,6 +62,9 @@ public class NumMatricesWithDataForTaxon extends NumberForTaxon {
 	public String getName() {
 		return "Number of Matrices with Data for Taxon";  
 	}
+	public String getVeryShortName() {
+		return "Num. Matrices w/Data for Taxon";
+	} 
 
 	/*.................................................................................................................*/
 	public boolean isPrerelease() {

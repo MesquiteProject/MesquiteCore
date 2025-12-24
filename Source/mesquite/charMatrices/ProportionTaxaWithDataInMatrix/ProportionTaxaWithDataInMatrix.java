@@ -75,6 +75,9 @@ public class ProportionTaxaWithDataInMatrix extends NumberForMatrix implements P
 	public String getName() {
 		return "Occupancy (Proportion of Taxa with Data in Matrix)";
 	} 
+	public String getVeryShortName() {
+		return "Occupancy";
+	} 
 
 	public String getExplanation(){
 		return "Counts the proportion of taxa with data (not ? and not gaps) the matrix.";
