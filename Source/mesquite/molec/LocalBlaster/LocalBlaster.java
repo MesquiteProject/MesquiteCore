@@ -370,7 +370,7 @@ public class LocalBlaster extends Blaster implements ActionListener,  AppUser, P
 	public boolean queryOptions() {
 		appInfoFile = getAppInfoFile();
 		MesquiteInteger buttonPressed = new MesquiteInteger(1);
-		ExtensibleDialog dialog = new ExtensibleDialog(containerOfModule(), "Local BLAST Options",buttonPressed);  //MesquiteTrunk.mesquiteTrunk.containerOfModule()
+		ExtensibleDialog dialog = new ExtensibleDialog(containerOfModule(), "Options for BLASTING local databases",buttonPressed);  //MesquiteTrunk.mesquiteTrunk.containerOfModule()
 		dialog.addLabel("Local BLAST Options");
 		StringBuffer sb = new StringBuffer();
 		sb.append("To use this local BLAST tool, you need to have installed the BLAST program on this computer, and need to have also set up local BLAST databases on your computer. ");
@@ -706,7 +706,7 @@ public class LocalBlaster extends Blaster implements ActionListener,  AppUser, P
 	}
 
 	public String getName() {
-		return "BLAST Local Server";
+		return "BLAST Local Database";
 	}
 
 	public String getExplanation() {

@@ -36,7 +36,7 @@ public class FindSimilarSequencesInDB extends DataWindowAssistantI {
 	MesquiteSubmenuSpec mss= null;
 	/*.................................................................................................................*/
 	public boolean startJob(String arguments, Object condition, boolean hiredByName) {
-		mss = addSubmenu(null, "Find Similar Sequences in Database", makeCommand("doSearch",  this));
+		mss = addSubmenu(null, "Find Sequences in Database Similar to Selected", makeCommand("doSearch",  this));
 		mss.setList(MolecDataSearcher.class);
 		return true;
 	}
