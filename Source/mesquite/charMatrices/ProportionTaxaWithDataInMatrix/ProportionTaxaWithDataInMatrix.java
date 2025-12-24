@@ -1,4 +1,4 @@
-package mesquite.charMatrices.NumTaxaWithDataInMatrix;
+package mesquite.charMatrices.ProportionTaxaWithDataInMatrix;
 
 
 
@@ -6,11 +6,12 @@ import mesquite.categ.lib.RequiresAnyMolecularData;
 import mesquite.lib.CompatibilityTest;
 import mesquite.lib.MesquiteNumber;
 import mesquite.lib.MesquiteString;
+import mesquite.lib.ProportionCalculator;
 import mesquite.lib.characters.CharacterState;
 import mesquite.lib.characters.MCharactersDistribution;
 import mesquite.lib.duties.NumberForMatrix;
 
-public class NumTaxaWithDataInMatrix extends NumberForMatrix {
+public class ProportionTaxaWithDataInMatrix extends NumberForMatrix implements ProportionCalculator {
 
 	public boolean startJob(String arguments, Object condition, boolean hiredByName) {
 		return true;
@@ -35,12 +36,12 @@ public class NumTaxaWithDataInMatrix extends NumberForMatrix {
 		}
 
 		if (count>0) {
-			result.setValue(count); 
+			result.setValue(count*1.0/data.getNumTaxa()); 
 		}  else
-			result.setValue(0); 
+			result.setValue(0.0); 
 
 		if (resultString!=null) {
-			resultString.setValue("Number of taxa with data: " + result.toString());
+			resultString.setValue("Proportion of taxa with data: " + result.toString());
 		}
 		saveLastResult(result);
 		saveLastResultString(resultString);
@@ -72,11 +73,11 @@ public class NumTaxaWithDataInMatrix extends NumberForMatrix {
 	}
 
 	public String getName() {
-		return "Number of Taxa with Data in Matrix";
+		return "Occupancy (Proportion of Taxa with Data in Matrix)";
 	} 
 
 	public String getExplanation(){
-		return "Counts the number of taxa with data (not ? and not gaps) the matrix.";
+		return "Counts the proportion of taxa with data (not ? and not gaps) the matrix.";
 	} 
 
 } 

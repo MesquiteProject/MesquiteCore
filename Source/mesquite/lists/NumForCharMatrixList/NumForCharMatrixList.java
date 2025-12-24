@@ -14,13 +14,17 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
 package mesquite.lists.NumForCharMatrixList;
 /*~~  */
 
+import java.awt.Checkbox;
 import java.awt.Color;
 import java.util.Vector;
 
 import mesquite.lib.CommandChecker;
 import mesquite.lib.EmployeeNeed;
+import mesquite.lib.IntegerArray;
+import mesquite.lib.IntegerField;
 import mesquite.lib.ListableVector;
 import mesquite.lib.MesquiteBoolean;
+import mesquite.lib.MesquiteDouble;
 import mesquite.lib.MesquiteFile;
 import mesquite.lib.MesquiteInteger;
 import mesquite.lib.MesquiteListener;
@@ -31,6 +35,7 @@ import mesquite.lib.MesquiteThread;
 import mesquite.lib.Notification;
 import mesquite.lib.NumberArray;
 import mesquite.lib.Pausable;
+import mesquite.lib.ProportionCalculator;
 import mesquite.lib.Snapshot;
 import mesquite.lib.StringArray;
 import mesquite.lib.StringUtil;
@@ -72,23 +77,26 @@ public class NumForCharMatrixList extends CharMatricesListAssistant implements M
 			}
 		}
 		else {
-		numberTask = (NumberForMatrix)hireEmployee(NumberForMatrix.class, "Value to calculate for character matrix (for List of Matrices window)");
-		if (numberTask==null) {
-			return sorry("Number for character matrix (for list) can't start because the no calculating module was successfully hired");
-		}
+			numberTask = (NumberForMatrix)hireEmployee(NumberForMatrix.class, "Value to calculate for character matrix (for List of Matrices window)");
+			if (numberTask==null) {
+				return sorry("Number for character matrix (for list) can't start because the no calculating module was successfully hired");
+			}
 		}
 		shadeCells.setValue(false);
 		addCheckMenuItem(null, "Color Cells", makeCommand("toggleShadeCells",  this), shadeCells); 
 		addMenuItem(null, "Select based on value...", makeCommand("selectBasedOnValue",  this));
+		addMenuItem(null, "Quick histogram to log", makeCommand("logHistogram10", this));
+		addMenuItem(null, "Histogram to log...", makeCommand("logHistogram", this));
+		
 		return true;
 	}
-	
+
 	/*
 	//DEFAULTASSISTANTS
 	public boolean iCanBeADefault(){
 		return numberTask.iCanBeADefault();
 	}
-	*/
+	 */
 	/** Returns whether or not it's appropriate for an employer to hire more than one instance of this module.  
  	If false then is hired only once; second attempt fails.*/
 	public boolean canHireMoreThanOnce(){
@@ -186,41 +194,7 @@ public class NumForCharMatrixList extends CharMatricesListAssistant implements M
 		return (buttonPressed.getValue()==0);
 	}
 	/*.................................................................................................................*/
-	void selectBasedOnValue() {
-		if (MesquiteThread.isScripting())
-			return;
-		if (table==null || datas==null || na==null)
-			return;
-		MesquiteNumber lessThan = new MesquiteNumber();
-		MesquiteNumber moreThan = new MesquiteNumber();
-		if (!querySelectBounds(lessThan, moreThan))
-			return;
-		if (!lessThan.isCombinable() && ! moreThan.isCombinable())
-			return;
-		MesquiteNumber value = new MesquiteNumber();
-		for (int i=0; i<datas.getNumberOfParts(); i++) {
-			na.placeValue(i, value);
 
-			if (lessThan.isCombinable() && moreThan.isCombinable()) {
-				if ((lessThan.isMoreThan(value)|| lessThan.equals(value)) &&  (moreThan.isLessThan(value) ||  moreThan.equals(value))) {
-					table.selectRow(i);
-					datas.setSelected(i, true);
-					table.redrawFullRow(i);
-				}
-			} else if (lessThan.isCombinable() && (lessThan.isMoreThan(value)|| lessThan.equals(value))) {
-				table.selectRow(i);
-				datas.setSelected(i, true);
-				table.redrawFullRow(i);
-			} else if (moreThan.isCombinable() && (moreThan.isLessThan(value) ||  moreThan.equals(value))) {
-				table.selectRow(i);
-				datas.setSelected(i, true);
-				table.redrawFullRow(i);
-			}
-		}
-
-		datas.notifyListeners(this, new Notification(MesquiteListener.SELECTION_CHANGED));
-
-	}
 	/*.................................................................................................................*/
 	public Object doCommand(String commandName, String arguments, CommandChecker checker) {
 		if (checker.compare(this.getClass(), "Sets module that calculates a number for a character matrix", "[name of module]", commandName, "setValueTask")) {
@@ -245,6 +219,28 @@ public class NumForCharMatrixList extends CharMatricesListAssistant implements M
 				parametersChanged();
 			}
 		}
+		else if (checker.compare(this.getClass(), "Output quick histogram to log", null, commandName, "logHistogram10")) {
+			logHistogram(10, false);
+		}
+		else if (checker.compare(this.getClass(), "Output histogram to log", null, commandName, "logHistogram")) {
+					MesquiteInteger buttonPressed = new MesquiteInteger(1);
+			ExtensibleDialog dialog = new ExtensibleDialog(containerOfModule(), "Output histogram to log",buttonPressed); 
+
+			dialog.addLargeOrSmallTextLabel("Select based upon value of " + numberTask.getNameOfValueCalculated());
+
+			IntegerField numBinsF = dialog.addIntegerField("Number of bins in histogram ",10,5);
+			Checkbox cumul = dialog.addCheckBox("Cumulative ",false);
+
+			dialog.completeAndShowDialog(true);
+			int numBins = numBinsF.getValue();
+			boolean cumu = cumul.getState();
+			if (buttonPressed.getValue()==0 && MesquiteInteger.isCombinable(numBins))  {
+				dialog.dispose();
+				logHistogram(numBins, cumu);
+			}
+			else
+				dialog.dispose();
+		}
 		else if (checker.compare(this.getClass(), "Selects list rows based on value of this column", null, commandName, "selectBasedOnValue")) {
 			selectBasedOnValue();
 		}
@@ -261,8 +257,8 @@ public class NumForCharMatrixList extends CharMatricesListAssistant implements M
 	public Color getBackgroundColorOfCell(int ic, boolean selected){
 		if (!shadeCells.getValue())
 			return null;
-		if (min.isCombinable() && max.isCombinable() && na != null && na.isCombinable(ic)){
-			return MesquiteColorTable.getGreenScale(na.getDouble(ic), min.getDoubleValue(), max.getDoubleValue(), false);
+		if (min.isCombinable() && max.isCombinable() && numberArray != null && numberArray.isCombinable(ic)){
+			return MesquiteColorTable.getGreenScale(numberArray.getDouble(ic), min.getDoubleValue(), max.getDoubleValue(), false);
 		}
 		return null;
 	}
@@ -274,7 +270,7 @@ public class NumForCharMatrixList extends CharMatricesListAssistant implements M
 		parametersChanged(notification);
 	}
 	/*.................................................................................................................*/
-	NumberArray na = new NumberArray(0);
+	NumberArray numberArray = new NumberArray(0);
 	StringArray explArray = new StringArray(0);
 	MesquiteNumber min = new MesquiteNumber();
 	MesquiteNumber max = new MesquiteNumber();
@@ -286,29 +282,135 @@ public class NumForCharMatrixList extends CharMatricesListAssistant implements M
 		int numBlocks = datas.size();
 		explArray.resetSize(numBlocks);
 		MesquiteString expl = new MesquiteString();
-		na.deassignArrayToInteger();
-		na.resetSize(numBlocks);
+		numberArray.deassignArrayToInteger();
+		numberArray.resetSize(numBlocks);
 		MesquiteNumber mn = new MesquiteNumber();
 		for (int ic=0; ic<numBlocks; ic++) {
 			CharacterData data = (CharacterData)datas.elementAt(ic);
 			mn.setToUnassigned();
 			numberTask.calculateNumber(data.getMCharactersDistribution(), mn, expl);
-			na.setValue(ic, mn);
+			numberArray.setValue(ic, mn);
 			explArray.setValue(ic, expl.getValue());
 		}
-		na.placeMinimumValue(min);
-		na.placeMaximumValue(max);
+		numberArray.placeMinimumValue(min);
+		numberArray.placeMaximumValue(max);
 	}
+	/*.................................................................................................................*/
+	void logHistogram(int numBuckets, boolean cumulative) {
+		if (table==null || datas==null || numberArray==null)
+			return;
+		int[] buckets = new int[numBuckets];
+		MesquiteNumber min = new MesquiteNumber();
+		MesquiteNumber max = new MesquiteNumber();
+		numberArray.placeMinimumValue(min);
+		numberArray.placeMaximumValue(max);
+		if (!min.isCombinable() || !max.isCombinable()){
+			logln("Histogram cannot be given; no data, or minimum or maximum values beyond allowable limits.");
+			return;
+		}
+		if (numberTask instanceof ProportionCalculator){
+			min.setValue(0.0);
+			max.setValue(1.0);
+		}
+		if (min.getDoubleValue() == max.getDoubleValue()){
+			logln("All items have value " + min.toString());
+			return;
+		}
+		int count = 0;
+		MesquiteNumber value = new MesquiteNumber();
+		for (int i=0; i<datas.getNumberOfParts(); i++) {
+			value.setToUnassigned();
+			numberArray.placeValue(i, value);
+			if (value.isCombinable()){
+				count++;
+				int bucket = (int)(numBuckets*(value.getDoubleValue()-min.getDoubleValue())/(max.getDoubleValue()-min.getDoubleValue()))-1;
+				if (bucket < 0)
+					bucket = 0;
+
+				if (cumulative){
+					for (int ibl = bucket; ibl<numBuckets; ibl++)
+						buckets[ibl]++;
+				}
+				else
+					buckets[bucket]++;
+
+			}
+		}
+		double bucketWidth = (max.getDoubleValue()-min.getDoubleValue())/numBuckets;
+		String intro = "Histogram";
+		if (cumulative)
+			intro = "Cumulative histogram";
+		logln("\n" + intro + " of values of " + numberTask.getName() + " (total number: " + count + ")");
+		logln("Value\tCount");
+		for (int ib = 0; ib<numBuckets; ib++){
+			String numInBucket = Integer.toString(buckets[ib]);
+			if (cumulative){
+				if (ib == 0)
+					logln( "≥ " + min + " to < " + (bucketWidth*(ib+1) + min.getDoubleValue()) + " \t" + numInBucket);
+				else if (ib == numBuckets -1)
+					logln("≤ " + max + " \t" + numInBucket);
+				else
+					logln("< " + MesquiteDouble.toString(bucketWidth*(ib+1) + min.getDoubleValue()) + " \t" + numInBucket);
+			}
+			else {
+				if (ib == 0)
+					logln( "≥ " + min + " to < " + (bucketWidth*(ib+1) + min.getDoubleValue()) + " \t" + numInBucket);
+				else if (ib == numBuckets -1)
+					logln("≥ " + MesquiteDouble.toString((bucketWidth*(ib) + min.getDoubleValue())) + " to ≤ " + max + " \t" + numInBucket);
+				else
+					logln("≥ " + MesquiteDouble.toString(bucketWidth*(ib) + min.getDoubleValue()) + " to < " + MesquiteDouble.toString(bucketWidth*(ib+1) + min.getDoubleValue()) + " \t" + numInBucket);
+			}
+		}
+
+	}	
+
+	/*.................................................................................................................*/
+	void selectBasedOnValue() {
+		if (MesquiteThread.isScripting())
+			return;
+		if (table==null || datas==null || numberArray==null)
+			return;
+		MesquiteNumber lessThan = new MesquiteNumber();
+		MesquiteNumber moreThan = new MesquiteNumber();
+		if (!querySelectBounds(lessThan, moreThan))
+			return;
+		if (!lessThan.isCombinable() && ! moreThan.isCombinable())
+			return;
+		MesquiteNumber value = new MesquiteNumber();
+		for (int i=0; i<datas.getNumberOfParts(); i++) {
+			numberArray.placeValue(i, value);
+
+			if (lessThan.isCombinable() && moreThan.isCombinable()) {
+				if ((lessThan.isMoreThan(value)|| lessThan.equals(value)) &&  (moreThan.isLessThan(value) ||  moreThan.equals(value))) {
+					table.selectRow(i);
+					datas.setSelected(i, true);
+					table.redrawFullRow(i);
+				}
+			} else if (lessThan.isCombinable() && (lessThan.isMoreThan(value)|| lessThan.equals(value))) {
+				table.selectRow(i);
+				datas.setSelected(i, true);
+				table.redrawFullRow(i);
+			} else if (moreThan.isCombinable() && (moreThan.isLessThan(value) ||  moreThan.equals(value))) {
+				table.selectRow(i);
+				datas.setSelected(i, true);
+				table.redrawFullRow(i);
+			}
+		}
+
+		datas.notifyListeners(this, new Notification(MesquiteListener.SELECTION_CHANGED));
+
+	}
+	/*.................................................................................................................*/
 	public String getExplanationForRow(int ic){
 		if (explArray == null || explArray.getSize() <= ic)
 			return null;
 		return explArray.getValue(ic);
 	}
 	public String getStringForRow(int ic){
-		if (na==null)
+		if (numberArray==null)
 			return "";
 
-		return na.toString(ic);
+		return numberArray.toString(ic);
 	}
 	public String getWidestString(){
 		if (numberTask==null)

@@ -129,6 +129,18 @@ public class ShowMatrixInTreeWindow extends TreeWindowAssistantI implements Item
 			resetMatrix(tree);
 	}
 
+	void showMatrixWindow(Tree tree){
+		if (choose0Link1 == 0 && data != null){
+			data.doCommand("showMe", null, CommandChecker.defaultChecker);
+		}
+		else if (tree != null) {
+			//here also look for matrix from source if needed
+			CharacterData d = ((MesquiteTree)tree).findLinkedMatrix(getProject());
+			if (d != null){
+				d.doCommand("showMe", null, CommandChecker.defaultChecker);
+			}
+		}
+	}
 
 	void resetMatrix(Tree tree){
 		if (!showMatrix)
@@ -305,6 +317,9 @@ public class ShowMatrixInTreeWindow extends TreeWindowAssistantI implements Item
 				extra.turnOnOff(true);
 				//extra.forceRefresh();
 			}
+		}
+		else if (checker.compare(this.getClass(), "Shows the linked matrix in the editor", "[]", commandName, "showMatrixWindow")) {
+			showMatrixWindow(extra.getTreeDisplay().getTree());
 		}
 		else if (checker.compare(this.getClass(), "Whether to show selected characters only", "[true/false]", commandName, "selectedOnly")) {
 			selectedCharatersOnly = MesquiteBoolean.fromTrueFalseString(arguments);
@@ -1050,12 +1065,15 @@ class ShowMatrixLinkedExtra extends TreeDisplayExtra implements TreeDisplayBkgdE
 					ownerModule.choose0Link1 = 1;
 					ownerModule.resetMatrix(treeDisplay.getTree());
 					CharacterData data = ownerModule.data;
-					if (data != null) {
-						popup.addItem("Tree has linked matrix: " + data.getName(),  MesquiteCommand.nullCommand, null);
+					CharacterData linkedData = ((MesquiteTree)tree).findLinkedMatrix(ownerModule.getProject());
+					if (linkedData != null) {
+						popup.addItem("Tree has linked matrix: " + linkedData.getName(),  MesquiteCommand.nullCommand, null);
 						popup.addItem("-",  MesquiteCommand.nullCommand, null);
 					}
 					popup.addItem("Show Matrix Linked to Tree",  new MesquiteCommand("showLinked", ownerModule), null);
 					popup.addItem("Display Options...", new MesquiteCommand("queryOptionsFromIcon", ownerModule), null);
+					popup.addItem("-",  MesquiteCommand.nullCommand, null);
+					popup.addItem("Go to Matrix Window",  new MesquiteCommand("showMatrixWindow", ownerModule), null);
 					popup.showPopup(x, y);
 
 
@@ -1068,12 +1086,15 @@ class ShowMatrixLinkedExtra extends TreeDisplayExtra implements TreeDisplayBkgdE
 			else { //on; turn off
 				MesquitePopup popup = new MesquitePopup(treeDisplay);
 				CharacterData data = ownerModule.data;
-				if (data != null) {
+				CharacterData linkedData = ((MesquiteTree)tree).findLinkedMatrix(ownerModule.getProject());
+				if (data != null && data == linkedData) {
 					popup.addItem("Tree has linked matrix: " + data.getName(),  MesquiteCommand.nullCommand, null);
 					popup.addItem("-",  MesquiteCommand.nullCommand, null);
 				}
 				popup.addItem("Hide Matrix",  new MesquiteCommand("hideMatrix", ownerModule), null);
 				popup.addItem("Display Options...", new MesquiteCommand("queryOptionsFromIcon", ownerModule), null);
+				popup.addItem("-",  MesquiteCommand.nullCommand, null);
+				popup.addItem("Go to Matrix Window",  new MesquiteCommand("showMatrixWindow", ownerModule), null);
 				popup.showPopup(x, y);
 
 			}

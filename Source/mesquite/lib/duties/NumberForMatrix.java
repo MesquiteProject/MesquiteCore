@@ -31,7 +31,7 @@ public abstract class NumberForMatrix extends MesquiteModule implements NumberFo
  		return "Number for Matrix";
    	 }
  	 public String[] getDefaultModule() {
- 	 	return new String[] {"#NumTaxaWithDataInMatrix", "#NumSelTaxaWithDataInMatrix"};
+ 	 	return new String[] {"#ProportionTaxaWithDataInMatrix", "#NumTaxaWithDataInMatrix", "#NumSelTaxaWithDataInMatrix"};
  	 }
 	 public String getFunctionIconPath(){
    		 return getRootImageDirectoryPath() + "functionIcons/matrixNumber.gif";
