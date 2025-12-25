@@ -155,6 +155,7 @@ public class TreesFromSelMatricesParallel extends CharMatricesListUtility {
 		}
 		TreeVector trees = new TreeVector(((CharacterData)datas.elementAt(0)).getTaxa());
 		Vector v = pauseAllPausables();
+		long startTime = System.currentTimeMillis();
 		int count = 0;
 		int numFailed =0;
 		String stringFailed = "";
@@ -176,7 +177,7 @@ public class TreesFromSelMatricesParallel extends CharMatricesListUtility {
 					trees.addElement(tV.elementAt(it), false);
 				}
 			}
-			trees.setName("@PARALLEL Trees from matrices (" + inferenceTask.getName() + ")");
+			trees.setName("Trees from matrices (" + inferenceTask.getName() + ")");
 			String annot = trees.getAnnotation();
 			trees.setAnnotation("Information for trees from last of the matrices analyzed: " + annot, false);
 			trees.addToFile(getProject().getHomeFile(), getProject(), findElementManager(Tree.class));
@@ -187,7 +188,10 @@ public class TreesFromSelMatricesParallel extends CharMatricesListUtility {
 				logln(stringFailed);
 			}
 		}
+		long totalTime = System.currentTimeMillis() - startTime;
+		logln("Time used for parallel tree inferences: " + (totalTime/1000) +" seconds."); 
 		unpauseAllPausables(v);
+		
 		if (getProject() != null)
 			getProject().decrementProjectWindowSuppression();
 		resetAllMenuBars();
@@ -261,7 +265,7 @@ class TreeInferenceParallelMachine implements Parallelizable {
 	}
 	/*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~*/
 	/*\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\*/
-	public void markInappropriateItems() {
+	public void markInappropriateItems(Parallelizer parallelizer) {
 			int iN = 0;
 			while (iN< datas.size()){
 				if (!ownerModule.compatibleMatrix((CharacterData)datas.elementAt(iN)))
@@ -271,7 +275,7 @@ class TreeInferenceParallelMachine implements Parallelizable {
 	}
 	/*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~*/
 	/*\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\*/
-	public synchronized int getNextParallelItemAndReserve() {
+	public synchronized int getNextParallelItemAndReserve(Parallelizer parallelizer) {
 		int iN = 0;
 		while (iN< datas.size()){
 			if (ownerModule.compatibleMatrix((CharacterData)datas.elementAt(iN)) && parallelizer.itemUncalculated(iN)){
@@ -284,7 +288,7 @@ class TreeInferenceParallelMachine implements Parallelizable {
 	}
 	/*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~*/
 	/*\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\*/
-	public ParallelParams doFirstCalculation_Parallel(int firstItem) {
+	public ParallelParams doFirstCalculation_Parallel(int firstItem, Parallelizer parallelizer) {
 
 		ParallelParams pp = new ParallelParams();
 		pp.responsibleEmployer = ownerModule;
@@ -292,13 +296,13 @@ class TreeInferenceParallelMachine implements Parallelizable {
 		pp.threadObjects = new Object[]{ ownerModule.matrixSourceTask};
 
 		parallelizer.setItemStatus(firstItem, Parallelizer.BEINGCALCULATED);  //prob not necessary
-		int result = doItemCalculation_Parallel(firstItem, pp);
+		int result = doItemCalculation_Parallel(firstItem, pp, parallelizer);
 		return pp;
 	}
 
 	/*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~*/
 	/*\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\*/
-	public ParallelParams cloneForParallel(ParallelParams params) {
+	public ParallelParams cloneForParallel(ParallelParams params, Parallelizer parallelizer) {
 		if (params == null)
 			return null;
 		ParallelParams pp = new ParallelParams();
@@ -318,7 +322,7 @@ class TreeInferenceParallelMachine implements Parallelizable {
 	ListableVector treeBlocks = new ListableVector();
 	/*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~*/
 	/*\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\*/
-	public int doItemCalculation_Parallel(int item, ParallelParams params) {
+	public int doItemCalculation_Parallel(int item, ParallelParams params, Parallelizer parallelizer) {
 		ThreadListOfMatrices matrixSource = (ThreadListOfMatrices)params.threadObjects[0];
 		matrixSource.setCurrentMatrix(item);
 		MCharactersDistribution matrix = matrixSource.getCurrentMatrix((Taxa)null);
@@ -345,8 +349,8 @@ class TreeInferenceParallelMachine implements Parallelizable {
 		return 0;
 	}
 
-	public boolean pleaseReuseParallelThreads() {
-		return false;
+	public boolean pleaseReuseParallelThreads() { //doesn't really matter here, becuase not persistent
+		return true;
 	}
 }
 

@@ -13,46 +13,119 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
  */
 package mesquite.lib.parallel;
 
+import mesquite.lib.CommandChecker;
+import mesquite.lib.MesquiteModule;
+import mesquite.lib.MesquiteString;
+import mesquite.lib.MesquiteThread;
+import mesquite.lib.characters.CharacterData;
+import mesquite.lib.characters.MCharactersDistribution;
+import mesquite.lib.duties.TreeSearcherFromMatrix;
+import mesquite.lib.taxa.Taxa;
+import mesquite.lib.tree.MesquiteTree;
+import mesquite.lib.tree.Tree;
+import mesquite.lib.tree.TreeVector;
 
 /* ======================================================================== */
 /** */
 /* ############################# */
 public interface Parallelizable {
 
-	/*Total possible count, for parallelizer to prepare array recording status of which items are done, being calculated, etc..
-	 *  If some items aren't appropriate, and will be filtered, that is OK, handled in getNextParallelItem.
-	 * */
-	//synchronized please
-	public int getTotalPossibleParallelItemCount(); 
-
-	/*Using parallizer.setItemStatus(item, Parallelizer.INAPPLICABLE), mark which items are not to be calculated.
-	 * This is optional, and it may be unnecessary, but it could help the parallelizer know in advance which aren't important to calculate */
-	public void markInappropriateItems();
-
-
-	//Returns next uncalculated item. Return -1 if none more
-	//synchronized please
-	public int getNextParallelItemAndReserve();  
 	
+	/*\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\*/
+	/**Total possible count, for parallelizer to prepare array recording status of which items are done, being calculated, etc..
+	 *  If some items aren't appropriate, and will be filtered, that is OK, handled in getNextParallelItemAndReserve.
+ 	— SYNCHRONIZED please * */
+	public int getTotalPossibleParallelItemCount(); 
+	/*EXAMPLE:
+	 * 		
+	 	return totalNumber;  //e.g., the size of the vector, the number of taxa or characters or branches, etc.
+	 */
 
-	/* Do any initiation calculations, including resetting  AND calculation of first item to make sure employees are warmed up.	
-	 * The firstItem is given, even though getNextParallelItem could be called, so that Parallelizable can be responsible to set the status of that first item, 
+	/*\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\*/
+	/**Using parallizer.setItemStatus(item, Parallelizer.INAPPLICABLE), mark which items are not to be calculated.
+	 * This is optional, and it may be unnecessary, but it could help the parallelizer know in advance which aren't important to calculate */
+	public void markInappropriateItems(Parallelizer parallelizer);
+
+
+	/*\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\*/
+	/**Finds next uncalculated item and reserves it by setting its status as being calculated, and then returns the number. Return -1 if none more
+	— SYNCHRONIZED please   */
+	public int getNextParallelItemAndReserve(Parallelizer parallelizer);  
+	/*EXAMPLE:
+	 * 		
+	 	int iN = 0;
+		while (iN< totalNumber){
+			if (thisOneIsCompatible(iN)) && parallelizer.itemUncalculated(iN)){
+				parallelizer.setItemStatus(iN, Parallelizer.BEINGCALCULATED);
+				return iN;
+			}
+			iN++;
+		}
+		return -1;
+	 */
+
+	/*\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\*/
+	/** Do any initiation calculations, including resetting  AND calculation of first item to make sure employees are warmed up.	
+	 * The firstItem is given, even though getNextParallelItemAndReserve could be called, so that Parallelizable can be responsible to set the status of that first item, 
 	 * e.g.  parallelizer.setItemStatus(firstItem, Parallelizer.CALCULATED);, without blocking it for calculation. 
 	 * Also, the principle is that the Parallelizer is always the one to supply the items.
 	 */
-	public ParallelParams doFirstCalculation_Parallel(int firstItem);
+	public ParallelParams doFirstCalculation_Parallel(int firstItem, Parallelizer parallelizer);
+	/*EXAMPLE:
+	 * 		
+	 	ParallelParams pp = new ParallelParams();
+		pp.responsibleEmployer = ownerModule;
+		pp.employees = new MesquiteModule[]{(MesquiteModule)ownerModule.inferenceTask}; //recording employees for cloning etc.
+		pp.threadObjects = new Object[]{ myStorageArray}; //remembering thread's data storage
+		
+		parallelizer.setItemStatus(firstItem, Parallelizer.BEINGCALCULATED);  //prob not necessary
+		int result = doItemCalculation_Parallel(firstItem, pp, parallelizer);
+		return pp;
 
-	//Clone and give snapshots to employee modules (Parallelizer provides one method as a service)
-	//synchronized please
-	public ParallelParams cloneForParallel(ParallelParams params); 
+	 * */
 
-	/* Do a calculation on item using employee modules and other params passed.
+	/*\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\*/
+	/**Clone and give snapshots to employee modules, and prepare's threads own data storage. 
+	 * Parallelizer's cloneEmployee clones the employees and gets and sends the snapshots)
+	SYNCHRONIZED please 
+	*/
+	public ParallelParams cloneForParallel(ParallelParams params, Parallelizer parallelizer); 
+	/*EXAMPLE: In this example, the params are not cloned because there's no information inherited from thread to thread
+	 * 		
+		if (params == null)  
+			return null;
+		ParallelParams pp = new ParallelParams(); //setting up this thread's parallel parameters
+		pp.responsibleEmployer = ownerModule;
+		MesquiteModule mb = parallelizer.cloneEmployee(ownerModule, (MesquiteModule)ownerModule.inferenceTask, TreeSearcherFromMatrix.class);
+		((TreeSearcherFromMatrix)mb).setMultipleMatrixMode(true);  //setting whatever parameters in employee modules
+		mb.setUseMenubar(false); 
+		IntegerArray myStorageArray = new IntegerArray(totalNumber); //preparing thread's data storage
+		pp.employees = new MesquiteModule[]{mb};
+		pp.threadObjects = new Object[]{myStorageArray};
+		return pp; 
+
+	 * */
+
+	/*\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\*/
+	/** Do a calculation on item using employee modules and other params passed.
 	 * Return 0 if success
 	 * Return negative number if failure*/
-	public int doItemCalculation_Parallel(int item, ParallelParams params); 
+	public int doItemCalculation_Parallel(int item, ParallelParams params, Parallelizer parallelizer); 
+	/*EXAMPLE
+	 * 
+		IntegerArray myData = (IntegerArray)params.threadObjects[0];  //recovering the thread's storage from params threadObjects
+		TreeSearcherFromMatrix inferenceTask = (TreeSearcherFromMatrix)params.employees[0]; //recovering the thread's employee module
+
+		//HERE do things with the employee and add results to myData
+		
+		return 0;
+	 * */
 
 
-	public boolean pleaseReuseParallelThreads(); // if true, then the parallelizer doesn't call cloneParams second time if thread already has them.
+	/*\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\*/
+	/** Return whether parallelizer shouldn't call cloneParams if the threads are reused  (e.g. because of a persistent, updated calculation.
+	 * */
+	public boolean pleaseReuseParallelThreads(); 
 
 }
 

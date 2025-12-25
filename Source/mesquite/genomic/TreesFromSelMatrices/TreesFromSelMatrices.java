@@ -127,6 +127,7 @@ public class TreesFromSelMatrices extends CharMatricesListUtility {
 		}
 		TreeVector trees = new TreeVector(((CharacterData)datas.elementAt(0)).getTaxa());
 		Vector v = pauseAllPausables();
+		long startTime = System.currentTimeMillis();
 		int count = 0;
 		int numFailed =0;
 		String stringFailed = "";
@@ -207,6 +208,8 @@ public class TreesFromSelMatrices extends CharMatricesListUtility {
 				logln(stringFailed);
 			}
 		}
+		long totalTime = System.currentTimeMillis() - startTime;
+		logln("Time used for tree inferences: " + (totalTime/1000) +" seconds."); 
 		unpauseAllPausables(v);
 		if (getProject() != null)
 			getProject().decrementProjectWindowSuppression();

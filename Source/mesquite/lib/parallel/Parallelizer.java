@@ -177,12 +177,12 @@ public class Parallelizer {
 		
 		// ################## Calculation for first item ##################
 		System.out.println("Parallelizer: first calculation");
-		owner.markInappropriateItems();		
+		owner.markInappropriateItems(this);		
 		//first step, do one calculation, and use its snapshot to build others
-		int firstItem = owner.getNextParallelItemAndReserve();
+		int firstItem = owner.getNextParallelItemAndReserve(this);
 
 		setItemStatus(firstItem, BEINGCALCULATED);  //should be redundant, given the AndReserve
-		ParallelParams ppFirst = owner.doFirstCalculation_Parallel(firstItem);
+		ParallelParams ppFirst = owner.doFirstCalculation_Parallel(firstItem, this);
 		if (ppFirst == null)
 			setItemStatus(firstItem, FAILURE);
 		else
@@ -196,8 +196,8 @@ public class Parallelizer {
 			System.out.println("Parallelizer: building " + nThreads + " threads");
 			threads = new PThread[nThreads];
 			for (int i = 0; i < nThreads; i++) {
-				ParallelParams ppT = owner.cloneForParallel(ppFirst);
-				threads[i] = new PThread(ppT, i);
+				ParallelParams ppT = owner.cloneForParallel(ppFirst, this);
+				threads[i] = new PThread(ppT, i, this);
 			}
 		}
 
@@ -246,10 +246,12 @@ public class Parallelizer {
 		boolean onCall = true;
 		boolean running = false;
 		int itemBeingCalculated = -1;
+		Parallelizer parallelizer;
 
-		public PThread(ParallelParams pp, int whichThread){
+		public PThread(ParallelParams pp, int whichThread, Parallelizer parallelizer){
 			this.pp = pp;
 			this.whichThread = whichThread;
+			this.parallelizer = parallelizer;
 		}
 		public void start(){
 			started = true;
@@ -260,10 +262,10 @@ public class Parallelizer {
 		public void doJob () {
 			done = false;
 			int item = -1;
-			while ((item = owner.getNextParallelItemAndReserve())>=0){
+			while ((item = owner.getNextParallelItemAndReserve(parallelizer))>=0){
 				itemBeingCalculated = item;
 				setItemStatus(item, BEINGCALCULATED);
-				int result = owner.doItemCalculation_Parallel(item, pp);
+				int result = owner.doItemCalculation_Parallel(item, pp, parallelizer);
 				totalCalculated++;
 				//MesquiteMessage.sys_err_println("### finished item " + item + " on thread " + whichThread);
 				if (result == 0)
