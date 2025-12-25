@@ -179,9 +179,9 @@ public class Parallelizer {
 		System.out.println("Parallelizer: first calculation");
 		owner.markInappropriateItems();		
 		//first step, do one calculation, and use its snapshot to build others
-		int firstItem = owner.getNextParallelItem();
+		int firstItem = owner.getNextParallelItemAndReserve();
 
-		setItemStatus(firstItem, BEINGCALCULATED);
+		setItemStatus(firstItem, BEINGCALCULATED);  //should be redundant, given the AndReserve
 		ParallelParams ppFirst = owner.doFirstCalculation_Parallel(firstItem);
 		if (ppFirst == null)
 			setItemStatus(firstItem, FAILURE);
@@ -260,7 +260,7 @@ public class Parallelizer {
 		public void doJob () {
 			done = false;
 			int item = -1;
-			while ((item = owner.getNextParallelItem())>=0){
+			while ((item = owner.getNextParallelItemAndReserve())>=0){
 				itemBeingCalculated = item;
 				setItemStatus(item, BEINGCALCULATED);
 				int result = owner.doItemCalculation_Parallel(item, pp);

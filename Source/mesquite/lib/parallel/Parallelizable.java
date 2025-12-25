@@ -32,7 +32,8 @@ public interface Parallelizable {
 
 	//Returns next uncalculated item. Return -1 if none more
 	//synchronized please
-	public int getNextParallelItem();  
+	public int getNextParallelItemAndReserve();  
+	
 
 	/* Do any initiation calculations, including resetting  AND calculation of first item to make sure employees are warmed up.	
 	 * The firstItem is given, even though getNextParallelItem could be called, so that Parallelizable can be responsible to set the status of that first item, 

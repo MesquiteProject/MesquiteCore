@@ -89,6 +89,8 @@ public class TreesFromSelMatrices extends CharMatricesListUtility {
 	}
 
 	boolean compatibleMatrix(CharacterData data) {
+		if (data.getNumTaxaWithAnyApplicable() <  4)
+			return false;
 		return data.isCompatible(inferenceTask.getCharacterClass(), getProject(), null, null);
 	}
 
@@ -116,8 +118,6 @@ public class TreesFromSelMatrices extends CharMatricesListUtility {
 			storePreferences();
 		}
 */
-		//mesquite.lib.Commandable runner = (mesquite.lib.Commandable)inferenceTask.doCommand("getRunner", null, CommandChecker.defaultChecker);  //Debugg.println("@
-		//runner.doCommand("optionsHaveBeenSet", "true", CommandChecker.defaultChecker);  //Debugg.println("@
 		inferenceTask.initialize(taxa);
 		inferenceTask.setMultipleMatrixMode(true);
 		TreeInferer inferer = inferenceTask.getTreeInferer();
