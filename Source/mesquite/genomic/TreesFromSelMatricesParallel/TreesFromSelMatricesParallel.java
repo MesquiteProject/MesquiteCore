@@ -23,6 +23,7 @@ import mesquite.lib.IntegerField;
 import mesquite.lib.ListableVector;
 import mesquite.lib.MesquiteBoolean;
 import mesquite.lib.MesquiteInteger;
+import mesquite.lib.MesquiteMessage;
 import mesquite.lib.MesquiteModule;
 import mesquite.lib.MesquiteString;
 import mesquite.lib.MesquiteThread;
@@ -67,6 +68,7 @@ public class TreesFromSelMatricesParallel extends CharMatricesListUtility {
 	ThreadListOfMatrices matrixSourceTask;
 	TreeInferenceParallelMachine machine;
 	int numThreads = 1;
+	int numCoresPerInference = 1;
 	/*.................................................................................................................*/
 	public boolean startJob(String arguments, Object condition, boolean hiredByName) {
 		loadPreferences();
@@ -117,6 +119,27 @@ public class TreesFromSelMatricesParallel extends CharMatricesListUtility {
 	public boolean pleaseLeaveMeOn(){
 		return false;
 	}
+	/*.................................................................................................................*/
+	public void processSingleXMLPreference (String tag, String content) {
+
+		if ("numThreads".equalsIgnoreCase(tag))
+			numThreads = MesquiteInteger.fromString(content);
+
+		if ("numCoresPerInference".equalsIgnoreCase(tag))
+			numCoresPerInference = MesquiteInteger.fromString(content);
+
+		super.processSingleXMLPreference(tag, content);
+	}
+
+	/*.................................................................................................................*/
+	public String preparePreferencesForXML () {
+		StringBuffer buffer = new StringBuffer(200);
+		StringUtil.appendXMLTag(buffer, 2, "numThreads", numThreads);  
+		StringUtil.appendXMLTag(buffer, 2, "numCoresPerInference", numCoresPerInference);  
+
+		buffer.append(super.preparePreferencesForXML());
+		return buffer.toString();
+	}
 
 
 
@@ -164,7 +187,7 @@ public class TreesFromSelMatricesParallel extends CharMatricesListUtility {
 		boolean userCancel = false;
 		progIndicator.start();
 		machine.setNumThreads(numThreads);
-		machine.doCalcs();
+		machine.doCalcs(progIndicator);
 		progIndicator.goAway();
 		MesquiteThread.setQuietPlease(false);
 		if (!userCancel) {
@@ -189,15 +212,16 @@ public class TreesFromSelMatricesParallel extends CharMatricesListUtility {
 			}
 		}
 		long totalTime = System.currentTimeMillis() - startTime;
-		logln("Time used for parallel tree inferences: " + (totalTime/1000) +" seconds."); 
-		unpauseAllPausables(v);
 		
+		logln("\nTime used for parallel tree inferences: " + (totalTime/1000) +" seconds."); 
+		unpauseAllPausables(v);
+
 		if (getProject() != null)
 			getProject().decrementProjectWindowSuppression();
 		resetAllMenuBars();
 		return true;
 	}
-	
+
 
 	/*.................................................................................................................*/
 	/** returns whether this module is requesting to appear as a primary choice */
@@ -228,6 +252,7 @@ class TreeInferenceParallelMachine implements Parallelizable {
 	int numThreads = 1;
 	Parallelizer parallelizer;
 	ListableVector datas;
+	ProgressIndicator progIndicator;
 	public TreeInferenceParallelMachine (TreesFromSelMatricesParallel ownerModule, int numThreads) {
 		this.ownerModule = ownerModule;
 		this.numThreads = numThreads;
@@ -236,7 +261,10 @@ class TreeInferenceParallelMachine implements Parallelizable {
 	void setDatas(ListableVector datas){
 		this.datas = datas;
 	}
-	void doCalcs(){
+	void doCalcs(ProgressIndicator progressIndicator){
+		progIndicator = progressIndicator;
+		progIndicator.start();
+		progIndicator.toFront();
 		/*+++++++++++++++++++++++++++++++++++++++++++++++++++++*/
 		parallelizer.go();
 		parallelizer.shutDown();
@@ -266,12 +294,12 @@ class TreeInferenceParallelMachine implements Parallelizable {
 	/*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~*/
 	/*\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\*/
 	public void markInappropriateItems(Parallelizer parallelizer) {
-			int iN = 0;
-			while (iN< datas.size()){
-				if (!ownerModule.compatibleMatrix((CharacterData)datas.elementAt(iN)))
-					parallelizer.setItemStatus(iN, Parallelizer.INAPPLICABLE);
-				iN++;
-			}
+		int iN = 0;
+		while (iN< datas.size()){
+			if (!ownerModule.compatibleMatrix((CharacterData)datas.elementAt(iN)))
+				parallelizer.setItemStatus(iN, Parallelizer.INAPPLICABLE);
+			iN++;
+		}
 	}
 	/*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~*/
 	/*\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\*/
@@ -297,6 +325,7 @@ class TreeInferenceParallelMachine implements Parallelizable {
 
 		parallelizer.setItemStatus(firstItem, Parallelizer.BEINGCALCULATED);  //prob not necessary
 		int result = doItemCalculation_Parallel(firstItem, pp, parallelizer);
+		ownerModule.logln("Remaining trees will be inferred quietly, without logging.");
 		return pp;
 	}
 
@@ -311,6 +340,7 @@ class TreeInferenceParallelMachine implements Parallelizable {
 		((TreeSearcherFromMatrix)mb).setMultipleMatrixMode(true);
 		mesquite.lib.Commandable runner = (mesquite.lib.Commandable)mb.doCommand("getRunner", null, CommandChecker.defaultChecker); 
 		runner.doCommand("numProcessors", "1", CommandChecker.defaultChecker);
+		runner.doCommand("setVerbose", "false", CommandChecker.defaultChecker);
 		runner.doCommand("optionsHaveBeenSet", "true", CommandChecker.defaultChecker);  
 		mb.setUseMenubar(false); 
 		ThreadListOfMatrices matrixSourceTask = new ThreadListOfMatrices(this);
@@ -329,10 +359,13 @@ class TreeInferenceParallelMachine implements Parallelizable {
 		Taxa taxa = matrix.getTaxa();
 		TreeVector trees = new TreeVector(taxa);
 		TreeSearcherFromMatrix inferenceTask = (TreeSearcherFromMatrix)params.employees[0];
+		progIndicator.setText("\nInferring trees from matrix " +matrix.getName());
 
 		inferenceTask.initialize(taxa);
 		MesquiteThread.setHintToSuppressProgressIndicatorCurrentThread(true);
+		MesquiteThread.setThreadMaxLogLevel(MesquiteMessage.HIGH_PRIORITY);
 		int result = inferenceTask.fillTreeBlock(trees);
+		MesquiteThread.releaseThreadMaxLogLevel();
 		MesquiteThread.setHintToSuppressProgressIndicatorCurrentThread(false);
 		for (int itr = 0; itr<trees.size(); itr++) { //multiple trees from same matrix; number trees .#1, 2, 3
 			String num = "";
@@ -345,8 +378,14 @@ class TreeInferenceParallelMachine implements Parallelizable {
 				tM.attach(new MesquiteString("fromMatrix", matrix.getName()));
 			}
 		}
-	treeBlocks.addElement(trees, false);
-		return 0;
+		ownerModule.log(".");
+		treeBlocks.addElement(trees, false);
+		progIndicator.setText("\nTrees inferred from matrix " +matrix.getName());
+		int tot = parallelizer.getTotalCalculated();
+		if (tot% 100 == 0)
+			progIndicator.toFront();
+		progIndicator.setCurrentValue(tot);
+			return 0;
 	}
 
 	public boolean pleaseReuseParallelThreads() { //doesn't really matter here, becuase not persistent

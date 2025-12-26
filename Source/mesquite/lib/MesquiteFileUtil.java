@@ -18,7 +18,7 @@ import java.io.File;
 public class MesquiteFileUtil {
 
 	/*.................................................................................................................*/
-	public static String createDirectoryForFiles(MesquiteModule module, boolean askForLocation, String name) {
+	public synchronized static String createDirectoryForFiles(MesquiteModule module, boolean askForLocation, String name) {
 		MesquiteBoolean directoryCreated = new MesquiteBoolean(false);
 		String rootDir = null;
 		if (!askForLocation)
@@ -40,7 +40,7 @@ public class MesquiteFileUtil {
 	public static final int IN_SUBDIRECTORY_BESIDE_HOME_FILE = 3;  // as of 4.0, not yet used
 
 	/*.................................................................................................................*/
-	public static String pathForFiles(String enclosingDirectoryPath, String name, String suffix, boolean createUniqueDatedName) {
+	public synchronized static String pathForFiles(String enclosingDirectoryPath, String name, String suffix, boolean createUniqueDatedName) {
 		String path = enclosingDirectoryPath + StringUtil.cleanseStringOfFancyChars(name, false, true);
 		if (createUniqueDatedName) {
 			path+= "-" + StringUtil.getDateDayOnly() + suffix;
@@ -49,7 +49,7 @@ public class MesquiteFileUtil {
 		return path;
 	}
 	/*.................................................................................................................*/
-	public static String createDirectoryForFiles(MesquiteModule module, int location, String superDirectoryName, String subDirectoryName, String name, String suffix, boolean createUniqueDatedName) {
+	public synchronized static String createDirectoryForFiles(MesquiteModule module, int location, String superDirectoryName, String subDirectoryName, String name, String suffix, boolean createUniqueDatedName) {
 		MesquiteBoolean directoryCreated = new MesquiteBoolean(false);
 		if ( module.getProject() == null) //ZQQ
 			return null;
@@ -109,15 +109,15 @@ public class MesquiteFileUtil {
 		return rootDir;
 	}
 	/*.................................................................................................................*/
-	public static String createDirectoryForFiles(MesquiteModule module, int location, String name, String suffix) {
+	public synchronized static String createDirectoryForFiles(MesquiteModule module, int location, String name, String suffix) {
 		return createDirectoryForFiles( module,  location, null, null, name,  suffix, true);
 	}
 	/*.................................................................................................................*/
-	public static String createDirectoryForFiles(MesquiteModule module, int location, String subDirectoryName, String name, String suffix) {
+	public synchronized static String createDirectoryForFiles(MesquiteModule module, int location, String subDirectoryName, String name, String suffix) {
 		return createDirectoryForFiles( module,  location, null, subDirectoryName, name,  suffix, true);
 	}
 	/*.................................................................................................................*/
-	public static String createDirectoryForFiles(MesquiteModule module, int location, String superDirectoryName, String subDirectoryName, String name, String suffix) {
+	public synchronized static String createDirectoryForFiles(MesquiteModule module, int location, String superDirectoryName, String subDirectoryName, String name, String suffix) {
 		return createDirectoryForFiles( module,  location, superDirectoryName, subDirectoryName, name,  suffix, true);
 	}
 

@@ -75,7 +75,12 @@ public interface Parallelizable {
 	 * 		
 	 	ParallelParams pp = new ParallelParams();
 		pp.responsibleEmployer = ownerModule;
-		pp.employees = new MesquiteModule[]{(MesquiteModule)ownerModule.inferenceTask}; //recording employees for cloning etc.
+		
+		//Assume ownerModule.calculatorModule is the first calculator module hired in ownerModule with full interface, options, etc.
+		//It is thus set up, and ready to get a snapshot of when needed.
+		pp.employees = new MesquiteModule[]{(MesquiteModule)ownerModule.calculatorModule}; //recording employees for cloning etc.
+	
+		IntegerArray myStorageArray = new IntegerArray(totalNumber); //preparing data storage for first calculation
 		pp.threadObjects = new Object[]{ myStorageArray}; //remembering thread's data storage
 		
 		parallelizer.setItemStatus(firstItem, Parallelizer.BEINGCALCULATED);  //prob not necessary
@@ -96,8 +101,8 @@ public interface Parallelizable {
 			return null;
 		ParallelParams pp = new ParallelParams(); //setting up this thread's parallel parameters
 		pp.responsibleEmployer = ownerModule;
-		MesquiteModule mb = parallelizer.cloneEmployee(ownerModule, (MesquiteModule)ownerModule.inferenceTask, TreeSearcherFromMatrix.class);
-		((TreeSearcherFromMatrix)mb).setMultipleMatrixMode(true);  //setting whatever parameters in employee modules
+		MesquiteModule mb = parallelizer.cloneEmployee(ownerModule, (MesquiteModule)ownerModule.calculatorModule, SpecialCalculatorModule.class);
+		((SpecialCalculatorModule)mb).setBigParameter(true);  //setting whatever parameters in employee modules
 		mb.setUseMenubar(false); 
 		IntegerArray myStorageArray = new IntegerArray(totalNumber); //preparing thread's data storage
 		pp.employees = new MesquiteModule[]{mb};
@@ -114,16 +119,23 @@ public interface Parallelizable {
 	/*EXAMPLE
 	 * 
 		IntegerArray myData = (IntegerArray)params.threadObjects[0];  //recovering the thread's storage from params threadObjects
-		TreeSearcherFromMatrix inferenceTask = (TreeSearcherFromMatrix)params.employees[0]; //recovering the thread's employee module
+		SpecialCalculatorModule calculatorModule = (SpecialCalculatorModule)params.employees[0]; //recovering the thread's employee module
 
 		//HERE do things with the employee and add results to myData
+		calculatorModule.doCalculations(myData);
+		
+		//if the Parallelizable has a progress indicator, it can be updated here
+		progIndicator.setText("Item just calculated " +item);
+		progIndicator.setCurrentValue(parallelizer.getTotalCalculated());
 		
 		return 0;
 	 * */
 
 
 	/*\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\*/
-	/** Return whether parallelizer shouldn't call cloneParams if the threads are reused  (e.g. because of a persistent, updated calculation.
+	/** Return whether parallelizer shouldn't call cloneParams if the threads are reused  (e.g. because of a persistent, updated calculation.)
+	 * If true, then parallelizer will just act as if the thread will keep reusing its parameter objects and employees
+	 * If false, then parallelizer will re-clone everything each time the parallel calculation is redone.
 	 * */
 	public boolean pleaseReuseParallelThreads(); 
 
