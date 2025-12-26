@@ -233,7 +233,7 @@ public class MesquiteTree extends Associable implements AdjustableTree, Listable
 		flags = new boolean[numNodeSpaces];
 		parents = new int[numNodeSpaces][];
 		if (taxa==null)
-			MesquiteMessage.warnProgrammer(" Taxa in constructor for Tree is null ");
+			warnProgrammer(" Taxa in constructor for Tree is null ");
 		else {
 			nodeOfTaxon = new int[taxa.getNumTaxa()];
 			oldNumTaxa = taxa.getNumTaxa();
@@ -264,7 +264,7 @@ public class MesquiteTree extends Associable implements AdjustableTree, Listable
 		parents = new int[numNodeSpaces][];
 		this.taxaVersion = taxaVersion;
 		if (taxa==null)
-			MesquiteMessage.warnProgrammer(" Taxa in constructor for Tree is null ");
+			warnProgrammer(" Taxa in constructor for Tree is null ");
 		else {
 			oldNumTaxa = numTaxa;
 			taxaIDs = taxa.getTaxaIDs();
@@ -292,6 +292,27 @@ public class MesquiteTree extends Associable implements AdjustableTree, Listable
 		if (!StringUtil.blank(sT))
 			return "<li>Tree: " + getName() + "<ul>" + sT + "</ul></li>";
 		return "<li>Tree: " + getName() + "</li>";
+	}
+	
+	/*-----------------------------------------*/
+	boolean warningSuppress = false;
+	public void setWarningSuppress(boolean warningSuppress){
+		this.warningSuppress = warningSuppress;
+	}
+	public boolean getWarningSuppress(){
+		return warningSuppress;
+	}
+	void warnProgrammer(String s){
+		if (!warningSuppress)
+			MesquiteMessage.warnProgrammer(s);
+	}
+	void warnUser(String s){
+		if (!warningSuppress)
+			MesquiteMessage.warnUser(s, true);
+	}
+	void printStackTrace(String s){
+		if (!warningSuppress)
+			MesquiteMessage.printStackTrace(s);
 	}
 	/*-----------------------------------------*/
 	/** This sets arrays to default values, including zapping the labels and parents array elements.  Sensitive attachments also removed.
@@ -351,7 +372,7 @@ public class MesquiteTree extends Associable implements AdjustableTree, Listable
 				lastOpenFound = i;
 				return i;
 			}
-		MesquiteMessage.warnProgrammer("no open nodes in Tree");//for some reason didn't work
+		warnProgrammer("no open nodes in Tree");//for some reason didn't work
 		lastOpenFound = -1;
 		return 0;
 	}
@@ -477,7 +498,7 @@ public class MesquiteTree extends Associable implements AdjustableTree, Listable
 		name = tree.name;
 		modifiedSinceNamed = tree.modifiedSinceNamed;
 		if (nameLock)
-			MesquiteMessage.printStackTrace("name changed in locked tree");
+			printStackTrace("name changed in locked tree");
 		rooted = tree.rooted;
 		polytomiesHard = tree.polytomiesHard;
 		exists = true;
@@ -936,7 +957,7 @@ public class MesquiteTree extends Associable implements AdjustableTree, Listable
 	/** Sets the name of the tree.*/
 	public void setName(String name) {
 		if (nameLock)
-			MesquiteMessage.printStackTrace("Error: locked name in tree changed");
+			printStackTrace("Error: locked name in tree changed");
 		else {
 			this.name = name;
 			modifiedSinceNamed = false;
@@ -971,7 +992,7 @@ public class MesquiteTree extends Associable implements AdjustableTree, Listable
 			sensitiveAttachments.removeAllElements();
 		modifiedSinceNamed = true; 
 		if (nameLock)
-			MesquiteMessage.printStackTrace("Error: locked name in tree changed 2");
+			printStackTrace("Error: locked name in tree changed 2");
 		if (notify)
 			notifyListeners(this, new Notification (code));
 
@@ -2904,7 +2925,7 @@ public class MesquiteTree extends Associable implements AdjustableTree, Listable
 		else 
 			branchLength[node]= length; 
 		if (MesquiteInteger.isCombinable(length) && length<0)
-			;//MesquiteMessage.notifyProgrammer("Warning: branch length being set to negative number (" + length + ")");
+			;
 		incrementVersion(BRANCHLENGTHS_CHANGED, notify);
 	}
 	/*-----------------------------------------*/
@@ -2920,7 +2941,7 @@ public class MesquiteTree extends Associable implements AdjustableTree, Listable
 		}
 		branchLength[node] = length; 
 		if (MesquiteDouble.isCombinable(length) && length<0)
-			;//MesquiteMessage.notifyProgrammer("Warning: branch length being set to negative number (" + length + ")");
+			;
 		incrementVersion(BRANCHLENGTHS_CHANGED, notify);
 	}
 	/*-----------------------------------------*/
@@ -3170,39 +3191,7 @@ public class MesquiteTree extends Associable implements AdjustableTree, Listable
 				taxa.getClades().addClade(c);
 			}
 			return ParseUtil.getToken(TreeDescription, stringLoc);  //skip parens or next comma
-			/*	}
-			else if (MesquiteNumber.isNumber(c) && checkNumericalLabelInterpretation(c)){
-				double d = MesquiteDouble.fromString(c);
-				setAssociatedDouble(defaultValueCodeRef, sN, d, interpretNumericalLabelsAsOnBranches);
-				return ParseUtil.getToken(TreeDescription, stringLoc);  //skip parens or next comma
-			}
-			else {
-				int labNode = nodeOfLabel(c);
-				if (labNode==-1) {
-					setNodeLabel(c, sN); 
-					if (taxa!=null && taxa.getClades()!=null && taxa.getClades().findClade(c) == null)
-						taxa.getClades().addClade(c);
-					return ParseUtil.getToken(TreeDescription, stringLoc);  //skip parens or next comma
-				}
-				else {//IF LABEL already exists, then attach new ancestor
-					String s = "";
-					if (permitTruncTaxNames)
-						s =" (This may have occured because of a corrupted file, or because tree reading is set to permit truncated taxon names (see Defaults menu to turn this off), leading to ambiguities.)"; 
-					if (numReticWarnings++ < 5)
-						MesquiteMessage.warnProgrammer("Apparent reticulation found (two taxon names or clade names interpreted as the same; A). [" + c  + "; interp as " + taxonNumber+ "] " + s  + " stringLoc after " + stringLoc + "  " + TreeDescription);
-					else if (numReticWarnings == 5)
-						MesquiteTrunk.mesquiteTrunk.discreetAlert("Five warnings about apparent reticulations have been given. " + s + "  If there are further problems in this run of Mesquite, only short warnings will be given");
-					else if (numReticWarnings <100)
-						MesquiteMessage.println("Another tree with apparent reticulations found.");
-					else if (numReticWarnings == 100)
-						MesquiteMessage.println("NO MORE WARNINGS ABOUT RETICULATIONS WILL BE GIVEN IN THIS RUN OF MESQUITE.");
-
-
-					setParentOfNode(labNode, motherOfNode(labNode), false);
-					setParentOfNode(labNode, motherOfNode(sN), false);
-					return ParseUtil.getToken(TreeDescription, stringLoc);  //skip parens or next comma
-				}
-			}*/
+		
 		}
 	}
 	static int numReticWarnings = 0;
@@ -3375,7 +3364,7 @@ and the tree has been rerooted. Properties that belong to nodes implicitly have 
 					readLength(TreeDescription, sprouted, stringLoc);
 					c = ParseUtil.getToken(TreeDescription, stringLoc, whitespaceString, punctuationString);  //get next token
 					if (!expectedPunctuation(c)) {
-						MesquiteMessage.warnProgrammer("bad token in tree where ,  ) ; expected (" + c + ") 1");
+						warnProgrammer("bad token in tree where ,  ) ; expected (" + c + ") 1");
 						echo("x\n", 100);
 						return FAILED;
 					}
@@ -3384,7 +3373,7 @@ and the tree has been rerooted. Properties that belong to nodes implicitly have 
 					skipValue(TreeDescription, sprouted, stringLoc);
 					c = ParseUtil.getToken(TreeDescription, stringLoc, whitespaceString, punctuationString);  //get next token
 					if (!expectedPunctuation(c)) {
-						MesquiteMessage.warnProgrammer("bad token in tree where ,  ) ; expected (" + c + ") 2");
+						warnProgrammer("bad token in tree where ,  ) ; expected (" + c + ") 2");
 						echo("x\n", 100);
 						return FAILED;
 					}
@@ -3395,7 +3384,7 @@ and the tree has been rerooted. Properties that belong to nodes implicitly have 
 					// ************************* end Newick  tokenizing rules ***************
 					c = ParseUtil.getToken(TreeDescription, stringLoc, whitespaceString, punctuationString);  //get next token
 					if (!(c!=null && ":".equals(c)) && !expectedPunctuation(c)) {
-						MesquiteMessage.warnProgrammer("bad token in tree where ,  ) ; expected (" + c + ") 3");
+						warnProgrammer("bad token in tree where ,  ) ; expected (" + c + ") 3");
 						echo("x\n", 100);
 						return FAILED;
 					}
@@ -3429,7 +3418,7 @@ and the tree has been rerooted. Properties that belong to nodes implicitly have 
 						skipValue(TreeDescription, sprouted, stringLoc);
 						c = ParseUtil.getToken(TreeDescription, stringLoc, whitespaceString, punctuationString);  //get next token
 						if (!expectedPunctuation(c)) {
-							MesquiteMessage.warnProgrammer("bad token in tree where ,  ) ; expected (" + c + ") 5");
+							warnProgrammer("bad token in tree where ,  ) ; expected (" + c + ") 5");
 							echo("x\n", 100);
 							return FAILED;
 						}
@@ -3440,7 +3429,7 @@ and the tree has been rerooted. Properties that belong to nodes implicitly have 
 						// ************************* end Newick  tokenizing rules ***************
 						c = ParseUtil.getToken(TreeDescription, stringLoc, whitespaceString, punctuationString);  //get next token
 						if (!(c!=null && ":".equals(c)) && !expectedPunctuation(c)) {
-							MesquiteMessage.warnProgrammer("bad token in tree where ,  ) ; expected (" + c + ") 6");
+							warnProgrammer("bad token in tree where ,  ) ; expected (" + c + ") 6");
 							echo("x\n", 100);
 							return FAILED;
 						}
@@ -3494,7 +3483,7 @@ and the tree has been rerooted. Properties that belong to nodes implicitly have 
 				if (taxonNumber>= nodeOfTaxon.length)
 					resetNodeOfTaxonNumbers();
 				if (taxonNumber>= nodeOfTaxon.length){
-					MesquiteMessage.warnProgrammer("taxon number too high found (" + c + "); number: "+taxonNumber);
+					warnProgrammer("taxon number too high found (" + c + "); number: "+taxonNumber);
 					int fIT = taxa.getNumTaxa();
 					if (name != null)
 						taxonNumber = namer.whichTaxonNumber(this, c);
@@ -3517,25 +3506,13 @@ and the tree has been rerooted. Properties that belong to nodes implicitly have 
 					if (motherOfNode(termN) != motherOfNode(node)) { //protect against redundant references; NOTE: may not protect if more than two parents
 						//apparent reticulation found!
 						reticulationWarning( c,  taxonNumber,  stringLoc,  TreeDescription, 1);
-						/*String s = "";
-						if (permitTruncTaxNames)
-							s =" (This may have occured because of a corrupted file, or because tree reading is set to permit truncated taxon names (see Defaults menu to turn this off), leading to ambiguities.)"; 
-						if (numReticWarnings++ < 5)
-							MesquiteMessage.warnProgrammer("Apparent reticulation found (two taxon names or clade names interpreted as the same; B). [" + c + "; interp as " + taxonNumber + "] " + s  + " stringLoc after " + stringLoc + "  " + TreeDescription);
-						else if (numReticWarnings == 5)
-							MesquiteTrunk.mesquiteTrunk.discreetAlert("Five warnings about apparent reticulations have been given. " + s + "  If there are further problems in this run of Mesquite, only short warnings will be given");
-						else if (numReticWarnings <100){
-							MesquiteMessage.println("Another tree with apparent reticulations found.");
-						}
-						else if (numReticWarnings == 100)
-							MesquiteMessage.println("NO MORE WARNINGS ABOUT RETICULATIONS WILL BE GIVEN IN THIS RUN OF MESQUITE.");
-							*/
+						
 						setParentOfNode(termN, motherOfNode(termN), false);
 						setParentOfNode(termN, motherOfNode(node), false);
 						return DONT_SPROUT; //don't continue up tree
 					}
 					else {//redundant
-						MesquiteMessage.warnProgrammer("Redundant taxon or node name in tree  (" + c + ", taxon number " + taxonNumber + "; number from " + fromWhichNamer + " permitTruncTaxNames " + permitTruncTaxNames + "); attempt will be made to read tree, but some clades or taxa may be missing. " + TreeDescription);
+						warnProgrammer("Redundant taxon or node name in tree  (" + c + ", taxon number " + taxonNumber + "; number from " + fromWhichNamer + " permitTruncTaxNames " + permitTruncTaxNames + "); attempt will be made to read tree, but some clades or taxa may be missing. " + TreeDescription);
 						//snip last daughter added, as redundant
 						int prev = previousSisterOfNode(node);
 						if (prev>=0 && prev<nextSister.length)
@@ -3549,25 +3526,14 @@ and the tree has been rerooted. Properties that belong to nodes implicitly have 
 				if (labNode!=-1) {//IF LABEL already exists, then attach new ancestor
 					if (motherOfNode(labNode) != motherOfNode(node)) { //protect against redundant references; NOTE: may not protect if more than two parents
 						reticulationWarning( c,  taxonNumber,  stringLoc,  TreeDescription, 2);
-						/*String s = "";
-						if (permitTruncTaxNames)
-							s =" (This may have occured because of a corrupted file, or because tree reading is set to permit truncated taxon names (see Defaults menu to turn this off), leading to ambiguities.)"; 
-						if (numReticWarnings++ < 5)
-							MesquiteMessage.warnProgrammer("Apparent reticulation found (two taxon names or clade names interpreted as the same; C). [" + c  + "; interp as " + taxonNumber+ "] " + s  + " stringLoc after " + stringLoc + "  " + TreeDescription);
-						else if (numReticWarnings == 5)
-							MesquiteTrunk.mesquiteTrunk.discreetAlert("Five warnings about apparent reticulations have been given. " + s + "  If there are further problems in this run of Mesquite, only short warnings will be given");
-						else if (numReticWarnings <100)
-							MesquiteMessage.println("Another tree with apparent reticulations found.");
-						else if (numReticWarnings == 100)
-							MesquiteMessage.println("NO MORE WARNINGS ABOUT RETICULATIONS WILL BE GIVEN IN THIS RUN OF MESQUITE.");
-						*/
+						
 						setParentOfNode(labNode, motherOfNode(labNode), false);
 						setParentOfNode(labNode, motherOfNode(node), false);
 						//c = ParseUtil.getToken(TreeDescription, stringLoc);  //skip internal node name
 						return DONT_SPROUT; //don't continue up tree
 					}
 					else {  //redundant
-						MesquiteMessage.warnProgrammer("Redundant taxon or node name in tree description  (" + c + ", internal node); attempt will be made to read tree, but some clades or taxa may be missing. " + TreeDescription);
+						warnProgrammer("Redundant taxon or node name in tree description  (" + c + ", internal node); attempt will be made to read tree, but some clades or taxa may be missing. " + TreeDescription);
 						//snip last daughter added, as redundant
 						int prev = previousSisterOfNode(node);
 						if (prev>=0 && prev<nextSister.length)
@@ -3576,7 +3542,7 @@ and the tree has been rerooted. Properties that belong to nodes implicitly have 
 					}
 				}
 				else if (StringUtil.blank(c)){
-					MesquiteMessage.warnProgrammer("Blank taxon name in tree " + getName() + " for taxa " + getTaxa().getName() + " (search for \"ERROR>\" in output in log file) " + path);
+					warnProgrammer("Blank taxon name in tree " + getName() + " for taxa " + getTaxa().getName() + " (search for \"ERROR>\" in output in log file) " + path);
 					StringBuffer sb = new StringBuffer(TreeDescription);
 					sb.insert(stringLoc.getValue()-1, "ERROR>");
 					MesquiteFile.writeToLog(sb.toString());
@@ -3608,13 +3574,13 @@ and the tree has been rerooted. Properties that belong to nodes implicitly have 
 						if (!AlertDialog.quietQuery(MesquiteTrunk.mesquiteTrunk.containerOfModule(), "Unrecognized taxon name", "Unrecognized name (\"" + c + "\") of terminal taxon in tree", "Continue", "Don't warn again", 0)) {
 							dWarn = false;
 						}
-						MesquiteMessage.warnUser("Unrecognized name (\"" + c + "\") of terminal taxon in tree " + getName() + " for taxa " + getTaxa().getName() + " [permit t0 " + permitT0Names + "] (search for \"ERROR>\" in output in log file) " + path, true);
+						warnUser("Unrecognized name (\"" + c + "\") of terminal taxon in tree " + getName() + " for taxa " + getTaxa().getName() + " [permit t0 " + permitT0Names + "] (search for \"ERROR>\" in output in log file) " + path);
 						StringBuffer sb = new StringBuffer(TreeDescription);
 						sb.insert(stringLoc.getValue()-1, "ERROR>");
 						MesquiteFile.writeToLog(sb.toString());
 					}
 					else {
-						MesquiteMessage.warnUser("Unrecognized name (\"" + c + "\") of terminal taxon in tree " + getName() + " for taxa " + getTaxa().getName() + " (search for \"ERROR>\" in output in log file) " + path, true);
+						warnUser("Unrecognized name (\"" + c + "\") of terminal taxon in tree " + getName() + " for taxa " + getTaxa().getName() + " (search for \"ERROR>\" in output in log file) " + path);
 						lastUnrecognizedName = c;
 					}
 					echo("x\n", 100);
@@ -3629,30 +3595,28 @@ and the tree has been rerooted. Properties that belong to nodes implicitly have 
 		if (permitTruncTaxNames)
 			s =" (This may have occured because of a corrupted file, or because tree reading is set to permit truncated taxon names (see Defaults menu to turn this off), leading to ambiguities.)"; 
 		if (numReticWarnings++ < 5)
-			MesquiteMessage.warnProgrammer("Apparent reticulation found (two taxon names or clade names interpreted as the same; C). [" + c  + "; interp as " + taxonNumber+ "] " + s  + " stringLoc after " + stringLoc + "  " + TreeDescription);
+			warnProgrammer("Apparent reticulation found (two taxon names or clade names interpreted as the same; C). [" + c  + "; interp as " + taxonNumber+ "] " + s  + " stringLoc after " + stringLoc + "  " + TreeDescription);
 		else if (numReticWarnings == 5)
-			MesquiteTrunk.mesquiteTrunk.discreetAlert("Five warnings about apparent reticulations have been given. " + s + "  If there are further problems in this run of Mesquite, only short warnings will be given");
+			warnProgrammer("Five warnings about apparent reticulations have been given. " + s + "  If there are further problems in this run of Mesquite, only short warnings will be given");
 		else if (numReticWarnings <100)
-			MesquiteMessage.println("Another tree with apparent reticulations found.");
+			MesquiteMessage.sys_err_println("Another tree with apparent reticulations found.");
 		else if (numReticWarnings == 100)
-			MesquiteMessage.println("NO MORE WARNINGS ABOUT RETICULATIONS WILL BE GIVEN IN THIS RUN OF MESQUITE.");
-		if (MesquiteTrunk.developmentMode)
-			MesquiteMessage.printStackTrace();
+			MesquiteMessage.sys_err_println("NO MORE WARNINGS ABOUT RETICULATIONS WILL BE GIVEN IN THIS RUN OF MESQUITE.");
 	}
 	public boolean graftCladeFromDescription(String TreeDescription, int node, MesquiteInteger stringLoc, TaxonNamer namer) {
 		setTaxonNumber(node, -1);
 		try {
 			if (readClade(TreeDescription, node, stringLoc, namer, null, null) == FAILED){
 				if (lastUnrecognizedName != null)
-					MesquiteMessage.warnProgrammer("graft clade failed; taxon name unrecognized: " + lastUnrecognizedName);
+					warnProgrammer("graft clade failed; taxon name unrecognized: " + lastUnrecognizedName);
 				else
-					MesquiteMessage.printStackTrace("graft clade failed");
+					warnProgrammer("graft clade failed");
 
 
 				return false;
 			}
 			if (!checkTreeIntegrity(root)) {
-				MesquiteMessage.printStackTrace("graft clade failed (integrity check)");
+				printStackTrace("graft clade failed (integrity check)");
 				return false;
 			}
 		}
@@ -3789,9 +3753,9 @@ and the tree has been rerooted. Properties that belong to nodes implicitly have 
 			int result = readClade(TreeDescription, root, stringLoc, namer, whitespaceString, punctuationString);
 			if (result == FAILED){
 				if (lastUnrecognizedName != null)
-					MesquiteMessage.warnProgrammer("read clade failed; taxon name unrecognized: " + lastUnrecognizedName);
+					warnProgrammer("read clade failed; taxon name unrecognized: " + lastUnrecognizedName);
 				else
-					MesquiteMessage.warnProgrammer("read clade failed"); 
+					warnProgrammer("read clade failed"); 
 				if (MesquiteTrunk.debugMode)
 					MesquiteMessage.discreetNotifyUser("\nTree description: \n"+TreeDescription +"\n");
 
@@ -3829,7 +3793,7 @@ and the tree has been rerooted. Properties that belong to nodes implicitly have 
 					c = ParseUtil.getToken(TreeDescription, stringLoc, whitespaceString, punctuationString);  //skip comma or parens
 					if (!expectedPunctuation(c)) {
 						intializeTree();
-						MesquiteMessage.warnProgrammer("bad token in tree where ,  ) ; expected (" + c + ") 7");
+						warnProgrammer("bad token in tree where ,  ) ; expected (" + c + ") 7");
 						if (startingPos !=null)
 							startingPos.setValue(stringLoc.getValue());
 						echo("\n", 100);
@@ -3841,7 +3805,7 @@ and the tree has been rerooted. Properties that belong to nodes implicitly have 
 					c = ParseUtil.getToken(TreeDescription, stringLoc, whitespaceString, punctuationString);  //skip comma or parens
 					if (!expectedPunctuation(c)) {
 						intializeTree();
-						MesquiteMessage.warnProgrammer("bad token in tree where ,  ) ; expected (" + c + ") 8");
+						warnProgrammer("bad token in tree where ,  ) ; expected (" + c + ") 8");
 						if (startingPos !=null)
 							startingPos.setValue(stringLoc.getValue());
 						echo("\n", 100);
@@ -3891,7 +3855,7 @@ and the tree has been rerooted. Properties that belong to nodes implicitly have 
 		stampRootIfNodeOrientedProperties();
 		if (!checkTreeIntegrity(root)) {
 			intializeTree();
-			MesquiteMessage.warnProgrammer("tree failed integrity check");
+			warnProgrammer("tree failed integrity check");
 			if (startingPos !=null)
 				startingPos.setValue(stringLoc.getValue());
 			echo("\n", 100);
@@ -5340,7 +5304,7 @@ and the tree has been rerooted. Properties that belong to nodes implicitly have 
 	/** Attach terminal taxon to tree along given branch.*/
 	public  boolean graftTaxon(int taxon, int toN, boolean notify) {   
 		if (!nodeInTree(toN)) {
-			MesquiteMessage.warnProgrammer("ATTEMPT TO GRAFT ONTO NODE NOT IN TREE");
+			warnProgrammer("ATTEMPT TO GRAFT ONTO NODE NOT IN TREE");
 			return false;
 		}
 		int fromN = openNode();
@@ -6175,7 +6139,7 @@ and the tree has been rerooted. Properties that belong to nodes implicitly have 
 		mother[cladeRoot]=oldMotherOfClade;
 		double branchLengthAfter = totalBranchLength(root);
 		if (!MesquiteDouble.closeEnough(branchLengthAfter, branchLengthBefore, 0.000001))
-			MesquiteMessage.warnProgrammer("Error: sum of branch lengths not preserved on reroot (before " + branchLengthBefore + " after " + branchLengthAfter + ")");
+			warnProgrammer("Error: sum of branch lengths not preserved on reroot (before " + branchLengthBefore + " after " + branchLengthAfter + ")");
 		checkTreeIntegrity(root);
 		incrementVersion(MesquiteListener.BRANCHES_REARRANGED,notify);
 		return true;
@@ -6625,7 +6589,7 @@ and the tree has been rerooted. Properties that belong to nodes implicitly have 
 	/** Returns the next tree in the sequence of all possible trees (polytomies are set to first resolution)*
 	public boolean setToNextInSequence(){
 		if (numberOfTerminalsInClade(root)>60) {
-			MesquiteMessage.warnProgrammer("Cannot find next tree in sequence if tree has more than 60 terminal taxa");
+			warnProgrammer("Cannot find next tree in sequence if tree has more than 60 terminal taxa");
 			return false;
 		}
 		else
@@ -6898,7 +6862,7 @@ and the tree has been rerooted. Properties that belong to nodes implicitly have 
 				warning = "Error in tree "  + getName() + " (id " + getID() + ", version " + getVersionNumber() + ", treeVector: " + treeVector +"): id of taxon " + i +" in Taxa doesn't match id recorded in MesquiteTree";
 		if (warning == null)
 			return true;
-		MesquiteMessage.warnProgrammer(warning);
+		warnProgrammer(warning);
 		return false;
 	}
 	public void reconcileTaxa(int code, Notification notification){
@@ -7128,7 +7092,7 @@ and the tree has been rerooted. Properties that belong to nodes implicitly have 
 				num = parameters[1];
 			}
 			catch (ArrayIndexOutOfBoundsException e){
-				MesquiteMessage.warnProgrammer("Error: insufficient parameters in changed in MesquiteTree ");
+				warnProgrammer("Error: insufficient parameters in changed in MesquiteTree ");
 				return;
 			}
 			if (code==MesquiteListener.PARTS_ADDED) {
