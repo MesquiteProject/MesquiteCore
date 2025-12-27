@@ -14,6 +14,7 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
 package mesquite.lib.parallel;
 
 import mesquite.lib.CommandChecker;
+import mesquite.lib.MesquiteInteger;
 import mesquite.lib.MesquiteModule;
 import mesquite.lib.MesquiteString;
 import mesquite.lib.MesquiteThread;
@@ -70,7 +71,7 @@ public interface Parallelizable {
 	 * e.g.  parallelizer.setItemStatus(firstItem, Parallelizer.CALCULATED);, without blocking it for calculation. 
 	 * Also, the principle is that the Parallelizer is always the one to supply the items.
 	 */
-	public ParallelParams doFirstCalculation_Parallel(int firstItem, Parallelizer parallelizer);  //System.err.println("@ here add MesquiteInteger for error code reporting
+	public ParallelParams doFirstCalculation_Parallel(int firstItem, Parallelizer parallelizer, MesquiteInteger resultCode);  
 	/*EXAMPLE:
 	 * 		
 	 	ParallelParams pp = new ParallelParams();
@@ -113,8 +114,8 @@ public interface Parallelizable {
 
 	/*\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\*/
 	/** Do a calculation on item using employee modules and other params passed.
-	 * Return 0 if success
-	 * Return negative number if failure*/
+	 * Return ResultCodes.NO_ERROR if success
+	 * Return others numbers otherwise*/
 	public int doItemCalculation_Parallel(int item, ParallelParams params, Parallelizer parallelizer);  
 	/*EXAMPLE
 	 * 

@@ -185,15 +185,14 @@ boolean stopWithFirstItemFailure = false;
 		owner.markInappropriateItems(this);		
 		//first step, do one calculation, and use its snapshot to build others
 		int firstItem = owner.getNextParallelItemAndReserve(this);
-
+		MesquiteInteger firstResult = new MesquiteInteger();
 		setItemStatus(firstItem, BEINGCALCULATED);  //should be redundant, given the AndReserve
-		ParallelParams ppFirst = owner.doFirstCalculation_Parallel(firstItem, this); 
-		if (ppFirst == null) {
-			if (stopWithFirstItemFailure){
-				return ResultCodes.ERROR;
+		ParallelParams ppFirst = owner.doFirstCalculation_Parallel(firstItem, this, firstResult); 
+		if (firstResult.getValue() != ResultCodes.NO_ERROR) {
+			setItemStatus(firstItem, FAILURE);
+			if (stopWithFirstItemFailure  || firstResult.getValue() == ResultCodes.USERCANCELONINITIALIZE){
+				return firstResult.getValue();
 			}
-			else 
-				setItemStatus(firstItem, FAILURE);
 		}
 		else
 			setItemStatus(firstItem, SUCCESS);
