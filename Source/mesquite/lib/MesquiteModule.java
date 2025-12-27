@@ -799,12 +799,6 @@ public abstract class MesquiteModule extends EmployerEmployee implements Command
 	}
 	
 	/*.................................................................................................................*/
-	/**Override to specify if employee requires more cores */
-	public int minCoresIRequire() {
-		return 1;
-	}
-
-	/*.................................................................................................................*/
 	/** A method an employee can call to know how many cores it can use. */
 	public int howManyCoresMayIUse() {
 		if (doomed)
