@@ -87,7 +87,7 @@ public abstract class ListModule extends ManagerAssistant  {
 			script += aScript  + StringUtil.lineEnding();
 			script += "endTell;" + StringUtil.lineEnding();
 		}
-		System.err.println("@\n" + script);
+		System.err.println("\n" + script);
 	}
 	// - - - - - - - - - 
 	public void registerAssistantAsDefault(ListAssistant assistant, boolean asDefault){

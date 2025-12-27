@@ -27,11 +27,28 @@ import mesquite.lib.tree.Tree;
 import mesquite.lib.tree.TreeVector;
 
 /* ======================================================================== */
-/** */
+/** The Parallelizable interface is used for code to be parallelized by an instance of the Parallelizer utility. */
+
+/* EXAMPLE
+public class ParallelizeMe implements Parallelizable {
+	Parallelizer parallelizer;
+	
+	public ParallelizeMe (){
+		parallelizer = new Parallelizer(this, 4);
+		//Here hire the first instances of any employee modules. They will be cloned for the other threads.
+		SpecialCalculatorModule calculatorModule = (SpecialCalculatorModule)ownerModule.hireNamedEmployee(SpecialCalculatorModule.class, "#MyCalculator");
+		calculatorModule.setBigParameter(true);  //setting whatever parameters in employee modules
+
+		parallelizer.go();
+	}
+}
+*/
 /* ############################# */
 public interface Parallelizable {
 
-	
+	/* The Parallelizable 
+
+
 	/*\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\*/
 	/**Total possible count, for parallelizer to prepare array recording status of which items are done, being calculated, etc..
 	 *  If some items aren't appropriate, and will be filtered, that is OK, handled in getNextParallelItemAndReserve.
@@ -76,14 +93,14 @@ public interface Parallelizable {
 	 * 		
 	 	ParallelParams pp = new ParallelParams();
 		pp.responsibleEmployer = ownerModule;
-		
+
 		//Assume ownerModule.calculatorModule is the first calculator module hired in ownerModule with full interface, options, etc.
 		//It is thus set up, and ready to get a snapshot of when needed.
 		pp.employees = new MesquiteModule[]{(MesquiteModule)ownerModule.calculatorModule}; //recording employees for cloning etc.
-	
+
 		IntegerArray myStorageArray = new IntegerArray(totalNumber); //preparing data storage for first calculation
 		pp.threadObjects = new Object[]{ myStorageArray}; //remembering thread's data storage
-		
+
 		parallelizer.setItemStatus(firstItem, Parallelizer.BEINGCALCULATED);  //prob not necessary
 		int result = doItemCalculation_Parallel(firstItem, pp, parallelizer);
 		return pp;
@@ -94,7 +111,7 @@ public interface Parallelizable {
 	/**Clone and give snapshots to employee modules, and prepare's threads own data storage. 
 	 * Parallelizer's cloneEmployee clones the employees and gets and sends the snapshots)
 	SYNCHRONIZED please 
-	*/
+	 */
 	public ParallelParams cloneForParallel(ParallelParams params, Parallelizer parallelizer); 
 	/*EXAMPLE: In this example, the params are not cloned because there's no information inherited from thread to thread
 	 * 		
@@ -124,11 +141,11 @@ public interface Parallelizable {
 
 		//HERE do things with the employee and add results to myData
 		calculatorModule.doCalculations(myData);
-		
+
 		//if the Parallelizable has a progress indicator, it can be updated here
 		progIndicator.setText("Item just calculated " +item);
 		progIndicator.setCurrentValue(parallelizer.getTotalCalculated());
-		
+
 		return 0;
 	 * */
 
