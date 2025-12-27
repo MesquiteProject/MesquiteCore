@@ -17,6 +17,7 @@ package mesquite.genomic.TreesFromSelMatrices;
 import java.util.Vector;
 
 import mesquite.lib.CommandChecker;
+import mesquite.lib.CompatibilityTest;
 import mesquite.lib.ListableVector;
 import mesquite.lib.MesquiteBoolean;
 import mesquite.lib.MesquiteString;
@@ -28,6 +29,7 @@ import mesquite.lib.characters.MCharactersDistribution;
 import mesquite.lib.duties.MatrixSourceCoord;
 import mesquite.lib.duties.TreeInferer;
 import mesquite.lib.duties.TreeSearcherFromMatrix;
+import mesquite.lib.misc.KeywordsCompatibilityTest;
 import mesquite.lib.table.MesquiteTable;
 import mesquite.lib.taxa.Taxa;
 import mesquite.lib.tree.MesquiteTree;
@@ -63,7 +65,7 @@ public class TreesFromSelMatrices extends CharMatricesListUtility {
 		inferenceTask.setMatrixSource(matrixSourceTask);
 		return true;
 	}
-
+	/*.................................................................................................................*/
 	/** if returns true, then requests to remain on even after operateOnTaxas is called.  Default is false*/
 	public boolean pleaseLeaveMeOn(){
 		return false;

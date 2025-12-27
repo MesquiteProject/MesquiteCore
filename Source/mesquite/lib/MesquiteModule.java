@@ -17,6 +17,7 @@ package mesquite.lib;
 import java.awt.Checkbox;
 import java.awt.Desktop;
 import java.awt.Panel;
+import java.awt.Point;
 import java.awt.Window;
 import java.io.File;
 import java.io.FileOutputStream;
@@ -85,7 +86,7 @@ MesquiteModule objects.<p>
 public abstract class MesquiteModule extends EmployerEmployee implements Commandable, Showable, Logger, FunctionExplainable,  Identifiable, FileDirtier, MesquiteListener, XMLPreferencesProcessor, ObjectCommenter {
 
 	//RELEASEPROTOCOL
-/*.................................................................................................................*/
+	/*.................................................................................................................*/
 	/** returns build date of the Mesquite system (e.g., "22 September 2003") */
 	public final static String getBuildDate() {
 		return "18 December 2025";
@@ -747,6 +748,52 @@ public abstract class MesquiteModule extends EmployerEmployee implements Command
 				p.unpause();
 			}
 		}
+	}
+
+	/*.................................................................................................................*/
+	/*Requests for cores beyond cheap Java threads. These could be for expensive java threads, 
+	 * or for external programs, e.g. alignment or tree inference.
+	 * The system at present is simple; all extra threads in an employee branch are summed.
+	 * However, sometimes these should be multiplied -- e.g., a parallelized calculation in 8 threads
+	 * might call an inference program using 2 threads each, so it should be counted as 16. 
+	 * This can be, for the moment, the responsibility of the parallelized calculator to adjust its
+	 * requestExtraCore, and perhaps even override getEmployeeCoreRequests.
+	 * */
+	Point extraCoreRequest = new Point(0, MesquiteInteger.unassigned);
+
+	public void requestExtraCores(int min, int max){ //to be called by core user to indicate it wants extra cores
+		extraCoreRequest.x = min; //if this is not combinable, request will be ignored
+		extraCoreRequest.y = max;  //set as MesquiteInteger.infinite to say it's indefinite
+	}
+	/*. . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . */
+	public Point getExtraCoreRequest(){
+		return extraCoreRequest;
+	}
+	/*. . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . */
+	public Point getEmployeeCoreRequests(){
+		ListableVector employees = getEmployeeVector();
+		int sumMin = extraCoreRequest.x;
+		int sumMax = extraCoreRequest.y;
+		for (int i=0; i<employees.size(); i++) {
+			MesquiteModule mb = (MesquiteModule)employees.elementAt(i);
+			Point mbRequest = mb.getEmployeeCoreRequests();
+			if (MesquiteInteger.isCombinable(mbRequest.x)){
+				sumMin += mbRequest.x;
+				if (mbRequest.y == MesquiteInteger.infinite)
+					sumMax = MesquiteInteger.infinite;
+				else if (MesquiteInteger.isCombinable(mbRequest.y)){
+					if (sumMax != MesquiteInteger.infinite){
+						if (sumMax == MesquiteInteger.unassigned)
+							sumMax = mbRequest.y;
+						else
+							sumMax += mbRequest.y;
+					}
+				}
+			}
+		}
+		if (sumMin>0)
+			return new Point(sumMin, sumMax);
+		return null;
 	}
 	/*.................................................................................................................*/
 	/** A method an employee can call to know how many cores it can use. */
@@ -2970,17 +3017,17 @@ public abstract class MesquiteModule extends EmployerEmployee implements Command
 	//DEFAULTASSISTANTS
 	// system currently (2025) used only in list windows.
 	boolean factoryDefault = false; //can be made default
-	
+
 	public final void setAsFactoryDefault(boolean d){
 		factoryDefault = d;
 	}
-	
+
 	// To be called by list module to see whether can be set/unset as default
 	public final boolean isDefaultable() {
 		return !factoryDefault && iCanBeADefault();
 	}
 	// used to indicate that module does not have settings and therefore can be used as a default e.g. as an assistant in list windows.
-	
+
 	public boolean iCanBeADefault() {
 		return false;
 	}
