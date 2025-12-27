@@ -759,25 +759,27 @@ public abstract class MesquiteModule extends EmployerEmployee implements Command
 	 * This can be, for the moment, the responsibility of the parallelized calculator to adjust its
 	 * requestExtraCore, and perhaps even override getEmployeeCoreRequests.
 	 * */
-	Point extraCoreRequest = new Point(0, MesquiteInteger.unassigned);
+	int extraCoresMin = 0;
+	int extraCoresMax = MesquiteInteger.unassigned;
+
 
 	public void requestExtraCores(int min, int max){ //to be called by core user to indicate it wants extra cores
-		extraCoreRequest.x = min; //if this is not combinable, request will be ignored
-		extraCoreRequest.y = max;  //set as MesquiteInteger.infinite to say it's indefinite
+		extraCoresMin = min; //if this is not combinable, request will be ignored
+		extraCoresMax = max;  //set as MesquiteInteger.infinite to say it's indefinite
 	}
-	/*. . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . */
+	/*. . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . *
 	public Point getExtraCoreRequest(){
 		return extraCoreRequest;
 	}
 	/*. . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . */
 	public Point getEmployeeCoreRequests(){
 		ListableVector employees = getEmployeeVector();
-		int sumMin = extraCoreRequest.x;
-		int sumMax = extraCoreRequest.y;
+		int sumMin = extraCoresMin;
+		int sumMax = extraCoresMax;
 		for (int i=0; i<employees.size(); i++) {
 			MesquiteModule mb = (MesquiteModule)employees.elementAt(i);
 			Point mbRequest = mb.getEmployeeCoreRequests();
-			if (MesquiteInteger.isCombinable(mbRequest.x)){
+			if (mbRequest != null && MesquiteInteger.isCombinable(mbRequest.x)){
 				sumMin += mbRequest.x;
 				if (mbRequest.y == MesquiteInteger.infinite)
 					sumMax = MesquiteInteger.infinite;
