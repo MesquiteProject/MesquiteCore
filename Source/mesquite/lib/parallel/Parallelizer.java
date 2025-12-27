@@ -22,6 +22,7 @@ import mesquite.lib.MesquiteModule;
 import mesquite.lib.MesquiteThread;
 import mesquite.lib.MesquiteTrunk;
 import mesquite.lib.Puppeteer;
+import mesquite.lib.ResultCodes;
 import mesquite.lib.Snapshot;
 
 /* ======================================================================== */
@@ -33,7 +34,7 @@ public class Parallelizer {
 	IntegerArray calcStatus;
 	boolean verbose = false;
 	int totalCalculated = 0;
-
+boolean stopWithFirstItemFailure = false;
 	public Parallelizer(Parallelizable owner, int nThreads){
 		this.owner = owner;
 		this.nThreads = nThreads;
@@ -54,6 +55,10 @@ public class Parallelizer {
 		}
 		return true;
 	}
+	public void setStopWithFirstItemFailure(boolean stop){
+		stopWithFirstItemFailure = stop;
+	}
+
 	public void setNumThreads(int n){
 		nThreads = n;
 	}
@@ -162,7 +167,7 @@ public class Parallelizer {
 		return clone;
 	}
 	/* ===================================================== */
-	public synchronized void go(){ //this should be called on thread of owner, which should hold until done
+	public synchronized int go(){ //this should be called on thread of owner, which should hold until done
 		
 		// ################## INITIALIZE ##################
 		System.out.println("Parallelizer: calculations initializing");
@@ -182,9 +187,14 @@ public class Parallelizer {
 		int firstItem = owner.getNextParallelItemAndReserve(this);
 
 		setItemStatus(firstItem, BEINGCALCULATED);  //should be redundant, given the AndReserve
-		ParallelParams ppFirst = owner.doFirstCalculation_Parallel(firstItem, this);
-		if (ppFirst == null)
-			setItemStatus(firstItem, FAILURE);
+		ParallelParams ppFirst = owner.doFirstCalculation_Parallel(firstItem, this); 
+		if (ppFirst == null) {
+			if (stopWithFirstItemFailure){
+				return ResultCodes.ERROR;
+			}
+			else 
+				setItemStatus(firstItem, FAILURE);
+		}
 		else
 			setItemStatus(firstItem, SUCCESS);
 
@@ -225,6 +235,7 @@ public class Parallelizer {
 			threads[i].running = false;
 		
 		System.out.println("Parallelizer: " + summarizeCalcStatus());
+		return ResultCodes.NO_ERROR;
 	}
 	public void reset(){ // to be called on owner's thread
 		if (threads == null)
@@ -294,7 +305,8 @@ public class Parallelizer {
 		}
 		
 		public void fireParallelEmployees(){ // to be called on owner's thread
-	
+			if (pp == null)
+				return;
 			MesquiteModule employer = pp.responsibleEmployer;
 			for (int i = 0; i<pp.employees.length; i++)
 				employer.fireEmployee(pp.employees[i]);

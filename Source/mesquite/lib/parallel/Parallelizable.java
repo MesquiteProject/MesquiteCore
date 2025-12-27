@@ -70,7 +70,7 @@ public interface Parallelizable {
 	 * e.g.  parallelizer.setItemStatus(firstItem, Parallelizer.CALCULATED);, without blocking it for calculation. 
 	 * Also, the principle is that the Parallelizer is always the one to supply the items.
 	 */
-	public ParallelParams doFirstCalculation_Parallel(int firstItem, Parallelizer parallelizer);
+	public ParallelParams doFirstCalculation_Parallel(int firstItem, Parallelizer parallelizer);  //System.err.println("@ here add MesquiteInteger for error code reporting
 	/*EXAMPLE:
 	 * 		
 	 	ParallelParams pp = new ParallelParams();
@@ -115,7 +115,7 @@ public interface Parallelizable {
 	/** Do a calculation on item using employee modules and other params passed.
 	 * Return 0 if success
 	 * Return negative number if failure*/
-	public int doItemCalculation_Parallel(int item, ParallelParams params, Parallelizer parallelizer); 
+	public int doItemCalculation_Parallel(int item, ParallelParams params, Parallelizer parallelizer);  
 	/*EXAMPLE
 	 * 
 		IntegerArray myData = (IntegerArray)params.threadObjects[0];  //recovering the thread's storage from params threadObjects
