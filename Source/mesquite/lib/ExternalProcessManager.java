@@ -86,6 +86,23 @@ public class ExternalProcessManager implements Commandable  {
 		this.watcher = watcher;
 		this.visibleTerminal = visibleTerminal;
 	}
+	public ExternalProcessManager(MesquiteModule ownerModule, String directoryPath, String programCommand, String[] programCommands, String name, String[] outputFilePaths, OutputFileProcessor outputFileProcessor, ProcessWatcher watcher, boolean visibleTerminal, boolean removeQuotesStart, boolean removeQuotes, boolean setNoQuoteChar){
+		this.directoryPath=directoryPath;
+		this.name = name;
+		this.outputFilePaths = outputFilePaths;
+		this.outputFileProcessor = outputFileProcessor;
+		this.ownerModule = ownerModule;
+		this.removeQuotes = removeQuotes;
+		this.removeQuotesStart = removeQuotesStart;
+		this.setNoQuoteChar =  setNoQuoteChar;
+		this.originalProgramCommand = programCommand;
+	//	this.programOptions = programOptions;
+		this.programCommands = programCommands;
+		stdOutFilePath = MesquiteFile.getDirectoryPathFromFilePath(directoryPath)  + stdOutFileName;
+		stdErrFilePath = MesquiteFile.getDirectoryPathFromFilePath(directoryPath) +  stdErrFileName;
+		this.watcher = watcher;
+		this.visibleTerminal = visibleTerminal;
+	}
 	public ExternalProcessManager(MesquiteModule ownerModule, String directoryPath, String[] programCommands, String name, String[] outputFilePaths, OutputFileProcessor outputFileProcessor, ProcessWatcher watcher, boolean visibleTerminal){
 		this.directoryPath=directoryPath;
 		this.name = name;
