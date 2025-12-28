@@ -103,6 +103,7 @@ public interface Parallelizable {
 
 		parallelizer.setItemStatus(firstItem, Parallelizer.BEINGCALCULATED);  //prob not necessary
 		int result = doItemCalculation_Parallel(firstItem, pp, parallelizer);
+		resultCode.setValue(result);
 		return pp;
 
 	 * */
@@ -146,7 +147,7 @@ public interface Parallelizable {
 		progIndicator.setText("Item just calculated " +item);
 		progIndicator.setCurrentValue(parallelizer.getTotalCalculated());
 
-		return 0;
+		return ResultCodes.NO_ERROR;
 	 * */
 
 

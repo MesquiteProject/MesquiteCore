@@ -34,7 +34,8 @@ public class Parallelizer {
 	IntegerArray calcStatus;
 	boolean verbose = false;
 	int totalCalculated = 0;
-boolean stopWithFirstItemFailure = false;
+	boolean stopWithFirstItemFailure = false;
+
 	public Parallelizer(Parallelizable owner, int nThreads){
 		this.owner = owner;
 		this.nThreads = nThreads;
@@ -168,7 +169,7 @@ boolean stopWithFirstItemFailure = false;
 	}
 	/* ===================================================== */
 	public synchronized int go(){ //this should be called on thread of owner, which should hold until done
-		
+
 		// ################## INITIALIZE ##################
 		System.out.println("Parallelizer: calculations initializing");
 		int count = owner.getTotalPossibleParallelItemCount();
@@ -179,7 +180,7 @@ boolean stopWithFirstItemFailure = false;
 			calcStatus.resetSize(count);
 		calcStatus.zeroArray();
 		totalCalculated = 0;
-		
+
 		// ################## Calculation for first item ##################
 		System.out.println("Parallelizer: first calculation");
 		owner.markInappropriateItems(this);		
@@ -230,8 +231,13 @@ boolean stopWithFirstItemFailure = false;
 		}
 		System.out.println("Parallelizer: finished calculations");
 
-		for (int i = 0; i < nThreads; i++) 
+		System.out.print("Parallelizer: Calculations finished in each thread: ");
+		for (int i = 0; i < nThreads; i++) {
+			
 			threads[i].running = false;
+			System.out.print(" " + threads[i].calculatedOnThread);
+		}
+		System.out.println("");
 		
 		System.out.println("Parallelizer: " + summarizeCalcStatus());
 		return ResultCodes.NO_ERROR;
@@ -241,7 +247,7 @@ boolean stopWithFirstItemFailure = false;
 			return;
 		for (int i = 0; i < nThreads; i++) {
 			if (threads[i] !=null)
-			threads[i].fireParallelEmployees();
+				threads[i].fireParallelEmployees();
 		}
 		threads = null;
 	}
@@ -257,6 +263,7 @@ boolean stopWithFirstItemFailure = false;
 		boolean running = false;
 		int itemBeingCalculated = -1;
 		Parallelizer parallelizer;
+		int calculatedOnThread = 0;
 
 		public PThread(ParallelParams pp, int whichThread, Parallelizer parallelizer){
 			this.pp = pp;
@@ -266,19 +273,22 @@ boolean stopWithFirstItemFailure = false;
 		public void start(){
 			started = true;
 			onCall = true;
+			calculatedOnThread = 0;
 			super.start();
 		}
 
 		public void doJob () {
 			done = false;
 			int item = -1;
+			calculatedOnThread = 0;
 			while ((item = owner.getNextParallelItemAndReserve(parallelizer))>=0){
 				itemBeingCalculated = item;
 				setItemStatus(item, BEINGCALCULATED);
 				int result = owner.doItemCalculation_Parallel(item, pp, parallelizer);
 				totalCalculated++;
+				calculatedOnThread++;
 				//MesquiteMessage.sys_err_println("### finished item " + item + " on thread " + whichThread);
-				if (result == 0)
+				if (result == ResultCodes.NO_ERROR)
 					setItemStatus(item, SUCCESS);
 				else
 					setItemStatus(item, FAILURE);
@@ -302,7 +312,7 @@ boolean stopWithFirstItemFailure = false;
 				}
 			}		
 		}
-		
+
 		public void fireParallelEmployees(){ // to be called on owner's thread
 			if (pp == null)
 				return;

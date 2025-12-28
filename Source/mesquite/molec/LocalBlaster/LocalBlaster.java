@@ -569,6 +569,8 @@ public class LocalBlaster extends Blaster implements ActionListener,  AppUser, P
 				blastResponse.setLength(0);
 				blastResponse.append(results);
 			}
+			else
+				success = false;
 		}
 		if (!MesquiteTrunk.developmentMode)
 			deleteSupportDirectory();

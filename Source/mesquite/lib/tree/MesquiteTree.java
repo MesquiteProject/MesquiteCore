@@ -3591,6 +3591,8 @@ and the tree has been rerooted. Properties that belong to nodes implicitly have 
 	}
 	
 	void reticulationWarning (String c, int taxonNumber, MesquiteInteger stringLoc, String TreeDescription, int whichPlace){
+		if (warningSuppress)
+			return;
 		String s = "";
 		if (permitTruncTaxNames)
 			s =" (This may have occured because of a corrupted file, or because tree reading is set to permit truncated taxon names (see Defaults menu to turn this off), leading to ambiguities.)"; 
@@ -3598,7 +3600,7 @@ and the tree has been rerooted. Properties that belong to nodes implicitly have 
 			warnProgrammer("Apparent reticulation found (two taxon names or clade names interpreted as the same; C). [" + c  + "; interp as " + taxonNumber+ "] " + s  + " stringLoc after " + stringLoc + "  " + TreeDescription);
 		else if (numReticWarnings == 5)
 			warnProgrammer("Five warnings about apparent reticulations have been given. " + s + "  If there are further problems in this run of Mesquite, only short warnings will be given");
-		else if (numReticWarnings <100)
+		else if (numReticWarnings <100) 
 			MesquiteMessage.sys_err_println("Another tree with apparent reticulations found.");
 		else if (numReticWarnings == 100)
 			MesquiteMessage.sys_err_println("NO MORE WARNINGS ABOUT RETICULATIONS WILL BE GIVEN IN THIS RUN OF MESQUITE.");
