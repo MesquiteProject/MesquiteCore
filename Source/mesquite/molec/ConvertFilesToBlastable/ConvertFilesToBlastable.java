@@ -259,8 +259,8 @@ public class ConvertFilesToBlastable extends UtilitiesAssistant implements Actio
 		
 		String fileNameBase = StringUtil.getAllButLastItem(fileName, ".");
 		
-		String blastArguments = " -in " + NCBIUtil.getBLASTFileInputName(fileName) + " -out " + StringUtil.blanksToUnderline(fileNameBase + "DB") + " -dbtype nucl -blastdb_version 4";
-
+		String blastArguments = " -in " + NCBIUtil.getBLASTFileInputName(fileName) + " -out " + StringUtil.blanksToUnderline(fileNameBase + "DB") + " -dbtype nucl -blastdb_version 4 -parse_seqids";
+//28Dec added -parse_seqids
 
 		String blastCommand = blastProgram + blastArguments;
 		String programPath = blastProgram;
