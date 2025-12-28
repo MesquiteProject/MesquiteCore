@@ -570,7 +570,10 @@ public class LocalBlaster extends Blaster implements ActionListener,  AppUser, P
 				blastResponse.append(results);
 			}
 		}
-		deleteSupportDirectory();
+		if (!MesquiteTrunk.developmentMode)
+			deleteSupportDirectory();
+		if (MesquiteTrunk.developmentMode && ! success)
+			showSupportDirectory();
 		if (getProject()!=null)
 			getProject().decrementProjectWindowSuppression();
 		logln("   BLAST completed in " +timer.timeSinceLastInSeconds()+" seconds");
@@ -626,6 +629,8 @@ public class LocalBlaster extends Blaster implements ActionListener,  AppUser, P
 		for (int i=0; i<idList.length; i++) 
 			if (StringUtil.notEmpty(idList[i]))
 				count++;
+		if (MesquiteTrunk.developmentMode && count==0)
+			showSupportDirectory();
 		if (count==0)
 			return null;
 		if (blastx)
@@ -712,11 +717,13 @@ public class LocalBlaster extends Blaster implements ActionListener,  AppUser, P
 				blastResponse.setLength(0);
 				blastResponse.append(results);
 			}
-			deleteSupportDirectory();
+			if (!MesquiteTrunk.developmentMode)
+				deleteSupportDirectory();
 			getProject().decrementProjectWindowSuppression();
 			return results;
 		}
-		deleteSupportDirectory();
+		if (!MesquiteTrunk.developmentMode)
+			deleteSupportDirectory();
 		getProject().decrementProjectWindowSuppression();
 		return null;
 	}	
