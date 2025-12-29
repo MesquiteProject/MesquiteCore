@@ -49,6 +49,7 @@ import mesquite.lib.CommandChecker;
 import mesquite.lib.CommandRecord;
 import mesquite.lib.CommandThread;
 import mesquite.lib.ConsoleThread;
+import mesquite.lib.Debugg;
 import mesquite.lib.EmployeeNeed;
 import mesquite.lib.EmployerEmployee;
 import mesquite.lib.FileElement;
@@ -642,7 +643,6 @@ public class Mesquite extends MesquiteTrunk
 		tempDirectory = createTempDirectory();
 
 
-
 		/*----*/
 
 		appsDirectory = mesquiteDirectoryPath + "apps";
@@ -681,6 +681,12 @@ public class Mesquite extends MesquiteTrunk
 		if (InterfaceManager.enabled){
 			interfaceManager = new InterfaceManager();
 			//InterfaceManager.importSettingsFiles();
+		}
+		if (isMacOSX()){
+			String containing = StringUtil.getAllButLastItem(mesquiteDirectoryPath, MesquiteFile.fileSeparator, "/");
+			String dmgFilePath = MesquiteFile.getDirectoryPathFromFilePath(containing) + ".onDMG.txt";
+			if (MesquiteFile.fileExists(dmgFilePath))
+				alert("You appear to be running Mesquite within the downloaded disk image, which is read-only and which will hinder Mesquite's function.\n\nPlease copy Mesquite_Folder to your computer's storage before using it.");
 		}
 
 		ModuleLoader mBL = new ModuleLoader(this);
