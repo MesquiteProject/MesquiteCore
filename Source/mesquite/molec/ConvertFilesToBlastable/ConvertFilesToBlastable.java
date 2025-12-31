@@ -256,7 +256,7 @@ public class ConvertFilesToBlastable extends UtilitiesAssistant implements Actio
 	public String getConcatCommand(String node0File, String fileName, String destinationPath) {
 		//echo "Your desired string" | cat - yourfile.txt > newfile.txt
 		if (MesquiteTrunk.isWindows()) 
-			return "type " + node0File + " " +fileName + " > " + destinationPath + "\n";
+			return "type " + StringUtil.protectFilePathForWindows(node0File) + " " +StringUtil.protectFilePathForWindows(fileName) + " > " + StringUtil.protectFilePathForWindows(destinationPath) + "\n";
 		else
 			return "cat " + node0File + " " +fileName + " > " + destinationPath + "\n";
 	}
