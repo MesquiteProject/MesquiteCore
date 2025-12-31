@@ -310,8 +310,7 @@ public class ConvertFilesToBlastable extends UtilitiesAssistant implements Actio
 //						success=false;
 				}
 			}
-			if (!MesquiteTrunk.developmentMode)
-				deleteSupportDirectory();
+			deleteSupportDirectory();
 			if (MesquiteTrunk.developmentMode && ! success)
 				showSupportDirectory();
 
