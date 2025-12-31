@@ -267,7 +267,7 @@ public class LocalBlaster extends Blaster implements ActionListener,  AppUser, P
 					String filePath = blastDatabaseFolderPath + MesquiteFile.fileSeparator + files[i];
 					File cFile = new File(filePath);
 					if (cFile.exists()) {
-						if (!cFile.isDirectory()) {
+						if (!cFile.isDirectory() && !StringUtil.startsWithIgnoreCase(files[i], ".")) {
 							 if (files[i].endsWith(".nsq")) {
 								count++;
 							}
@@ -283,7 +283,7 @@ public class LocalBlaster extends Blaster implements ActionListener,  AppUser, P
 					String filePath = blastDatabaseFolderPath + MesquiteFile.fileSeparator + files[i];
 					File cFile = new File(filePath);
 					if (cFile.exists()) {
-						if (!cFile.isDirectory()) {
+						if (!cFile.isDirectory() && !StringUtil.startsWithIgnoreCase(files[i], ".")) {
 							 if (files[i].endsWith(".nsq")) {
 								 String fileNameBase = StringUtil.getAllButLastItem(files[i], ".");
 								databaseArray[count]= blastDatabaseFolderPath + MesquiteFile.fileSeparator +fileNameBase;
@@ -477,7 +477,7 @@ public class LocalBlaster extends Blaster implements ActionListener,  AppUser, P
 
 		String unique = MesquiteTrunk.getUniqueIDBase();
 		String rootDir = createSupportDirectory() + MesquiteFile.fileSeparator;  
-		String fileName = "sequenceToSearch" + MesquiteFile.massageStringToFilePathSafe(unique) + ".fa";   
+		String fileName =  "sequenceToSearch" + MesquiteFile.massageStringToFilePathSafe(unique) + ".fa";   
 		String filePath = rootDir +  fileName;
 
 		StringBuffer fileBuffer = new StringBuffer();
@@ -489,6 +489,7 @@ public class LocalBlaster extends Blaster implements ActionListener,  AppUser, P
 //		 runningFilePath = "";
 		String outFileName = "blastResults" + MesquiteFile.massageStringToFilePathSafe(unique);
 		String outFilePath = rootDir + outFileName;
+		//String outFilePath = StringUtil.protectFilePathForWindows(rootDir + outFileName);
 		String[] outputFilePaths = new String[1];
 		outputFilePaths[0] = outFilePath;
 
@@ -564,7 +565,7 @@ public class LocalBlaster extends Blaster implements ActionListener,  AppUser, P
 
 		
 		if (success){
-			String results = MesquiteFile.getFileContentsAsString(outFilePath, -1, 1000, false);
+			String results = MesquiteFile.getFileContentsAsString(outFilePath, -1, 1000, MesquiteTrunk.developmentMode);
 			if (blastResponse!=null && StringUtil.notEmpty(results)){
 				blastResponse.setLength(0);
 				blastResponse.append(results);
@@ -601,7 +602,11 @@ public class LocalBlaster extends Blaster implements ActionListener,  AppUser, P
 			if (StringUtil.notEmpty(idList[i])){
 				if (count>0)
 					queryString.append(",");
-				queryString.append("'"+idList[i]+"'");
+				if (MesquiteTrunk.isWindows())
+					queryString.append("\""+idList[i]+"\"");
+				else
+					queryString.append("'"+idList[i]+"'");
+					
 				count++;
 			}
 
@@ -611,7 +616,7 @@ public class LocalBlaster extends Blaster implements ActionListener,  AppUser, P
 		String rootDir = createSupportDirectory() + MesquiteFile.fileSeparator;  
 
 		String runningFilePath = rootDir + "running" + MesquiteFile.massageStringToFilePathSafe(unique);
-		String outFileName = "blastResults" + MesquiteFile.massageStringToFilePathSafe(unique);
+		String outFileName = "blastResultsGetFastaFromIDs" + MesquiteFile.massageStringToFilePathSafe(unique);
 		String outFilePath = rootDir + outFileName;
 		String[] outputFilePaths = new String[1];
 		outputFilePaths[0] = outFilePath;
@@ -621,7 +626,8 @@ public class LocalBlaster extends Blaster implements ActionListener,  AppUser, P
 
 		String blastArguments = "  -entry "+queryString + " -outfmt %f";
 		//blastArguments+= " -db "+databaseArray[databaseNumber];
-		blastArguments+= " -db "+NCBIUtil.getBLASTFileInputName(databaseArray[databaseNumber]);
+		//blastArguments+= " -db \""+databaseArray[databaseNumber]+"\"";
+		blastArguments+= " -db "+NCBIUtil.getBLASTFileInputName(databaseArray[databaseNumber], scriptBased);
 		if (prependDatabaseName && foundTaxonName != null){
 			String nameFromDatabaseName = StringUtil.getLastItem(databaseArray[databaseNumber], MesquiteFile.fileSeparator);
 			nameFromDatabaseName = StringUtil.getAllButLastItem(nameFromDatabaseName, ".");
@@ -633,9 +639,10 @@ public class LocalBlaster extends Blaster implements ActionListener,  AppUser, P
 
 
 		StringBuffer shellScript = new StringBuffer(1000);
-		String scriptPath = rootDir + "batchScript" + MesquiteFile.massageStringToFilePathSafe(unique) + ".bat";
+		String scriptPath = rootDir + "batchScriptGetFastaFromIDs" + MesquiteFile.massageStringToFilePathSafe(unique) + ".bat";
 		if (scriptBased) {
-				String  executablePath = StringUtil.protectFilePath(getDefaultExecutablePath())+MesquiteFile.fileSeparator+"blastdbcmd";
+			String  executablePath = StringUtil.protectFilePath(getDefaultExecutablePath()+"blastdbcmd");
+			//String  executablePath = StringUtil.protectFilePath(getDefaultExecutablePath()+MesquiteFile.fileSeparator+"blastdbcmd");
 				shellScript.append(ShellScriptUtil.getBasicShellScript(executablePath,  rootDir, blastArguments, null, runningFilePath, false, true));
 				MesquiteFile.putFileContents(scriptPath, shellScript.toString(), true);
 		}

@@ -268,7 +268,7 @@ public class ConvertFilesToBlastable extends UtilitiesAssistant implements Actio
 		String unique = MesquiteTrunk.getUniqueIDBase();
 		directoryPath+= MesquiteFile.fileSeparator;
 		String runningFilePath = rootSupportDir + "running" + MesquiteFile.massageStringToFilePathSafe(unique);
-		String outFileName = "blastResults" + MesquiteFile.massageStringToFilePathSafe(unique);
+		String outFileName = "blastResultsMakeBLASTDB" + MesquiteFile.massageStringToFilePathSafe(unique);
 		String outFilePath = rootSupportDir + outFileName;
 		String[] outputFilePaths = new String[1];
 		outputFilePaths[0] = outFilePath;
