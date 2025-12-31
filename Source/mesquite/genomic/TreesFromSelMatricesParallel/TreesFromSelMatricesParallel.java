@@ -265,6 +265,7 @@ public class TreesFromSelMatricesParallel extends CharMatricesListUtility {
 		String stringFailed = "";
 		boolean stop = false;
 		ProgressIndicator progIndicator = new ProgressIndicator(getProject(),"Tree inference on matrices", "", datas.size(), true);
+		machine.parallelizer.setProgressIndicator(progIndicator);
 		boolean userCancel = false;
 		progIndicator.start();
 		machine.setNumThreads(numThreads);
