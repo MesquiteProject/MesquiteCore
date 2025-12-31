@@ -23,6 +23,7 @@ import mesquite.lib.CommandChecker;
 import mesquite.lib.IntegerField;
 import mesquite.lib.ListableVector;
 import mesquite.lib.MesquiteBoolean;
+import mesquite.lib.MesquiteFile;
 import mesquite.lib.MesquiteInteger;
 import mesquite.lib.MesquiteMessage;
 import mesquite.lib.MesquiteModule;
@@ -48,18 +49,23 @@ import mesquite.lib.tree.TreeDisplay;
 import mesquite.lib.tree.TreeVector;
 import mesquite.lib.ui.ExtensibleDialog;
 import mesquite.lib.ui.ProgressIndicator;
+import mesquite.lib.ui.RadioButtons;
 import mesquite.lists.lib.CharMatricesListUtility;
 
 /* ======================================================================== */
 public class TreesFromSelMatricesParallel extends CharMatricesListUtility {
+	int storageChoice = 0; //0 = single tree block; 1 = multiple tree blocks; 2 = multiple tree files
+	static final int SINGLE_TREE_BLOCK = 0;
+	static final int MULTIPLE_TREE_BLOCKS = 1;
+	static final int MULTIPLE_FILES = 2;
 
 	/*.................................................................................................................*/
 	public String getName() {
-		return "Infer Trees from Matrices (Parallel)";
+		return "Infer Trees from Matrices (Parallelized)";
 	}
 	/*.................................................................................................................*/
 	public String getNameForMenuItem() {
-		return "Trees from Matrices (Parallel)...";
+		return "Infer Trees from Matrices (Parallelized)...";
 	}
 
 	public String getExplanation() {
@@ -91,7 +97,7 @@ public class TreesFromSelMatricesParallel extends CharMatricesListUtility {
 			maxCores = coreRequests.y;
 		}
 		MesquiteInteger buttonPressed = new MesquiteInteger(1);
-		ExtensibleDialog queryDialog = new ExtensibleDialog(containerOfModule(), "Parallelization of Tree Inferences", buttonPressed);
+		ExtensibleDialog queryDialog = new ExtensibleDialog(containerOfModule(), "Parallel Tree Inferences", buttonPressed);
 		String infoString = "The tree inferences will be performed in parallel, on several threads. Choose the number of parallel threads according to your computer's multiprocessing capabilities.";
 		if (minCores>1){
 			if (minCores == maxCores)
@@ -121,7 +127,12 @@ public class TreesFromSelMatricesParallel extends CharMatricesListUtility {
 				coresField = queryDialog.addIntegerField("Number of processor cores for each thread", numCoresPerInference, 20, minCores, maxCores);
 			}
 		}
+		queryDialog.addHorizontalLine(1);
+		queryDialog.addLargeOrSmallTextLabel("Where to save trees inferred from the matrices?");
 
+		RadioButtons whereToSave = queryDialog.addRadioButtons (new String[] {"In single tree block", "In separate tree block for each matrix", "In external tree files"}, storageChoice);
+
+		queryDialog.addHorizontalLine(1);
 		queryDialog.addLargeOrSmallTextLabel("(Note: the first matrix will be processed alone, and then the others in parallel.)");
 		queryDialog.setDefaultTextComponent(threadsField.getTextField());
 		queryDialog.setDefaultComponent(threadsField.getTextField());
@@ -157,8 +168,10 @@ public class TreesFromSelMatricesParallel extends CharMatricesListUtility {
 					alert("The number of processor cores must be between " + minCores + " and 255.");
 					OK = false;
 				}
-				if (OK)
+				if (OK){
+					storageChoice = whereToSave.getValue();
 					storePreferences();
+				}
 
 			}
 		}
@@ -178,6 +191,8 @@ public class TreesFromSelMatricesParallel extends CharMatricesListUtility {
 
 		if ("numCoresPerInference".equalsIgnoreCase(tag))
 			numCoresPerInference = MesquiteInteger.fromString(content);
+		if ("storageChoice".equalsIgnoreCase(tag))
+			storageChoice = MesquiteInteger.fromString(content);
 
 		super.processSingleXMLPreference(tag, content);
 	}
@@ -187,6 +202,7 @@ public class TreesFromSelMatricesParallel extends CharMatricesListUtility {
 		StringBuffer buffer = new StringBuffer(200);
 		StringUtil.appendXMLTag(buffer, 2, "numThreads", numThreads);  
 		StringUtil.appendXMLTag(buffer, 2, "numCoresPerInference", numCoresPerInference);  
+		StringUtil.appendXMLTag(buffer, 2, "storageChoice", storageChoice);  
 
 		buffer.append(super.preparePreferencesForXML());
 		return buffer.toString();
@@ -229,7 +245,19 @@ public class TreesFromSelMatricesParallel extends CharMatricesListUtility {
 			inferer.setAlwaysPrepareForAnyMatrices(true);
 			//inferer.setPlaceAllAnalysisFilesInSubdirectory(true);
 		}
-		TreeVector trees = new TreeVector(((CharacterData)datas.elementAt(0)).getTaxa());
+		String directoryPath = null;
+		String basePath = null;
+		String treeFileListPath = null;
+
+		if (storageChoice == MULTIPLE_FILES){
+			directoryPath = MesquiteFile.chooseDirectory("Where to save files?"); //MesquiteFile.saveFileAsDialog("Base name for files (files will be named <name>1.nex, <name>2.nex, etc.)", baseName);
+			if (StringUtil.blank(directoryPath))
+				return false;
+			basePath = directoryPath + MesquiteFile.fileSeparator ; //+ baseName;
+			treeFileListPath = StringUtil.getAllButLastItem(directoryPath, MesquiteFile.fileSeparator) + MesquiteFile.fileSeparator + "ListOfTreeFiles.txt";
+		}
+
+
 		Vector v = pauseAllPausables();
 		long startTime = System.currentTimeMillis();
 		int count = 0;
@@ -237,6 +265,7 @@ public class TreesFromSelMatricesParallel extends CharMatricesListUtility {
 		String stringFailed = "";
 		boolean stop = false;
 		ProgressIndicator progIndicator = new ProgressIndicator(getProject(),"Tree inference on matrices", "", datas.size(), true);
+		machine.parallelizer.setProgressIndicator(progIndicator);
 		boolean userCancel = false;
 		progIndicator.start();
 		machine.setNumThreads(numThreads);
@@ -245,17 +274,49 @@ public class TreesFromSelMatricesParallel extends CharMatricesListUtility {
 		MesquiteThread.setQuietPlease(false);
 		if (!userCancel) {
 			//harvesttrees
-			for (int i= 0; i< machine.treeBlocks.size(); i++){
-				TreeVector tV = (TreeVector)machine.treeBlocks.elementAt(i);
-				for (int it = 0; it<tV.size(); it++){
-					trees.addElement(tV.elementAt(it), false);
+			if (storageChoice == SINGLE_TREE_BLOCK) {  //accumulate into single tree block, and put in file
+				TreeVector trees = new TreeVector(((CharacterData)datas.elementAt(0)).getTaxa());
+				String annot = null;
+				for (int i= 0; i< machine.treeBlocks.size(); i++){
+					TreeVector tV = (TreeVector)machine.treeBlocks.elementAt(i);
+					for (int it = 0; it<tV.size(); it++){
+						trees.addElement(tV.elementAt(it), false);
+						annot = tV.getAnnotation();
+					}
+				}
+				trees.setName("Trees from matrices (" + inferenceTask.getName() + ")");
+				trees.setAnnotation("Information for trees from last of the matrices analyzed: " + annot, false);
+				trees.addToFile(getProject().getHomeFile(), getProject(), findElementManager(Tree.class));
+			}
+			else if (storageChoice == MULTIPLE_TREE_BLOCKS){
+				for (int i= 0; i< machine.treeBlocks.size(); i++){
+					TreeVector trees = new TreeVector(((CharacterData)datas.elementAt(0)).getTaxa());
+					TreeVector tV = (TreeVector)machine.treeBlocks.elementAt(i);
+					for (int it = 0; it<tV.size(); it++){
+						trees.addElement(tV.elementAt(it), false);
+					}
+					trees.setAnnotation("Information for trees from last of the matrices analyzed: " + tV.getAnnotation(), false);
+					trees.setName("Trees (" + inferenceTask.getName() + ") from matrix " + tV.getName());
+					trees.addToFile(getProject().getHomeFile(), getProject(), findElementManager(Tree.class));
 				}
 			}
-			trees.setName("Trees from matrices (" + inferenceTask.getName() + ")");
-			String annot = trees.getAnnotation();
-			trees.setAnnotation("Information for trees from last of the matrices analyzed: " + annot, false);
-			trees.addToFile(getProject().getHomeFile(), getProject(), findElementManager(Tree.class));
-			//logln("Total matrices analyzed: " + count);
+			else if (storageChoice == MULTIPLE_FILES){
+				for (int i= 0; i< machine.treeBlocks.size(); i++){
+					TreeVector tV = (TreeVector)machine.treeBlocks.elementAt(i);
+					//SAVE TREE FILE 
+					String fileName = tV.getName() + ".trees";
+					MesquiteFile.putFileContents(basePath+fileName, "", false); //path, contents, ascii
+					for (int it = 0; it<tV.size(); it++){
+						Tree tree = tV.getTree(it);
+						if (tree != null)
+							MesquiteFile.appendFileContents(basePath+fileName, tree.writeTree() + "\n", false); //path, contents, ascii
+						else
+							System.err.println("Tree null " + i + " " +it);
+					}
+					MesquiteFile.appendFileContents(treeFileListPath, basePath+fileName + "\n", false); //path, contents, ascii
+				}
+			}
+
 			if (numFailed > 0) {
 				discreetAlert("Trees were not obtained for " + numFailed + " of the matrices. See log for details");
 				logln("Trees were not obtained for these matrices:");
@@ -421,6 +482,7 @@ class TreeInferenceParallelMachine implements Parallelizable {
 		MesquiteThread.setHintToSuppressProgressIndicatorCurrentThread(true);
 		MesquiteThread.setThreadMaxLogLevel(MesquiteMessage.HIGH_PRIORITY);
 		int result = inferenceTask.fillTreeBlock(trees);
+		trees.setName(matrix.getName());
 		MesquiteThread.releaseThreadMaxLogLevel();
 		MesquiteThread.setHintToSuppressProgressIndicatorCurrentThread(false);
 		if (result !=ResultCodes.NO_ERROR)

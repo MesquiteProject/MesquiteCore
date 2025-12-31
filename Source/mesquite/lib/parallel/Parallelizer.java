@@ -24,6 +24,7 @@ import mesquite.lib.MesquiteTrunk;
 import mesquite.lib.Puppeteer;
 import mesquite.lib.ResultCodes;
 import mesquite.lib.Snapshot;
+import mesquite.lib.ui.ProgressIndicator;
 
 /* ======================================================================== */
 /** */
@@ -35,6 +36,7 @@ public class Parallelizer {
 	boolean verbose = false;
 	int totalCalculated = 0;
 	boolean stopWithFirstItemFailure = false;
+	ProgressIndicator progressIndicator;
 
 	public Parallelizer(Parallelizable owner, int nThreads){
 		this.owner = owner;
@@ -58,6 +60,9 @@ public class Parallelizer {
 	}
 	public void setStopWithFirstItemFailure(boolean stop){
 		stopWithFirstItemFailure = stop;
+	}
+	public void setProgressIndicator(ProgressIndicator progressIndicator){
+		this.progressIndicator = progressIndicator;
 	}
 
 	public void setNumThreads(int n){
@@ -259,6 +264,7 @@ public class Parallelizer {
 		int whichThread;
 		boolean done = false;
 		boolean started = false;
+		boolean stopped = false;
 		boolean onCall = true;
 		boolean running = false;
 		int itemBeingCalculated = -1;
@@ -281,7 +287,7 @@ public class Parallelizer {
 			done = false;
 			int item = -1;
 			calculatedOnThread = 0;
-			while ((item = owner.getNextParallelItemAndReserve(parallelizer))>=0){
+			while (!stopped && (item = owner.getNextParallelItemAndReserve(parallelizer))>=0){
 				itemBeingCalculated = item;
 				setItemStatus(item, BEINGCALCULATED);
 				int result = owner.doItemCalculation_Parallel(item, pp, parallelizer);
@@ -293,17 +299,21 @@ public class Parallelizer {
 				else
 					setItemStatus(item, FAILURE);
 				itemBeingCalculated = -1;
+				if (progressIndicator != null && progressIndicator.isAborted())
+					stopped = true;
 			}
 			done = true;
 		}
 
 		public void run(){
-			while (onCall){
+			while (onCall && !stopped){
 				try {
 					Thread.sleep(10); 
 					if (running){
 						//x MesquiteMessage.sys_err_println("RERUNNING " + owner.getNextParallelItem() + "-");
 						doJob();
+						if (progressIndicator != null && progressIndicator.isAborted())
+							stopped = true;
 						running = false;
 					}
 				}
