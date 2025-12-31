@@ -641,7 +641,7 @@ public class LocalBlaster extends Blaster implements ActionListener,  AppUser, P
 		StringBuffer shellScript = new StringBuffer(1000);
 		String scriptPath = rootDir + "batchScriptGetFastaFromIDs" + MesquiteFile.massageStringToFilePathSafe(unique) + ".bat";
 		if (scriptBased) {
-			String  executablePath = StringUtil.protectFilePath(getDefaultExecutablePath()+"blastdbcmd");
+			String  executablePath = StringUtil.protectFilePath(getDefaultExecutablePath()+ MesquiteFile.fileSeparator+"blastdbcmd");
 			//String  executablePath = StringUtil.protectFilePath(getDefaultExecutablePath()+MesquiteFile.fileSeparator+"blastdbcmd");
 				shellScript.append(ShellScriptUtil.getBasicShellScript(executablePath,  rootDir, blastArguments, null, runningFilePath, false, true));
 				MesquiteFile.putFileContents(scriptPath, shellScript.toString(), true);
