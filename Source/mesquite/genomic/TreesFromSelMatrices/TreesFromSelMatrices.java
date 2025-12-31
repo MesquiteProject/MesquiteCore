@@ -14,12 +14,16 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
 package mesquite.genomic.TreesFromSelMatrices;
 /* created May 02 */
 
+import java.awt.Point;
 import java.util.Vector;
 
 import mesquite.lib.CommandChecker;
 import mesquite.lib.CompatibilityTest;
+import mesquite.lib.IntegerField;
 import mesquite.lib.ListableVector;
 import mesquite.lib.MesquiteBoolean;
+import mesquite.lib.MesquiteFile;
+import mesquite.lib.MesquiteInteger;
 import mesquite.lib.MesquiteString;
 import mesquite.lib.MesquiteThread;
 import mesquite.lib.ResultCodes;
@@ -35,23 +39,28 @@ import mesquite.lib.taxa.Taxa;
 import mesquite.lib.tree.MesquiteTree;
 import mesquite.lib.tree.Tree;
 import mesquite.lib.tree.TreeVector;
+import mesquite.lib.ui.ExtensibleDialog;
 import mesquite.lib.ui.ProgressIndicator;
+import mesquite.lib.ui.RadioButtons;
 import mesquite.lists.lib.CharMatricesListUtility;
 
 /* ======================================================================== */
 public class TreesFromSelMatrices extends CharMatricesListUtility {
-
+	int storageChoice = 0; //0 = single tree block; 1 = multiple tree blocks; 2 = multiple tree files
+	static final int SINGLE_TREE_BLOCK = 0;
+	static final int MULTIPLE_TREE_BLOCKS = 1;
+	static final int MULTIPLE_FILES = 2;
 	/*.................................................................................................................*/
 	public String getName() {
 		return "Infer Trees from Matrices";
 	}
 	/*.................................................................................................................*/
 	public String getNameForMenuItem() {
-		return "Trees from Matrices...";
+		return "Infer Trees from Matrices...";
 	}
 
 	public String getExplanation() {
-		return "Infers trees for each of the matrices, and compiles them into a single tree block." ;
+		return "Infers trees for each of the matrices, and compiles them into a single tree block, or multiple tree blocks, or external tree files." ;
 	}
 	TreeSearcherFromMatrix inferenceTask;
 	MatrixSourceCoord matrixSourceTask;
@@ -63,28 +72,49 @@ public class TreesFromSelMatrices extends CharMatricesListUtility {
 		if (inferenceTask == null || matrixSourceTask == null)
 			return false;
 		inferenceTask.setMatrixSource(matrixSourceTask);
-		return true;
+		return queryOptions();
 	}
 	/*.................................................................................................................*/
 	/** if returns true, then requests to remain on even after operateOnTaxas is called.  Default is false*/
 	public boolean pleaseLeaveMeOn(){
 		return false;
 	}
-/*
-	boolean warnedAboutDeleting = false;
-	/*.................................................................................................................*
+
+	/* ................................................................................................................. */
+	public boolean queryOptions() {
+
+		MesquiteInteger buttonPressed = new MesquiteInteger(1);
+		ExtensibleDialog queryDialog = new ExtensibleDialog(containerOfModule(), "Inferring trees from matrices", buttonPressed);
+		queryDialog.addLargeOrSmallTextLabel("Where to save trees inferred from the matrices?");
+
+		RadioButtons whereToSave = queryDialog.addRadioButtons (new String[] {"In single tree block", "In separate tree block for each matrix", "In external tree files"}, storageChoice);
+
+
+		queryDialog.completeAndShowDialog(true);
+
+		boolean OK = buttonPressed.getValue() == 0;
+		if (OK) {
+			storageChoice = whereToSave.getValue();
+			storePreferences();
+
+		}
+		queryDialog.dispose();
+		return (OK);
+	}
+
+	/*.................................................................................................................*/
 	public String preparePreferencesForXML () {
 		StringBuffer buffer = new StringBuffer();
-		StringUtil.appendXMLTag(buffer, 2, "warnedAboutDeleting", warnedAboutDeleting);  
+		StringUtil.appendXMLTag(buffer, 2, "storageChoice", storageChoice);  
 		return buffer.toString();
 	}
-	/*.................................................................................................................*
+	/*.................................................................................................................*/
 	public void processSingleXMLPreference (String tag, String content) {
-		if ("warnedAboutDeleting".equalsIgnoreCase(tag)) {
-			warnedAboutDeleting = MesquiteBoolean.fromTrueFalseString(content);
+		if ("storageChoice".equalsIgnoreCase(tag)) {
+			storageChoice = MesquiteInteger.fromString(content);
 		}
 	}
-*/
+
 	MCharactersDistribution currentMatrix = null;
 	public MCharactersDistribution getCurrentMatrix(Taxa taxa) {
 		return currentMatrix;
@@ -114,12 +144,12 @@ public class TreesFromSelMatrices extends CharMatricesListUtility {
 				}
 			}
 		}
-	/*	if (!warnedAboutDeleting && datas.size()>=10 && !MesquiteThread.isScripting()){
+		/*	if (!warnedAboutDeleting && datas.size()>=10 && !MesquiteThread.isScripting()){
 			alert("If the tree inferences will be done locally and analysis folders will be created, you may want to check the \"Delete analysis folder after completion\" check box so as not to generate many new folders.\n\nThis suggestion won't be repeated.");
 			warnedAboutDeleting = true;
 			storePreferences();
 		}
-*/
+		 */
 		inferenceTask.initialize(taxa);
 		inferenceTask.setMultipleMatrixMode(true);
 		TreeInferer inferer = inferenceTask.getTreeInferer();
@@ -127,7 +157,21 @@ public class TreesFromSelMatrices extends CharMatricesListUtility {
 			inferer.setAlwaysPrepareForAnyMatrices(true);
 			//inferer.setPlaceAllAnalysisFilesInSubdirectory(true);
 		}
-		TreeVector trees = new TreeVector(((CharacterData)datas.elementAt(0)).getTaxa());
+		TreeVector trees = null;
+		String directoryPath = null;
+		String basePath = null;
+		String treeFileListPath = null;
+
+		if (storageChoice != MULTIPLE_TREE_BLOCKS){
+			trees = new TreeVector(((CharacterData)datas.elementAt(0)).getTaxa());
+			if (storageChoice == MULTIPLE_FILES){
+			directoryPath = MesquiteFile.chooseDirectory("Where to save files?"); //MesquiteFile.saveFileAsDialog("Base name for files (files will be named <name>1.nex, <name>2.nex, etc.)", baseName);
+			if (StringUtil.blank(directoryPath))
+				return false;
+			basePath = directoryPath + MesquiteFile.fileSeparator ; //+ baseName;
+			treeFileListPath = StringUtil.getAllButLastItem(directoryPath, MesquiteFile.fileSeparator) + MesquiteFile.fileSeparator + "ListOfTreeFiles.txt";
+		}
+		}
 		Vector v = pauseAllPausables();
 		long startTime = System.currentTimeMillis();
 		int count = 0;
@@ -145,6 +189,8 @@ public class TreesFromSelMatrices extends CharMatricesListUtility {
 				if (data.getNumChars()==0)
 					logln("Trees not inferred from matrix " +data.getName() + " because it has no characters");
 				else {
+					if (storageChoice == MULTIPLE_TREE_BLOCKS)
+						trees = new TreeVector(((CharacterData)datas.elementAt(0)).getTaxa());
 					currentMatrix = data.getMCharactersDistribution();
 					int lastNumTrees = trees.size();
 					logln("Inferring trees from matrix #" +(im+1) + " (" + data.getName() + ", " + data.getNumChars() + " characters)"); 
@@ -192,6 +238,20 @@ public class TreesFromSelMatrices extends CharMatricesListUtility {
 						}
 					}
 				}
+				if (storageChoice == MULTIPLE_TREE_BLOCKS){
+					trees.setName("Trees (" + inferenceTask.getName() + ") from matrix " + data.getName());
+					trees.addToFile(getProject().getHomeFile(), getProject(), findElementManager(Tree.class));
+				}
+				else if (storageChoice == MULTIPLE_FILES){
+					//SAVE TREE FILE HERE
+					String fileName = data.getName() + ".trees";
+					MesquiteFile.putFileContents(basePath+fileName, "", false); //path, contents, ascii
+					for (int i = 0; i<trees.size(); i++){
+						MesquiteFile.appendFileContents(basePath+fileName, trees.getTree(i).writeTree() + "\n", false); //path, contents, ascii
+					}
+					MesquiteFile.appendFileContents(treeFileListPath, basePath+fileName + "\n", false); //path, contents, ascii
+					trees.removeAllElements(false);
+				}
 			}
 			else
 				logln("Trees not inferred from matrix " +data.getName() + " because it is of a data type incompatible with the tree inference method"); 
@@ -199,10 +259,12 @@ public class TreesFromSelMatrices extends CharMatricesListUtility {
 		progIndicator.goAway();
 		MesquiteThread.setQuietPlease(false);
 		if (!userCancel) {
-			trees.setName("Trees from matrices (" + inferenceTask.getName() + ")");
-			String annot = trees.getAnnotation();
-			trees.setAnnotation("Information for trees from last of the matrices analyzed: " + annot, false);
-			trees.addToFile(getProject().getHomeFile(), getProject(), findElementManager(Tree.class));
+			if (storageChoice == SINGLE_TREE_BLOCK){
+				trees.setName("Trees from matrices (" + inferenceTask.getName() + ")");
+				String annot = trees.getAnnotation();
+				trees.setAnnotation("Information for trees from last of the matrices analyzed: " + annot, false);
+				trees.addToFile(getProject().getHomeFile(), getProject(), findElementManager(Tree.class));
+			}
 			logln("Total matrices analyzed: " + count);
 			if (numFailed > 0) {
 				discreetAlert("Trees were not obtained for " + numFailed + " of the matrices. See log for details");

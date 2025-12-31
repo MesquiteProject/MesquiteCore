@@ -3,7 +3,7 @@
 <project name="Mesquite" default="default" basedir="."
   xmlns:fx="javafx:com.sun.javafx.tools.ant">
  
-	<property name="JAVA_HOME" value="/Library/Java/JavaVirtualMachines/jdk-1.8.jdk/Contents/Home"/>
+  <property name="JAVA_HOME" value="/Library/Java/JavaVirtualMachines/jdk1.8.0_111.jdk/Contents/Home"/>
   <property name="build.src.dir" value="src"/>
   <property name="build.classes.dir" value="classes"/>
   <property name="build.dist.dir" value="dist"/>
@@ -60,8 +60,8 @@
       destdir="${build.classes.dir}"
       fork="yes"
       executable="${JAVA_HOME}/bin/javac"
-      source="1.8"
-      target="1.8"
+      source="1.7"
+      target="1.7"
       debug="on">
     </javac>
   </target>

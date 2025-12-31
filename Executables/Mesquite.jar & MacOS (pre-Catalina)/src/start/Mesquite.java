@@ -14,16 +14,20 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
 
 package start;
 
+import java.awt.Desktop;
 import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.OutputStreamWriter;
 import java.io.UnsupportedEncodingException;
-import java.lang.reflect.*;
-import java.lang.Class;
+import java.io.Writer;
+import java.lang.reflect.Method;
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.net.URLDecoder;
-import java.net.URLEncoder;
 import java.util.Vector;
-import java.lang.ClassLoader;
+
 
 /*This class is used to start Mesquite.  It is now the expected way to start Mesquite, whether in executables or not,
  * because (as of Java 9) Mesquite needs to use a custom classloader for its modules.
@@ -49,7 +53,7 @@ import java.lang.ClassLoader;
  * Starting regimes: 
  * Eclipse: set start.Mesquite as main class
  * For all other execution, this class and ByteBuddy classes need to be bundled into a jar file, and that is used to start Mesquite. See Executables folder for instructions.
-  */
+ */
 
 public class Mesquite {
 	URLClassLoader basicLoader;
@@ -58,18 +62,21 @@ public class Mesquite {
 		Mesquite m = new Mesquite();
 		m.startMesquite(args);
 	}
-	
-	Vector startupNotices = new Vector();
+
+	Vector startupNotices;
 	void startMesquite(String args[]){
+		System.out.println("Starting Mesquite with Java: " + System.getProperty("java.version"));
+		startupNotices = new Vector();
 		ClassLoader cl = start.Mesquite.class.getClassLoader();
 		String loc = cl.getResource("start/Mesquite.class").getPath();
-		System.out.println("Starting Mesquite with Java: " + System.getProperty("java.version"));
+
 		startupNotices.addElement("start.Mesquite: Location of executable start class: " + loc);
-		
-		if (loc.startsWith("file:")){
-				loc = loc.substring(5, loc.length());
+
+		if (loc != null && loc.startsWith("file:")){
+			loc = loc.substring(5, loc.length());
 		}
-	//	loc = decodeFromURL(loc); 
+
+		//	loc = decodeFromURL(loc); 
 		try {
 			loc = URLDecoder.decode(loc, "UTF-8");
 		} catch (UnsupportedEncodingException e) {
@@ -77,12 +84,42 @@ public class Mesquite {
 			e.printStackTrace();
 		}
 		System.out.println("Location of executable start class: " + loc);
-		
+
 		/*Find Mesquite_Folder by moving upwards until signature folders are found
 		 * Mesquite_Folder must contain "mesquite", "images", and "start"*/
 		loc = findMesquite_Folder(loc);
 		//If started from a jar file within an OS X application bundle, loc is initially within <bundle>/Contents/Java/<jar>/start/Mesquite.class
 		
+		if (loc == null){
+			String warning = "Mesquite cannot find the resources in its folder. Here are some possible reasons:\n\n"
+					+ "— Mesquite_Folder could be within a folder that has punctuation or special characters in its name, such as + or # or something else."
+					+" To run Mesquite (and most other bioinformatics programs), please ensure that your folders do not include most punctuation or special characters."
+					+" Generally, spaces, periods (.), underscores (_) and dashes (-) are acceptable, although spaces could cause problems for some functions.\n\n"
+					+"— Mesquite_Folder could be within a read-only disk image or zipped archive. To run Mesquite properly, please move Mesquite_Folder onto your computer's storage.\n\n"
+					+"— Mesquite_Folder has had some of its contents deleted. Please find the components, or download Mesquite again.";
+			System.err.println(warning);
+			Writer stream;
+			try {
+				stream = new OutputStreamWriter(new FileOutputStream("MesquiteProblem.txt"));
+				stream.write(warning);
+				stream.flush();
+				stream.close();
+				File file = new File("MesquiteProblem.txt");
+				if (!file.exists())
+					return;
+
+				if (Desktop.isDesktopSupported()) {
+					try {
+						Desktop.getDesktop().open(file);
+					}
+					catch (IOException ex) {
+					}
+				}
+		}
+			catch( Exception e ) {
+			} 
+			return;
+		}
 		File mesquiteDirectory = new File(loc);		
 		System.out.println("Mesquite Folder: " + loc + " (exists = " + mesquiteDirectory.exists() + ")");
 		startupNotices.addElement("start.Mesquite: Mesquite Folder: " + loc);
@@ -119,7 +156,7 @@ public class Mesquite {
 		catch (Throwable t) {
 			t.printStackTrace();
 		}
-	
+
 		/*Next, using the basic class loader to start Mesquite, doing it via a special main method that is passed this starter*/
 		try {
 			Class c = basicLoader.loadClass("mesquite.Mesquite");
@@ -131,7 +168,7 @@ public class Mesquite {
 			System.out.println("There appears to be a problem starting Mesquite.");
 			t.printStackTrace();
 		}
-		
+
 
 	}
 	/*-------------------------*/
@@ -158,11 +195,11 @@ public class Mesquite {
 	}
 	/*-------------------------*/
 	public ClassLoader getMesquiteClassLoader(){
-			return basicLoader;
+		return basicLoader;
 	}
 	/*-------------------------*/
 	public Vector getStartupNotices(){
-			return startupNotices;
+		return startupNotices;
 	}
 	/*-------------------------*/
 	static String stripLast(String s){
@@ -255,7 +292,7 @@ public class Mesquite {
 		return buffer.toString();
 	}
 
-*/
+	 */
 }
 
 

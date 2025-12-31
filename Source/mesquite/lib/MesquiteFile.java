@@ -595,7 +595,7 @@ public class MesquiteFile extends Listened implements HNode, Commandable, Listab
 				int numToDispose = calcNumToDispose();
 				boolean didOne;
 				t = System.currentTimeMillis();
-				
+
 				while (numToDispose>0 /*&& lastNumToDispose != numToDispose*/) {
 					didOne=false;
 					numToDispose = calcNumToDispose();
@@ -611,7 +611,7 @@ public class MesquiteFile extends Listened implements HNode, Commandable, Listab
 								MesquiteMessage.warnProgrammer("oops, deleted element not marked as doomed");
 							numDisposed++;
 							project.removeFileElement(elem);
-						numToDispose--;
+							numToDispose--;
 							didOne = true;
 						}
 						if (!didOne)
@@ -635,12 +635,12 @@ public class MesquiteFile extends Listened implements HNode, Commandable, Listab
 				project.decrementProjectWindowSuppression();
 				t = System.currentTimeMillis();
 			}
-		
-	}
+
+		}
 		catch (NullPointerException e){
 
 		}
-		
+
 		if (project != null)
 			project.removeFile(this);
 		t = System.currentTimeMillis();
@@ -1250,7 +1250,7 @@ public class MesquiteFile extends Listened implements HNode, Commandable, Listab
 						if (MesquiteTrunk.isWindows())
 							MesquiteMessage.warnProgrammer("If you are working on a Windows machine, you may have modified the original file with another program, which may mysteriously prevent you from modifying it in Mesquite.  This appears to be a bug in Windows.   Try duplicating the file, or using Save As in Mesquite to make a new copy of the file which should be free of the problem, or using another operating system.");
 					}
-				/*	try {MRJFileUtils.setFileTypeAndCreator(writingFile, new MRJOSType("TEXT"), new MRJOSType(setFileType));}
+					/*	try {MRJFileUtils.setFileTypeAndCreator(writingFile, new MRJOSType("TEXT"), new MRJOSType(setFileType));}
 					catch (Throwable t){}*/
 				}
 			}
@@ -2187,7 +2187,7 @@ public class MesquiteFile extends Listened implements HNode, Commandable, Listab
 		}
 		return null;
 	}
-	
+
 	/*.................................................................................................................*/
 	/** Adds the passed FileElement to the file. */
 	public void addFileElement(FileElement element) {
@@ -2788,7 +2788,7 @@ public class MesquiteFile extends Listened implements HNode, Commandable, Listab
 
 						}
 						else
-						v.addElement(newS);
+							v.addElement(newS);
 					}
 				}
 				if (v.size()!=0) {
@@ -3244,8 +3244,8 @@ public class MesquiteFile extends Listened implements HNode, Commandable, Listab
 					}
 				}
 				stream.close();
-			//	try {MRJFileUtils.setFileTypeAndCreator(new File(relativePath), new MRJOSType("TEXT"), new MRJOSType("R*ch"));}
-			//	catch (Throwable t){}
+				//	try {MRJFileUtils.setFileTypeAndCreator(new File(relativePath), new MRJOSType("TEXT"), new MRJOSType("R*ch"));}
+				//	catch (Throwable t){}
 			}
 			catch( FileNotFoundException e ) {
 				MesquiteMessage.warnProgrammer( "File Busy or Not Found:  put file contents (0)");
@@ -3289,8 +3289,8 @@ public class MesquiteFile extends Listened implements HNode, Commandable, Listab
 					}
 				}
 				stream.close();
-			//	try {MRJFileUtils.setFileTypeAndCreator(new File(relativePath), new MRJOSType("TEXT"), new MRJOSType("R*ch"));}
-		//		catch (Throwable t){}
+				//	try {MRJFileUtils.setFileTypeAndCreator(new File(relativePath), new MRJOSType("TEXT"), new MRJOSType("R*ch"));}
+				//		catch (Throwable t){}
 			}
 			catch( FileNotFoundException e ) {
 				MesquiteMessage.warnProgrammer( "File Busy or Not Found: put file contents  (1) [" + relativePath + "]");
@@ -3335,7 +3335,7 @@ public class MesquiteFile extends Listened implements HNode, Commandable, Listab
 				}
 				stream.close();
 				//try {MRJFileUtils.setFileTypeAndCreator(new File(relativePath), new MRJOSType("TEXT"), new MRJOSType("R*ch"));}
-			//	catch (Throwable t){}
+				//	catch (Throwable t){}
 			}
 			catch( FileNotFoundException e ) {
 				MesquiteMessage.warnProgrammer( "File Busy or Not Found: put file contents  (1) [" + relativePath + "]");
@@ -3365,39 +3365,34 @@ public class MesquiteFile extends Listened implements HNode, Commandable, Listab
 			return;
 		if (w)
 			MesquiteMessage.warnProgrammer("writing simultaneously ");
-
 		w = true;
 		if (fileExists(relativePath) && !canWrite(relativePath)) {
 			MesquiteModule.mesquiteTrunk.discreetAlert( MesquiteThread.isScripting(),"File cannot be written.  It may be locked or open in another application. (4; Path: " + relativePath + ")"); 
 			return;
 		}
 		Writer stream;
-		if (!MesquiteTrunk.isApplet()) {
-			try {
-				if (ascii && System.getProperty("os.name").startsWith("Mac"))
-					stream = new OutputStreamWriter(new FileOutputStream(relativePath), "ASCII");
-				else
-					stream = new OutputStreamWriter(new FileOutputStream(relativePath));
-				if (contents!=null) {
-					stream.write(contents);
-					stream.flush();
-					stream.close();
+		try {
+			if (ascii && System.getProperty("os.name").startsWith("Mac"))
+				stream = new OutputStreamWriter(new FileOutputStream(relativePath), "ASCII");
+			else
+				stream = new OutputStreamWriter(new FileOutputStream(relativePath));
+			if (contents!=null) {
+				stream.write(contents);
+				stream.flush();
+				stream.close();
 				//	try {MRJFileUtils.setFileTypeAndCreator(new File(relativePath), new MRJOSType("TEXT"), new MRJOSType("R*ch"));}
 				//	catch (Throwable t){}
-				}
-			}
-			catch( FileNotFoundException e ) {
-				MesquiteMessage.warnProgrammer( "File Busy or Not Found:  put file contents  (2) [" + relativePath + "]");
-				MesquiteMessage.printStackTrace();
-			} 
-			catch( IOException e ) {
-				MesquiteMessage.warnProgrammer( "IO exception put file contents  (2)  [" + relativePath + "] " + e.getMessage());
-				//MesquiteMessage.printStackTrace();
 			}
 		}
-		else {
-			//files cannot be written with applets
+		catch( FileNotFoundException e ) {
+			MesquiteMessage.warnProgrammer( "File Busy or Not Found:  put file contents  (2) [" + relativePath + "]");
+			MesquiteMessage.printStackTrace();
+		} 
+		catch( IOException e ) {
+			MesquiteMessage.warnProgrammer( "IO exception put file contents  (2)  [" + relativePath + "] " + e.getMessage());
+			//MesquiteMessage.printStackTrace();
 		}
+
 		w = false;
 	}
 	/*.................................................................................................................*/
@@ -3445,6 +3440,24 @@ public class MesquiteFile extends Listened implements HNode, Commandable, Listab
 	/** Returns whether a directory can be shown in the OS's file browser." */
 	public static boolean canShowDirectory() {
 		return true; //(MesquiteTrunk.isMacOSX() || MesquiteTrunk.isWindows());
+	}
+	/*.................................................................................................................*/
+	/** Shows the file specified in path in the Finder or Explorer" */
+	public static void showFile(String path) {
+		if (path == null)
+			return;
+		File file = new File(path);
+		if (!file.exists())
+			return;
+
+		if (Desktop.isDesktopSupported()) {
+			try {
+				Desktop.getDesktop().open(file);
+			}
+			catch (IOException ex) {
+			}
+		}
+
 	}
 	/*.................................................................................................................*/
 	/** Shows the directory specified in path in the Finder or Explorer" */
