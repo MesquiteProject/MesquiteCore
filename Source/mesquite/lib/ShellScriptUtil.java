@@ -244,17 +244,23 @@ public class ShellScriptUtil  {
 		return null;
 	}
 	/*.................................................................................................................*/
-	public static String getBasicShellScript(String programCommand, String workingDirectory, String args, String runningFilePath, boolean visibleTerminal) {
+	public static String getBasicShellScript(String programCommand, String workingDirectory, String args, String extraCommands, String runningFilePath, boolean visibleTerminal, boolean redirectStdOutErr) {
 		StringBuffer shellScript = new StringBuffer(1000);
 		shellScript.append(ShellScriptUtil.getChangeDirectoryCommand(MesquiteTrunk.isWindows(), workingDirectory)+ StringUtil.lineEnding(MesquiteTrunk.isWindows()));
+		if (StringUtil.notEmpty(extraCommands))
+			shellScript.append(extraCommands);
 
 		String suffix = "";
 
-		if (visibleTerminal && MesquiteTrunk.isMacOSX()) {
-			shellScript.append(programCommand + " " + args+ " >/dev/tty   2> " + ShellScriptRunner.stErrorFileName);
+		if (redirectStdOutErr) {
+			if (visibleTerminal && MesquiteTrunk.isMacOSX()) {
+				shellScript.append(programCommand + " " + args+ " >/dev/tty   2> " + ShellScriptRunner.stErrorFileName);
+			}
+			else 
+				shellScript.append(programCommand + " " + args+ " > " + ShellScriptRunner.stOutFileName+ " 2> " + ShellScriptRunner.stErrorFileName);
 		}
-		else 
-			shellScript.append(programCommand + " " + args+ " > " + ShellScriptRunner.stOutFileName+ " 2> " + ShellScriptRunner.stErrorFileName);
+		else
+			shellScript.append(programCommand + " " + args);
 
 		shellScript.append(suffix + StringUtil.lineEnding(MesquiteTrunk.isWindows()));
 

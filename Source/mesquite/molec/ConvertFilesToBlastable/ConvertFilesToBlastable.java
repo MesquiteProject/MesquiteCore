@@ -32,6 +32,7 @@ import mesquite.lib.MesquiteTrunk;
 import mesquite.lib.OutputFileProcessor;
 import mesquite.lib.ProcessWatcher;
 import mesquite.lib.ShellScriptRunner;
+import mesquite.lib.ShellScriptUtil;
 import mesquite.lib.StringUtil;
 import mesquite.lib.duties.UtilitiesAssistant;
 import mesquite.lib.ui.ExtensibleDialog;
@@ -44,7 +45,6 @@ import mesquite.molec.lib.NCBIUtil;
 public class ConvertFilesToBlastable extends UtilitiesAssistant implements ActionListener,  AppUser, ProcessWatcher, OutputFileProcessor { 
 	boolean preferencesSet = false;
 	ExternalProcessManager externalProcessManager;
-	boolean scriptBased = false;
 	boolean databasesInDefaultLocation = true;
 	String blastDatabaseFolderPath = "";
 	static String previousDirectory = null;
@@ -53,11 +53,14 @@ public class ConvertFilesToBlastable extends UtilitiesAssistant implements Actio
 
 	static String blastProgram = "makeblastdb";
 
+	static final  boolean scriptBased = true;
+
 	
 	boolean hasApp=false;
 	boolean useDefaultExecutablePath = true;  //newApp
 	String blastExecutableFolderPath = "";
 	AppInformationFile appInfoFile;
+//	int processExitValue=MesquiteInteger.impossible;
 
 
 	/*.................................................................................................................*/
@@ -247,19 +250,38 @@ public class ConvertFilesToBlastable extends UtilitiesAssistant implements Actio
 		return (buttonPressed.getValue()==0);
 	}
 
+	ShellScriptRunner scriptRunner;
+
+	/*.................................................................................................................*/
+	public String getConcatCommand(String node0File, String fileName, String destinationPath) {
+		//echo "Your desired string" | cat - yourfile.txt > newfile.txt
+		if (MesquiteTrunk.isWindows()) 
+			return "cat " + node0File + " " +fileName + " > " + destinationPath + "\n";
+		else
+			return "type " + node0File + " " +fileName + " > " + destinationPath + "\n";
+	}
 	/*.................................................................................................................*/
 	public void makeBLASTdb(String directoryPath, String fileName) {
 
+		
+		String rootSupportDir = createSupportDirectory() + MesquiteFile.fileSeparator;  
 		String unique = MesquiteTrunk.getUniqueIDBase();
-		String runningFilePath = directoryPath + "running" + MesquiteFile.massageStringToFilePathSafe(unique);
+		directoryPath+= MesquiteFile.fileSeparator;
+		String runningFilePath = rootSupportDir + "running" + MesquiteFile.massageStringToFilePathSafe(unique);
 		String outFileName = "blastResults" + MesquiteFile.massageStringToFilePathSafe(unique);
-		String outFilePath = directoryPath + outFileName;
+		String outFilePath = rootSupportDir + outFileName;
 		String[] outputFilePaths = new String[1];
 		outputFilePaths[0] = outFilePath;
 		
 		String fileNameBase = StringUtil.getAllButLastItem(fileName, ".");
+		MesquiteFile.putFileContents(rootSupportDir+"node0File.txt", ">NODE_0\nN\n", true);
 		
-		String blastArguments = " -in " + NCBIUtil.getBLASTFileInputName(fileName) + " -out " + StringUtil.blanksToUnderline(fileNameBase + "DB") + " -dbtype nucl -blastdb_version 4 -parse_seqids";
+		String destinationPath = rootSupportDir+fileName;
+		String concatCommand = getConcatCommand(rootSupportDir+"node0File.txt", fileName, destinationPath);
+		
+//		String blastArguments = " -in " + NCBIUtil.getBLASTFileInputName(fileName) + " -out " + StringUtil.blanksToUnderline(fileNameBase + "DB") + " -dbtype nucl -blastdb_version 4 -parse_seqids";
+//		String blastArguments = " -in " + NCBIUtil.getBLASTFileInputName(fileName) + " -out " + StringUtil.blanksToUnderline(fileNameBase + "DB") + " -dbtype nucl -blastdb_version 4 ";
+		String blastArguments = " -in " + NCBIUtil.getBLASTFileInputName(destinationPath) + " -out " + StringUtil.blanksToUnderline(fileNameBase + "DB") + " -dbtype nucl -blastdb_version 4 ";
 
 		String blastCommand = blastProgram + blastArguments;
 		String programPath = blastProgram;
@@ -267,18 +289,42 @@ public class ConvertFilesToBlastable extends UtilitiesAssistant implements Actio
 		
 		logln("\n...................\nBLAST command: \n" + blastCommand);
 
+		StringBuffer shellScript = new StringBuffer(1000);
+		String scriptPath = rootSupportDir + "batchScript" + MesquiteFile.massageStringToFilePathSafe(unique) + ".bat";
+		if (scriptBased) {
+				String  executablePath = StringUtil.protectFilePath(getDefaultExecutablePath())+MesquiteFile.fileSeparator+blastProgram;
+				shellScript.append(ShellScriptUtil.getBasicShellScript(executablePath,  directoryPath, blastArguments, concatCommand, runningFilePath, false, true));
+				MesquiteFile.putFileContents(scriptPath, shellScript.toString(), true);
+		}
 
 
 		boolean success = false;
 
-		String arguments = blastArguments;
-		arguments=StringUtil.stripBoundingWhitespace(arguments);
-		externalProcessManager = new ExternalProcessManager(this, directoryPath, programPath, arguments, getName(), outputFilePaths, this, this, true);
-		externalProcessManager.setStdOutFileName(ShellScriptRunner.stOutFileName);
+		if (scriptBased) {
+			scriptRunner = new ShellScriptRunner(scriptPath, runningFilePath, null, false, "makeblastdb", outputFilePaths, this, this, false);  //scriptPath, runningFilePath, null, true, name, outputFilePaths, outputFileProcessor, watcher, true
+			success = scriptRunner.executeInShell();
+			if (success) {
+				if (scriptRunner!=null) {
+					success = scriptRunner.monitorAndCleanUpShell(null);
+//					if (MesquiteInteger.isCombinable(processExitValue) && processExitValue!=0)
+//						success=false;
+				}
+			}
+			if (!MesquiteTrunk.developmentMode)
+				deleteSupportDirectory();
+			if (MesquiteTrunk.developmentMode && ! success)
+				showSupportDirectory();
 
-		success = externalProcessManager.executeInShell();
-		if (success)
-			success = externalProcessManager.monitorAndCleanUpShell(null);
+			} else {
+			String arguments = blastArguments;
+			arguments=StringUtil.stripBoundingWhitespace(arguments);
+			externalProcessManager = new ExternalProcessManager(this, directoryPath, programPath, arguments, getName(), outputFilePaths, this, this, true);
+			externalProcessManager.setStdOutFileName(ShellScriptRunner.stOutFileName);
+
+			success = externalProcessManager.executeInShell();
+			if (success)
+				success = externalProcessManager.monitorAndCleanUpShell(null);
+		}
 
 		if (getProject()!=null)
 			getProject().decrementProjectWindowSuppression();
@@ -381,10 +427,14 @@ public class ConvertFilesToBlastable extends UtilitiesAssistant implements Actio
 		// TODO Auto-generated method stub
 		
 	}
-	@Override
+	
 	public boolean continueProcess(Process proc) {
-		// TODO Auto-generated method stub
-		return false;
+		if (proc!=null && scriptBased) {
+			if (!scriptRunner.processRunning()) {
+				return false;
+			}
+		}
+		return true;
 	}
 	@Override
 	public boolean userAborted() {

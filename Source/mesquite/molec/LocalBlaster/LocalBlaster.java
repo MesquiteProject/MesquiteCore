@@ -511,7 +511,7 @@ public class LocalBlaster extends Blaster implements ActionListener,  AppUser, P
 
 		blastArguments+=" -out " + outFileName + " -outfmt 5";		
 		blastArguments+=" -max_target_seqs " + numHits; // + " -num_alignments " + numHits;// + " -num_descriptions " + numHits;		
-		blastArguments+=" " + programOptions + StringUtil.lineEnding();
+		blastArguments+=" " + programOptions;
 		String blastCommand = blastType + blastArguments;
 		String programPath = blastType;
 		programPath = getExecutablePath() + MesquiteFile.fileSeparator +blastType;
@@ -520,7 +520,7 @@ public class LocalBlaster extends Blaster implements ActionListener,  AppUser, P
 		String scriptPath = rootDir + "batchScript" + MesquiteFile.massageStringToFilePathSafe(unique) + ".bat";
 		if (scriptBased) {
 				String  executablePath = StringUtil.protectFilePath(getDefaultExecutablePath())+MesquiteFile.fileSeparator+blastType;
-				shellScript.append(ShellScriptUtil.getBasicShellScript(executablePath,  rootDir, blastArguments, runningFilePath, false));
+				shellScript.append(ShellScriptUtil.getBasicShellScript(executablePath,  rootDir, blastArguments, null, runningFilePath, false, true));
 				MesquiteFile.putFileContents(scriptPath, shellScript.toString(), true);
 		}
 
@@ -583,49 +583,6 @@ public class LocalBlaster extends Blaster implements ActionListener,  AppUser, P
 
 	
 	/*.................................................................................................................*/
-	public  String[] getStringArrayWithSplitting(String string1, String string2) {
-		boolean removeQuotesStart = false;
-		boolean removeQuotes = true;
-		boolean setNoQuoteChar = false;
-		if (StringUtil.blank(string1))
-			return null;
-		String[] array;
-		string2=StringUtil.stripBoundingWhitespace(string2);
-		if (StringUtil.blank(string2)) {
-			array = new String[1];
-			array[0]=string1;
-		} else {
-			Parser parser = new Parser(string2);
-			parser.setPunctuationString("");
-			parser.setQuoteCharacter('\'');
-			parser.setWhitespaceString(" ");
-			parser.setAllowComments(false);
-			if (setNoQuoteChar)
-				parser.setNoQuoteCharacter();  // commented out April 2023 DRM
-			int total = parser.getNumberOfTokens();
-			array = new String[total+1];
-			array[0]=string1;
-			String token = parser.getFirstRawToken();  // May 2022 DRM
-			if (removeQuotesStart)
-				token = StringUtil.removeCharacters(token, "'");  // added April 2023 DRM
-			int count=0;
-			boolean dbPrevious = false;
-			while (StringUtil.notEmpty(token)) {
-				count++;
-				array[count]=token;
-				token = parser.getUnalteredToken(false);   // May 2022 DRM
-				if (removeQuotes && !dbPrevious)
-					token = StringUtil.removeCharacters(token, "'");  // May 2022 DRM
-				dbPrevious=false;
-				if (token.equalsIgnoreCase("-db"))
-					dbPrevious=true;
-			}
-		}
-		return array;
-
-	}
-
-	/*.................................................................................................................*/
 	public String getFastaFromIDs(String queryTaxonName, String[] idList, boolean isNucleotides, StringBuffer blastResponse, int databaseNumber, MesquiteString foundTaxonName) {
 		int count = 0;
 		for (int i=0; i<idList.length; i++) 
@@ -679,7 +636,7 @@ public class LocalBlaster extends Blaster implements ActionListener,  AppUser, P
 		String scriptPath = rootDir + "batchScript" + MesquiteFile.massageStringToFilePathSafe(unique) + ".bat";
 		if (scriptBased) {
 				String  executablePath = StringUtil.protectFilePath(getDefaultExecutablePath())+MesquiteFile.fileSeparator+"blastdbcmd";
-				shellScript.append(ShellScriptUtil.getBasicShellScript(executablePath,  rootDir, blastArguments, runningFilePath, false));
+				shellScript.append(ShellScriptUtil.getBasicShellScript(executablePath,  rootDir, blastArguments, null, runningFilePath, false, true));
 				MesquiteFile.putFileContents(scriptPath, shellScript.toString(), true);
 		}
 
@@ -729,6 +686,50 @@ public class LocalBlaster extends Blaster implements ActionListener,  AppUser, P
 		getProject().decrementProjectWindowSuppression();
 		return null;
 	}	
+
+	/*.................................................................................................................*/
+	public  String[] getStringArrayWithSplitting(String string1, String string2) {
+		boolean removeQuotesStart = false;
+		boolean removeQuotes = true;
+		boolean setNoQuoteChar = false;
+		if (StringUtil.blank(string1))
+			return null;
+		String[] array;
+		string2=StringUtil.stripBoundingWhitespace(string2);
+		if (StringUtil.blank(string2)) {
+			array = new String[1];
+			array[0]=string1;
+		} else {
+			Parser parser = new Parser(string2);
+			parser.setPunctuationString("");
+			parser.setQuoteCharacter('\'');
+			parser.setWhitespaceString(" ");
+			parser.setAllowComments(false);
+			if (setNoQuoteChar)
+				parser.setNoQuoteCharacter();  // commented out April 2023 DRM
+			int total = parser.getNumberOfTokens();
+			array = new String[total+1];
+			array[0]=string1;
+			String token = parser.getFirstRawToken();  // May 2022 DRM
+			if (removeQuotesStart)
+				token = StringUtil.removeCharacters(token, "'");  // added April 2023 DRM
+			int count=0;
+			boolean dbPrevious = false;
+			while (StringUtil.notEmpty(token)) {
+				count++;
+				array[count]=token;
+				token = parser.getUnalteredToken(false);   // May 2022 DRM
+				if (removeQuotes && !dbPrevious)
+					token = StringUtil.removeCharacters(token, "'");  // May 2022 DRM
+				dbPrevious=false;
+				if (token.equalsIgnoreCase("-db"))
+					dbPrevious=true;
+			}
+		}
+		return array;
+
+	}
+
 
 	/*.................................................................................................................*/
 	public  String getTaxonomyFromID(String id, boolean isNucleotides, boolean writeLog, StringBuffer report){
