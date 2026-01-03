@@ -53,7 +53,7 @@ public abstract class SpeciesTreeFit extends NumberForTree implements Incrementa
 		"The reconstruction method can be specified initially.");
 	}
 	MesquiteNumber nt;
-	TreeSource treeSourceTask;
+	TreeSource geneTreeSourceTask;
 	AssociationSource associationTask;
 	ReconstructAssociation reconstructTask;
 	MesquiteString treeSourceName;
@@ -69,12 +69,12 @@ public abstract class SpeciesTreeFit extends NumberForTree implements Incrementa
 		reconstructTask = (ReconstructAssociation)hireEmployee(ReconstructAssociation.class, "Method to reconstruct association history");
 		if (reconstructTask == null)
 			return sorry(getName() + " couldn't start because no association reconstructor module obtained.");
-		treeSourceTask = (TreeSource)hireEmployee(TreeSource.class, "Source of contained trees");
-		if (treeSourceTask == null)
+		geneTreeSourceTask = (TreeSource)hireEmployee(TreeSource.class, "Source of contained (gene) trees");
+		if (geneTreeSourceTask == null)
 			return sorry(getName() + " couldn't start because no source of trees obtained");
 		tstC =  makeCommand("setTreeSource",  this);
-		treeSourceTask.setHiringCommand(tstC);
-		treeSourceName = new MesquiteString(treeSourceTask.getName());
+		geneTreeSourceTask.setHiringCommand(tstC);
+		treeSourceName = new MesquiteString(geneTreeSourceTask.getName());
 		if (numModulesAvailable(TreeSource.class)>1) {
 			MesquiteSubmenuSpec mss = addSubmenu(null, "Gene Tree Source", tstC, TreeSource.class);
 			mss.setSelected(treeSourceName);
@@ -86,7 +86,7 @@ public abstract class SpeciesTreeFit extends NumberForTree implements Incrementa
   	 }
   	 
 	public void employeeQuit(MesquiteModule m){
-		if (m != treeSourceTask)
+		if (m != geneTreeSourceTask)
 			iQuit();
 	}  	 
 	public boolean biggerIsBetter() {
@@ -94,27 +94,27 @@ public abstract class SpeciesTreeFit extends NumberForTree implements Incrementa
 	}
 	/*.................................................................................................................*/
  	public void employeeParametersChanged(MesquiteModule employee, MesquiteModule source, Notification notification) {
- 		if (employee != treeSourceTask || Notification.getCode(notification) != MesquiteListener.SELECTION_CHANGED)
+ 		if (employee != geneTreeSourceTask || Notification.getCode(notification) != MesquiteListener.SELECTION_CHANGED)
  			super.employeeParametersChanged(employee, source, notification);
 	}
 	/*.................................................................................................................*/
   	 public Snapshot getSnapshot(MesquiteFile file) { 
    	 	Snapshot temp = new Snapshot();
-  	 	temp.addLine("setTreeSource ", treeSourceTask); 
+  	 	temp.addLine("setTreeSource ", geneTreeSourceTask); 
   	 	return temp;
   	 }
 	MesquiteInteger pos = new MesquiteInteger();
 	/*.................................................................................................................*/
     	 public Object doCommand(String commandName, String arguments, CommandChecker checker) {
     	 	if (checker.compare(this.getClass(), "Sets the source of the gene tree", "[name of module]", commandName, "setTreeSource")) {
-			TreeSource temp = (TreeSource)replaceEmployee(TreeSource.class, arguments, "Source of trees", treeSourceTask);
+			TreeSource temp = (TreeSource)replaceEmployee(TreeSource.class, arguments, "Source of trees", geneTreeSourceTask);
 			if (temp !=null){
-				treeSourceTask = temp;
-				treeSourceTask.setHiringCommand(tstC);
-				treeSourceName.setValue(treeSourceTask.getName());
+				geneTreeSourceTask = temp;
+				geneTreeSourceTask.setHiringCommand(tstC);
+				treeSourceName.setValue(geneTreeSourceTask.getName());
 				currentContained = MesquiteInteger.unassigned;
 				parametersChanged();
-    	 			return treeSourceTask;
+    	 			return geneTreeSourceTask;
     	 		}
     	 	}
     	 	else if (checker.compare(this.getClass(), "Goes to next contained gene tree", null, commandName, "nextContained")) {
@@ -139,7 +139,7 @@ public abstract class SpeciesTreeFit extends NumberForTree implements Incrementa
 	public void setContained (int index){ 
 		if (containedTaxa == null)
 			return;
- 		if (index<((TreeSource)treeSourceTask).getNumberOfTrees(containedTaxa) && index>=0){
+ 		if (index<((TreeSource)geneTreeSourceTask).getNumberOfTrees(containedTaxa) && index>=0){
  			currentContained=index;
  			parametersChanged();
  		}
@@ -153,7 +153,7 @@ public abstract class SpeciesTreeFit extends NumberForTree implements Incrementa
         			containedTaxa = association.getTaxa(1);
         		else
         			containedTaxa = association.getTaxa(0);
-			treeSourceTask.initialize(containedTaxa);
+			geneTreeSourceTask.initialize(containedTaxa);
         	}
    	}
 	Tree lastTree;
@@ -179,7 +179,7 @@ public abstract class SpeciesTreeFit extends NumberForTree implements Incrementa
  	}
  	public long getMax(){
    		//initTaxa(preferredTaxa);
-		int nt = ((TreeSource)treeSourceTask).getNumberOfTrees(containedTaxa);
+		int nt = ((TreeSource)geneTreeSourceTask).getNumberOfTrees(containedTaxa);
 		if (nt == MesquiteInteger.infinite) {
 			return MesquiteLong.infinite;
 		}
@@ -231,9 +231,9 @@ public abstract class SpeciesTreeFit extends NumberForTree implements Incrementa
         		if (MesquiteThread.isScripting())
         			currentContained = 0;
         		else {
-				int nt = ((TreeSource)treeSourceTask).getNumberOfTrees(containedTaxa);
+				int nt = ((TreeSource)geneTreeSourceTask).getNumberOfTrees(containedTaxa);
 			   	if (nt>1) {
-   					currentContained = ((TreeSource)treeSourceTask).queryUserChoose(containedTaxa, "Which contained tree to fit into species tree to count deep coalescences?");
+   					currentContained = ((TreeSource)geneTreeSourceTask).queryUserChoose(containedTaxa, "Which contained tree to fit into species tree to count deep coalescences?");
    					if (MesquiteInteger.isUnassigned(currentContained))
    						currentContained = 0;
    				}
@@ -245,7 +245,7 @@ public abstract class SpeciesTreeFit extends NumberForTree implements Incrementa
         	}
         	
         	//getting the contained tree & cloning it in case we need to change its resolution
-		Tree containedTree = ((TreeSource)treeSourceTask).getTree(containedTaxa, currentContained); 
+		Tree containedTree = ((TreeSource)geneTreeSourceTask).getTree(containedTaxa, currentContained); 
 	        if (containedTree==null) {
 			if (resultString!=null)
 				resultString.setValue("Deep coalescences: unassigned (no gene tree)");

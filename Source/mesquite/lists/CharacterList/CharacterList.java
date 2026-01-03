@@ -174,6 +174,11 @@ public class CharacterList extends ListModule {
 					((CharacterListWindow)window).addListAssistant(assistant);
 					assistant.setUseMenubar(false);
 				}
+				assistant = (CharListAssistant)hireNamedEmployee(CharListAssistant.class, StringUtil.tokenize("#CharListGenCodeModels"));
+				if (assistant!= null){
+					((CharacterListWindow)window).addListAssistant(assistant);
+					assistant.setUseMenubar(false);
+				}
 			}
 			/**/
 		}
