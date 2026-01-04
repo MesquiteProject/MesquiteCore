@@ -61,7 +61,7 @@ public class AboutPanel extends MQPanel {
 		}
 		g.drawString("http://www.mesquiteproject.org", 5,210);
 		//RELEASEPROTOCOL
-		g.drawString("Copyright (c) 1997-2025 W. & D. Maddison.", 5,225);
+		g.drawString("Copyright (c) 1997-2026 W. & D. Maddison.", 5,225);
 		
 		MesquiteWindow.uncheckDoomed(this);
 	}

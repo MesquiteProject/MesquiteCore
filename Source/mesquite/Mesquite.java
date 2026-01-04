@@ -501,7 +501,7 @@ public class Mesquite extends MesquiteTrunk
 		if (StringUtil.notEmpty(MesquiteModule.getSpecialVersion()))
 			logInitString  +="  " + MesquiteModule.getSpecialVersion()+ "\n";
 		//RELEASEPROTOCOL
-		logInitString  += ("\nCopyright (c) 1997-2025 W. Maddison and D. Maddison\n");
+		logInitString  += ("\nCopyright (c) 1997-2026 W. Maddison and D. Maddison\n");
 		logInitString  += "The basic Mesquite package (class library and basic modules) is free software; you can redistribute it and/or modify it under the terms of the GNU Lesser General Public License. "
 				+ "  Mesquite is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY.  For details on license and "
 				+ "lack of warranty see the GNU Lesser General Public License by selecting \"Display License\" from the Window menu or at www.gnu.org\n"
