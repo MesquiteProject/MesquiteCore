@@ -470,6 +470,7 @@ public class CombineFlippedFastas extends GeneralFileMakerMultiple {
 			fileSuggestion += ".nex";
 			proj.getHomeFile().setFileName(fileSuggestion);
 			if (proj.getHomeFile().changeLocation("Save imported file as NEXUS file")) {
+				logln("Processing single-taxon FASTA files in directory " + directoryPath);
 				processDirectory(directoryPath, proj);
 				MesquiteWindow w = fileCoord.getModuleWindow();
 				if (w != null) {

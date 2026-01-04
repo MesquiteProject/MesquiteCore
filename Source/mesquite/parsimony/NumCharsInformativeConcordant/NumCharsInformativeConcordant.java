@@ -16,6 +16,7 @@ package mesquite.parsimony.NumCharsInformativeConcordant;
 
 import mesquite.categ.lib.CategoricalData;
 import mesquite.categ.lib.MCategoricalDistribution;
+import mesquite.lib.Debugg;
 import mesquite.lib.EmployeeNeed;
 import mesquite.lib.MesquiteModule;
 import mesquite.lib.MesquiteNumber;
@@ -100,6 +101,7 @@ public class NumCharsInformativeConcordant extends NumberForMatrixAndTree {
 					if (cNum.isCombinable()){
 						if (cNum.equals(bNum))
 							numInformativeConcordant.add(1);
+						else
 						count++;
 					}
 					else
