@@ -273,6 +273,8 @@ public class TreesFromSelMatricesParallel extends CharMatricesListUtility {
 		progIndicator.goAway();
 		MesquiteThread.setQuietPlease(false);
 		if (!userCancel) {
+			if (System.currentTimeMillis()- startTime>100000)
+				MesquiteMessage.beep();
 			//harvesttrees
 			if (storageChoice == SINGLE_TREE_BLOCK) {  //accumulate into single tree block, and put in file
 				TreeVector trees = new TreeVector(((CharacterData)datas.elementAt(0)).getTaxa());

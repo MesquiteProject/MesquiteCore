@@ -24,6 +24,7 @@ import mesquite.lib.ListableVector;
 import mesquite.lib.MesquiteBoolean;
 import mesquite.lib.MesquiteFile;
 import mesquite.lib.MesquiteInteger;
+import mesquite.lib.MesquiteMessage;
 import mesquite.lib.MesquiteString;
 import mesquite.lib.MesquiteThread;
 import mesquite.lib.ResultCodes;
@@ -259,6 +260,8 @@ public class TreesFromSelMatrices extends CharMatricesListUtility {
 		progIndicator.goAway();
 		MesquiteThread.setQuietPlease(false);
 		if (!userCancel) {
+			if (System.currentTimeMillis()- startTime>100000)
+				MesquiteMessage.beep();
 			if (storageChoice == SINGLE_TREE_BLOCK){
 				trees.setName("Trees from matrices (" + inferenceTask.getName() + ")");
 				String annot = trees.getAnnotation();
