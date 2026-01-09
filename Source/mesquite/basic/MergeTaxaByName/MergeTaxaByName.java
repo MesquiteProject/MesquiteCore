@@ -97,6 +97,7 @@ public class MergeTaxaByName extends TaxonUtility {
 		if (!ok)
 			return false;
 		boolean[] selected = new boolean[taxa.getNumTaxa()];
+		Vector v = pauseAllPausables();
 		for (int it = 0; it< taxa.getNumTaxa(); it++){
 			for (int s = 0; s<selected.length; s++)
 				selected[s] = false;
@@ -143,6 +144,7 @@ public class MergeTaxaByName extends TaxonUtility {
 		else
 		discreetAlert("Sorry, no matching taxa were found to merge.");
 
+		unpauseAllPausables(v);
 		//String r = report.toString();
 	//	logln(r);
 		//if (!StringUtil.blank(r))
