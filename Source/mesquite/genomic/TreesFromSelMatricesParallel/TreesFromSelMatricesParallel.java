@@ -418,7 +418,7 @@ class TreeInferenceParallelMachine implements Parallelizable {
 	}
 	/*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~*/
 	/*\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\*/
-	public synchronized int getNextParallelItemAndReserve(Parallelizer parallelizer) {
+	public synchronized int getNextParallelItemAndReserve(ParallelParams pp, Parallelizer parallelizer) {
 		int iN = 0;
 		while (iN< datas.size()){
 			if (ownerModule.compatibleMatrix((CharacterData)datas.elementAt(iN)) && parallelizer.itemUncalculated(iN)){

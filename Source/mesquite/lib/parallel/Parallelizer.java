@@ -190,7 +190,7 @@ public class Parallelizer {
 		System.out.println("Parallelizer: first calculation");
 		owner.markInappropriateItems(this);		
 		//first step, do one calculation, and use its snapshot to build others
-		int firstItem = owner.getNextParallelItemAndReserve(this);
+		int firstItem = owner.getNextParallelItemAndReserve(null, this);
 		MesquiteInteger firstResult = new MesquiteInteger();
 		setItemStatus(firstItem, BEINGCALCULATED);  //should be redundant, given the AndReserve
 		ParallelParams ppFirst = owner.doFirstCalculation_Parallel(firstItem, this, firstResult); 
@@ -287,13 +287,14 @@ public class Parallelizer {
 			done = false;
 			int item = -1;
 			calculatedOnThread = 0;
-			while (!stopped && (item = owner.getNextParallelItemAndReserve(parallelizer))>=0){
+			while (!stopped && (item = owner.getNextParallelItemAndReserve(pp, parallelizer))>=0){
 				itemBeingCalculated = item;
 				setItemStatus(item, BEINGCALCULATED);
 				int result = owner.doItemCalculation_Parallel(item, pp, parallelizer);
 				totalCalculated++;
 				calculatedOnThread++;
-				//MesquiteMessage.sys_err_println("### finished item " + item + " on thread " + whichThread);
+				
+				//MesquiteMessage.sys_err_println("### finished item " + item + " on thread " + whichThread + " " + result);
 				if (result == ResultCodes.NO_ERROR)
 					setItemStatus(item, SUCCESS);
 				else

@@ -68,7 +68,7 @@ public interface Parallelizable {
 	/*\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\*/
 	/**Finds next uncalculated item and reserves it by setting its status as being calculated, and then returns the number. Return -1 if none more
 	— SYNCHRONIZED please   */
-	public int getNextParallelItemAndReserve(Parallelizer parallelizer);  
+	public int getNextParallelItemAndReserve(ParallelParams params, Parallelizer parallelizer);  
 	/*EXAMPLE:
 	 * 		
 	 	int iN = 0;
