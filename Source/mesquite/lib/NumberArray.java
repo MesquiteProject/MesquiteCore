@@ -304,7 +304,7 @@ public class NumberArray {
 	}
 
 	/** Sets value of element "index" to the passed value */
-	public void setValue(int index, double v) {
+	public synchronized void setValue(int index, double v) {
 		if (!legalIndex(index)) {
 			MesquiteMessage.warnProgrammer("NumberArray index out of bounds (d) " + index + "  max: " + length + " valueclass " + valueClass + " intValues " + intValues + " doubleValues " + doubleValues);
 			if (intValues != null)
@@ -722,7 +722,7 @@ public class NumberArray {
 	/*--------------------------------ARITHMETRIC, COMPARISON-----------------------------*/
 	/**Add the value in the passed MesquiteNumber to that of element "index".  
 	NOTE: the sum will be returned in the MesquiteNumber passed!*/
-	public void addValue(int index, MesquiteNumber n) {
+	public synchronized void addValue(int index, MesquiteNumber n) {
 		if (!legalIndex(index))
 			return;
 		if (n!=null) {
