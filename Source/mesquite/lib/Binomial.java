@@ -26,8 +26,8 @@ public class Binomial {
 	}
 	
 	public static double probability(int n, int heads, double p) {
-		if (n>1000) {
-			MesquiteMessage.println("Error: binomial probability can't be calculated for n greater than 1000");
+		if (n>10000) {
+			MesquiteMessage.println("Error: binomial probability can't be calculated for n greater than 10000");
 			return 0;
 		}
 		if (heads>n)
@@ -46,8 +46,8 @@ public class Binomial {
 		}
 	}
 	public static double bestTail(int n, int heads, double p) {
-		if (n>1000) {
-			MesquiteMessage.println("Error: binomial probability can't be calculated for n greater than 1000");
+		if (n>10000) {
+			MesquiteMessage.println("Error: binomial probability can't be calculated for n greater than 10000");
 			return 0;
 		}
 		double c=0;
@@ -67,8 +67,8 @@ public class Binomial {
 		return c;
 	}
 	public static double rightTail(int n, int heads, double p) {
-		if (n>1000) {
-			 MesquiteMessage.println("Error: binomial probability can't be calculated for n greater than 1000");
+		if (n>10000) {
+			 MesquiteMessage.println("Error: binomial probability can't be calculated for n greater than 10000");
 			return 0;
 		}
 		double c=0;
@@ -78,8 +78,8 @@ public class Binomial {
 		return c;
 	}
 	public static double leftTail(int n, int heads, double p) {
-		if (n>1000) {
-			MesquiteMessage.println("Error: binomial probability can't be calculated for n greater than 1000");
+		if (n>10000) {
+			MesquiteMessage.println("Error: binomial probability can't be calculated for n greater than 10000");
 			return 0;
 		}
 		double c=0;
