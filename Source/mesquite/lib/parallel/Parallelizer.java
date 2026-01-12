@@ -98,8 +98,10 @@ public class Parallelizer {
 				numSUCCESS++;
 			else if (calcStatus.getValue(i) == INAPPLICABLE)
 				numINAPPLICABLE++;
-			else 
+			else {
 				numOTHER++;
+				System.err.println("@ other " + calcStatus.getValue(i) + " for " + i);
+			}
 		}
 		String s = "#";
 		s += " UNCALCULATED " + numUNCALCULATED;
