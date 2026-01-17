@@ -177,8 +177,8 @@ public class NodeLocsStandard extends NodeLocsVH {
 			fixedScalingMenuItem.setEnabled(false);
 			showScaleMenuItem.setEnabled(false);
 			broadScaleMenuItem.setEnabled(false);
-
-
+			stretchMenuItem.setEnabled(true);
+			evenMenuItem.setEnabled(true);
 		}
 
 
@@ -488,10 +488,8 @@ public class NodeLocsStandard extends NodeLocsVH {
 				branchLengthsDisplayMode.setValue(TreeDisplay.DRAWUNASSIGNEDASONE);
 			else
 				branchLengthsDisplayMode.setValue(TreeDisplay.DRAWULTRAMETRIC);
+			resetForBranchLengthDisplayMode();
 
-			autoOn.setValue(branchLengthsDisplayMode.getValue() == TreeDisplay.AUTOSHOWLENGTHS);
-			ultraOn.setValue(branchLengthsDisplayMode.getValue() == TreeDisplay.DRAWULTRAMETRIC);
-			blOn.setValue(branchLengthsDisplayMode.getValue() == TreeDisplay.DRAWUNASSIGNEDASONE);
 			//param changed not needed because this is an old script
 		}
 		else if (checker.compare(this.getClass(), "Sets whether or not the branches are to be shown proportional to their lengths", "[integer for mode]", commandName, "branchLengthsDisplay")) {
@@ -502,37 +500,7 @@ public class NodeLocsStandard extends NodeLocsVH {
 			if (!MesquiteInteger.isCombinable(choice) || choice <0 || choice >2)
 				return null;
 			branchLengthsDisplayMode.setValue(choice);
-			autoOn.setValue(branchLengthsDisplayMode.getValue() == TreeDisplay.AUTOSHOWLENGTHS);
-			ultraOn.setValue(branchLengthsDisplayMode.getValue() == TreeDisplay.DRAWULTRAMETRIC);
-			blOn.setValue(branchLengthsDisplayMode.getValue() == TreeDisplay.DRAWUNASSIGNEDASONE);
-			if (!MesquiteThread.isScripting() && inBasicTreeWindow())
-				recordLastLengthsDisplayMode(branchLengthsDisplayMode.getValue());
-			/*
-			 * static final int SHOWULTRAMETRIC = 0; //	
-			static final int AUTOSHOWLENGTHS = 1;
-			static final int SHOWUNASSIGNEDASONE = 2; //if a branch has unassigned length, treat as length 1
-			 */
-			if (branchLengthsDisplayMode.getValue() == TreeDisplay.DRAWULTRAMETRIC) {
-				deleteMostMenuItems();
-				stretchMenuItem.setEnabled(true);
-				evenMenuItem.setEnabled(true);
-			}
-			else {
-				deleteMostMenuItems();
-				fixedScalingMenuItem.setEnabled(true);
-				if (fixedScale) {
-					fixedScalingMenuItem.setName("Fixed Scaling Off");
-					fixedScalingMenuItem.setCommand(makeCommand("offFixedScaling", this));
-				}
-				else {
-					fixedScalingMenuItem.setName("Fixed Scaling...");
-					fixedScalingMenuItem.setCommand(makeCommand("setFixedScaling", this));
-				}
-				//offFixedScalingMenuItem.setEnabled(fixedScale);
-				showScaleMenuItem.setEnabled(true);
-				broadScaleMenuItem.setEnabled(true);
-			}
-			resetContainingMenuBar();
+			resetForBranchLengthDisplayMode();
 			parametersChanged();
 		}
 		else if (checker.compare(this.getClass(), "Sets fixed scale length", "[length of branch lengths scale]", commandName, "setFixedScaling")) {
@@ -575,6 +543,36 @@ public class NodeLocsStandard extends NodeLocsVH {
 		else
 			return  super.doCommand(commandName, arguments, checker);
 		return null;
+	}
+
+	void resetForBranchLengthDisplayMode(){
+		autoOn.setValue(branchLengthsDisplayMode.getValue() == TreeDisplay.AUTOSHOWLENGTHS);
+		ultraOn.setValue(branchLengthsDisplayMode.getValue() == TreeDisplay.DRAWULTRAMETRIC);
+		blOn.setValue(branchLengthsDisplayMode.getValue() == TreeDisplay.DRAWUNASSIGNEDASONE);
+		if (!MesquiteThread.isScripting() && inBasicTreeWindow())
+			recordLastLengthsDisplayMode(branchLengthsDisplayMode.getValue());
+
+		if (branchLengthsDisplayMode.getValue() == TreeDisplay.DRAWULTRAMETRIC) {
+			deleteMostMenuItems();
+			stretchMenuItem.setEnabled(true);
+			evenMenuItem.setEnabled(true);
+		}
+		else {
+			deleteMostMenuItems();
+			fixedScalingMenuItem.setEnabled(true);
+			if (fixedScale) {
+				fixedScalingMenuItem.setName("Fixed Scaling Off");
+				fixedScalingMenuItem.setCommand(makeCommand("offFixedScaling", this));
+			}
+			else {
+				fixedScalingMenuItem.setName("Fixed Scaling...");
+				fixedScalingMenuItem.setCommand(makeCommand("setFixedScaling", this));
+			}
+			//offFixedScalingMenuItem.setEnabled(fixedScale);
+			showScaleMenuItem.setEnabled(true);
+			broadScaleMenuItem.setEnabled(true);
+		}
+		resetContainingMenuBar();
 	}
 	public String getName() {
 		return "Node Locations (standard)";
