@@ -664,7 +664,7 @@ public abstract class MesquiteTrunk extends MesquiteModule
 	}
 
 	/*.................................................................................................................*/
-	private static void resetEnabling(Menu menu) {
+	public static void resetEnabling(Menu menu) {
 		int numItems = menu.getItemCount();
 		for (int i = 0; i<numItems; i++) {
 			MenuItem mi = menu.getItem(i);

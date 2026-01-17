@@ -2478,6 +2478,14 @@ public abstract class MesquiteWindow implements Listable, Commandable, OwnedByMo
 			ownerModule.logln("   " + Integer.toString(menuResets) + " menu resets for " + getTitle() + "    " +time + " seconds");
 		}
 
+		//make sure enabling is OK
+		int numMenus = menuBar.getMenuCount();
+		for (int imenu = 0; imenu<numMenus; imenu++) {
+			Menu menu = menuBar.getMenu(imenu);
+			MesquiteTrunk.resetEnabling(menu);
+		}
+
+
 		resetMenuTime.end();
 	}
 	public void setMenuBar(MenuBar mbar) {
