@@ -44,7 +44,10 @@ import java.util.Vector;
 
 import javax.imageio.ImageIO;
 
+import org.apache.commons.math3.distribution.BinomialDistribution;
+
 import mesquite.lib.Associable;
+import mesquite.lib.Binomial;
 import mesquite.lib.CommandChecker;
 import mesquite.lib.CommandRecord;
 import mesquite.lib.CommandThread;
@@ -58,6 +61,7 @@ import mesquite.lib.ListableVector;
 import mesquite.lib.Listened;
 import mesquite.lib.LogWindow;
 import mesquite.lib.MainThread;
+import mesquite.lib.MesquiteBigDecimal;
 import mesquite.lib.MesquiteBoolean;
 import mesquite.lib.MesquiteCommand;
 import mesquite.lib.MesquiteFile;
@@ -465,7 +469,7 @@ public class Mesquite extends MesquiteTrunk
 		if (verboseStartup) System.out.println("main init 7");
 
 
-	String logPath = supportFilesPath + sep + MesquiteTrunk.logFileName; 
+		String logPath = supportFilesPath + sep + MesquiteTrunk.logFileName; 
 		File logFile = new File(logPath);
 
 		boolean logFileExistsButCantWrite = (logFile.exists() &&!logFile.canWrite());
@@ -926,7 +930,21 @@ public class Mesquite extends MesquiteTrunk
 			addMenuItem(helpMenu, "Test Error Reporting", makeCommand("testError", this));
 		
 		postExtraPackagesReport();
-
+		
+		/*Debugg.println("@
+		int total = 2000;
+		//int heads = total;
+		BinomialDistribution binom = new BinomialDistribution(total, 0.5);
+		
+		for (int heads = total/2; heads<=total; heads++){
+			double apache = 1.0 - binom.cumulativeProbability(heads-1);
+			double oldMesquite = Binomial.rightTail(total, heads, 0.5);
+			MesquiteBigDecimal bH = Binomial.rightTailMBD(total, heads, 0.5);
+			double newMesquite = bH.getLog10();
+			//System.err.println("@ apache " + Math.log10(apache) + " old " + Math.log10(oldMesquite) + " new " + newMesquite);
+		
+		}
+		System.err.println("@ DONE===========");*/
 	} 
 
 	/*.................................................................................................................*/

@@ -70,6 +70,10 @@ public class MesquiteInteger implements Listable, Nameable{
 	public void setValue(String s) {
 		this.value=fromString(s);
 	}
+	/** Sets value */
+	public void setValue(MesquiteInteger b) {
+		this.value=b.getValue();
+	}
 	public static void setValue(MesquiteInteger b, int value) { //so that setting can be done in line whether or not null
 		if (b != null)
 			b.setValue(value);
@@ -489,6 +493,25 @@ public class MesquiteInteger implements Listable, Nameable{
 			}
 		}
 	}
+	/*...........................................................*/
+	/** Returns true if current value is more than d . */
+	public boolean greaterThan(int d) {
+		if (isUnassigned() || MesquiteInteger.isInfinite(d)) return false;
+		if (MesquiteInteger.isUnassigned(d) || isInfinite()) return true;
+		if (!MesquiteInteger.isCombinable(d) || !isCombinable())
+			return false;
+			return value>d;
+		
+	}
+	/*...........................................................*/
+	/** Returns true if current value is more than value of n . */
+	public boolean greaterThan(MesquiteInteger n) {
+		if (n==null) return false;
+		if (isUnassigned() || n.isInfinite()) return false;
+		if (n.isUnassigned() || isInfinite()) return true;
+		return value>n.getValue();
+	}
+
 	/*----------------------------------------------------------*/
 	public static boolean isDivisibleBy(int value, int diviser) {
 		if (diviser == 0) 
