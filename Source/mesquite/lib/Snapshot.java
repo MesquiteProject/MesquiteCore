@@ -283,7 +283,7 @@ public class Snapshot {
 
 			for (int i = 0; i< module.getNumberOfEmployees(); i++) {
 				MesquiteModule mb = (MesquiteModule)module.getEmployeeVector().elementAt(i);
-				if (!snapshot.modulePresent(mb) && (MesquiteTrunk.snapshotMode == Snapshot.SNAPALL || mb.satisfiesSnapshotMode())) {  //employee not covered in snapshot
+				if (!snapshot.modulePresent(mb) && mb.getAutoSnapshotAsEmployee() && (MesquiteTrunk.snapshotMode == Snapshot.SNAPALL || mb.satisfiesSnapshotMode())) {  //employee not covered in snapshot
 					String emp = getSnapshotCommands(mb, file, spacer);
 					if (!StringUtil.blank(emp)) {
 						sb.append(spacer + "getEmployee " + StringUtil.tokenize(module.getEmployeeReference(mb)) + ";" + StringUtil.lineEnding());//quote

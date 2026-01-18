@@ -2330,7 +2330,16 @@ public abstract class MesquiteModule extends EmployerEmployee implements Command
 	public void preWritingCheck(MesquiteFile file, String format){		
 	}
 
-
+	/*.................................................................................................................*/
+	/*Suppresses auto snapshotting of unnamed employee modules. E.g., for parallelization. See also noUIForEmployeeBranch in EmployerEmployee	 */
+	boolean autoSnapshotAsEmployee = true;
+	public void setAutoSnapshotAsEmployee(boolean auto){
+		autoSnapshotAsEmployee = auto;
+	}
+	public boolean getAutoSnapshotAsEmployee(){
+		return autoSnapshotAsEmployee;
+	}
+	/*.................................................................................................................*/
 	/** Return Mesquite commands that will put the module (approximately) back into its current state. Used
 	so that on file save, a Mesquite block can be saved that will return the user more or less to previous state. */
 	public Snapshot getSnapshot(MesquiteFile file) {  //this allows employees to be dealt with

@@ -2438,12 +2438,12 @@ class BasicTreeWindow extends MesquiteWindow implements Fittable, MesquiteListen
 			else if (setToZero || currentTreeNumber >= numTrees)
 				goToTreeNumber(0, false);
 			else
-				goToTreeNumber(currentTreeNumber, false);
+				goToTreeNumber(currentTreeNumber, false, true); //TREESETHERE
 		}
 
 		if (editedTree != null && !windowModule.pinToLastTree.getValue()) {  //if pinned to last tree, you lose edit
 			// originalTree = null;
-			setTree(editedTree);
+			setTree(editedTree);  //TREESETHERE
 			setTreeName(editedTree);
 			if (firstTimeTreeSource) {
 				if (originalTree != null && originalTree instanceof MesquiteTree)
@@ -3744,9 +3744,13 @@ class BasicTreeWindow extends MesquiteWindow implements Fittable, MesquiteListen
 	void setScrollEnabled(boolean enable){
 		palette.paletteScroll.setEnabled(enable);
 	}
-
 	/* ................................................................................................................. */
 	public Tree goToTreeNumber(int index, boolean rememberEdited) {
+		return goToTreeNumber(index, rememberEdited, false);
+	}
+
+	/* ................................................................................................................. */
+	public Tree goToTreeNumber(int index, boolean rememberEdited, boolean suppressTreeSet) {
 		if (disposing)
 			return null;
 		currentTreeNumber = index;
@@ -3786,7 +3790,7 @@ class BasicTreeWindow extends MesquiteWindow implements Fittable, MesquiteListen
 		if (disposing)
 			return null;
 		MesquiteBoolean editStatusToSet = new MesquiteBoolean();
-		Tree t = setCloneOfTree(treeT, true, editStatusToSet);
+		Tree t = setCloneOfTree(treeT, true, editStatusToSet, suppressTreeSet);
 		treeEdited = editStatusToSet.getValue();
 		editedByHand = false;
 		setTreeName(t);
@@ -4170,7 +4174,7 @@ class BasicTreeWindow extends MesquiteWindow implements Fittable, MesquiteListen
 						showTreePopup(x, y, tree, -1); 
 					}
 					else {
-						if (notifyExtrasOfFieldTouch(g, x, y, modifiers)){
+						if (notifyExtrasOfFieldTouch(g, x, y, modifiers, currentTreeTool)){
 							fieldTouchedExtrasX = x;
 							fieldTouchedExtrasY = y;
 							return true;
@@ -4181,6 +4185,11 @@ class BasicTreeWindow extends MesquiteWindow implements Fittable, MesquiteListen
 						lastFieldDragY = y;
 
 					}
+				}
+				else if (notifyExtrasOfFieldTouch(g, x, y, modifiers, currentTreeTool)){
+					fieldTouchedExtrasX = x;
+					fieldTouchedExtrasY = y;
+					return true;
 				}
 
 				boolean fieldTouchAccepted = currentTreeTool.fieldTouched(x, y, tree, modifiers);
@@ -4663,14 +4672,14 @@ class BasicTreeWindow extends MesquiteWindow implements Fittable, MesquiteListen
 
 	/* ................................................................................................ */
 	//	return true if consumed!
-	boolean notifyExtrasOfFieldTouch(Graphics g, int x, int y, int modifiers) {
+	boolean notifyExtrasOfFieldTouch(Graphics g, int x, int y, int modifiers, MesquiteTool tool) {
 		if (treeDisplay.getExtras() != null) {
 			Enumeration e = treeDisplay.getExtras().elements();
 			while (e.hasMoreElements()) {
 				Object obj = e.nextElement();
 				if (obj instanceof TreeDisplayExtra) {
 					TreeDisplayExtra tce = (TreeDisplayExtra) obj;
-					if (tce.cursorTouchField(tree, g, x, y, modifiers, 0))
+					if (tce.cursorTouchField(tree, g, x, y, modifiers, 0, tool))
 						return true;
 				}
 			}
@@ -5092,9 +5101,12 @@ class BasicTreeWindow extends MesquiteWindow implements Fittable, MesquiteListen
 		tree.setName(n);
 		setTreeName(tree);
 	}
+	Tree setCloneOfTree(Tree treeToClone, boolean resetOriginal, MesquiteBoolean editStatusToSet) { // displays copy for editing
+		return setCloneOfTree(treeToClone, resetOriginal, editStatusToSet, false);
+	}
 
 	/* ................................................................................................................. */
-	Tree setCloneOfTree(Tree treeToClone, boolean resetOriginal, MesquiteBoolean editStatusToSet) { // displays copy for editing
+	Tree setCloneOfTree(Tree treeToClone, boolean resetOriginal, MesquiteBoolean editStatusToSet, boolean suppressTreeSet) { // displays copy for editing
 	if (taxa != null && taxa.isDoomed()) {
 			ownerModule.iQuit();
 			return null;
@@ -5144,7 +5156,8 @@ class BasicTreeWindow extends MesquiteWindow implements Fittable, MesquiteListen
 				setTreeName(tree);
 			}
 			hookCurrentTree();
-			treeChanged(true);
+			if (!suppressTreeSet)
+				treeChanged(true);
 			return tree;
 		}
 		else if (ownerModule != null)

@@ -166,6 +166,7 @@ public class Parallelizer {
 		MesquiteModule clone = (MesquiteModule) employer.hireNamedEmployee(hiredAs, "#" + MesquiteModule.getShortClassName(employee.getClass()));
 		if (clone != null) {
 			clone.noUIForEmployeeBranch();
+			clone.setAutoSnapshotAsEmployee(false);
 			Puppeteer p = new Puppeteer(clone);
 			Object obj = p.sendCommands(clone, snapshot, pos, "", false, null, CommandChecker.defaultChecker);
 		}

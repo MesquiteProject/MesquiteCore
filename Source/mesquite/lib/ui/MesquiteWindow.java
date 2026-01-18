@@ -2481,8 +2481,12 @@ public abstract class MesquiteWindow implements Listable, Commandable, OwnedByMo
 		//make sure enabling is OK
 		int numMenus = menuBar.getMenuCount();
 		for (int imenu = 0; imenu<numMenus; imenu++) {
-			Menu menu = menuBar.getMenu(imenu);
+			try {
+				Menu menu = menuBar.getMenu(imenu);
 			MesquiteTrunk.resetEnabling(menu);
+			}
+			catch (Exception e){
+			}
 		}
 
 

@@ -828,6 +828,7 @@ public class GraphicsUtil {
 		if (transparency == 0)
 			return;
 		Composite composite = ColorDistribution.getComposite(g);
+		Color c = g.getColor();
 		if (transparency == 2)
 			ColorDistribution.setTransparentGraphics2(g);		
 		else if (transparency == 3)
@@ -836,7 +837,8 @@ public class GraphicsUtil {
 			ColorDistribution.setTransparentGraphics5(g);		
 		g.setColor(color);
 		g.fill(poly);
-		ColorDistribution.setComposite(g, composite);		
+		ColorDistribution.setComposite(g, composite);	
+		g.setColor(c);
 	}
 	public static void setTransparentGraphics (Graphics g, int transparency) {
 		if (transparency == 2)

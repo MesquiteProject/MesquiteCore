@@ -254,6 +254,9 @@ public abstract class TreeDisplayExtra implements Listable, OwnedByModule {
 	/**to inform TreeDisplayExtra that cursor has just touched branch N*/
 	public void cursorTouchBranch(Tree tree, int N, Graphics g){}
 	/**to inform TreeDisplayExtra that cursor has just touched the field (not in a branch or taxon)*/
+	public boolean cursorTouchField(Tree tree, Graphics g, int x, int y, int modifiers, int clickID, MesquiteTool tool){
+		return cursorTouchField(tree, g, x, y, modifiers,clickID);
+	}
 	public boolean cursorTouchField(Tree tree, Graphics g, int x, int y, int modifiers, int clickID){
 		return false;
 	}
