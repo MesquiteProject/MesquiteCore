@@ -624,7 +624,11 @@ public class LocalBlaster extends Blaster implements ActionListener,  AppUser, P
 		String programPath = "blastdbcmd";
 		programPath = getExecutablePath() + MesquiteFile.fileSeparator +"blastdbcmd";
 
-		String blastArguments = "  -entry "+queryString + " -outfmt %f";
+		String blastArguments = "  -entry "+queryString;
+		if (MesquiteTrunk.isWindows() && scriptBased)
+			blastArguments += " -outfmt \"%%f\"";
+		else
+			blastArguments += " -outfmt %f";
 		//blastArguments+= " -db "+databaseArray[databaseNumber];
 		//blastArguments+= " -db \""+databaseArray[databaseNumber]+"\"";
 		blastArguments+= " -db "+NCBIUtil.getBLASTFileInputName(databaseArray[databaseNumber], scriptBased);
@@ -642,6 +646,7 @@ public class LocalBlaster extends Blaster implements ActionListener,  AppUser, P
 		String scriptPath = rootDir + "batchScriptGetFastaFromIDs" + MesquiteFile.massageStringToFilePathSafe(unique) + ".bat";
 		if (scriptBased) {
 			String  executablePath = StringUtil.protectFilePath(getDefaultExecutablePath()+"blastdbcmd");
+//			String  executablePath = StringUtil.protectFilePath("%~dp0"+getDefaultExecutablePath()+"blastdbcmd");
 			//String  executablePath = StringUtil.protectFilePath(getDefaultExecutablePath()+MesquiteFile.fileSeparator+"blastdbcmd");
 				shellScript.append(ShellScriptUtil.getBasicShellScript(executablePath,  rootDir, blastArguments, null, runningFilePath, false, true));
 				MesquiteFile.putFileContents(scriptPath, shellScript.toString(), true);
