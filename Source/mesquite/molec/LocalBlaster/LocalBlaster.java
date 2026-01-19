@@ -129,7 +129,7 @@ public class LocalBlaster extends Blaster implements ActionListener,  AppUser, P
 		}
 		if (appInfoFile!=null) {
 			String fullPath = appInfoFile.getFullPath();
-			return fullPath;
+			return MesquiteFile.getPathWithSingleSeparatorAtEnd(fullPath);
 		}
 		return null;
 	}
