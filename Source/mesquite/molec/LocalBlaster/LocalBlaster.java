@@ -520,7 +520,7 @@ public class LocalBlaster extends Blaster implements ActionListener,  AppUser, P
 		StringBuffer shellScript = new StringBuffer(1000);
 		String scriptPath = rootDir + "batchScript" + MesquiteFile.massageStringToFilePathSafe(unique) + ".bat";
 		if (scriptBased) {
-				String  executablePath = StringUtil.protectFilePath(getDefaultExecutablePath())+MesquiteFile.fileSeparator+blastType;
+				String  executablePath = StringUtil.protectFilePath(getDefaultExecutablePath()+blastType);
 				shellScript.append(ShellScriptUtil.getBasicShellScript(executablePath,  rootDir, blastArguments, null, runningFilePath, false, true));
 				MesquiteFile.putFileContents(scriptPath, shellScript.toString(), true);
 		}
@@ -573,8 +573,8 @@ public class LocalBlaster extends Blaster implements ActionListener,  AppUser, P
 			else
 				success = false;
 		}
-		if (!MesquiteTrunk.developmentMode)
-			deleteSupportDirectory();
+//		if (!MesquiteTrunk.developmentMode)
+//			deleteSupportDirectory();
 		if (MesquiteTrunk.developmentMode && ! success)
 			showSupportDirectory();
 		if (getProject()!=null)
@@ -641,7 +641,7 @@ public class LocalBlaster extends Blaster implements ActionListener,  AppUser, P
 		StringBuffer shellScript = new StringBuffer(1000);
 		String scriptPath = rootDir + "batchScriptGetFastaFromIDs" + MesquiteFile.massageStringToFilePathSafe(unique) + ".bat";
 		if (scriptBased) {
-			String  executablePath = StringUtil.protectFilePath(getDefaultExecutablePath()+ MesquiteFile.fileSeparator+"blastdbcmd");
+			String  executablePath = StringUtil.protectFilePath(getDefaultExecutablePath()+"blastdbcmd");
 			//String  executablePath = StringUtil.protectFilePath(getDefaultExecutablePath()+MesquiteFile.fileSeparator+"blastdbcmd");
 				shellScript.append(ShellScriptUtil.getBasicShellScript(executablePath,  rootDir, blastArguments, null, runningFilePath, false, true));
 				MesquiteFile.putFileContents(scriptPath, shellScript.toString(), true);
@@ -683,12 +683,11 @@ public class LocalBlaster extends Blaster implements ActionListener,  AppUser, P
 				blastResponse.setLength(0);
 				blastResponse.append(results);
 			}
-			if (!MesquiteTrunk.developmentMode)
-				deleteSupportDirectory();
+//			if (!MesquiteTrunk.developmentMode)
+//				deleteSupportDirectory();
 			getProject().decrementProjectWindowSuppression();
 			return results;
-		}
-		if (!MesquiteTrunk.developmentMode)
+		} else if (!MesquiteTrunk.developmentMode)
 			deleteSupportDirectory();
 		getProject().decrementProjectWindowSuppression();
 		return null;

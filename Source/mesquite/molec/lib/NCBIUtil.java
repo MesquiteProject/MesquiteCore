@@ -63,7 +63,9 @@ public class NCBIUtil {
 	/*.................................................................................................................*/
 	public static String getBLASTFileInputName(String fileName) {
 		if (MesquiteTrunk.isWindows()) {
-			return "\"\\\"" + fileName + "\\\"\"";
+			String s = "\"\\\"" + fileName + "\\\"\"";
+			s=s.replace("^", "^^");
+			return s;
 		} else {
 			return "\' \"" + fileName + "\" \'";
 		}
@@ -72,10 +74,13 @@ public class NCBIUtil {
 	/*.................................................................................................................*/
 	public static String getBLASTFileInputName(String fileName, boolean inScript) {
 		if (MesquiteTrunk.isWindows()) {
+			String s=fileName;
+			s=s.replace("^", "^^");
 			if (inScript)
-				return "\"" + fileName + "\"";
+				s= "\"" + s + "\"";
 			else
-				return "\"\\\"" + fileName + "\\\"\"";
+				s= "\"\\\"" + s + "\\\"\"";
+			return s;
 		} else {
 			return "\' \"" + fileName + "\" \'";
 		}

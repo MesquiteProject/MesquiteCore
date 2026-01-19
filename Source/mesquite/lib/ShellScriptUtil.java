@@ -265,7 +265,7 @@ public class ShellScriptUtil  {
 		shellScript.append(suffix + StringUtil.lineEnding(MesquiteTrunk.isWindows()));
 
 
-		shellScript.append(ShellScriptUtil.getRemoveCommand(MesquiteTrunk.isWindows(), runningFilePath, false));
+		shellScript.append("\n"+ShellScriptUtil.getRemoveCommand(MesquiteTrunk.isWindows(), runningFilePath, false));
 		shellScript.append(StringUtil.lineEnding(MesquiteTrunk.isWindows()));
 		if (ShellScriptUtil.exitCommandIsAvailableAndUseful(MesquiteTrunk.isWindows()))
 			shellScript.append("\n" + ShellScriptUtil.getExitCommand(MesquiteTrunk.isMacOSX()) + "\n");
