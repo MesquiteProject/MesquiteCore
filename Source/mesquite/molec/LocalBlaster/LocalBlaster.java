@@ -631,7 +631,7 @@ public class LocalBlaster extends Blaster implements ActionListener,  AppUser, P
 			blastArguments += " -outfmt %f";
 		//blastArguments+= " -db "+databaseArray[databaseNumber];
 		//blastArguments+= " -db \""+databaseArray[databaseNumber]+"\"";
-		blastArguments+= " -db "+NCBIUtil.getBLASTFileInputName(databaseArray[databaseNumber], scriptBased);
+		blastArguments+= " -db "+NCBIUtil.getBLASTFileInputName(databaseArray[databaseNumber]);
 		if (prependDatabaseName && foundTaxonName != null){
 			String nameFromDatabaseName = StringUtil.getLastItem(databaseArray[databaseNumber], MesquiteFile.fileSeparator);
 			nameFromDatabaseName = StringUtil.getAllButLastItem(nameFromDatabaseName, ".");
