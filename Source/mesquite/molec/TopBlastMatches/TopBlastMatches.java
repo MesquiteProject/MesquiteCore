@@ -66,7 +66,7 @@ public class TopBlastMatches extends MolecDataSearcher implements ItemListener {
 
 	boolean importTopMatches = true;
 	boolean saveResultsToFile = false;
-	int maxHits = 5;
+	int maxHits = 10;
 	double  minimumBitScore = 0.0;
 	boolean preferencesSet = false;
 	boolean fetchTaxonomy = false;
