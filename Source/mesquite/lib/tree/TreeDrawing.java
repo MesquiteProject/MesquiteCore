@@ -163,8 +163,8 @@ public abstract class TreeDrawing  {
 	}
 	public int findTerminalBox(Tree tree, int x, int y){
 		int drawnRoot = getDrawnRoot(); 
-		if (!tree.nodeExists(drawnRoot))
-			drawnRoot = tree.getRoot();
+	//	if (!tree.nodeExists(drawnRoot))
+	//		drawnRoot = tree.getRoot();
 		return findTerminalBox(tree, drawnRoot, x, y); 
 	}
 
@@ -199,6 +199,8 @@ public abstract class TreeDrawing  {
 		return y[node];
 	}
 	public int getDrawnRoot(){
+		if (drawnRoot == -1 || !treeDisplay.getTree().nodeExists(drawnRoot))
+			return treeDisplay.getTree().getRoot();
 		return drawnRoot;
 	}
 	public void setDrawnRoot(int node){

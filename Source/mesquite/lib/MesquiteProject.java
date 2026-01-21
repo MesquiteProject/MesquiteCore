@@ -2118,13 +2118,16 @@ public class MesquiteProject extends Attachable implements Listable, MesquiteLis
 	/** returns the jth of data sets belonging to a given file*/
 	public mesquite.lib.characters.CharacterData getCharacterMatrix(MesquiteFile f, Taxa taxa, Object dataClass, int j, boolean visibleOnly) {  //MesquiteProject only
 		int count=0;
+		
 		for (int i=0; i<datas.size(); i++) { 
 			mesquite.lib.characters.CharacterData data = (mesquite.lib.characters.CharacterData)datas.elementAt(i);
-
-			if ((!visibleOnly || data.isUserVisible()) && !data.isDoomed() && (f== null || data.getFile()==f) && (taxa == null || taxa == data.getTaxa()) && (dataClass == null || compatibleMatrix(dataClass, data))) {
-				if (count==j) {
+			if ((!visibleOnly || data.isUserVisible()) 
+					&& !data.isDoomed() 
+					&& (f== null || data.getFile()==f) 
+					&& (taxa == null || taxa == data.getTaxa()) 
+					&& (dataClass == null || compatibleMatrix(dataClass, data))) {
+				if (count==j)
 					return data;
-				}
 				count++;
 			}
 		}
