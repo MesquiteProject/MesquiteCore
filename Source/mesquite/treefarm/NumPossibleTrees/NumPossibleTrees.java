@@ -14,7 +14,12 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
 package mesquite.treefarm.NumPossibleTrees;
 
 
+import java.math.BigDecimal;
 import java.math.BigInteger;
+import java.text.DecimalFormat;
+import java.text.DecimalFormatSymbols;
+import java.text.NumberFormat;
+import java.util.Locale;
 
 import mesquite.lib.MesquiteFile;
 import mesquite.lib.MesquiteModule;
@@ -33,14 +38,20 @@ public class NumPossibleTrees extends TreeUtility {
 	public  void useTree(Tree tree) {
 		BigInteger num = new BigInteger("1");
 		int numTaxa = tree.getNumTaxa();
-		for (int it=3; it<=numTaxa; it++) {
+        NumberFormat formatter = new DecimalFormat("0.####E0", DecimalFormatSymbols.getInstance(Locale.ROOT));
+        for (int it=3; it<=numTaxa; it++) {
 			int value = 2*it-3;
 			String valueString = "" +  value;
-			if (it==numTaxa)
-				logln("Number of possible unrooted, dichotomous trees: " + num.toString());
+			if (it==numTaxa) {
+				logln("\nNumber of possible unrooted, dichotomous trees for " + numTaxa+ " terminal taxa: \n" + num.toString());
+				logln("   = " + formatter.format(num));
+			}
 			num=num.multiply(new BigInteger(valueString));
 		}
-		logln("Number of possible rooted, dichotomous trees: " + num.toString());
+		logln("\nNumber of possible rooted, dichotomous trees for " + numTaxa+ " terminal taxa: \n" + num.toString());
+ //       BigDecimal bd = new BigDecimal(num);
+
+		logln("   = " + formatter.format(num));
 	}
 	
 	
@@ -49,7 +60,7 @@ public class NumPossibleTrees extends TreeUtility {
 	}
 	/*.................................................................................................................*/
     	 public String getName() {
-		return "Number of Possible Trees";
+		return "Write Number of Possible Trees to Log";
    	 }
 	/*.................................................................................................................*/
  	/** returns an explanation of what the module does.*/
