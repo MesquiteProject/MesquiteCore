@@ -55,6 +55,7 @@ import mesquite.lib.Annotatable;
 import mesquite.lib.CommandChecker;
 import mesquite.lib.Commandable;
 import mesquite.lib.CommandableOwner;
+import mesquite.lib.Debugg;
 import mesquite.lib.DoubleArray;
 import mesquite.lib.EmployeeNeed;
 import mesquite.lib.EmployeeVector;
@@ -257,8 +258,8 @@ public class BasicTreeWindowMaker extends TreeWindowMaker implements Commandable
 		if (MesquiteThread.isScripting() || (arguments == null || !arguments.equalsIgnoreCase("edit")))
 			treeSourceTask = (TreeSource) hireCompatibleEmployee(TreeSource.class, condition, "Source of trees (Tree window)");
 		else {
-			treeSourceTask = (TreeSource) hireNamedEmployee(TreeSource.class, "$ #StoredTrees laxMode", taxa, false);
-			editMode = true;
+		treeSourceTask = (TreeSource) hireNamedEmployee(TreeSource.class, "$ #StoredTrees laxMode", taxa, false); 
+		editMode = true;
 		}
 
 		if (treeSourceTask == null)
@@ -2438,7 +2439,7 @@ class BasicTreeWindow extends MesquiteWindow implements Fittable, MesquiteListen
 			else if (setToZero || currentTreeNumber >= numTrees)
 				goToTreeNumber(0, false);
 			else
-				goToTreeNumber(currentTreeNumber, false, true); //TREESETHERE
+				goToTreeNumber(currentTreeNumber, false, false); //TREESETHERE  Debugg.println("@ double check why 
 		}
 
 		if (editedTree != null && !windowModule.pinToLastTree.getValue()) {  //if pinned to last tree, you lose edit

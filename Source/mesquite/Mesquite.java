@@ -931,20 +931,6 @@ public class Mesquite extends MesquiteTrunk
 		
 		postExtraPackagesReport();
 		
-		/*Debugg.println("@
-		int total = 2000;
-		//int heads = total;
-		BinomialDistribution binom = new BinomialDistribution(total, 0.5);
-		
-		for (int heads = total/2; heads<=total; heads++){
-			double apache = 1.0 - binom.cumulativeProbability(heads-1);
-			double oldMesquite = Binomial.rightTail(total, heads, 0.5);
-			MesquiteBigDecimal bH = Binomial.rightTailMBD(total, heads, 0.5);
-			double newMesquite = bH.getLog10();
-			//System.err.println("@ apache " + Math.log10(apache) + " old " + Math.log10(oldMesquite) + " new " + newMesquite);
-		
-		}
-		System.err.println("@ DONE===========");*/
 	} 
 
 	/*.................................................................................................................*/

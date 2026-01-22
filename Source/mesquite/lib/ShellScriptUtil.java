@@ -138,7 +138,8 @@ public class ShellScriptUtil  {
 			return "osascript -e 'quit app \"Terminal\"'";  // doesn't fully work as will prompt user
 		}
 		else
-			return "exit ";
+			return "exit ";  
+			//return "";
 	}
 	/*.................................................................................................................*/
 	public static String getSetFileTypeCommand(String filePath){

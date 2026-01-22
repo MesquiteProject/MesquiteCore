@@ -71,7 +71,7 @@ public class MesquiteSubmenuSpec extends MesquiteMenuSpec{
 	public ListableVector getExtraItems(){
 		return items;
 	}
-
+	
 	public void setBehaviorIfNoChoice(int beh) {
 		this.beh = beh;
 	}

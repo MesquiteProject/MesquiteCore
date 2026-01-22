@@ -628,8 +628,8 @@ class SquareLineTreeDrawing extends TreeDrawing  {
 		if (MesquiteTree.OK(tree)) {
 			if (tree.getNumNodeSpaces()!=numNodes)
 				resetNumNodes(tree.getNumNodeSpaces());
-			if (!tree.nodeExists(getDrawnRoot()))
-				setDrawnRoot(tree.getRoot());
+		//	if (!tree.nodeExists(getDrawnRoot()))
+		//		setDrawnRoot(tree.getRoot());
 			calcBranchStuff(tree, getDrawnRoot());
 		}
 	}

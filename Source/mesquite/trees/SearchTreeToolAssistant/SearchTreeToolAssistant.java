@@ -21,13 +21,16 @@ import mesquite.lib.Commandable;
 import mesquite.lib.MesquiteBoolean;
 import mesquite.lib.MesquiteCommand;
 import mesquite.lib.MesquiteInteger;
+import mesquite.lib.MesquiteListener;
 import mesquite.lib.MesquiteModule;
 import mesquite.lib.MesquiteString;
+import mesquite.lib.Notification;
 import mesquite.lib.RandomBetween;
 import mesquite.lib.duties.NumberForTree;
 import mesquite.lib.duties.TreeDisplayAssistantI;
 import mesquite.lib.duties.TreeSwapper;
 import mesquite.lib.tree.AdjustableTree;
+import mesquite.lib.tree.MesquiteTree;
 import mesquite.lib.tree.Tree;
 import mesquite.lib.tree.TreeDisplay;
 import mesquite.lib.tree.TreeDisplayExtra;
@@ -233,12 +236,17 @@ import mesquite.trees.lib.TreeOptimizer;
 				
 				int branchFound= MesquiteInteger.fromString(arguments,pos);
 				MesquiteString resultString = new MesquiteString();
+		//		((MesquiteTree)tree).incrementVersion(MesquiteListener.BRANCHES_REARRANGED, true);
+				treeDisplay.getTreeDrawing().setDrawnRoot(-1);
 				treeOptimizer.setSwapTask(ownerModule.getTreeSwapper());
 				treeOptimizer.setNumberTask(ownerModule.getNumberTask());
 				treeOptimizer.setBiggerIsBetter(!ownerModule.getSmallerIsBetter());
 				treeOptimizer.setLiveUpdates(ownerModule.getLiveUpdates());
 				treeOptimizer.setNotify(true);
+				
 				treeOptimizer.searchForBetterTree(tree, branchFound, rng, resultString);
+				
+				treeDisplay.pleaseUpdate(true);
 
 				//	TreeSearchUtil.searchForBetterTree(ownerModule,  tree,  branchFound, ownerModule.getTreeSwapper(),  ownerModule.getNumberTask(),  rng,  resultString,  ownerModule.getSmallerIsBetter(),  ownerModule.getLiveUpdates(),  true);
 			//	TreeSearchUtil.searchForBetterTree(ownerModule,  tree,  branchFound, 30000,false,false,ownerModule.getTreeSwapper(),  ownerModule.getNumberTask(),  rng,  resultString,  ownerModule.getSmallerIsBetter(),  ownerModule.getLiveUpdates(),  true,true,false);

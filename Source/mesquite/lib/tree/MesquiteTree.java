@@ -980,7 +980,7 @@ public class MesquiteTree extends Associable implements AdjustableTree, Listable
 	}
 	/*-----------------------------------------*/
 	/** Used to keep track of version numbers of tree.  Each time tree is changed, call this.  Also removes sensitive attachments. */
-	protected void incrementVersion(int code, boolean notify){
+	public void incrementVersion(int code, boolean notify){
 		super.incrementVersion(code, notify);
 		if (code == BRANCHES_REARRANGED) {
 			topologyVersion++;

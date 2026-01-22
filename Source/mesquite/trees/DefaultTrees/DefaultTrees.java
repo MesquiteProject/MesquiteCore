@@ -24,6 +24,7 @@ import mesquite.lib.tree.Tree;
 /** Supplies default trees (e.g., ladder, bush).  Used as a last resort tree source. */
 public class DefaultTrees extends TreeSource {  
 	int currentTree=0; //AS OF 1. 06 the default is symmetrical to prevent deepest recursions with large trees (StackOverflowError)
+	MesquiteTree latestTree = null;
 	Taxa currentTaxa;
 	static int BUSH = 1;
 	static int LADDER = 2;
@@ -40,6 +41,12 @@ public class DefaultTrees extends TreeSource {
 			return;
 		if (obj == currentTaxa) {
 				parametersChanged(notification);
+		}
+		else if (obj == latestTree){
+			String name =latestTree.getName();
+			if (name != null && name.indexOf("Based on")<0)
+				latestTree.setName("Based on " +latestTree.getName());
+			parametersChanged(notification);
 		}
 	}
 	 public boolean permitSeparateThreadWhenFilling(){
@@ -95,6 +102,8 @@ public class DefaultTrees extends TreeSource {
 	public void endJob(){
 		if (currentTaxa!=null)
 			currentTaxa.removeListener(this);
+		if (latestTree != null)
+			latestTree.removeListener(this);
 		super.endJob();
 	}
    	/** Called to provoke any necessary initialization.  This helps prevent the module's intialization queries to the user from
@@ -106,34 +115,36 @@ public class DefaultTrees extends TreeSource {
    		if (taxa == null)
    			return null;
    		currentTree = itree;
-   		if (itree==BUSH) {
-			MesquiteTree tree = new MesquiteTree(taxa);
+		MesquiteTree tree = new MesquiteTree(taxa);
+  		if (itree==BUSH) {
 			tree.setToDefaultBush(taxa.getNumTaxa(), false);
 			tree.setName("Default bush");
-	   		return tree;
    		}
    		else if (itree==LADDER) {
-			MesquiteTree tree = new MesquiteTree(taxa);
 			tree.setToDefaultLadder(taxa.getNumTaxa(), false);
 			tree.setName("Default ladder");
-	   		return tree;
    		}
    		else { //Symmetrical
    			int numTaxa = taxa.getNumTaxa();
-			MesquiteTree tree = new MesquiteTree(taxa);
 			if (numTaxa == 1){
 				tree.setToDefaultBush(1, false);
 				return tree;
 			}
-			tree.setToDefaultBush(2, false);
+			else {
+				tree.setToDefaultBush(2, false);
 			int secondHalf = numTaxa/2;
 			int rightNode = tree.nextSisterOfNode(tree.firstDaughterOfNode(tree.getRoot()));
 			tree.setTaxonNumber(rightNode, secondHalf, false);
 			formSymmetricalClade(tree, 0, secondHalf-1);
 			formSymmetricalClade(tree, secondHalf, tree.getTaxa().getNumTaxa()-1);
 			tree.setName("Default symmetrical");
-	   		return tree;
+			}
    		}
+		if (latestTree != null)
+			latestTree.removeListener(this);
+		latestTree = tree;
+		latestTree.addListener(this);
+ 		return tree;
    	}
 	/*.................................................................................................................*/
    	public int getNumberOfTrees(Taxa taxa) {
