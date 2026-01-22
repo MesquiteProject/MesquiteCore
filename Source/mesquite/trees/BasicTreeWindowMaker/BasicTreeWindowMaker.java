@@ -4094,7 +4094,7 @@ class BasicTreeWindow extends MesquiteWindow implements Fittable, MesquiteListen
 				setExplanation(baseExplanation, false);
 				treeDisplay.setCursor(currentTreeTool.getCursor());
 				currentTreeTool.moved(x, y, tree, modifiers);
-				notifyExtrasOfCursorMove(g, x, y);
+				notifyExtrasOfCursorMove(g, x, y, modifiers, currentTreeTool);
 				// notify extras?
 			}
 		}
@@ -4561,14 +4561,14 @@ class BasicTreeWindow extends MesquiteWindow implements Fittable, MesquiteListen
 	}
 
 	/* ................................................................................................ */
-	public void notifyExtrasOfCursorMove(Graphics g, int x, int y) {
+	public void notifyExtrasOfCursorMove(Graphics g, int x, int y, int modifiers, MesquiteTool tool) {
 		if (treeDisplay.getExtras() != null) {
 			Enumeration e = treeDisplay.getExtras().elements();
 			while (e.hasMoreElements()) {
 				Object obj = e.nextElement();
 				if (obj instanceof TreeDisplayExtra) {
 					TreeDisplayExtra tce = (TreeDisplayExtra) obj;
-					tce.cursorMove(tree, x, y, g);
+					tce.cursorMove(tree, x, y, g, modifiers, tool );
 				}
 			}
 		}
