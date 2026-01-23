@@ -566,7 +566,27 @@ public class MesquiteInteger implements Listable, Nameable{
 			}
 		}
 	}
-
+	public static String toStringOrdinal(int v, boolean superlative){
+		if (!isCombinable(v))
+			return toString(v);
+		if (v == 1){
+			if (superlative)
+				return "";
+			return "1st";
+		}
+		else if (v == 2)
+			return "2nd";
+		else if (v==3)
+			return "3rd";
+		else if (v == -1)
+			return "-1st";
+		else if (v == -2)
+			return "-2nd";
+		else if (v==-3)
+			return "-3rd";
+		else
+			return Integer.toString(v) + "th";
+	}
 	/** Returns string version of this value, with leading zeros as needed.  Returns "unassigned" etc. if needed*/
 	public static String toStringDigitsSpecified(int v, int digits) {
 		if (v==unassigned)
