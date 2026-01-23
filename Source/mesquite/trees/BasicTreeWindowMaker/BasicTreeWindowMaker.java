@@ -2279,7 +2279,7 @@ class BasicTreeWindow extends MesquiteWindow implements Fittable, MesquiteListen
 			treeDisplay.repaint();
 		}
 		else {
-			resetForTreeSource(setToZero, true, false, MesquiteInteger.inapplicable);
+				resetForTreeSource(setToZero, true, false, MesquiteInteger.inapplicable);
 		}
 	}
 
@@ -2419,6 +2419,7 @@ class BasicTreeWindow extends MesquiteWindow implements Fittable, MesquiteListen
 			setScrollEnabled(true);
 		}
 		pTLTmis.setEnabled(treeSourceTask.permitsRequestForLastTree(taxa));
+		boolean willSetTree = editedTree != null && !windowModule.pinToLastTree.getValue();
 		if (numTrees == 0) {
 			currentTreeNumber = 0;
 			palette.paletteScroll.setCurrentValue(0);
@@ -2439,10 +2440,10 @@ class BasicTreeWindow extends MesquiteWindow implements Fittable, MesquiteListen
 			else if (setToZero || currentTreeNumber >= numTrees)
 				goToTreeNumber(0, false);
 			else
-				goToTreeNumber(currentTreeNumber, false, false); //TREESETHERE  Debugg.println("@ double check why 
+				goToTreeNumber(currentTreeNumber, false,  willSetTree); //TREESETHERE  suppress tree change if about to happen in next block anyway
 		}
 
-		if (editedTree != null && !windowModule.pinToLastTree.getValue()) {  //if pinned to last tree, you lose edit
+		if (willSetTree) {  //if pinned to last tree, you lose edit
 			// originalTree = null;
 			setTree(editedTree);  //TREESETHERE
 			setTreeName(editedTree);
@@ -4656,19 +4657,24 @@ class BasicTreeWindow extends MesquiteWindow implements Fittable, MesquiteListen
 	}
 
 	/* ................................................................................................ */
-	void notifyExtrasOfBranchTouch(Graphics g, int N, int modifiers, MesquiteTool tool) {
+	boolean notifyExtrasOfBranchTouch(Graphics g, int N, int modifiers, MesquiteTool tool) {
 		if (treeDisplay.getExtras() != null) {
 			Enumeration e = treeDisplay.getExtras().elements();
 			while (e.hasMoreElements()) {
 				Object obj = e.nextElement();
 				if (obj instanceof TreeDisplayExtra) {
 					TreeDisplayExtra tce = (TreeDisplayExtra) obj;
-					tce.cursorTouchBranch(tree, N, g, modifiers, tool);
+					if (tce.cursorTouchBranch(tree, N, g, modifiers, tool)) {
+						if (treeInfoPanel != null && infoPanelOn.getValue())
+							treeInfoPanel.branchTouch(N);
+						return true;
+					}
 				}
 			}
 		}
 		if (treeInfoPanel != null && infoPanelOn.getValue())
 			treeInfoPanel.branchTouch(N);
+		return false;
 	}
 
 	/* ................................................................................................ */
@@ -5177,6 +5183,8 @@ class BasicTreeWindow extends MesquiteWindow implements Fittable, MesquiteListen
 				unhookPreviousTree();
 				tree.dispose();
 			}
+			long treeID = tree.getID();
+			long treeVersion = tree.getVersionNumber();
 			if (originalTree == null) {
 				if (windowModule.editMode)
 					tree = taxa.getDefaultDichotomousTree(null);
@@ -5194,7 +5202,11 @@ class BasicTreeWindow extends MesquiteWindow implements Fittable, MesquiteListen
 				setTreeName(tree);
 			}
 			hookCurrentTree();
-			treeChanged(true);
+			long nowTreeID = tree.getID();
+			long nowTreeVersion = tree.getVersionNumber();
+			
+			if (nowTreeID != treeID || nowTreeVersion != treeVersion)
+				treeChanged(true);
 			return tree;
 		}
 		else

@@ -247,9 +247,10 @@ public abstract class TreeDisplayExtra implements Listable, OwnedByModule {
 	public void cursorExitBranch(Tree tree, int N, Graphics g, int modifiers, MesquiteTool tool){
 	cursorExitBranch(tree, N, g);
 }
-	/**to inform TreeDisplayExtra that cursor has just touched branch N*/
-	public void cursorTouchBranch(Tree tree, int N, Graphics g, int modifiers, MesquiteTool tool){ //$%$%$%
+	/**to inform TreeDisplayExtra that cursor has just touched branch N; return true if consumed*/
+	public boolean cursorTouchBranch(Tree tree, int N, Graphics g, int modifiers, MesquiteTool tool){ //$%$%$%
 		cursorTouchBranch(tree, N, g);
+		return false; //if it's not overridden, and it's simply calling an old one, assume the touch is treated as unconsumed
 	}
 	/**to inform TreeDisplayExtra that cursor has just touched branch N*/
 	public void cursorTouchBranch(Tree tree, int N, Graphics g){}
