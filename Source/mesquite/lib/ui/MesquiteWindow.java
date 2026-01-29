@@ -2443,7 +2443,7 @@ public abstract class MesquiteWindow implements Listable, Commandable, OwnedByMo
 		resetMenus(true);
 	}
 	public void resetMenus(boolean generateRegardless){
-		if (ownerModule.isDoomed())
+		if (ownerModule == null || ownerModule.isDoomed())
 			return;
 		if (!generateRegardless && refreshMenusOnlyFrontWindows && parentFrame.frontWindow != this){ //this is the short circuit that makes it so that only frontmost windows have their menus reset
 			needMenuBarReset = true;

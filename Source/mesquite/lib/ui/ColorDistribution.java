@@ -363,7 +363,15 @@ public class ColorDistribution {
 			((Graphics2D)g).setComposite(AlphaComposite.getInstance(AlphaComposite.SRC, 1));   
 	}
 	
-	private static float brighten(int v, double proportion){
+	public static float brighten(double v, double proportion){
+		float b = (float)(1.0-(1.0-v)*proportion);
+		if (b<0)
+			b=0;
+		else if (b>1)
+			b=1;
+		return b;
+	}
+	public static float brighten(int v, double proportion){
 		float b = (float)((255-(255-v)*proportion)/255);
 		if (b<0)
 			b=0;
@@ -380,7 +388,7 @@ public class ColorDistribution {
 		int blue = c.getBlue();
 		return new Color(brighten(red, proportion), brighten(green, proportion), brighten(blue, proportion));
 	}
-	private static float darken(int v, double proportion){
+	public static float darken(int v, double proportion){
 		float b = (float)((v*proportion)/255);
 		if (b<0)
 			b=0;

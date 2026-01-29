@@ -59,7 +59,6 @@ public abstract class TrimSitesByFlagger extends SequenceTrimmer  {
 			undoInstructions =data.getUndoInstructionsAllMatrixCells(new int[] {UndoInstructions.CHAR_DELETED});
 
 		data.incrementNotifySuppress();
-		Vector v = pauseAllPausables();
 		if (getProject() != null)
 			getProject().incrementProjectWindowSuppression();
 
@@ -87,7 +86,6 @@ public abstract class TrimSitesByFlagger extends SequenceTrimmer  {
 
 		if (getProject() != null)
 			getProject().decrementProjectWindowSuppression();
-		unpauseAllPausables(v);
 		data.decrementNotifySuppress();
 
 		data.notifyListeners(this, new Notification(MesquiteListener.PARTS_DELETED));

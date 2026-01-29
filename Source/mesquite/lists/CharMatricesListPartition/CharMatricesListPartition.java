@@ -17,9 +17,12 @@ package mesquite.lists.CharMatricesListPartition;
 import java.awt.Color;
 import java.awt.FontMetrics;
 import java.awt.Graphics;
+import java.util.Vector;
 
+import mesquite.lib.Debugg;
 import mesquite.lib.ListableVector;
 import mesquite.lib.Notification;
+import mesquite.lib.Pausable;
 import mesquite.lib.SelectionInformer;
 import mesquite.lib.characters.CharacterData;
 import mesquite.lib.characters.MatrixPartition;
@@ -33,7 +36,7 @@ import mesquite.lists.lib.CharMatricesListAssistant;
 import mesquite.lists.lib.ListModule;
 
 /* ======================================================================== */
-public class CharMatricesListPartition extends CharMatricesListAssistant implements SelectionInformer{
+public class CharMatricesListPartition extends CharMatricesListAssistant implements SelectionInformer, Pausable{
 	//"@MATRIXGROUP
 	/*.................................................................................................................*/
 	MesquiteTable table=null;
@@ -71,6 +74,26 @@ public class CharMatricesListPartition extends CharMatricesListAssistant impleme
 		return "Lists and allows changes to group membership in the current partition of matrices, for List of Character Matrices window." ;
 	}
 	
+	/** Indicate what could be paused */
+	public void addPausables(Vector pausables) {
+		if (pausables != null)
+			pausables.addElement(this);
+	}
+	/** to ask Pausable to pause*/
+	public void pause() {
+		paused = true;
+	}
+	/** to ask a Pausable to unpause (i.e. to resume regular activity)*/
+	public void unpause() {
+		paused = false;
+		outputInvalid();
+		parametersChanged(null);
+	}
+	/*.................................................................................................................*/
+	boolean paused = false;
+	public boolean isPaused(){
+		return paused;
+	}
 	/*.................................................................................................................*/
 	
 	public boolean isItemSelected (int item, Object caller){
@@ -90,8 +113,10 @@ public class CharMatricesListPartition extends CharMatricesListAssistant impleme
 	public void changed(Object caller, Object obj, Notification notification){
 		if (caller == this)
 			return;
-		outputInvalid();
-		parametersChanged(notification);
+		if (!paused){
+			outputInvalid();
+			parametersChanged(notification);
+		}
 	}
 	public String getTitle() {
 		return "Group";
