@@ -31,6 +31,20 @@ public class MesquiteBigDecimal {
 		this.mantissa= mantissa;
 		adjust();
 	}
+	public void setValueLog10(double log10 ){
+		boolean neg = (log10<0);
+		if (neg)
+			log10 = -log10;
+		exponent = (int)log10;
+		double mL = log10 - exponent;
+		if (neg){
+			mantissa= Math.pow(10, -mL);
+			exponent= -exponent;
+		}
+		else
+			mantissa= Math.pow(10, mL);
+		adjust();
+	}
 	public void setValue(double mantissa){
 		this.exponent= 0;
 		this.mantissa= mantissa;
@@ -122,7 +136,6 @@ public class MesquiteBigDecimal {
 			System.err.println("MesquiteBigDecimal log10 of zero");
 
 		return exponent + Math.log10(mantissa);
-
 	}
 	public double getMantissa(){
 		return mantissa;
@@ -149,10 +162,28 @@ public class MesquiteBigDecimal {
 			return false;
 		if (m>0) // positives, so 
 			return mantissa < m;
-
 		//negatives so smaller absolute number is bigger
 		return mantissa > m;
 
+	}
+	public boolean greaterThan(double m, int e){
+		if (e != exponent){ // make exponents the same
+			int f = e-exponent;
+			m *= Math.pow(10, f);
+		}
+		if (mantissa==0) {
+			return m < 0;
+		}
+		if (m == 0)
+			return mantissa > 0;
+			if (mantissa>0 && m<0 || mantissa>0 && m<0)
+				return true;
+			if (m>0 && mantissa<0 || m>0 && mantissa<0)
+				return false;
+			if (m>0) // positives, so 
+				return mantissa > m;
+				//negatives so smaller absolute number is bigger
+				return mantissa < m;
 	}
 	public String toString(){
 		return Double.toString(mantissa) + " X 10^" + exponent + " (log10: " +getLog10() + ")";
