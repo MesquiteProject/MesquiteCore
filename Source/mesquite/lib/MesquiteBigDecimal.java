@@ -45,6 +45,27 @@ public class MesquiteBigDecimal {
 			mantissa= Math.pow(10, mL);
 		adjust();
 	}
+	public static String toStringFromLog10(double log10){
+		boolean neg = (log10<0);
+		if (neg)
+			log10 = -log10;
+		int exp = (int)log10;
+		double mant = 1.0;
+		double mL = log10 - exp;
+		if (neg){
+			mant= Math.pow(10, -mL);
+			exp= -exp;
+		}
+		else
+			mant= Math.pow(10, mL);
+		if (neg){
+			mant *= 10.0;
+			exp -= 1;
+		}
+		String s = MesquiteDouble.toStringDigitsSpecified(mant, 3);
+		s += " x 10^" + exp;
+		return s;
+	}
 	public void setValue(double mantissa){
 		this.exponent= 0;
 		this.mantissa= mantissa;

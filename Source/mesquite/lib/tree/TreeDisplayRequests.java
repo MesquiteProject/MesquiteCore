@@ -23,7 +23,7 @@ public class TreeDisplayRequests {
 	/*These requests do NOT sum; the tree drawer will try to ensure there is at least this much outside the 
 	 * bounds of the left and right tips, the highest tip, and the root node
 	
-		left, top, right, bottom borders are measured in pixels and in actually screen orientation, not relative to the root-tip direction of the tree
+		left, top, right, bottom borders are measured in pixels and in actual screen orientation, not relative to the root-tip direction of the tree
 		
 		tipsFieldDistance is measured in pixels, and in tree orientation. Used, e.g. in Character State Boxes
 		
