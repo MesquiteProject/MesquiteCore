@@ -1396,9 +1396,12 @@ public class NodeLocsStandard extends NodeLocsVH {
 			}
 			boolean drawDiagonalRoot = getEmployer() instanceof DiagonalRootDrawer;
 			double extraDepthAtRootRequested = 0.0;
+			int minimalHeightFromTipsRequested = 0;
 			TreeDisplayRequests requested = treeDisplay.getExtraTreeDisplayRequests(); //accumulated if needed in checkAndAdjustParameterSettings
-			if (requested != null)
+			if (requested != null) {
 				extraDepthAtRootRequested = requested.extraDepthAtRoot;
+				minimalHeightFromTipsRequested = requested.minimalHeightFromTips;
+			}
 
 			//Resetting tips margin according to length of taxon names
 			Graphics g = treeDisplay.getGraphics();
@@ -1411,11 +1414,16 @@ public class NodeLocsStandard extends NodeLocsVH {
 					if (f==null)
 						f = g.getFont();
 					prepareFontMetrics(f, g);
+					int minNeeded = findMaxNameLength(treeDisplay, tree, root) + treeDisplay.getTaxonNameBuffer() + treeDisplay.getTaxonNameDistanceFromTip();
+					minNeeded = MesquiteInteger.maximum(minNeeded, minimalHeightFromTipsRequested);
 					if (fm!=null)
-						treeDisplay.setTipsMargin(findMaxNameLength(treeDisplay, tree, root) + treeDisplay.getTaxonNameBuffer() + treeDisplay.getTaxonNameDistanceFromTip());
+						treeDisplay.setTipsMargin(minNeeded);
 				}
-				else 
-					treeDisplay.setTipsMargin(treeDisplay.getTaxonNameBuffer());
+				else {
+					int minNeeded =treeDisplay.getTaxonNameBuffer();
+					minNeeded = MesquiteInteger.maximum(minNeeded, minimalHeightFromTipsRequested);
+					treeDisplay.setTipsMargin(minNeeded);
+				}
 				g.dispose();
 			}
 			boolean branchesProportionalToLength = treeDisplay.branchLengthDisplay == TreeDisplay.DRAWUNASSIGNEDASONE || 

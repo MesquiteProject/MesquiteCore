@@ -80,13 +80,17 @@ public class MesquiteBigDecimal {
 		if (mantissa == 0){
 			exponent = 0;
 		}
-		else if (mantissa<0.001){
+		else if (mantissa<1.0){
 			double log10M = Math.log10(mantissa);
 			int factor = (int)log10M;
 			mantissa *= Math.pow(10, -factor);
 			exponent += factor;
+			if (mantissa < 1.0){
+				mantissa *= 10.0;
+				exponent -= 1;
+			}
 		}
-		else if (mantissa>1000){
+		else if (mantissa>10.0){
 			double log10M = Math.log10(mantissa);
 			int factor = (int)log10M;
 			mantissa = mantissa/Math.pow(10, factor);
@@ -207,7 +211,8 @@ public class MesquiteBigDecimal {
 				return mantissa < m;
 	}
 	public String toString(){
-		return Double.toString(mantissa) + " X 10^" + exponent + " (log10: " +getLog10() + ")";
+		adjust();
+		return MesquiteDouble.toStringDigitsSpecified(mantissa, 4) + " X 10^" + exponent + " (log10: " +getLog10() + ")";
 	}
 }
 

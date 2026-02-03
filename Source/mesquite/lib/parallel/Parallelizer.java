@@ -58,6 +58,13 @@ public class Parallelizer {
 		}
 		return true;
 	}
+	public boolean stopped (){
+		for (int i = 0; i < nThreads; i++) {
+			if (!threads[i].stopped)
+				return false;
+		}
+		return true;
+	}
 	public void setStopWithFirstItemFailure(boolean stop){
 		stopWithFirstItemFailure = stop;
 	}
@@ -229,7 +236,7 @@ public class Parallelizer {
 				threads[i].start();
 		}
 
-		while (!completed()){
+		while (!completed() && !stopped()){
 			try {
 				Thread.sleep(10);
 			}
@@ -237,7 +244,11 @@ public class Parallelizer {
 				e.printStackTrace();
 			}
 		}
-		System.out.println("Parallelizer: finished calculations");
+		boolean completedYay = completed();
+		if (completedYay)
+			System.out.println("Parallelizer: finished calculations");
+		else 
+			System.out.println("Parallelizer: calculations stopped");
 
 		System.out.print("Parallelizer: Calculations finished in each thread: ");
 		for (int i = 0; i < nThreads; i++) {
@@ -248,7 +259,9 @@ public class Parallelizer {
 		System.out.println("");
 		
 		System.out.println("Parallelizer: " + summarizeCalcStatus());
-		return ResultCodes.NO_ERROR;
+		if (completedYay)
+			return ResultCodes.NO_ERROR;
+		return ResultCodes.USER_STOPPED;
 	}
 	public void reset(){ // to be called on owner's thread
 		if (threads == null)
