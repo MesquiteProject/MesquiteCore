@@ -25,6 +25,25 @@ public class MesquiteBigDecimal {
 		this.mantissa= mantissa;
 		adjust();
 	}
+	public MesquiteBigDecimal(String s ){
+		if (s.indexOf("e")>=0){
+			String mString = s.substring(0, s.indexOf("e"));
+			String eString = s.substring(s.indexOf("e")+1, s.length());
+			this.exponent= MesquiteInteger.fromString(eString);
+			this.mantissa= MesquiteDouble.fromString(mString);
+		}
+		else if (s.indexOf("E")>=0){
+			String mString = s.substring(0, s.indexOf("E"));
+			String eString = s.substring(s.indexOf("E")+1, s.length());
+			this.exponent= MesquiteInteger.fromString(eString);
+			this.mantissa= MesquiteDouble.fromString(mString);
+		}
+		else {
+			this.exponent= 0;
+			this.mantissa= MesquiteDouble.fromString(s);
+		}
+		adjust();
+	}
 
 	public void setValue(double mantissa, int exponent ){
 		this.exponent= exponent;
@@ -145,6 +164,12 @@ public class MesquiteBigDecimal {
 	}
 
 	public void add(double m, int e){
+		if (mantissa == 0){
+			mantissa = m;
+			exponent = e;
+			adjust();
+			return;
+		}
 		if (e != exponent){
 			int f = e-exponent;
 			m *= Math.pow(10, f);

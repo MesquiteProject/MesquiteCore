@@ -87,7 +87,7 @@ public class ColorDistribution {
 		lightBlue = new Color((float)0.35, (float)0.48, (float)0.9);
 		veryLightBlue = new Color((float)0.55, (float)0.68, (float)0.99);
 		veryVeryLightBlue = new Color((float)0.85, (float)0.85, (float)0.99);
-		aquamarine = new Color(0F, 0.2F, 1F);
+		aquamarine = new Color(0F, 0.2F, 0.9F);
 		lightOrange = new Color((float)1, (float)0.8, (float)0);
 		orange = new Color((float)1, (float)0.5, (float)0);
 
