@@ -20,6 +20,7 @@ import java.awt.Container;
 import java.awt.Dimension;
 import java.awt.FontMetrics;
 import java.awt.Graphics;
+import java.awt.Shape;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 
@@ -27,6 +28,7 @@ import com.lowagie.text.pdf.PdfGraphics2D;
 
 import mesquite.lib.Associable;
 import mesquite.lib.CommandChecker;
+import mesquite.lib.Debugg;
 import mesquite.lib.EmployeeNeed;
 import mesquite.lib.Listable;
 import mesquite.lib.ListableVector;
@@ -919,6 +921,7 @@ class BasicTreeDisplay extends TreeDisplay  implements KeyListener {
 
 	public void update(Graphics g){
 			super.update(g);
+			
 	}
 	private int which = 0;
 

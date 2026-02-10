@@ -68,6 +68,11 @@ public abstract class TreeDisplayExtra implements Listable, OwnedByModule {
 		this.placement = placement;
 	}
 	
+	//For some forgotten reason, TreeDisplay sets the clip to null before asking extras to draw on tree. It true is returend, this suppresses that, to leave the clip intact. 
+	public boolean pleaseDontNullClip(){
+		return false;
+	}
+	
 	/* The TreeDisplayRequests object has public int fields leftBorder, topBorder, rightBorder, bottomBorder (in pixels and in screen orientation)
 	 * and a public double field extraDepthAtRoot (in branch lengths units and rootward regardless of screen orientation) */
 	public TreeDisplayRequests getRequestsOfTreeDisplay(Tree tree, TreeDrawing treeDrawing){

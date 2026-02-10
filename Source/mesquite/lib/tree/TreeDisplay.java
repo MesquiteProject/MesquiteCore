@@ -819,6 +819,7 @@ public class TreeDisplay extends TaxaTreeDisplay  {
 					if (ownerModule==null || ownerModule.isDoomed()) 
 						return;
 					Shape clip = g.getClip();
+					if (!ex.pleaseDontNullClip())
 					g.setClip(null);
 					ex.drawOnTree(tree, drawnRoot, g);
 					g.setClip(clip);
@@ -833,7 +834,8 @@ public class TreeDisplay extends TaxaTreeDisplay  {
 					if (ownerModule==null || ownerModule.isDoomed()) 
 						return;
 					Shape clip = g.getClip();
-					g.setClip(null);
+					if (!ex.pleaseDontNullClip())
+						g.setClip(null);
 					ex.drawOnTree(tree, drawnRoot, g);
 					g.setClip(clip);
 				}
@@ -847,6 +849,7 @@ public class TreeDisplay extends TaxaTreeDisplay  {
 					if (ownerModule==null || ownerModule.isDoomed()) 
 						return;
 					Shape clip = g.getClip();
+					if (!ex.pleaseDontNullClip())
 					g.setClip(null);
 					ex.drawOnTree(tree, drawnRoot, g);
 					g.setClip(clip);
