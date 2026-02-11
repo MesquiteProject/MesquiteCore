@@ -193,14 +193,31 @@ public class Object2DArray implements Listable {
 		return d;
 	}
 	/*...........................................................*/
-	//NOTE: this assumes, probably, that the incoming matrix is complete, i.e. all d[i].length is the same for all i's
+	public static String toString(Object[][] d){
+		if (d == null)
+			return "Object[][] NULL";
+		String s = "Object[][]\n";
+		for (int ic = 0; ic< d.length; ic++){
+			if (d[ic]== null)
+				s += "row " + ic + " NULL\n";
+			else {
+				s += "row " + ic + ": ";
+				for (int it=0; it<d[ic].length; it++)
+					s += "  " + d[ic][it];
+				s += "\n";
+			}
+		}
+		return s;
+	}
+	/*...........................................................*/
 	public static Object[][] deleteColumnsFlagged(Object[][] d, Bits toDelete) {
 		if (d == null)
 			return null;
 		if (d.length <= 0)
 			return d;
-		int numRows= d[0].length;
-		if (numRows == 0)
+		if (d[0] == null)
+			return d;
+		if (d[0].length == 0)
 			return d;
 		if (toDelete == null)
 			return d;
@@ -211,9 +228,19 @@ public class Object2DArray implements Listable {
 		Bits flags = toDelete.cloneBits(); 
 		int source = flags.nextBit(toFill, false); //find source to move into it
 		int highestFilled = toFill-1; //
+
 		while (source >=0 && source < d.length && toFill >=0) { //First, compact storage toward the start of the array.
-			for (int it=0; it<numRows; it++)
-				d[toFill][it] = d[source][it]; //move content from source to place
+			//@@@@@@@@@@@@@@
+			if (d[source] == null)
+				d[toFill] = null;
+			else {
+				if (d[toFill] == null || d[toFill].length !=d[source].length ) 
+					d[toFill] = new Object[d[source].length];
+			for (int it=0; it<d[source].length; it++)
+					d[toFill][it] = d[source][it]; //move content from source to place
+			}
+			//@@@@@@@@@@@@@@
+
 			highestFilled = toFill;
 			flags.setBit(source, true); // set to available to receive
 			toFill =flags.nextBit(++toFill, true);
@@ -221,12 +248,16 @@ public class Object2DArray implements Listable {
 		}
 		//Next, trim leftovers
 		int newNumColumns = highestFilled+1;
-		Object[][] newMatrix=new Object[newNumColumns][numRows];
+		Object[][] newMatrix=new Object[newNumColumns][];
 		for (int ic=0; ic<newNumColumns; ic++) 
-			for (int it=0; it<numRows && it< d[ic].length; it++) 
-				newMatrix[ic][it] = d[ic][it];
+			if (d[ic] != null){
+				newMatrix[ic] = new Object[d[ic].length];
+				for (int it=0; it<d[ic].length; it++) 
+					newMatrix[ic][it] = d[ic][it];
+			}
+
 		return newMatrix;
-	}	/*...........................................................*
+	}		/*...........................................................*
 	public static Object[][] deleteColumnsBy Blocks(Object[][] d, int[][] blocks){
 		if (d == null)
 			return null;
