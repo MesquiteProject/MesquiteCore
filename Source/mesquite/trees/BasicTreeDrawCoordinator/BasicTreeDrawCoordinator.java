@@ -813,7 +813,7 @@ class BasicTreeDisplay extends TreeDisplay  implements KeyListener {
 		int initialPending = repaintsPending;
 		which =0;
 		if (bailOut(initialPending)) return;
-		if (getParent().getBackground()!=getBackground())
+		if (getParent() != null && getParent().getBackground()!=getBackground())
 			getParent().setBackground(getBackground());
 		if (bailOut(initialPending)) return;
 
