@@ -211,7 +211,8 @@ public class BasicFileCoordinator extends FileCoordinator implements PackageIntr
 			pw = null;
 			setModuleWindow(null);
 			doomEmployees(this);
-			p.dispose();
+			if (p != null)
+				p.dispose();
 			MesquiteTrunk.mesquiteTrunk.removeProject(p);
 	}
 		decrementEmployeeBrowserRefreshSuppression(MesquiteProject.class);
@@ -732,7 +733,6 @@ public class BasicFileCoordinator extends FileCoordinator implements PackageIntr
 	}
 /*============================================================*/
 	public void showBasicWindows(FileInterpreter fInterp){
-		System.err.println("@##### showBasicWindow " + fInterp);
 		MesquiteWindow mw = getModuleWindow();
 		if (mw != null)
 			mw.setWindowSize(1000, 800);
@@ -762,7 +762,6 @@ public class BasicFileCoordinator extends FileCoordinator implements PackageIntr
 			if (mbb != null) {
 				if (getProject().getNumberTreeVectors()==1) {
 					Object obj = mbb.doCommand("showTreesInWindow", "" + 0 + " \'autoShowPropertiesList;\'", CommandChecker.defaultChecker);
-					System.err.println("@##### showBasicWindow Making window");
 					if (obj != null && obj instanceof MesquiteModule){
 						TreeVector trees = getProject().getTreesByNumber(0);
 						if (trees.size()>0){
@@ -807,13 +806,20 @@ public class BasicFileCoordinator extends FileCoordinator implements PackageIntr
 			p = e.establishProject(extraArgs);
 			if (p!=null){
 				p.incrementProjectWindowSuppression();
+				
 				if (pw == null){
+					if (p.getCoordinatorModule()  != this){
+						MesquiteWindow pwe = p.getCoordinatorModule().containerOfModule();
+						pwe.setWindowSize(1000, 700);
+						pwe.setWindowLocation(8,8, false);
+					}
+					else {
 					pw =  new ProjectWindow(this);
-					p.setFrame(pw.getParentFrame());
+					p.setFrame(pw.getParentFrame());  
 					setModuleWindow(pw);
-
-					pw.setWindowSize(700, 500);
+					pw.setWindowSize(1000, 700);
 					pw.setWindowLocation(8,8, false);
+					}
 				}
 
 				p.developing = false;

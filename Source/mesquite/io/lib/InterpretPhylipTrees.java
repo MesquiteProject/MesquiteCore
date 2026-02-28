@@ -106,6 +106,7 @@ public abstract class InterpretPhylipTrees extends InterpretPhylip  {
 		decrementMenuResetSuppression();
 	}
 	/*.................................................................................................................*/
+	//overridden in InterpretPhylipTreesBasic
 	protected void exportTrees(Taxa taxa, TreeVector treeVector, MesquiteStringBuffer outputBuffer) { 
 		Tree tree;
 		if (treeVector !=null && treeVector.size()>0) {

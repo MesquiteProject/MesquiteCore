@@ -36,6 +36,7 @@ import mesquite.lib.FileElement;
 import mesquite.lib.Identifiable;
 import mesquite.lib.IntegerArray;
 import mesquite.lib.Listable;
+import mesquite.lib.ListableVector;
 import mesquite.lib.LongArray;
 import mesquite.lib.LowLevelListener;
 import mesquite.lib.MesquiteBoolean;
@@ -74,7 +75,9 @@ import mesquite.lib.misc.ChangeHistory;
 import mesquite.lib.table.MesquiteTable;
 import mesquite.lib.taxa.Taxa;
 import mesquite.lib.taxa.Taxon;
+import mesquite.lib.tree.MesquiteTree;
 import mesquite.lib.tree.Tree;
+import mesquite.lib.tree.TreeVector;
 import mesquite.lib.ui.AlertDialog;
 import mesquite.lib.ui.ColorDistribution;
 import mesquite.lib.ui.ColorTheme;
@@ -4245,6 +4248,30 @@ public abstract class CharacterData extends FileElement implements MesquiteListe
 	}
 	public Tree getBasisTree(){
 		return basisTree;
+	}
+	public boolean selectLinkedTrees(MesquiteProject project, boolean notify){
+		ListableVector treeVectors = project.getTreeVectors();
+		boolean selAny = false;
+
+		for (int j=0; j<treeVectors.size(); j++){
+			boolean sel = false;
+			TreeVector trees = (TreeVector)treeVectors.elementAt(j);
+			//now we have this tree vector. Let's see if this matrix has matches among the trees, and select those trees
+			if (trees.getTaxa() == getTaxa()){
+				for (int itr = 0; itr<trees.size(); itr++){
+					MesquiteTree tree = (MesquiteTree) trees.getTree(itr);
+					CharacterData d = tree.findLinkedMatrix(project);
+					if (d == this){
+						trees.setSelected(itr, true);
+						sel = true;
+					}
+				}
+				selAny = selAny || sel;
+				if (sel && notify)
+					trees.notifyListeners(this, new Notification(MesquiteListener.SELECTION_CHANGED));	
+			}
+		}
+		return selAny;
 	}
 	/* ---------------- for HNode interface ----------------------*/
 	public Image getHImage(){

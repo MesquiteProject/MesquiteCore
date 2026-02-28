@@ -226,6 +226,7 @@ public abstract class MesquiteWindow implements Listable, Commandable, OwnedByMo
 		id = numWindowsTotal++;
 		setUniqueID(MesquiteTrunk.getUniqueIDBase() + id);
 		this.showInfoBar = showInfoBar;
+		
 		if ((compactWindows || this instanceof SystemWindow) && ownerModule != null){
 			MesquiteProject proj = ownerModule.getProject();
 			MesquiteFrame frame = null;

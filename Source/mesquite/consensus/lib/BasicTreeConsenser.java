@@ -44,10 +44,11 @@ public abstract class BasicTreeConsenser extends IncrementalConsenser   {
 	/*.................................................................................................................*/
 	public boolean startJob(String arguments, Object condition, boolean hiredByName) {
 		bipartitions = new BipartitionVector();
-		loadPreferences();
-		if (!MesquiteThread.isScripting()) 
+		if (!MesquiteThread.isScripting()) {
+			loadPreferences();
 			if (!queryOptions())
 				return false;
+		}
 		addMenuItem("Consensus Options...",  makeCommand("setOptions",  this));
 		return true;
 	}

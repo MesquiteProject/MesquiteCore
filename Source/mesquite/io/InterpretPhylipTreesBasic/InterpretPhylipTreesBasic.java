@@ -15,6 +15,10 @@ package mesquite.io.InterpretPhylipTreesBasic;
 
 import mesquite.io.lib.InterpretPhylipTrees;
 import mesquite.io.lib.TryNexusFirstTreeFileInterpreter;
+import mesquite.lib.MesquiteStringBuffer;
+import mesquite.lib.taxa.Taxa;
+import mesquite.lib.tree.Tree;
+import mesquite.lib.tree.TreeVector;
 
 
 /* ============  a file interpreter for Phylip trees ============*/
@@ -39,6 +43,19 @@ public class InterpretPhylipTreesBasic extends InterpretPhylipTrees implements T
 	/*.................................................................................................................*/
 	public boolean isPrerelease(){
 		return false;
+	}
+	/*.................................................................................................................*/
+	//In this version, does writes only basic NEWICK. Properties not included.
+	protected void exportTrees(Taxa taxa, TreeVector treeVector, MesquiteStringBuffer outputBuffer) { 
+		Tree tree;
+		if (treeVector !=null && treeVector.size()>0) {
+			for (int iTree = 0; iTree < treeVector.size(); iTree++) {
+				tree = (Tree)treeVector.elementAt(iTree);
+				outputBuffer.append(tree.writeTreeSimpleByNames());  //or Tree.BY_NUMBERS  or Tree.BY_NAMES
+				// if do it BY_NAMES, make sure you truncate the taxon names to 10 characters!!
+				outputBuffer.append(getLineEnding());
+			}
+		}
 	}
 
 

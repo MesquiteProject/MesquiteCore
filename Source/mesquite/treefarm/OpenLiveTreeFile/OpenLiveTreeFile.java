@@ -160,7 +160,14 @@ public class OpenLiveTreeFile extends GeneralFileMakerSingle {
 				extension = ".nex";
 			commands = "requireSaveAs true; renameFile ? " + StringUtil.tokenize("(Monitoring) " + fileName + extension) + "; getEmployee #ManageTrees; tell It; getTreeBlock 0; tell It; deleteMe; endTell; endTell;" + commands;
 		}
-		MesquiteProject pr = MesquiteTrunk.mesquiteTrunk.openOrImportFileHandler(path, " @justTheseBlocks.TAXA.DATA @autosaveImported @scriptToFileCoordinator." + StringUtil.tokenize(commands), TryNexusFirstTreeFileInterpreter.class);
+		CommandRecord prev = MesquiteThread.getCurrentCommandRecord();
+		CommandRecord cRec = new CommandRecord(true);
+		MesquiteThread.setCurrentCommandRecord(cRec);
+		MesquiteProject pr = MesquiteTrunk.mesquiteTrunk.openOrImportFileHandler(path, " @justTheseBlocks.TAXA.DATA.TREES @autosaveImported ", TryNexusFirstTreeFileInterpreter.class);
+	//	MesquiteProject pr = MesquiteTrunk.mesquiteTrunk.openOrImportFileHandler(path, " @justTheseBlocks.TAXA.DATA.TREES @autosaveImported @scriptToFileCoordinator." + StringUtil.tokenize(commands), TryNexusFirstTreeFileInterpreter.class);
+		Puppeteer p = new Puppeteer(this);
+		p.execute(pr.getCoordinatorModule(), commands, new MesquiteInteger(0), null, false, null, null);
+		MesquiteThread.setCurrentCommandRecord(prev);
 
 		return pr;
 	}

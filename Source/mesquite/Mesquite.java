@@ -64,6 +64,7 @@ import mesquite.lib.MainThread;
 import mesquite.lib.MesquiteBigDecimal;
 import mesquite.lib.MesquiteBoolean;
 import mesquite.lib.MesquiteCommand;
+import mesquite.lib.MesquiteDouble;
 import mesquite.lib.MesquiteFile;
 import mesquite.lib.MesquiteInteger;
 import mesquite.lib.MesquiteMacro;
@@ -598,7 +599,10 @@ public class Mesquite extends MesquiteTrunk
 		else
 			mrj = "; MRJ version " + mrj;
 		if (verboseStartup) System.out.println("main init 21");
-		logln("Running under Java " + System.getProperty("java.version") +"; virtual machine by " + System.getProperty("java.vendor") + mrj + " on " + System.getProperty("os.name") + " " + System.getProperty("os.version") + " (architecture: " + System.getProperty("os.arch") + ")");
+		double memGB = Runtime.getRuntime().maxMemory()/1073741824.0;
+		logln("Running under Java " + System.getProperty("java.version") +"; virtual machine by " + System.getProperty("java.vendor") + mrj 
+				+ " on " + System.getProperty("os.name") + " " + System.getProperty("os.version") + " (architecture: " + System.getProperty("os.arch") + ")"
+				+ "; with allocated maximum memory: " + MesquiteDouble.toStringDigitsSpecified(memGB, 2));
 		logln("User: " + System.getProperty("user.name") );
 	//	logln(" ");
 		/* EMBEDDED add following if embedded *
@@ -1600,7 +1604,7 @@ public class Mesquite extends MesquiteTrunk
 			pt.settempID(arguments);
 			pr.setThread(pt);
 			pt.start();
-			return null;
+		return null;
 		}
 	}
 	
