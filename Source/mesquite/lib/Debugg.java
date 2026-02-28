@@ -32,6 +32,12 @@ public class Debugg {
 			MesquiteTrunk.mesquiteTrunk.logln(s);
 		MesquiteThread.resumeThreadLogging();
 	}
+	public static void errln(String s) { // to make it easier to find
+		System.err.println(s);
+	}
+	public static void err(String s) { // to make it easier to find
+		System.err.print(s);
+	}
 	public static void printLogln(String s) {
 		MesquiteMessage.warnUser(s);
 	}

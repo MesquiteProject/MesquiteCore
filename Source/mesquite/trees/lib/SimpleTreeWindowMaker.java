@@ -68,7 +68,7 @@ public abstract class SimpleTreeWindowMaker extends TWindowMaker implements Tree
 		resetContainingMenuBar();
 		resetAllWindowsMenus();
 		simpleTreeWindow.sizeDisplays();
-		return true;
+		return super.superStartJob(arguments,condition,hiredByName);
 	}
 	/*............................................................................. */
 	// can be overridden by modules to suppress their employers' menus, e.g. for a dependent window, so it doesn't have unexpected clutter

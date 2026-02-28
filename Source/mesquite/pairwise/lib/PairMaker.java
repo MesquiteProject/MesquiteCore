@@ -40,7 +40,7 @@ public abstract class PairMaker extends MesquiteModule  {
 	/*.................................................................................................................*/
 	public boolean superStartJob(String arguments, Object condition, boolean hiredByName) {
 		addMenuItem("Max. Number of Pairings...", makeCommand("setLimit", this));
- 		return true;
+		return super.superStartJob(arguments,condition,hiredByName);
  	}
 	/*.................................................................................................................*/
   	public void setLimit(int limit){
