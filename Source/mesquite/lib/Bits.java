@@ -79,7 +79,7 @@ public class Bits implements Listable, Nameable {
 		for (int i=0; i<bools.length; i++)
 			bools[i] = isBitOn(i);
 		return bools;
-}
+	}
 
 	public void setBits(Bits b) {
 		if (b == null)
@@ -245,7 +245,7 @@ public class Bits implements Listable, Nameable {
 
 	/* ........................................................... */
 	//NOTE: this assumes, probably, that the incoming matrix is complete, i.e. all d[i].length is the same for all i's
-public static boolean[][] deleteColumnsFlagged(boolean[][] d, Bits toDelete) {
+	public static boolean[][] deleteColumnsFlagged(boolean[][] d, Bits toDelete) {
 		if (d == null)
 			return null;
 		if (d.length <= 0)
@@ -550,6 +550,12 @@ public static boolean[][] deleteColumnsFlagged(boolean[][] d, Bits toDelete) {
 		for (int i = 0; i < numInts && i < other.numInts; i++)
 			array[i] = array[i] & other.array[i];
 	}
+	public boolean anyCommonBits(Bits other) {
+		for (int i = 0; i < numInts && i < other.numInts; i++)
+			if ((array[i] & other.array[i]) != 0)
+				return true;
+		return false;
+	}
 
 	/**
 	 * clears any bits that are on in the other Bits
@@ -639,7 +645,7 @@ public static boolean[][] deleteColumnsFlagged(boolean[][] d, Bits toDelete) {
 				flag = 2;
 		}
 		return false;
-		
+
 	}
 
 	public boolean isBitOn(int whichBit) {
@@ -679,7 +685,7 @@ public static boolean[][] deleteColumnsFlagged(boolean[][] d, Bits toDelete) {
 			startBit = 0;
 		int whichInt = startBit / SIZECHUNK;
 		for (int i = startBit; i < (whichInt + 1) * SIZECHUNK && i < numBits; i++) // check to see if it is in the first
-																					// int
+			// int
 			if (isBitOn(i) == on) // then we've found a bit that has the same value as "on"
 				return i;
 		// now let's check later Ints
@@ -688,7 +694,7 @@ public static boolean[][] deleteColumnsFlagged(boolean[][] d, Bits toDelete) {
 			// if array[i] == 0, then they are all off; if it is ==-1, then they are all on
 			// (that is, there are non off)
 			if (((array[i] != 0) && on) || ((array[i] != -1) && !on)) { // then we've found a block that has the same
-																		// value as on
+				// value as on
 				// now look to see which bit in the block has the correct value
 				for (int j = i * SIZECHUNK; j < (i + 1) * SIZECHUNK && j < numBits; j++)
 					if (isBitOn(j) == on) // then we've found the bit that has the same value as "on"
@@ -819,7 +825,7 @@ public static boolean[][] deleteColumnsFlagged(boolean[][] d, Bits toDelete) {
 				return i;
 		return -1;
 	}
-	
+
 	/*------------------------------------------*/
 	public int firstBitOff() {
 		for (int i = 0; i < numBits; i++)
