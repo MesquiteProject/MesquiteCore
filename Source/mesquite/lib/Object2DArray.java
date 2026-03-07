@@ -19,8 +19,11 @@ import java.util.Vector;
 public class Object2DArray implements Listable {
 	Object[][] values;
 	NameReference name=null;
+	int numC, numT;
 	public Object2DArray(int numC, int numT){
 		values = new Object[numC][numT];
+		this.numC = numC;
+		this.numT = numT;
 	}
 	/*...........................................................*/
 	public String getName(){
@@ -61,6 +64,18 @@ public class Object2DArray implements Listable {
 	/*...........................................................*/
 	public void setMatrix(Object[][] m) {
 		values = m;
+		resetNums();
+	}
+	private void resetNums(){
+		if (values == null)
+			numC = 0;
+		else {
+			numC = values.length;
+			if (numC>0)
+				numT = values[0].length;
+			else
+				numT = 0;
+		}
 	}
 	/*...........................................................*/
 	public static void moveColumns(Object[][] d, int starting, int num, int justAfter) {
@@ -257,7 +272,28 @@ public class Object2DArray implements Listable {
 			}
 
 		return newMatrix;
-	}		/*...........................................................*
+	}		
+	
+	/*...........................................................*/
+	/** Changes the array size to the new dimensions*/
+	public void resetSize(int newNumC, int newNumT) {
+		if (newNumC == numC && newNumT == numT)
+			return;
+		Object[][] newObjValues = new Object[newNumC][newNumT];
+		for (int i=0; i<newNumC; i++)
+			for (int j=0; j<newNumT; j++) {
+				if (i<numC && j<numT)
+					newObjValues[i][j]=values[i][j];
+				else
+					newObjValues[i][j]=0;
+			}
+		values=newObjValues;
+
+		numC=newNumC;
+		numT=newNumT;
+	}
+
+	/*...........................................................*
 	public static Object[][] deleteColumnsBy Blocks(Object[][] d, int[][] blocks){
 		if (d == null)
 			return null;

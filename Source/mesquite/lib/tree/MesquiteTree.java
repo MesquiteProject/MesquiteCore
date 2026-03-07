@@ -4098,6 +4098,34 @@ and the tree has been rerooted. Properties that belong to nodes implicitly have 
 		}
 	}
 	/*-----------------------------------------*/
+	/** Writes a tree description into the StringBuffer showing node numbers. For debugging*/
+	private void writeTreeByNodeNumbers(int node, StringBuffer treeDescription) {
+		if (nodeIsInternal(node)) {
+			treeDescription.append('(');
+			int thisSister = firstDaughterOfNode(node);
+			writeTreeByNodeNumbers(thisSister, treeDescription);
+			while (nodeExists(thisSister = nextSisterOfNode(thisSister))) {
+				treeDescription.append(',');
+				writeTreeByNodeNumbers(thisSister, treeDescription);
+			}
+			treeDescription.append(')');
+			treeDescription.append(Integer.toString(node));
+		}
+		else {
+			treeDescription.append(Integer.toString(node));
+			treeDescription.append('[');
+			treeDescription.append(Integer.toString(taxonNumberOfNode(node)));
+			treeDescription.append(']');
+		}
+		
+	}
+	public String writeTreeByNodeNumbers() {
+		StringBuffer sb = new StringBuffer(100);
+		writeTreeByNodeNumbers(getRoot(), sb);
+		return sb.toString();
+	}
+
+	/*-----------------------------------------*/
 	/** Writes a tree description into the StringBuffer using taxon names in simple style: t0, t1, t2, etc. */
 	private void writeTreeByT0Names(int node, StringBuffer treeDescription, boolean includeBranchLengths) {
 		if (nodeIsInternal(node)) {

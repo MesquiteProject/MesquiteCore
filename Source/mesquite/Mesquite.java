@@ -29,6 +29,8 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.io.Writer;
+import java.lang.management.ManagementFactory;
+import java.lang.management.OperatingSystemMXBean;
 import java.lang.reflect.Method;
 import java.net.MalformedURLException;
 import java.net.URI;
@@ -600,9 +602,23 @@ public class Mesquite extends MesquiteTrunk
 			mrj = "; MRJ version " + mrj;
 		if (verboseStartup) System.out.println("main init 21");
 		double memGB = Runtime.getRuntime().maxMemory()/1073741824.0;
+		String phyMemGB = "";
+        try {
+        	OperatingSystemMXBean osBean = ManagementFactory.getOperatingSystemMXBean();
+
+        // Check if the platform-specific com.sun.management.OperatingSystemMXBean is available
+        if (osBean instanceof com.sun.management.OperatingSystemMXBean) {
+            com.sun.management.OperatingSystemMXBean sunOsBean = 
+                (com.sun.management.OperatingSystemMXBean) osBean;
+            phyMemGB = "; on a machine with total physical memory: " + MesquiteDouble.toStringDigitsSpecified(sunOsBean.getTotalPhysicalMemorySize()/1073741824.0, 2) + " GB.";
+        } 
+        }
+        catch (Throwable t){
+        }
+
 		logln("Running under Java " + System.getProperty("java.version") +"; virtual machine by " + System.getProperty("java.vendor") + mrj 
 				+ " on " + System.getProperty("os.name") + " " + System.getProperty("os.version") + " (architecture: " + System.getProperty("os.arch") + ")"
-				+ "; with allocated maximum memory: " + MesquiteDouble.toStringDigitsSpecified(memGB, 2));
+				+ "; with allocated maximum memory: " + MesquiteDouble.toStringDigitsSpecified(memGB, 2) + " GB" + phyMemGB);
 		logln("User: " + System.getProperty("user.name") );
 	//	logln(" ");
 		/* EMBEDDED add following if embedded *

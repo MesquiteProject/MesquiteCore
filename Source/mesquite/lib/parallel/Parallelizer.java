@@ -15,6 +15,7 @@ package mesquite.lib.parallel;
 
 import mesquite.lib.CommandChecker;
 import mesquite.lib.CommandRecord;
+import mesquite.lib.Debugg;
 import mesquite.lib.IntegerArray;
 import mesquite.lib.MesquiteInteger;
 import mesquite.lib.MesquiteMessage;
@@ -205,6 +206,7 @@ public class Parallelizer {
 		setItemStatus(firstItem, BEINGCALCULATED);  //should be redundant, given the AndReserve
 		ParallelParams ppFirst = owner.doFirstCalculation_Parallel(firstItem, this, firstResult); 
 		if (firstResult.getValue() != ResultCodes.NO_ERROR) {
+			Debugg.errln("Error in first result " + firstResult.getValue());
 			setItemStatus(firstItem, FAILURE);
 			if (stopWithFirstItemFailure  || firstResult.getValue() == ResultCodes.USERCANCELONINITIALIZE){
 				return firstResult.getValue();
