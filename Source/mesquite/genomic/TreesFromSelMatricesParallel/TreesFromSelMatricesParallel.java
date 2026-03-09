@@ -478,6 +478,7 @@ class TreeInferenceParallelMachine implements Parallelizable {
 		Taxa taxa = matrix.getTaxa();
 		TreeVector trees = new TreeVector(taxa);
 		TreeSearcherFromMatrix inferenceTask = (TreeSearcherFromMatrix)params.employees[0];
+		int numSoFarDone = treeBlocks.size();
 		progIndicator.setText("\nInferring trees from matrix " +matrix.getName());
 
 		inferenceTask.initialize(taxa);
@@ -502,7 +503,14 @@ class TreeInferenceParallelMachine implements Parallelizable {
 		}
 		ownerModule.log(".");
 		treeBlocks.addElement(trees, false);
-		progIndicator.setText("\nTrees inferred from matrix " +matrix.getName());
+		numSoFarDone++;
+		String message = "\nTrees inferred from " +numSoFarDone + " matri";
+		if (numSoFarDone == 1)
+			message += "x";
+		else
+		message += "ces";
+		message += ". Matrix just completed: " + matrix.getName();
+		progIndicator.setText(message);
 		int tot = parallelizer.getTotalCalculated();
 		if (tot% 100 == 0)
 			progIndicator.toFront();

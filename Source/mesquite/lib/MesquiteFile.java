@@ -1101,8 +1101,9 @@ public class MesquiteFile extends Listened implements HNode, Commandable, Listab
 			writingFileName = directoryName + fileName;
 			backupDirPath = directoryName + "backups" + fileSeparator;
 			backupFileName = backupDirPath + fileName;
-			if (!suppressReadWriteLogging)
+			if (!suppressReadWriteLogging){
 				MesquiteModule.mesquiteTrunk.logln( "In Directory: " + directoryName);
+			}
 		}
 		else {
 			writingFileName = fileName;
@@ -2280,6 +2281,11 @@ public class MesquiteFile extends Listened implements HNode, Commandable, Listab
 				}
 				directory.delete();
 			}
+		} catch (NullPointerException e){
+			MesquiteMessage.println("Directory could not be deleted because directory appears to be null: " + directoryPath + "\n");
+			e.printStackTrace();
+			return false;
+		
 		} catch (SecurityException e){
 			MesquiteMessage.println("Directory could not be deleted: " + directoryPath);
 			return false;
