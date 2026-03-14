@@ -1883,6 +1883,15 @@ public abstract class MesquiteModule extends EmployerEmployee implements Command
 		return null;
 	}
 
+	public Object doCommandAsScripting(String commandName, String arguments) {
+		CommandRecord cr = MesquiteThread.getCurrentCommandRecord();
+		CommandRecord scrRec = new CommandRecord(true);
+		MesquiteThread.setCurrentCommandRecord(scrRec);
+
+		Object result = doCommand(commandName, arguments, CommandChecker.defaultChecker);
+		MesquiteThread.setCurrentCommandRecord(cr);
+		return result;
+	}
 	public Object doCommand(String commandName, String arguments) {
 		return doCommand(commandName, arguments, CommandChecker.defaultChecker);
 	}

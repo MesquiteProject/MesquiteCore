@@ -843,7 +843,11 @@ class DiagonalTreeDrawing extends TreeDrawing  {
 			widths = tree.getAssociatedDoubles(widthNameReference);
 			if (widths!=null)
 				maxWidth = findMaxWidth(tree, getDrawnRoot());
+			try {
 			calcBranchPolys(tree, getDrawnRoot());
+			}
+			catch (Exception e){
+			}
 
 		}
 	}

@@ -23,7 +23,7 @@ public abstract class TreeWindowAssistantSGA extends TreeWindowAssistant  {
    	 	return TreeWindowAssistantSGA.class;
    	 }
    	 public String[] getDefaultModule() {
-    	 	return new String[] {"#ABBABABASurvey", "#ABBABABAOnTree", "#BranchAttractionWSelBranch"};
+    	 	return new String[] {"#ABBABABASurvey", "#ABBABABAOnTree", "#GenePrefBranchMoveMap"};
     	 }
  	public String getDutyName() {
  		return "Assistant for Tree Window (Species Tree-Gene Tree Analysis)";
