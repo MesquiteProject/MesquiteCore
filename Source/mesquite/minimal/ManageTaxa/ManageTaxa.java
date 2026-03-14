@@ -1378,6 +1378,9 @@ public class ManageTaxa extends TaxaManager {
 	}
 	/*.................................................................................................................*/
 	public String getTaxaBlock(Taxa taxa, TaxaBlock tB, MesquiteFile file){
+		return getTaxaBlock(taxa, tB, file, true, true);
+	}
+	public String getTaxaBlock(Taxa taxa, TaxaBlock tB, MesquiteFile file, boolean includeClutter, boolean includeTitleAndLink){
 		//check first for file ready to write.  In future should have general call to modules, but for now just check for duplicate taxon names
 		if (hasBlankNames(taxa)){
 			discreetAlert("The block of taxa being saved (" + taxa.getName() + ") has blank taxon names.  This will cause problems in saving and reading trees and other functions, and will be fixed (Summary: " +fixBlankNames(taxa) + ")");
@@ -1401,12 +1404,12 @@ public class ManageTaxa extends TaxaManager {
 		block.append(end);
 		CommandRecord.tick("Composing taxa block");
 		block.append("BEGIN TAXA");
-		if (taxa.getAnnotation()!=null) 
+		if (includeClutter && taxa.getAnnotation()!=null) 
 			block.append("[!" + StringUtil.tokenize(taxa.getAnnotation()) + "]");
 		block.append(';');
 		block.append(end);
 
-		if (MesquiteFile.okToWriteTitleOfNEXUSBlock(file, taxa))
+		if (includeTitleAndLink && MesquiteFile.okToWriteTitleOfNEXUSBlock(file, taxa))
 			block.append("\tTITLE " + StringUtil.tokenize(taxa.getName()) + ";" + end);
 		int numTaxaWrite = taxa.getNumTaxa();
 		if (file.writeOnlySelectedTaxa)
@@ -1431,7 +1434,7 @@ public class ManageTaxa extends TaxaManager {
 
 		CommandRecord.tick("Writing IDs ");
 		int last = lastID(taxa);
-		if (!file.useSimplifiedNexus  && !file.useConservativeNexus && last>-1){
+		if (includeClutter && !file.useSimplifiedNexus  && !file.useConservativeNexus && last>-1){
 			block.append("\tIDS ");
 			for (int it=0; it<= last; it++) {
 
@@ -1447,7 +1450,7 @@ public class ManageTaxa extends TaxaManager {
 			block.append(";" + end);
 		}
 		CommandRecord.tick("Taxa block composed ");
-		if (!file.useSimplifiedNexus  && !file.useConservativeNexus && !StringUtil.blank(taxa.getUniqueID()) && !NexusBlock.suppressNEXUSIDS)
+		if (includeClutter && !file.useSimplifiedNexus  && !file.useConservativeNexus && !StringUtil.blank(taxa.getUniqueID()) && !NexusBlock.suppressNEXUSIDS)
 			block.append("\tBLOCKID " + taxa.getUniqueID() + ";" + end);
 		if (tB != null) block.append( tB.getUnrecognizedCommands()+ end);
 		block.append("END;" + end+ end);

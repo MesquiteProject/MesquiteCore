@@ -3265,6 +3265,9 @@ public class MesquiteFile extends Listened implements HNode, Commandable, Listab
 	/** Places to a file the contents.  Path is relative to the root of the package heirarchy; i.e. for file in
 	a module's folder, indicate "mesquite/modules/moduleFolderName/fileName" */
 	public synchronized static void putFileContents(String relativePath, MesquiteStringBuffer contents, boolean ascii) {
+		putFileContents(relativePath, contents, ascii, true);
+	}
+	public synchronized static void putFileContents(String relativePath, MesquiteStringBuffer contents, boolean ascii, boolean addLineEndings) {
 		if (contents==null)
 			return;
 		if (w)
@@ -3284,6 +3287,9 @@ public class MesquiteFile extends Listened implements HNode, Commandable, Listab
 					stream = new OutputStreamWriter(new FileOutputStream(relativePath));
 				for (int i=0; i< contents.getNumStrings(); i++) {
 					if (contents.getStringBuffer(i)!=null) {
+						String line = contents.getStringBuffer(i).toString();
+						if (addLineEndings)
+							line += StringUtil.lineEnding();
 						stream.write(contents.getStringBuffer(i).toString() + StringUtil.lineEnding());
 						stream.flush();
 					}

@@ -17,6 +17,7 @@ import java.awt.Checkbox;
 import java.awt.Label;
 
 import mesquite.assoc.lib.TaxaAssociation;
+import mesquite.categ.lib.CategoricalState;
 import mesquite.lib.Associable;
 import mesquite.lib.Bits;
 import mesquite.lib.DoubleArray;
@@ -156,7 +157,186 @@ public class TreeUtil {
 		}
 		return rotated;
 	}
+	/*======================================================*/
+	static int stateHasntBranch = 1<<0;
+	static int stateHasBranch = 1<<1;
+	static int stateHasBoth = 1<<2;
+	//passed the to be rerooted tree
+
+	static void setBranchStates(Tree tree, int node, int[][] branchStates, int[][] taxonStates){
+		int root = tree.getRoot() ;
+		if (node != root){
+			//This node inherits all of the states of its ancestor
+			int motherOfNode = tree.motherOfNode(node);
+			for (int k = 0; k< branchStates[node].length; k++)
+				branchStates[node][k] = branchStates[motherOfNode][k];
+			//and it adds a state of its own, unless it is the first daughter of the root
+			if (motherOfNode != root || tree.firstDaughterOfNode(root) != node)
+				branchStates[node][node] = stateHasBranch;
+		}
+		if (tree.nodeIsTerminal(node)) {
+			int taxon = tree.taxonNumberOfNode(node);
+			for (int k = 0; k< taxonStates[taxon].length; k++)
+				branchStates[taxon][k] = branchStates[node][k];
+		}
+		else {
+			for (int daughter = tree.firstDaughterOfNode(node); tree.nodeExists(daughter); daughter = tree.nextSisterOfNode(daughter)) {
+				setBranchStates(tree, daughter, branchStates, taxonStates);
+			}
+		}
+	}
+	//passed the target tree
+	static void inferAncestralBranchStatesDownpass(Tree tree, int node, int[][] branchStates, int[][] taxonStates, int[] tempSingleDouble){
+		if (tree.nodeIsTerminal(node)){
+			int taxon = tree.taxonNumberOfNode(node);
+			for (int k = 0; k< branchStates[node].length; k++) // on the way down, zap all internals to leave states only at tips
+				branchStates[node][k] = taxonStates[taxon][k];
+		}
+		else  { 
+			for (int k = 0; k< branchStates[node].length; k++)
+				tempSingleDouble[k] = 0;
+		
+			for (int daughter = tree.firstDaughterOfNode(node); tree.nodeExists(daughter); daughter = tree.nextSisterOfNode(daughter)) {
+				inferAncestralBranchStatesDownpass(tree, daughter, branchStates, taxonStates, tempSingleDouble);
+				for (int k = 0; k< branchStates[daughter].length; k++)
+					tempSingleDouble[k] = tempSingleDouble[k] | branchStates[daughter][k];  //accumulating all statesets
+			}
+			for (int k = 0; k< branchStates[node].length; k++) {
+				int statesSeen = tempSingleDouble[k];
+				if ((statesSeen & stateHasBranch) != 0 && (statesSeen & stateHasntBranch) != 0) //both seen; return both
+					branchStates[node][k] = stateHasBoth;
+				else if ((statesSeen & stateHasBranch) != 0) //hasbranch included; resolves to that
+					branchStates[node][k] = stateHasBranch;
+				else if ((statesSeen & stateHasntBranch) != 0) //hasntbranch included; resolves to that
+					branchStates[node][k] = stateHasntBranch;
+				else if ((statesSeen & stateHasBoth) != 0) //has both returned
+					branchStates[node][k] = stateHasBoth;
+			}
+
+		}
+	}
 	
+	/*.............................................................................................................*/
+	static void inferAncestralBranchStatesUppass(Tree tree, int node, int[][] branchStatesDown, int[][] branchStatesUp, int[] tempSingleDouble){
+		if (tree.nodeIsInternal(node)){
+			for (int k = 0; k< branchStatesUp[node].length; k++)
+				tempSingleDouble[k] = 0;
+			
+			// accumulate downstates from sisters
+			for (int daughter = tree.firstDaughterOfNode(tree.motherOfNode(node)); tree.nodeExists(daughter); daughter = tree.nextSisterOfNode(daughter)) {
+				if (daughter != node){
+				for (int k = 0; k< branchStatesDown[daughter].length; k++)
+					tempSingleDouble[k] = tempSingleDouble[k] | branchStatesDown[daughter][k];  //accumulating all statesets
+				}
+			}
+			//get upstate from ancestor
+			if (tree.motherOfNode(node)!=tree.getRoot()) {
+				for (int k = 0; k< branchStatesDown[node].length; k++)
+					tempSingleDouble[k] = tempSingleDouble[k] | branchStatesUp[tree.motherOfNode(node)][k];  //accumulating all statesets
+			}
+	
+			for (int k = 0; k< branchStatesUp[node].length; k++) {
+				int statesSeen = tempSingleDouble[k];
+				if ((statesSeen & stateHasBranch) != 0 && (statesSeen & stateHasntBranch) != 0) //both seen; return both
+					branchStatesUp[node][k] = stateHasBoth;
+				else if ((statesSeen & stateHasBranch) != 0) //hasbranch included; resolves to that
+					branchStatesUp[node][k] = stateHasBranch;
+				else if ((statesSeen & stateHasntBranch) != 0) //hasntbranch included; resolves to that
+					branchStatesUp[node][k] = stateHasntBranch;
+				else if ((statesSeen & stateHasBoth) != 0) //has both returned
+					branchStatesUp[node][k] = stateHasBoth;
+			}
+
+			for (int d = tree.firstDaughterOfNode(node); tree.nodeExists(d); d = tree.nextSisterOfNode(d))
+				inferAncestralBranchStatesUppass(tree, d, branchStatesDown, branchStatesUp, tempSingleDouble);
+	}
+	}
+	
+	//final pass: if node is polytomous, is intersection /uinion of up anad downpass at node
+	static void inferAncestralBranchStatesFinalpass(Tree tree, int node, int[][] branchStatesDown, int[][] branchStatesUp, int[][] branchStatesFinal, int[] tempSingleDouble){
+		if (tree.nodeIsTerminal(node)){
+			for (int k = 0; k< branchStatesFinal[node].length; k++)
+				branchStatesFinal[node][k] = branchStatesDown[node][k];
+		}
+		else {
+			for (int k = 0; k< branchStatesUp[node].length; k++)
+				tempSingleDouble[k] = 0;
+			
+			// accumulate downstates from sisters
+			for (int daughter = tree.firstDaughterOfNode(tree.motherOfNode(node)); tree.nodeExists(daughter); daughter = tree.nextSisterOfNode(daughter)) {
+				for (int k = 0; k< branchStatesDown[daughter].length; k++)
+					tempSingleDouble[k] = tempSingleDouble[k] | branchStatesDown[daughter][k];  //accumulating all statesets
+			}
+			//get upstate from node
+				for (int k = 0; k< branchStatesDown[node].length; k++)
+					tempSingleDouble[k] = tempSingleDouble[k] | branchStatesUp[node][k];  //accumulating all statesets
+	
+			for (int k = 0; k< branchStatesUp[node].length; k++) {
+				int statesSeen = tempSingleDouble[k];
+				if ((statesSeen & stateHasBranch) != 0 && (statesSeen & stateHasntBranch) != 0) //both seen; return both
+					branchStatesFinal[node][k] = stateHasBoth;
+				else if ((statesSeen & stateHasBranch) != 0) //hasbranch included; resolves to that
+					branchStatesFinal[node][k] = stateHasBranch;
+				else if ((statesSeen & stateHasntBranch) != 0) //hasntbranch included; resolves to that
+					branchStatesFinal[node][k] = stateHasntBranch;
+				else if ((statesSeen & stateHasBoth) != 0) //has both returned
+					branchStatesFinal[node][k] = stateHasBoth;
+			}
+			for (int d = tree.firstDaughterOfNode(node); tree.nodeExists(d); d = tree.nextSisterOfNode(d))
+				inferAncestralBranchStatesFinalpass(tree, d, branchStatesDown, branchStatesUp, branchStatesFinal, tempSingleDouble);
+
+		}
+	}
+	
+	static void findBestMatches(Tree tree, int node, int[][] branchStates, int[] targetAncSt, int[] ancStMatch){
+		int countMatches = 0;
+		for (int k = 0; k< branchStates[node].length; k++) {
+			if (branchStates[node][k] == targetAncSt[k])
+				countMatches++;
+		}
+		ancStMatch[node] = countMatches;
+		
+			for (int daughter = tree.firstDaughterOfNode(node); tree.nodeExists(daughter); daughter = tree.nextSisterOfNode(daughter)) {
+				findBestMatches(tree, daughter, branchStates, targetAncSt, ancStMatch);
+			}
+		
+	}
+
+	/*reroots one tree to match other as well as possible. Returns whether a reroot was done. 
+	This is a quick heuristic for visualization purposes */
+	public static boolean rerootToMatch(MesquiteTree toBeRerooted, Tree targetTree, boolean acceptEqual, boolean notify){
+		//get bipartition characters from toBeRerooted
+		int numTaxa = toBeRerooted.getTaxa().getNumTaxa();
+		int numNodeSpaces = MesquiteInteger.maximum(toBeRerooted.getNumNodeSpaces(), targetTree.getNumNodeSpaces());
+		int[][] branchStatesTBR = new int[numNodeSpaces][numNodeSpaces];
+		int[][] taxonStates = new int[numTaxa][numNodeSpaces];
+		setBranchStates(toBeRerooted, toBeRerooted.getRoot(), branchStatesTBR, taxonStates);
+		//map bipartition characters on target to find parsimony ancestral states
+		int[] tempStatesDouble = new int[numNodeSpaces];
+		int[][] branchStatesDown = new int[numNodeSpaces][numNodeSpaces];
+		inferAncestralBranchStatesDownpass(targetTree, targetTree.getRoot(), branchStatesDown, taxonStates, tempStatesDouble);
+		int[][] branchStatesUp = new int[numNodeSpaces][numNodeSpaces];
+		inferAncestralBranchStatesUppass(targetTree, targetTree.getRoot(), branchStatesDown, branchStatesUp, tempStatesDouble);
+		int[][] branchStatesFinal = new int[numNodeSpaces][numNodeSpaces];
+		inferAncestralBranchStatesFinalpass(targetTree, targetTree.getRoot(), branchStatesDown, branchStatesUp, branchStatesFinal, tempStatesDouble);
+
+		//now find branch in toBeRerooted whose bipartition states matches reconstructed ancestral as closely as possible
+		int[] targetAncestralStates = branchStatesFinal[targetTree.getRoot()];
+		int[] ancestralStateMatch = new int[numNodeSpaces];
+		findBestMatches(toBeRerooted, toBeRerooted.getRoot(), branchStatesTBR, targetAncestralStates, ancestralStateMatch);
+		
+		int max = 0;
+		int best = -1;
+		for (int k = 0; k<ancestralStateMatch.length; k++){  //should look for multiple matches and go toward middle-ish one!
+			if (ancestralStateMatch[k]>max){ 
+				max =ancestralStateMatch[k];
+				best = k;
+			}
+		}
+		if (best != toBeRerooted.getRoot())
+		toBeRerooted.reroot(best, toBeRerooted.getRoot(), notify);  
+		return best != toBeRerooted.getRoot();
+	}
 	/*
 	 *  void furthestPoly(Tree tree, int node, MesquiteInteger d){
 		if (tree.nodeIsTerminal(node)) { 

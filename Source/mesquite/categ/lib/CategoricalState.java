@@ -321,6 +321,14 @@ public class CategoricalState extends CharacterState{
 			return (((1L<<e)&s)!=0L);
 	}
 	/*..........................................CategoricalState.....................................*/
+	/**returns true iff e is element in state set s */
+	public static boolean isElement(int s, int e) {
+		if (!legalState(e))
+			return false;
+		else
+			return (((1<<e)&s)!=0);
+	}
+	/*..........................................CategoricalState.....................................*/
 	/**returns true iff the first long is a subset of the second */
 	public static boolean isSubset(long sub, long s) {
 		return (statesBitsMask & sub & s) == (statesBitsMask & sub);

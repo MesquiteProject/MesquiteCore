@@ -17,8 +17,11 @@ import java.awt.Checkbox;
 import java.awt.TextArea;
 
 import mesquite.lib.Arguments;
+import mesquite.lib.Debugg;
 import mesquite.lib.ExporterDialog;
 import mesquite.lib.Listable;
+import mesquite.lib.MesquiteBoolean;
+import mesquite.lib.MesquiteDouble;
 import mesquite.lib.MesquiteFile;
 import mesquite.lib.MesquiteInteger;
 import mesquite.lib.MesquiteProject;
@@ -38,6 +41,7 @@ public class ExportNEXUSTreeFile extends FileInterpreterI {
 
 /*.................................................................................................................*/
 	public boolean startJob(String arguments, Object condition, boolean hiredByName) {
+		loadPreferences();
  		return true;  //make this depend on taxa reader being found?)
   	 }
   	 
@@ -89,6 +93,10 @@ public class ExportNEXUSTreeFile extends FileInterpreterI {
 /* ============================  exporting ============================*/
 	/*.................................................................................................................*/
 	boolean includeTaxaBlock = false;
+	boolean includeClutter =true;
+	boolean includeTitleAndLink =true;
+	boolean useTranslationTable =true;
+	boolean fullNewickWithMetadata =true;
 	String fileName = "untitledTrees.nex";
 	String addendum = "";
 	
@@ -98,6 +106,10 @@ public class ExportNEXUSTreeFile extends FileInterpreterI {
 		exportDialog.setSuppressLineEndQuery(true);
 		exportDialog.setDefaultButton(null);
 		Checkbox itCheckBox = exportDialog.addCheckBox("Include Taxa Block", includeTaxaBlock);
+		Checkbox iTTCheckBox = exportDialog.addCheckBox("Include translation table", useTranslationTable);
+		Checkbox iCCheckBox = exportDialog.addCheckBox("Include comments and id's", includeClutter);
+		Checkbox iTLCheckBox = exportDialog.addCheckBox("Include block Title and Link", includeTitleAndLink);
+		Checkbox fNMCheckBox = exportDialog.addCheckBox("Write Newick tree strings with metadata comments", fullNewickWithMetadata);
 		exportDialog.addLabel("Addendum: ");
 		
 		addendum = "";
@@ -107,18 +119,50 @@ public class ExportNEXUSTreeFile extends FileInterpreterI {
 		exportDialog.completeAndShowDialog();
 			
 		boolean ok = (exportDialog.query()==0);
-		
+		if (ok){
 		includeTaxaBlock = itCheckBox.getState();
-
+		includeClutter = iCCheckBox.getState();
+		includeTitleAndLink = iTLCheckBox.getState();
+		useTranslationTable = iTTCheckBox.getState();
+		fullNewickWithMetadata = fNMCheckBox.getState();
+		storePreferences();
 		addendum = fsText.getText();
+		}
 		exportDialog.dispose();
 		return ok;
 	}	
 	
-	
+	public String preparePreferencesForXML () {
+		StringBuffer buffer = new StringBuffer(200);
+		StringUtil.appendXMLTag(buffer, 2, "includeTaxaBlock", includeTaxaBlock);  
+		StringUtil.appendXMLTag(buffer, 2, "includeClutter", includeClutter);  
+		StringUtil.appendXMLTag(buffer, 2, "includeTitleAndLink", includeTitleAndLink);  
+		StringUtil.appendXMLTag(buffer, 2, "useTranslationTable", useTranslationTable);  
+		StringUtil.appendXMLTag(buffer, 2, "fullNewickWithMetadata", fullNewickWithMetadata);  
+		return buffer.toString();
+	}
+	public void processSingleXMLPreference (String tag, String flavor, String content){
+		processSingleXMLPreference(tag, content);
+	}
+
+	/*.................................................................................................................*/
+	public void processSingleXMLPreference (String tag, String content) {
+		if ("includeTaxaBlock".equalsIgnoreCase(tag))
+			includeTaxaBlock = MesquiteBoolean.fromTrueFalseString(content);
+		if ("includeClutter".equalsIgnoreCase(tag))
+			includeClutter = MesquiteBoolean.fromTrueFalseString(content);
+		if ("includeTitleAndLink".equalsIgnoreCase(tag))
+			includeTitleAndLink = MesquiteBoolean.fromTrueFalseString(content);
+		if ("useTranslationTable".equalsIgnoreCase(tag))
+			useTranslationTable = MesquiteBoolean.fromTrueFalseString(content);
+		if ("fullNewickWithMetadata".equalsIgnoreCase(tag))
+			fullNewickWithMetadata = MesquiteBoolean.fromTrueFalseString(content);
+	}
+
 	/*.................................................................................................................*/
 	public boolean exportFile(MesquiteFile file, String arguments) { //if file is null, consider whole project open to export
 		Arguments args = new Arguments(new Parser(arguments), true);
+		Debugg.errln("EXPOERR");
 		boolean usePrevious = args.parameterExists("usePrevious");
 		Listable[] blocks = getProject().getFileElements(TreeVector.class);
 		if (blocks ==null) {
@@ -141,6 +185,8 @@ public class ExportNEXUSTreeFile extends FileInterpreterI {
 			if (!getExportOptions(trees))
 				return false;
 		}
+
+//includeClutter, includeTitleAndLink, useTranslationTable, fullNewickWithMetadata
 		String path = getPathForExport(arguments, suggested, dir, fn);
 		if (path != null) {
 			f = MesquiteFile.newFile(dir.getValue(), fn.getValue());
@@ -148,8 +194,9 @@ public class ExportNEXUSTreeFile extends FileInterpreterI {
 				f.openWriting(true);
 				f.writeLine("#NEXUS" + StringUtil.lineEnding());
 				if (includeTaxaBlock)
-					f.writeLine(((TaxaManager)findElementManager(Taxa.class)).getTaxaBlock(trees.getTaxa(), null, file));
-				String block = tm.getTreeBlock( trees, null);
+					f.writeLine(((TaxaManager)findElementManager(Taxa.class)).getTaxaBlock(trees.getTaxa(), null, file, includeClutter, includeTitleAndLink));
+			//boolean	addClutter, boolean addLink, boolean useTranslationTable, boolean fullNewickWithMetadata
+				String block = tm.getNEXUSTreeBlock( trees, null, includeClutter, includeTitleAndLink, useTranslationTable, fullNewickWithMetadata);
 				if (block != null)
 					f.writeLine(block);
 				if (addendum != null)

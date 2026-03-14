@@ -53,8 +53,9 @@ public abstract class TreesManager extends FileElementManager   {
 	public abstract TreeVector getTreeBlock(Taxa taxa, MesquiteFile file, int i);
 	public abstract TreeVector getTreeBlockByID(long id);  //this uses the temporary run-time id of the tree vector
 	public abstract TreeVector getTreeBlockByUniqueID(String uniqueID);  //this uses the unique id of the tree vector
-	public abstract String getTreeBlock(TreeVector trees, NexusBlock tB);
-	public abstract TreeVector makeNewTreeBlock(Taxa taxa, String name, MesquiteFile f);
+//	public abstract String getNEXUSTreeBlock(TreeVector trees, NexusBlock tB);
+	public abstract String getNEXUSTreeBlock(TreeVector trees, NexusBlock tB, boolean includeClutter, boolean includeTitleAndLink, boolean useTranslationTable, boolean fullNewickWithMetadata);
+public abstract TreeVector makeNewTreeBlock(Taxa taxa, String name, MesquiteFile f);
 	public abstract Taxa findTaxaMatchingTable(TreeVector trees, MesquiteProject proj, MesquiteFile file, Vector table);
 	public abstract ListableVector getTreeBlockVector();
 	public abstract boolean queryAboutNumericalLabelIntepretation(boolean[] interps, String c, MesquiteString n);
