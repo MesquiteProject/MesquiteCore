@@ -285,6 +285,7 @@ public class Parallelizer {
 		boolean stopped = false;
 		boolean onCall = true;
 		boolean running = false;
+	
 		int itemBeingCalculated = -1;
 		Parallelizer parallelizer;
 		int calculatedOnThread = 0;
@@ -325,7 +326,7 @@ public class Parallelizer {
 		}
 
 		public void run(){
-			while (onCall && !stopped){
+			while (onCall && !stopped && !done){
 				try {
 					Thread.sleep(10); 
 					if (running){
