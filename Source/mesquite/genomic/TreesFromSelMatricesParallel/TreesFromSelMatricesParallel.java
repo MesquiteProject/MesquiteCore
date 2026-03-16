@@ -518,6 +518,10 @@ class TreeInferenceParallelMachine implements Parallelizable {
 		return ResultCodes.NO_ERROR;
 	}
 
+	/*\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\*/
+	public void threadCompletedAssignedTasks(ParallelParams params, Parallelizer parallelizer){
+	}
+	public void ping(Parallelizer parallelizer){}
 	public boolean pleaseReuseParallelThreads() { //doesn't really matter here, becuase not persistent
 		return true;
 	}

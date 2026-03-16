@@ -149,6 +149,16 @@ public interface Parallelizable {
 
 		return ResultCodes.NO_ERROR;
 	 * */
+	/*\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\*/
+	/** Tells owner to do anything needed because thread has completed its assigned tasks. May need to reset params, e.g., for graphics
+	 * */
+	public void threadCompletedAssignedTasks(ParallelParams params, Parallelizer parallelizer);
+
+	/*\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\*/
+	/** Tells owner to the requested interval has passed (use setPingbackInterval) and calculations are ongoing
+	 * */
+	public void ping(Parallelizer parallelizer);
+
 
 
 	/*\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\*/

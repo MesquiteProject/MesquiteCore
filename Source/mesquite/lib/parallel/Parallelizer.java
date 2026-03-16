@@ -38,10 +38,13 @@ public class Parallelizer {
 	int totalCalculated = 0;
 	boolean stopWithFirstItemFailure = false;
 	ProgressIndicator progressIndicator;
+	ParallelParams ppFirst = null;
+	ParallelParams[] threadParams;
+	long pingbackInterval = -1;
 
 	public Parallelizer(Parallelizable owner, int nThreads){
 		this.owner = owner;
-		this.nThreads = nThreads;
+		setNumThreads(nThreads);
 	}
 
 
@@ -66,6 +69,9 @@ public class Parallelizer {
 		}
 		return true;
 	}
+	public void setPingbackInterval(long intervalInMillis){
+		pingbackInterval = intervalInMillis;
+	}
 	public void setStopWithFirstItemFailure(boolean stop){
 		stopWithFirstItemFailure = stop;
 	}
@@ -75,6 +81,7 @@ public class Parallelizer {
 
 	public void setNumThreads(int n){
 		nThreads = n;
+		threadParams = new ParallelParams[nThreads];
 	}
 	/* ===================================================== */
 
@@ -185,7 +192,6 @@ public class Parallelizer {
 	}
 	/* ===================================================== */
 	public synchronized int go(){ //this should be called on thread of owner, which should hold until done
-
 		// ################## INITIALIZE ##################
 		System.out.println("Parallelizer: calculations initializing");
 		int count = owner.getTotalPossibleParallelItemCount();
@@ -204,7 +210,7 @@ public class Parallelizer {
 		int firstItem = owner.getNextParallelItemAndReserve(null, this);
 		MesquiteInteger firstResult = new MesquiteInteger();
 		setItemStatus(firstItem, BEINGCALCULATED);  //should be redundant, given the AndReserve
-		ParallelParams ppFirst = owner.doFirstCalculation_Parallel(firstItem, this, firstResult); 
+		ppFirst = owner.doFirstCalculation_Parallel(firstItem, this, firstResult); 
 		if (firstResult.getValue() != ResultCodes.NO_ERROR) {
 			Debugg.errln("Error in first result " + firstResult.getValue());
 			setItemStatus(firstItem, FAILURE);
@@ -227,20 +233,26 @@ public class Parallelizer {
 				threads[i] = new PThread(ppT, i, this);
 			}
 		}
-
+		
 		// ################## Running threads ##################
 
 		System.out.println("Parallelizer: starting threads");
 		for (int i = 0; i < nThreads; i++) {
 			threads[i].done = false;
 			threads[i].running = true;  // this is how they get re-going if second time around
+			threadParams[i] = threads[i].pp;
 			if (!threads[i].started)
 				threads[i].start();
 		}
-
+		long lastPing = System.currentTimeMillis();
 		while (!completed() && !stopped()){
 			try {
 				Thread.sleep(10);
+				long now = System.currentTimeMillis();
+				if (pingbackInterval>0 && now-lastPing>pingbackInterval){
+					lastPing = now;
+					owner.ping(this);
+				}
 			}
 			catch (Exception e){
 				e.printStackTrace();
@@ -264,6 +276,14 @@ public class Parallelizer {
 		if (completedYay)
 			return ResultCodes.NO_ERROR;
 		return ResultCodes.USER_STOPPED;
+	}
+	
+	public ParallelParams getFirstParams(){
+		return ppFirst;
+	}
+	
+	public ParallelParams[] getThreadParams(){
+		return threadParams;
 	}
 	public void reset(){ // to be called on owner's thread
 		if (threads == null)
@@ -313,7 +333,6 @@ public class Parallelizer {
 				totalCalculated++;
 				calculatedOnThread++;
 				
-				//MesquiteMessage.sys_err_println("### finished item " + item + " on thread " + whichThread + " " + result);
 				if (result == ResultCodes.NO_ERROR)
 					setItemStatus(item, SUCCESS);
 				else
@@ -322,15 +341,15 @@ public class Parallelizer {
 				if (progressIndicator != null && progressIndicator.isAborted())
 					stopped = true;
 			}
+			owner.threadCompletedAssignedTasks(pp, parallelizer);
 			done = true;
 		}
 
 		public void run(){
-			while (onCall && !stopped && !done){
+			while (onCall && !stopped){
 				try {
 					Thread.sleep(10); 
 					if (running){
-						//x MesquiteMessage.sys_err_println("RERUNNING " + owner.getNextParallelItem() + "-");
 						doJob();
 						if (progressIndicator != null && progressIndicator.isAborted())
 							stopped = true;
