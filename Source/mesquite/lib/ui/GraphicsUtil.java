@@ -13,6 +13,7 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
  */
 package mesquite.lib.ui;
 
+import java.awt.AlphaComposite;
 import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.Component;
@@ -791,13 +792,46 @@ public class GraphicsUtil {
 	public static void drawTransparentLine (Graphics g, int x, int y, int w, int h, Color color, double thickness) {
 		Composite composite = ColorDistribution.getComposite(g);
 		ColorDistribution.setTransparentGraphics3(g);		
+		Color oldColor = g.getColor();
 		g.setColor(color);
 		drawLine(g, x, y, w, h, thickness);
+		g.setColor(oldColor);
+		ColorDistribution.setComposite(g, composite);		
+	}
+	public static void drawVeryTransparentLine (Graphics g, double x, double y, double w, double h, Color color, double thickness) {
+		Composite composite = ColorDistribution.getComposite(g);
+		ColorDistribution.setTransparentGraphics01(g);		
+		Color oldColor = g.getColor();
+		g.setColor(color);
+		drawLine(g, x, y, w, h, thickness);
+		g.setColor(oldColor);
+		ColorDistribution.setComposite(g, composite);		
+	}
+	public static void drawTransparentLine (Graphics g, double x, double y, double w, double h, Color color, double thickness) {
+		Composite composite = ColorDistribution.getComposite(g);
+		ColorDistribution.setTransparentGraphics3(g);		
+		Color oldColor = g.getColor();
+		g.setColor(color);
+		drawLine(g, x, y, w, h, thickness);
+		g.setColor(oldColor);
+		ColorDistribution.setComposite(g, composite);		
+	}
+	public static void drawTransparentLine (Graphics g, double x, double y, double w, double h, Color color, double thickness, AlphaComposite tComposite) {
+		Composite composite = ColorDistribution.getComposite(g);
+		Color oldColor = g.getColor();
+	 ColorDistribution.setComposite(g, tComposite);	
+		g.setColor(color);
+		drawLine(g, x, y, w, h, thickness);
+		ColorDistribution.setTransparentGraphics(g, tComposite);	
+	
+		drawLine(g, x, y, w, h, thickness);
+		g.setColor(oldColor);
 		ColorDistribution.setComposite(g, composite);		
 	}
 	public static void fillTransparentRect (Graphics g, int x, int y, int w, int h, Color color, double thickness) {
 		Composite composite = ColorDistribution.getComposite(g);
 		ColorDistribution.setTransparentGraphics3(g);		
+		Color oldColor = g.getColor();
 		g.setColor(color);
 		g.fillRect(x,y,w, h);
 		ColorDistribution.setComposite(g, composite);		

@@ -137,6 +137,24 @@ public class TaxaAssociation extends FileElement  {
 			associations = null;
 	}
 
+	public static TaxaAssociation getAutoAssociation(Taxa taxa, TaxaAssociation association){
+		if (association != null && association.getContainingTaxa() == taxa && association.getContainedTaxa() == taxa){
+			boolean matching = true;
+			for (int it = 0; it<taxa.getNumTaxa() && matching; it++){
+				if (!association.areAssociated(it, it) || association.getNumContained(it)!= 1 || association.getNumContaining(it) != 1)
+					matching = false;
+			}
+			if (matching)
+				return association;
+		}
+		association = new TaxaAssociation();
+		association.setTaxa(taxa, 0);
+		association.setTaxa(taxa, 1);
+		for (int it = 0; it<taxa.getNumTaxa(); it++)
+			association.setAssociated(it, it, true);
+		return association;
+	}
+	
 	public String getDefaultIconFileName(){ //for small 16 pixel icon at left of main bar
 		return "taxaAssocSmall.gif";
 	}

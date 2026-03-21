@@ -1,9 +1,11 @@
 
 package mesquite.trees.SquareLineTree;
 
+import java.awt.AlphaComposite;
 import java.awt.BasicStroke;
 import java.awt.Checkbox;
 import java.awt.Color;
+import java.awt.Composite;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Label;
@@ -609,6 +611,8 @@ class SquareLineTreeDrawing extends TreeDrawing  {
 			}
 		}
 	}
+	
+
 	/*_________________________________________________*/
 	public   void drawTree(Tree tree, int drawnRoot, Graphics g) {
 		if (MesquiteTree.OK(tree)) {

@@ -322,6 +322,7 @@ public class ColorDistribution {
 		}
 	}
 
+	static Composite alphaComposite01 =  AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 0.01f);
 	static Composite alphaComposite2 =  AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 0.2f);
 	static Composite alphaComposite3 =  AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 0.3f);
 	static Composite alphaComposite5 =  AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 0.5f);
@@ -345,6 +346,9 @@ public class ColorDistribution {
 			((Graphics2D)g).setComposite(composite); 
 		}
 
+	}
+	public static void setTransparentGraphics01(Graphics g) {
+		setTransparentGraphics(g,alphaComposite01); 
 	}
 	public static void setTransparentGraphics2(Graphics g) {
 		setTransparentGraphics(g,alphaComposite2); 

@@ -870,9 +870,11 @@ class BasicTreeDisplay extends TreeDisplay  implements KeyListener {
 				stage = 1;	
 
 				if (bailOut(initialPending)) return;
-				getTreeDrawing().drawTree(tree, dRoot, g); //ALLOW other drawnRoots!
-				
-				getTreeDrawing().drawDebuggingLines(tree, dRoot, g); //there's a boolean there to turn off/on
+				boolean treeMuted = getMuteMode();
+				if (!treeMuted)
+					getTreeDrawing().drawTree(tree, dRoot, g); //ALLOW other drawnRoots!
+		
+					getTreeDrawing().drawDebuggingLines(tree, dRoot, g); //there's a boolean there to turn off/on
 				//showNodeLocations(tree, g, tree.getRoot());
 				stage = 2;
 
@@ -892,8 +894,9 @@ class BasicTreeDisplay extends TreeDisplay  implements KeyListener {
 					((DrawTreeCoordinator)ownerModule).getNamesTask().drawNames(this, tree, dRoot, g);
 				stage = 6;
 				if (bailOut(initialPending)) return;
-				if (getTreeDrawing()!=null && tree !=null && getHighlightedBranch() > 0) 
-					getTreeDrawing().highlightBranch(tree, getHighlightedBranch(),g); 
+				if (!treeMuted)
+					if (getTreeDrawing()!=null && tree !=null && getHighlightedBranch() > 0) 
+						getTreeDrawing().highlightBranch(tree, getHighlightedBranch(),g); 
 				stage = 7;
 				if (bailOut(initialPending)) return;
 			}

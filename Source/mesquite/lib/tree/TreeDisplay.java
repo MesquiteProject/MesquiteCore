@@ -496,6 +496,19 @@ public class TreeDisplay extends TaxaTreeDisplay  {
 		return fixedTaxonSpacing;
 	}
 	
+	public boolean getMuteMode() {
+		if (extras != null) {
+			Enumeration e = extras.elements();
+			while (e.hasMoreElements()) {
+				Object obj = e.nextElement();
+				TreeDisplayExtra ex = (TreeDisplayExtra)obj;
+				if (ex.requestMuteTree())
+					return true;
+
+			}
+		}
+		return false;
+	}	/*^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^*/
 	public boolean getTraceMode() {
 		if (extras != null) {
 			Enumeration e = extras.elements();
