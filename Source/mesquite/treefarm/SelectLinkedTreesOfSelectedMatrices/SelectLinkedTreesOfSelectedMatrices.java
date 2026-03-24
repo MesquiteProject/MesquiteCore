@@ -14,6 +14,7 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
 package mesquite.treefarm.SelectLinkedTreesOfSelectedMatrices;
 /*~~  */
 
+import mesquite.lib.Debugg;
 import mesquite.lib.ListableVector;
 import mesquite.lib.MesquiteListener;
 import mesquite.lib.MesquiteModule;
@@ -55,9 +56,11 @@ public class SelectLinkedTreesOfSelectedMatrices extends CharMatricesListUtility
 		for (int j=0; j<treeVectors.size(); j++){
 			boolean sel = false;
 			TreeVector trees = (TreeVector)treeVectors.elementAt(j);
+			Debugg.errln("@findin for tree vector " + j);
 			//now we have this tree vector. Let's go through the matrices to see which ones might have matches among the trees, and select those trees
 			for (int k = 0; k< datas.size(); k++){
 				CharacterData dataK = (CharacterData)datas.elementAt(k);
+				Debugg.errln("@findin for matrix " + k);
 				if (trees.getTaxa() == dataK.getTaxa()){
 					for (int itr = 0; itr<trees.size(); itr++){
 						MesquiteTree tree = (MesquiteTree) trees.getTree(itr);
