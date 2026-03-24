@@ -113,6 +113,7 @@ import mesquite.lib.duties.TreeWindowAssistant;
 import mesquite.lib.duties.TreeWindowAssistantA;
 import mesquite.lib.duties.TreeWindowAssistantC;
 import mesquite.lib.duties.TreeWindowAssistantI;
+import mesquite.lib.duties.TreeWindowAssistantISGA;
 import mesquite.lib.duties.TreeWindowAssistantN;
 import mesquite.lib.duties.TreeWindowAssistantOA;
 import mesquite.lib.duties.TreeWindowAssistantSGA;
@@ -937,6 +938,10 @@ public class BasicTreeWindowMaker extends TreeWindowMaker implements Commandable
 		if (MesquiteTrunk.mesquiteModulesInfoVector.getNumModulesOfDuty(TreeWindowAssistantSGA.class, null, this)>0) {
 			MesquiteSubmenuSpec mmsSG = addSubmenu(aux, "Species Tree - Gene Tree Analyses", makeCommand("newWindowAssistant", basicTreeWindow));
 			mmsSG.setList(TreeWindowAssistantSGA.class);
+		}
+		if (MesquiteTrunk.mesquiteModulesInfoVector.getNumModulesOfDuty(TreeWindowAssistantISGA.class, null, this)>0) {
+			MesquiteSubmenuSpec mmsSG = addSubmenu(aux, "Introgression Analysis & Visualization", makeCommand("newWindowAssistant", basicTreeWindow));
+			mmsSG.setList(TreeWindowAssistantISGA.class);
 		}
 		addMenuItem(aux, "-", null);
 

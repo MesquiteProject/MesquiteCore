@@ -322,10 +322,14 @@ public class ColorDistribution {
 		}
 	}
 
-	static Composite alphaComposite01 =  AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 0.01f);
-	static Composite alphaComposite2 =  AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 0.2f);
-	static Composite alphaComposite3 =  AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 0.3f);
-	static Composite alphaComposite5 =  AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 0.5f);
+	public static Composite alphaComposite01 =  AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 0.01f);
+	public static Composite alphaComposite03 =  AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 0.03f);
+	public static Composite alphaComposite05 =  AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 0.05f);
+	public static Composite alphaComposite08 =  AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 0.08f);
+	public static Composite alphaComposite1 =  AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 0.1f);
+	public static Composite alphaComposite2 =  AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 0.2f);
+	public static Composite alphaComposite3 =  AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 0.3f);
+	public static Composite alphaComposite5 =  AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 0.5f);
 	static Composite storedComposite = null;
 	static float prevCompositeFloat = 0;
 

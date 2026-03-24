@@ -17,13 +17,16 @@ package mesquite.lib.duties;
 /* ======================================================================== */
 /**An assistant to the tree window, to appear in Analysis menu.*/
 
-public abstract class TreeWindowAssistantSGA extends TreeWindowAssistant  {
+public abstract class TreeWindowAssistantISGA extends TreeWindowAssistant  {
 	
    	 public Class getDutyClass() {
-   	 	return TreeWindowAssistantSGA.class;
+   	 	return TreeWindowAssistantISGA.class;
    	 }
+   	 public String[] getDefaultModule() {
+    	 	return new String[] {"#ABBABABASurvey", "#ABBABABAOnTree", "#GenePrefBranchMoveMap"};
+    	 }
  	public String getDutyName() {
- 		return "Assistant for Tree Window (Species Tree-Gene Tree Analysis)";
+ 		return "Assistant for Tree Window (Introgression Exploration)";
    	 }
 
 }

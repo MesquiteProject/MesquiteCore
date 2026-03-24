@@ -85,8 +85,9 @@ public abstract class TreeDisplayExtra implements Listable, OwnedByModule {
 	public boolean requestTraceMode(){
 		return false;
 	}
-	public boolean requestMuteTree(){
-		return false;
+	//Override to dim the tree. 0 none; 1 mostly; 2 completely
+	public int requestMuteTree(){
+		return 0;
 	}
 	public void dispose(){
 		ownerModule =null;

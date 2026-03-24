@@ -16,6 +16,7 @@ package mesquite.trees.BasicTreeDrawCoordinator;
 
 import java.awt.Color;
 import java.awt.Component;
+import java.awt.Composite;
 import java.awt.Container;
 import java.awt.Dimension;
 import java.awt.FontMetrics;
@@ -870,10 +871,17 @@ class BasicTreeDisplay extends TreeDisplay  implements KeyListener {
 				stage = 1;	
 
 				if (bailOut(initialPending)) return;
-				boolean treeMuted = getMuteMode();
-				if (!treeMuted)
+				int treeMuted = getMuteMode();
+				if (treeMuted<2) {
+					Composite composite = ColorDistribution.getComposite(g);
+					if (treeMuted == 1)
+						ColorDistribution.setComposite(g, ColorDistribution.alphaComposite03);
+
 					getTreeDrawing().drawTree(tree, dRoot, g); //ALLOW other drawnRoots!
-		
+					if (treeMuted == 1)
+						ColorDistribution.setComposite(g, composite);
+
+				}
 					getTreeDrawing().drawDebuggingLines(tree, dRoot, g); //there's a boolean there to turn off/on
 				//showNodeLocations(tree, g, tree.getRoot());
 				stage = 2;
@@ -894,7 +902,7 @@ class BasicTreeDisplay extends TreeDisplay  implements KeyListener {
 					((DrawTreeCoordinator)ownerModule).getNamesTask().drawNames(this, tree, dRoot, g);
 				stage = 6;
 				if (bailOut(initialPending)) return;
-				if (!treeMuted)
+
 					if (getTreeDrawing()!=null && tree !=null && getHighlightedBranch() > 0) 
 						getTreeDrawing().highlightBranch(tree, getHighlightedBranch(),g); 
 				stage = 7;

@@ -496,18 +496,20 @@ public class TreeDisplay extends TaxaTreeDisplay  {
 		return fixedTaxonSpacing;
 	}
 	
-	public boolean getMuteMode() {
+	public int getMuteMode() {
+		int max = 0;
 		if (extras != null) {
 			Enumeration e = extras.elements();
 			while (e.hasMoreElements()) {
 				Object obj = e.nextElement();
 				TreeDisplayExtra ex = (TreeDisplayExtra)obj;
-				if (ex.requestMuteTree())
-					return true;
+				int req = ex.requestMuteTree();
+				if (req> max)
+					max = req;
 
 			}
 		}
-		return false;
+		return max;
 	}	/*^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^*/
 	public boolean getTraceMode() {
 		if (extras != null) {

@@ -195,7 +195,7 @@ public class TreeUtil {
 		else  { 
 			for (int k = 0; k< branchStates[node].length; k++)
 				tempSingleDouble[k] = 0;
-		
+
 			for (int daughter = tree.firstDaughterOfNode(node); tree.nodeExists(daughter); daughter = tree.nextSisterOfNode(daughter)) {
 				inferAncestralBranchStatesDownpass(tree, daughter, branchStates, taxonStates, tempSingleDouble);
 				for (int k = 0; k< branchStates[daughter].length; k++)
@@ -215,26 +215,32 @@ public class TreeUtil {
 
 		}
 	}
-	
+
 	/*.............................................................................................................*/
 	static void inferAncestralBranchStatesUppass(Tree tree, int node, int[][] branchStatesDown, int[][] branchStatesUp, int[] tempSingleDouble){
 		if (tree.nodeIsInternal(node)){
 			for (int k = 0; k< branchStatesUp[node].length; k++)
 				tempSingleDouble[k] = 0;
-			
+
 			// accumulate downstates from sisters
 			for (int daughter = tree.firstDaughterOfNode(tree.motherOfNode(node)); tree.nodeExists(daughter); daughter = tree.nextSisterOfNode(daughter)) {
 				if (daughter != node){
-				for (int k = 0; k< branchStatesDown[daughter].length; k++)
-					tempSingleDouble[k] = tempSingleDouble[k] | branchStatesDown[daughter][k];  //accumulating all statesets
+					for (int k = 0; k< branchStatesDown[daughter].length; k++)
+						tempSingleDouble[k] = tempSingleDouble[k] | branchStatesDown[daughter][k];  //accumulating all statesets
 				}
 			}
 			//get upstate from ancestor
 			if (tree.motherOfNode(node)!=tree.getRoot()) {
-				for (int k = 0; k< branchStatesDown[node].length; k++)
+				for (int k = 0; k< branchStatesUp[node].length; k++)
 					tempSingleDouble[k] = tempSingleDouble[k] | branchStatesUp[tree.motherOfNode(node)][k];  //accumulating all statesets
 			}
-	
+			else {
+				for (int k = 0; k< branchStatesDown[node].length; k++) {
+					if (tree.motherOfNode(k) == tree.getRoot())
+						tempSingleDouble[k] = tempSingleDouble[k] | stateHasntBranch;  //for the root daughters, treats as if there is an outgroup, so as not to reroot if unneeded
+				}
+			}
+
 			for (int k = 0; k< branchStatesUp[node].length; k++) {
 				int statesSeen = tempSingleDouble[k];
 				if ((statesSeen & stateHasBranch) != 0 && (statesSeen & stateHasntBranch) != 0) //both seen; return both
@@ -249,9 +255,9 @@ public class TreeUtil {
 
 			for (int d = tree.firstDaughterOfNode(node); tree.nodeExists(d); d = tree.nextSisterOfNode(d))
 				inferAncestralBranchStatesUppass(tree, d, branchStatesDown, branchStatesUp, tempSingleDouble);
+		}
 	}
-	}
-	
+
 	//final pass: if node is polytomous, is intersection /uinion of up anad downpass at node
 	static void inferAncestralBranchStatesFinalpass(Tree tree, int node, int[][] branchStatesDown, int[][] branchStatesUp, int[][] branchStatesFinal, int[] tempSingleDouble){
 		if (tree.nodeIsTerminal(node)){
@@ -261,19 +267,22 @@ public class TreeUtil {
 		else {
 			for (int k = 0; k< branchStatesUp[node].length; k++)
 				tempSingleDouble[k] = 0;
-			
+
 			// accumulate downstates from sisters
 			for (int daughter = tree.firstDaughterOfNode(tree.motherOfNode(node)); tree.nodeExists(daughter); daughter = tree.nextSisterOfNode(daughter)) {
 				for (int k = 0; k< branchStatesDown[daughter].length; k++)
 					tempSingleDouble[k] = tempSingleDouble[k] | branchStatesDown[daughter][k];  //accumulating all statesets
 			}
 			//get upstate from node
-				for (int k = 0; k< branchStatesDown[node].length; k++)
-					tempSingleDouble[k] = tempSingleDouble[k] | branchStatesUp[node][k];  //accumulating all statesets
-	
+			for (int k = 0; k< branchStatesDown[node].length; k++)
+				tempSingleDouble[k] = tempSingleDouble[k] | branchStatesUp[node][k];  //accumulating all statesets
+
 			for (int k = 0; k< branchStatesUp[node].length; k++) {
 				int statesSeen = tempSingleDouble[k];
-				if ((statesSeen & stateHasBranch) != 0 && (statesSeen & stateHasntBranch) != 0) //both seen; return both
+				if (node == tree.getRoot() && tree.motherOfNode(k) == tree.getRoot())
+					branchStatesFinal[node][k] =stateHasntBranch;
+
+				else if ((statesSeen & stateHasBranch) != 0 && (statesSeen & stateHasntBranch) != 0) //both seen; return both
 					branchStatesFinal[node][k] = stateHasBoth;
 				else if ((statesSeen & stateHasBranch) != 0) //hasbranch included; resolves to that
 					branchStatesFinal[node][k] = stateHasBranch;
@@ -287,7 +296,7 @@ public class TreeUtil {
 
 		}
 	}
-	
+
 	static void findBestMatches(Tree tree, int node, int[][] branchStates, int[] targetAncSt, int[] ancStMatch){
 		int countMatches = 0;
 		for (int k = 0; k< branchStates[node].length; k++) {
@@ -295,11 +304,11 @@ public class TreeUtil {
 				countMatches++;
 		}
 		ancStMatch[node] = countMatches;
-		
-			for (int daughter = tree.firstDaughterOfNode(node); tree.nodeExists(daughter); daughter = tree.nextSisterOfNode(daughter)) {
-				findBestMatches(tree, daughter, branchStates, targetAncSt, ancStMatch);
-			}
-		
+
+		for (int daughter = tree.firstDaughterOfNode(node); tree.nodeExists(daughter); daughter = tree.nextSisterOfNode(daughter)) {
+			findBestMatches(tree, daughter, branchStates, targetAncSt, ancStMatch);
+		}
+
 	}
 
 	/*reroots one tree to match other as well as possible. Returns whether a reroot was done. 
@@ -324,7 +333,7 @@ public class TreeUtil {
 		int[] targetAncestralStates = branchStatesFinal[targetTree.getRoot()];
 		int[] ancestralStateMatch = new int[numNodeSpaces];
 		findBestMatches(toBeRerooted, toBeRerooted.getRoot(), branchStatesTBR, targetAncestralStates, ancestralStateMatch);
-		
+
 		int max = 0;
 		int best = -1;
 		for (int k = 0; k<ancestralStateMatch.length; k++){  //should look for multiple matches and go toward middle-ish one!
@@ -333,8 +342,8 @@ public class TreeUtil {
 				best = k;
 			}
 		}
-		if (best != toBeRerooted.getRoot())
-		toBeRerooted.reroot(best, toBeRerooted.getRoot(), notify);  
+		if (best != toBeRerooted.getRoot() || max > ancestralStateMatch[toBeRerooted.getRoot()])
+			toBeRerooted.reroot(best, toBeRerooted.getRoot(), notify);  
 		return best != toBeRerooted.getRoot();
 	}
 	/*
