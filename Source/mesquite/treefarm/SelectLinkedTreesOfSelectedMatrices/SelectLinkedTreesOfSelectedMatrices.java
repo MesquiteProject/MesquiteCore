@@ -61,8 +61,7 @@ public class SelectLinkedTreesOfSelectedMatrices extends CharMatricesListUtility
 				if (trees.getTaxa() == dataK.getTaxa()){
 					for (int itr = 0; itr<trees.size(); itr++){
 						MesquiteTree tree = (MesquiteTree) trees.getTree(itr);
-						CharacterData d = tree.findLinkedMatrix(getProject());
-						if (d == dataK){
+						if (tree.isMatrixLinked(dataK)){
 							trees.setSelected(itr, true);
 							sel = true;
 						}

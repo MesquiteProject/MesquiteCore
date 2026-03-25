@@ -293,7 +293,7 @@ public class MesquiteTree extends Associable implements AdjustableTree, Listable
 			return "<li>Tree: " + getName() + "<ul>" + sT + "</ul></li>";
 		return "<li>Tree: " + getName() + "</li>";
 	}
-	
+
 	/*-----------------------------------------*/
 	boolean warningSuppress = false;
 	public void setWarningSuppress(boolean warningSuppress){
@@ -1353,7 +1353,7 @@ public class MesquiteTree extends Associable implements AdjustableTree, Listable
 		if (!inBounds(node))
 			return -1;
 		return taxonNumber[node]; }
-	
+
 	/*-----------------------------------------*/
 	/** Returns index of single selected part */
 	public int singleSelected() {
@@ -3191,7 +3191,7 @@ public class MesquiteTree extends Associable implements AdjustableTree, Listable
 				taxa.getClades().addClade(c);
 			}
 			return ParseUtil.getToken(TreeDescription, stringLoc);  //skip parens or next comma
-		
+
 		}
 	}
 	static int numReticWarnings = 0;
@@ -3506,7 +3506,7 @@ and the tree has been rerooted. Properties that belong to nodes implicitly have 
 					if (motherOfNode(termN) != motherOfNode(node)) { //protect against redundant references; NOTE: may not protect if more than two parents
 						//apparent reticulation found!
 						reticulationWarning( c,  taxonNumber,  stringLoc,  TreeDescription, 1);
-						
+
 						setParentOfNode(termN, motherOfNode(termN), false);
 						setParentOfNode(termN, motherOfNode(node), false);
 						return DONT_SPROUT; //don't continue up tree
@@ -3526,7 +3526,7 @@ and the tree has been rerooted. Properties that belong to nodes implicitly have 
 				if (labNode!=-1) {//IF LABEL already exists, then attach new ancestor
 					if (motherOfNode(labNode) != motherOfNode(node)) { //protect against redundant references; NOTE: may not protect if more than two parents
 						reticulationWarning( c,  taxonNumber,  stringLoc,  TreeDescription, 2);
-						
+
 						setParentOfNode(labNode, motherOfNode(labNode), false);
 						setParentOfNode(labNode, motherOfNode(node), false);
 						//c = ParseUtil.getToken(TreeDescription, stringLoc);  //skip internal node name
@@ -3589,7 +3589,7 @@ and the tree has been rerooted. Properties that belong to nodes implicitly have 
 			}
 		}
 	}
-	
+
 	void reticulationWarning (String c, int taxonNumber, MesquiteInteger stringLoc, String TreeDescription, int whichPlace){
 		if (warningSuppress)
 			return;
@@ -4117,7 +4117,7 @@ and the tree has been rerooted. Properties that belong to nodes implicitly have 
 			treeDescription.append(Integer.toString(taxonNumberOfNode(node)));
 			treeDescription.append(']');
 		}
-		
+
 	}
 	public String writeTreeByNodeNumbers() {
 		StringBuffer sb = new StringBuffer(100);
@@ -4409,6 +4409,24 @@ and the tree has been rerooted. Properties that belong to nodes implicitly have 
 				d = project.getCharacterMatrixByReference(null,taxa, null, treeName.substring(0, treeName.length()-1));
 		}
 		return d;
+	}
+	public boolean isMatrixLinked(CharacterData data){
+		if (data == null)
+			return false;
+		String matrixName = data.getName();
+		Object obj = getAttachment("fromMatrix", MesquiteString.class);
+		if (obj != null)
+			return matrixName.equalsIgnoreCase(((MesquiteString)obj).getValue());
+		String treeName = getName();
+		if (matrixName.equalsIgnoreCase(treeName))
+			return true;
+		if (matrixName.equalsIgnoreCase(StringUtil.getAllButLastItem(treeName, ".")))
+			return true;
+		if (matrixName.equalsIgnoreCase(StringUtil.getAllButLastItem(treeName, "#")))
+			return true;
+		if (treeName.endsWith("+") && matrixName.equalsIgnoreCase(treeName.substring(0, treeName.length()-1)))
+			return true;
+		return false;
 	}
 
 	/*-----------------------------------------*/
@@ -5469,7 +5487,7 @@ and the tree has been rerooted. Properties that belong to nodes implicitly have 
 		return true;
 
 	}
-	
+
 	/*-----------------------------------------*/
 	/** Is this a legal branch move? Uses same criteria as moveBranch itself*/
 	public  boolean legalBranchMove(int branchFrom, int branchTo) {

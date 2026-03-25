@@ -20,6 +20,7 @@ import mesquite.assoc.lib.TaxaAssociation;
 import mesquite.categ.lib.CategoricalState;
 import mesquite.lib.Associable;
 import mesquite.lib.Bits;
+import mesquite.lib.Debugg;
 import mesquite.lib.DoubleArray;
 import mesquite.lib.IntegerArray;
 import mesquite.lib.ListableVector;
@@ -478,6 +479,9 @@ public class TreeUtil {
 			}
 		}
 		boolean done = false;
+		boolean logProgress =  (line.length()>10000);
+		if (logProgress)
+			MesquiteMessage.print("Trees read: ");
 		while (!done && stringLoc.getValue()+1<line.length() && !abort && (iTree<numTrees)) {
 
 			if (trees == null) {
@@ -498,6 +502,13 @@ public class TreeUtil {
 			stringLoc.setValue(oldLoc);
 			 */
 			t.readTree(line,stringLoc, namer, StringUtil.defaultWhitespace + "\n\r", "():;,[]\'<>", true);  //tree reading adjusted to use Newick punctuation rather than NEXUS, except adding <>, so that associated will be read
+			if (logProgress){
+				if ((iTree+1) % 1000 == 0)
+					MesquiteMessage.print(" " + (iTree + 1));
+				else if ((iTree+1) % 100 == 0)
+					MesquiteMessage.print(" .");
+				
+			}
 			if (oldLoc < stringLoc.getValue()){
 				t.setName(treeNameBase + (iTree+1));
 				trees.addElement(t, false);
@@ -506,6 +517,8 @@ public class TreeUtil {
 			else
 				done = true;
 		}
+		if (logProgress)
+			MesquiteMessage.println("");
 
 
 		return trees;
