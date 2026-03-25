@@ -33,5 +33,8 @@ public class CharMatricesListWindow extends ListableVectorWindow {
 				g.setColor(Color.gray);
 		}
 	}
+	protected char[] getStandardEndDelimiterPunctuation(){
+		return new char[]{'.', '+'};
+	}
 
 }
