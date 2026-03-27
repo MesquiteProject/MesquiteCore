@@ -322,7 +322,7 @@ public class ColorDistribution {
 		}
 	}
 
-	public static Composite alphaComposite01 =  AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 0.01f);
+	public static Composite alphaComposite01 =  AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 0.01f); //below 0.01 and the colours turn grey on macOS at least
 	public static Composite alphaComposite03 =  AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 0.03f);
 	public static Composite alphaComposite05 =  AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 0.05f);
 	public static Composite alphaComposite08 =  AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 0.08f);

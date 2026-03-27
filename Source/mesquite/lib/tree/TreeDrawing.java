@@ -433,6 +433,9 @@ public abstract class TreeDrawing  {
 
 	/** This allows access to edgeWidths */
 	public abstract int getEdgeWidth();
+	public int useEdgeWidth(){  //this returns not the official edgewidth, but the used one (in case requestTraceMode was set true)
+		return getEdgeWidth();
+	}
 
 	/** project point x,y onto the line between N's lineBase to lineTip. */
 	public Point2D.Double projectionOnLine(int N, double x, double y) {

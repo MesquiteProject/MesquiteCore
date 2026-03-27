@@ -67,6 +67,7 @@ import mesquite.lib.StringUtil;
 import mesquite.lib.UndoInstructions;
 import mesquite.lib.duties.CharMatrixManager;
 import mesquite.lib.duties.CharactersManager;
+import mesquite.lib.duties.DataWindowMaker;
 import mesquite.lib.duties.ElementManager;
 import mesquite.lib.misc.AttachedNotesVector;
 import mesquite.lib.misc.ChangeAuthority;
@@ -4305,6 +4306,13 @@ public abstract class CharacterData extends FileElement implements MesquiteListe
 			return (MesquiteModule)((Commandable)getManager()).doCommand("showDataWindow", getFile().getProject().getCharMatrixReferenceInternal(this), CommandChecker.defaultChecker);
 		}
 		return null;
+	}
+	public void showCell(int ic, int it, boolean selectAlso){
+		MesquiteModule mb = showMatrix();
+		if (mb != null){
+			DataWindowMaker dwm = (DataWindowMaker)mb;
+			dwm.focusOnCell(ic, it, selectAlso);
+		}
 	}
 	public void showList(){
 		if (getManager() != null && getFile() != null) 

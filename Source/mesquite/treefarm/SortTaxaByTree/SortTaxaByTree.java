@@ -13,6 +13,8 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
 */
 package mesquite.treefarm.SortTaxaByTree;
 
+import java.util.Vector;
+
 import mesquite.lib.MesquiteInteger;
 import mesquite.lib.MesquiteListener;
 import mesquite.lib.Notification;
@@ -36,6 +38,7 @@ public class SortTaxaByTree extends TreeUtility {
 		if (tree == null)
 			return;
 		Taxa taxa = tree.getTaxa();
+		Vector v = pauseAllPausables();
 		UndoInstructions undoInstructions = new UndoInstructions(UndoInstructions.PARTS_MOVED, taxa);
 		undoInstructions.recordPreviousOrder(taxa);
 		UndoReference undoReference = new UndoReference(undoInstructions, this);
@@ -49,6 +52,7 @@ public class SortTaxaByTree extends TreeUtility {
 			tree.reconcileTaxa(MesquiteListener.PARTS_MOVED, null, false);
 		}
 		taxa.notifyListeners(this, new Notification(MesquiteListener.PARTS_MOVED, undoReference));
+		unpauseAllPausables(v);
 	}
 	
 	

@@ -274,6 +274,17 @@ public class GraphicsUtil {
 		g2.draw(arc);
 	}
 	/*_________________________________________________*/
+	public static void drawArc(Graphics2D g2, double x, double y, double width, double height, double startingAngle, double angleExtent, float thickness) {
+		Arc2D arc = new Arc2D.Double(x,y,width,height,startingAngle,  angleExtent, Arc2D.OPEN);
+		BasicStroke wideStroke = new BasicStroke(thickness);
+
+		Stroke oldStroke = g2.getStroke();
+		g2.setStroke(wideStroke);
+		g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+		g2.draw(arc);
+		g2.setStroke(oldStroke);
+	}
+	/*_________________________________________________*/
 	public static void drawArc(Graphics g, double x, double y, double width, double height, double startingAngle, double angleExtent) {
 		if (!(g instanceof Graphics2D))
 			return;

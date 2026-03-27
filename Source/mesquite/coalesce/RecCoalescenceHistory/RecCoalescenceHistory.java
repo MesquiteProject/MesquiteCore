@@ -45,6 +45,7 @@ public class RecCoalescenceHistory extends ReconstructAssociation {
 	MesquiteBoolean unrootedContained = new MesquiteBoolean(false);
 	MesquiteBoolean allowResolve = new MesquiteBoolean(true);
 	MesquiteBoolean  useBranchLengths = new MesquiteBoolean(true);
+	MesquiteBoolean  keepBrLengthsRerooting = new MesquiteBoolean(false);
 	Vector rerootVectors;
 	static final int maxRerootStores = 20;
 	/*.................................................................................................................*/
@@ -55,7 +56,8 @@ public class RecCoalescenceHistory extends ReconstructAssociation {
 			ExtensibleDialog checkBoxDialog = new ExtensibleDialog(containerOfModule(), "Contained (gene) tree interpetation",buttonPressed);
 			checkBoxDialog.addLargeOrSmallTextLabel ("Options for interpreting contained tree (e.g., gene tree within species or population history.)");
 			Checkbox ur = checkBoxDialog.addCheckBox("Treat contained as unrooted", unrootedContained.getValue());
-			Checkbox polyAutoRes = checkBoxDialog.addCheckBox("Contained polytomies auto-resolve", allowResolve.getValue());
+			Checkbox urB = checkBoxDialog.addCheckBox("Keep branch lengths if rerooting contained", keepBrLengthsRerooting.getValue());
+		Checkbox polyAutoRes = checkBoxDialog.addCheckBox("Contained polytomies auto-resolve", allowResolve.getValue());
 			Checkbox useLen = checkBoxDialog.addCheckBox("Use Branch lengths of Contained tree", useBranchLengths.getValue());
 			
 			checkBoxDialog.completeAndShowDialog(true);
@@ -64,11 +66,13 @@ public class RecCoalescenceHistory extends ReconstructAssociation {
 				unrootedContained.setValue(ur.getState());
 				allowResolve.setValue(polyAutoRes.getState());
 				useBranchLengths.setValue(useLen.getState());
+				keepBrLengthsRerooting.setValue(urB.getState());
 			}
 			checkBoxDialog.dispose();
  		}
 		MesquiteSubmenuSpec mss = addSubmenu(null, "Reconstruct Coalescence");
 		addCheckMenuItemToSubmenu( null, mss, "Treat contained as unrooted", makeCommand("toggleUnrooted", this), unrootedContained);
+		addCheckMenuItemToSubmenu( null, mss, "Keep branch lengths if rerooting contained", makeCommand("keepBrLengthsRerooting", this), keepBrLengthsRerooting);
 		addCheckMenuItemToSubmenu( null, mss, "Contained polytomies auto-resolve", makeCommand("toggleResolve", this), allowResolve);
 		addCheckMenuItemToSubmenu( null, mss, "Use Branch lengths of Contained", makeCommand("toggleUseLengths", this), useBranchLengths);
 		rerootVectors = new Vector();
@@ -80,6 +84,7 @@ public class RecCoalescenceHistory extends ReconstructAssociation {
    	 	Snapshot temp = new Snapshot();
 		//temp.addLine("toggleReconstruct " + reconstruct.toOffOnString()); //this is currently buggy and not available
 		temp.addLine("toggleUnrooted " + unrootedContained.toOffOnString());
+		temp.addLine("keepBrLengthsRerooting " + keepBrLengthsRerooting.toOffOnString());
 		temp.addLine("toggleResolve " + allowResolve.toOffOnString());
 		temp.addLine("toggleUseLengths " + useBranchLengths.toOffOnString());
   	 	return temp;
@@ -107,7 +112,20 @@ public class RecCoalescenceHistory extends ReconstructAssociation {
 	    	 		}
     	 		}
     	 	}
-    	 	else if (checker.compare(this.getClass(), "Sets whether or not any branch lengths of the contained tree are used in fitting it into the containing tree", "[on = use lengths; off]", commandName, "toggleUseLengths")) {
+    	 	else if (checker.compare(this.getClass(), "Sets whether or not the contained tree's branch lengths should be kept if rerooted", "[on = keep; off]", commandName, "keepBrLengthsRerooting")) {
+    	 		boolean current = keepBrLengthsRerooting.getValue();
+    	 		if (StringUtil.blank(arguments)) {
+    	 			keepBrLengthsRerooting.setValue(!current);
+	    	 		parametersChanged();
+    	 		}
+    	 		else {
+    	 			keepBrLengthsRerooting.toggleValue(parser.getFirstToken(arguments));
+	    	 		if (current!=keepBrLengthsRerooting.getValue()) {
+	    	 			parametersChanged();
+	    	 		}
+    	 		}
+    	 	}
+   	 	else if (checker.compare(this.getClass(), "Sets whether or not any branch lengths of the contained tree are used in fitting it into the containing tree", "[on = use lengths; off]", commandName, "toggleUseLengths")) {
     	 		boolean current = useBranchLengths.getValue();
     	 		if (StringUtil.blank(arguments)) {
     	 			useBranchLengths.setValue(!current);
@@ -158,7 +176,8 @@ public class RecCoalescenceHistory extends ReconstructAssociation {
 		tree.makeAllRootings(tree.getRoot(), rerootings);
 		for (int i = 0; i<rerootings.size(); i++){
 			MesquiteTree cr = (MesquiteTree)rerootings.getTree(i);
-			cr.setAllBranchLengths(MesquiteDouble.unassigned, false);
+			if (!keepBrLengthsRerooting.getValue())
+				cr.setAllBranchLengths(MesquiteDouble.unassigned, false); 
 		}
 		rerootVectors.addElement(rerootings);
 		if (rerootVectors.size()>=maxRerootStores) {

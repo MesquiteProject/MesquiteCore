@@ -37,6 +37,7 @@ public abstract class DataWindowMaker extends MesquiteModule  {
  	 }
   	 public abstract void requestCellColorer(MesquiteModule m, int ic, int it, String message);
    	 public abstract void demandCellColorer(MesquiteModule m, int ic, int it, String message);
+ 	public abstract void focusOnCell(int ic, int it, boolean selectAlso);
 
   	 public abstract mesquite.lib.characters.CharacterData getCharacterData();
   	 public abstract void linkEditor(DataWindowMaker mb, boolean linkeeIsNew);

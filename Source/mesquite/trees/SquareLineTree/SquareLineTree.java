@@ -310,9 +310,9 @@ class SquareLineTreeDrawing extends TreeDrawing  {
 		this.ownerModule = ownerModule;
 
 		if (showSpots())
-			treeDisplay.setMinimumTaxonNameDistanceFromTip(edgewidth, spotSize/2+ 4); //better if only did this if tracing on
+			treeDisplay.setMinimumTaxonNameDistanceFromTip(useEdgeWidth(), spotSize/2+ 4); //better if only did this if tracing on
 		else
-			treeDisplay.setMinimumTaxonNameDistanceFromTip(edgewidth, 4); //better if only did this if tracing on
+			treeDisplay.setMinimumTaxonNameDistanceFromTip(useEdgeWidth(), 4); //better if only did this if tracing on
 		this.treeDisplay = treeDisplay;
 		oldNumTaxa = numTaxa;
 
@@ -524,8 +524,11 @@ class SquareLineTreeDrawing extends TreeDrawing  {
 				if (spotSize<2)
 					spotSize=2;
 			}
-			treeDisplay.setMinimumTaxonNameDistanceFromTip(edgewidth, spotSize/2+ 4);
+			
+			treeDisplay.setMinimumTaxonNameDistanceFromTip(useEdgeWidth(), spotSize/2+ 4);
 		}
+		else if (treeDisplay.getTraceMode())
+			treeDisplay.setMinimumTaxonNameDistanceFromTip(useEdgeWidth(), 4); 
 		if (treeDisplay.getTaxonSpacing()<edgewidth+2) {
 			edgewidth= (int)treeDisplay.getTaxonSpacing()-2;
 			if (edgewidth<2)
@@ -939,7 +942,7 @@ class SquareLineTreeDrawing extends TreeDrawing  {
 		preferredEdgeWidth = edw;
 	}
 
-	int useEdgeWidth(){
+	public int useEdgeWidth(){
 		if (treeDisplay != null && treeDisplay.getTraceMode() && edgewidth<6 && !showSpots())
 			return 6;
 		return edgewidth;

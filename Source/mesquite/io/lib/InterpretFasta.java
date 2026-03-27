@@ -779,8 +779,9 @@ public abstract class InterpretFasta extends FileInterpreterI implements ReadFil
 						}
 
 						if (wroteMoreThanOneSymbol) {
+							data.showCell(ic, it, true);
 							alert("Sorry, this data matrix can't be exported to this format (some character states aren't represented by a single symbol [char. " + CharacterStates.toExternal(ic) + ", taxon " + Taxon.toExternal(it) + "])");
-							return false;
+						return false;
 						}
 						if (timer.timeCurrentBout()>2000) {
 							double proportion = 1.0*it*ic/totalCells;

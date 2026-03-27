@@ -322,7 +322,10 @@ public class BasicDataWindowMaker extends DataWindowMaker implements Commandable
 			bdw.toFront();
 		}
 	}
-
+	public void focusOnCell(int ic, int it, boolean selectAlso){
+		if (bdw != null)
+			bdw.focusOnCell(ic, it, selectAlso);
+	}
 	/* ................................................................................................................. */
 	public CharacterData getCharacterData() {
 		if (data.isDisposed())
@@ -5454,8 +5457,10 @@ class MatrixTable extends mesquite.lib.table.CMTable implements MesquiteDroppedF
 			String ws = "Illegal entry for character " + (column + 1) + " in taxon " + (row + 1) + ": " + result.toString();
 			if (turnOffWarnings || MesquiteThread.isScripting())
 				window.ownerModule.logln(ws);
-			else
+			else {
+				data.showCell(column, row, false);
 				turnOffWarnings = !AlertDialog.query(window, "Illegal character state", ws, "OK", "Don't warn again");
+			}
 		}
 	}
 

@@ -121,6 +121,7 @@ public class ExportPartitionsFASTA extends FileInterpreterI {
 							}
 
 							if (wroteMoreThanOneSymbol) {
+								data.showCell(ic, it, true);
 								discreetAlert("Sorry, this data matrix can't be exported to this format (some character states aren't represented by a single symbol [char. " + CharacterStates.toExternal(ic) + ", taxon " + Taxon.toExternal(it) + "])");
 								return false;
 							}

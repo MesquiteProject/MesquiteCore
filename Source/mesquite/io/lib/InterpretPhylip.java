@@ -498,6 +498,7 @@ public abstract class InterpretPhylip extends FileInterpreterITree {
 							if (it==0)
 								charWritten++;
 							if (outputBuffer.length()-currentSize>1) {
+								data.showCell(ic, it, true);
 								alert("Sorry, this data matrix can't be exported to this format (some character states aren't represented by a single symbol [char. " + CharacterStates.toExternal(ic) + ", taxon " + Taxon.toExternal(it) + "])");
 								return;
 							}

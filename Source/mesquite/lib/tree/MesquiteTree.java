@@ -5222,7 +5222,7 @@ and the tree has been rerooted. Properties that belong to nodes implicitly have 
 		}
 		return false;
 	}
-	/** Excise node and clade above it from tree, zeroing information at each node in clade.*/
+	/** Prune taxa from both trees that are not in common.*/
 	public  static void pruneTaxaNotInCommon(MesquiteTree tree1, MesquiteTree tree2, boolean notify) {   
 		if (tree1.getTaxa() != tree2.getTaxa())
 			return;
@@ -5231,6 +5231,15 @@ and the tree has been rerooted. Properties that belong to nodes implicitly have 
 				tree1.deleteClade(tree1.nodeOfTaxonNumber(it), notify);
 			else if (!tree1.taxonInTree(it) && tree2.taxonInTree(it))
 				tree2.deleteClade(tree2.nodeOfTaxonNumber(it), notify);
+		}
+	}
+	/** Prune taxa from this tree that are not in common.*/
+	public  void pruneTaxaNotInCommon(MesquiteTree tree2, boolean notify) {   
+		if (getTaxa() != tree2.getTaxa())
+			return;
+		for (int it=0; it<getNumTaxa(); it++) {
+			if (taxonInTree(it) && ! tree2.taxonInTree(it))
+				deleteClade(nodeOfTaxonNumber(it), notify);
 		}
 	}
 	/** Excise node and clade above it from tree, zeroing information at each node in clade.*/

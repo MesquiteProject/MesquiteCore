@@ -92,11 +92,18 @@ public abstract class TableWindow extends MesquiteWindow {
 	/*...............................................................................................................*/
 	/* these two methods are used for find facility  */
 	protected void selectAndFocus(int ic, int it){
+		focusOnCell(ic, it, true);
+	}
+	/*...............................................................................................................*/
+	/* these two methods are used for find facility  */
+	public void focusOnCell(int ic, int it, boolean selectAlso){
 		MesquiteTable table = getTable();
 		if (table == null)
 			return;
-		table.deselectAll();
-		table.selectCell(ic, it);
+		if (selectAlso){
+			table.deselectAll();
+			table.selectCell(ic, it);
+		}
 		table.setFocusedCell(ic, it);
 		table.repaintAll();
 	}
