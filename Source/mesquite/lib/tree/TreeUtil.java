@@ -158,6 +158,8 @@ public class TreeUtil {
 		}
 		return rotated;
 	}
+	
+
 	/*======================================================*/
 	static int stateHasntBranch = 1<<0;
 	static int stateHasBranch = 1<<1;

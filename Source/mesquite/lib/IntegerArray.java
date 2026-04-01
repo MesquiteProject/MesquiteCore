@@ -212,6 +212,24 @@ public class IntegerArray  implements Listable  {
 		return -1;
 	}
 	/*...........................................................*/
+	// note: this will count same even if a and b have different numbers of some values, e.g. a = {1, 2, 2} and b = {1, 1, 2}
+	public static boolean sameValues(int[] a, int[] b){
+		if (a==null && b == null)
+			return true;
+		if (a==null || b == null)
+			return false;
+		if (a.length != b.length)
+			return false;
+		
+		for (int i=0; i<a.length; i++)
+			if (indexOf(b, a[i])<0)
+				return false;
+		for (int i=0; i<b.length; i++)
+			if (indexOf(a, b[i])<0)
+				return false;
+		return true;
+	}
+	/*...........................................................*/
 	public static int countSame(int[] a, int match){
 		if (a==null)
 			return 0;

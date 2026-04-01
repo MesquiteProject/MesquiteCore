@@ -24,6 +24,7 @@ import mesquite.lib.ui.TwoIntegersDialog;
 	original change as needed*/
 public class MesquiteInteger implements Listable, Nameable{
 	public static final int unassigned = Integer.MIN_VALUE+1;
+	public static final int almostUnassigned = Integer.MIN_VALUE+2; //shows up occasionally
 	public static final int negInfinite = Integer.MIN_VALUE;
 	public static final int infinite = Integer.MAX_VALUE;
 	public static final int impossible = Integer.MAX_VALUE - 1;
@@ -195,11 +196,11 @@ public class MesquiteInteger implements Listable, Nameable{
 	}
 	/** Returns whether value is a regular number (NOT unassigned, infinite, inapplicable, impossible) */
 	public boolean isCombinable() {
-		return (value!=unassigned && value!=infinite && value!=impossible&& value!=inapplicable && value != finite && value != negInfinite && value != uncombinable && value != disallowed1 && value != disallowed2);
+		return (value!=unassigned && value!=almostUnassigned && value!=infinite && value!=impossible&& value!=inapplicable && value != finite && value != negInfinite && value != uncombinable && value != disallowed1 && value != disallowed2);
 	}
 	/** Returns whether value is a regular number (NOT unassigned, infinite, inapplicable, impossible) */
 	public static boolean isCombinable(int i) {
-		return (i!=unassigned && i!=infinite && i!=impossible&& i!=inapplicable && i != finite && i != negInfinite  && i != uncombinable && i != disallowed1 && i != disallowed2);
+		return (i!=unassigned && i!=almostUnassigned && i!=infinite && i!=impossible&& i!=inapplicable && i != finite && i != negInfinite  && i != uncombinable && i != disallowed1 && i != disallowed2);
 	}
 	/** Returns whether value is a regular number (NOT unassigned, infinite, inapplicable, impossible) and greater than zero */
 	public static boolean isPositive(int i) {

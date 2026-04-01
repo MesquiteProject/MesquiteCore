@@ -547,7 +547,7 @@ public class BasicTreeWindowMaker extends TreeWindowMaker implements Commandable
 			}
 			for (int i = 0; i < getNumberOfEmployees(); i++) {
 				Object e = getEmployeeVector().elementAt(i);
-				if (e instanceof TreeWindowAssistantC || e instanceof TreeWindowAssistantN || e instanceof TreeWindowAssistantA || e instanceof TreeWindowAssistantSGA) {
+				if (e instanceof TreeWindowAssistantC || e instanceof TreeWindowAssistantN || e instanceof TreeWindowAssistantA || e instanceof TreeWindowAssistantSGA || e instanceof TreeWindowAssistantISGA) {
 					if (((TreeWindowAssistant)e).rehireMeInSnapshot())   
 						temp.addLine("\tnewWindowAssistant ", ((MesquiteModule) e));
 				}
@@ -3069,27 +3069,12 @@ class BasicTreeWindow extends MesquiteWindow implements Fittable, MesquiteListen
 			}
 		}
 		else if (checker.compare(this.getClass(), "Pastes a description of the tree", null, commandName, "Paste")) {
-			if (tree != null) {
-				Clipboard clip = Toolkit.getDefaultToolkit().getSystemClipboard();
-				Transferable t = clip.getContents(this);
-				try {
-					String s = (String) t.getTransferData(DataFlavor.stringFlavor);
-					s = StringUtil.stripTrailingWhitespace(s);
-					if (StringUtil.blank(s))
-						return null;
-					if (!s.endsWith(";"))
-						s += ";";
-					Tree tr = setTree(s);
-
-					if (tr != null) {
-						treeEdited(true);
-						return tr;
-					}
-
-				} catch (Exception e) {
-				}
-			}
+			Debugg.errln("arguments " + arguments);
+			return pasteFromClipboard(true);
 		}
+		/*else if (checker.compare(this.getClass(), "Pastes a description of the tree, allowing t0, t1, t2 names", null, commandName, "Paste")) {
+			return pasteFromClipboard(true);
+		}*/
 		else if (checker.compare(this.getClass(), "Hires a module to alter or transform branch lengths", "[name of module]", commandName, "alterBranchLengths")) {
 			BranchLengthsAlterer ble = (BranchLengthsAlterer) ownerModule.hireNamedEmployee(BranchLengthsAlterer.class, arguments);
 			if (ble != null) {
@@ -5002,9 +4987,36 @@ class BasicTreeWindow extends MesquiteWindow implements Fittable, MesquiteListen
 
 	}
 
+	Tree pasteFromClipboard(boolean acceptT0Names){
+		if (tree != null) {
+			Clipboard clip = Toolkit.getDefaultToolkit().getSystemClipboard();
+			Transferable t = clip.getContents(this);
+			try {
+				String s = (String) t.getTransferData(DataFlavor.stringFlavor);
+				s = StringUtil.stripTrailingWhitespace(s);
+				if (StringUtil.blank(s))
+					return null;
+				if (!s.endsWith(";"))
+					s += ";";
+				Tree tr = setTree(s, acceptT0Names);
+
+				if (tr != null) {
+					treeEdited(true);
+					return tr;
+				}
+
+			} catch (Exception e) {
+			}
+		}
+		return null;
+		}
+	/* ................................................................................................................. */
+	public Tree setTree(String TreeDescription, boolean acceptT0Names) {
+		return setTree(TreeDescription, null, acceptT0Names);
+	}
 	/* ................................................................................................................. */
 	public Tree setTree(String TreeDescription) {
-		return setTree(TreeDescription, null);
+		return setTree(TreeDescription, null, false);
 	}
 	/* ................................................................................................................. */
 	Tree setTree(MesquiteTree t, String name) {
@@ -5056,6 +5068,9 @@ class BasicTreeWindow extends MesquiteWindow implements Fittable, MesquiteListen
 
 	/* ................................................................................................................. */
 	Tree setTree(String TreeDescription, String name) {
+		return setTree(TreeDescription, name, false);
+	}
+	Tree setTree(String TreeDescription, String name, boolean acceptT0Names) {
 		if (ownerModule == null || ownerModule.isDoomed())
 			return null;
 	if (taxa != null && taxa.isDoomed()) {
@@ -5077,6 +5092,7 @@ class BasicTreeWindow extends MesquiteWindow implements Fittable, MesquiteListen
 
 
 			MesquiteTree t = new MesquiteTree(taxa);
+			t.setPermitT0Names(acceptT0Names);
 			if (!t.readTree(TreeDescription)) {
 				ownerModule.discreetAlert("That tree description is invalid (" + TreeDescription + ")");
 				return null;

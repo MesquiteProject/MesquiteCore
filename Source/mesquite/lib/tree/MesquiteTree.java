@@ -2170,6 +2170,19 @@ public class MesquiteTree extends Associable implements AdjustableTree, Listable
 			fillTermAr(node, result, count);
 		return result;
 	}
+	/*.................................................................................................................*/
+	/** Returns node whose clade has this list of taxa. -1 if no equivalent found. */
+	public int findCladeWithTaxa(int node, int[] tipsToMatch){
+		int[] tTaxa = getTerminalTaxa(node);
+		if (IntegerArray.sameValues(tTaxa, tipsToMatch))
+			return node;
+			for (int daughter = firstDaughterOfNode(node); nodeExists(daughter); daughter = nextSisterOfNode(daughter)) {
+				int found = findCladeWithTaxa(daughter, tipsToMatch);
+				if (found >= 0)
+					return found;
+			}
+			return -1;
+	}
 	/*-----------------------------------------*/
 	private void gNAtHeight(int node, double target, int[] nodes, double heightToAncestor, double lengthIfUnassigned, MesquiteInteger count){
 		if (target>heightToAncestor){
