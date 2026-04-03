@@ -3107,6 +3107,26 @@ public class MesquiteTree extends Associable implements AdjustableTree, Listable
 		return minimum;
 	}
 	/*-----------------------------------------*/
+	/** returns the number of branches down from node to ancestor" */
+	public int branchesToAncestor (int ancestor, int node) {
+		if (node == root || node == subRoot)
+			return -1;
+		if (node == ancestor)
+			return 0;
+		int current = node;
+		int count = 0;
+		boolean found = false;
+		while (current != root && current != ancestor){
+			count++;
+			current = motherOfNode(current);
+			if (current == ancestor)
+				found = true;
+		}
+		if (!found)
+			return -1;
+		return count;
+	}
+	/*-----------------------------------------*/
 	/** returns total of branchlengths from node down to root, with unassigned lengths given value "perUnassignedLength" */
 	public double distanceToRoot (int node, boolean countUnassigned, double perUnassignedLength) {
 		if (!inBounds(node))

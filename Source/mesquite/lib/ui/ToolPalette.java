@@ -322,6 +322,8 @@ public class ToolPalette extends MesquitePanel implements Commandable, KeyListen
 	public MesquiteButton addTool(MesquiteTool tool) {
 		if (tool == null || tools == null)
 			return null;
+		if (tools.indexOf(tool)>=0)
+			return null;
 		tools.addElement(tool, false);
 		tool.setPalette(this);
 
