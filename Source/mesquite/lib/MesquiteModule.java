@@ -1364,8 +1364,8 @@ public abstract class MesquiteModule extends EmployerEmployee implements Command
 			else
 				logln(s);
 		}
-		else if (AlertDialog.query(containerOfModule(), "Problem", s + "\n\nPlease send a report of this problem to the Mesquite server, to help us debug it and improve Mesquite.  None of your data will be sent, but your log file up to this point will be sent." + addendum, "OK, Send Report and Continue", "Close without sending"))
-			reportCrashToHome(e, s);
+		else if (AlertDialog.query(containerOfModule(), "Problem", s + "\n\nPlease send a report of this problem to the Mesquite server, to help us debug it and improve Mesquite.  None of your data will be sent." + addendum, "OK, Send Report and Continue", "Close without sending"))
+			reportCrashToHome(e, s + "\n"+ MesquiteThread.getActiveThreadList()+"\n");
 		MesquiteTrunk.errorReportedToHome++;
 	}
 	boolean okToReportErrors(){

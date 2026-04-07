@@ -48,6 +48,9 @@ public class ClockWatcherThread extends Thread {
 			}
 		}
 	}
+	public String toString(){
+		return "ClockWatcherThread " + super.toString();
+	}
 
 	public void run() {
 		long sleepCount = 0;

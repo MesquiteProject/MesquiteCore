@@ -381,6 +381,13 @@ public class Parallelizer {
 			}		
 			fireParallelEmployees();
 		}
+		public String toString(){
+			String details = "";
+			if (parallelizer!= null){
+				details = "owner: " + owner.getClass().getName();
+			}
+			return "ParallelizerThread " + details + " " + super.toString();
+		}
 
 	}
 }

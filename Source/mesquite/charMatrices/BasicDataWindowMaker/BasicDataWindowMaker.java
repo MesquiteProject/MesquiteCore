@@ -1588,7 +1588,7 @@ class BasicDataWindow extends TableWindow implements MesquiteListener {
 			return matrixInfoPanel;
 		}
 		else if (checker.compare(this.getClass(), "Goes to the next matrix", null, commandName, "nextMatrix")) { 
-			// figure out what is next matrix
+		// figure out what is next matrix
 			MesquiteProject proj = data.getProject();
 			int im = proj.getMatrixNumber(data);
 			int imNext = 0;
@@ -5310,6 +5310,7 @@ class MatrixTable extends mesquite.lib.table.CMTable implements MesquiteDroppedF
 
 	/* ................................................................................................................. */
 	protected void clearIt(boolean cut) {
+		
 		notifySuppressed = true;
 		boolean namesChanged = false;
 		boolean changed = false;

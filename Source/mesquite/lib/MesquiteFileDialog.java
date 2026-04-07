@@ -400,6 +400,11 @@ class MFDThread extends Thread {
 	public MFDThread(MesquiteFileDialog parent){
 		this.parent = parent;
 	}
+	
+	public String toString(){
+		return getClass().getName() + " = " + super.toString();
+	}
+
 	public void run(){
 		go = true;
 		try{
