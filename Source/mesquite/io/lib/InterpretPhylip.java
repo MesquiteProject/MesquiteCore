@@ -481,7 +481,8 @@ public abstract class InterpretPhylip extends FileInterpreterITree {
 							name = taxonNamer.getNameToUse(taxa,it)+pad;
 						else
 							name = (taxa.getTaxonName(it)+ pad);
-						name = name.substring(0,taxonNameLength);
+						if (name.length()> taxonNameLength)
+							name = name.substring(0,taxonNameLength);
 						name = StringUtil.blanksToUnderline(StringUtil.stripTrailingWhitespace(name));
 
 						outputBuffer.append(name);
@@ -608,8 +609,12 @@ public abstract class InterpretPhylip extends FileInterpreterITree {
 		if (exportMultipleMatrices()) {
 			//data = findDataToExport(file, arguments);
 			t = getProject().chooseTaxa(containerOfModule(), "Select taxa to export", false);
+			if (t == null)
+				return false;
 			numMatrices = getProject().getNumberCharMatricesVisible(CategoricalState.class);
 			data = getProject().getCharacterMatrixVisible(t, 0, CategoricalState.class);
+			if (data == null)
+				return false;
 			taxa = data.getTaxa();
 		} else {
 			data = findDataToExport(file, arguments);

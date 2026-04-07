@@ -1801,7 +1801,7 @@ public abstract class CharacterData extends FileElement implements MesquiteListe
 	public void equalizeCharacter(CharacterData oData, int oic, int ic){
 		//doesn't yet incorporate colors, etc
 		CharacterState cs2 = null;
-		if (oData.characterNames != null && oic<oData.characterNames.length){
+		if (ic < characterNames.length && oData.characterNames != null && oic<oData.characterNames.length){
 			characterNames[ic] = oData.characterNames[oic];
 			notifyOfChangeLowLevel(MesquiteListener.NAMES_CHANGED, ic, -1, 0);  
 		}

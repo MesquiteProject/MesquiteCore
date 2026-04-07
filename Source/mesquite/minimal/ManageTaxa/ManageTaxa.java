@@ -1249,6 +1249,10 @@ public class ManageTaxa extends TaxaManager {
 			return;
 
 		String[][] storedOrder = (String[][])((ObjectContainer)obj).getObject();
+		if (storedOrder == null || storedOrder.length != taxa.getNumTaxa()){
+			return;
+		}
+		
 		boolean anyIDMoves = false;
 		for (int ic = 0; ic<taxa.getNumTaxa(); ic++){ //first reorder by id's
 			String id = storedOrder[ic][0];

@@ -310,19 +310,19 @@ public class ProjectWindow extends MesquiteWindow implements MesquiteListener {
 		projPanel.setFootnote(heading, text);
 	}
 	public void refresh(FileElement element){
-		if (bfc.isDoomed() || bfc.getProject().refreshSuppression>0 || projPanel == null)
+		if (bfc == null || bfc.isDoomed() || bfc.getProject().refreshSuppression>0 || projPanel == null)
 			return;
 		BasicFileCoordinator.totalProjectPanelRefreshes++;
 		projPanel.refresh(element);
 	}
 	public void refresh(){
-		if (bfc.isDoomed() || bfc.getProject().refreshSuppression>0 || projPanel == null)
+		if (bfc == null || bfc.isDoomed() || bfc.getProject().refreshSuppression>0 || projPanel == null)
 			return;
 		BasicFileCoordinator.totalProjectPanelRefreshes++;
 		projPanel.refresh();
 	}
 	public void refreshGraphics(){
-		if (bfc.isDoomed() || projPanel == null)
+		if (bfc == null || bfc.isDoomed() || projPanel == null)
 			return;
 		BasicFileCoordinator.totalProjectPanelRefreshes++;
 		projPanel.refreshGraphics();
@@ -465,7 +465,7 @@ class ProjectPanel extends MousePanel implements ClosablePanelContainer{
 	//===============================================
 	int count = 0;
 	int sequenceUpToDate(){
-		if (bfc.isDoomed())
+		if (bfc == null || bfc.isDoomed())
 			return 0;
 		MesquiteProject proj = bfc.getProject();
 		if (proj.refreshSuppression >0)
@@ -1371,7 +1371,7 @@ class MElementPanel extends ElementPanel {
 		return null;
 	}
 	public String getTitleAddition(){
-		int numChars = ((CharacterData)element).getNumChars();
+		int numChars = ((CharacterData)element).getNumChars(false);
 		String heading = " (" + numChars + " character";
 		if (numChars>1)
 			heading += "s";
@@ -1386,7 +1386,7 @@ class MElementPanel extends ElementPanel {
 	public String getNotes(){
 		if (element == null)
 			return "";
-		return Integer.toString(((CharacterData)element).getNumChars()) + " Characters";
+		return Integer.toString(((CharacterData)element).getNumChars(false)) + " Characters";
 	}
 	public String getShowMatrixIconFileName(){ //for small 16 pixel icon at left of main bar
 		return "matrixCateg.gif";

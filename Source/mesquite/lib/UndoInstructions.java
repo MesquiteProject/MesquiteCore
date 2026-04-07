@@ -352,10 +352,12 @@ public class UndoInstructions implements Undoer {
 		String[] oldNamesList;
 		Notification notification;
 		int[] subcodes=null;
-
+		
 		switch (changeClass) {
 
 		case SINGLEDATACELL:
+			if(data == null)
+				return null;
 			if (table != null) {
 				table.offAllEditingSelection();
 				table.setFocusedCell(icStart, itStart, true);
@@ -407,6 +409,8 @@ public class UndoInstructions implements Undoer {
 		case SINGLECHARACTERNAME:
 			// problems if no name in cell, as with undo will be fixed as
 			// "Character 25", for example, and will display as such
+			if(data == null)
+				return null;
 			if (table != null) {
 				table.offAllEditingSelection();
 				table.setFocusedCell(icStart, -1, true);
@@ -424,6 +428,8 @@ public class UndoInstructions implements Undoer {
 			return new UndoInstructions(changeClass, newState, oldState, textField);
 
 		case ALLDATACELLS:
+			if(data == null || oldData == null)
+				return null;
 			newData = data.cloneData();   // note that this clones the current (live) matrix, which means if it has lost columns, they aren't recovered.  
 			newData.setName("Undo Matrix [new]");
 			newData.disconnectListening();
@@ -452,6 +458,8 @@ public class UndoInstructions implements Undoer {
 			return new UndoInstructions(changeClass, newData, data);
 
 		case DATABLOCK:
+			if(data == null)
+				return null;
 			newData = data.cloneDataBlock(icStart, icEnd, itStart, itEnd); //this will be just the size of the block
 			newData.setName("Undo Matrix [new]");
 			newData.disconnectListening();

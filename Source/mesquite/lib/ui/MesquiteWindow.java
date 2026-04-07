@@ -1244,7 +1244,15 @@ public abstract class MesquiteWindow implements Listable, Commandable, OwnedByMo
 		pjob = MesquitePrintJob.getPrintJob((MesquiteFrame)f, "Print Window", fitRule);
 		if (pjob != null) {
 			MesquiteTrunk.mesquiteTrunk.logln("Printing window");
+			try {
 			printWindow(pjob);
+			}
+			catch (UnsupportedClassVersionError e){
+				if (MesquiteTrunk.isJavaVersionLessThan(17)){
+					MesquiteTrunk.mesquiteTrunk.discreetAlert("Printing failed, likely because your version of Java is too old. We strongly recommend you upgrade to Java 21 or later. See https://www.mesquiteproject.org/Installation.html.");
+					return;
+				}
+			}
 			/*
 			if (infoBar !=null && infoBar.getMode()!=InfoBar.TEXT_PARAMETERS)
 				printParameters(pjob);

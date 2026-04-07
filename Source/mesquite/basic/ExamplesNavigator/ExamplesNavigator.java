@@ -157,7 +157,7 @@ public class ExamplesNavigator extends FileAssistantN  {
 			if (npw == null)
 				return null;
 			nextProjectName = npw.getNextText();
-			if (StringUtil.blank(nextProjectName))
+			if (StringUtil.blank(nextProjectName) || getProject()== null)
 				return null;
 			while (getProject().developing)
 				;
@@ -175,7 +175,7 @@ public class ExamplesNavigator extends FileAssistantN  {
 			if (npw == null)
 				return null;
 			prevProjectName = npw.getPrevText();
-			if (StringUtil.blank(prevProjectName))
+			if (StringUtil.blank(prevProjectName) || getProject()== null)
 				return null;
 			while (getProject().developing)
 				;

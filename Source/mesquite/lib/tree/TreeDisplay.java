@@ -21,6 +21,7 @@ import java.awt.Graphics;
 import java.awt.Panel;
 import java.awt.Rectangle;
 import java.awt.Shape;
+import java.awt.geom.IllegalPathStateException;
 import java.util.Enumeration;
 import java.util.Vector;
 
@@ -457,8 +458,13 @@ public class TreeDisplay extends TaxaTreeDisplay  {
 		highlightedBranch.setValue(value);
 	}
 	public void redoCalculations(int code){
+		try {
 		if (treeDrawing!=null && tree !=null)
 			treeDrawing.recalculatePositions(tree); //to force node locs recalc
+		}
+		catch (IllegalPathStateException e){
+			redoCalculationsMainThread();
+		}
 
 	}
 	

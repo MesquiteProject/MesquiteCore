@@ -173,10 +173,12 @@ public class ValuesAtNodes extends TreeDisplayAssistantMA implements LegendHolde
 		temp.addLine("suppress");
 		temp.addLine("setNumForNodes", numForNodesTask);
 		temp.addLine("setDisplay", displayTask);
-		ValuesAtNodesOperator tco = (ValuesAtNodesOperator)traces.elementAt(0);
+		if(traces != null){
+			ValuesAtNodesOperator tco = (ValuesAtNodesOperator)traces.elementAt(0);
 		if (tco!=null && tco.vLegend!=null) {
 			temp.addLine("setInitialOffsetX " + tco.vLegend.getOffsetX()); //Should go operator by operator!!!
 			temp.addLine("setInitialOffsetY " + tco.vLegend.getOffsetY());
+		}
 		}
 		temp.addLine("desuppress");
 		return temp;

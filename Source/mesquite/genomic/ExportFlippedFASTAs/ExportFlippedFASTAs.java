@@ -113,6 +113,8 @@ public class ExportFlippedFASTAs extends FileInterpreterI {
 	public synchronized boolean exportFile(MesquiteFile file, String arguments) { //if file is null, consider whole project open to export
 		Arguments args = new Arguments(new Parser(arguments), true);
 		Taxa taxa = (Taxa)getProject().chooseTaxa(containerOfModule(),"For which block of taxa to export FASTA files?");
+		if (taxa == null)
+			return false;
 		writeOnlySelectedTaxa = false;
 		if (taxa.anySelected()) {
 			loadPreferences();

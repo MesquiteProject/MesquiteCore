@@ -181,6 +181,7 @@ class ColorByPartitionExtra extends TreeDisplayExtra implements MesquiteListener
 
 	void setShowColors(boolean a){
 		showColors = a;
+		if (treeDisplay!= null)
 		treeDisplay.pleaseUpdate(false);
 	}
 	/**return a text version of information at node*/
