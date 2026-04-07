@@ -42,6 +42,7 @@ import mesquite.lib.ProcessWatcher;
 import mesquite.lib.ShellScriptRunner;
 import mesquite.lib.ShellScriptUtil;
 import mesquite.lib.StringUtil;
+import mesquite.lib.misc.AlertWithLinkToDirectory;
 import mesquite.lib.ui.ExtensibleDialog;
 import mesquite.lib.ui.SingleLineTextField;
 import mesquite.molec.lib.BLASTResults;
@@ -268,7 +269,7 @@ public class LocalBlaster extends Blaster implements ActionListener,  AppUser, P
 					File cFile = new File(filePath);
 					if (cFile.exists()) {
 						if (!cFile.isDirectory() && !StringUtil.startsWithIgnoreCase(files[i], ".")) {
-							 if (files[i].endsWith(".nsq")) {
+							 if (files[i].endsWith(".nsq") || files[i].endsWith(".psq")) {
 								count++;
 							}
 						}
@@ -284,7 +285,7 @@ public class LocalBlaster extends Blaster implements ActionListener,  AppUser, P
 					File cFile = new File(filePath);
 					if (cFile.exists()) {
 						if (!cFile.isDirectory() && !StringUtil.startsWithIgnoreCase(files[i], ".")) {
-							 if (files[i].endsWith(".nsq")) {
+							 if (files[i].endsWith(".nsq") || files[i].endsWith(".psq")) {
 								 String fileNameBase = StringUtil.getAllButLastItem(files[i], ".");
 								databaseArray[count]= blastDatabaseFolderPath + MesquiteFile.fileSeparator +fileNameBase;
 								count++;
@@ -375,10 +376,15 @@ public class LocalBlaster extends Blaster implements ActionListener,  AppUser, P
 		dialog.addLabel("Local BLAST Options");
 		StringBuffer sb = new StringBuffer();
 		sb.append("To use this local BLAST tool, you need to have installed the BLAST program on this computer, and need to have also set up local BLAST databases on your computer. ");
-		sb.append("You can do this by following the instructions at <a href=\"http://www.ncbi.nlm.nih.gov/guide/howto/run-blast-local/\">http://www.ncbi.nlm.nih.gov/guide/howto/run-blast-local/</a>.  <br><br>If you build your own BLAST database from ");
-		sb.append("a fasta file using the makeblastdb command-line tool (e.g., using \"makeblastdb -in fastafilename -out outputblastabledatabasefilename -dbtype nucl\"), then both Use ID in Definition and Local BLAST database has NCBI taxonomy IDs should be unchecked. ");
+		sb.append("You can do this by using Mesquite's Make BLASTable Files from FASTA (available in the Utilities menu that is visible when you touch on Mesquite's log window. <br><br>If you build your own "
+				+ "BLAST database from ");
+		sb.append("files, then both Use ID in Definition and Local BLAST database has NCBI taxonomy IDs should be unchecked. ");
 		sb.append("<br><br>");
 		sb.append("If you are going to do a blastX to a local protein database that you downloaded from GenBank, you will need to check Use ID in Definition.");
+		sb.append("<br><br>");
+		sb.append("BLAST:  compares nucleotide query sequence against a nucleotide query sequence OR amino acid query against a protein database;  "
+				+ " BLASTX: compares a nucleotide query sequence, translated in all six reading frames, against a protein database;  "
+				+ "TBLASTX: compares a nucleotide query sequence, translated in all six reading frames, against a nucleotide database also translated in all six reading frames.");
 		dialog.appendToHelpString(sb.toString());
 
 		AppChooser appChooser = new AppChooser(this, this, useDefaultExecutablePath, blastExecutableFolderPath);
@@ -497,7 +503,7 @@ public class LocalBlaster extends Blaster implements ActionListener,  AppUser, P
 		String blastArguments =  "  -query " + fileName;
 		//blastArguments+= " -db "+database;
 		blastArguments+= " -db "+NCBIUtil.getBLASTFileInputName(database);
-		blastArguments+=" -task blastn";		// TODO:  does this need to change if the blastType differs?
+		//	blastArguments+=" -task blastn";		// TODO:  does this need to change if the blastType differs?
 
 		if (eValueCutoff>=0.0)
 			blastArguments+= " -evalue "+eValueCutoff;
@@ -575,8 +581,11 @@ public class LocalBlaster extends Blaster implements ActionListener,  AppUser, P
 		}
 //		if (!MesquiteTrunk.developmentMode)
 //			deleteSupportDirectory();
-		if (MesquiteTrunk.developmentMode && ! success)
-			showSupportDirectory();
+		if (! success) {
+			if (okToInteractWithUser(MesquiteModule.CAN_PROCEED_ANYWAY, "BLAST failed")){
+				AlertWithLinkToDirectory alert = new AlertWithLinkToDirectory(containerOfModule(),"BLAST failed", "BLAST failed. Please examine the StandardErrorFile in the analysis folder for information.", supportDirectoryPath());
+			}
+		}
 		if (getProject()!=null)
 			getProject().decrementProjectWindowSuppression();
 		logln("   BLAST completed in " +timer.timeSinceLastInSeconds()+" seconds");

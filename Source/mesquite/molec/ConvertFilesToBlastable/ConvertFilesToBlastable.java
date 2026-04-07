@@ -50,6 +50,7 @@ public class ConvertFilesToBlastable extends UtilitiesAssistant implements Actio
 	static String previousDirectory = null;
 	ProgressIndicator progIndicator = null;
 	String extension ="fas";
+	boolean inputIsProtein = false;
 
 	static String blastProgram = "makeblastdb";
 
@@ -158,10 +159,12 @@ public class ConvertFilesToBlastable extends UtilitiesAssistant implements Actio
 	
 	/*.................................................................................................................*/
 	public void processSingleXMLPreference (String tag, String content) {
-		 if ("blastExecutableFolderPath".equalsIgnoreCase(tag))
+		if ("blastExecutableFolderPath".equalsIgnoreCase(tag))
 			blastExecutableFolderPath = StringUtil.cleanXMLEscapeCharacters(content);
 		else if ("useDefaultExecutablePath".equalsIgnoreCase(tag))
 			useDefaultExecutablePath = MesquiteBoolean.fromTrueFalseString(content);
+		else if ("inputIsProtein".equalsIgnoreCase(tag))
+			inputIsProtein = MesquiteBoolean.fromTrueFalseString(content);
 		else  if ("extension".equalsIgnoreCase(tag))
 			extension = StringUtil.cleanXMLEscapeCharacters(content);
 
@@ -172,6 +175,7 @@ public class ConvertFilesToBlastable extends UtilitiesAssistant implements Actio
 		StringBuffer buffer = new StringBuffer(200);
 		StringUtil.appendXMLTag(buffer, 2, "blastExecutableFolderPath", blastExecutableFolderPath);  
 		StringUtil.appendXMLTag(buffer, 2, "useDefaultExecutablePath", useDefaultExecutablePath);  
+		StringUtil.appendXMLTag(buffer, 2, "inputIsProtein", inputIsProtein);  
 		StringUtil.appendXMLTag(buffer, 2, "extension", extension);  
 
 		preferencesSet = true;
@@ -222,12 +226,14 @@ public class ConvertFilesToBlastable extends UtilitiesAssistant implements Actio
 
 		
 		SingleLineTextField extensionField = dialog.addTextField("Extension for FASTA files:", extension, 10);
+		Checkbox proteinCheckBox = dialog.addCheckBox("Input FASTA files contain protein data", inputIsProtein);
 
 		dialog.completeAndShowDialog(true);
 		if (buttonPressed.getValue()==0)  {
 			
 			useDefaultExecutablePath = appChooser.useBuiltInExecutable(); //for preference writing
 			blastExecutableFolderPath = appChooser.getManualPath(); //for preference writing
+			inputIsProtein = proteinCheckBox.getState();
 
 			/*if (defaultExecutablePathCheckBox!=null)
 				useDefaultExecutablePath = defaultExecutablePathCheckBox.getState();
@@ -281,7 +287,11 @@ public class ConvertFilesToBlastable extends UtilitiesAssistant implements Actio
 		
 //		String blastArguments = " -in " + NCBIUtil.getBLASTFileInputName(fileName) + " -out " + StringUtil.blanksToUnderline(fileNameBase + "DB") + " -dbtype nucl -blastdb_version 4 -parse_seqids";
 //		String blastArguments = " -in " + NCBIUtil.getBLASTFileInputName(fileName) + " -out " + StringUtil.blanksToUnderline(fileNameBase + "DB") + " -dbtype nucl -blastdb_version 4 ";
-		String blastArguments = " -in " + NCBIUtil.getBLASTFileInputName(destinationPath) + " -out " + StringUtil.blanksToUnderline(fileNameBase + "DB") + " -dbtype nucl -blastdb_version 4 ";
+		String blastArguments = " -in " + NCBIUtil.getBLASTFileInputName(destinationPath) + " -out " + StringUtil.blanksToUnderline(fileNameBase + "DB");
+		if (inputIsProtein) 
+			blastArguments+= " -dbtype prot -blastdb_version 4 ";
+		else 
+			blastArguments+= " -dbtype nucl -blastdb_version 4 ";
 
 		String blastCommand = blastProgram + blastArguments;
 		String programPath = blastProgram;

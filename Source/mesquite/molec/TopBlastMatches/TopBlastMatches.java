@@ -169,7 +169,13 @@ public class TopBlastMatches extends MolecDataSearcher implements ItemListener {
 		ExtensibleDialog dialog = new ExtensibleDialog(containerOfModule(), "Acquire (BLAST) Sequences from Database",buttonPressed);  //MesquiteTrunk.mesquiteTrunk.containerOfModule()
 		dialog.addLabel("Options for Acquire Sequences from Database");
 		int oldBlastType = blastType;
-		dialog.appendToHelpString("For the \"Reject hits with eValues greater than\" field, use values of the from \"1E-100\"");
+		StringBuffer sb = new StringBuffer();
+		sb.append("For the \"Reject hits with eValues greater than\" field, use values of the from \"1E-100\"<br>");
+		sb.append("BLAST:  compares nucleotide query sequence against a nucleotide query sequence OR amino acid query against a protein database;  <br>"
+				+ " BLASTX: compares a nucleotide query sequence, translated in all six reading frames, against a protein database;  <br>"
+				+ "TBLASTX: compares a nucleotide query sequence, translated in all six reading frames, against a nucleotide database also translated in all six reading frames.");
+		dialog.appendToHelpString(sb.toString());
+
 
 		IntegerField maxHitsField = dialog.addIntegerField("Maximum number of matches:",  maxHits,5,1,blasterTask.getUpperLimitMaxHits());
 		//		blastXCheckBox = dialog.addCheckBox("use blastx for nucleotides",blastx);
@@ -237,7 +243,7 @@ public class TopBlastMatches extends MolecDataSearcher implements ItemListener {
 	public void unsuccessfulSearchMessage(){
 		logln("BLAST database returned no sequences in response to query.");
 	}
-	
+
 	/*.................................................................................................................*/
 	/** message once search has been fully invoked.  */
 	public void searchInvokedMessage(){
@@ -290,7 +296,7 @@ public class TopBlastMatches extends MolecDataSearcher implements ItemListener {
 			MesquiteFile.putFileContents(blastSummaryPath, results.toString(), false);
 		}
 	}
-	
+
 	/** Returns the number of separate processings that are needed after each search.   E.g., LocalBlaster can require multiple
 	 * processings if several local databases are searched.  */
 	public int getNumberOfProcessingPassesPerSearch() {
@@ -301,67 +307,80 @@ public class TopBlastMatches extends MolecDataSearcher implements ItemListener {
 
 
 	/*.................................................................................................................*/
+	boolean databaseCompatibleForImport(CharacterData data) {
+		if (data instanceof DNAData)
+			return (blastType==Blaster.BLAST || blastType==Blaster.TBLASTX);
+		if (data instanceof ProteinData)
+			return (blastType==Blaster.BLASTX || blastType==Blaster.BLAST);
+		return false;
+	}
+	/*.................................................................................................................*/
 	/** Processing to be done after each search. Returns true if  */
 	public boolean processAfterEachTaxonSearch(CharacterData data, int it, int passNumber){
 		logln("\nSearch results: \n"+ results.toString());
 		//		logln("**** IDs: " +StringArray.toString(ID)); 
 		int numTaxaAdded =0;
 
-		if (importTopMatches ){  
-			int originalNumChars = data.getNumChars();
-			int insertAfterTaxon = data.getNumTaxa()-1;
-			if (interleaveResults)
-				insertAfterTaxon = it;
-			//NCBIUtil.getGenBankIDs(accessionNumbers, false,  this, false);
-			logln("About to import top matches.", true);
 
-			int count = 0;
-			for (int i=0; i<ID.length && i<passNumberOfIDs.length; i++) {  // find out how many of the IDs belong tho this pass number
-				if (passNumberOfIDs[i]==passNumber)
-					count++;
-			}
-			String[] localID = new String[count];
-			count=0;
-			for (int i=0; i<ID.length && i<passNumberOfIDs.length; i++) {  // now fill a local ID array with the ones that belong to this pass
-				if (passNumberOfIDs[i]==passNumber) {
-					localID[count]=ID[i];
-					count++;
+		if (importTopMatches){  
+			if (!databaseCompatibleForImport(data)) {
+				logln("Sequences will not be imported from database sequences can not be imported into this type of matrix.");
+			}  else {
+				int originalNumChars = data.getNumChars();
+				int insertAfterTaxon = data.getNumTaxa()-1;
+				if (interleaveResults)
+					insertAfterTaxon = it;
+				//NCBIUtil.getGenBankIDs(accessionNumbers, false,  this, false);
+				logln("About to import top matches.", true);
+
+				int count = 0;
+				for (int i=0; i<ID.length && i<passNumberOfIDs.length; i++) {  // find out how many of the IDs belong tho this pass number
+					if (passNumberOfIDs[i]==passNumber)
+						count++;
 				}
-			}
-			if (blastType==Blaster.BLASTX && data instanceof DNAData) {
-				//	ID = NCBIUtil.getNucIDsFromProtIDs(ID);
-				localID = blasterTask.getNucleotideIDsfromProteinIDs(localID);
-				//	logln("****AFTER NucToProt IDs: " +StringArray.toString(ID)); 
-			}
-			//String newSequencesAsFasta = NCBIUtil.fetchGenBankSequencesFromIDs(ID, data instanceof DNAData, this, true, report);	
-			MesquiteString foundTaxonName = new MesquiteString();
-			StringBuffer blastResponse = new StringBuffer();
-			String newSequencesAsFasta = blasterTask.getFastaFromIDs(data.getTaxa().getTaxonName(it), localID,  data instanceof DNAData, blastResponse, passNumber, foundTaxonName);
-		
-			String appendToTaxonName = "";
-			String prependToTaxonName = "";
-			if (appendQueryName)
-				appendToTaxonName = " ["+data.getTaxa().getTaxonName(it)+"]";
-			if (!foundTaxonName.isBlank())
-				prependToTaxonName = foundTaxonName.getValue();
+				String[] localID = new String[count];
+				count=0;
+				for (int i=0; i<ID.length && i<passNumberOfIDs.length; i++) {  // now fill a local ID array with the ones that belong to this pass
+					if (passNumberOfIDs[i]==passNumber) {
+						localID[count]=ID[i];
+						count++;
+					}
+				}
+				if (blastType==Blaster.BLASTX && data instanceof DNAData) {
+					//	ID = NCBIUtil.getNucIDsFromProtIDs(ID);
+					localID = blasterTask.getNucleotideIDsfromProteinIDs(localID);
+					//	logln("****AFTER NucToProt IDs: " +StringArray.toString(ID)); 
+				}
+				//String newSequencesAsFasta = NCBIUtil.fetchGenBankSequencesFromIDs(ID, data instanceof DNAData, this, true, report);	
+				MesquiteString foundTaxonName = new MesquiteString();
+				StringBuffer blastResponse = new StringBuffer();
+				String newSequencesAsFasta = blasterTask.getFastaFromIDs(data.getTaxa().getTaxonName(it), localID,  data instanceof DNAData, blastResponse, passNumber, foundTaxonName);
 
-			numTaxaAdded = data.getNumTaxa();
-			if (StringUtil.notEmpty(newSequencesAsFasta))
-				NCBIUtil.importFASTASequences(data, newSequencesAsFasta, this, results, insertAfterTaxon, it, adjustSequences, addInternalGaps, prependToTaxonName, appendToTaxonName);
-			else
-				logln("BLAST database returned no sequences in response to query.");
-			data.notifyListeners(this, new Notification(MesquiteListener.PARTS_ADDED));
-			data.getTaxa().notifyListeners(this, new Notification(MesquiteListener.PARTS_ADDED));
-			logln(results.toString());
+				String appendToTaxonName = "";
+				String prependToTaxonName = "";
+				if (appendQueryName)
+					appendToTaxonName = " ["+data.getTaxa().getTaxonName(it)+"]";
+				if (!foundTaxonName.isBlank())
+					prependToTaxonName = foundTaxonName.getValue();
 
-			numTaxaAdded = data.getNumTaxa()-numTaxaAdded;
-			/*			if (lastSearched!=null && lastSearched.isCombinable()) {
+				numTaxaAdded = data.getNumTaxa();
+				if (StringUtil.notEmpty(newSequencesAsFasta))
+					NCBIUtil.importFASTASequences(data, newSequencesAsFasta, this, results, insertAfterTaxon, it, adjustSequences, addInternalGaps, prependToTaxonName, appendToTaxonName);
+				else
+					logln("BLAST database returned no sequences in response to query.");
+				data.notifyListeners(this, new Notification(MesquiteListener.PARTS_ADDED));
+				data.getTaxa().notifyListeners(this, new Notification(MesquiteListener.PARTS_ADDED));
+				logln(results.toString());
+
+				numTaxaAdded = data.getNumTaxa()-numTaxaAdded;
+				/*			if (lastSearched!=null && lastSearched.isCombinable()) {
 				if (interleaveResults) { 
 					//lastSearched.add(numTaxaAdded);
 				}
 			}
-			 */
-			return data.getNumChars()!=originalNumChars;
+				 */
+				return data.getNumChars()!=originalNumChars;
+			}
 		}
 		return true;
 	}
@@ -386,6 +405,8 @@ public class TopBlastMatches extends MolecDataSearcher implements ItemListener {
 		passNumberOfIDs= new int[0];
 		ID=new String[0];
 		String errorMessage = "";
+		if (numDatabases==0)
+			errorMessage = "No databases to search";
 
 
 		for (int iDatabase = 0; iDatabase<numDatabases; iDatabase++) {
@@ -410,7 +431,7 @@ public class TopBlastMatches extends MolecDataSearcher implements ItemListener {
 			if (blastResults.someHits())
 				someHits=true;
 			blasterTask.postProcessingCleanup(blastResults);
-			
+
 
 			if (blastResults.someHits()) {
 				results.append("   Top hits\n\tAccession [eValue] Definition): \n");
@@ -418,7 +439,7 @@ public class TopBlastMatches extends MolecDataSearcher implements ItemListener {
 				ID = StringArray.concatenate(ID, thisID);
 				int startThisPass = passNumberOfIDs.length;
 				passNumberOfIDs=IntegerArray.addParts(passNumberOfIDs, thisID.length);
-			//	IntegerArray.zeroUnassigned(passNumberOfIDs);
+				//	IntegerArray.zeroUnassigned(passNumberOfIDs);
 				for (int pass=startThisPass; pass<passNumberOfIDs.length; pass++)
 					passNumberOfIDs[pass]=iDatabase;
 			}
@@ -468,6 +489,15 @@ public class TopBlastMatches extends MolecDataSearcher implements ItemListener {
 		else {
 			if (!queryOptions())
 				return false;
+			if (wordSize>7 && (blastType==Blaster.BLASTX || data instanceof ProteinData)) {
+				MesquiteMessage.discreetNotifyUser("wordSize must be 7 or less if amino acids are the query or if the query database contains amino acid data; wordsize reset to 7." );
+				wordSize=7;
+			} else if (wordSize>4 && (blastType==Blaster.TBLASTX )) {
+					MesquiteMessage.discreetNotifyUser("wordSize must be 4 or less for TBLASTX queries; wordsize reset to 4." );
+					wordSize=4;
+				}
+
+
 			if (saveResultsToFile)
 				prepareReportDirectory();
 			logln("\nSearching for top BLAST hits (" + blasterTask.getName() + ")");
