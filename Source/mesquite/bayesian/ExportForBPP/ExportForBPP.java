@@ -226,7 +226,7 @@ public class ExportForBPP extends FileInterpreterI {
 	}
 	/*.................................................................................................................*/
 	public void appendPhylipStateToBuffer(CharacterData data, int ic, int it, MesquiteStringBuffer outputBuffer){
-		data.statesIntoStringBuffer(ic, it, outputBuffer, false);
+		data.statesIntoStringBuffer(ic, it, outputBuffer, false, true);
 	}
 	/*.................................................................................................................*/
 	public void exportBlock(Taxa taxa, Bits taxaToInclude, CharacterData data, MesquiteStringBuffer outputBuffer, boolean writeTaxonNames) { 

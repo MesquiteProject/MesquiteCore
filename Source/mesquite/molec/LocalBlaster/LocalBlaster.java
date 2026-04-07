@@ -87,7 +87,7 @@ public class LocalBlaster extends Blaster implements ActionListener,  AppUser, P
 	 */
 
 	public  int getUpperLimitMaxHits(){
-		return 100;
+		return 1000;
 	}
 
 	public boolean userAborted(){
