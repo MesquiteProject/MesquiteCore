@@ -37,7 +37,7 @@ public class AppChooser implements ActionListener {
 	String builtInAppPath;
 	String officialAppNameInAppInfo;  //
 	String programName;
-	MesquiteBoolean useDefaultExecutablePath = new MesquiteBoolean(false);
+	MesquiteBoolean useBuiltInExecutablePath = new MesquiteBoolean(false);
 	boolean builtInExecutableAllowed = false;  // whether or not the built in executable is allowed to be used
 	//- the system has already harvested app info and recorded whether or not a built-in executable exists.
 
@@ -65,7 +65,7 @@ public class AppChooser implements ActionListener {
 		}
 
 		this.alternativeManualPath.setValue(alternativeManualPath);;
-		this.useDefaultExecutablePath.setValue(useDefaultExecutablePath);;
+		this.useBuiltInExecutablePath.setValue(useDefaultExecutablePath);;
 
 	}
 
@@ -85,7 +85,7 @@ public class AppChooser implements ActionListener {
 		}
 
 		this.alternativeManualPath.setValue(alternativeManualPath);
-		this.useDefaultExecutablePath.setValue(useDefaultExecutablePath);
+		this.useBuiltInExecutablePath.setValue(useDefaultExecutablePath);
 	}
 
 	/*.................................................................................................................*/
@@ -104,14 +104,14 @@ public class AppChooser implements ActionListener {
 
 			//Show app chooser dialog ========================
 			MesquiteInteger buttonPressed = new MesquiteInteger(1);
-			appChooserDialog = new AppChooserDialog(containingDialog,  "Choose " + programName,buttonPressed, builtInExecutableAllowed, ownerModule, this, useDefaultExecutablePath, alternativeManualPath);  //MesquiteTrunk.mesquiteTrunk.containerOfModule()
+			appChooserDialog = new AppChooserDialog(containingDialog,  "Choose " + programName,buttonPressed, builtInExecutableAllowed, ownerModule, this, useBuiltInExecutablePath, alternativeManualPath);  //MesquiteTrunk.mesquiteTrunk.containerOfModule()
 			appChooserDialog.completeAndShowDialog(true);
 
 			if (buttonPressed.getValue()==0)  {
-				useDefaultExecutablePath.setValue(appChooserDialog.builtInAppChosen());
+				useBuiltInExecutablePath.setValue(appChooserDialog.builtInAppChosen());
 				if (appChooserDialog.getAlternativePathField()!=null) {
 					String tempPath = appChooserDialog.getAlternativePathField().getText();
-					if (StringUtil.blank(tempPath) && !useDefaultExecutablePath.getValue()){
+					if (StringUtil.blank(tempPath) && !useBuiltInExecutablePath.getValue()){
 						MesquiteMessage.discreetNotifyUser("If you do not use a built-in app, then the path to " +programName+ " must be entered.");
 					} else
 						alternativeManualPath.setValue(tempPath);
@@ -184,13 +184,13 @@ public class AppChooser implements ActionListener {
 	/*.................................................................................................................*/
 	boolean usingBuiltIn() {
 		if (builtInExecutableAllowed) {
-			return useDefaultExecutablePath.getValue();
+			return useBuiltInExecutablePath.getValue();
 		}
 		return false;
 	}
 
 	public String getPathToUse() { 
-		if (useDefaultExecutablePath.getValue())
+		if (useBuiltInExecutablePath.getValue())
 			return builtInAppPath;
 		else
 			return alternativeManualPath.getValue();
@@ -201,7 +201,7 @@ public class AppChooser implements ActionListener {
 	}
 
 	public boolean useBuiltInExecutable() { //for preference writing
-		return useDefaultExecutablePath.getValue();
+		return useBuiltInExecutablePath.getValue();
 	}
 
 	public String getVersion() {
