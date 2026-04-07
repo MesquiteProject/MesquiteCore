@@ -2361,6 +2361,21 @@ public abstract class CharacterData extends FileElement implements MesquiteListe
 	respectively, will be returned in the result MesquiteString.*/
 	public abstract int setState(int ic, int it, Parser parser, boolean fromEditor, MesquiteString result);
 
+	/*..........................................  CategoricalData  ..................................................*/
+	/** appends to buffer string describing the state(s) of character ic in taxon it.�*/
+	public void statesIntoStringBuffer(int ic, int it, MesquiteStringBuffer sb, boolean forDisplay, boolean useDefaultSymbols){
+		if (useDefaultSymbols) {
+			if (isInapplicable(ic,it))
+				sb.append(defaultInapplicableChar);
+			else if (isUnassigned(ic,it))
+				sb.append(defaultInapplicableChar);
+			else 
+				statesIntoStringBuffer(ic,it,sb, forDisplay, true, true);
+		}
+		else 
+			statesIntoStringBuffer(ic,it,sb, forDisplay, true, true);
+	}
+
 	/**Override to provide faster and more risky state setting for reading large files.  Assumes it and ic are in bounds, and parser string is not blank*/
 	public int setStateQuickNexusReading(int ic, int it, Parser parser){
 		return setState(ic, it, parser, false, null);
