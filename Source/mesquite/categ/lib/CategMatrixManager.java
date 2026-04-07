@@ -85,7 +85,15 @@ public abstract class CategMatrixManager extends CharMatrixManager   {
 							invalidIC = ic;
 							invalidIT = it;
 						}
-						data.statesIntoNEXUSStringBuffer(ic, it, blocks);
+						if (file.useSimplifiedNexus) {  // to avoid circumstances where user has defined odd characters as missing or inapplicable
+							if (data.isInapplicable(ic,it))
+								blocks.append(data.defaultInapplicableChar);
+							else if (data.isUnassigned(ic,it))
+								blocks.append(data.defaultMissingChar);
+							else
+								data.statesIntoNEXUSStringBuffer(ic, it, blocks);
+						} else
+							data.statesIntoNEXUSStringBuffer(ic, it, blocks);
 						
 					//	27 July 08:  DRM commented out the following two lines.  These cannot be included, as NEXUS files are sensitive to line breaks within the MATRIX command.
 					

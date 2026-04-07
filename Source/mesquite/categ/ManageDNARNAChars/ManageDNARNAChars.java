@@ -332,7 +332,10 @@ public class ManageDNARNAChars extends CategMatrixManager {
 			blocks.append(" DATATYPE = RNA");
 		if (data.interleaved && file.interleaveAllowed)
 			blocks.append(" INTERLEAVE");
-		blocks.append(" GAP = " + data.getInapplicableSymbol() + " MISSING = " + data.getUnassignedSymbol());
+		if (file.useSimplifiedNexus)
+			blocks.append(" GAP = " + data.defaultInapplicableChar + " MISSING = " + data.defaultMissingChar);
+		else
+			blocks.append(" GAP = " + data.getInapplicableSymbol() + " MISSING = " + data.getUnassignedSymbol());
 		blocks.append(endLine);
 		if (data.isLinked() && !file.useSimplifiedNexus){
 			blocks.append("\tOPTIONS ");
