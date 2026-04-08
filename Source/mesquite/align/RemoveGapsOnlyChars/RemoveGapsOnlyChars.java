@@ -11,7 +11,7 @@ Mesquite's web site is http://mesquiteproject.org
 This source code and its compiled class files are free and modifiable under the terms of 
 GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
 */
-package mesquite.align.RemoveAllGaps;
+package mesquite.align.RemoveGapsOnlyChars;
 /*~~  */
 
 import mesquite.categ.lib.MolecularData;
@@ -22,9 +22,10 @@ import mesquite.lib.characters.AltererWholeCharacterAddRemove;
 import mesquite.lib.characters.CharacterData;
 import mesquite.lib.duties.DataAltererParallelizable;
 import mesquite.lib.table.MesquiteTable;
+import mesquite.molec.lib.SequenceTrimmer;
 
 /* ======================================================================== */
-public class RemoveAllGaps extends MolecularDataAlterer implements AltererWholeCharacterAddRemove, DataAltererParallelizable {
+public class RemoveGapsOnlyChars extends SequenceTrimmer {
 	/*.................................................................................................................*/
 	public boolean startJob(String arguments, Object condition, boolean hiredByName) {
 		return true;
@@ -37,9 +38,9 @@ public class RemoveAllGaps extends MolecularDataAlterer implements AltererWholeC
    	
 	/*.................................................................................................................*/
    	/** Called to alter data in those cells selected in table*/
-   	public int alterData(CharacterData cData, MesquiteTable table,  UndoReference undoReference){
+	public boolean trimMatrix(CharacterData cData, UndoReference undoReference){
 		if (!(cData instanceof MolecularData))
-			return ResultCodes.INCOMPATIBLE_DATA;
+			return false;
 		MolecularData data = (MolecularData)cData;
 		int oldNumChars = data.getNumChars();
 		data.removeCharactersThatAreEntirelyGaps(false);
@@ -51,8 +52,8 @@ public class RemoveAllGaps extends MolecularDataAlterer implements AltererWholeC
 		}
 */
 		if ( oldNumChars!=data.getNumChars())
-		return ResultCodes.SUCCEEDED;
-		return ResultCodes.MEH;
+		return true;
+		return false;
 
    	}
 	/*.................................................................................................................*/

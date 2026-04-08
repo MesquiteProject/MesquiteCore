@@ -24,8 +24,10 @@ import mesquite.lib.characters.AltererDNACell;
 import mesquite.lib.characters.CharacterData;
 import mesquite.lib.duties.DataAltererParallelizable;
 import mesquite.lib.table.MesquiteTable;
+import mesquite.lib.taxa.Taxa;
+import mesquite.molec.lib.SequenceTrimmer;
 
-public class TrimTermAmbiguities extends DNADataAlterer  implements AltererDNACell, DataAltererParallelizable {
+public class TrimTermAmbiguities extends SequenceTrimmer {
 
 	/*.................................................................................................................*/
 	public boolean startJob(String arguments, Object condition, boolean hiredByName) {
@@ -34,22 +36,23 @@ public class TrimTermAmbiguities extends DNADataAlterer  implements AltererDNACe
 
 	/*.................................................................................................................*/
 	/** Called to alter data in those cells selected in table*/
-	public int alterData(CharacterData dData, MesquiteTable table,  UndoReference undoReference){
+	public boolean trimMatrix(CharacterData dData, UndoReference undoReference){
 		if (dData==null)
-			return -10;
+			return false;
 	
 		if (!(dData instanceof DNAData)){
 			MesquiteMessage.warnProgrammer(getName() + " requires DNA data");
-			return ResultCodes.INCOMPATIBLE_DATA;
+			return false;
 		}
 		DNAData data = (DNAData)dData;
 
 
    		UndoInstructions undoInstructions = data.getUndoInstructionsAllMatrixCells(new int[] {UndoInstructions.NO_CHAR_TAXA_CHANGES});
 		boolean changed = false;
-		
-		for (int it = 0; it<data.getNumTaxa(); it++)
-			if (table == null || !table.anyRowSelected()||table.wholeRowSelectedAnyWay(it)) {
+		Taxa taxa = data.getTaxa();
+		boolean anyTaxaSelected = taxa.anySelected();
+		for (int it = 0; it<taxa.getNumTaxa(); it++)
+			if (!anyTaxaSelected || taxa.isSelected(it)) {
 				
 				for (int ic = 0; ic<data.getNumChars(); ic++){  // check start
 					if (!data.isInapplicable(ic, it)) {
@@ -77,12 +80,7 @@ public class TrimTermAmbiguities extends DNADataAlterer  implements AltererDNACe
 				undoReference.setResponsibleModule(this);
 			}
 		}
-		if ( changed)
-			return ResultCodes.SUCCEEDED;
-		return ResultCodes.MEH;
-	}
-	/*.................................................................................................................*/
-	public void alterCell(CharacterData ddata, int ic, int it){
+		return changed;
 	}
 
 	/*.................................................................................................................*/

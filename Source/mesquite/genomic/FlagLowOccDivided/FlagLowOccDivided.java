@@ -122,8 +122,8 @@ public class FlagLowOccDivided extends MatrixFlaggerForTrimmingSites implements 
 		dialog.addLargeOrSmallTextLabel("To be flagged, a site has to be judged too gappy within selected taxa and also too gappy within unselected taxa."
 				+" A site is considered too gappy among a set of taxa if it has fewer observed states (non-gaps)"
 				+" than the proportion specified."
-				+"\n\nEnter a number above 1 under selected to make the choice depend only on unselected taxa. "
-				+"Enter a number above 1 under unselected to make the choice depend only on selected taxa.");
+				+"\n\nEnter a number above 1 for selected to make the choice depend only on unselected taxa. "
+				+"Enter a number above 1 for unselected to make the choice depend only on selected taxa.");
 		String s = "<b>Filter of low occupancy sites</b> selects sites with high levels of gaps."
 				+ " It is not intended to identify sites that are unreliable or poorly aligned; it is intended simply to find sites"
 				+ " where the amount of available data is too sparse to justify inclusion, just as one filters loci for occupancy.<hr>" 
@@ -354,7 +354,7 @@ public class FlagLowOccDivided extends MatrixFlaggerForTrimmingSites implements 
 	}
 	/*.................................................................................................................*/
 	public boolean isPrerelease() {
-		return true;
+		return false;
 	}
 
 	/*.................................................................................................................*/

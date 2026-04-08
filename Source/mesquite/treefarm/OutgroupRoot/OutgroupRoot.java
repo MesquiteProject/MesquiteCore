@@ -119,8 +119,8 @@ public class OutgroupRoot extends TreeAltererMult {
 	}
 	/*.................................................................................................................*/
 	public boolean isPrerelease(){
-		return true; //note in History
-	}
+		return false;
+		}
 	/*.................................................................................................................*/
     	 public String getName() {
 		return "Root tree with selected taxa as outgroup";

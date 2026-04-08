@@ -22,9 +22,10 @@ import mesquite.lib.characters.AltererWholeCharacterAddRemove;
 import mesquite.lib.characters.CharacterData;
 import mesquite.lib.duties.DataAltererParallelizable;
 import mesquite.lib.table.MesquiteTable;
+import mesquite.molec.lib.SequenceTrimmer;
 
 /* ======================================================================== */
-public class CollapseEdges extends MolecularDataAlterer implements AltererWholeCharacterAddRemove, DataAltererParallelizable{
+public class CollapseEdges extends SequenceTrimmer{
 	/*.................................................................................................................*/
 	public boolean startJob(String arguments, Object condition, boolean hiredByName) {
 		return true;
@@ -37,16 +38,14 @@ public class CollapseEdges extends MolecularDataAlterer implements AltererWholeC
 	
 	/*.................................................................................................................*/
    	/** Called to alter data in those cells selected in table*/
-   	public int alterData(CharacterData cData, MesquiteTable table,  UndoReference undoReference){
+	public boolean trimMatrix(CharacterData cData, UndoReference undoReference){
 		if (!(cData instanceof MolecularData))
-			return ResultCodes.INCOMPATIBLE_DATA;
+			return false;
 		MolecularData data = (MolecularData)cData;
 		boolean changed = data.stripRightTerminalGaps(false);
 		boolean leftChanged = data.stripLeftTerminalGaps(false);
 		changed = changed || leftChanged;
-		if (changed)
-			return ResultCodes.SUCCEEDED;
-			return ResultCodes.MEH;
+		return changed;
    	}
 	/*.................................................................................................................*/
   	 public boolean showCitation() {

@@ -41,8 +41,8 @@
     <td width="51%"><strong id="PackageTitle">Mesquite</strong></td>
     <td width="33%" align="right"><div id="subtitle"><!-- InstanceBeginEditable name="subtitle" -->History of New Features<!-- InstanceEndEditable --></div></td>
     <td width="2%">&nbsp;</td>
-    <td width="14%">Version 4.02<br />
-      October 2025<br /></td>
+    <td width="14%">Version 4.03<br />
+      April 2026<br /></td>
   </tr>
 </table>
 
@@ -210,7 +210,35 @@
   <a name="New Features, Bugs, and History of Features and Bug Fixes--Features in the next release version of Mesquite; the latest source code in the development branch of the MesquiteProject/MesquiteCore repository on GitHub contains these changes" id="New Features, Bugs, and History of Features and Bug Fixes--Features in the next release version of Mesquite; the latest source code in the development branch of the MesquiteProject/MesquiteCore repository on GitHub contains these changes"></a>Features to come in the next release version of Mesquite are listed <a href="https://github.com/MesquiteProject/MesquiteCore/wiki/New-features-and-bug-fixes-in-the-development-version">on this web page</a>. These new features and bug fixes are already contained in latest source code in the development branch of the MesquiteProject/MesquiteCore repository on GitHub.</p>
 	  <p></p>
  <hr />
- <h3>Version 4.02</h3>
+  <h3>Version 4.03</h3>
+	  
+	  <h4 id="toc186">New Features </h4>
+ <ul>
+   <li>Tree inference matrix by matrix in the Utilities menu of the List of Characer Matrices, for instance to infer gene trees for each locus, now has two options: regular (<strong>"Infer Trees from Matrices"</strong>) and parallelized (<strong>"Infer Trees from Matrices (Parallelized)</strong>". The regular version does the inferences sequentially; the parallelized version does them in parallel, assigned to different threads. This can greatly speed gene tree inference if you have a computer with many cores.</li>
+   <li>Character Matrices can now be assigned to groups, thus making a partitioning of character matrices, just as can be done for characters or taxa. This can be done in the List of Character Matrices in the Columns menu by selecting <strong>Group Membership (Matrices)</strong>. A drop down menu from the header of the column controls it, as for character groups and taxon groups.</li>
+   <li>There is a new alignment trimming method, "<strong>Trim Sites Gappy in Both Selected & Unselected Taxa</strong>. After you have selected some of the taxa, if you invoke this method, it allows you to specify the required occupancy among selected taxa, and separately among unselected taxa, in order to keep sites. A site is kept if it satisfies <strong>either</strong> occupancy threshold. This can be useful for alignments that include taxa sequenced in different ways, e.g. the selected taxa including an intron and the unselected taxa not. An intron site would be kept if it has minimum occupancy among the selected taxa, even if it has zero occupancy among the others.</li>
+   <li>If you have in a file both gene trees and the locus matrices from which they are inferred, Mesquite can coordinate their selection using items in the List of Character Matrices and List of Trees windows. In the List of Character Matrices, choose <strong>Select Trees Linked to Selected Matrices</strong> in order for Mesquite to select the gene trees belonging to the matrices selected in the List. This depends either on their names being a close enough match, or on the tree storing its source matrix (which it does if you had used Infer Trees from Matrices). The other direction can be done in the List of Trees window, by choosing <strong>Select Matrices Linked to Selected Trees</strong> in <strong>List&gt;Utilities</strong>.</li>
+	   <li><strong>Root tree with selected taxa as outgroup</strong> has been adjusted to reroot by the first taxon selected if the selected taxa are polyphyletic on the tree. (In previous versions, the tree would not be rerooted in that circumstance.)</li>
+   <li><strong>XXX</strong> xxxxxx.</li>
+   <li><strong>XXX</strong> xxxxxx.</li>
+
+ </ul>
+ <h4 id="toc187">Bug Fixes, Workarounds, and Improvements</h4>
+ <ul>
+   <li>The following bugs were fixed:</li>
+   <ul>
+     <li>Menu items were sometimes dimmed when they should have been available.</li>
+   <li>The Windows .bat file to start Mesquite failed under some circumstances. A new version was kindly supplied by GitHub user tomoakin.</li>
+   <li><strong>XXX</strong> xxxxxx.</li>
+   <li><strong>XXX</strong> xxxxxx.</li>
+	
+
+   </ul>
+<li>Various other bug fixes and small improvements were done.</li>
+ </ul>
+ <p>&nbsp;</p>
+  <hr />
+	  <h3>Version 4.02</h3>
 	  
 	  <h4 id="toc186">New Features </h4>
  <ul>
