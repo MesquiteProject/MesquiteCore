@@ -219,8 +219,8 @@
    <li>There is a new alignment trimming method, "<strong>Trim Sites Gappy in Both Selected & Unselected Taxa</strong>. After you have selected some of the taxa, if you invoke this method, it allows you to specify the required occupancy among selected taxa, and separately among unselected taxa, in order to keep sites. A site is kept if it satisfies <strong>either</strong> occupancy threshold. This can be useful for alignments that include taxa sequenced in different ways, e.g. the selected taxa including an intron and the unselected taxa not. An intron site would be kept if it has minimum occupancy among the selected taxa, even if it has zero occupancy among the others.</li>
    <li>If you have in a file both gene trees and the locus matrices from which they are inferred, Mesquite can coordinate their selection using items in the List of Character Matrices and List of Trees windows. In the List of Character Matrices, choose <strong>Select Trees Linked to Selected Matrices</strong> in order for Mesquite to select the gene trees belonging to the matrices selected in the List. This depends either on their names being a close enough match, or on the tree storing its source matrix (which it does if you had used Infer Trees from Matrices). The other direction can be done in the List of Trees window, by choosing <strong>Select Matrices Linked to Selected Trees</strong> in <strong>List&gt;Utilities</strong>.</li>
 	   <li><strong>Root tree with selected taxa as outgroup</strong> has been adjusted to reroot by the first taxon selected if the selected taxa are polyphyletic on the tree. (In previous versions, the tree would not be rerooted in that circumstance.)</li>
-   <li><strong>XXX</strong> xxxxxx.</li>
-   <li><strong>XXX</strong> xxxxxx.</li>
+   <li><strong>Trim Terminal Ambiguous Bases: </strong>This will trim ambiguous nucleotides (e.g., R or Y) from the start or ends of sequences. For example, if the first cell in a sequence is an R, and the last one a W, they will be removed and that cell converted to a gap. This is useful for submitting sequences to GenBank, as those bases will be removed by GenBank.</li>
+   <li><strong>Shortest Sequence Length in Matrix</strong>: This is a number for a matrix which can, for example, be listed in a column in the List of Character Matrices. The value is the length of the shortest non-empty sequence in the matrix.</li>
 
  </ul>
  <h4 id="toc187">Bug Fixes, Workarounds, and Improvements</h4>
@@ -229,12 +229,12 @@
    <ul>
      <li>Menu items were sometimes dimmed when they should have been available.</li>
    <li>The Windows .bat file to start Mesquite failed under some circumstances. A new version was kindly supplied by GitHub user tomoakin.</li>
-   <li><strong>XXX</strong> xxxxxx.</li>
-   <li><strong>XXX</strong> xxxxxx.</li>
+   <li>BLASTX now works</li>
 	
 
    </ul>
-<li>Various other bug fixes and small improvements were done.</li>
+<li><strong>Root tree with selected taxa as outgroup</strong> (available under List &gt; Utilities &gt; Alter Trees) now roots at the first selected taxon if the set of selected taxa is not convex on the tree. (Previously the rerooting simply failed in that circumstance.)</li>
+<li>Numerous other bug fixes and small improvements were done.</li>
  </ul>
  <p>&nbsp;</p>
   <hr />
