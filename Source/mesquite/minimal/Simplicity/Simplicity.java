@@ -25,6 +25,7 @@ import org.dom4j.DocumentHelper;
 import org.dom4j.Element;
 
 import mesquite.lib.CommandChecker;
+import mesquite.lib.Debugg;
 import mesquite.lib.Listable;
 import mesquite.lib.MesquiteBoolean;
 import mesquite.lib.MesquiteFile;
@@ -186,7 +187,7 @@ public class Simplicity extends SimplicityManagerModule {
 		loadSettingsFile(custom);
 	}
 	StringArray importFile(String path, boolean isDefault){
-		if (!MesquiteFile.fileExists(path))
+		if (!MesquiteFile.fileExists(path) || !StringUtil.endsWithIgnoreCase(path, ".xml"))
 			return null;
 		String settingsXML = MesquiteFile.getFileContentsAsString(path);
 		Element root = XMLUtil.getRootXMLElementFromString("mesquite",settingsXML);

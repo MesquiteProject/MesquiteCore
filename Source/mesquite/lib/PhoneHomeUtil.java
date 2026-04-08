@@ -520,7 +520,9 @@ public class PhoneHomeUtil {
 		int lastVersionNoticed = phoneHomeRecord.getLastVersionNoticed();
 
 		//String name = mmi.getName();
-
+		int xmlLoc = noticesFromHome.indexOf("xml");
+		if (xmlLoc<0 || xmlLoc > 32 ||  noticesFromHome.indexOf("href")<12)  // a kludge against html!!!
+		return null;
 		Element root = XMLUtil.getRootXMLElementFromString("mesquite",noticesFromHome);
 		if (root==null)
 			return null;
