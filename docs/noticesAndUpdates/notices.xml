@@ -1,26 +1,26 @@
 <?xml version="1.0"?>
 <mesquite>
-	<lastnoticeNumber>33</lastnoticeNumber>
+	<lastnoticeNumber>34</lastnoticeNumber>
 	<MessagesFromHome>
 		<version>1</version>
 		<currentReleaseVersion>
-			<versionString>4.02</versionString>
-			<build>1109</build>
-			<version>402</version>
+			<versionString>4.03</versionString>
+			<build>1132</build>
+			<version>403</version>
 			<downloadURL>https://www.mesquiteproject.org/Installation.html</downloadURL>
 		</currentReleaseVersion>
 		<notice>
-			<forMesquiteVersionLessOrEqual>401</forMesquiteVersionLessOrEqual>
-			<noticeNumber>33</noticeNumber>
+			<forMesquiteVersionLessOrEqual>402</forMesquiteVersionLessOrEqual>
+			<noticeNumber>34</noticeNumber>
 			<messageType>alert</messageType>
-			<message><![CDATA[Mesquite 4.02 is available. This update has several bug fixes a few new features compared to 4.01. Version 4 is a major update over 3.x, with many new features for phylogenomics, data management, visualizations, and analyses. 
+			<message><![CDATA[Mesquite 4.03 is available. This update has several bug fixes a few new features compared to 4.02. Version 4 is a major update over 3.x, with many new features for phylogenomics, data management, visualizations, and analyses. 
 			Tree inference programs (IQ-TREE, RAxML), aligners (MAFFT, MUSCLE) and trimming programs (trimAl, Gblocks) are built in.  Includes the Zephyr, Chromaseq, and Cartographer packages.  
 			<a href = "https://www.mesquiteproject.org">Learn more and download here.</a>]]></message>
 		</notice>
 		<notice>
 			<forVersion>381</forVersion>
 			<noticeNumber>33</noticeNumber>
-			<message><![CDATA[Mesquite 4.02 is available. This update has several bug fixes a few new features compared to 4.01. Version 4 is a major update over 3.x, with many new features for phylogenomics, data management, visualizations, and analyses. 
+			<message><![CDATA[Mesquite 4.03 is available. This update has several bug fixes a few new features compared to 4.02. Version 4 is a major update over 3.x, with many new features for phylogenomics, data management, visualizations, and analyses. 
 			Tree inference programs (IQ-TREE, RAxML), aligners (MAFFT, MUSCLE) and trimming programs (trimAl, Gblocks) are built in.  Includes the Zephyr, Chromaseq, and Cartographer packages.  
 			<a href = "https://www.mesquiteproject.org">Learn more and download here.</a>]]></message>
 		</notice>
@@ -28,7 +28,7 @@
 			<forVersion>380</forVersion>
 			<noticeNumber>33</noticeNumber>
 			<messageType>alert</messageType>
-			<message><![CDATA[Mesquite 4.02 is available. This update has several bug fixes a few new features compared to 4.01. Version 4 is a major update over 3.x, with many new features for phylogenomics, data management, visualizations, and analyses. 
+			<message><![CDATA[Mesquite 4.03 is available. This update has several bug fixes a few new features compared to 4.02. Version 4 is a major update over 3.x, with many new features for phylogenomics, data management, visualizations, and analyses. 
 			Tree inference programs (IQ-TREE, RAxML), aligners (MAFFT, MUSCLE) and trimming programs (trimAl, Gblocks) are built in.  Includes the Zephyr, Chromaseq, and Cartographer packages.  
 			<a href = "https://www.mesquiteproject.org">Learn more and download here.</a>]]></message>
 		</notice>
@@ -36,7 +36,7 @@
 			<forVersion>370</forVersion>
 			<noticeNumber>33</noticeNumber>
 			<messageType>alert</messageType>
-			<message><![CDATA[Mesquite 4.02 is available. This update has several bug fixes a few new features compared to 4.01. Version 4 is a major update over 3.x, with many new features for phylogenomics, data management, visualizations, and analyses. 
+			<message><![CDATA[Mesquite 4.03 is available. This update has several bug fixes a few new features compared to 4.02. Version 4 is a major update over 3.x, with many new features for phylogenomics, data management, visualizations, and analyses. 
 			Tree inference programs (IQ-TREE, RAxML), aligners (MAFFT, MUSCLE) and trimming programs (trimAl, Gblocks) are built in.  Includes the Zephyr, Chromaseq, and Cartographer packages.  
 			<a href = "https://www.mesquiteproject.org">Learn more and download here.</a>]]></message>
 		</notice>
@@ -44,7 +44,7 @@
 			<forVersion>380</forVersion>
 			<noticeNumber>33</noticeNumber>
 			<messageType>alert</messageType>
-			<message><![CDATA[Mesquite 4.02 is available. This update has several bug fixes a few new features compared to 4.01. Version 4 is a major update over 3.x, with many new features for phylogenomics, data management, visualizations, and analyses. 
+			<message><![CDATA[Mesquite 4.03 is available. This update has several bug fixes a few new features compared to 4.02. Version 4 is a major update over 3.x, with many new features for phylogenomics, data management, visualizations, and analyses. 
 			Tree inference programs (IQ-TREE, RAxML), aligners (MAFFT, MUSCLE) and trimming programs (trimAl, Gblocks) are built in.  Includes the Zephyr, Chromaseq, and Cartographer packages.  
 			<a href = "https://www.mesquiteproject.org">Learn more and download here.</a>]]></message>
 		</notice>
@@ -52,7 +52,7 @@
 			<forVersion>361</forVersion>
 			<noticeNumber>33</noticeNumber>
 			<messageType>alert</messageType>
-			<message><![CDATA[Mesquite 4.02 is available. This update has several bug fixes a few new features compared to 4.01. Version 4 is a major update over 3.x, with many new features for phylogenomics, data management, visualizations, and analyses. 
+			<message><![CDATA[Mesquite 4.03 is available. This update has several bug fixes a few new features compared to 4.02. Version 4 is a major update over 3.x, with many new features for phylogenomics, data management, visualizations, and analyses. 
 			Tree inference programs (IQ-TREE, RAxML), aligners (MAFFT, MUSCLE) and trimming programs (trimAl, Gblocks) are built in.  Includes the Zephyr, Chromaseq, and Cartographer packages.  
 			<a href = "https://www.mesquiteproject.org">Learn more and download here.</a>]]></message>
 		</notice>
@@ -60,7 +60,7 @@
 			<forVersion>360</forVersion>
 			<noticeNumber>33</noticeNumber>
 			<messageType>alert</messageType>
-			<message><![CDATA[Mesquite 4.02 is available. This update has several bug fixes a few new features compared to 4.01. Version 4 is a major update over 3.x, with many new features for phylogenomics, data management, visualizations, and analyses. 
+			<message><![CDATA[Mesquite 4.03 is available. This update has several bug fixes a few new features compared to 4.02. Version 4 is a major update over 3.x, with many new features for phylogenomics, data management, visualizations, and analyses. 
 			Tree inference programs (IQ-TREE, RAxML), aligners (MAFFT, MUSCLE) and trimming programs (trimAl, Gblocks) are built in.  Includes the Zephyr, Chromaseq, and Cartographer packages.  
 			<a href = "https://www.mesquiteproject.org">Learn more and download here.</a>]]></message>
 		</notice>
@@ -68,7 +68,7 @@
 			<forVersion>351</forVersion>
 			<noticeNumber>33</noticeNumber>
 			<messageType>alert</messageType>
-			<message><![CDATA[Mesquite 4.02 is available. This update has several bug fixes a few new features compared to 4.01. Version 4 is a major update over 3.x, with many new features for phylogenomics, data management, visualizations, and analyses. 
+			<message><![CDATA[Mesquite 4.03 is available. This update has several bug fixes a few new features compared to 4.02. Version 4 is a major update over 3.x, with many new features for phylogenomics, data management, visualizations, and analyses. 
 			Tree inference programs (IQ-TREE, RAxML), aligners (MAFFT, MUSCLE) and trimming programs (trimAl, Gblocks) are built in.  Includes the Zephyr, Chromaseq, and Cartographer packages.  
 			<a href = "https://www.mesquiteproject.org">Learn more and download here.</a>]]></message>
 		</notice>
@@ -76,7 +76,7 @@
 			<forVersion>350</forVersion>
 			<noticeNumber>33</noticeNumber>
 			<messageType>alert</messageType>
-			<message><![CDATA[A new version of Mesquite is available, version 4.01, with many new features and bug fixes.  It also has bundled in the Zephyr, Chromaseq, and Cartographer packages.  
+			<message><![CDATA[A new version of Mesquite is available, version 4.03, with many new features and bug fixes.  It also has bundled in the Zephyr, Chromaseq, and Cartographer packages.  
 
 			We urge that you update to the new version by downloading it from 
 			<a href = "https://www.mesquiteproject.org">Learn more and download here.</a>]]></message>
@@ -85,7 +85,7 @@
 			<forVersion>340</forVersion>
 			<noticeNumber>33</noticeNumber>
 			<messageType>alert</messageType>
-			<message><![CDATA[Mesquite 4 is available. This is a major update, with many new features for phylogenomics, data management, visualizations, and analyses. 
+			<message><![CDATA[Mesquite 4.03 is available. This is a major update, with many new features for phylogenomics, data management, visualizations, and analyses. 
 			Tree inference programs (IQ-TREE, RAxML), aligners (MAFFT, MUSCLE) and trimming programs (trimAl, Gblocks) are built in.  Includes the Zephyr, Chromaseq, and Cartographer packages.  
 			<a href = "https://www.mesquiteproject.org">Learn more and download here.</a>]]></message>
 		</notice>
@@ -93,7 +93,7 @@
 			<forVersion>331</forVersion>
 			<noticeNumber>33</noticeNumber>
 			<messageType>alert</messageType>
-			<message><![CDATA[Mesquite 4 is available. This is a major update, with many new features for phylogenomics, data management, visualizations, and analyses. 
+			<message><![CDATA[Mesquite 4.03 is available. This is a major update, with many new features for phylogenomics, data management, visualizations, and analyses. 
 			Tree inference programs (IQ-TREE, RAxML), aligners (MAFFT, MUSCLE) and trimming programs (trimAl, Gblocks) are built in.  Includes the Zephyr, Chromaseq, and Cartographer packages.  
 			<a href = "https://www.mesquiteproject.org">Learn more and download here.</a>]]></message>
 		</notice>
@@ -101,7 +101,7 @@
 			<forVersion>330</forVersion>
 			<noticeNumber>30</noticeNumber>
 			<messageType>alert</messageType>
-			<message><![CDATA[Mesquite 4 is available. This is a major update, with many new features for phylogenomics, data management, visualizations, and analyses. 
+			<message><![CDATA[Mesquite 4.03 is available. This is a major update, with many new features for phylogenomics, data management, visualizations, and analyses. 
 			Tree inference programs (IQ-TREE, RAxML), aligners (MAFFT, MUSCLE) and trimming programs (trimAl, Gblocks) are built in.  Includes the Zephyr, Chromaseq, and Cartographer packages.  
 			<a href = "https://www.mesquiteproject.org">Learn more and download here.</a>]]></message>
 		</notice>
@@ -109,7 +109,7 @@
 			<forMesquiteVersionLessOrEqual>330</forMesquiteVersionLessOrEqual>
 			<noticeNumber>33</noticeNumber>
 			<messageType>alert</messageType>
-			<message><![CDATA[Mesquite 4 is available. This is a major update, with many new features for phylogenomics, data management, visualizations, and analyses. 
+			<message><![CDATA[Mesquite 4.03 is available. This is a major update, with many new features for phylogenomics, data management, visualizations, and analyses. 
 			Tree inference programs (IQ-TREE, RAxML), aligners (MAFFT, MUSCLE) and trimming programs (trimAl, Gblocks) are built in.  Includes the Zephyr, Chromaseq, and Cartographer packages.  
 			<a href = "https://www.mesquiteproject.org">Learn more and download here.</a>]]></message>
 		</notice>
