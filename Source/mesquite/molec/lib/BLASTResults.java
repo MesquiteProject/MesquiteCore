@@ -245,6 +245,19 @@ public class BLASTResults {
 		accession = NCBIUtil.getGenBankAccessionFromID(ID, nucleotides, null, false);
 	}
 
+	/*
+	 *       
+	 	<Hsp_query-from>67</Hsp_query-from>  first base in query sequence matching the hit
+      <Hsp_query-to>655</Hsp_query-to>  last base in query sequence matching the hit
+      <Hsp_hit-from>1</Hsp_hit-from>  first base in hit that matches up with Hsp_query-from
+      <Hsp_hit-to>589</Hsp_hit-to>  last base in hit that matches up with Hsp_query-to.  NOTE: larger, therefore don't reverse complement
+
+
+    <Hsp_query-from>8</Hsp_query-from>
+    <Hsp_query-to>160</Hsp_query-to>
+    <Hsp_hit-from>158</Hsp_hit-from>
+    <Hsp_hit-to>6</Hsp_hit-to>   NOTE:  less than Hsp_hit-from therefore need to reverse complement!
+*/
 	/*.................................................................................................................*/
 	public  boolean processResultsFromBLAST(String response, boolean storeSequences, double eValueCutoff){
 		if (accession==null)
