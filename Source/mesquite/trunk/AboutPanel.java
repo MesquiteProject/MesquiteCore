@@ -57,11 +57,11 @@ public class AboutPanel extends MQPanel {
 		if (MesquiteTrunk.substantivePrereleasesExist) {
 			g.drawString( "Some installed modules", 21,12);
 			g.drawString("are pre-release versions.", 21,27);
-			//StringUtil.highlightString(g, "Touch on red alert symbol in windows for information.", 25,45);
 			g.drawImage(InfoBar.prereleaseImage,3,3,(ImageObserver)this);
 		}
 		g.drawString("http://www.mesquiteproject.org", 5,210);
-		g.drawString("Copyright (c) 1997-2025 W. & D. Maddison.", 5,225);
+		//RELEASEPROTOCOL
+		g.drawString("Copyright (c) 1997-2026 W. & D. Maddison.", 5,225);
 		
 		MesquiteWindow.uncheckDoomed(this);
 	}

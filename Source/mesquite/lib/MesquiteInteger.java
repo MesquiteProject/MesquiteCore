@@ -24,6 +24,7 @@ import mesquite.lib.ui.TwoIntegersDialog;
 	original change as needed*/
 public class MesquiteInteger implements Listable, Nameable{
 	public static final int unassigned = Integer.MIN_VALUE+1;
+	public static final int almostUnassigned = Integer.MIN_VALUE+2; //shows up occasionally
 	public static final int negInfinite = Integer.MIN_VALUE;
 	public static final int infinite = Integer.MAX_VALUE;
 	public static final int impossible = Integer.MAX_VALUE - 1;
@@ -69,6 +70,10 @@ public class MesquiteInteger implements Listable, Nameable{
 	/** Sets value */
 	public void setValue(String s) {
 		this.value=fromString(s);
+	}
+	/** Sets value */
+	public void setValue(MesquiteInteger b) {
+		this.value=b.getValue();
 	}
 	public static void setValue(MesquiteInteger b, int value) { //so that setting can be done in line whether or not null
 		if (b != null)
@@ -191,11 +196,11 @@ public class MesquiteInteger implements Listable, Nameable{
 	}
 	/** Returns whether value is a regular number (NOT unassigned, infinite, inapplicable, impossible) */
 	public boolean isCombinable() {
-		return (value!=unassigned && value!=infinite && value!=impossible&& value!=inapplicable && value != finite && value != negInfinite && value != uncombinable && value != disallowed1 && value != disallowed2);
+		return (value!=unassigned && value!=almostUnassigned && value!=infinite && value!=impossible&& value!=inapplicable && value != finite && value != negInfinite && value != uncombinable && value != disallowed1 && value != disallowed2);
 	}
 	/** Returns whether value is a regular number (NOT unassigned, infinite, inapplicable, impossible) */
 	public static boolean isCombinable(int i) {
-		return (i!=unassigned && i!=infinite && i!=impossible&& i!=inapplicable && i != finite && i != negInfinite  && i != uncombinable && i != disallowed1 && i != disallowed2);
+		return (i!=unassigned && i!=almostUnassigned && i!=infinite && i!=impossible&& i!=inapplicable && i != finite && i != negInfinite  && i != uncombinable && i != disallowed1 && i != disallowed2);
 	}
 	/** Returns whether value is a regular number (NOT unassigned, infinite, inapplicable, impossible) and greater than zero */
 	public static boolean isPositive(int i) {
@@ -489,6 +494,25 @@ public class MesquiteInteger implements Listable, Nameable{
 			}
 		}
 	}
+	/*...........................................................*/
+	/** Returns true if current value is more than d . */
+	public boolean greaterThan(int d) {
+		if (isUnassigned() || MesquiteInteger.isInfinite(d)) return false;
+		if (MesquiteInteger.isUnassigned(d) || isInfinite()) return true;
+		if (!MesquiteInteger.isCombinable(d) || !isCombinable())
+			return false;
+			return value>d;
+		
+	}
+	/*...........................................................*/
+	/** Returns true if current value is more than value of n . */
+	public boolean greaterThan(MesquiteInteger n) {
+		if (n==null) return false;
+		if (isUnassigned() || n.isInfinite()) return false;
+		if (n.isUnassigned() || isInfinite()) return true;
+		return value>n.getValue();
+	}
+
 	/*----------------------------------------------------------*/
 	public static boolean isDivisibleBy(int value, int diviser) {
 		if (diviser == 0) 
@@ -543,7 +567,27 @@ public class MesquiteInteger implements Listable, Nameable{
 			}
 		}
 	}
-
+	public static String toStringOrdinal(int v, boolean superlative){
+		if (!isCombinable(v))
+			return toString(v);
+		if (v == 1){
+			if (superlative)
+				return "";
+			return "1st";
+		}
+		else if (v == 2)
+			return "2nd";
+		else if (v==3)
+			return "3rd";
+		else if (v == -1)
+			return "-1st";
+		else if (v == -2)
+			return "-2nd";
+		else if (v==-3)
+			return "-3rd";
+		else
+			return Integer.toString(v) + "th";
+	}
 	/** Returns string version of this value, with leading zeros as needed.  Returns "unassigned" etc. if needed*/
 	public static String toStringDigitsSpecified(int v, int digits) {
 		if (v==unassigned)

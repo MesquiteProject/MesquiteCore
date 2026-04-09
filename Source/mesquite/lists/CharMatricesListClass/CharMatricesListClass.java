@@ -68,14 +68,19 @@ public class CharMatricesListClass extends CharMatricesListAssistant implements 
 			CharacterData data =((CharacterData)datas.elementAt(ic));
 			if (data==null)
 				return "";
-			return data.getDataTypeName();
+			String n = data.getDataTypeName();
+			n = n.replace(" Data", "");
+			n = n.replace(" data", "");
+			return n;
 		}
 		catch (NullPointerException e){
 			return "";
 		}
 	}
+	
+	
 	public String getWidestString(){
-		String best = " 888888 ";
+		String best = "8888";
 		if (datas==null)
 			return best;
 		int m = 8;
@@ -90,7 +95,7 @@ public class CharMatricesListClass extends CharMatricesListAssistant implements 
 				}
 			}
 		}
-		return best + "888";
+		return best + "88";
 
 	}
 	/*.................................................................................................................*/

@@ -55,6 +55,7 @@ import mesquite.lib.Annotatable;
 import mesquite.lib.CommandChecker;
 import mesquite.lib.Commandable;
 import mesquite.lib.CommandableOwner;
+import mesquite.lib.Debugg;
 import mesquite.lib.DoubleArray;
 import mesquite.lib.EmployeeNeed;
 import mesquite.lib.EmployeeVector;
@@ -112,6 +113,7 @@ import mesquite.lib.duties.TreeWindowAssistant;
 import mesquite.lib.duties.TreeWindowAssistantA;
 import mesquite.lib.duties.TreeWindowAssistantC;
 import mesquite.lib.duties.TreeWindowAssistantI;
+import mesquite.lib.duties.TreeWindowAssistantISGA;
 import mesquite.lib.duties.TreeWindowAssistantN;
 import mesquite.lib.duties.TreeWindowAssistantOA;
 import mesquite.lib.duties.TreeWindowAssistantSGA;
@@ -257,8 +259,8 @@ public class BasicTreeWindowMaker extends TreeWindowMaker implements Commandable
 		if (MesquiteThread.isScripting() || (arguments == null || !arguments.equalsIgnoreCase("edit")))
 			treeSourceTask = (TreeSource) hireCompatibleEmployee(TreeSource.class, condition, "Source of trees (Tree window)");
 		else {
-			treeSourceTask = (TreeSource) hireNamedEmployee(TreeSource.class, "$ #StoredTrees laxMode", taxa, false);
-			editMode = true;
+		treeSourceTask = (TreeSource) hireNamedEmployee(TreeSource.class, "$ #StoredTrees laxMode", taxa, false); 
+		editMode = true;
 		}
 
 		if (treeSourceTask == null)
@@ -545,7 +547,7 @@ public class BasicTreeWindowMaker extends TreeWindowMaker implements Commandable
 			}
 			for (int i = 0; i < getNumberOfEmployees(); i++) {
 				Object e = getEmployeeVector().elementAt(i);
-				if (e instanceof TreeWindowAssistantC || e instanceof TreeWindowAssistantN || e instanceof TreeWindowAssistantA || e instanceof TreeWindowAssistantSGA) {
+				if (e instanceof TreeWindowAssistantC || e instanceof TreeWindowAssistantN || e instanceof TreeWindowAssistantA || e instanceof TreeWindowAssistantSGA || e instanceof TreeWindowAssistantISGA) {
 					if (((TreeWindowAssistant)e).rehireMeInSnapshot())   
 						temp.addLine("\tnewWindowAssistant ", ((MesquiteModule) e));
 				}
@@ -937,6 +939,10 @@ public class BasicTreeWindowMaker extends TreeWindowMaker implements Commandable
 			MesquiteSubmenuSpec mmsSG = addSubmenu(aux, "Species Tree - Gene Tree Analyses", makeCommand("newWindowAssistant", basicTreeWindow));
 			mmsSG.setList(TreeWindowAssistantSGA.class);
 		}
+		if (MesquiteTrunk.mesquiteModulesInfoVector.getNumModulesOfDuty(TreeWindowAssistantISGA.class, null, this)>0) {
+			MesquiteSubmenuSpec mmsSG = addSubmenu(aux, "Introgression Analysis & Visualization", makeCommand("newWindowAssistant", basicTreeWindow));
+			mmsSG.setList(TreeWindowAssistantISGA.class);
+		}
 		addMenuItem(aux, "-", null);
 
 		MesquiteSubmenuSpec mmsO = addSubmenu(aux, "Other Analyses with Tree", makeCommand("newWindowAssistant", basicTreeWindow));
@@ -1242,6 +1248,7 @@ class BasicTreeWindow extends MesquiteWindow implements Fittable, MesquiteListen
 		ownerModule.addMenuItem("Copy Tree", copyCommand);
 		ownerModule.addMenuItem("Copy Tree (Simple Newick)", ownerModule.makeCommand("copyTreeSimple", this));
 		ownerModule.addMenuItem("Paste Tree", pasteCommand);
+		ownerModule.addMenuItem("Paste Tree (Allow t0, t1, ...)", new MesquiteCommand("pastet0", this));
 		//ownerModule.addMenuSeparator();				
 		//ownerModule.addMenuItem("Edited Tree Handling Options...", ownerModule.makeCommand("queryEditedTreeMode", this));
 		ownerModule.addMenuSeparator();
@@ -1496,6 +1503,7 @@ class BasicTreeWindow extends MesquiteWindow implements Fittable, MesquiteListen
 
 		TreeTool tool5 = new TreeTool(this, "scissors", ownerModule.getPath(), "scissors.gif", 6, 5, "Prune clade", "This tool deletes the clade of the node touched.  Only the tree being operated on is affected (that is, the terminal taxa are not deleted from the data file).");
 		tool5.setTouchedCommand(MesquiteModule.makeCommand("cutClade", this));
+		tool5.setOptionImageFileName("scissorsBelow.gif", 6, 5);
 		addTool(tool5);
 
 		TreeTool tool7 = new TreeTool(this, "ladderize", ownerModule.getPath(), "ladderize.gif", 3, 13, "Ladderize clade", "This tool ladderizes a clade by rotating branches until largest of sister clades on right (except if option key is held down, in which case, left).");
@@ -1530,6 +1538,7 @@ class BasicTreeWindow extends MesquiteWindow implements Fittable, MesquiteListen
 			MesquiteModule mb = (MesquiteModule) obj;
 			if (mb instanceof TreeWindowAssistant) {
 				addWindowAssistant((TreeWindowAssistant)mb);
+				((TreeWindowAssistant)mb).setTree(tree);
 			}
 		}
 		setShowExplanation(true);
@@ -2276,7 +2285,7 @@ class BasicTreeWindow extends MesquiteWindow implements Fittable, MesquiteListen
 			treeDisplay.repaint();
 		}
 		else {
-			resetForTreeSource(setToZero, true, false, MesquiteInteger.inapplicable);
+				resetForTreeSource(setToZero, true, false, MesquiteInteger.inapplicable);
 		}
 	}
 
@@ -2416,6 +2425,7 @@ class BasicTreeWindow extends MesquiteWindow implements Fittable, MesquiteListen
 			setScrollEnabled(true);
 		}
 		pTLTmis.setEnabled(treeSourceTask.permitsRequestForLastTree(taxa));
+		boolean willSetTree = editedTree != null && !windowModule.pinToLastTree.getValue();
 		if (numTrees == 0) {
 			currentTreeNumber = 0;
 			palette.paletteScroll.setCurrentValue(0);
@@ -2436,12 +2446,12 @@ class BasicTreeWindow extends MesquiteWindow implements Fittable, MesquiteListen
 			else if (setToZero || currentTreeNumber >= numTrees)
 				goToTreeNumber(0, false);
 			else
-				goToTreeNumber(currentTreeNumber, false);
+				goToTreeNumber(currentTreeNumber, false,  willSetTree); //TREESETHERE  suppress tree change if about to happen in next block anyway
 		}
 
-		if (editedTree != null && !windowModule.pinToLastTree.getValue()) {  //if pinned to last tree, you lose edit
+		if (willSetTree) {  //if pinned to last tree, you lose edit
 			// originalTree = null;
-			setTree(editedTree);
+			setTree(editedTree);  //TREESETHERE
 			setTreeName(editedTree);
 			if (firstTimeTreeSource) {
 				if (originalTree != null && originalTree instanceof MesquiteTree)
@@ -3029,7 +3039,7 @@ class BasicTreeWindow extends MesquiteWindow implements Fittable, MesquiteListen
 				int numTrees = treeSourceTask.getNumberOfTrees(taxa);
 				goToTreeNumber(numTrees-1, true);
 			}
-			else
+			else if (!MesquiteThread.isScripting()) // if scripting, then current tree will have been set that way
 				goToTreeNumber(0, true);
 				
 			setScrollEnabled(!windowModule.pinToLastTree.getValue());
@@ -3059,28 +3069,15 @@ class BasicTreeWindow extends MesquiteWindow implements Fittable, MesquiteListen
 				clip.setContents(ss, ss);
 			}
 		}
-		else if (checker.compare(this.getClass(), "Pastes a description of the tree", null, commandName, "Paste")) {
-			if (tree != null) {
-				Clipboard clip = Toolkit.getDefaultToolkit().getSystemClipboard();
-				Transferable t = clip.getContents(this);
-				try {
-					String s = (String) t.getTransferData(DataFlavor.stringFlavor);
-					s = StringUtil.stripTrailingWhitespace(s);
-					if (StringUtil.blank(s))
-						return null;
-					if (!s.endsWith(";"))
-						s += ";";
-					Tree tr = setTree(s);
-
-					if (tr != null) {
-						treeEdited(true);
-						return tr;
-					}
-
-				} catch (Exception e) {
-				}
-			}
+		else if (checker.compare(this.getClass(), "Pastes a description of the tree", null, commandName, "Pastet0")) {
+			return pasteFromClipboard(true);
 		}
+		else if (checker.compare(this.getClass(), "Pastes a description of the tree", null, commandName, "Paste")) {
+			return pasteFromClipboard(false);
+		}
+		/*else if (checker.compare(this.getClass(), "Pastes a description of the tree, allowing t0, t1, t2 names", null, commandName, "Paste")) {
+			return pasteFromClipboard(true);
+		}*/
 		else if (checker.compare(this.getClass(), "Hires a module to alter or transform branch lengths", "[name of module]", commandName, "alterBranchLengths")) {
 			BranchLengthsAlterer ble = (BranchLengthsAlterer) ownerModule.hireNamedEmployee(BranchLengthsAlterer.class, arguments);
 			if (ble != null) {
@@ -3460,7 +3457,11 @@ class BasicTreeWindow extends MesquiteWindow implements Fittable, MesquiteListen
 		else if (checker.compare(this.getClass(), "Cut clade descendant from node", "[node number]", commandName, "cutClade")) {
 			int branchFound = MesquiteInteger.fromFirstToken(arguments, pos);
 			if (branchFound > 0) {
-				if (tree.deleteClade(branchFound, true)) {
+				if ((arguments.indexOf("option") >= 0)){
+					if (tree.pruneTaxaOutsideClade(branchFound, true))
+						treeEdited(false);
+				}
+				else if (tree.deleteClade(branchFound, true)) {
 					treeEdited(false);
 				}
 			}
@@ -3738,9 +3739,13 @@ class BasicTreeWindow extends MesquiteWindow implements Fittable, MesquiteListen
 	void setScrollEnabled(boolean enable){
 		palette.paletteScroll.setEnabled(enable);
 	}
-
 	/* ................................................................................................................. */
 	public Tree goToTreeNumber(int index, boolean rememberEdited) {
+		return goToTreeNumber(index, rememberEdited, false);
+	}
+
+	/* ................................................................................................................. */
+	public Tree goToTreeNumber(int index, boolean rememberEdited, boolean suppressTreeSet) {
 		if (disposing)
 			return null;
 		currentTreeNumber = index;
@@ -3780,7 +3785,7 @@ class BasicTreeWindow extends MesquiteWindow implements Fittable, MesquiteListen
 		if (disposing)
 			return null;
 		MesquiteBoolean editStatusToSet = new MesquiteBoolean();
-		Tree t = setCloneOfTree(treeT, true, editStatusToSet);
+		Tree t = setCloneOfTree(treeT, true, editStatusToSet, suppressTreeSet);
 		treeEdited = editStatusToSet.getValue();
 		editedByHand = false;
 		setTreeName(t);
@@ -4018,7 +4023,7 @@ class BasicTreeWindow extends MesquiteWindow implements Fittable, MesquiteListen
 			int wasHighlighted = highlightedBranch.getValue();
 			if (branchFound == 0) {
 				UnhighlightBranch(g, highlightedBranch);
-				notifyExtrasOfBranchExit(g, wasHighlighted);
+				notifyExtrasOfBranchExit(g, wasHighlighted, modifiers, currentTreeTool);
 
 				setTreeName(tree);
 				setExplanation(baseExplanation, false);
@@ -4026,13 +4031,13 @@ class BasicTreeWindow extends MesquiteWindow implements Fittable, MesquiteListen
 			else if (branchFound != highlightedBranch.getValue()) {
 				UnhighlightBranch(g, highlightedBranch);
 				HighlightBranch(g, branchFound, highlightedBranch, true);
-				notifyExtrasOfBranchExit(g, wasHighlighted);
-				notifyExtrasOfBranchEnter(g, branchFound);
+				notifyExtrasOfBranchExit(g, wasHighlighted, modifiers, currentTreeTool);
+				notifyExtrasOfBranchEnter(g, branchFound, modifiers, currentTreeTool);
 			}
 		}
 		else if (branchFound != 0) { // we weren't in a branch, but now we found one
 			HighlightBranch(g, branchFound, highlightedBranch, true);
-			notifyExtrasOfBranchEnter(g, branchFound);
+			notifyExtrasOfBranchEnter(g, branchFound, modifiers, currentTreeTool);
 			if (tree.nodeIsTerminal(branchFound)) {
 				Taxon t = tree.getTaxa().getTaxon(tree.taxonNumberOfNode(branchFound));
 				if (t != null)
@@ -4084,7 +4089,7 @@ class BasicTreeWindow extends MesquiteWindow implements Fittable, MesquiteListen
 				setExplanation(baseExplanation, false);
 				treeDisplay.setCursor(currentTreeTool.getCursor());
 				currentTreeTool.moved(x, y, tree, modifiers);
-				notifyExtrasOfCursorMove(g, x, y);
+				notifyExtrasOfCursorMove(g, x, y, modifiers, currentTreeTool);
 				// notify extras?
 			}
 		}
@@ -4135,7 +4140,7 @@ class BasicTreeWindow extends MesquiteWindow implements Fittable, MesquiteListen
 			}
 			else {
 				if (highlightedBranch.getValue() != 0) {
-					notifyExtrasOfBranchExit(g, highlightedBranch.getValue());
+					notifyExtrasOfBranchExit(g, highlightedBranch.getValue(), modifiers, currentTreeTool);
 					UnhighlightBranch(g, highlightedBranch);
 				}
 				currentTreeTool.branchTouched(branchFound, x, y, tree, modifiers);
@@ -4145,7 +4150,7 @@ class BasicTreeWindow extends MesquiteWindow implements Fittable, MesquiteListen
 				showTreePopup(x, y, tree, branchFound); 
 			}
 			else
-				notifyExtrasOfBranchTouch(g, branchFound, modifiers, currentTreeTool.isArrowTool());
+				notifyExtrasOfBranchTouch(g, branchFound, modifiers, currentTreeTool);
 			return true;
 		}
 		else { // not in a branch
@@ -4153,7 +4158,7 @@ class BasicTreeWindow extends MesquiteWindow implements Fittable, MesquiteListen
 			if (nameFound != -1) { // it is in a taxon
 				currentTreeTool.taxonTouched(nameFound, tree, modifiers);
 				taxonTouched = nameFound;
-				notifyExtrasOfTaxonTouch(g, nameFound, modifiers, currentTreeTool.isArrowTool());
+				notifyExtrasOfTaxonTouch(g, nameFound, modifiers, currentTreeTool);
 				if (highlightedTaxon >= 0)
 					RevertTaxon(g, highlightedTaxon);
 				return true;
@@ -4164,7 +4169,7 @@ class BasicTreeWindow extends MesquiteWindow implements Fittable, MesquiteListen
 						showTreePopup(x, y, tree, -1); 
 					}
 					else {
-						if (notifyExtrasOfFieldTouch(g, x, y, modifiers)){
+						if (notifyExtrasOfFieldTouch(g, x, y, modifiers, currentTreeTool)){
 							fieldTouchedExtrasX = x;
 							fieldTouchedExtrasY = y;
 							return true;
@@ -4175,6 +4180,11 @@ class BasicTreeWindow extends MesquiteWindow implements Fittable, MesquiteListen
 						lastFieldDragY = y;
 
 					}
+				}
+				else if (notifyExtrasOfFieldTouch(g, x, y, modifiers, currentTreeTool)){
+					fieldTouchedExtrasX = x;
+					fieldTouchedExtrasY = y;
+					return true;
 				}
 
 				boolean fieldTouchAccepted = currentTreeTool.fieldTouched(x, y, tree, modifiers);
@@ -4273,7 +4283,7 @@ class BasicTreeWindow extends MesquiteWindow implements Fittable, MesquiteListen
 
 			}
 			if (highlightedBranch.getValue() != 0) {
-				notifyExtrasOfBranchExit(g, highlightedBranch.getValue());
+				notifyExtrasOfBranchExit(g, highlightedBranch.getValue(), modifiers, currentTreeTool);
 				UnhighlightBranch(g, highlightedBranch);
 			}
 			else if (highlightedTaxon >= 0)
@@ -4304,7 +4314,7 @@ class BasicTreeWindow extends MesquiteWindow implements Fittable, MesquiteListen
 				if (taxonTouched == nameFound && currentTreeTool.isArrowTool())
 					selectTaxon(modifiers, taxonTouched);
 				currentTreeTool.taxonMouseUp(nameFound, x, y, tree, modifiers);
-				notifyExtrasOfTaxonTouch(g, nameFound, modifiers, currentTreeTool.isArrowTool());
+				notifyExtrasOfTaxonTouch(g, nameFound, modifiers, currentTreeTool);
 				if (highlightedTaxon >= 0)
 					RevertTaxon(g, highlightedTaxon);
 				taxonTouched = -1;
@@ -4546,14 +4556,14 @@ class BasicTreeWindow extends MesquiteWindow implements Fittable, MesquiteListen
 	}
 
 	/* ................................................................................................ */
-	public void notifyExtrasOfCursorMove(Graphics g, int x, int y) {
+	public void notifyExtrasOfCursorMove(Graphics g, int x, int y, int modifiers, MesquiteTool tool) {
 		if (treeDisplay.getExtras() != null) {
 			Enumeration e = treeDisplay.getExtras().elements();
 			while (e.hasMoreElements()) {
 				Object obj = e.nextElement();
 				if (obj instanceof TreeDisplayExtra) {
 					TreeDisplayExtra tce = (TreeDisplayExtra) obj;
-					tce.cursorMove(tree, x, y, g);
+					tce.cursorMove(tree, x, y, g, modifiers, tool );
 				}
 			}
 		}
@@ -4592,14 +4602,14 @@ class BasicTreeWindow extends MesquiteWindow implements Fittable, MesquiteListen
 	}
 
 	/* ................................................................................................ */
-	void notifyExtrasOfTaxonTouch(Graphics g, int M, int modifiers, boolean isTreeTool) {
+	void notifyExtrasOfTaxonTouch(Graphics g, int M, int modifiers, MesquiteTool tool) {
 		if (treeDisplay.getExtras() != null) {
 			Enumeration e = treeDisplay.getExtras().elements();
 			while (e.hasMoreElements()) {
 				Object obj = e.nextElement();
 				if (obj instanceof TreeDisplayExtra) {
 					TreeDisplayExtra tce = (TreeDisplayExtra) obj;
-					tce.cursorTouchTaxon(tree, M, g, modifiers, isTreeTool);
+					tce.cursorTouchTaxon(tree, M, g, modifiers, tool);
 				}
 			}
 		}
@@ -4608,14 +4618,14 @@ class BasicTreeWindow extends MesquiteWindow implements Fittable, MesquiteListen
 	}
 
 	/* ................................................................................................ */
-	void notifyExtrasOfBranchEnter(Graphics g, int N) {
+	void notifyExtrasOfBranchEnter(Graphics g, int N, int modifiers, MesquiteTool tool) {
 		if (treeDisplay.getExtras() != null) {
 			Enumeration e = treeDisplay.getExtras().elements();
 			while (e.hasMoreElements()) {
 				Object obj = e.nextElement();
 				if (obj instanceof TreeDisplayExtra) {
 					TreeDisplayExtra tce = (TreeDisplayExtra) obj;
-					tce.cursorEnterBranch(tree, N, g);
+					tce.cursorEnterBranch(tree, N, g, modifiers, tool);
 				}
 			}
 		}
@@ -4624,14 +4634,14 @@ class BasicTreeWindow extends MesquiteWindow implements Fittable, MesquiteListen
 	}
 
 	/* ................................................................................................ */
-	void notifyExtrasOfBranchExit(Graphics g, int N) {
+	void notifyExtrasOfBranchExit(Graphics g, int N, int modifiers, MesquiteTool tool) {
 		if (treeDisplay.getExtras() != null) {
 			Enumeration e = treeDisplay.getExtras().elements();
 			while (e.hasMoreElements()) {
 				Object obj = e.nextElement();
 				if (obj instanceof TreeDisplayExtra) {
 					TreeDisplayExtra tce = (TreeDisplayExtra) obj;
-					tce.cursorExitBranch(tree, N, g);
+					tce.cursorExitBranch(tree, N, g, modifiers, tool);
 				}
 			}
 		}
@@ -4640,31 +4650,36 @@ class BasicTreeWindow extends MesquiteWindow implements Fittable, MesquiteListen
 	}
 
 	/* ................................................................................................ */
-	void notifyExtrasOfBranchTouch(Graphics g, int N, int modifiers, boolean isTreeTool) {
+	boolean notifyExtrasOfBranchTouch(Graphics g, int N, int modifiers, MesquiteTool tool) {
 		if (treeDisplay.getExtras() != null) {
 			Enumeration e = treeDisplay.getExtras().elements();
 			while (e.hasMoreElements()) {
 				Object obj = e.nextElement();
 				if (obj instanceof TreeDisplayExtra) {
 					TreeDisplayExtra tce = (TreeDisplayExtra) obj;
-					tce.cursorTouchBranch(tree, N, g, modifiers, isTreeTool);
+					if (tce.cursorTouchBranch(tree, N, g, modifiers, tool)) {
+						if (treeInfoPanel != null && infoPanelOn.getValue())
+							treeInfoPanel.branchTouch(N);
+						return true;
+					}
 				}
 			}
 		}
 		if (treeInfoPanel != null && infoPanelOn.getValue())
 			treeInfoPanel.branchTouch(N);
+		return false;
 	}
 
 	/* ................................................................................................ */
 	//	return true if consumed!
-	boolean notifyExtrasOfFieldTouch(Graphics g, int x, int y, int modifiers) {
+	boolean notifyExtrasOfFieldTouch(Graphics g, int x, int y, int modifiers, MesquiteTool tool) {
 		if (treeDisplay.getExtras() != null) {
 			Enumeration e = treeDisplay.getExtras().elements();
 			while (e.hasMoreElements()) {
 				Object obj = e.nextElement();
 				if (obj instanceof TreeDisplayExtra) {
 					TreeDisplayExtra tce = (TreeDisplayExtra) obj;
-					if (tce.cursorTouchField(tree, g, x, y, modifiers, 0))
+					if (tce.cursorTouchField(tree, g, x, y, modifiers, 0, tool))
 						return true;
 				}
 			}
@@ -4975,9 +4990,36 @@ class BasicTreeWindow extends MesquiteWindow implements Fittable, MesquiteListen
 
 	}
 
+	Tree pasteFromClipboard(boolean acceptT0Names){
+		if (tree != null) {
+			Clipboard clip = Toolkit.getDefaultToolkit().getSystemClipboard();
+			Transferable t = clip.getContents(this);
+			try {
+				String s = (String) t.getTransferData(DataFlavor.stringFlavor);
+				s = StringUtil.stripTrailingWhitespace(s);
+				if (StringUtil.blank(s))
+					return null;
+				if (!s.endsWith(";"))
+					s += ";";
+				Tree tr = setTree(s, acceptT0Names);
+
+				if (tr != null) {
+					treeEdited(true);
+					return tr;
+				}
+
+			} catch (Exception e) {
+			}
+		}
+		return null;
+		}
+	/* ................................................................................................................. */
+	public Tree setTree(String TreeDescription, boolean acceptT0Names) {
+		return setTree(TreeDescription, null, acceptT0Names);
+	}
 	/* ................................................................................................................. */
 	public Tree setTree(String TreeDescription) {
-		return setTree(TreeDescription, null);
+		return setTree(TreeDescription, null, false);
 	}
 	/* ................................................................................................................. */
 	Tree setTree(MesquiteTree t, String name) {
@@ -5029,9 +5071,12 @@ class BasicTreeWindow extends MesquiteWindow implements Fittable, MesquiteListen
 
 	/* ................................................................................................................. */
 	Tree setTree(String TreeDescription, String name) {
+		return setTree(TreeDescription, name, false);
+	}
+	Tree setTree(String TreeDescription, String name, boolean acceptT0Names) {
 		if (ownerModule == null || ownerModule.isDoomed())
 			return null;
-		if (taxa != null && taxa.isDoomed()) {
+	if (taxa != null && taxa.isDoomed()) {
 			ownerModule.iQuit();
 			return null;
 		}
@@ -5050,6 +5095,7 @@ class BasicTreeWindow extends MesquiteWindow implements Fittable, MesquiteListen
 
 
 			MesquiteTree t = new MesquiteTree(taxa);
+			t.setPermitT0Names(acceptT0Names);
 			if (!t.readTree(TreeDescription)) {
 				ownerModule.discreetAlert("That tree description is invalid (" + TreeDescription + ")");
 				return null;
@@ -5086,10 +5132,13 @@ class BasicTreeWindow extends MesquiteWindow implements Fittable, MesquiteListen
 		tree.setName(n);
 		setTreeName(tree);
 	}
+	Tree setCloneOfTree(Tree treeToClone, boolean resetOriginal, MesquiteBoolean editStatusToSet) { // displays copy for editing
+		return setCloneOfTree(treeToClone, resetOriginal, editStatusToSet, false);
+	}
 
 	/* ................................................................................................................. */
-	Tree setCloneOfTree(Tree treeToClone, boolean resetOriginal, MesquiteBoolean editStatusToSet) { // displays copy for editing
-		if (taxa != null && taxa.isDoomed()) {
+	Tree setCloneOfTree(Tree treeToClone, boolean resetOriginal, MesquiteBoolean editStatusToSet, boolean suppressTreeSet) { // displays copy for editing
+	if (taxa != null && taxa.isDoomed()) {
 			ownerModule.iQuit();
 			return null;
 		}
@@ -5138,7 +5187,8 @@ class BasicTreeWindow extends MesquiteWindow implements Fittable, MesquiteListen
 				setTreeName(tree);
 			}
 			hookCurrentTree();
-			treeChanged(true);
+			if (!suppressTreeSet)
+				treeChanged(true);
 			return tree;
 		}
 		else if (ownerModule != null)
@@ -5157,6 +5207,8 @@ class BasicTreeWindow extends MesquiteWindow implements Fittable, MesquiteListen
 				unhookPreviousTree();
 				tree.dispose();
 			}
+			long treeID = tree.getID();
+			long treeVersion = tree.getVersionNumber();
 			if (originalTree == null) {
 				if (windowModule.editMode)
 					tree = taxa.getDefaultDichotomousTree(null);
@@ -5174,7 +5226,11 @@ class BasicTreeWindow extends MesquiteWindow implements Fittable, MesquiteListen
 				setTreeName(tree);
 			}
 			hookCurrentTree();
-			treeChanged(true);
+			long nowTreeID = tree.getID();
+			long nowTreeVersion = tree.getVersionNumber();
+			
+			if (nowTreeID != treeID || nowTreeVersion != treeVersion)
+				treeChanged(true);
 			return tree;
 		}
 		else

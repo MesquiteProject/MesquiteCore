@@ -10,7 +10,7 @@ Mesquite's web site is http://mesquiteproject.org
 
 This source code and its compiled class files are free and modifiable under the terms of 
 GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
-*/
+ */
 package mesquite.lib;
 
 import java.text.Collator;
@@ -46,10 +46,10 @@ public class ListableVector extends FileElement implements StringLister, Command
 		if (size() == 0)
 			return "";
 		String sH = "";
-		
+
 		for (int i=0; i<size(); i++){
 			Listable e = elementAt(i);
-			
+
 
 			if (e instanceof HTMLDescribable){
 				String sT =  ((HTMLDescribable)e).toHTMLStringDescription();
@@ -61,15 +61,15 @@ public class ListableVector extends FileElement implements StringLister, Command
 			else 
 				sH += "<li>" + e.getName() + "</li>";
 
-				
+
 		}
-	//	if (StringUtil.blank(s))
-	//		return "";
+		//	if (StringUtil.blank(s))
+		//		return "";
 		return "<li>" + getTypeName() + " (" + size() + " units)<ul>" + sH + "</ul>" + super.toHTMLStringDescription() + "</li>";
 	}
 	boolean wasDisposed = false;
 	public void dispose(boolean disposeElements){
-		
+
 
 		wasDisposed = true;
 		if (disposeElements){
@@ -77,7 +77,7 @@ public class ListableVector extends FileElement implements StringLister, Command
 				Listable listable = elementAt(i);
 				if (listable instanceof Disposable)
 					((Disposable)listable).dispose();
-		}
+			}
 		}
 		removeAllListeners();
 		removeAllElements(false);
@@ -93,19 +93,19 @@ public class ListableVector extends FileElement implements StringLister, Command
 		totalFinalized++;
 		super.finalize();
 	}
-	
+
 	public String getTypeName(){
 		return "Listable Vector";
 	}
-	
+
 	public ListableVector clone(){
 		ListableVector lv = new ListableVector();
 		for (int i=0; i<size(); i++)
 			lv.addElement(elementAt(i), false);
 		return lv;
-		
+
 	}
-	
+
 	public Listable getElement(String name){
 		if (name==null)
 			return null;
@@ -116,7 +116,7 @@ public class ListableVector extends FileElement implements StringLister, Command
 		}
 		return null;
 	}
-	
+
 	public Vector getElements(String name){
 		if (name==null)
 			return null;
@@ -198,7 +198,7 @@ public class ListableVector extends FileElement implements StringLister, Command
 		else {
 			int count =1;
 			while (true){
-				
+
 				String candidate;
 				if (count==1)
 					candidate = base;
@@ -272,8 +272,8 @@ public class ListableVector extends FileElement implements StringLister, Command
 	public Listable[] getListables(){
 		Listable[] temp = new Listable[size()];
 		try {
-		for (int i=0; i<size(); i++)
-			temp[i]= (Listable)elementAt(i);
+			for (int i=0; i<size(); i++)
+				temp[i]= (Listable)elementAt(i);
 		}
 		catch (Exception e){
 		}
@@ -294,11 +294,11 @@ public class ListableVector extends FileElement implements StringLister, Command
 				s += " \"" + names[i].getName() + "\" ";
 		return s + " ]";
 	}
-	
+
 	public String toString() {
 		String first = "";
-			if (vec!= null & vec.size()>0)
-				first = " (elem.0 of class " + vec.elementAt(0).getClass() + ")";
+		if (vec!= null & vec.size()>0)
+			first = " (elem.0 of class " + vec.elementAt(0).getClass() + ")";
 		return super.toString() + first;
 	}
 	/*-------------ListableVector----------------*/
@@ -345,7 +345,7 @@ public class ListableVector extends FileElement implements StringLister, Command
 		if (notify)
 			notifyListeners(this, new Notification(MesquiteListener.PARTS_ADDED));
 	}
-	
+
 	/*-------------ListableVector----------------*/
 	public void insertElementAt(Listable obj, int index, boolean notify) {
 		if (obj==null) {
@@ -403,7 +403,7 @@ public class ListableVector extends FileElement implements StringLister, Command
 	public void removeElementAt(int i, boolean notify) {
 		removeElement(elementAt(i), notify);
 	}
-	
+
 	/*-------------ListableVector----------------*/
 	public void removeAllElements(boolean notify){
 		vec.removeAllElements();
@@ -415,15 +415,15 @@ public class ListableVector extends FileElement implements StringLister, Command
 	public boolean swapParts(int first, int second) {
 		return swapParts(first, second, true);
 	}
-	*/
-	
+	 */
+
 	public boolean swapParts(int first, int second, boolean notify) {
 		if (first<0 || first>=size() || second<0 || second>=size()) 
 			return false;
 		mesquite.lib.duties.ElementManager m = null;
 		if (elementAt(first) instanceof FileElement)
 			m = ((FileElement)elementAt(first)).getManager();
-		
+
 		Object objFirst = vec.elementAt(first);
 		Object objSecond = vec.elementAt(second);
 		vec.setElementAt(objSecond, first);
@@ -431,7 +431,7 @@ public class ListableVector extends FileElement implements StringLister, Command
 		if (notify && m != null)
 			m.elementsReordered(this);
 		return super.swapParts(first, second, notify);
-		
+
 	}
 	/*...........................................................*/
 	public boolean moveParts(int starting, int num, int justAfter) {
@@ -444,12 +444,12 @@ public class ListableVector extends FileElement implements StringLister, Command
 		mesquite.lib.duties.ElementManager m = null;
 		if (elementAt(0) instanceof FileElement)
 			m = ((FileElement)elementAt(0)).getManager();
-		
+
 		Vector newValues = new Vector(size());
 		if (starting>justAfter){
 			for (int i=0; i<=justAfter; i++)
 				newValues.addElement(elementAt(i));
-			
+
 			for (int i=starting; i<=starting+num-1; i++)
 				newValues.addElement(elementAt(i));
 			for (int i=justAfter+1; i<=starting-1; i++)
@@ -460,7 +460,7 @@ public class ListableVector extends FileElement implements StringLister, Command
 		else {
 			for (int i=0; i<=starting-1; i++)
 				newValues.addElement(elementAt(i));
-			
+
 			for (int i=starting+num; i<=justAfter; i++)
 				newValues.addElement(elementAt(i));
 			for (int i=starting; i<=starting+num-1; i++)
@@ -479,7 +479,7 @@ public class ListableVector extends FileElement implements StringLister, Command
 			notifyListeners(this, new Notification(MesquiteListener.PARTS_MOVED));
 		return moved;
 	}
- 	/*.................................................................................................................*/
+	/*.................................................................................................................*/
 	/** notifies listeners that element has been disposed*/
 	public void notifyListenersOfDisposed(Object disp){ //{ ��� need in file element removeal to have all in one (dispose & remove) thjat calls this
 		if (listeners!=null) {
@@ -487,7 +487,7 @@ public class ListableVector extends FileElement implements StringLister, Command
 			while (e.hasMoreElements()) {
 				Object obj = e.nextElement();
 				MesquiteListener listener = (MesquiteListener)obj;
-	 			listener.disposing(disp);
+				listener.disposing(disp);
 			}
 		}
 	}
@@ -614,14 +614,14 @@ public class ListableVector extends FileElement implements StringLister, Command
 			name = (String)target;
 		else if (target instanceof Listable)
 			name = ((Listable)target).getName();
-			else 
+		else 
 			return -1;
 		if (name == null)
 			return -1;
 		for (int i=0; i<v.size(); i++) {
 			Object obj = v.elementAt(i);
 			if (obj instanceof Listable)
-				
+
 				if (name.equals(((Listable)obj).getName()))
 					return i;
 		}
@@ -680,7 +680,7 @@ public class ListableVector extends FileElement implements StringLister, Command
 				if ((ik-ic) % 3 ==0)
 					return previousThird;
 			}
-		
+
 		}
 		return previousThird;
 	}
@@ -700,7 +700,7 @@ public class ListableVector extends FileElement implements StringLister, Command
 				if ((ik-ic) % 3 ==0)
 					return previousThird;
 			}
-		
+
 		}
 		return previousThird;
 	}
@@ -800,20 +800,20 @@ public class ListableVector extends FileElement implements StringLister, Command
 			if (listArray1[i]==obj1 && numberArray2.getInt(i)==number2) {
 				found=true;
 				if (continuing == 0) {//first instance
-				//first, check to see if there is a series of thirds....
-				 int lastThird = 0;
-				 if (doByThirds)
-					 lastThird = endSequenceByThree(listArray1, obj1,numberArray2, number2, i);
-				//if so, then go the series of thirds 
-				if (doByThirds && lastThird != i){
-					s += " " + CharacterStates.toExternal(i) + " - " +  CharacterStates.toExternal(lastThird) + "\\3";
-					i = lastThird;
-				}
-				else { //otherwise write as normal*/
-					s += " " + (i + offset);
-					lastWritten = i;
-					continuing = 1;
-				}
+					//first, check to see if there is a series of thirds....
+					int lastThird = 0;
+					if (doByThirds)
+						lastThird = endSequenceByThree(listArray1, obj1,numberArray2, number2, i);
+					//if so, then go the series of thirds 
+					if (doByThirds && lastThird != i){
+						s += " " + CharacterStates.toExternal(i) + " - " +  CharacterStates.toExternal(lastThird) + "\\3";
+						i = lastThird;
+					}
+					else { //otherwise write as normal*/
+						s += " " + (i + offset);
+						lastWritten = i;
+						continuing = 1;
+					}
 				}
 				else if (continuing == 1) {
 					s += " - ";
@@ -839,7 +839,7 @@ public class ListableVector extends FileElement implements StringLister, Command
 	}
 
 	/*...........................................................*/
- 	static Collator collator;
+	static Collator collator;
 	static {
 		collator = Collator.getInstance();
 	}
@@ -848,7 +848,7 @@ public class ListableVector extends FileElement implements StringLister, Command
 	public static void sort(String[] array){
 		if (array==null || array.length<=1)
 			return;
-		
+
 		for (int i=1; i<array.length; i++) {
 			for (int j= i-1; j>=0 && collator.compare(array[j], array[j+1])>0 ; j--) {
 				String temp = array[j];
@@ -856,12 +856,12 @@ public class ListableVector extends FileElement implements StringLister, Command
 				array[j+1]=temp;
 			}
 		}
-		
+
 	}
 	public static void sort(int[] array){
 		if (array==null || array.length<=1)
 			return;
-		
+
 		for (int i=1; i<array.length; i++) {
 			for (int j= i-1; j>=0 && array[j]>array[j+1]; j--) {
 				int temp = array[j];
@@ -869,38 +869,38 @@ public class ListableVector extends FileElement implements StringLister, Command
 				array[j+1]=temp;
 			}
 		}
-		
+
 	}
 	public static void sort(Listable[] array){
- 		if (array==null)
- 			return;
- 		boolean done = false;
+		if (array==null)
+			return;
+		boolean done = false;
 		for (int i=1; i<array.length; i++) {
 			for (int j= i-1; j>=0 && array[j]!=null && array[j+1] !=null && collator.compare(array[j].getName(), array[j+1].getName())>0; j--) {
-						Listable temp = array[j];
-						array[j] = array[j+1];
-						array[j+1]=temp;
-					
+				Listable temp = array[j];
+				array[j] = array[j+1];
+				array[j+1]=temp;
+
 			}
 		}
- 	}
- 	boolean distributeCommands = false;
+	}
+	boolean distributeCommands = false;
 	/*.................................................................................................................*/
 	/** Note that command "distributeCommands" causes subsequent commands to be sent
 	 on to any Commandables among the elements, until the next "endDistributeCommands" command */
-    	 public Object doCommand(String commandName, String arguments, CommandChecker checker) {
+	public Object doCommand(String commandName, String arguments, CommandChecker checker) {
 		if (checker.compare(this.getClass(), "Deletes elements", "[start][end]", commandName, "deleteElements")) {
-    	 		MesquiteInteger pos = new MesquiteInteger(0);
-    	 		int first = MesquiteInteger.fromString(arguments, pos);
-    	 		int last = MesquiteInteger.fromString(arguments, pos);
-    	 		if (MesquiteInteger.isCombinable(first) && MesquiteInteger.isCombinable(last)) {
-    	 			for (int i = last; i>=first ; i--)
-    	 				removeElementAt(i, false);
+			MesquiteInteger pos = new MesquiteInteger(0);
+			int first = MesquiteInteger.fromString(arguments, pos);
+			int last = MesquiteInteger.fromString(arguments, pos);
+			if (MesquiteInteger.isCombinable(first) && MesquiteInteger.isCombinable(last)) {
+				for (int i = last; i>=first ; i--)
+					removeElementAt(i, false);
 				notifyListeners(this, new Notification(MesquiteListener.PARTS_DELETED));
 			}
-    	 			
- 		}
- 		else 	if (checker.compare(this.getClass(), "Turns off the distibution of commands to elements", null, commandName, "endDistributeCommands")) {
+
+		}
+		else 	if (checker.compare(this.getClass(), "Turns off the distibution of commands to elements", null, commandName, "endDistributeCommands")) {
 			distributeCommands = false;
 		}
 		else if (distributeCommands){
@@ -914,20 +914,20 @@ public class ListableVector extends FileElement implements StringLister, Command
 		else if (checker.compare(this.getClass(), "Turns on the distibution of commands to elements", null, commandName, "distributeCommands")) {
 			distributeCommands = true;
 		}
-    	 	else
-    	 		return  super.doCommand(commandName, arguments, checker);
+		else
+			return  super.doCommand(commandName, arguments, checker);
 		return null;
-   	 }
-    /** passes which object changed, along with optional Notification object with details (e.g., code number (type of change) and integers (e.g. which character))*/
-    		public void changed(Object caller, Object obj, Notification notification){
-    			int code = Notification.getCode(notification); 
-    			if (indexOf(obj)>=0 && code != MesquiteListener.LOCK_CHANGED && code != MesquiteListener.SELECTION_CHANGED && code != MesquiteListener.ANNOTATION_CHANGED && code != MesquiteListener.ANNOTATION_ADDED && code != MesquiteListener.ANNOTATION_DELETED)
-    				if (code == MesquiteListener.NAMES_CHANGED)
-    					notifyListeners(this, new Notification(MesquiteListener.NAMES_CHANGED));
-    				else
-    					notifyListeners(this, new Notification(MesquiteListener.ELEMENT_CHANGED));
-    					
-    		}
+	}
+	/** passes which object changed, along with optional Notification object with details (e.g., code number (type of change) and integers (e.g. which character))*/
+	public void changed(Object caller, Object obj, Notification notification){
+		int code = Notification.getCode(notification); 
+		if (indexOf(obj)>=0 && code != MesquiteListener.LOCK_CHANGED && code != MesquiteListener.SELECTION_CHANGED && code != MesquiteListener.ANNOTATION_CHANGED && code != MesquiteListener.ANNOTATION_ADDED && code != MesquiteListener.ANNOTATION_DELETED)
+			if (code == MesquiteListener.NAMES_CHANGED)
+				notifyListeners(this, new Notification(MesquiteListener.NAMES_CHANGED));
+			else
+				notifyListeners(this, new Notification(MesquiteListener.ELEMENT_CHANGED));
+
+	}
 	/** passes which object was disposed*/
 	public void disposing(Object obj){
 	}

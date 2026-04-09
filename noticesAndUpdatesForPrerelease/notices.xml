@@ -1,0 +1,21 @@
+<?xml version="1.0"?>
+<mesquite>
+	<lastnoticeNumber>36</lastnoticeNumber>
+	<MessagesFromHome>
+		<version>1</version>
+		<currentReleaseVersion>
+			<versionString>4.02</versionString>
+			<build>1109</build>
+			<version>402</version>
+			<downloadURL>https://www.mesquiteproject.org/Installation.html</downloadURL>
+		</currentReleaseVersion>
+		<notice>
+			<forMesquiteVersionLessOrEqual>402</forMesquiteVersionLessOrEqual>
+			<noticeNumber>36</noticeNumber>
+			<messageType>alert</messageType>
+			<message><![CDATA[Mesquite 4.02+ is being tested!]]></message>
+		</notice>
+		
+		
+	</MessagesFromHome>
+</mesquite>

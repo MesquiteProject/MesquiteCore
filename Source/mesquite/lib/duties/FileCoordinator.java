@@ -62,7 +62,7 @@ public abstract class FileCoordinator extends MesquiteModule {
 	/** make a new blank MesquiteProject without user input. */
 	public abstract MesquiteFile createBlankProject();
 	
-	public abstract void showBasicWindows();
+	public abstract void showBasicWindows(FileInterpreter fileInterp);
 	public abstract void refreshGraphicsProjectWindow();
 	public abstract void refreshProjectWindow();
 	public abstract void refreshInProjectWindow(FileElement element);

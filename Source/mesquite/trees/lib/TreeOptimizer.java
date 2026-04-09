@@ -187,7 +187,8 @@ public class TreeOptimizer {
 			if (notify && tree instanceof Listened && liveUpdates) {
 				swapTree.standardize(node,true, false);
 				tree.setToClone(swapTree);
-				((Listened)tree).notifyListeners(ownerModule, new Notification(MesquiteListener.BRANCHES_REARRANGED));
+				((MesquiteTree)tree).incrementVersion(MesquiteListener.BRANCHES_REARRANGED, true);
+			//	((Listened)tree).notifyListeners(ownerModule, new Notification(MesquiteListener.BRANCHES_REARRANGED));
 			}
 			return true;
 		} else
@@ -379,6 +380,7 @@ public class TreeOptimizer {
 		}
 		swapTree.standardize(node,true, false);
 		tree.setToClone(swapTree);
+		((MesquiteTree)tree).incrementVersion(MesquiteListener.BRANCHES_REARRANGED, false);
 		swapTree.dispose();
 		if (notify && tree instanceof Listened && !liveUpdates) {
 			((Listened)tree).notifyListeners(ownerModule, new Notification(MesquiteListener.BRANCHES_REARRANGED));

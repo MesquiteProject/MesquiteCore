@@ -1,5 +1,5 @@
 dir=`dirname "$0"`
-java --add-exports java.desktop/com.apple.eawt=ALL-UNNAMED -Xmx2000M -Xss8m -Djava.library.path=lib -Djri.ignore.ule="yes" -jar "$dir/Mesquite.jar"
+java --add-exports java.desktop/com.apple.eawt=ALL-UNNAMED -Xmx2000M -Xss8m  -XX:+EnableDynamicAgentLoading -Djava.library.path=lib -Djri.ignore.ule="yes" -jar "$dir/Mesquite.jar"
 
 #================
 #INSTRUCTIONS

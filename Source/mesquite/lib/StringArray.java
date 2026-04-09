@@ -146,6 +146,30 @@ public class StringArray implements StringLister, Listable, Nameable {
 		return -1;
 	}
 	/*...........................................................*/
+	public static int indexOf(String[]s, String match, char[] endDelimiters){
+		if (match == null || s==null)
+			return -1;
+		for (int i=0; i<s.length; i++) {
+			if (match.equals(s[i]))
+				return i;
+			if (endDelimiters != null){
+				String mC = match;
+				String siC = s[i];
+				for (int k = 0; k< endDelimiters.length; k++){
+					int e = mC.indexOf(endDelimiters[k]);
+					if (e>=0)
+						mC = mC.substring(0, e);
+					e = siC.indexOf(endDelimiters[k]);
+					if (e>=0)
+						siC = siC.substring(0, e);
+				}
+				if (mC.equals(siC))
+					return i;
+			}
+		}
+		return -1;
+	}
+	/*...........................................................*/
 	public static boolean exists(String[]s, String match){
 		return (indexOf(s,match)>=0);
 	}
@@ -157,6 +181,31 @@ public class StringArray implements StringLister, Listable, Nameable {
 			String firstCol = StringUtil.getTabbedToken(s[i], whichToken);
 			if (match.equals(firstCol))
 				return i;
+		}
+		return -1;
+	}
+	/*...........................................................*/
+	public static int indexOfTabbedToken(String[]s, String match, int whichToken, char[] endDelimiters){
+		if (match == null || s==null)
+			return -1;
+		for (int i=0; i<s.length; i++) {
+			String firstCol = StringUtil.getTabbedToken(s[i], whichToken);
+			if (match.equals(firstCol))
+				return i;
+			if (endDelimiters != null){
+				String mC = match;
+				String siC = firstCol;
+				for (int k = 0; k< endDelimiters.length; k++){
+					int e = mC.indexOf(endDelimiters[k]);
+					if (e>=0)
+						mC = mC.substring(0, e);
+					e = siC.indexOf(endDelimiters[k]);
+					if (e>=0)
+						siC = siC.substring(0, e);
+				}
+				if (mC.equals(siC))
+					return i;
+			}
 		}
 		return -1;
 	}
@@ -407,7 +456,7 @@ public class StringArray implements StringLister, Listable, Nameable {
 		if (d.length <= 0)
 			return d;
 		//Columns are the first index in d, which may seem like rows, but they are columns
-		
+
 		//First, count how many columns are going to get deleted
 		int numToBeDeleted = 0;
 		for (int i = 0; i< d.length && i<toDelete.getSize(); i++){
@@ -416,10 +465,10 @@ public class StringArray implements StringLister, Listable, Nameable {
 		}
 		if (numToBeDeleted == 0)
 			return d;
-		
+
 		//Make new array with the new number of columns
 		String[][] newD = new String[d.length-numToBeDeleted][];
-		
+
 		// go through d; if row is to be kept, transfer it across to newD; otherwise, skip
 		int newI = 0;
 		for (int i=0; i<d.length; i++){
@@ -435,7 +484,7 @@ public class StringArray implements StringLister, Listable, Nameable {
 				newD[newI++] = copyDI;
 			}
 		}
-		
+
 		return newD;
 	}
 
@@ -565,6 +614,24 @@ public class StringArray implements StringLister, Listable, Nameable {
 		d[second] = temp;
 	}
 	/*...........................................................*/
+	public void movePartsToDestinations( int[] destinations) {
+		movePartsToDestinations(values,destinations);
+	}
+	/*...........................................................*/
+	public static void movePartsToDestinations(String[] d, int[] destinations) {
+		if (d == null || destinations == null)
+			return;
+		String[] newValues = new String[d.length];
+		for (int i=0; i<d.length; i++) {
+			if (i<destinations.length)
+				newValues[destinations[i]]=d[i];
+			else 
+				newValues[i]=d[i];
+		}
+		for (int i=0; i<d.length; i++)
+			d[i]=newValues[i];
+	}
+	/*...........................................................*/
 	public static void moveParts(String[] d, int starting, int num, int justAfter) {
 		if (num<=0 || d==null || starting>=d.length || (justAfter>=starting && justAfter<=starting+num-1)) //starting???
 			return;
@@ -599,6 +666,23 @@ public class StringArray implements StringLister, Listable, Nameable {
 		}
 		for (int i=0; i<d.length; i++)
 			d[i]=newValues[i];
+	}
+	/*...........................................................*/
+	public static void moveRowsToDestinations(String[][] d, int[] destinations) {
+		if (d == null || d.length == 0 || destinations == null)
+			return;
+		int numRows = d[0].length;
+		String[] newValues = new String[numRows];
+		for (int column = 0; column<d.length; column++){
+			for (int i=0; i<numRows; i++) {
+				if (i<destinations.length)
+					newValues[destinations[i]]=d[column][i];
+				else 
+					newValues[i]=d[column][i];
+			}
+			for (int i=0; i<numRows; i++)
+				d[column][i]=newValues[i];
+		}
 	}
 	/*...........................................................*/
 	/** assumes String[columns][rows] */

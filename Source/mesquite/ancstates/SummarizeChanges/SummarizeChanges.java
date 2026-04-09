@@ -682,7 +682,8 @@ public class SummarizeChanges extends ChgSummarizerMultTrees {
 				else
 					leadText += "Number of mappings sampled per tree: " + minSampled + "-"+maxSampled+"\n";
 				currentText = leadText+"\n"+ currentText;
-				textWindow.setText(currentText);
+				if (textWindow != null)
+					textWindow.setText(currentText);
 				if (saveDetails())
 					MesquiteFile.putFileContentsQuery("Save file with full details", fullDetails.toString(), true);
 			}

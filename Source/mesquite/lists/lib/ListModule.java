@@ -23,6 +23,7 @@ import mesquite.lib.Listable;
 import mesquite.lib.MesquiteFile;
 import mesquite.lib.MesquiteModule;
 import mesquite.lib.Notification;
+import mesquite.lib.Snapshot;
 import mesquite.lib.StringUtil;
 import mesquite.lib.Undoer;
 import mesquite.lib.duties.ManagerAssistant;
@@ -61,6 +62,45 @@ public abstract class ListModule extends ManagerAssistant  {
 	public abstract Object getMainObject();
 	public abstract String getItemTypeName();
 	public abstract String getItemTypeNamePlural();
+	
+	/* -----------------------------------------*/
+	//DEFAULTASSISTANTS
+	 
+	 
+	// - - - - - - - - - 
+	 /*
+	  * TO DO:
+	  * design overriding
+	  * all factory defaults set as factory
+	  */
+	// - - - - - - - - - 
+	/* Vector defaultAssistants = new Vector();
+	void saveDefaults(){
+		// build script to hire all the assistants and send them their scripts
+		String script = "";
+		for (int i = 0; i<defaultAssistants.size(); i++){
+			ListAssistant assistant = (ListAssistant)defaultAssistants.elementAt(i);
+			Snapshot snapshot = assistant.getSnapshot(getProject().getHomeFile());
+			String aScript = snapshot.toString(getProject().getHomeFile(), "");
+			script += "newAssistant " + StringUtil.tokenize(module.getEmployeeReference(assistant)) + ";" + StringUtil.lineEnding();//quote
+			script += "tell It;" + StringUtil.lineEnding();
+			script += aScript  + StringUtil.lineEnding();
+			script += "endTell;" + StringUtil.lineEnding();
+		}
+		System.err.println("\n" + script);
+	}
+	// - - - - - - - - - 
+	public void registerAssistantAsDefault(ListAssistant assistant, boolean asDefault){
+		boolean alreadyRegistered = defaultAssistants.indexOf(assistant)>=0;
+		if (asDefault){
+			if (!alreadyRegistered) //not found; need to make a new one
+				defaultAssistants.addElement(assistant);
+			saveDefaults();
+		}
+		else if (alreadyRegistered)
+			defaultAssistants.removeElement(assistant);
+	}
+	/* -----------------------------------------*/
 	
 	public String getTextContentsPreface(){
 		String text = "";

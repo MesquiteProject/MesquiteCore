@@ -15,6 +15,7 @@ package mesquite.lib.parallel;
 
 import mesquite.lib.CommandChecker;
 import mesquite.lib.CommandRecord;
+import mesquite.lib.Debugg;
 import mesquite.lib.IntegerArray;
 import mesquite.lib.MesquiteInteger;
 import mesquite.lib.MesquiteMessage;
@@ -22,7 +23,9 @@ import mesquite.lib.MesquiteModule;
 import mesquite.lib.MesquiteThread;
 import mesquite.lib.MesquiteTrunk;
 import mesquite.lib.Puppeteer;
+import mesquite.lib.ResultCodes;
 import mesquite.lib.Snapshot;
+import mesquite.lib.ui.ProgressIndicator;
 
 /* ======================================================================== */
 /** */
@@ -33,17 +36,22 @@ public class Parallelizer {
 	IntegerArray calcStatus;
 	boolean verbose = false;
 	int totalCalculated = 0;
+	boolean stopWithFirstItemFailure = false;
+	ProgressIndicator progressIndicator;
+	ParallelParams ppFirst = null;
+	ParallelParams[] threadParams;
+	long pingbackInterval = -1;
 
 	public Parallelizer(Parallelizable owner, int nThreads){
 		this.owner = owner;
-		this.nThreads = nThreads;
+		setNumThreads(nThreads);
 	}
 
 
 	public void shutDown(){
 		if (threads == null)
 			return;
-		for (int i = 0; i < nThreads; i++) {
+		for (int i = 0; i < nThreads  && i<threads.length; i++) {
 			threads[i].shutDown();
 		}
 	}
@@ -53,6 +61,27 @@ public class Parallelizer {
 				return false;
 		}
 		return true;
+	}
+	public boolean stopped (){
+		for (int i = 0; i < nThreads; i++) {
+			if (!threads[i].stopped)
+				return false;
+		}
+		return true;
+	}
+	public void setPingbackInterval(long intervalInMillis){
+		pingbackInterval = intervalInMillis;
+	}
+	public void setStopWithFirstItemFailure(boolean stop){
+		stopWithFirstItemFailure = stop;
+	}
+	public void setProgressIndicator(ProgressIndicator progressIndicator){
+		this.progressIndicator = progressIndicator;
+	}
+
+	public void setNumThreads(int n){
+		nThreads = n;
+		threadParams = new ParallelParams[nThreads];
 	}
 	/* ===================================================== */
 
@@ -84,8 +113,10 @@ public class Parallelizer {
 				numSUCCESS++;
 			else if (calcStatus.getValue(i) == INAPPLICABLE)
 				numINAPPLICABLE++;
-			else 
+			else {
 				numOTHER++;
+				System.err.println("@ other " + calcStatus.getValue(i) + " for " + i);
+			}
 		}
 		String s = "#";
 		s += " UNCALCULATED " + numUNCALCULATED;
@@ -150,6 +181,7 @@ public class Parallelizer {
 		MesquiteModule clone = (MesquiteModule) employer.hireNamedEmployee(hiredAs, "#" + MesquiteModule.getShortClassName(employee.getClass()));
 		if (clone != null) {
 			clone.noUIForEmployeeBranch();
+			clone.setAutoSnapshotAsEmployee(false);
 			Puppeteer p = new Puppeteer(clone);
 			Object obj = p.sendCommands(clone, snapshot, pos, "", false, null, CommandChecker.defaultChecker);
 		}
@@ -159,8 +191,7 @@ public class Parallelizer {
 		return clone;
 	}
 	/* ===================================================== */
-	public synchronized void go(){ //this should be called on thread of owner, which should hold until done
-		
+	public synchronized int go(){ //this should be called on thread of owner, which should hold until done
 		// ################## INITIALIZE ##################
 		System.out.println("Parallelizer: calculations initializing");
 		int count = owner.getTotalPossibleParallelItemCount();
@@ -171,57 +202,97 @@ public class Parallelizer {
 			calcStatus.resetSize(count);
 		calcStatus.zeroArray();
 		totalCalculated = 0;
-		
+
 		// ################## Calculation for first item ##################
 		System.out.println("Parallelizer: first calculation");
-		owner.markInappropriateItems();		
+		owner.markInappropriateItems(this);		
 		//first step, do one calculation, and use its snapshot to build others
-		int firstItem = owner.getNextParallelItem();
-
-		setItemStatus(firstItem, BEINGCALCULATED);
-		ParallelParams ppFirst = owner.doFirstCalculation_Parallel(firstItem);
-		if (ppFirst == null)
+		int firstItem = owner.getNextParallelItemAndReserve(null, this);
+		MesquiteInteger firstResult = new MesquiteInteger();
+		setItemStatus(firstItem, BEINGCALCULATED);  //should be redundant, given the AndReserve
+		ppFirst = owner.doFirstCalculation_Parallel(firstItem, this, firstResult); 
+		if (firstResult.getValue() != ResultCodes.NO_ERROR) {
+			System.err.println("Error in first result " + firstResult.getValue());
 			setItemStatus(firstItem, FAILURE);
+			if (stopWithFirstItemFailure  || firstResult.getValue() == ResultCodes.USERCANCELONINITIALIZE){
+				return firstResult.getValue();
+			}
+		}
 		else
 			setItemStatus(firstItem, SUCCESS);
 
 		totalCalculated++;
 
 		//Next, build others threads
-		if (threads == null || !owner.pleaseReuseParallelThreads()){
+		if (threads == null || threads.length != nThreads || !owner.pleaseReuseParallelThreads()){
 			// ################## Building threads ##################
-			System.out.println("Parallelizer: building threads");
+			System.out.println("Parallelizer: building " + nThreads + " threads");
 			threads = new PThread[nThreads];
 			for (int i = 0; i < nThreads; i++) {
-				ParallelParams ppT = owner.cloneForParallel(ppFirst);
-				threads[i] = new PThread(ppT, i);
+				ParallelParams ppT = owner.cloneForParallel(ppFirst, this);
+				threads[i] = new PThread(ppT, i, this);
 			}
 		}
-
+		
 		// ################## Running threads ##################
 
 		System.out.println("Parallelizer: starting threads");
 		for (int i = 0; i < nThreads; i++) {
 			threads[i].done = false;
 			threads[i].running = true;  // this is how they get re-going if second time around
+			threadParams[i] = threads[i].pp;
 			if (!threads[i].started)
 				threads[i].start();
 		}
-
-		while (!completed()){
+		long lastPing = System.currentTimeMillis();
+		while (!completed() && !stopped()){
 			try {
 				Thread.sleep(10);
+				long now = System.currentTimeMillis();
+				if (pingbackInterval>0 && now-lastPing>pingbackInterval){
+					lastPing = now;
+					owner.ping(this);
+				}
 			}
 			catch (Exception e){
 				e.printStackTrace();
 			}
 		}
-		System.out.println("Parallelizer: finished calculations");
+		boolean completedYay = completed();
+		if (completedYay)
+			System.out.println("Parallelizer: finished calculations");
+		else 
+			System.out.println("Parallelizer: calculations stopped");
 
-		for (int i = 0; i < nThreads; i++) 
+		System.out.print("Parallelizer: Calculations finished in each thread: ");
+		for (int i = 0; i < nThreads; i++) {
+			
 			threads[i].running = false;
+			System.out.print(" " + threads[i].calculatedOnThread);
+		}
+		System.out.println("");
 		
 		System.out.println("Parallelizer: " + summarizeCalcStatus());
+		if (completedYay)
+			return ResultCodes.NO_ERROR;
+		return ResultCodes.USER_STOPPED;
+	}
+	
+	public ParallelParams getFirstParams(){
+		return ppFirst;
+	}
+	
+	public ParallelParams[] getThreadParams(){
+		return threadParams;
+	}
+	public void reset(){ // to be called on owner's thread
+		if (threads == null)
+			return;
+		for (int i = 0; i < nThreads; i++) {
+			if (threads[i] !=null)
+				threads[i].fireParallelEmployees();
+		}
+		threads = null;
 	}
 	/* ===================================================== */
 
@@ -231,45 +302,57 @@ public class Parallelizer {
 		int whichThread;
 		boolean done = false;
 		boolean started = false;
+		boolean stopped = false;
 		boolean onCall = true;
 		boolean running = false;
+	
 		int itemBeingCalculated = -1;
+		Parallelizer parallelizer;
+		int calculatedOnThread = 0;
 
-		public PThread(ParallelParams pp, int whichThread){
+		public PThread(ParallelParams pp, int whichThread, Parallelizer parallelizer){
 			this.pp = pp;
 			this.whichThread = whichThread;
+			this.parallelizer = parallelizer;
 		}
 		public void start(){
 			started = true;
 			onCall = true;
+			calculatedOnThread = 0;
 			super.start();
 		}
 
 		public void doJob () {
 			done = false;
 			int item = -1;
-			while ((item = owner.getNextParallelItem())>=0){
+			calculatedOnThread = 0;
+			while (!stopped && (item = owner.getNextParallelItemAndReserve(pp, parallelizer))>=0){
 				itemBeingCalculated = item;
 				setItemStatus(item, BEINGCALCULATED);
-				int result = owner.doItemCalculation_Parallel(item, pp);
+				int result = owner.doItemCalculation_Parallel(item, pp, parallelizer);
 				totalCalculated++;
-				//MesquiteMessage.sys_err_println("### finished item " + item + " on thread " + whichThread);
-				if (result == 0)
+				calculatedOnThread++;
+				
+				if (result == ResultCodes.NO_ERROR)
 					setItemStatus(item, SUCCESS);
 				else
 					setItemStatus(item, FAILURE);
 				itemBeingCalculated = -1;
+				if (progressIndicator != null && progressIndicator.isAborted())
+					stopped = true;
 			}
+			owner.threadCompletedAssignedTasks(pp, parallelizer);
 			done = true;
 		}
 
 		public void run(){
-			while (onCall){
+			while (onCall && !stopped){
 				try {
 					Thread.sleep(10); 
 					if (running){
-						//x MesquiteMessage.sys_err_println("RERUNNING " + owner.getNextParallelItem() + "-");
 						doJob();
+						if (progressIndicator != null && progressIndicator.isAborted())
+							stopped = true;
 						running = false;
 					}
 				}
@@ -278,7 +361,14 @@ public class Parallelizer {
 				}
 			}		
 		}
-		
+
+		public void fireParallelEmployees(){ // to be called on owner's thread
+			if (pp == null)
+				return;
+			MesquiteModule employer = pp.responsibleEmployer;
+			for (int i = 0; i<pp.employees.length; i++)
+				employer.fireEmployee(pp.employees[i]);
+		}
 		public void shutDown(){ // to be called on owner's thread
 			onCall = false;
 			while (running){
@@ -289,9 +379,14 @@ public class Parallelizer {
 					e.printStackTrace();
 				}
 			}		
-			MesquiteModule employer = pp.responsibleEmployer;
-			for (int i = 0; i<pp.employees.length; i++)
-				employer.fireEmployee(pp.employees[i]);
+			fireParallelEmployees();
+		}
+		public String toString(){
+			String details = "";
+			if (parallelizer!= null){
+				details = "owner: " + owner.getClass().getName();
+			}
+			return "ParallelizerThread " + details + " " + super.toString();
 		}
 
 	}

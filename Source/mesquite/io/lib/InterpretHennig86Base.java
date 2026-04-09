@@ -26,8 +26,10 @@ import mesquite.categ.lib.ProteinData;
 import mesquite.categ.lib.ProteinState;
 import mesquite.cont.lib.ContinuousData;
 import mesquite.lib.Arguments;
+import mesquite.lib.CommandChecker;
 import mesquite.lib.ExporterDialog;
 import mesquite.lib.Listable;
+import mesquite.lib.MesquiteBoolean;
 import mesquite.lib.MesquiteFile;
 import mesquite.lib.MesquiteInteger;
 import mesquite.lib.MesquiteMessage;
@@ -37,7 +39,9 @@ import mesquite.lib.MesquiteStringBuffer;
 import mesquite.lib.MesquiteThread;
 import mesquite.lib.MesquiteTrunk;
 import mesquite.lib.NameReference;
+import mesquite.lib.ParseUtil;
 import mesquite.lib.Parser;
+import mesquite.lib.Snapshot;
 import mesquite.lib.StringUtil;
 import mesquite.lib.characters.CharInclusionSet;
 import mesquite.lib.characters.CharWeightSet;
@@ -80,6 +84,7 @@ public abstract class InterpretHennig86Base extends FileInterpreterITree {
 	HennigNonaCommand[] availableCommands;
 	int treeNumber = 0;
 	boolean convertGapsToMissing = false;
+	boolean includeCNames = false;
 	boolean includeQuotes = true;
 	Class futureDataClass = null;
 	
@@ -89,6 +94,7 @@ public abstract class InterpretHennig86Base extends FileInterpreterITree {
 	public boolean startJob(String arguments, Object condition, boolean hiredByName) {
 		availableCommands = new HennigNonaCommand[numCommands];
 		acceptedClasses = getAcceptedClasses();
+		loadPreferences();
 		initializeCommands();
 		return true;  //make this depend on taxa reader being found?)
 	}
@@ -161,6 +167,47 @@ public abstract class InterpretHennig86Base extends FileInterpreterITree {
 		return convertGapsToMissing;
 	}
 
+	/*.................................................................................................................*/
+	public String preparePreferencesForXML () {
+		StringBuffer buffer = new StringBuffer(200);
+		StringUtil.appendXMLTag(buffer, 2, "convertGapsToMissing", convertGapsToMissing);  
+		StringUtil.appendXMLTag(buffer, 2, "includeCNames", includeCNames);  
+		StringUtil.appendXMLTag(buffer, 2, "includeQuotes", includeQuotes);  
+		return buffer.toString();
+	}
+
+	/*.................................................................................................................*/
+	public void processSingleXMLPreference (String tag, String content) {
+		if ("convertGapsToMissing".equalsIgnoreCase(tag))
+			convertGapsToMissing = MesquiteBoolean.fromTrueFalseString(content);
+		if ("includeCNames".equalsIgnoreCase(tag))
+			includeCNames = MesquiteBoolean.fromTrueFalseString(content);
+		if ("includeQuotes".equalsIgnoreCase(tag))
+			includeQuotes = MesquiteBoolean.fromTrueFalseString(content);
+	}
+	/*.................................................................................................................*/
+	public Snapshot getSnapshot(MesquiteFile file) { 
+		Snapshot temp = new Snapshot();
+		temp.addLine("convertGapsToMissing " + convertGapsToMissing);
+		temp.addLine("includeCNames " + includeCNames);
+		temp.addLine("includeQuotes " + includeQuotes);
+		return temp;
+	}
+	/*.................................................................................................................*/
+	public Object doCommand(String commandName, String arguments, CommandChecker checker) {
+		if (checker.compare(this.getClass(), "Sets whether or not to convert gaps to missing.", "[true or false]", commandName, "convertGapsToMissing")) {
+			convertGapsToMissing = MesquiteBoolean.fromTrueFalseString(parser.getFirstToken(arguments));
+		}
+		else if (checker.compare(this.getClass(), "Sets whether or not to include cnames.", "[true or false]", commandName, "includeCNames")) {
+			includeCNames = MesquiteBoolean.fromTrueFalseString(parser.getFirstToken(arguments));
+		}
+		else if (checker.compare(this.getClass(), "Sets whether or not to include quotes.", "[true or false]", commandName, "includeQuotes")) {
+			includeQuotes = MesquiteBoolean.fromTrueFalseString(parser.getFirstToken(arguments));
+		}
+		else
+			return  super.doCommand(commandName, arguments, checker);
+		return null;
+	}
 	/*.................................................................................................................*/
 	static final int numCommands = 8;   // number of available commands
 	static final int cnamesElement = 7;
@@ -423,6 +470,7 @@ public abstract class InterpretHennig86Base extends FileInterpreterITree {
 		ExporterDialog exportDialog = new ExporterDialog(this,containerOfModule(), "Export TNT/Nona/Hennig86 Options", buttonPressed);
 		
 		Checkbox convertGapsBox = exportDialog.addCheckBox("convert gaps to missing", convertGapsToMissing);
+		Checkbox includeCNamesCheckBox = exportDialog.addCheckBox("include cnames command in file", includeCNames);
 
 
 		exportDialog.completeAndShowDialog(dataSelected, taxaSelected);
@@ -430,7 +478,8 @@ public abstract class InterpretHennig86Base extends FileInterpreterITree {
 		boolean ok = (exportDialog.query(dataSelected, taxaSelected)==0);
 		if (ok)  {
 			convertGapsToMissing = convertGapsBox.getState();
-			//storePreferences();
+			includeCNames = includeCNamesCheckBox.getState();
+			storePreferences();
 		}
 
 		exportDialog.dispose();
@@ -491,7 +540,7 @@ public abstract class InterpretHennig86Base extends FileInterpreterITree {
 		if (file != null){
 			writeTaxaWithAllMissing = file.writeTaxaWithAllMissing;
 			writeExcludedCharacters = file.writeExcludedCharacters;
-			writeCharLabels = file.writeCharLabelInfo;
+			writeCharLabels = file.writeCharLabelInfo && includeCNames;
 		}
 
 
@@ -1074,6 +1123,13 @@ class HennigCNAMES extends HennigNonaCommand {
 		return true;
 	}
 	/*.................................................................................................................*/
+	public String cleanStringForHennig(String s) {
+		String cleaned = StringUtil.replace(s, ";",".");
+		cleaned = StringUtil.replace(cleaned, ",",".");
+		cleaned = StringUtil.cleanseStringOfFancyChars(cleaned);
+		return cleaned;
+	}
+	/*.................................................................................................................*/
 	public void appendCommandToStringBuffer(MesquiteStringBuffer outputBuffer, Taxa taxa, CharacterData charData, ProgressIndicator progIndicator){
 		CategoricalData catData = null;
 		if (charData instanceof CategoricalData)
@@ -1088,14 +1144,14 @@ class HennigCNAMES extends HennigNonaCommand {
 				incrementAndUpdateProgIndicator(progIndicator,"Exporting character and state names");
 				outputBuffer.append("{"+counter+" ");
 				if (charData.characterHasName(ic))
-					outputBuffer.append(StringUtil.tokenize(charData.getCharacterName(ic),";"));
+					outputBuffer.append(cleanStringForHennig(charData.getCharacterName(ic)));
 				else if (catData!=null && catData.hasStateNames(ic))
 					outputBuffer.append(StringUtil.tokenize("Character_" + (ic+1),";"));
 
 				if (catData!=null && catData.hasStateNames(ic)) {
 					for (int stateNumber = 0; stateNumber<=catData.maxStateWithName(ic); stateNumber++) {
 						if (catData.hasStateName(ic,stateNumber))
-							outputBuffer.append(" " + StringUtil.tokenize(catData.getStateName(ic,stateNumber),";"));
+							outputBuffer.append(" " + cleanStringForHennig(catData.getStateName(ic,stateNumber)));
 						else
 							outputBuffer.append(" " + "_");
 					}

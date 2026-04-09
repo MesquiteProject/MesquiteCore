@@ -231,6 +231,23 @@ public class ShortArray implements Listable {
 		return newValues;
 	}
 	/*...........................................................*/
+	public static void moveRowsToDestinations(short[][] d, int[] destinations) {
+		if (d == null || d.length == 0 || destinations == null)
+			return;
+		int numRows = d[0].length;
+		short[] newValues = new short[numRows];
+		for (int column = 0; column<d.length; column++){
+			for (int i=0; i<numRows; i++) {
+				if (i<destinations.length)
+					newValues[destinations[i]]=d[column][i];
+				else 
+					newValues[i]=d[column][i];
+			}
+			for (int i=0; i<numRows; i++)
+				d[column][i]=newValues[i];
+		}
+	}
+	/*...........................................................*/
 	public void moveParts(int starting, int num, int justAfter) {
 		moveParts(values, starting, num, justAfter);
 	}

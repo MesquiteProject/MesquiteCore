@@ -19,6 +19,9 @@ import java.util.zip.CRC32;
 
 import mesquite.lib.Associable;
 import mesquite.lib.Bits;
+import mesquite.lib.Debugg;
+import mesquite.lib.Double2DArray;
+import mesquite.lib.DoubleArray;
 import mesquite.lib.IntegerArray;
 import mesquite.lib.Long2DArray;
 import mesquite.lib.LongArray;
@@ -838,6 +841,17 @@ public class CategoricalData extends CharacterData {
 		return super.deleteTaxa(starting, num);
 	}
 	/*..........................................  CategoricalData  ..................................................*/
+	public boolean moveTaxaToDestinations(int[] destinations){
+		setDirty(true);
+		if (usingShortMatrix()) 
+			ShortArray.moveRowsToDestinations(matrixShort, destinations);
+		else
+			LongArray.moveRowsToDestinations(matrix, destinations);
+
+		incrementStatesVersion();
+		return super.moveTaxaToDestinations(destinations);
+	}
+	/*..........................................  CategoricalData  ..................................................*/
 	/**moves num taxa from position "starting" to just after position "justAfter"; returns true iff successful.*/
 	public boolean moveTaxa(int starting, int num, int justAfter){
 		if (num<=0)
@@ -1326,6 +1340,12 @@ public class CategoricalData extends CharacterData {
 	public  boolean isAmbiguousOrPolymorphic(int ic, int it){
 		long s = getStateRaw(ic,it);
 		return s== CategoricalState.unassigned || s==CategoricalState.impossible || (CategoricalState.hasMultipleStates(s));
+	}
+	/*..........................................  CategoricalData  ..................................................*/
+	/** returns whether the state of character ic is missing in taxon it*/
+	public  boolean isPolymorphic(int ic, int it){
+		long s = getStateRaw(ic,it);
+		return (!CategoricalState.isUncertain(s) && CategoricalState.hasMultipleStates(s));
 	}
 	/*..........................................  CategoricalData  ..................................................*/
 	/** returns whether the state of character ic is missing in taxon it*/

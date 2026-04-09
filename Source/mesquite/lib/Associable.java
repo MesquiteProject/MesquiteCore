@@ -1627,6 +1627,51 @@ public ListableVector getAssociatesOfKind(int kind){
 		return true;
 	}
 	/*-----------------------------------------*/
+	public boolean movePartsToDestinations(int[] destinations){
+
+		if (bits!=null) {
+			for (int i=0; i< bits.size(); i++) {
+				Bits b = (Bits)bits.elementAt(i);
+				b.movePartsToDestinations(destinations);
+			}
+		}
+		if (longs!=null) {
+			for (int i=0; i< longs.size(); i++) {
+				LongArray b = (LongArray)longs.elementAt(i);
+				b.movePartsToDestinations(destinations);
+			}
+		}
+		if (doubles!=null)
+			for (int i=0; i< doubles.size(); i++) {
+				DoubleArray b = (DoubleArray)doubles.elementAt(i);
+				b.movePartsToDestinations(destinations);
+			}
+		if (strings!=null)
+			for (int i=0; i< strings.size(); i++) {
+				StringArray b = (StringArray)strings.elementAt(i);
+				b.movePartsToDestinations(destinations);
+			}
+		if (objects!=null)
+			for (int i=0; i< objects.size(); i++) {
+				ObjectArray b = (ObjectArray)objects.elementAt(i);
+				b.movePartsToDestinations(destinations);
+			}
+		if (defaultOrder != null){
+			IntegerArray.movePartsToDestinations(defaultOrder, destinations);
+		}
+		if (currentOrder != null){
+			IntegerArray.movePartsToDestinations(defaultOrder, destinations);
+		}
+		if (previousOrder != null){
+			IntegerArray.movePartsToDestinations(defaultOrder, destinations);
+		}
+
+
+		incrementVersion(MesquiteListener.ASSOCIATED_CHANGED, false);
+		return true;
+	}
+
+	/*-----------------------------------------*/
 	public boolean moveParts(int starting, int num, int justAfter){
 		if (num==0)
 			return false;

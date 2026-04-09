@@ -50,12 +50,25 @@ public class CharMatricesListDeconcatenate extends CharMatricesListUtility {
 	}
 	/*.................................................................................................................*/
 	public boolean startJob(String arguments, Object condition, boolean hiredByName) {
+		loadPreferences();
 		return true;
 	}
 	/*.................................................................................................................*/
 	/** if returns true, then requests to remain on even after operateOnTaxas is called.  Default is false*/
 	public boolean pleaseLeaveMeOn(){
 		return false;
+	}
+	/*.................................................................................................................*/
+	public void processSingleXMLPreference(String tag, String content) {
+		if ("deleteOriginalMatrices".equalsIgnoreCase(tag))
+			deleteOriginalMatrices.setValue(MesquiteBoolean.fromTrueFalseString(content));
+	}
+
+	/*.................................................................................................................*/
+	public String preparePreferencesForXML() {
+		StringBuffer buffer = new StringBuffer(200);
+		StringUtil.appendXMLTag(buffer, 2, "deleteOriginalMatrices", deleteOriginalMatrices);
+		return buffer.toString();
 	}
 
 	MesquiteBoolean deleteOriginalMatrices = new MesquiteBoolean(true);

@@ -15,6 +15,7 @@ package mesquite.lib.tree;
 
 import mesquite.lib.Bits;
 import mesquite.lib.DoubleArray;
+import mesquite.lib.IntegerArray;
 import mesquite.lib.Listable;
 import mesquite.lib.LongArray;
 import mesquite.lib.MesquiteInteger;
@@ -186,6 +187,10 @@ public interface Tree extends Listable {
 	public int[] getTerminalTaxaComplement(int[] allTerminals, int node);
 	/** Returns list of terminal taxa NOT in clade of node.  Into this version you pass int[]'s, for speed's sake. */
 	public int[] getTerminalTaxaComplement(int[] allTerminals, int[] nodeTerminals);
+	/** Returns node whose clade has this list of taxa. -1 if no equivalent found. */
+	public int findCladeWithTaxa(int node, int[] tipsToMatch);
+	//* Returns node in other tree that is equivalent to node in this tree, in having the same taxa. -1 if no equivalent found. */
+	//public int findCladeInOtherTree(int node, Tree otherTree);
 	/** Returns true iff the terminal taxa listed in "terminals" form a clade. */
 	public boolean isClade(Bits terminals);
 	/** Returns true iff the terminal taxa listed in "terminals" form a convex part of the tree.  Also returns the two nodes that form the boundary*/

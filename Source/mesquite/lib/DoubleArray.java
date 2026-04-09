@@ -256,7 +256,43 @@ public class DoubleArray implements Listable, Nameable  {
 		for (int i=0; i<newNum; i++) 
 			newD[i] = d[i];
 		return newD;
+	} */
+	/*...........................................................*/
+	public static void moveRowsToDestinations(double[][] d, int[] destinations) {
+		if (d == null || d.length == 0 || destinations == null)
+			return;
+		int numRows = d[0].length;
+		double[] newValues = new double[numRows];
+		for (int column = 0; column<d.length; column++){
+			for (int i=0; i<numRows; i++) {
+				if (i<destinations.length)
+					newValues[destinations[i]]=d[column][i];
+				else 
+					newValues[i]=d[column][i];
+			}
+			for (int i=0; i<numRows; i++)
+				d[column][i]=newValues[i];
+		}
 	}
+	/*...........................................................*/
+	public void movePartsToDestinations( int[] destinations) {
+		movePartsToDestinations(values,destinations);
+	}
+	/*...........................................................*/
+	public static void movePartsToDestinations(double[] d, int[] destinations) {
+		if (d == null || destinations == null)
+			return;
+		double[] newValues = new double[d.length];
+		for (int i=0; i<d.length; i++) {
+			if (i<destinations.length)
+				newValues[destinations[i]]=d[i];
+			else 
+				newValues[i]=d[i];
+		}
+		for (int i=0; i<d.length; i++)
+			d[i]=newValues[i];
+	}
+
 	/*...........................................................*/
 	public void moveParts(int starting, int num, int justAfter) {
 		moveParts(values, starting, num, justAfter);

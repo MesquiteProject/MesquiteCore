@@ -499,6 +499,9 @@ class TreesListWindow extends ListableVectorWindow implements MesquiteListener {
 		else
 			super.changed(caller, obj, notification);
 	}
+	protected char[] getStandardEndDelimiterPunctuation(){
+		return new char[]{'.', '+'};
+	}
 
 	public void dispose(){
 		if (currentTreeBlock!=null)

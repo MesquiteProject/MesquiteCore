@@ -31,7 +31,7 @@ public abstract class TaxaDistFromMatrix extends MesquiteModule {
 		distParamSubmenu = addSubmenu(null, "Distance Parameters");
 		if (!getDistanceOptions())  //QZ: WAYNECHECK:  This is called BEFORE startjob for the module is called, which means some variables are not yet initialized.  It appears to only have been a problem for Great Circle distances, and I protected that. 
 			return false;
-		return true;
+		return super.superStartJob(arguments,condition,hiredByName);
   	 }	 
   	 public Class getDutyClass() {
    	 	return TaxaDistFromMatrix.class;

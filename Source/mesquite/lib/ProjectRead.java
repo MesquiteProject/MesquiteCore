@@ -239,7 +239,6 @@ public class ProjectRead implements Runnable {
 				proj = openURLString(arguments);
 			else if (category == 3)
 				proj = openGeneral(arguments);
-
 			if (originalArguments !=null){
 				Parser parser = new Parser();
 				if (parser.hasFileReadingArgument(originalArguments, "scriptToFileCoordinator")){

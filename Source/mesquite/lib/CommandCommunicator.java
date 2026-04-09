@@ -417,10 +417,12 @@ public class CommandCommunicator {
 				MesquiteModule mb = (MesquiteModule)objectCommanded;
 				int i = MesquiteInteger.fromString(arguments);
 				if (MesquiteInteger.isCombinable(i) && i>=0 && i<mb.getEmployeeVector().size()) {
-					Object r = mb.getEmployeeVector().elementAt(i);
+					MesquiteModule r = (MesquiteModule)mb.getEmployeeVector().elementAt(i);
 					if (r !=null) {
+						if (r.getName().equalsIgnoreCase("ZoL"))
+							r.doCommand("reset", arguments,CommandChecker.defaultChecker);
 						setObjectCommanded(r, MesquiteWindow.GUIavailable && !MesquiteWindow.suppressAllWindows, false);
-
+						
 					}
 				}
 			}

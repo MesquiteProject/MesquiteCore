@@ -24,6 +24,7 @@ import mesquite.lib.OwnedByModule;
 import mesquite.lib.StringUtil;
 import mesquite.lib.taxa.Taxon;
 import mesquite.lib.ui.MesquitePopup;
+import mesquite.lib.ui.MesquiteTool;
 import mesquite.lib.ui.MesquiteWindow;
 
 
@@ -67,6 +68,11 @@ public abstract class TreeDisplayExtra implements Listable, OwnedByModule {
 		this.placement = placement;
 	}
 	
+	//For some forgotten reason, TreeDisplay sets the clip to null before asking extras to draw on tree. It true is returend, this suppresses that, to leave the clip intact. 
+	public boolean pleaseDontNullClip(){
+		return false;
+	}
+	
 	/* The TreeDisplayRequests object has public int fields leftBorder, topBorder, rightBorder, bottomBorder (in pixels and in screen orientation)
 	 * and a public double field extraDepthAtRoot (in branch lengths units and rootward regardless of screen orientation) */
 	public TreeDisplayRequests getRequestsOfTreeDisplay(Tree tree, TreeDrawing treeDrawing){
@@ -78,6 +84,10 @@ public abstract class TreeDisplayExtra implements Listable, OwnedByModule {
 	}
 	public boolean requestTraceMode(){
 		return false;
+	}
+	//Override to dim the tree. 0 none; 1 mostly; 2 completely
+	public int requestMuteTree(){
+		return 0;
 	}
 	public void dispose(){
 		ownerModule =null;
@@ -238,15 +248,25 @@ public abstract class TreeDisplayExtra implements Listable, OwnedByModule {
 	public  int findBranch(Tree tree, int drawnRoot, int x, int y){return -1;} // should be renamed; need method to tell assistant to react to mousedown that might be in its node picture etc.
 	/**to inform TreeDisplayExtra that cursor has just entered branch N*/
 	public void cursorEnterBranch(Tree tree, int N, Graphics g){}
+	public void cursorEnterBranch(Tree tree, int N, Graphics g, int modifiers, MesquiteTool tool){
+		cursorEnterBranch(tree, N, g);
+	}
 	/**to inform TreeDisplayExtra that cursor has just exited branch N*/
 	public void cursorExitBranch(Tree tree, int N, Graphics g){}
-	/**to inform TreeDisplayExtra that cursor has just touched branch N*/
-	public void cursorTouchBranch(Tree tree, int N, Graphics g, int modifiers, boolean isArrowTool){
+	public void cursorExitBranch(Tree tree, int N, Graphics g, int modifiers, MesquiteTool tool){
+	cursorExitBranch(tree, N, g);
+}
+	/**to inform TreeDisplayExtra that cursor has just touched branch N; return true if consumed*/
+	public boolean cursorTouchBranch(Tree tree, int N, Graphics g, int modifiers, MesquiteTool tool){ //$%$%$%
 		cursorTouchBranch(tree, N, g);
+		return false; //if it's not overridden, and it's simply calling an old one, assume the touch is treated as unconsumed
 	}
 	/**to inform TreeDisplayExtra that cursor has just touched branch N*/
 	public void cursorTouchBranch(Tree tree, int N, Graphics g){}
 	/**to inform TreeDisplayExtra that cursor has just touched the field (not in a branch or taxon)*/
+	public boolean cursorTouchField(Tree tree, Graphics g, int x, int y, int modifiers, int clickID, MesquiteTool tool){
+		return cursorTouchField(tree, g, x, y, modifiers,clickID);
+	}
 	public boolean cursorTouchField(Tree tree, Graphics g, int x, int y, int modifiers, int clickID){
 		return false;
 	}
@@ -259,11 +279,15 @@ public abstract class TreeDisplayExtra implements Listable, OwnedByModule {
 	/**to inform TreeDisplayExtra that cursor has just exited name of terminal taxon M*/
 	public void cursorExitTaxon(Tree tree, int M, Graphics g){}
 	/**to inform TreeDisplayExtra that cursor has just touched name of terminal taxon M*/
-	public void cursorTouchTaxon(Tree tree, int M, Graphics g, int modifiers, boolean isArrowTool){
+	public void cursorTouchTaxon(Tree tree, int M, Graphics g, int modifiers, MesquiteTool tool){ //$%$%$%
 		cursorTouchTaxon(tree, M, g);
 	}
 	/**to inform TreeDisplayExtra that cursor has just touched name of terminal taxon M*/
 	public void cursorTouchTaxon(Tree tree, int M, Graphics g){}
+	/**to inform TreeDisplayExtra that cursor has just moved OUTSIDE of taxa or branches*/
+	public void cursorMove(Tree tree, int x, int y, Graphics g, int modifiers, MesquiteTool tool){
+		cursorMove(tree, x, y, g);
+	}
 	/**to inform TreeDisplayExtra that cursor has just moved OUTSIDE of taxa or branches*/
 	public void cursorMove(Tree tree, int x, int y, Graphics g){}
 	

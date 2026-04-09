@@ -84,7 +84,7 @@ public class RemoveTokensTaxonNames extends TaxonNameAlterer implements KeyListe
 		endTokensField = queryDialog.addIntegerField("Number of tokens to remove from end", numEnd, 4,0,1000);
 		endTokensField.addKeyListener(this);
 		queryDialog.addHorizontalLine(2);
-		queryDialog.addLabel("Preview of first taxon name to be changed:");
+		queryDialog.addLabel("Preview of first " + kindName +" name to be changed:");
 		currentName = queryDialog.addLabel("");	
 		alteredName = queryDialog.addLabel("");	
 		String name = currentTaxa.getName(firstTaxon);

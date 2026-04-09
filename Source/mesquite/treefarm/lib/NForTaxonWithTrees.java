@@ -79,7 +79,7 @@ public abstract class NForTaxonWithTrees extends NumberForTaxon {
 		results = new NumberArray(1);
 		resultsString = new MesquiteString();
 		needsRecalculation = MesquiteThread.isScripting();
-		return true;  
+		return super.superStartJob(arguments,condition,hiredByName);
  	}
  	
 	/*.................................................................................................................*/

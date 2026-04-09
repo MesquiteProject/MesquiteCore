@@ -68,7 +68,7 @@ public abstract class SpecsSetManager extends FileInit implements ElementManager
 					}
 			}
 			ManagerAssistant lister= (ManagerAssistant)hireNamedEmployee(ManagerAssistant.class, StringUtil.tokenize(listerName));
-	 			if (lister!=null) {
+ 			if (lister!=null) {
 	 				lister.showListWindow(obj);
     	 			if (!MesquiteThread.isScripting() && lister.getModuleWindow()!=null)
     	 				lister.getModuleWindow().setVisible(true);

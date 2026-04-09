@@ -146,13 +146,13 @@ public abstract class Attachable extends Listened implements HTMLDescribable {
 		return getAttachment(name, null);
 	}
 	public Object getAttachment(String name, Class c){
-		if (attachments==null || name == null)
+		if (attachments==null)
 			return null;
 		for (int i=0; i<attachments.size(); i++) {
 			Object obj = attachments.elementAt(i);
 			if (obj instanceof Listable && (c == null || c.isAssignableFrom(obj.getClass()))){
 				Listable b = (Listable)obj;
-				if (name.equalsIgnoreCase(b.getName()))
+				if (name== null || name.equalsIgnoreCase(b.getName()))
 					return b;	
 			}
 		}

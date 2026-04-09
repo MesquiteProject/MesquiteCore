@@ -17,6 +17,7 @@ package mesquite.lib;
 import java.awt.Checkbox;
 import java.awt.Desktop;
 import java.awt.Panel;
+import java.awt.Point;
 import java.awt.Window;
 import java.io.File;
 import java.io.FileOutputStream;
@@ -83,15 +84,17 @@ MesquiteModule objects.<p>
 
 
 public abstract class MesquiteModule extends EmployerEmployee implements Commandable, Showable, Logger, FunctionExplainable,  Identifiable, FileDirtier, MesquiteListener, XMLPreferencesProcessor, ObjectCommenter {
+
+	//RELEASEPROTOCOL
 	/*.................................................................................................................*/
 	/** returns build date of the Mesquite system (e.g., "22 September 2003") */
 	public final static String getBuildDate() {
-		return "24 October 2025";
+		return "9 April 2026";
 	}
 	/*.................................................................................................................*/
 	/** returns version of the Mesquite system */
 	public final static String getMesquiteVersion() {
-		return "4.02";
+		return "4.03";
 	}
 	/*.................................................................................................................*/
 	/** returns letter in the build number of the Mesquite system (e.g., "e" of "e58") */
@@ -104,7 +107,7 @@ public abstract class MesquiteModule extends EmployerEmployee implements Command
 	public final static int getBuildNumber() {
 		//as of 26 Dec 08, build naming changed from letter + number to just number.  Accordingly j105 became 473, based on
 		// highest build numbers of d51+e81+g97+h66+i69+j105 + 3 for a, b, c
-		return 1109;  
+		return 1132;  
 	}
 	//0.95.80    14 Mar 01 - first beta release 
 	//0.96  2 April 01 beta  - second beta release
@@ -163,6 +166,7 @@ public abstract class MesquiteModule extends EmployerEmployee implements Command
 	//4.0  = 1086 released 27 June 2025
 	//4.01  = 1092 released 9 July 2025
 	//4.02  = 1109 released 24 October 2025
+	//4.03  = 1132 released 9 April 2026
 
 	/*.................................................................................................................*/
 	/** returns a string if this is a special version of Mesquite */
@@ -176,6 +180,7 @@ public abstract class MesquiteModule extends EmployerEmployee implements Command
 	/*.................................................................................................................*/
 	//URLs for phoneHome phoning home
 	/*.................................................................................................................*/
+	//RELEASEPROTOCOL
 	//As of 4.0, new URLs)
 	public static String versionReportURL =  "http://startup.mesquiteproject.org/mesquite/mesquiteStartup.php"; //(see PhoneHomeThread, checkForMessagesFromAllHomes)
 	public static String devVersionReportURL =  "http://startup.mesquiteproject.org/mesquite/mesquiteDevStartup.php"; //(see PhoneHomeThread, checkForMessagesFromAllHomes)
@@ -317,9 +322,15 @@ public abstract class MesquiteModule extends EmployerEmployee implements Command
 		getModuleInfo().incrementNumStarts();
 	}
 	/*.................................................................................................................*/
-	/** superStartJob is called automatically when an employee is hired.  This is intended for use by superclasses of modules that need
+	/** superStartJob is called automatically when an employee is hired, BEFORE startJob.  This is intended for use by superclasses of modules that need
 	their own constructor-like call, without relying on the subclass to be polite enough to call super.startJob().*/
 	public boolean superStartJob(String arguments, Object condition, boolean hiredByName){
+		return true;
+	}
+	/*.................................................................................................................*/
+	/** superStartJobAfter is called automatically when an employee is hired, AFTER startJob.  This is intended for use by superclasses of modules that need
+	their own constructor-like call, without relying on the subclass to be polite enough to call super.startJob().*/
+	public boolean superStartJobAfter(String arguments, Object condition, boolean hiredByName){
 		return true;
 	}
 	/*.................................................................................................................*/
@@ -739,6 +750,55 @@ public abstract class MesquiteModule extends EmployerEmployee implements Command
 			}
 		}
 	}
+
+	/*.................................................................................................................*/
+	/*Requests for cores beyond cheap Java threads. These could be for expensive java threads, 
+	 * or for external programs, e.g. alignment or tree inference.
+	 * The system at present is simple; all extra threads in an employee branch are summed.
+	 * However, sometimes these should be multiplied -- e.g., a parallelized calculation in 8 threads
+	 * might call an inference program using 2 threads each, so it should be counted as 16. 
+	 * This can be, for the moment, the responsibility of the parallelized calculator to adjust its
+	 * requestExtraCore, and perhaps even override getEmployeeCoreRequests.
+	 * */
+	int extraCoresMin = 0;
+	int extraCoresMax = MesquiteInteger.unassigned;
+
+
+	public void requestExtraCores(int min, int max){ //to be called by core user to indicate it wants extra cores
+		extraCoresMin = min; //if this is not combinable, request will be ignored
+		extraCoresMax = max;  //set as MesquiteInteger.infinite to say it's indefinite
+	}
+	/*. . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . *
+	public Point getExtraCoreRequest(){
+		return extraCoreRequest;
+	}
+	/*. . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . */
+	public Point getEmployeeCoreRequests(){
+		ListableVector employees = getEmployeeVector();
+		int sumMin = extraCoresMin;
+		int sumMax = extraCoresMax;
+		for (int i=0; i<employees.size(); i++) {
+			MesquiteModule mb = (MesquiteModule)employees.elementAt(i);
+			Point mbRequest = mb.getEmployeeCoreRequests();
+			if (mbRequest != null && MesquiteInteger.isCombinable(mbRequest.x)){
+				sumMin += mbRequest.x;
+				if (mbRequest.y == MesquiteInteger.infinite)
+					sumMax = MesquiteInteger.infinite;
+				else if (MesquiteInteger.isCombinable(mbRequest.y)){
+					if (sumMax != MesquiteInteger.infinite){
+						if (sumMax == MesquiteInteger.unassigned)
+							sumMax = mbRequest.y;
+						else
+							sumMax += mbRequest.y;
+					}
+				}
+			}
+		}
+		if (sumMin>0)
+			return new Point(sumMin, sumMax);
+		return null;
+	}
+	
 	/*.................................................................................................................*/
 	/** A method an employee can call to know how many cores it can use. */
 	public int howManyCoresMayIUse() {
@@ -939,6 +999,11 @@ public abstract class MesquiteModule extends EmployerEmployee implements Command
 			return;
 		String directoryPath = supportDirectoryPath();
 		MesquiteFile.deleteDirectory(directoryPath);
+	}
+	/*.................................................................................................................*/
+	public void showSupportDirectory(){
+		String directoryPath = supportDirectoryPath();
+		MesquiteFile.showDirectory(directoryPath);
 	}
 
 
@@ -1300,8 +1365,8 @@ public abstract class MesquiteModule extends EmployerEmployee implements Command
 			else
 				logln(s);
 		}
-		else if (AlertDialog.query(containerOfModule(), "Problem", s + "\n\nPlease send a report of this problem to the Mesquite server, to help us debug it and improve Mesquite.  None of your data will be sent, but your log file up to this point will be sent." + addendum, "OK, Send Report and Continue", "Close without sending"))
-			reportCrashToHome(e, s);
+		else if (AlertDialog.query(containerOfModule(), "Problem", s + "\n\nPlease send a report of this problem to the Mesquite server, to help us debug it and improve Mesquite.  None of your data will be sent." + addendum, "OK, Send Report and Continue", "Close without sending"))
+			reportCrashToHome(e, s + "\n"+ MesquiteThread.getActiveThreadList()+"\n");
 		MesquiteTrunk.errorReportedToHome++;
 	}
 	boolean okToReportErrors(){
@@ -1819,6 +1884,15 @@ public abstract class MesquiteModule extends EmployerEmployee implements Command
 		return null;
 	}
 
+	public Object doCommandAsScripting(String commandName, String arguments) {
+		CommandRecord cr = MesquiteThread.getCurrentCommandRecord();
+		CommandRecord scrRec = new CommandRecord(true);
+		MesquiteThread.setCurrentCommandRecord(scrRec);
+
+		Object result = doCommand(commandName, arguments, CommandChecker.defaultChecker);
+		MesquiteThread.setCurrentCommandRecord(cr);
+		return result;
+	}
 	public Object doCommand(String commandName, String arguments) {
 		return doCommand(commandName, arguments, CommandChecker.defaultChecker);
 	}
@@ -2266,7 +2340,16 @@ public abstract class MesquiteModule extends EmployerEmployee implements Command
 	public void preWritingCheck(MesquiteFile file, String format){		
 	}
 
-
+	/*.................................................................................................................*/
+	/*Suppresses auto snapshotting of unnamed employee modules. E.g., for parallelization. See also noUIForEmployeeBranch in EmployerEmployee	 */
+	boolean autoSnapshotAsEmployee = true;
+	public void setAutoSnapshotAsEmployee(boolean auto){
+		autoSnapshotAsEmployee = auto;
+	}
+	public boolean getAutoSnapshotAsEmployee(){
+		return autoSnapshotAsEmployee;
+	}
+	/*.................................................................................................................*/
 	/** Return Mesquite commands that will put the module (approximately) back into its current state. Used
 	so that on file save, a Mesquite block can be saved that will return the user more or less to previous state. */
 	public Snapshot getSnapshot(MesquiteFile file) {  //this allows employees to be dealt with
@@ -2951,6 +3034,24 @@ public abstract class MesquiteModule extends EmployerEmployee implements Command
 	/** returns whether this module is requesting to appear as a primary choice */
 	public boolean requestPrimaryChoice(){
 		return false;  
+	}
+	/*.................................................................................................................*
+	//DEFAULTASSISTANTS
+	// system currently (2026) used only in list windows.
+	boolean factoryDefault = false; //can be made default
+
+	public final void setAsFactoryDefault(boolean d){
+		factoryDefault = d;
+	}
+
+	// To be called by list module to see whether can be set/unset as default
+	public final boolean isDefaultable() {
+		return !factoryDefault && iCanBeADefault();
+	}
+	// used to indicate that module does not have settings and therefore can be used as a default e.g. as an assistant in list windows.
+
+	public boolean iCanBeADefault() {
+		return false;
 	}
 	/*.................................................................................................................*/
 	public boolean getHideable() {

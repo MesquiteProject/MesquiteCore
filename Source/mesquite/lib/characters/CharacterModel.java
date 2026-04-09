@@ -256,7 +256,12 @@ public abstract class CharacterModel extends FileElement implements Compatibilit
 	
 	/** return string description of model */
 	public String toString (){
-		return getName() + " (model of class " + getTypeName() + ", id " + getID() + ")";
+		String nex = getNexusSpecification();
+		if (nex == null)
+			nex = "";
+		else
+			nex = ", spec " + nex;
+		return getName() + " (model of class " + getTypeName() + nex + ")";
 	}
 	/** return the NEXUS-format string describing the model.  The string begins at the point of the modelSpecification
 	in "USERTYPE modelName (modelClassName) =  modelSpecification;" */

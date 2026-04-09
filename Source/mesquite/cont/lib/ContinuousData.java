@@ -571,6 +571,17 @@ public class ContinuousData extends CharacterData implements ItemContainer {
 		return super.deleteTaxa(starting, num);
 	}
 	/*..........................................ContinuousData................*/
+	public boolean moveTaxaToDestinations(int[] destinations){
+		setDirty(true);
+		for (int item = 0; item<getNumItems(); item++){
+			Double2DArray matrixA = ((Double2DArray)matrices.elementAt(item));
+			double[][] matrix = matrixA.getMatrix();
+			DoubleArray.moveRowsToDestinations(matrix, destinations);
+		}
+		incrementStatesVersion();
+		return super.moveTaxaToDestinations(destinations);
+	}
+	/*..........................................ContinuousData................*/
 	/**moves num taxa from position "starting" to just after position "justAfter"; returns true iff successful.*/
 	public boolean moveTaxa(int starting, int num, int justAfter){
 		if (num<=0)

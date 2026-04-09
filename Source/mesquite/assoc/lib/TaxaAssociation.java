@@ -137,6 +137,24 @@ public class TaxaAssociation extends FileElement  {
 			associations = null;
 	}
 
+	public static TaxaAssociation getAutoAssociation(Taxa taxa, TaxaAssociation association){
+		if (association != null && association.getContainingTaxa() == taxa && association.getContainedTaxa() == taxa){
+			boolean matching = true;
+			for (int it = 0; it<taxa.getNumTaxa() && matching; it++){
+				if (!association.areAssociated(it, it) || association.getNumContained(it)!= 1 || association.getNumContaining(it) != 1)
+					matching = false;
+			}
+			if (matching)
+				return association;
+		}
+		association = new TaxaAssociation();
+		association.setTaxa(taxa, 0);
+		association.setTaxa(taxa, 1);
+		for (int it = 0; it<taxa.getNumTaxa(); it++)
+			association.setAssociated(it, it, true);
+		return association;
+	}
+	
 	public String getDefaultIconFileName(){ //for small 16 pixel icon at left of main bar
 		return "taxaAssocSmall.gif";
 	}
@@ -325,7 +343,7 @@ public class TaxaAssociation extends FileElement  {
 		}
 	}
 	/*.................................................................................................................*/
-	private boolean areAssociated(int a, int b){
+	public boolean areAssociated(int a, int b){
 		if (a >=0 && a < taxaContaining.getNumTaxa() && b >= 0 && b < taxaContained.getNumTaxa()){
 			Taxon taxonA = taxaContaining.getTaxon(a);
 			if (taxonA == null)
@@ -337,7 +355,7 @@ public class TaxaAssociation extends FileElement  {
 		return false;
 	}
 	/*.................................................................................................................*/
-	private boolean areAssociated(Taxon taxonA, Taxon taxonB){
+	public boolean areAssociated(Taxon taxonA, Taxon taxonB){
 		if (taxonA == null)
 			return false;
 		for (int i= 0; i<associations.length; i++){
@@ -458,7 +476,7 @@ public class TaxaAssociation extends FileElement  {
 
 	static boolean warnedDuplicate = false;
 	/*.................................................................................................................*/
-	private void setAssociated(int containingTaxon, int containedTaxon, boolean assoc){
+	public void setAssociated(int containingTaxon, int containedTaxon, boolean assoc){
 		if (containingTaxon >=0 && containingTaxon < taxaContaining.getNumTaxa() && containedTaxon >= 0 && containedTaxon < taxaContained.getNumTaxa()) {
 			Taxon taxonA = taxaContaining.getTaxon(containingTaxon);
 			if (taxonA == null)
@@ -669,6 +687,26 @@ public class TaxaAssociation extends FileElement  {
 				return areAssociated(a, b);
 		}
 		return false;
+	}
+	/*.................................................................................................................*/
+	public int getNumContained(int containingTaxon){
+		if (taxaContaining==null || taxaContained == null)
+			return 0;
+			int num = 0;
+			for (int i=0; i<taxaContaining.getNumTaxa(); i++) //counting how many associates
+				if (areAssociated(i, containingTaxon))//bug pre-1.1build62: used associates index instead of taxaA index
+					num++;
+			return num;
+	}
+	/*.................................................................................................................*/
+	public int getNumContaining(int containedTaxon){
+		if (taxaContaining==null || taxaContained == null)
+			return 0;
+			int num = 0;
+			for (int i=0; i<taxaContaining.getNumTaxa(); i++) //counting how many associates
+				if (areAssociated(containedTaxon, i))//bug pre-1.1build62: used associates index instead of taxaA index
+					num++;
+			return num;
 	}
 	/*.................................................................................................................*/
 	public int getNumAssociates(Taxon taxon){

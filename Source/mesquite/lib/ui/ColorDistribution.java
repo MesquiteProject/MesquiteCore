@@ -41,7 +41,7 @@ public class ColorDistribution {
 	public static int numberOfRed = 5;
 	public static int numberOfGreen = 11;
 	public static int numberOfBlue = 14;
-	public static Color lightGreen, veryLightGreen, darkGreen, lightGreenYellow, lightGreenYellowish, lightBlue, darkBlue, veryLightBlue, veryVeryLightBlue, violetBlue, veryLightGray, veryVeryLightGray, veryVeryVeryLightGray, lightRed, darkRed, veryVeryLightGreen;
+	public static Color lightGreen, veryLightGreen, strongGreen, darkGreen, lightGreenYellow, lightGreenYellowish, lightBlue, darkBlue, veryLightBlue, veryVeryLightBlue, violetBlue, aquamarine, veryLightGray, veryVeryLightGray, veryVeryVeryLightGray, lightRed, darkRed, veryVeryLightGreen;
 	public static Color darkBrown, brown, lightOrange, lightPurple, orange, straw, lightYellow, veryLightYellow, tabLineBrown, mesquiteBrown, darkMesquiteBrown, veryDarkMesquiteBrown, lightMesquiteBrown, brightMesquiteBrown;
 	public static Color lightBlueGray;
 	public static Color uneditable;
@@ -77,6 +77,7 @@ public class ColorDistribution {
 		darkRed = new Color((float)0.5, (float)0.2, (float)0.1);
 		lightRed = new Color((float)0.9, (float)0.48, (float)0.35);
 		darkGreen = new Color((float)0.1, (float)0.5, (float)0.2);
+		strongGreen = new Color((float)0.05, (float)0.8, (float)0.01);
 		lightGreen = new Color((float)0.35, (float)0.9, (float)0.48);
 		lightGreenYellowish =  new Color((float)0.50, (float)0.99, (float)0.46);  
 		lightGreenYellow =  new Color((float)0.46, (float)0.99, (float)0.25);  
@@ -86,6 +87,7 @@ public class ColorDistribution {
 		lightBlue = new Color((float)0.35, (float)0.48, (float)0.9);
 		veryLightBlue = new Color((float)0.55, (float)0.68, (float)0.99);
 		veryVeryLightBlue = new Color((float)0.85, (float)0.85, (float)0.99);
+		aquamarine = new Color(0F, 0.2F, 0.9F);
 		lightOrange = new Color((float)1, (float)0.8, (float)0);
 		orange = new Color((float)1, (float)0.5, (float)0);
 
@@ -320,9 +322,14 @@ public class ColorDistribution {
 		}
 	}
 
-	static Composite alphaComposite2 =  AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 0.2f);
-	static Composite alphaComposite3 =  AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 0.3f);
-	static Composite alphaComposite5 =  AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 0.5f);
+	public static Composite alphaComposite01 =  AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 0.01f); //below 0.01 and the colours turn grey on macOS at least
+	public static Composite alphaComposite03 =  AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 0.03f);
+	public static Composite alphaComposite05 =  AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 0.05f);
+	public static Composite alphaComposite08 =  AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 0.08f);
+	public static Composite alphaComposite1 =  AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 0.1f);
+	public static Composite alphaComposite2 =  AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 0.2f);
+	public static Composite alphaComposite3 =  AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 0.3f);
+	public static Composite alphaComposite5 =  AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 0.5f);
 	static Composite storedComposite = null;
 	static float prevCompositeFloat = 0;
 
@@ -344,6 +351,9 @@ public class ColorDistribution {
 		}
 
 	}
+	public static void setTransparentGraphics01(Graphics g) {
+		setTransparentGraphics(g,alphaComposite01); 
+	}
 	public static void setTransparentGraphics2(Graphics g) {
 		setTransparentGraphics(g,alphaComposite2); 
 	}
@@ -361,7 +371,15 @@ public class ColorDistribution {
 			((Graphics2D)g).setComposite(AlphaComposite.getInstance(AlphaComposite.SRC, 1));   
 	}
 	
-	private static float brighten(int v, double proportion){
+	public static float brighten(double v, double proportion){
+		float b = (float)(1.0-(1.0-v)*proportion);
+		if (b<0)
+			b=0;
+		else if (b>1)
+			b=1;
+		return b;
+	}
+	public static float brighten(int v, double proportion){
 		float b = (float)((255-(255-v)*proportion)/255);
 		if (b<0)
 			b=0;
@@ -378,7 +396,7 @@ public class ColorDistribution {
 		int blue = c.getBlue();
 		return new Color(brighten(red, proportion), brighten(green, proportion), brighten(blue, proportion));
 	}
-	private static float darken(int v, double proportion){
+	public static float darken(int v, double proportion){
 		float b = (float)((v*proportion)/255);
 		if (b<0)
 			b=0;

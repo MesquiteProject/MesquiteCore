@@ -19,6 +19,7 @@ import java.util.Vector;
 import mesquite.lib.Attachable;
 import mesquite.lib.CommandChecker;
 import mesquite.lib.CompatibilityTest;
+import mesquite.lib.Debugg;
 import mesquite.lib.EmployerEmployee;
 import mesquite.lib.Listable;
 import mesquite.lib.ListableVector;
@@ -488,7 +489,7 @@ public class StoredTrees extends TreeSource implements MesquiteListener {
 				currentListNumber = ListDialog.queryList(containerOfModule(), "Use which tree block?", "Use which tree block? \n(" + whatIsMyPurpose() + ")",MesquiteString.helpString, list, 0);
 				if (!MesquiteInteger.isCombinable(currentListNumber))
 					currentListNumber = 0;
-			}
+		}
 			MesquiteTrunk.resetChecks(listSubmenu);
 		}
 		int code = 0;
@@ -498,7 +499,7 @@ public class StoredTrees extends TreeSource implements MesquiteListener {
 		}
 		else
 			currentTreeBlock = lastUsedTreeBlock;
-
+		
 		if (currentTreeBlock != null)
 			currentTreeBlockID = currentTreeBlock.getID();
 
@@ -532,6 +533,7 @@ public class StoredTrees extends TreeSource implements MesquiteListener {
 		}
 		currentSourceFile = currentTreeBlock.getFile();
 		laxMode = false;
+		
 		return code;
 	}
 	public boolean showing(TreeVector v){

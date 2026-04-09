@@ -1,9 +1,11 @@
 
 package mesquite.trees.SquareLineTree;
 
+import java.awt.AlphaComposite;
 import java.awt.BasicStroke;
 import java.awt.Checkbox;
 import java.awt.Color;
+import java.awt.Composite;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Label;
@@ -308,9 +310,9 @@ class SquareLineTreeDrawing extends TreeDrawing  {
 		this.ownerModule = ownerModule;
 
 		if (showSpots())
-			treeDisplay.setMinimumTaxonNameDistanceFromTip(edgewidth, spotSize/2+ 4); //better if only did this if tracing on
+			treeDisplay.setMinimumTaxonNameDistanceFromTip(useEdgeWidth(), spotSize/2+ 4); //better if only did this if tracing on
 		else
-			treeDisplay.setMinimumTaxonNameDistanceFromTip(edgewidth, 4); //better if only did this if tracing on
+			treeDisplay.setMinimumTaxonNameDistanceFromTip(useEdgeWidth(), 4); //better if only did this if tracing on
 		this.treeDisplay = treeDisplay;
 		oldNumTaxa = numTaxa;
 
@@ -522,8 +524,11 @@ class SquareLineTreeDrawing extends TreeDrawing  {
 				if (spotSize<2)
 					spotSize=2;
 			}
-			treeDisplay.setMinimumTaxonNameDistanceFromTip(edgewidth, spotSize/2+ 4);
+			
+			treeDisplay.setMinimumTaxonNameDistanceFromTip(useEdgeWidth(), spotSize/2+ 4);
 		}
+		else if (treeDisplay.getTraceMode())
+			treeDisplay.setMinimumTaxonNameDistanceFromTip(useEdgeWidth(), 4); 
 		if (treeDisplay.getTaxonSpacing()<edgewidth+2) {
 			edgewidth= (int)treeDisplay.getTaxonSpacing()-2;
 			if (edgewidth<2)
@@ -609,6 +614,8 @@ class SquareLineTreeDrawing extends TreeDrawing  {
 			}
 		}
 	}
+	
+
 	/*_________________________________________________*/
 	public   void drawTree(Tree tree, int drawnRoot, Graphics g) {
 		if (MesquiteTree.OK(tree)) {
@@ -628,8 +635,8 @@ class SquareLineTreeDrawing extends TreeDrawing  {
 		if (MesquiteTree.OK(tree)) {
 			if (tree.getNumNodeSpaces()!=numNodes)
 				resetNumNodes(tree.getNumNodeSpaces());
-			if (!tree.nodeExists(getDrawnRoot()))
-				setDrawnRoot(tree.getRoot());
+		//	if (!tree.nodeExists(getDrawnRoot()))
+		//		setDrawnRoot(tree.getRoot());
 			calcBranchStuff(tree, getDrawnRoot());
 		}
 	}
@@ -736,7 +743,7 @@ class SquareLineTreeDrawing extends TreeDrawing  {
 					if (tree.isLeftmostTerminalOfCollapsedClade(node)){
 						if (triangleWidthInCollapsed()>0){ //this will have to re-ask about the number of colors, since now it's the ancestor's
 								if (numColors==1){
-									g.setColor(colors.getColor(0));
+									g.setColor(colors.getColor(0, !tree.anySelected()|| tree.getSelected(node)));
 									DrawTreeUtil.fillOneTriangle(treeDisplay, x, y, useEdgeWidth(), useEdgeWidth(), localInset, triangleFillMode, tree, g, node);
 								}
 								else {
@@ -935,7 +942,7 @@ class SquareLineTreeDrawing extends TreeDrawing  {
 		preferredEdgeWidth = edw;
 	}
 
-	int useEdgeWidth(){
+	public int useEdgeWidth(){
 		if (treeDisplay != null && treeDisplay.getTraceMode() && edgewidth<6 && !showSpots())
 			return 6;
 		return edgewidth;

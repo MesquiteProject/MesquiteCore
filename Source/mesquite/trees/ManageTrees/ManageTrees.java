@@ -29,6 +29,7 @@ import javax.swing.JLabel;
 import mesquite.lib.Attachable;
 import mesquite.lib.CommandChecker;
 import mesquite.lib.CommandRecord;
+import mesquite.lib.Debugg;
 import mesquite.lib.EmployeeNeed;
 import mesquite.lib.FileBlock;
 import mesquite.lib.FileElement;
@@ -719,7 +720,7 @@ public class ManageTrees extends TreesManager implements ItemListener {
 			return treeFillerTask;
 		}
 		/* The following were replaced by FileAssistantTM, with include partial and include specify dialect as options*/
-		
+
 		/*	else if (checker.compare(this.getClass(), "Links file with trees", null, commandName, "linkTreeFile")) { 
 			MesquiteModule fCoord = getFileCoordinator();
 			fCoord.doCommand("linkTreeFile", StringUtil.argumentMarker + "fuseTreeBlocks", checker);
@@ -1905,43 +1906,47 @@ public class ManageTrees extends TreesManager implements ItemListener {
 	}
 
 
-	public String getTreeBlock(TreeVector trees, NexusBlock tB){
+	//clutter is comments, NEXUS IDs
+	public String getNEXUSTreeBlock(TreeVector trees, NexusBlock tB, boolean includeClutter, boolean includeTitleAndLink, boolean useTranslationTable, boolean fullNewickWithMetadata){
 		if (trees == null || trees.size()==0)
 			return null;
 		String endLine = ";" + StringUtil.lineEnding();
 		StringBuffer block = new StringBuffer(5000);
 		Taxa taxa = trees.getTaxa();
 		block.append("BEGIN TREES");
-		if (trees.getAnnotation()!=null) 
+		if (trees.getAnnotation()!=null && includeClutter) 
 			block.append("[!" + StringUtil.tokenize(trees.getAnnotation()) + "]");
 		block.append(endLine);
-		if (!NexusBlock.suppressNEXUSTITLESANDLINKS){
+		if (includeTitleAndLink && !NexusBlock.suppressNEXUSTITLESANDLINKS){
 			block.append("\tTitle " + StringUtil.tokenize(trees.getName()));
 			block.append(endLine);
 		}
-		if (!NexusBlock.suppressNEXUSIDS){
+		if (includeClutter && !NexusBlock.suppressNEXUSIDS){
 			block.append("\tID " + StringUtil.tokenize(trees.getUniqueID()));
 			block.append(endLine);
 		}
-		if (taxa!=null && (getProject().getNumberTaxas()>1 || !NexusBlock.suppressNEXUSTITLESANDLINKS)) {
+		if (includeTitleAndLink && taxa!=null && (getProject().getNumberTaxas()>1 || !NexusBlock.suppressNEXUSTITLESANDLINKS)) {
 			block.append("\tLINK Taxa = " + StringUtil.tokenize(taxa.getName()));
 			block.append(endLine);
 		}
 		block.append("\tTRANSLATE" + StringUtil.lineEnding());
-		String tt =trees.getTranslationTable();
-		int writeMode = Tree.BY_TABLE;
-		if (tt==null) {
-			tt = "";
-			if (taxa!=null)
-				for(int i=0; i<taxa.getNumTaxa(); i++) {
-					if (i>0)
-						tt += ","+ StringUtil.lineEnding();
-					tt += "\t\t" + Taxon.toExternal(i) + "\t" + StringUtil.tokenize(taxa.getTaxonName(i)) ;
-				}
-			writeMode = Tree.BY_NUMBERS;
+		int writeMode = Tree.BY_NAMES;
+		if (useTranslationTable){
+			String tt =trees.getTranslationTable(includeClutter);
+			writeMode = Tree.BY_TABLE;
+			if (tt==null) {
+				tt = "";
+				if (taxa!=null)
+					for(int i=0; i<taxa.getNumTaxa(); i++) {
+						if (i>0)
+							tt += ","+ StringUtil.lineEnding();
+						tt += "\t\t" + Taxon.toExternal(i) + "\t" + StringUtil.tokenize(taxa.getTaxonName(i)) ;
+					}
+				writeMode = Tree.BY_NUMBERS;
+			}
+			block.append( tt);
+			block.append(endLine);
 		}
-		block.append( tt);
-		block.append(endLine);
 
 		Enumeration e = trees.elements();
 		while (e.hasMoreElements()) {
@@ -1953,16 +1958,24 @@ public class ManageTrees extends TreesManager implements ItemListener {
 				String s = ((MesquiteTree)t).getAnnotation();
 				s= StringUtil.replace(s, '\n', ' ');
 				s=StringUtil.replace(s, '\r', ' ');
-				block.append(" [!" + s + "] ");
+				if ( includeClutter) block.append(" [!" + s + "] ");
 			}
 
 			Object weightObject = ((Attachable)t).getAttachment(WEIGHT);
+			String newick = "";
+			if (fullNewickWithMetadata)
+				newick = t.writeTree(writeMode);
+			else
+				newick = t.writeTreeSimpleByNames();
 			if(trees.getWriteWeights()&& weightObject!=null && weightObject instanceof MesquiteString){
-				block.append(StringUtil.tokenize(t.getName()) + " = [&W " + ((MesquiteString)weightObject).getValue() + "] " + t.writeTree(writeMode) + StringUtil.lineEnding());
+				block.append(StringUtil.tokenize(t.getName()) + " = ");
+				if (includeClutter)
+					block.append("[&W " + ((MesquiteString)weightObject).getValue() + "] ");
+				block.append(t.writeTree(writeMode) + StringUtil.lineEnding());
 			}
 			else {
 				String ttt = t.writeTree(Tree.BY_TABLE);
-				block.append(StringUtil.tokenize(t.getName() )+ " = " +  t.writeTree(writeMode) + StringUtil.lineEnding());
+				block.append(StringUtil.tokenize(t.getName() )+ " = " +  newick + StringUtil.lineEnding());
 			}
 
 		}
@@ -2248,7 +2261,7 @@ class TreeBlock extends NexusBlock {
 		if (trees==null)
 			return null;
 		else
-			return ((ManageTrees)getManager()).getTreeBlock(trees, this);
+			return ((ManageTrees)getManager()).getNEXUSTreeBlock(trees, this, true, true, true, true);
 	}
 }
 

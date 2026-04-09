@@ -80,7 +80,7 @@ public class ExportFusedPhylip extends InterpretPhylip {
 	}
 	/*.................................................................................................................*/
 	public void appendPhylipStateToBuffer(CharacterData data, int ic, int it, MesquiteStringBuffer outputBuffer){
-		data.statesIntoStringBuffer(ic, it, outputBuffer, false);
+		data.statesIntoStringBuffer(ic, it, outputBuffer, false, true);
 	}
 	boolean exportRAxMLModelFile = true;
 	/*.................................................................................................................*/

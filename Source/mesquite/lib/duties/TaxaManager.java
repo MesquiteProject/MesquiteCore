@@ -44,6 +44,7 @@ public abstract class TaxaManager extends FileElementManager   {
 	public Class getElementClass(){
 		return Taxa.class;
 	}
+	public abstract String getTaxaBlock(Taxa taxa, TaxaBlock tB, MesquiteFile file, boolean includeClutter, boolean includeTitleAndLink);
 	public abstract String getTaxaBlock(Taxa taxa, TaxaBlock tB, MesquiteFile file);
 	public abstract MesquiteModule getListOfTaxaModule(Taxa taxa, boolean show);
 	

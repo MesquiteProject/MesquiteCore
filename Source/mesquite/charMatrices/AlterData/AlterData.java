@@ -35,7 +35,7 @@ import mesquite.lib.characters.AltererDNACell;
 import mesquite.lib.characters.AltererMetadata;
 import mesquite.lib.characters.AltererRandomizations;
 import mesquite.lib.characters.AltererSimpleCell;
-import mesquite.lib.characters.AltererWholeCharacterAddRemove;
+import mesquite.lib.characters.AltererDataRemove;
 import mesquite.lib.characters.CharacterData;
 import mesquite.lib.duties.DataAlterer;
 import mesquite.lib.duties.DataWindowAssistantI;
@@ -70,8 +70,8 @@ public class AlterData extends DataWindowAssistantI  {
 //	MesquiteCMenuItemSpec bySMmi; 
 
 	//Specify various interfaces here
-	String[] labels = new String[]{ "Character Add/Remove", "Align/Shift/Reverse Data", "Transformations", "Metadata", "Basic Data Cell Manipulation", "DNA/RNA Data Cell Manipulation", "Convert Gap/Missing/Polymorph/Uncertain", "Randomizations"};
-	Class[] interfaces = new Class[]{AltererWholeCharacterAddRemove.class, AltererAlignShift.class, AltererContinuousTransformations.class, AltererMetadata.class, AltererSimpleCell.class, AltererDNACell.class, AltererConvertGapMissPolyUncert.class,  AltererRandomizations.class};
+	String[] labels = new String[]{ "Trim/Remove", "Align/Shift/Reverse Data", "Transformations", "Metadata", "Basic Data Cell Manipulation", "DNA/RNA Data Cell Manipulation", "Convert Gap/Missing/Polymorph/Uncertain", "Randomizations"};
+	Class[] interfaces = new Class[]{AltererDataRemove.class, AltererAlignShift.class, AltererContinuousTransformations.class, AltererMetadata.class, AltererSimpleCell.class, AltererDNACell.class, AltererConvertGapMissPolyUncert.class,  AltererRandomizations.class};
 	boolean[] asSubmenu = new boolean[]{false,false,false, true, true, true, true, true};
 
 

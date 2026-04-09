@@ -14,6 +14,8 @@
 package mesquite.genomic.AppendTaxaAndSequences;
 /*~~  */
 
+import java.util.Vector;
+
 import mesquite.basic.ManageTaxaPartitions.ManageTaxaPartitions;
 import mesquite.lib.CommandChecker;
 import mesquite.lib.Listable;
@@ -67,9 +69,9 @@ public class AppendTaxaAndSequences extends FileAssistantFM {
 			return;
 		}
 		else
-			receivingTaxa = proj.chooseTaxa(containerOfModule(), "To which block of taxa do you want to append the incoming taxa and sequences?", false);
+			receivingTaxa = proj.chooseTaxa(containerOfModule(), "To which block of taxa do you want to append the incoming taxa and matrices?", false);
 		boolean transferDone = false;
-		MesquiteFile.openFileDialog("Please select a NEXUS file whose taxa and sequences you want to append to this one. Only the first taxa block will be read!", directoryName, fileName);
+		MesquiteFile.openFileDialog("Select a NEXUS file whose taxa and matrices you want to include. Only the first taxa block will be read. Matrices will be matched by name.", directoryName, fileName);
 		if (!fileName.isBlank()){
 			TaxaGroupVector groupsVector = (TaxaGroupVector)proj.getFileElement(TaxaGroupVector.class, 0);
 			Listable[] previousGroups = groupsVector.getElementArray();
@@ -80,7 +82,9 @@ public class AppendTaxaAndSequences extends FileAssistantFM {
 			fileToRead.setReadCategory(MesquiteFile.INCLUDED);
 			//only do this if there's a set of taxa; ask user to choose if there are more than one
 			NexusFileInterpreter mb = (NexusFileInterpreter)findNearestColleagueWithDuty(NexusFileInterpreter.class);
+			proj.setNotificationsOnOff(false);
 			mb.readFile(getProject(), fileToRead, " @noWarnMissingReferent  @noWarnUnrecognized @noWarnDupTaxaBlock @readOneTaxaBlockOnly @justTheseBlocks.TAXA.CHARACTERS.DATA.SETS.LABELS");
+			proj.setNotificationsOnOff(true);
 
 			CharactersManager charactersManager = (CharactersManager)proj.getCoordinatorModule().findElementManager(CharacterData.class);
 			Taxa incomingTaxa = proj.getTaxa(fileToRead, 0);
@@ -106,15 +110,25 @@ public class AppendTaxaAndSequences extends FileAssistantFM {
 					for (int iM = 0; iM<proj.getNumberCharMatrices(fileToRead); iM++){
 
 						CharacterData incomingMatrix = proj.getCharacterMatrix(fileToRead, iM);
-
-						//if (incomingMatrix instanceof DNAData){
 						String incomingMatrixName = incomingMatrix.getName();
-						CharacterData receivingMatrix = proj.getCharacterMatrixByReference(null,  receivingTaxa, null, incomingMatrixName);
+						CharacterData attachedMatrix = (CharacterData)incomingMatrix.getAttachment(null, CharacterData.class);
+						
+						CharacterData receivingMatrix = null;
+						
+						if (attachedMatrix != null)
+							receivingMatrix = attachedMatrix;
+						
+						else {
+						receivingMatrix = proj.getCharacterMatrixByReference(null,  receivingTaxa, null, incomingMatrixName);
 						if (receivingMatrix == null || !(receivingMatrix.getDataTypeName().equalsIgnoreCase(incomingMatrix.getDataTypeName()))){  //matrix of same name and kind not found; make a new one (new locus)
 							receivingMatrix = charactersManager.newCharacterData(receivingTaxa, 0, incomingMatrix.getDataTypeName()); //this is manager of receiving project
 							receivingMatrix.setName(incomingMatrixName);
 							receivingMatrix.addToFile(receivingTaxa.getFile(), proj, null);
+							//link receiving matrix to incoming matrix by putting receiving matrix reference into incoming
+							incomingMatrix.attach(receivingMatrix);
+							}
 						}
+						
 						/*Now time to pull sequence into receivingMatrix 	 */
 						transferDone = true;
 						int incomingSeqLeng = incomingMatrix.lastApplicable(incomingTaxonNumber) + 1;
@@ -151,6 +165,10 @@ public class AppendTaxaAndSequences extends FileAssistantFM {
 						}
 						//}
 					}
+				}
+				for (int iM = 0; iM<proj.getNumberCharMatrices(fileToRead); iM++){
+					CharacterData incomingMatrix = proj.getCharacterMatrix(fileToRead, iM);
+					incomingMatrix.detach(incomingMatrix.getAttachment(null, CharacterData.class));
 				}
 				ManageTaxaPartitions partManager = (ManageTaxaPartitions)findElementManager(TaxaPartition.class);
 				partManager.transferCurrentPartitionAndGroups( proj, previousTaxas, currentTaxas, receivingTaxa, previousGroups);

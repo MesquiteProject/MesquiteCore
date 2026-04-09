@@ -15,6 +15,7 @@ package mesquite.basic.MergeTaxaUtility;
 
 import java.awt.Checkbox;
 import java.awt.Label;
+import java.util.Vector;
 
 import mesquite.assoc.lib.AssociationsManager;
 import mesquite.assoc.lib.TaxaAssociation;
@@ -72,6 +73,8 @@ public class MergeTaxaUtility extends TaxonUtility {
 		boolean ok = mergeTask.queryOptions(taxa, selected, true, "Merge Selected Taxa", true, true);
 		if (!ok)
 			return false;
+		Vector v = pauseAllPausables();
+		
 		int result = mergeTask.mergeTaxa(taxa, selected, null, report);
 		boolean success = false;
 		if (result == ResultCodes.SUCCEEDED){
@@ -83,6 +86,7 @@ public class MergeTaxaUtility extends TaxonUtility {
 			}
 		}
 
+		unpauseAllPausables(v);
 		String r = report.toString();
 		logln(r);
 		if (!StringUtil.blank(r))

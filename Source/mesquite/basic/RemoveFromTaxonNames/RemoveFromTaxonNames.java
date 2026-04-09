@@ -40,7 +40,7 @@ public class RemoveFromTaxonNames extends TaxonNameAlterer {
    			return true;
 		MesquiteInteger buttonPressed = new MesquiteInteger(1);
 		ExtensibleDialog queryDialog = new ExtensibleDialog(containerOfModule(), "Remove from names",  buttonPressed);
-		queryDialog.addLabel("Remove text from taxon names", Label.CENTER);
+		queryDialog.addLabel("Remove text from " + kindName + " names", Label.CENTER);
 		SingleLineTextField truncationLengthField = queryDialog.addTextField("Number of characters to remove:", ""+truncLength, 20);
 		Checkbox removeFromEndBox = queryDialog.addCheckBox("remove from end of names", removeFromEnd.getValue());
 		queryDialog.completeAndShowDialog(true);

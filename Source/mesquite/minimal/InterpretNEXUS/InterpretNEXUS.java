@@ -760,6 +760,7 @@ public class InterpretNEXUS extends NexusFileInterpreter implements NEXUSInterpr
 			if (!MesquiteModule.author.hasDefaultSettings())
 				loc += " (" + author.getName() + ")";
 			mNF.writeLine("[written " + d.toString() + " by Mesquite " + s + " version " + getMesquiteVersion()  + getBuildVersion() + loc + "]"); 
+			mNF.writeLine("[Taxa blocks: " + mf.getNumberTaxas() + "; Character matrices: " + mf.getNumberCharMatrices() + "; Tree blocks: " + mf.getNumberTreeVectors() + "]"); 
 			//mNF.writeLine("[!" + mNF.getAnnotation() + "]");
 
 			for (int i=0; i<blocks.size(); i++) {

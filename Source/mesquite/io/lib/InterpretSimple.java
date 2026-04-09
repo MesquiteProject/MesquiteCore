@@ -248,8 +248,9 @@ public abstract class InterpretSimple extends FileInterpreterI {
 							data.statesIntoStringBuffer(ic, it, outputBuffer, false);
 						}
 						if ((outputBuffer.length()-currentSize>expectedIncrement)&& mesquiteReadable && isCategorical()) {
+							data.showCell(ic, it, true);
 							alert("Sorry, this data matrix can't be exported to this format (some character states aren't represented by a single symbol [char. " + CharacterStates.toExternal(ic) + ", taxon " + Taxon.toExternal(it) + "])");
-							return false;
+						return false;
 						}
 					}
 				}

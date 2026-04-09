@@ -90,7 +90,10 @@ public class PhoneHomeThread extends Thread {
 			}
 		}
 	}
-	 
+	public String toString(){
+		return "PhoneHome Thread  " + super.toString();
+	}
+
 	String contactMessage = "";
 	public void setContactMessage(String contactMessage) {
 		this.contactMessage = contactMessage;

@@ -23,28 +23,6 @@ public class CharactersGroup extends GroupLabel {
 		return false;
 	}
 
-	/*.................................................................................................................*
-	public void editMe(){
-			GroupDialog d = new GroupDialog(getProject(),getProject().getCoordinatorModule().containerOfModule(), "Edit Character Group", getName(), getColor(), getSymbol(), supportsSymbols());
-			d.completeAndShowDialog();
-			String name = d.getName();
-			boolean ok = d.query()==0;
-			Color c = d.getColor();
-			d.dispose();
-			if (!ok)
-				return;
-
-
-			if (!StringUtil.blank(name)) {
-				setName(name);
-				setColor(c);
-	 		//	data.notifyListeners(this, new Notification(MesquiteListener.NAMES_CHANGED)); //TODO: bogus! should notify via specs not data???
-				notifyListeners(this, new Notification(MesquiteListener.DATA_CHANGED));
-			}
-		
-		
-	}
-	*/
 }
 
 

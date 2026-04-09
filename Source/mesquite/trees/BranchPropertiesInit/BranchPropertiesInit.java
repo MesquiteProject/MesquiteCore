@@ -44,6 +44,9 @@ public class BranchPropertiesInit extends MesquiteInit implements MesquiteListen
 		nL.showName = false;
 		prefsList.addElement(nL, false);
 		DisplayableBranchProperty bL = new DisplayableBranchProperty(MesquiteTree.branchLengthName, Associable.BUILTIN);
+		// booleans sequence: showName, centered, whiteEdges, showOnTerminals, showIfUnassigned, percentage, vertical
+		parser.setString(" false false false true true true false false ");
+		bL.setBooleans(parser);
 		prefsList.addElement(bL, false);
 		DisplayableBranchProperty cF = new DisplayableBranchProperty("consensusFrequency", Associable.DOUBLES);
 		prefsList.addElement(cF, false);

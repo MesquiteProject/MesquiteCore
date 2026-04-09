@@ -25,5 +25,9 @@ public class StartupThread extends Thread  {
 		mesquite.lib.MesquiteModule.mesquiteTrunk.mesquiteTrunk = new mesquite.Mesquite(args);
 		
 	}
+	public String toString(){
+		return "Startup Thread " + args + " " + super.toString();
+	}
+
 }
 

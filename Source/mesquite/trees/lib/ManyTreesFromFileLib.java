@@ -1267,6 +1267,9 @@ class FIleCheckThread extends Thread {
 		going = true;
 		super.start();
 	}
+	public String toString(){
+		return "FileCheckThread in ManyTreesFromFileLib " + super.toString();
+	}
 	public boolean going(){
 		return going;
 	}

@@ -163,8 +163,8 @@ public abstract class TreeDrawing  {
 	}
 	public int findTerminalBox(Tree tree, int x, int y){
 		int drawnRoot = getDrawnRoot(); 
-		if (!tree.nodeExists(drawnRoot))
-			drawnRoot = tree.getRoot();
+	//	if (!tree.nodeExists(drawnRoot))
+	//		drawnRoot = tree.getRoot();
 		return findTerminalBox(tree, drawnRoot, x, y); 
 	}
 
@@ -199,6 +199,8 @@ public abstract class TreeDrawing  {
 		return y[node];
 	}
 	public int getDrawnRoot(){
+		if (drawnRoot == -1 || !treeDisplay.getTree().nodeExists(drawnRoot))
+			return treeDisplay.getTree().getRoot();
 		return drawnRoot;
 	}
 	public void setDrawnRoot(int node){
@@ -431,6 +433,9 @@ public abstract class TreeDrawing  {
 
 	/** This allows access to edgeWidths */
 	public abstract int getEdgeWidth();
+	public int useEdgeWidth(){  //this returns not the official edgewidth, but the used one (in case requestTraceMode was set true)
+		return getEdgeWidth();
+	}
 
 	/** project point x,y onto the line between N's lineBase to lineTip. */
 	public Point2D.Double projectionOnLine(int N, double x, double y) {

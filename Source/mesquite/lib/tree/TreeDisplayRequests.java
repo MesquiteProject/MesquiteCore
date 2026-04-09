@@ -23,11 +23,12 @@ public class TreeDisplayRequests {
 	/*These requests do NOT sum; the tree drawer will try to ensure there is at least this much outside the 
 	 * bounds of the left and right tips, the highest tip, and the root node
 	
-		left, top, right, bottom borders are measured in pixels and in actually screen orientation, not relative to the root-tip direction of the tree
+		left, top, right, bottom borders are measured in pixels and in actual screen orientation, not relative to the root-tip direction of the tree
 		
 		tipsFieldDistance is measured in pixels, and in tree orientation. Used, e.g. in Character State Boxes
 		
 		extraDepthAtRoot is measured in tree length units, and are rootward regardless of screen orientation
+		minimalHeightFromTips is measured in tree length units, and are tipward regardless of screen orientation
 	 * */
 	public int leftBorder = 0; //in pixels
 	public int topBorder = 0; //in pixels
@@ -35,6 +36,7 @@ public class TreeDisplayRequests {
 	public int bottomBorder = 0; //in pixels
 	public int tipsFieldDistance = 0; //in pixels
 	public double extraDepthAtRoot = 0; //in branch length dimensions
+	public int minimalHeightFromTips = 0; //in pixels
 	
 	public int tipsFieldBase = 0;
 	static int separation = 4;
@@ -62,6 +64,7 @@ public class TreeDisplayRequests {
 			tipsFieldBase += separation + other.tipsFieldDistance;  //accumulating the total field width
 		tipsFieldDistance = tipsFieldBase;  //accumulating the total field width
 		extraDepthAtRoot = MesquiteDouble.maximum(extraDepthAtRoot, other.extraDepthAtRoot);
+		minimalHeightFromTips = MesquiteInteger.maximum(minimalHeightFromTips, other.minimalHeightFromTips);
 	}
 	
 	public static boolean equal(TreeDisplayRequests a, TreeDisplayRequests b){
@@ -69,7 +72,8 @@ public class TreeDisplayRequests {
 			return true;
 		if (a == null || b == null)
 			return false;
-		return (a.leftBorder == b.leftBorder && a.topBorder == b. topBorder && a.rightBorder == b.rightBorder && a.bottomBorder == b.bottomBorder && a.extraDepthAtRoot == b.extraDepthAtRoot);
+		return (a.leftBorder == b.leftBorder && a.topBorder == b. topBorder && a.rightBorder == b.rightBorder && a.bottomBorder == b.bottomBorder 
+				&& a.extraDepthAtRoot == b.extraDepthAtRoot && a.minimalHeightFromTips == b.minimalHeightFromTips);
 	}
 }
 

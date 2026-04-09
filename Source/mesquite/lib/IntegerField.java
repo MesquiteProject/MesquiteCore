@@ -72,7 +72,7 @@ public class IntegerField implements TextListener {
 	}
 	/*.................................................................................................................*/
 	public void textValueChanged(TextEvent e){
-		if (!validValue())
+		if (!textField.isFocusOwner() && !validValue())
 			textField.setText(previousText);
 		else
 			previousText = textField.getText();

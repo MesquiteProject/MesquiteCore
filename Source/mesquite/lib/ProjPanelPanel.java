@@ -270,7 +270,7 @@ public void resetTitle(){
 	}
 	static final int indent = 20;
 	protected void resetSizes(int w, int h){
-		if (bfc.isDoomed() || bfc.getProject().refreshSuppression>0)
+		if (bfc == null || bfc.isDoomed() || bfc.getProject().refreshSuppression>0)
 			return;
 		if (!isOpen()){
 			for (int i = 0; i<subPanels.size(); i++){

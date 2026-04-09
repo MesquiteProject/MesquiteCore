@@ -21,6 +21,7 @@ import java.awt.Graphics;
 import java.awt.Panel;
 import java.awt.Rectangle;
 import java.awt.Shape;
+import java.awt.geom.IllegalPathStateException;
 import java.util.Enumeration;
 import java.util.Vector;
 
@@ -457,8 +458,13 @@ public class TreeDisplay extends TaxaTreeDisplay  {
 		highlightedBranch.setValue(value);
 	}
 	public void redoCalculations(int code){
+		try {
 		if (treeDrawing!=null && tree !=null)
 			treeDrawing.recalculatePositions(tree); //to force node locs recalc
+		}
+		catch (IllegalPathStateException e){
+			redoCalculationsMainThread();
+		}
 
 	}
 	
@@ -496,6 +502,21 @@ public class TreeDisplay extends TaxaTreeDisplay  {
 		return fixedTaxonSpacing;
 	}
 	
+	public int getMuteMode() {
+		int max = 0;
+		if (extras != null) {
+			Enumeration e = extras.elements();
+			while (e.hasMoreElements()) {
+				Object obj = e.nextElement();
+				TreeDisplayExtra ex = (TreeDisplayExtra)obj;
+				int req = ex.requestMuteTree();
+				if (req> max)
+					max = req;
+
+			}
+		}
+		return max;
+	}	/*^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^*/
 	public boolean getTraceMode() {
 		if (extras != null) {
 			Enumeration e = extras.elements();
@@ -819,6 +840,7 @@ public class TreeDisplay extends TaxaTreeDisplay  {
 					if (ownerModule==null || ownerModule.isDoomed()) 
 						return;
 					Shape clip = g.getClip();
+					if (!ex.pleaseDontNullClip())
 					g.setClip(null);
 					ex.drawOnTree(tree, drawnRoot, g);
 					g.setClip(clip);
@@ -833,7 +855,8 @@ public class TreeDisplay extends TaxaTreeDisplay  {
 					if (ownerModule==null || ownerModule.isDoomed()) 
 						return;
 					Shape clip = g.getClip();
-					g.setClip(null);
+					if (!ex.pleaseDontNullClip())
+						g.setClip(null);
 					ex.drawOnTree(tree, drawnRoot, g);
 					g.setClip(clip);
 				}
@@ -847,6 +870,7 @@ public class TreeDisplay extends TaxaTreeDisplay  {
 					if (ownerModule==null || ownerModule.isDoomed()) 
 						return;
 					Shape clip = g.getClip();
+					if (!ex.pleaseDontNullClip())
 					g.setClip(null);
 					ex.drawOnTree(tree, drawnRoot, g);
 					g.setClip(clip);

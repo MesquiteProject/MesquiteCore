@@ -31,7 +31,7 @@ public class OutgroupRoot extends TreeAltererMult {
 	int warnings = 0;
 	int treeNumber = 0;
 	boolean unselectedAlreadyWarned = false;
-	static final int warningsLimit = 10;
+	static final int warningsLimit = 3;
 	String notRooted = "";
 	Taxa currentTaxa = null;
 	/*.................................................................................................................*/
@@ -41,7 +41,7 @@ public class OutgroupRoot extends TreeAltererMult {
 	/*.................................................................................................................*/
  	public void endJob() {
  		if (warnings>1) 
- 			logln("  (Some trees could not be rerooted. These include trees " + notRooted);
+ 			logln("  (Some trees could not be rerooted for the complete outgroup, but were rerooted at the first selected taxon. These include trees " + notRooted + ".)");
   	 	if (currentTaxa != null)
   	 		currentTaxa.removeListener(this);
  		super.endJob();
@@ -100,12 +100,16 @@ public class OutgroupRoot extends TreeAltererMult {
 				resultString.setValue("Tree rerooted");
 		}
 		else {
-			String w = "Tree " + treeNumber + " among chosen trees could not be rerooted between the selected and unselected taxa, as the unselected taxa cannot be made monophyletic";
+			int firstSelected = taxa.firstSelected();
+			tree.reroot(tree.nodeOfTaxonNumber(firstSelected), tree.getRoot(), false);
+			String w = "Tree " + treeNumber + " was rooted using only the first selected taxon as outgroup. It could not be rerooted between the selected and unselected taxa, as the unselected taxa cannot be made monophyletic";
 			if (resultString != null)
 				resultString.setValue(w);
 			warnings++;
 			if (warnings<warningsLimit)
 				logln(w);
+			else if (warnings == warningsLimit)
+				logln("Other trees were also rooted only at first selected taxon.");
 			notRooted += " " + treeNumber;
 			return false;
 
@@ -116,7 +120,7 @@ public class OutgroupRoot extends TreeAltererMult {
 	/*.................................................................................................................*/
 	public boolean isPrerelease(){
 		return false;
-	}
+		}
 	/*.................................................................................................................*/
     	 public String getName() {
 		return "Root tree with selected taxa as outgroup";

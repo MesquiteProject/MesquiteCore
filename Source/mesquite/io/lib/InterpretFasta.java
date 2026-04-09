@@ -17,6 +17,7 @@ import java.awt.Checkbox;
 
 import mesquite.categ.lib.CategoricalData;
 import mesquite.categ.lib.CategoricalState;
+import mesquite.categ.lib.DNAData;
 import mesquite.categ.lib.DNAState;
 import mesquite.categ.lib.ProteinData;
 import mesquite.categ.lib.ProteinState;
@@ -555,6 +556,8 @@ public abstract class InterpretFasta extends FileInterpreterI implements ReadFil
 	protected boolean simplifyTaxonName = simplifyTaxonNameDEFAULT;
 	protected boolean convertMultStateToMissing = convertMultStateToMissingDEFAULT;
 	protected String uniqueSuffix = "";
+	protected boolean exportT0T1TaxonNames = false;  //accessible only by doCommand
+	protected boolean convertPolyToUnc = false;  //accessible only by doCommand
 	/*.................................................................................................................*/
 	public String preparePreferencesForXML () {
 		StringBuffer buffer = new StringBuffer(200);
@@ -605,6 +608,12 @@ public abstract class InterpretFasta extends FileInterpreterI implements ReadFil
 		}
 		else if (checker.compare(this.getClass(), "Sets whether or not to simplify taxon names.", "[true or false]", commandName, "simplifyTaxonName")) {
 			simplifyTaxonName = MesquiteBoolean.fromTrueFalseString(parser.getFirstToken(arguments));
+		}
+		else if (checker.compare(this.getClass(), "Sets whether or not to export to t0 t1 taxon names.", "[true or false]", commandName, "exportT0T1TaxonNames")) {
+			exportT0T1TaxonNames = MesquiteBoolean.fromTrueFalseString(parser.getFirstToken(arguments));
+		}
+		else if (checker.compare(this.getClass(), "Sets whether or not to export to convert polymorphisms to uncertainties.", "[true or false]", commandName, "convertPolyToUnc")) {
+			convertPolyToUnc = MesquiteBoolean.fromTrueFalseString(parser.getFirstToken(arguments));
 		}
 		else if (checker.compare(this.getClass(), "Sets whether or not to convert multistate to missing.", "[true or false]", commandName, "convertMultStateToMissing")) {
 			convertMultStateToMissing = MesquiteBoolean.fromTrueFalseString(parser.getFirstToken(arguments));
@@ -676,7 +685,10 @@ public abstract class InterpretFasta extends FileInterpreterI implements ReadFil
 		return getTaxonName(taxa, it, null);
 	}
 	protected String getTaxonName(Taxa taxa, int it, CharacterData data){
-		if (simplifyTaxonName)
+		if (exportT0T1TaxonNames){
+			return "t" + it;
+		}
+		else if (simplifyTaxonName)
 			return StringUtil.cleanseStringOfFancyChars(taxa.getTaxonName(it)+uniqueSuffix,false,true);
 		else 
 			return taxa.getTaxonName(it)+uniqueSuffix;
@@ -710,7 +722,7 @@ public abstract class InterpretFasta extends FileInterpreterI implements ReadFil
 	/*------------------*/
 	public  boolean writeMatrixToFile(CharacterData data, String path) { // eventually: FileWritingHints hints) {
 		Taxa taxa = data.getTaxa();
-
+		CategoricalData cData = (CategoricalData)data;
 		int numTaxa = taxa.getNumTaxa();
 		int numChars = data.getNumChars();
 		MesquiteStringBuffer outputBuffer = new MesquiteStringBuffer(20L + numChars);
@@ -728,10 +740,9 @@ public abstract class InterpretFasta extends FileInterpreterI implements ReadFil
 		if (totalCells > 10000000)
 			log("Writing Fasta file ");
 		double lastChunkReported = 0;
-
+		CategoricalState catS = new CategoricalState();
 		for (int it = 0; it<numTaxa; it++){
 			if ((!writeOnlySelectedTaxa || (taxa.getSelected(it))) && (!includeOnlyTaxaWithData || taxonHasData(data, it))){
-
 				counter = 1;
 				outputBuffer.append(">");
 				outputBuffer.append(getTaxonName(taxa,it, data));
@@ -739,13 +750,20 @@ public abstract class InterpretFasta extends FileInterpreterI implements ReadFil
 				if (StringUtil.notEmpty(sup))
 					outputBuffer.append(sup);
 				outputBuffer.append(getLineEnding());
-
+				
 				for (int ic = 0; ic<numChars; ic++) {
 					if ((!writeOnlySelectedData || (data.getSelected(ic))) && (writeExcludedCharacters || data.isCurrentlyIncluded(ic))&& (writeCharactersWithNoData || data.hasDataForCharacter(ic))){
 						long currentSize = outputBuffer.length();
 						boolean wroteMoreThanOneSymbol = false;
 						boolean wroteSymbol = false;
-						if (data.isUnassigned(ic, it) || (convertMultStateToMissing && isProtein && pData.isMultistateOrUncertainty(ic, it))){
+						if (convertPolyToUnc && cData.isPolymorphic(ic, it) && data instanceof DNAData){
+							catS = (CategoricalState)cData.getCharacterState(catS, ic, it);
+							catS.setUncertainty(true);
+							outputBuffer.append(DNAData.getIUPACSymbol(catS.getValue()));
+							counter ++;
+							wroteSymbol = true;
+						}
+						else if (data.isUnassigned(ic, it) || (convertMultStateToMissing && isProtein && pData.isMultistateOrUncertainty(ic, it))){
 							outputBuffer.append(getUnassignedSymbol());
 							counter ++;
 							wroteSymbol = true;
@@ -761,8 +779,9 @@ public abstract class InterpretFasta extends FileInterpreterI implements ReadFil
 						}
 
 						if (wroteMoreThanOneSymbol) {
+							data.showCell(ic, it, true);
 							alert("Sorry, this data matrix can't be exported to this format (some character states aren't represented by a single symbol [char. " + CharacterStates.toExternal(ic) + ", taxon " + Taxon.toExternal(it) + "])");
-							return false;
+						return false;
 						}
 						if (timer.timeCurrentBout()>2000) {
 							double proportion = 1.0*it*ic/totalCells;

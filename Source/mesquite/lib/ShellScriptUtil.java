@@ -93,6 +93,12 @@ public class ShellScriptUtil  {
 		return getChangeDirectoryCommand(MesquiteTrunk.isWindows(), directory); 
 	}
 	/*.................................................................................................................*/
+	public static void createRunningFile(String runningFilePath){
+		if (!StringUtil.blank(runningFilePath)) {
+			MesquiteFile.putFileContents(runningFilePath, "Script running...", true);
+		}
+	}
+	/*.................................................................................................................*/
 	public static String getRemoveCommand(boolean isWindows, String filePath){
 		if (isWindows)
 			return "del " + StringUtil.protectFilePathForWindows(filePath) +StringUtil.lineEnding(isWindows);
@@ -132,7 +138,8 @@ public class ShellScriptUtil  {
 			return "osascript -e 'quit app \"Terminal\"'";  // doesn't fully work as will prompt user
 		}
 		else
-			return "exit ";
+			return "exit ";  
+			//return "";
 	}
 	/*.................................................................................................................*/
 	public static String getSetFileTypeCommand(String filePath){
@@ -237,7 +244,35 @@ public class ShellScriptUtil  {
 		}
 		return null;
 	}
-	
+	/*.................................................................................................................*/
+	public static String getBasicShellScript(String programCommand, String workingDirectory, String args, String extraCommands, String runningFilePath, boolean visibleTerminal, boolean redirectStdOutErr) {
+		StringBuffer shellScript = new StringBuffer(1000);
+		shellScript.append(ShellScriptUtil.getChangeDirectoryCommand(MesquiteTrunk.isWindows(), workingDirectory)+ StringUtil.lineEnding(MesquiteTrunk.isWindows()));
+		if (StringUtil.notEmpty(extraCommands))
+			shellScript.append(extraCommands);
+
+		String suffix = "";
+
+		if (redirectStdOutErr) {
+			if (visibleTerminal && MesquiteTrunk.isMacOSX()) {
+				shellScript.append(programCommand + " " + args+ " >/dev/tty   2> " + ShellScriptRunner.stErrorFileName);
+			}
+			else 
+				shellScript.append(programCommand + " " + args+ " > " + ShellScriptRunner.stOutFileName+ " 2> " + ShellScriptRunner.stErrorFileName);
+		}
+		else
+			shellScript.append(programCommand + " " + args);
+
+		shellScript.append(suffix + StringUtil.lineEnding(MesquiteTrunk.isWindows()));
+
+
+		shellScript.append("\n"+ShellScriptUtil.getRemoveCommand(MesquiteTrunk.isWindows(), runningFilePath, false));
+		shellScript.append(StringUtil.lineEnding(MesquiteTrunk.isWindows()));
+		if (ShellScriptUtil.exitCommandIsAvailableAndUseful(MesquiteTrunk.isWindows()))
+			shellScript.append("\n" + ShellScriptUtil.getExitCommand(MesquiteTrunk.isMacOSX()) + "\n");
+		return shellScript.toString();
+	}
+
 	/*.................................................................................................................*/
 	public static Process executeScript(String scriptPath, boolean visibleTerminal){ 
 		//TODO: retool this to use ProcessBuilder?
@@ -414,6 +449,7 @@ public class ShellScriptUtil  {
 		String runningFilePath = null;
 		if (!StringUtil.blank(scriptPath))
 			runningFilePath=getDefaultRunningFilePath();
+		
 		return executeAndWaitForShell(scriptPath, runningFilePath, null, true, name);
 	}
 

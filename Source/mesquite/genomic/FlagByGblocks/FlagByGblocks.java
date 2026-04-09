@@ -289,7 +289,7 @@ public class FlagByGblocks extends MatrixFlaggerForTrimming implements ActionLis
 
 	/*.................................................................................................................*/
 	public  void actionPerformed(ActionEvent e) {
-			if (e.getActionCommand().equalsIgnoreCase("setToDefaults")) {
+		if (e.getActionCommand().equalsIgnoreCase("setToDefaults")) {
 			b1F.setValue(b1DEFAULT);
 			b2F.setValue(b2DEFAULT);
 			b3F.setValue(b3DEFAULT);
@@ -345,7 +345,7 @@ public class FlagByGblocks extends MatrixFlaggerForTrimming implements ActionLis
 				flags.reset(data);
 			String rootDir = createSupportDirectory() + MesquiteFile.fileSeparator;  
 			String unique = MesquiteFile.massageStringToFilePathSafe(MesquiteTrunk.getUniqueIDBase() + Math.abs((new Random(System.currentTimeMillis())).nextInt()));
-			boolean successSaving = saveFastaFile(data, rootDir, unique + "alignment.fas");
+			boolean successSaving = saveFastaFile(data, rootDir, unique + "alignment.fas", 2, 0);
 			String scriptPath = rootDir + "GblocksScript" + unique + ".bat";
 
 
@@ -361,7 +361,7 @@ public class FlagByGblocks extends MatrixFlaggerForTrimming implements ActionLis
 				gapsOption = "h";
 			else if (b5 == 2)
 				gapsOption = "a";
-			script += StringUtil.protectFilePath(gblocksPath) + "  " + unique + "alignment.fas -b1=" + b1Count + " -b2=" + b2Count + " -b3=" + b3 + " -b4=" + b4 + " -b5=" + gapsOption + " -s=n -p=s";
+			script += StringUtil.protectFilePath(gblocksPath) + "  " + unique + "alignment.fas -b1=" + b1Count + " -b2=" + b2Count + " -b3=" + b3 + " -b4=" + b4 + " -b5=" + gapsOption + " -s=n -p=s 1>" +unique + "gblocks.log 2>" +unique + "error.log";
 			MesquiteFile.putFileContents(scriptPath, script, false);
 			int resultStatus = ShellScriptUtil.executeAndWaitForShell(scriptPath);
 
@@ -400,18 +400,22 @@ public class FlagByGblocks extends MatrixFlaggerForTrimming implements ActionLis
 										count++;
 								}
 								done = true;
-								
+
 							}
 						}
 					}
+					deleteSupportDirectory();
 				}
-				else
+				else {
 					MesquiteMessage.warnProgrammer("No results from Gblocks found!");
+					showSupportDirectory();
+				}
 
 			}
-			else MesquiteMessage.warnUser(" Error status returned from attempt to run Gblocs: " + resultStatus);
-		deleteSupportDirectory();
-
+			else {
+				MesquiteMessage.warnUser(" Error status returned from attempt to run Gblocs: " + resultStatus);
+				showSupportDirectory();
+			}
 		}
 
 		return flags;

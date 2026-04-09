@@ -143,6 +143,7 @@ public class XMLUtil {
 		try { 
 			doc = DocumentHelper.parseText(contents);   //WARNING: this can't handle UTF-8 and other encodings.  Thus, accented characters are disallowed.  Use SAXReader instead
 		} catch (Exception e) {
+			e.printStackTrace();
 			return null;
 		}
 

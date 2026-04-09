@@ -181,6 +181,7 @@ class ColorByPartitionExtra extends TreeDisplayExtra implements MesquiteListener
 
 	void setShowColors(boolean a){
 		showColors = a;
+		if (treeDisplay!= null)
 		treeDisplay.pleaseUpdate(false);
 	}
 	/**return a text version of information at node*/
@@ -226,6 +227,8 @@ class ColorByPartitionExtra extends TreeDisplayExtra implements MesquiteListener
 				if (groupsAtNode[node][i] != null)
 					colors[node].setColor(counter++, groupsAtNode[node][i].getColor());
 			}
+			if (counter == 0)
+				colors[node].setColor(0, treeDisplay.branchColor);
 		}
 	}
 
@@ -270,7 +273,9 @@ class ColorByPartitionExtra extends TreeDisplayExtra implements MesquiteListener
 							colors[node].setColor(count++, tempGroups[i].getColor());
 						}
 					}
-				}				
+				}		
+				if (count == 0) 
+					colors[node].setColor(0, treeDisplay.branchColor);
 				for (int d = tree.firstDaughterOfNode(node); tree.nodeExists(d); d = tree.nextSisterOfNode(d))
 					harvestColorsUP(tree, d);
 			}

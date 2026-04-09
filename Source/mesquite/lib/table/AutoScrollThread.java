@@ -35,6 +35,9 @@ public class AutoScrollThread extends Thread implements MouseListener {
 	public boolean canAutoscrollVertically() {
 		return panel.canAutoscrollVertically();
 	}
+	public String toString(){
+		return getClass().getName() + " = " + super.toString();
+	}
 
 	public boolean active() {
 		return !abort && !suppressed;

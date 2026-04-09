@@ -25,6 +25,7 @@ import mesquite.lib.MesquiteModule;
 import mesquite.lib.NexusBlock;
 import mesquite.lib.NexusBlockTest;
 import mesquite.lib.Parser;
+import mesquite.lib.StringArray;
 import mesquite.lib.StringUtil;
 import mesquite.lib.duties.FileInit;
 
@@ -67,14 +68,18 @@ public class ManageLabelsBlock extends FileInit {
 		 sB= new LabelsBlock(file, this); //TODO: should this store the LABELS??
 		else
 			sB = (LabelsBlock)bs[0];
-		int numChars=0;
+		String[] justTheseCommands = null;
+		if (parser.hasFileReadingArgument(fileReadingArguments, "justTheseCommands")){
+			String whichCommands = parser.getFileReadingArgumentSubtype(fileReadingArguments, "justTheseCommands");
+			justTheseCommands = StringUtil.delimitedTokensToStrings(whichCommands, '.', false);
+		}
 		while (!StringUtil.blank(s=commandParser.getNextCommand(startCharC))) {
 			String commandName = parser.getFirstToken(s);
 			if (!commandName.equalsIgnoreCase("BEGIN") && !commandName.equalsIgnoreCase("END") && !commandName.equalsIgnoreCase("ENDBLOCK"))
 				if (commandName.equalsIgnoreCase("LINK")){
 					sB.processLinkCTCommand( s, getProject(), parser);
 				}
-				else
+				else if (justTheseCommands == null || StringArray.indexOfIgnoreCase(justTheseCommands, commandName)>=0) 
 					readUnrecognizedCommand(file, sB, "LABELS", block, commandName, s, blockComments, null,  fileReadingArguments);
 		}
 			numBlocks++;

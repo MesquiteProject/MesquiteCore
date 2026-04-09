@@ -22,6 +22,7 @@ public class ConsoleThread extends Thread {
 	boolean useSystemIn;
 	MesquiteModule module;
 	Vector commands;
+	Object objectCommanded;
 	
 	public ConsoleThread (MesquiteModule module, Object objectCommanded, boolean useSystemIn) {
 		this.module = module;
@@ -29,8 +30,11 @@ public class ConsoleThread extends Thread {
 		this.useSystemIn = useSystemIn;
 		communicator = new CommandCommunicator(module, objectCommanded, true);
 		commands = new Vector();
+		this.objectCommanded = objectCommanded;
 	}
-
+	public String toString(){
+		return "Console Thread " + module +" " + objectCommanded + " " + super.toString();
+	}
 	public void run() {
 		String input;
 		int count =0;

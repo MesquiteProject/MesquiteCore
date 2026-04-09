@@ -54,7 +54,7 @@ public class MesquiteThread extends Thread implements CommandRecordHolder {
 	public static int numFilesBeingRead =0;
 	boolean readingThread = false;
 	public boolean resetUIOnMe = true;
-	
+
 	public static String SEPARATETHREADHELPMESSAGE = "If you use a separate thread, you will then regain control of Mesquite once the process starts."+
 			" This has the advantage that it will allow you to continue to use Mesquite.  However, it is dangerous, as you can alter aspects of your data that will eventually cause problems for the separate process.";
 	static int numInst = 1;
@@ -63,7 +63,7 @@ public class MesquiteThread extends Thread implements CommandRecordHolder {
 		doomedIndicators = new ListableVector(10);
 	}
 	public String statusMessage = ""; //this can be used to record where execution is etc., in case helpful for debugging
-	
+
 	public MesquiteThread () {
 		super();
 		threads.addElement(this);
@@ -89,7 +89,7 @@ public class MesquiteThread extends Thread implements CommandRecordHolder {
 		String c = t.getClass().getName();
 		return (c.indexOf("mesquite.")>=0);
 	}
-	
+
 	int logLevel = Integer.MAX_VALUE;
 	public static void releaseThreadMaxLogLevel(){
 		if (Thread.currentThread() instanceof MesquiteThread){
@@ -121,6 +121,17 @@ public class MesquiteThread extends Thread implements CommandRecordHolder {
 			return ((MesquiteThread)t).isReading();
 		return false;
 	}
+
+	public static String getActiveThreadList(){
+		ThreadGroup group = Thread.currentThread().getThreadGroup();
+		Thread[] threadList = new Thread[group.activeCount()];
+		group.enumerate(threadList);
+		String s = "THREADS: ";
+		for (int i=0;i< threadList.length; i++){
+			s += "\t"+threadList[i];
+		}
+		return s;
+	}
 	public String toString(){
 		return getClass().getName() + " = " + super.toString();
 	}
@@ -135,7 +146,7 @@ public class MesquiteThread extends Thread implements CommandRecordHolder {
 		}
 		return t.toString();
 	}
-	
+
 	public static boolean okToResetUI(){
 		Thread thread = Thread.currentThread();
 		if (!(thread instanceof MesquiteThread))
@@ -202,7 +213,7 @@ public class MesquiteThread extends Thread implements CommandRecordHolder {
 			mt.loggingSuspended = false;
 		}
 	}
-	
+
 	public void start(){ //a thread inherits its parent threads indicator conditions
 		indicatorSuppressed = MesquiteThread.getHintToSuppressProgressIndicatorsCurrentThread();
 		super.start();

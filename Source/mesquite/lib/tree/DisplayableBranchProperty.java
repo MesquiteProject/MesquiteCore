@@ -16,6 +16,7 @@ package mesquite.lib.tree;
 import java.awt.Font;
 
 import mesquite.lib.Associable;
+import mesquite.lib.Debugg;
 import mesquite.lib.ListableVector;
 import mesquite.lib.MesquiteBoolean;
 import mesquite.lib.MesquiteDouble;

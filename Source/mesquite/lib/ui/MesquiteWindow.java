@@ -226,6 +226,7 @@ public abstract class MesquiteWindow implements Listable, Commandable, OwnedByMo
 		id = numWindowsTotal++;
 		setUniqueID(MesquiteTrunk.getUniqueIDBase() + id);
 		this.showInfoBar = showInfoBar;
+		
 		if ((compactWindows || this instanceof SystemWindow) && ownerModule != null){
 			MesquiteProject proj = ownerModule.getProject();
 			MesquiteFrame frame = null;
@@ -1243,7 +1244,15 @@ public abstract class MesquiteWindow implements Listable, Commandable, OwnedByMo
 		pjob = MesquitePrintJob.getPrintJob((MesquiteFrame)f, "Print Window", fitRule);
 		if (pjob != null) {
 			MesquiteTrunk.mesquiteTrunk.logln("Printing window");
+			try {
 			printWindow(pjob);
+			}
+			catch (UnsupportedClassVersionError e){
+				if (MesquiteTrunk.isJavaVersionLessThan(17)){
+					MesquiteTrunk.mesquiteTrunk.discreetAlert("Printing failed, likely because your version of Java is too old. We strongly recommend you upgrade to Java 21 or later. See https://www.mesquiteproject.org/Installation.html.");
+					return;
+				}
+			}
 			/*
 			if (infoBar !=null && infoBar.getMode()!=InfoBar.TEXT_PARAMETERS)
 				printParameters(pjob);
@@ -2443,7 +2452,7 @@ public abstract class MesquiteWindow implements Listable, Commandable, OwnedByMo
 		resetMenus(true);
 	}
 	public void resetMenus(boolean generateRegardless){
-		if (ownerModule.isDoomed())
+		if (ownerModule == null || ownerModule.isDoomed())
 			return;
 		if (!generateRegardless && refreshMenusOnlyFrontWindows && parentFrame.frontWindow != this){ //this is the short circuit that makes it so that only frontmost windows have their menus reset
 			needMenuBarReset = true;
@@ -2477,6 +2486,18 @@ public abstract class MesquiteWindow implements Listable, Commandable, OwnedByMo
 			totalTime += time;
 			ownerModule.logln("   " + Integer.toString(menuResets) + " menu resets for " + getTitle() + "    " +time + " seconds");
 		}
+
+		//make sure enabling is OK
+		int numMenus = menuBar.getMenuCount();
+		for (int imenu = 0; imenu<numMenus; imenu++) {
+			try {
+				Menu menu = menuBar.getMenu(imenu);
+			MesquiteTrunk.resetEnabling(menu);
+			}
+			catch (Exception e){
+			}
+		}
+
 
 		resetMenuTime.end();
 	}

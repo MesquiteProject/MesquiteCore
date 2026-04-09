@@ -435,13 +435,17 @@ public class TreeVector extends ListableVector implements Trees, Commandable, Id
 
 	/** Get the translation table as a string. */
 	public String getTranslationTable() {
+		return getTranslationTable(true);
+	}
+	/** Get the translation table as a string. */
+	public String getTranslationTable(boolean includeComments) {
 		if (translationTable==null || taxa == null)
 			return null;
 		String temp = "";
 		for(int i=0; i<taxa.getNumTaxa(); i++) {
 			if (i>0)
 				temp += ","+ StringUtil.lineEnding();
-			temp += "[" + i + "] ";
+			if (includeComments) temp += "[" + i + "] ";
 			String thisLabel = getTranslationLabel(i);
 			temp += "\t\t" + thisLabel + " " + StringUtil.tokenize(taxa.getTaxonName(i)) ;
 		}

@@ -27,6 +27,7 @@ import mesquite.lib.Parser;
 import mesquite.lib.SpecsSet;
 import mesquite.lib.SpecsSetVector;
 import mesquite.lib.StringUtil;
+import mesquite.lib.duties.ElementManager;
 import mesquite.lib.table.MesquiteTable;
 import mesquite.lib.taxa.Taxa;
 import mesquite.lib.taxa.TaxaStringsSet;
@@ -74,19 +75,20 @@ public class TaxonListArchivedName extends TaxonListAssistant {
 		addMenuItem("Trade Taxon Names with Alternatives", makeCommand("trade",  this));
 		addMenuItem("Replace Alternatives by Taxon Names", makeCommand("copyToAlt",  this));
 		addMenuItem("Replace Taxon Names by Alternatives", makeCommand("replaceByAlt",  this));
-	//	addMenuItem("Replace Alternatives by List in File...", makeCommand("replaceByFileList",  this));
+		//	addMenuItem("Replace Alternatives by List in File...", makeCommand("replaceByFileList",  this));
 		addMenuItem("Replace Alternatives using Translation Table in File...", makeCommand("replaceUsingTranslationTable",  this));
 		addMenuSeparator();
 		addMenuItem("Store Alternatives...", makeCommand("storeCurrent",  this));
 		addMenuItem("Replace Stored Alternatives...", makeCommand("replaceWithCurrent",  this));
+		addMenuItem("Delete Stored Alternatives...", makeCommand("deleteStored",  this));
 		if (taxa !=null){
 			taxa.prepareSpecsSetVector(TaxaStringsSet.class, "Alternative Names");
 			addSubmenu(null, "Load Alternatives", makeCommand("loadToCurrent",  this), taxa.getSpecSetsVector(TaxaStringsSet.class));
 		}
-		
+
 		addMenuItem( "Paste Values from Clipboard", makeCommand("paste",  this)); //need to put this in module, but ListAssistant class handles command
 	}
-	
+
 	/*.................................................................................................................*/
 	private Object getAlternativesFromTranslationFile (Taxa taxa) {
 
@@ -127,10 +129,10 @@ public class TaxonListArchivedName extends TaxonListAssistant {
 									if (StringUtil.notEmpty(name)) {
 										part.setProperty(name, it);
 										matched.append("\t"+name+ "\n");
-								//		taxa.setSelected(it, true);
+										//		taxa.setSelected(it, true);
 									} else
 										notMatched.append("\t"+name+ "\n");
-										
+
 								} else {
 									notMatched.append("\t"+name+ "\n");
 								}
@@ -191,9 +193,9 @@ public class TaxonListArchivedName extends TaxonListAssistant {
 
 	}
 
-	
+
 	MesquiteInteger pos = new MesquiteInteger(0);
-	
+
 	/*.................................................................................................................*/
 	public Object doCommand(String commandName, String arguments, CommandChecker checker) {
 		if (checker.compare(this.getClass(), "Copies the current names to the alternatives", null, commandName, "copyToAlt")) {
@@ -226,9 +228,9 @@ public class TaxonListArchivedName extends TaxonListAssistant {
 				}
 				for (int it = 0; it< taxa.getNumTaxa(); it++) {
 					if (!taxa.anySelected() || taxa.getSelected(it)){
-					String alt = (String)part.getProperty(it);
-					if (!StringUtil.blank(alt))
-						taxa.setTaxonName(it, alt, false);
+						String alt = (String)part.getProperty(it);
+						if (!StringUtil.blank(alt))
+							taxa.setTaxonName(it, alt, false);
 					}
 				}
 				taxa.notifyListeners(this, new Notification(MesquiteListener.NAMES_CHANGED));  
@@ -236,17 +238,17 @@ public class TaxonListArchivedName extends TaxonListAssistant {
 		}
 		else if (checker.compare(this.getClass(), "Replaces the alternatives with those in a list read in from a file", null, commandName, "replaceByFileList")) {
 			if (taxa !=null && !MesquiteThread.isScripting()) {
-					Object obj = getAlternativesFromFile(taxa.getNumTaxa());
-					if (obj!=null)
-						taxa.notifyListeners(this, new Notification(AssociableWithSpecs.SPECSSET_CHANGED)); //TODO: bogus! should notify via specs not data???			
-				}
+				Object obj = getAlternativesFromFile(taxa.getNumTaxa());
+				if (obj!=null)
+					taxa.notifyListeners(this, new Notification(AssociableWithSpecs.SPECSSET_CHANGED)); //TODO: bogus! should notify via specs not data???			
+			}
 		}
 		else if (checker.compare(this.getClass(), "Replaces the alternatives with those using a translation table read in from a file", null, commandName, "replaceUsingTranslationTable")) {
 			if (taxa !=null && !MesquiteThread.isScripting()) {
-					Object obj = getAlternativesFromTranslationFile(taxa);
-					if (obj!=null)
-						taxa.notifyListeners(this, new Notification(AssociableWithSpecs.SPECSSET_CHANGED)); //TODO: bogus! should notify via specs not data???			
-				}
+				Object obj = getAlternativesFromTranslationFile(taxa);
+				if (obj!=null)
+					taxa.notifyListeners(this, new Notification(AssociableWithSpecs.SPECSSET_CHANGED)); //TODO: bogus! should notify via specs not data???			
+			}
 		}
 		else if (checker.compare(this.getClass(), "Trades the current names with the alternatives", null, commandName, "trade")) {
 			if (taxa !=null) {
@@ -258,12 +260,12 @@ public class TaxonListArchivedName extends TaxonListAssistant {
 				}
 				for (int it = 0; it< taxa.getNumTaxa(); it++) {
 					if (!taxa.anySelected() || taxa.getSelected(it)){
-					String alt = (String)part.getProperty(it);
-					part.setProperty(taxa.getTaxonName(it), it);
-					if (!StringUtil.blank(alt))
-						taxa.setTaxonName(it, alt, false);
+						String alt = (String)part.getProperty(it);
+						part.setProperty(taxa.getTaxonName(it), it);
+						if (!StringUtil.blank(alt))
+							taxa.setTaxonName(it, alt, false);
 					}
-					
+
 				}
 				taxa.notifyListeners(this, new Notification(MesquiteListener.NAMES_CHANGED));  
 				SpecsSetVector ssv = taxa.getSpecSetsVector(TaxaStringsSet.class);
@@ -300,10 +302,31 @@ public class TaxonListArchivedName extends TaxonListAssistant {
 			if (taxa!=null){
 				SpecsSetVector ssv = taxa.getSpecSetsVector(TaxaStringsSet.class);
 				if (ssv!=null) {
-					SpecsSet chosen = (SpecsSet)ListDialog.queryList(containerOfModule(), "Replace stored naming", "Choose alternative naming scheme to replace by current alternative", MesquiteString.helpString,ssv, 0);
-					if (chosen!=null){
-						SpecsSet current = ssv.getCurrentSpecsSet();
-						ssv.replaceStoredSpecsSet(chosen, current);
+					if (ssv.size() == 0)
+						discreetAlert("There are no alternative namings stored");
+					else {
+						SpecsSet chosen = (SpecsSet)ListDialog.queryList(containerOfModule(), "Replace stored naming", "Choose alternative naming scheme to replace by current alternative", MesquiteString.helpString,ssv, 0);
+						if (chosen!=null){
+							SpecsSet current = ssv.getCurrentSpecsSet();
+							ssv.replaceStoredSpecsSet(chosen, current);
+						}
+					}
+				}
+
+			}
+			//return ((ListWindow)getModuleWindow()).getCurrentObject();
+		}
+		else if (checker.compare(this.getClass(), "Deletes a stored alternative name set", null, commandName, "deleteStored")) {
+			if (taxa!=null){
+				SpecsSetVector ssv = taxa.getSpecSetsVector(TaxaStringsSet.class);
+				if (ssv!=null) {
+					if (ssv.size() == 0)
+						discreetAlert("There are no alternative namings stored");
+					else {					
+						SpecsSet chosen = (SpecsSet)ListDialog.queryList(containerOfModule(), "Delete stored naming", "Choose alternative naming scheme to delete", MesquiteString.helpString,ssv, 0);
+					ElementManager manager = findElementManager(TaxaStringsSet.class);
+					if (manager != null)
+						manager.deleteElement(chosen);
 					}
 				}
 
@@ -348,14 +371,14 @@ public class TaxonListArchivedName extends TaxonListAssistant {
 		if (taxa!=null) {
 			TaxaStringsSet part = (TaxaStringsSet)taxa.getCurrentSpecsSet(TaxaStringsSet.class);
 			if (part == null){
-//				create current specs set
+				//				create current specs set
 				part= new TaxaStringsSet("Alternative Naming", taxa.getNumTaxa(), taxa);
 				part.setTypeName("Alternative Names");
 				part.addToFile(taxa.getFile(), getProject(), findElementManager(TaxaStringsSet.class));
 				taxa.setCurrentSpecsSet(part, TaxaStringsSet.class);
-				}
+			}
 			if (part != null)
-			part.setProperty(s, row);
+				part.setProperty(s, row);
 		}
 	}
 	public String getStringForTaxon(int ic){

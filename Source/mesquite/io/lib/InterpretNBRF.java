@@ -307,6 +307,7 @@ public abstract class InterpretNBRF extends FileInterpreterI implements ReadFile
 								}
 						}
 						if (wroteMoreThanOneSymbol) {
+							data.showCell(ic, it, true);
 							alert("Sorry, this data matrix can't be exported to this format (some character states aren't represented by a single symbol [char. " + CharacterStates.toExternal(ic) + ", taxon " + Taxon.toExternal(it) + "])");
 							return null;
 						}

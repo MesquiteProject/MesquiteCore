@@ -249,35 +249,6 @@ public class ManageTaxaPartitions extends SpecsSetManager {
 		else if (checker.compare(this.getClass(), "Shows list of the taxon groups", null, commandName, "showTaxonGroups")) {
 			return showTaxonGroupList(null, listOfTaxonGroupsName);
 		}
-		else if (checker.compare(this.getClass(), "Exports current groups and group labels/colors to a NEXUS file for later import.", "[taxa block]", commandName, "exportPartitionAndLabels")) {
-			Taxa taxa = proj.getTaxa(checker.getFile(), parser.getFirstToken(arguments));
-			TaxaPartition partition = (TaxaPartition)taxa.getCurrentSpecsSet(TaxaPartition.class);
-			if (partition == null){
-				discreetAlert("Sorry, there isn't a current partition to export");
-				return null;
-			}
-			TaxaGroupVector groups = (TaxaGroupVector)getProject().getFileElement(TaxaGroupVector.class, 0);
-			
-			String s = "#NEXUS\n";
-			
-			TaxaManager taxaManager = (TaxaManager)findElementManager(Taxa.class);
-			s += taxaManager.getTaxaBlock(taxa, null, null);
-			s += "\n";
-			if (groups != null){
-					s+= "BEGIN LABELS;\n\n";
-			for (int ig = 0; ig<groups.size(); ig++){
-				TaxaGroup group = (TaxaGroup)groups.elementAt(ig);
-				s += getGroupLabelNexusCommand(group) + "\n";
-			}
-			s += "END;";
-			}
-			s += "\nBEGIN SETS;\n";
-			s += nexusStringForSpecsSet(partition, taxa, checker.getFile(), true);
-			s += "\nEND;";
-			if (!StringUtil.blank(s)){
-				MesquiteFile.putFileContentsQuery("Exported NEXUS file of current partition and group labels/colors, for later import into other files", s, true);
-			}
-		}
 		else if (checker.compare(this.getClass(), "Exports group labels/colors to a NEXUS file for later import.", "[]", commandName, "exportLabels")) {
 			TaxaGroupVector groups = (TaxaGroupVector)getProject().getFileElement(TaxaGroupVector.class, 0);
 			if (groups == null)
@@ -305,7 +276,8 @@ public class ManageTaxaPartitions extends SpecsSetManager {
 				fileToRead.setProject(proj);
 				fileToRead.setReadCategory(MesquiteFile.INCLUDED);
 				NexusFileInterpreter mb = (NexusFileInterpreter)findNearestColleagueWithDuty(NexusFileInterpreter.class);
-				mb.readFile(getProject(), fileToRead, " @noWarnMissingReferent  @noWarnUnrecognized @justTheseBlocks.LABELS");
+				proj.setNotificationsOnOff(false);
+				mb.readFile(getProject(), fileToRead, " @noWarnMissingReferent  @noWarnUnrecognized @justTheseBlocks.LABELS @justTheseCommands.TAXAGROUPLABEL");
 
 				Listable[] combinedGroups = groupsVector.getElementArray();
 				for (int i = 0; i<combinedGroups.length; i++){
@@ -326,6 +298,7 @@ public class ManageTaxaPartitions extends SpecsSetManager {
 
 				//***************
 				proj.getCoordinatorModule().closeFile(fileToRead, true);
+				proj.setNotificationsOnOff(true);
 
 			}
 		}
@@ -345,27 +318,60 @@ public class ManageTaxaPartitions extends SpecsSetManager {
 					fileToRead.setProject(proj);
 					fileToRead.setReadCategory(MesquiteFile.INCLUDED);
 					NexusFileInterpreter mb = (NexusFileInterpreter)findNearestColleagueWithDuty(NexusFileInterpreter.class);
-					mb.readFile(getProject(), fileToRead, " @noWarnDupTaxaBlock @noWarnMissingReferent @noWarnUnrecognized @justTheseBlocks.TAXA.SETS.LABELS");
+					proj.setNotificationsOnOff(false);
+					mb.readFile(getProject(), fileToRead, " @noWarnDupTaxaBlock @noWarnMissingReferent @noWarnUnrecognized @justTheseBlocks.TAXA.SETS.LABELS @justTheseCommands.TAXAGROUPLABEL.TAXPARTITION");
 					Listable[] currentTaxas = proj.getTaxas().getElementArray();
-					if (currentTaxas.length == previousTaxas.length)
+					if (currentTaxas.length == previousTaxas.length){
+						proj.setNotificationsOnOff(true);
 						return null;
-					
+					}
+
 					//***************
 					transferCurrentPartitionAndGroups( proj, previousTaxas, currentTaxas, taxaToReceive, previousGroups);
 
 					//***************
 					///*/
 					proj.getCoordinatorModule().closeFile(fileToRead, true);
+					proj.setNotificationsOnOff(true);
 
 				}
 				taxaToReceive.notifyListeners(this, new Notification(AssociableWithSpecs.SPECSSET_CHANGED));  
+			}
+		}
+		else if (checker.compare(this.getClass(), "Exports current groups and group labels/colors to a NEXUS file for later import.", "[taxa block]", commandName, "exportPartitionAndLabels")) {
+			Taxa taxa = proj.getTaxa(checker.getFile(), parser.getFirstToken(arguments));
+			TaxaPartition partition = (TaxaPartition)taxa.getCurrentSpecsSet(TaxaPartition.class);
+			if (partition == null){
+				discreetAlert("Sorry, there isn't a current partition to export");
+				return null;
+			}
+			TaxaGroupVector groups = (TaxaGroupVector)getProject().getFileElement(TaxaGroupVector.class, 0);
+
+			String s = "#NEXUS\n";
+
+			TaxaManager taxaManager = (TaxaManager)findElementManager(Taxa.class);
+			s += taxaManager.getTaxaBlock(taxa, null, null);
+			s += "\n";
+			if (groups != null){
+				s+= "BEGIN LABELS;\n\n";
+				for (int ig = 0; ig<groups.size(); ig++){
+					TaxaGroup group = (TaxaGroup)groups.elementAt(ig);
+					s += getGroupLabelNexusCommand(group) + "\n";
+				}
+				s += "END;";
+			}
+			s += "\nBEGIN SETS;\n";
+			s += nexusStringForSpecsSet(partition, taxa, checker.getFile(), true);
+			s += "\nEND;";
+			if (!StringUtil.blank(s)){
+				MesquiteFile.putFileContentsQuery("Exported NEXUS file of current partition and group labels/colors, for later import into other files", s, true);
 			}
 		}
 		else
 			return  super.doCommand(commandName, arguments, checker);
 		return null;
 	}
-	
+
 	public void transferCurrentPartitionAndGroups(MesquiteProject proj, Listable[] previousTaxas, Listable[] currentTaxas, Taxa taxaToReceive, Listable[] previousGroups){
 		ListableVector newlyAddedGroups = new ListableVector();
 		TaxaPartition currentPartition = (TaxaPartition)taxaToReceive.getOrMakeCurrentSpecsSet(TaxaPartition.class);
@@ -407,7 +413,7 @@ public class ManageTaxaPartitions extends SpecsSetManager {
 			}
 		}
 
-}
+	}
 
 	private TaxaGroup findGroup(String token){ 
 		if (token ==null)

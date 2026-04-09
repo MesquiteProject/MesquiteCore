@@ -35,11 +35,12 @@ import mesquite.lib.characters.CharacterState;
 import mesquite.lib.duties.DataAltererParallelizable;
 import mesquite.lib.table.MesquiteTable;
 import mesquite.lib.ui.ExtensibleDialog;
+import mesquite.molec.lib.SequenceTrimmer;
 
 
 
 /* ======================================================================== */
-public class ZeroSequencesTooShort extends MolecularDataAlterer  implements AltererAlignShift, DataAltererParallelizable {
+public class ZeroSequencesTooShort extends SequenceTrimmer {
 	/*.................................................................................................................*/
 	public boolean startJob(String arguments, Object condition, boolean hiredByName) {
 		loadPreferences();
@@ -118,15 +119,15 @@ public class ZeroSequencesTooShort extends MolecularDataAlterer  implements Alte
 	}
 	/*.................................................................................................................*/
 	/** Called to alter data in those cells selected in table*/
-	public int alterData(CharacterData cData, MesquiteTable table,  UndoReference undoReference){
-		if (!(cData instanceof MolecularData))
-			return ResultCodes.INCOMPATIBLE_DATA;
+	public boolean trimMatrix(CharacterData cdata, UndoReference undoReference) {
+		if (!(cdata instanceof MolecularData))
+			return false;
 		if (okToInteractWithUser(CAN_PROCEED_ANYWAY, "Querying about options")){ //need to check if can proceed
 			if (!queryOptions())
-				return ResultCodes.USER_STOPPED;
+				return false;
 		}
 		boolean found = false;
-		MolecularData data = (MolecularData)cData;
+		MolecularData data = (MolecularData)cdata;
 		CharacterState cs = null;
 		boolean changed = false;
 		for (int it = 0; it<data.getNumTaxa(); it++) {
@@ -146,7 +147,7 @@ public class ZeroSequencesTooShort extends MolecularDataAlterer  implements Alte
 			data.notifyListeners(this, new Notification(CharacterData.DATA_CHANGED));
 			data.notifyInLinked(new Notification(MesquiteListener.DATA_CHANGED));
 		}
-		return ResultCodes.SUCCEEDED;
+		return changed;
 	}
 	/*.................................................................................................................*/
 	public boolean showCitation() {

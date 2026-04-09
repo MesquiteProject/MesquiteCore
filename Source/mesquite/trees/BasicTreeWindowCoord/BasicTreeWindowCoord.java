@@ -210,7 +210,7 @@ public class BasicTreeWindowCoord extends FileInit {
 			if (commandName.equalsIgnoreCase("editingTreeWindow"))
 				treeWindowTask = (TreeWindowMaker)hireNamedEmployee(TreeWindowMaker.class, "$ #BasicTreeWindowMaker edit", taxa);
 			else
-				treeWindowTask= (TreeWindowMaker)hireCompatibleEmployee(TreeWindowMaker.class, taxa, "Tree window style");
+				treeWindowTask= (TreeWindowMaker)hireCompatibleEmployee(TreeWindowMaker.class, taxa, "Tree window style");  // with source
 			if (treeWindowTask !=null){
 				treeWindowTask.doCommand("makeTreeWindow", getProject().getTaxaReferenceInternal(taxa), checker);
 				treeWindows.addElement(treeWindowTask.getModuleWindow(), false);

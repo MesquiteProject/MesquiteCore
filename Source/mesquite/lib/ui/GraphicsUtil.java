@@ -13,6 +13,7 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
  */
 package mesquite.lib.ui;
 
+import java.awt.AlphaComposite;
 import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.Component;
@@ -271,6 +272,17 @@ public class GraphicsUtil {
 		Arc2D arc = new Arc2D.Double(x,y,width,height,startingAngle,  angleExtent, Arc2D.OPEN);
 		g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
 		g2.draw(arc);
+	}
+	/*_________________________________________________*/
+	public static void drawArc(Graphics2D g2, double x, double y, double width, double height, double startingAngle, double angleExtent, float thickness) {
+		Arc2D arc = new Arc2D.Double(x,y,width,height,startingAngle,  angleExtent, Arc2D.OPEN);
+		BasicStroke wideStroke = new BasicStroke(thickness);
+
+		Stroke oldStroke = g2.getStroke();
+		g2.setStroke(wideStroke);
+		g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+		g2.draw(arc);
+		g2.setStroke(oldStroke);
 	}
 	/*_________________________________________________*/
 	public static void drawArc(Graphics g, double x, double y, double width, double height, double startingAngle, double angleExtent) {
@@ -791,13 +803,46 @@ public class GraphicsUtil {
 	public static void drawTransparentLine (Graphics g, int x, int y, int w, int h, Color color, double thickness) {
 		Composite composite = ColorDistribution.getComposite(g);
 		ColorDistribution.setTransparentGraphics3(g);		
+		Color oldColor = g.getColor();
 		g.setColor(color);
 		drawLine(g, x, y, w, h, thickness);
+		g.setColor(oldColor);
+		ColorDistribution.setComposite(g, composite);		
+	}
+	public static void drawVeryTransparentLine (Graphics g, double x, double y, double w, double h, Color color, double thickness) {
+		Composite composite = ColorDistribution.getComposite(g);
+		ColorDistribution.setTransparentGraphics01(g);		
+		Color oldColor = g.getColor();
+		g.setColor(color);
+		drawLine(g, x, y, w, h, thickness);
+		g.setColor(oldColor);
+		ColorDistribution.setComposite(g, composite);		
+	}
+	public static void drawTransparentLine (Graphics g, double x, double y, double w, double h, Color color, double thickness) {
+		Composite composite = ColorDistribution.getComposite(g);
+		ColorDistribution.setTransparentGraphics3(g);		
+		Color oldColor = g.getColor();
+		g.setColor(color);
+		drawLine(g, x, y, w, h, thickness);
+		g.setColor(oldColor);
+		ColorDistribution.setComposite(g, composite);		
+	}
+	public static void drawTransparentLine (Graphics g, double x, double y, double w, double h, Color color, double thickness, AlphaComposite tComposite) {
+		Composite composite = ColorDistribution.getComposite(g);
+		Color oldColor = g.getColor();
+	 ColorDistribution.setComposite(g, tComposite);	
+		g.setColor(color);
+		drawLine(g, x, y, w, h, thickness);
+		ColorDistribution.setTransparentGraphics(g, tComposite);	
+	
+		drawLine(g, x, y, w, h, thickness);
+		g.setColor(oldColor);
 		ColorDistribution.setComposite(g, composite);		
 	}
 	public static void fillTransparentRect (Graphics g, int x, int y, int w, int h, Color color, double thickness) {
 		Composite composite = ColorDistribution.getComposite(g);
 		ColorDistribution.setTransparentGraphics3(g);		
+		Color oldColor = g.getColor();
 		g.setColor(color);
 		g.fillRect(x,y,w, h);
 		ColorDistribution.setComposite(g, composite);		
@@ -828,6 +873,7 @@ public class GraphicsUtil {
 		if (transparency == 0)
 			return;
 		Composite composite = ColorDistribution.getComposite(g);
+		Color c = g.getColor();
 		if (transparency == 2)
 			ColorDistribution.setTransparentGraphics2(g);		
 		else if (transparency == 3)
@@ -836,7 +882,8 @@ public class GraphicsUtil {
 			ColorDistribution.setTransparentGraphics5(g);		
 		g.setColor(color);
 		g.fill(poly);
-		ColorDistribution.setComposite(g, composite);		
+		ColorDistribution.setComposite(g, composite);	
+		g.setColor(c);
 	}
 	public static void setTransparentGraphics (Graphics g, int transparency) {
 		if (transparency == 2)

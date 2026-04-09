@@ -28,6 +28,7 @@ import javax.accessibility.AccessibleContext;
 import mesquite.lib.CommandChecker;
 import mesquite.lib.Journal;
 import mesquite.lib.Listable;
+import mesquite.lib.ListableVector;
 import mesquite.lib.MesquiteCommand;
 import mesquite.lib.MesquiteEvent;
 import mesquite.lib.MesquiteInteger;
@@ -178,8 +179,10 @@ public class MesquiteMenuItem extends MenuItem implements ActionListener {
 	}
 	public void resetEnable() {
 		if (specification != null){
-			if (specification instanceof MesquiteSubmenuSpec && ((MesquiteSubmenuSpec)specification).getBehaviorIfNoChoice() == MesquiteSubmenuSpec.ONEMENUITEM_ZERODISABLE)
-				setEnabled(false);
+			if (specification instanceof MesquiteSubmenuSpec && ((MesquiteSubmenuSpec)specification).getBehaviorIfNoChoice() == MesquiteSubmenuSpec.ONEMENUITEM_ZERODISABLE) {
+				ListableVector v = specification.getListableVector();
+				setEnabled(!(v == null || v.size()==0));
+			}
 			else
 				setEnabled(specification.isEnabled());
 		}

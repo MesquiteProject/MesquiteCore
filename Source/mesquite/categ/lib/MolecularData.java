@@ -23,6 +23,7 @@ import mesquite.lib.MesquiteMessage;
 import mesquite.lib.MesquiteString;
 import mesquite.lib.MesquiteStringBuffer;
 import mesquite.lib.NameReference;
+import mesquite.lib.ObjectArray;
 import mesquite.lib.StringUtil;
 import mesquite.lib.characters.CharacterData;
 import mesquite.lib.characters.CharacterState;
@@ -365,6 +366,10 @@ public class MolecularData extends CategoricalData {
 			inversions = newValues;
 		}
 		return super.deleteTaxa(starting, num);
+	}
+	public boolean moveTaxaToDestinations(int[] destinations){
+		ObjectArray.movePartsToDestinations(inversions, destinations);
+		return super.moveTaxaToDestinations(destinations);
 	}
 	/**moves num taxa from position "starting" to just after position "justAfter"; returns true iff successful.*/
 	public boolean moveTaxa(int starting, int num, int justAfter){

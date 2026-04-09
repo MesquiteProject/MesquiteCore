@@ -591,7 +591,7 @@ public abstract class EmployerEmployee extends MenuOwner implements HNode, Lista
 	
 	/* ................................................................................................................. */
 	/**
-	 * Suppresses use of UI for all employees. E.g., for parallelization. Currently affects only menu bars	 */
+	 * Suppresses use of UI for all employees. E.g., for parallelization. Currently affects only menu bars. See also setAutoSnapshotAsEmployee in MesquiteModule	 */
 	public void noUIForEmployeeBranch() {
 		setUseMenubar(false);
 		if (employees == null)
@@ -1132,12 +1132,16 @@ public abstract class EmployerEmployee extends MenuOwner implements HNode, Lista
 				if (started)
 					started = mb.startJob(null, null, false);
 				if (started)
+					started = mb.superStartJobAfter(null, null, false);
+				if (started)
 					mb.incrementNumStarts();
 			}
 			else {
 				started = mb.superStartJob(arguments, condition, false);
 				if (started)
 					started = mb.startJob(arguments, condition, false);
+				if (started)
+					started = mb.superStartJobAfter(null, null, false);
 				if (started)
 					mb.incrementNumStarts();
 			}

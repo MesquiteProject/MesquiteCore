@@ -29,6 +29,8 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.io.Writer;
+import java.lang.management.ManagementFactory;
+import java.lang.management.OperatingSystemMXBean;
 import java.lang.reflect.Method;
 import java.net.MalformedURLException;
 import java.net.URI;
@@ -44,11 +46,15 @@ import java.util.Vector;
 
 import javax.imageio.ImageIO;
 
+import org.apache.commons.math3.distribution.BinomialDistribution;
+
 import mesquite.lib.Associable;
+import mesquite.lib.Binomial;
 import mesquite.lib.CommandChecker;
 import mesquite.lib.CommandRecord;
 import mesquite.lib.CommandThread;
 import mesquite.lib.ConsoleThread;
+import mesquite.lib.Debugg;
 import mesquite.lib.EmployeeNeed;
 import mesquite.lib.EmployerEmployee;
 import mesquite.lib.FileElement;
@@ -57,8 +63,10 @@ import mesquite.lib.ListableVector;
 import mesquite.lib.Listened;
 import mesquite.lib.LogWindow;
 import mesquite.lib.MainThread;
+import mesquite.lib.MesquiteBigDecimal;
 import mesquite.lib.MesquiteBoolean;
 import mesquite.lib.MesquiteCommand;
+import mesquite.lib.MesquiteDouble;
 import mesquite.lib.MesquiteFile;
 import mesquite.lib.MesquiteInteger;
 import mesquite.lib.MesquiteMacro;
@@ -137,26 +145,28 @@ public class Mesquite extends MesquiteTrunk
 {
 	/*.................................................................................................................*/
 	public String getCitation() {
-		return "Maddison, W.P. & D.R. Maddison. 2025. Mesquite: A modular system for evolutionary analysis.  Version " + getVersion() + ".  https://www.mesquiteproject.org";
+		return "Maddison, W.P. & D.R. Maddison. 2026. Mesquite: A modular system for evolutionary analysis.  Version " + getVersion() + ".  https://www.mesquiteproject.org";
 	}
 	/*.................................................................................................................*/
+	//RELEASEPROTOCOL
 	public String getVersion() {
-		return "4.02";
+		return "4.03";
 	}
 
 	/*.................................................................................................................*/
 	public int getVersionInt() {
-		return 402;
+		return 403;
 	}
 	/*.................................................................................................................*/
 	public double getMesquiteVersionNumber(){
-		return 4.02;
+		return 4.03;
 	}
 	/*.................................................................................................................*/
 	public String getDateReleased() {
-		return "October 2025"; //"April 2007";
+		return "April 2026"; //"April 2007";
 	}
 	/*.................................................................................................................*/
+	//RELEASEPROTOCOL
 	public boolean isPrerelease(){
 		return false;
 	}
@@ -167,14 +177,10 @@ public class Mesquite extends MesquiteTrunk
 		//See MesquiteModule for version reporter and error reporter URLs
 		//See Installer for updates.xml URLs
 
-		/*if (true)
-			return "https://raw.githubusercontent.com/wmaddisn/Tuatara/refs/heads/master/docs/notices.xml";   
-
-		else */
-			if (!isPrerelease() && !debugMode)
+		if (!isPrerelease() && !debugMode)
 			return "http://www.mesquiteproject.org/noticesAndUpdates/notices.xml";   
 		else
-			return "https://raw.githubusercontent.com/MesquiteProject/MesquiteCore/development/noticesAndUpdates/noticesPrerelease.xml";   
+			return "https://raw.githubusercontent.com/MesquiteProject/MesquiteCore/development/noticesAndUpdatesForPrerelease/notices.xml";   
 
 
 		/* Version 3.2 through 3.4 
@@ -466,7 +472,7 @@ public class Mesquite extends MesquiteTrunk
 		if (verboseStartup) System.out.println("main init 7");
 
 
-	String logPath = supportFilesPath + sep + MesquiteTrunk.logFileName; 
+		String logPath = supportFilesPath + sep + MesquiteTrunk.logFileName; 
 		File logFile = new File(logPath);
 
 		boolean logFileExistsButCantWrite = (logFile.exists() &&!logFile.canWrite());
@@ -501,7 +507,8 @@ public class Mesquite extends MesquiteTrunk
 		logInitString += "https://www.mesquiteproject.org\n";
 		if (StringUtil.notEmpty(MesquiteModule.getSpecialVersion()))
 			logInitString  +="  " + MesquiteModule.getSpecialVersion()+ "\n";
-		logInitString  += ("\nCopyright (c) 1997-2025 W. Maddison and D. Maddison\n");
+		//RELEASEPROTOCOL
+		logInitString  += ("\nCopyright (c) 1997-2026 W. Maddison and D. Maddison\n");
 		logInitString  += "The basic Mesquite package (class library and basic modules) is free software; you can redistribute it and/or modify it under the terms of the GNU Lesser General Public License. "
 				+ "  Mesquite is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY.  For details on license and "
 				+ "lack of warranty see the GNU Lesser General Public License by selecting \"Display License\" from the Window menu or at www.gnu.org\n"
@@ -594,7 +601,24 @@ public class Mesquite extends MesquiteTrunk
 		else
 			mrj = "; MRJ version " + mrj;
 		if (verboseStartup) System.out.println("main init 21");
-		logln("Running under Java " + System.getProperty("java.version") +"; virtual machine by " + System.getProperty("java.vendor") + mrj + " on " + System.getProperty("os.name") + " " + System.getProperty("os.version") + " (architecture: " + System.getProperty("os.arch") + ")");
+		double memGB = Runtime.getRuntime().maxMemory()/1073741824.0;
+		String phyMemGB = "";
+        try {
+        	OperatingSystemMXBean osBean = ManagementFactory.getOperatingSystemMXBean();
+
+        // Check if the platform-specific com.sun.management.OperatingSystemMXBean is available
+        if (osBean instanceof com.sun.management.OperatingSystemMXBean) {
+            com.sun.management.OperatingSystemMXBean sunOsBean = 
+                (com.sun.management.OperatingSystemMXBean) osBean;
+            phyMemGB = "; on a machine with total physical memory: " + MesquiteDouble.toStringDigitsSpecified(sunOsBean.getTotalPhysicalMemorySize()/1073741824.0, 2) + " GB.";
+        } 
+        }
+        catch (Throwable t){
+        }
+
+		logln("Running under Java " + System.getProperty("java.version") +"; virtual machine by " + System.getProperty("java.vendor") + mrj 
+				+ " on " + System.getProperty("os.name") + " " + System.getProperty("os.version") + " (architecture: " + System.getProperty("os.arch") + ")"
+				+ "; with allocated maximum memory: " + MesquiteDouble.toStringDigitsSpecified(memGB, 2) + " GB" + phyMemGB);
 		logln("User: " + System.getProperty("user.name") );
 	//	logln(" ");
 		/* EMBEDDED add following if embedded *
@@ -643,7 +667,6 @@ public class Mesquite extends MesquiteTrunk
 		tempDirectory = createTempDirectory();
 
 
-
 		/*----*/
 
 		appsDirectory = mesquiteDirectoryPath + "apps";
@@ -682,6 +705,12 @@ public class Mesquite extends MesquiteTrunk
 		if (InterfaceManager.enabled){
 			interfaceManager = new InterfaceManager();
 			//InterfaceManager.importSettingsFiles();
+		}
+		if (isMacOSX()){
+			String containing = StringUtil.getAllButLastItem(mesquiteDirectoryPath, MesquiteFile.fileSeparator, "/");
+			String dmgFilePath = MesquiteFile.getDirectoryPathFromFilePath(containing) + ".onDMG.txt";
+			if (MesquiteFile.fileExists(dmgFilePath))
+				alert("You appear to be running Mesquite within the downloaded disk image, which is read-only and which will hinder Mesquite's function.\n\nPlease copy Mesquite_Folder to your computer's storage before using it.");
 		}
 
 		ModuleLoader mBL = new ModuleLoader(this);
@@ -921,7 +950,7 @@ public class Mesquite extends MesquiteTrunk
 			addMenuItem(helpMenu, "Test Error Reporting", makeCommand("testError", this));
 		
 		postExtraPackagesReport();
-
+		
 	} 
 
 	/*.................................................................................................................*/
@@ -1591,7 +1620,7 @@ public class Mesquite extends MesquiteTrunk
 			pt.settempID(arguments);
 			pr.setThread(pt);
 			pt.start();
-			return null;
+		return null;
 		}
 	}
 	

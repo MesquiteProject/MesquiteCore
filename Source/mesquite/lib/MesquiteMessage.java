@@ -31,8 +31,12 @@ public class MesquiteMessage extends Debugg {
 	public static void warnProgrammer(String s) {
 		MesquiteThread.suspendThreadLogging();
 		MesquiteModule.showLogWindow(true);
-		if (MesquiteTrunk.mesquiteTrunk !=null)
-			MesquiteTrunk.mesquiteTrunk.logln(s);
+		if (MesquiteTrunk.mesquiteTrunk !=null){
+			if (MesquiteTrunk.developmentMode)
+				printStackTrace(s);
+			else
+				MesquiteTrunk.mesquiteTrunk.logln(s);
+		}
 		else
 			System.out.println(s);
 		MesquiteThread.resumeThreadLogging();
@@ -52,13 +56,20 @@ public class MesquiteMessage extends Debugg {
 			System.out.println(s);
 		MesquiteThread.resumeThreadLogging();
 	}
-	public static void warnUser(String s) {
+	public static void warnUser(String s, boolean stackTraceIfDevelopment) {
 		MesquiteThread.suspendThreadLogging();
-		if (MesquiteTrunk.mesquiteTrunk !=null)
+		if (MesquiteTrunk.mesquiteTrunk !=null) {
+			if (stackTraceIfDevelopment && MesquiteTrunk.developmentMode)
+				printStackTrace(s);
+			else
 			MesquiteTrunk.mesquiteTrunk.logln(s);
+		}
 		else
 			System.out.println(s);
 		MesquiteThread.resumeThreadLogging();
+	}
+	public static void warnUser(String s) {
+		warnUser(s, false);
 	}
 	public static void discreetNotifyUser( String s) {
 		MesquiteThread.suspendThreadLogging();

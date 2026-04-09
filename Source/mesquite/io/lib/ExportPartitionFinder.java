@@ -257,7 +257,7 @@ public abstract class ExportPartitionFinder extends FileInterpreterI {
 	}
 	/*.................................................................................................................*/
 	public void appendPhylipStateToBuffer(CharacterData data, int ic, int it, MesquiteStringBuffer outputBuffer){
-		data.statesIntoStringBuffer(ic, it, outputBuffer, false);
+		data.statesIntoStringBuffer(ic, it, outputBuffer, false, true);
 	}
 	/*.................................................................................................................*/
 	public boolean getExportOptions(boolean dataSelected, boolean taxaSelected){

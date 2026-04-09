@@ -62,6 +62,7 @@ import mesquite.lib.CommandChecker;
 import mesquite.lib.CommandRecord;
 import mesquite.lib.Commandable;
 import mesquite.lib.CommandableOwner;
+import mesquite.lib.Debugg;
 import mesquite.lib.DoubleArray;
 import mesquite.lib.EmployeeNeed;
 import mesquite.lib.IntegerArray;
@@ -321,7 +322,10 @@ public class BasicDataWindowMaker extends DataWindowMaker implements Commandable
 			bdw.toFront();
 		}
 	}
-
+	public void focusOnCell(int ic, int it, boolean selectAlso){
+		if (bdw != null)
+			bdw.focusOnCell(ic, it, selectAlso);
+	}
 	/* ................................................................................................................. */
 	public CharacterData getCharacterData() {
 		if (data.isDisposed())
@@ -1584,7 +1588,7 @@ class BasicDataWindow extends TableWindow implements MesquiteListener {
 			return matrixInfoPanel;
 		}
 		else if (checker.compare(this.getClass(), "Goes to the next matrix", null, commandName, "nextMatrix")) { 
-			// figure out what is next matrix
+		// figure out what is next matrix
 			MesquiteProject proj = data.getProject();
 			int im = proj.getMatrixNumber(data);
 			int imNext = 0;
@@ -5306,6 +5310,7 @@ class MatrixTable extends mesquite.lib.table.CMTable implements MesquiteDroppedF
 
 	/* ................................................................................................................. */
 	protected void clearIt(boolean cut) {
+		
 		notifySuppressed = true;
 		boolean namesChanged = false;
 		boolean changed = false;
@@ -5453,8 +5458,10 @@ class MatrixTable extends mesquite.lib.table.CMTable implements MesquiteDroppedF
 			String ws = "Illegal entry for character " + (column + 1) + " in taxon " + (row + 1) + ": " + result.toString();
 			if (turnOffWarnings || MesquiteThread.isScripting())
 				window.ownerModule.logln(ws);
-			else
+			else {
+				data.showCell(column, row, false);
 				turnOffWarnings = !AlertDialog.query(window, "Illegal character state", ws, "OK", "Don't warn again");
+			}
 		}
 	}
 

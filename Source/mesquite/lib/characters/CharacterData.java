@@ -36,6 +36,7 @@ import mesquite.lib.FileElement;
 import mesquite.lib.Identifiable;
 import mesquite.lib.IntegerArray;
 import mesquite.lib.Listable;
+import mesquite.lib.ListableVector;
 import mesquite.lib.LongArray;
 import mesquite.lib.LowLevelListener;
 import mesquite.lib.MesquiteBoolean;
@@ -66,6 +67,7 @@ import mesquite.lib.StringUtil;
 import mesquite.lib.UndoInstructions;
 import mesquite.lib.duties.CharMatrixManager;
 import mesquite.lib.duties.CharactersManager;
+import mesquite.lib.duties.DataWindowMaker;
 import mesquite.lib.duties.ElementManager;
 import mesquite.lib.misc.AttachedNotesVector;
 import mesquite.lib.misc.ChangeAuthority;
@@ -74,7 +76,9 @@ import mesquite.lib.misc.ChangeHistory;
 import mesquite.lib.table.MesquiteTable;
 import mesquite.lib.taxa.Taxa;
 import mesquite.lib.taxa.Taxon;
+import mesquite.lib.tree.MesquiteTree;
 import mesquite.lib.tree.Tree;
+import mesquite.lib.tree.TreeVector;
 import mesquite.lib.ui.AlertDialog;
 import mesquite.lib.ui.ColorDistribution;
 import mesquite.lib.ui.ColorTheme;
@@ -1797,7 +1801,7 @@ public abstract class CharacterData extends FileElement implements MesquiteListe
 	public void equalizeCharacter(CharacterData oData, int oic, int ic){
 		//doesn't yet incorporate colors, etc
 		CharacterState cs2 = null;
-		if (oData.characterNames != null && oic<oData.characterNames.length){
+		if (ic < characterNames.length && oData.characterNames != null && oic<oData.characterNames.length){
 			characterNames[ic] = oData.characterNames[oic];
 			notifyOfChangeLowLevel(MesquiteListener.NAMES_CHANGED, ic, -1, 0);  
 		}
@@ -1903,6 +1907,44 @@ public abstract class CharacterData extends FileElement implements MesquiteListe
 			taxaInfo.deleteParts(starting, num);
 		uncheckThread();
 		return true;
+	}
+
+	public boolean moveTaxaToDestinations(int[] destinations){
+		if (!checkThread(false))
+			return false;
+		if (footnotes !=null) {
+			StringArray.moveRowsToDestinations(footnotes, destinations);
+		}
+		if (cellObjectsDisplay !=null) {
+			Bits.moveRowsToDestinations(cellObjectsDisplay, destinations);
+		}
+		if (changedSinceSave !=null) {
+			Bits.moveRowsToDestinations(changedSinceSave, destinations);
+		}
+		if (firstApplicable !=null) {
+			IntegerArray.movePartsToDestinations(firstApplicable, destinations);
+		}
+		if (lastApplicable !=null) {
+			IntegerArray.movePartsToDestinations(lastApplicable, destinations);
+		}
+
+
+		if (cellObjects != null && cellObjects.size()>0){//Vector of arrays of objects that are attached to cells
+			for (int k =0; k<cellObjects.size(); k++){
+				Object2DArray objArray = (Object2DArray)cellObjects.elementAt(k);
+				Object[][] objects = objArray.getMatrix();
+				Object2DArray.moveRowsToDestinations(objects, destinations);
+				objArray.setMatrix(objects);
+			}
+		}
+		LongArray.movePartsToDestinations(taxaIDs, destinations);
+		LongArray.movePartsToDestinations(doubleCheckTaxaIDs, destinations);
+
+		if (taxaInfo != null)
+			taxaInfo.movePartsToDestinations(destinations);
+		uncheckThread();
+		return true;
+
 	}
 
 	/**moves num taxa from position "starting" to just after position "justAfter"; returns true iff successful.*/
@@ -2060,6 +2102,7 @@ public abstract class CharacterData extends FileElement implements MesquiteListe
 		MesquiteMessage.println("in taxa " + s + "]");
 	}
 	 */
+
 	private void reconcileTaxa(int code){
 		if (taxa == null)
 			return;
@@ -2068,21 +2111,40 @@ public abstract class CharacterData extends FileElement implements MesquiteListe
 		int newNumTaxa = taxa.getNumTaxa();
 		if (newNumTaxa == numTaxa) {
 			if (code== MesquiteListener.PARTS_CHANGED || code== MesquiteListener.PARTS_MOVED) {
-				/*go through list of taxa.  If any taxon is not in sequence expected from Taxa then find where it is in the list of taxaID's
-				and move it into place*/
-				for (int i = 0; i<taxa.getNumTaxa(); i++){ //!!!!! && taxa.getTaxon(i) != null; i++){ //go through list of taxa
+				int[] destinations = new int[numTaxa];
+				for (int i = 0; i<numTaxa; i++){ //!!!!! && taxa.getTaxon(i) != null; i++){ //go through list of taxa
 					if (taxa.getTaxon(i).getID() != taxaIDs[i]){ //taxon i is not in sequence expected from Taxa
 						int loc = LongArray.indexOf(taxaIDs, taxa.getTaxon(i).getID());
 						if (loc <0) {
 							MesquiteTrunk.mesquiteTrunk.discreetAlert( "Error in CharacterData: taxaID's cannot be reconciled with current Taxa");
 							return;
 						}
-						else {
-							//move taxon that should be here into this place
-							moveTaxa(loc, 1, i-1);
+						else 
+							destinations[loc] = i;
+					}
+					else destinations[i] = i;
+				}
+				moveTaxaToDestinations(destinations);
+
+				/*old style reconcilation
+
+					/*go through list of taxa.  If any taxon is not in sequence expected from Taxa then find where it is in the list of taxaID's
+					and move it into place*
+					for (int i = 0; i<taxa.getNumTaxa(); i++){ //!!!!! && taxa.getTaxon(i) != null; i++){ //go through list of taxa
+						if (taxa.getTaxon(i).getID() != taxaIDs[i]){ //taxon i is not in sequence expected from Taxa
+							int loc = LongArray.indexOf(taxaIDs, taxa.getTaxon(i).getID());
+							if (loc <0) {
+								MesquiteTrunk.mesquiteTrunk.discreetAlert( "Error in CharacterData: taxaID's cannot be reconciled with current Taxa");
+								return;
+							}
+							else {
+								//move taxon that should be here into this place
+								moveTaxa(loc, 1, i-1);
+							}
 						}
 					}
 				}
+				 */
 				Notification notification = new Notification(MesquiteListener.PARTS_CHANGED);
 				notification.setSubcodes(new int[] {MesquiteListener.TAXA_CHANGED});
 				notifyListeners(this, notification);
@@ -2298,6 +2360,21 @@ public abstract class CharacterData extends FileElement implements MesquiteListe
 	EOL is returned if data are interleaved and end of line found.  If there is an error or a comment, an error message or the comment,
 	respectively, will be returned in the result MesquiteString.*/
 	public abstract int setState(int ic, int it, Parser parser, boolean fromEditor, MesquiteString result);
+
+	/*..........................................  CategoricalData  ..................................................*/
+	/** appends to buffer string describing the state(s) of character ic in taxon it.�*/
+	public void statesIntoStringBuffer(int ic, int it, MesquiteStringBuffer sb, boolean forDisplay, boolean useDefaultSymbols){
+		if (useDefaultSymbols) {
+			if (isInapplicable(ic,it))
+				sb.append(defaultInapplicableChar);
+			else if (isUnassigned(ic,it))
+				sb.append(defaultInapplicableChar);
+			else 
+				statesIntoStringBuffer(ic,it,sb, forDisplay, true, true);
+		}
+		else 
+			statesIntoStringBuffer(ic,it,sb, forDisplay, true, true);
+	}
 
 	/**Override to provide faster and more risky state setting for reading large files.  Assumes it and ic are in bounds, and parser string is not blank*/
 	public int setStateQuickNexusReading(int ic, int it, Parser parser){
@@ -4188,6 +4265,30 @@ public abstract class CharacterData extends FileElement implements MesquiteListe
 	public Tree getBasisTree(){
 		return basisTree;
 	}
+	public boolean selectLinkedTrees(MesquiteProject project, boolean notify){
+		ListableVector treeVectors = project.getTreeVectors();
+		boolean selAny = false;
+
+		for (int j=0; j<treeVectors.size(); j++){
+			boolean sel = false;
+			TreeVector trees = (TreeVector)treeVectors.elementAt(j);
+			//now we have this tree vector. Let's see if this matrix has matches among the trees, and select those trees
+			if (trees.getTaxa() == getTaxa()){
+				for (int itr = 0; itr<trees.size(); itr++){
+					MesquiteTree tree = (MesquiteTree) trees.getTree(itr);
+					CharacterData d = tree.findLinkedMatrix(project);
+					if (d == this){
+						trees.setSelected(itr, true);
+						sel = true;
+					}
+				}
+				selAny = selAny || sel;
+				if (sel && notify)
+					trees.notifyListeners(this, new Notification(MesquiteListener.SELECTION_CHANGED));	
+			}
+		}
+		return selAny;
+	}
 	/* ---------------- for HNode interface ----------------------*/
 	public Image getHImage(){
 		return null;
@@ -4220,6 +4321,13 @@ public abstract class CharacterData extends FileElement implements MesquiteListe
 			return (MesquiteModule)((Commandable)getManager()).doCommand("showDataWindow", getFile().getProject().getCharMatrixReferenceInternal(this), CommandChecker.defaultChecker);
 		}
 		return null;
+	}
+	public void showCell(int ic, int it, boolean selectAlso){
+		MesquiteModule mb = showMatrix();
+		if (mb != null){
+			DataWindowMaker dwm = (DataWindowMaker)mb;
+			dwm.focusOnCell(ic, it, selectAlso);
+		}
 	}
 	public void showList(){
 		if (getManager() != null && getFile() != null) 

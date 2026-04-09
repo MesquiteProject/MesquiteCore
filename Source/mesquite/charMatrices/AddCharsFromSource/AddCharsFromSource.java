@@ -4,7 +4,7 @@ import mesquite.categ.lib.CategDataAlterer;
 import mesquite.lib.MesquiteInteger;
 import mesquite.lib.ResultCodes;
 import mesquite.lib.UndoReference;
-import mesquite.lib.characters.AltererWholeCharacterAddRemove;
+import mesquite.lib.characters.AltererDataRemove;
 import mesquite.lib.characters.CharacterData;
 import mesquite.lib.characters.CharacterDistribution;
 import mesquite.lib.characters.CharacterState;
@@ -12,7 +12,7 @@ import mesquite.lib.duties.CharSourceCoordObed;
 import mesquite.lib.table.MesquiteTable;
 
 /* ======================================================================== */
-public class AddCharsFromSource extends CategDataAlterer implements AltererWholeCharacterAddRemove {
+public class AddCharsFromSource extends CategDataAlterer { //implements AltererWholeCharacterAddRemove {
 	/*.................................................................................................................*/
 	public boolean isPrerelease(){
 		return false; 

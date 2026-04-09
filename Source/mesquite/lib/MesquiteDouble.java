@@ -771,6 +771,10 @@ public class MesquiteDouble implements Listable, Nameable {
 		}
 		s.append( Long.toString((long)(d*10.0)));
 	}
+	/** Returns string version of value, showing 4 digits*/
+	public static String toString4(double d) {  
+		return toStringDigitsSpecified(d, 4);
+	}
 	/** Returns string version of value, showing the given number of digits*/
 	public static String toStringDigitsSpecified(double d, int digits) {  
 		if (d == MesquiteDouble.unassigned)

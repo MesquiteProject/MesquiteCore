@@ -79,7 +79,7 @@ public class Bits implements Listable, Nameable {
 		for (int i=0; i<bools.length; i++)
 			bools[i] = isBitOn(i);
 		return bools;
-}
+	}
 
 	public void setBits(Bits b) {
 		if (b == null)
@@ -245,7 +245,7 @@ public class Bits implements Listable, Nameable {
 
 	/* ........................................................... */
 	//NOTE: this assumes, probably, that the incoming matrix is complete, i.e. all d[i].length is the same for all i's
-public static boolean[][] deleteColumnsFlagged(boolean[][] d, Bits toDelete) {
+	public static boolean[][] deleteColumnsFlagged(boolean[][] d, Bits toDelete) {
 		if (d == null)
 			return null;
 		if (d.length <= 0)
@@ -319,6 +319,20 @@ public static boolean[][] deleteColumnsFlagged(boolean[][] d, Bits toDelete) {
 		setBit(second, firstOn);
 	}
 
+	/*...........................................................*/
+	public void movePartsToDestinations( int[] destinations) {
+		if (destinations == null)
+			return;
+		Bits newBits = new Bits(numBits);
+		for (int i=0; i<numBits; i++) {
+			if (i<destinations.length)
+				newBits.setBit(destinations[i], isBitOn(i));
+			else 
+				newBits.setBit(i, isBitOn(i));
+		}
+		for (int i = 0; i < numBits; i++)
+			setBit(i, newBits.isBitOn(i));
+	}
 	/* ........................................................... */
 	public void moveParts(int starting, int num, int justAfter) {
 		if (num <= 0 || starting >= numBits || (justAfter >= starting && justAfter <= starting + num - 1)) // starting???
@@ -536,6 +550,12 @@ public static boolean[][] deleteColumnsFlagged(boolean[][] d, Bits toDelete) {
 		for (int i = 0; i < numInts && i < other.numInts; i++)
 			array[i] = array[i] & other.array[i];
 	}
+	public boolean anyCommonBits(Bits other) {
+		for (int i = 0; i < numInts && i < other.numInts; i++)
+			if ((array[i] & other.array[i]) != 0)
+				return true;
+		return false;
+	}
 
 	/**
 	 * clears any bits that are on in the other Bits
@@ -625,7 +645,7 @@ public static boolean[][] deleteColumnsFlagged(boolean[][] d, Bits toDelete) {
 				flag = 2;
 		}
 		return false;
-		
+
 	}
 
 	public boolean isBitOn(int whichBit) {
@@ -665,7 +685,7 @@ public static boolean[][] deleteColumnsFlagged(boolean[][] d, Bits toDelete) {
 			startBit = 0;
 		int whichInt = startBit / SIZECHUNK;
 		for (int i = startBit; i < (whichInt + 1) * SIZECHUNK && i < numBits; i++) // check to see if it is in the first
-																					// int
+			// int
 			if (isBitOn(i) == on) // then we've found a bit that has the same value as "on"
 				return i;
 		// now let's check later Ints
@@ -674,7 +694,7 @@ public static boolean[][] deleteColumnsFlagged(boolean[][] d, Bits toDelete) {
 			// if array[i] == 0, then they are all off; if it is ==-1, then they are all on
 			// (that is, there are non off)
 			if (((array[i] != 0) && on) || ((array[i] != -1) && !on)) { // then we've found a block that has the same
-																		// value as on
+				// value as on
 				// now look to see which bit in the block has the correct value
 				for (int j = i * SIZECHUNK; j < (i + 1) * SIZECHUNK && j < numBits; j++)
 					if (isBitOn(j) == on) // then we've found the bit that has the same value as "on"
@@ -805,7 +825,7 @@ public static boolean[][] deleteColumnsFlagged(boolean[][] d, Bits toDelete) {
 				return i;
 		return -1;
 	}
-	
+
 	/*------------------------------------------*/
 	public int firstBitOff() {
 		for (int i = 0; i < numBits; i++)
@@ -1012,6 +1032,23 @@ public static boolean[][] deleteColumnsFlagged(boolean[][] d, Bits toDelete) {
 		}
 	}
 
+	/*...........................................................*/
+	public static void moveRowsToDestinations(boolean[][] d, int[] destinations){
+		if (d == null || d.length == 0 || destinations == null)
+			return;
+		int numRows = d[0].length;
+		boolean[] newValues = new boolean[numRows];
+		for (int column = 0; column<d.length; column++){
+			for (int i=0; i<numRows; i++) {
+				if (i<destinations.length)
+					newValues[destinations[i]]=d[column][i];
+				else 
+					newValues[i]=d[column][i];
+			}
+			for (int i=0; i<numRows; i++)
+				d[column][i]=newValues[i];
+		}
+	}
 	/* ........................................................... */
 	public static void moveRows(boolean[][] d, int starting, int num, int justAfter) { // DRM: new
 		if (num <= 0 || d == null || d.length == 0)

@@ -776,27 +776,7 @@ public abstract class ListWindow extends TableWindow implements KeyListener, Mes
 			table.repaintAll();
 		}
 		else if (checker.compare(this.getClass(), "Select by List in Clipboard", null, commandName, "selectByClipboard")) {
-			String[] clipboard = null; //{"uce-101", "uce-1084"};
-			clipboard = null;
-			Clipboard clip = Toolkit.getDefaultToolkit().getSystemClipboard();
-			Transferable t = clip.getContents(this);
-			try {
-
-				String s = (String) t.getTransferData(DataFlavor.stringFlavor);
-				if (s != null) {
-					clipboard = StringUtil.getLines(s);
-				}
-			} catch (Exception e) {
-				e.printStackTrace();
-			}
-			for (int im = 0; im < table.getNumRows(); im++){
-				if (StringArray.indexOf(clipboard, table.getRowNameTextForDisplay(im))>=0 || StringArray.indexOfTabbedToken(clipboard, table.getRowNameTextForDisplay(im), 0)>=0){
-					table.selectRow(im);
-					if (table.getRowAssociable() != null)
-						table.getRowAssociable().setSelected(im, true);
-				}
-			}
-			table.repaintAll();
+			selectByListInClipboard();
 
 		}
 		else if (checker.compare(this.getClass(), "Moves the selected rows ", "[row to move after; -1 if at start]", commandName, "moveSelectedTo")) {
@@ -855,6 +835,34 @@ public abstract class ListWindow extends TableWindow implements KeyListener, Mes
 		}
 		else
 			return  super.doCommand(commandName, arguments, checker);
+		return null;
+	}
+	protected void selectByListInClipboard(){
+		String[] clipboard = null; //{"uce-101", "uce-1084"};
+		clipboard = null;
+		Clipboard clip = Toolkit.getDefaultToolkit().getSystemClipboard();
+		Transferable t = clip.getContents(this);
+		try {
+
+			String s = (String) t.getTransferData(DataFlavor.stringFlavor);
+			if (s != null) {
+				clipboard = StringUtil.getLines(s);
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		char[] ePunc = getStandardEndDelimiterPunctuation();
+		for (int im = 0; im < table.getNumRows(); im++){
+			if (StringArray.indexOf(clipboard, table.getRowNameTextForDisplay(im), ePunc)>=0 || StringArray.indexOfTabbedToken(clipboard, table.getRowNameTextForDisplay(im), 0, ePunc)>=0){
+				table.selectRow(im);
+				if (table.getRowAssociable() != null)
+					table.getRowAssociable().setSelected(im, true);
+			}
+		}
+		table.repaintAll();
+
+	}
+	protected char[] getStandardEndDelimiterPunctuation(){
 		return null;
 	}
 
@@ -1193,7 +1201,7 @@ public abstract class ListWindow extends TableWindow implements KeyListener, Mes
 			int count =0;
 			int currentNumRows = owner.getNumberOfRows();
 			Object obj = getCurrentObject();
-
+			
 			//NOTE: this code allows reporting of what contiguous blocks were deleted, but causes full recalculations for each discontiguity
 			int row = currentNumRows-1;
 			int firstInBlockDeleted = -1;
@@ -1216,7 +1224,8 @@ public abstract class ListWindow extends TableWindow implements KeyListener, Mes
 			row = currentNumRows-1;
 			firstInBlockDeleted = -1;
 			lastInBlockDeleted = -1;
-			((Listened)getCurrentObject()).incrementNotifySuppress();
+			if (obj != null)
+				((Listened)obj).incrementNotifySuppress();
 
 
 

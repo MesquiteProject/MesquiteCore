@@ -16,8 +16,14 @@ package mesquite.lists.lib;
 import java.awt.Color;
 import java.awt.Graphics;
 
+import mesquite.lib.CommandChecker;
 import mesquite.lib.ListableVector;
+import mesquite.lib.MesquiteBoolean;
+import mesquite.lib.MesquiteCommand;
 import mesquite.lib.characters.CharacterData;
+import mesquite.lib.duties.NumberForMatrix;
+import mesquite.lib.ui.MesquiteCMenuItemSpec;
+import mesquite.lib.ui.MesquiteMenuSpec;
 
 
 
@@ -35,6 +41,9 @@ public abstract class CharMatricesListAssistant extends ListAssistant  {
 	 public String[] getDefaultModule() {
 	 	 	return new String[] {"#NumForCharMatrixList"};
 	 	 }
+	
+	/*======================================*/
+	
 	public void drawInCell(int ic, Graphics g, int x, int y,  int w, int h, boolean selected){
 	}
 	

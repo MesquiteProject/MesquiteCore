@@ -171,7 +171,7 @@ public class MiniScroll extends MousePanel implements MiniControl, Explainable, 
 	int sw = 0;
 	int sh = 0;
 
-	private boolean recalcPositions(Graphics g){
+	private boolean recalcPositions(Graphics g, boolean force){
 		Font f =  g.getFont();
 		if (f != oldFont || !(StringUtil.stringsEqual(oldText, text))){
 			FontMetrics fm = g.getFontMetrics(f);
@@ -181,7 +181,7 @@ public class MiniScroll extends MousePanel implements MiniControl, Explainable, 
 		}
 		oldText = text;
 		oldFont = f;
-		if (oldTextBoxWidth < sw + MesquiteModule.textEdgeCompensationWidth -1 || oldTextBoxHeight < sh + MesquiteModule.textEdgeCompensationHeight -1){
+		if (force || oldTextBoxWidth < sw + MesquiteModule.textEdgeCompensationWidth -1 || oldTextBoxHeight < sh + MesquiteModule.textEdgeCompensationHeight -1){
 			textBoxWidth = sw + MesquiteModule.textEdgeCompensationWidth; //34
 			textBoxHeight =  sh + MesquiteModule.textEdgeCompensationHeight; //18
 			oldTextBoxWidth = textBoxWidth;
@@ -262,12 +262,12 @@ public class MiniScroll extends MousePanel implements MiniControl, Explainable, 
 		text = tf.getText();
 		Graphics g = getGraphics();
 		if (g!= null){
-			recalcPositions(g);
+			recalcPositions(g, false);
 			g.dispose();
 		}
 		super.repaint();
 	}
-	boolean neverCalculated = true;
+	int calculated = 0;
 	public void paint(Graphics g) { //^^^
 		if (g instanceof PrintGraphics)
 			return;
@@ -278,10 +278,10 @@ public class MiniScroll extends MousePanel implements MiniControl, Explainable, 
 			MesquiteWindow.uncheckDoomed(this);
 			return;
 		}
-		if (neverCalculated){
-			if (recalcPositions(g)){
+		if (calculated<2){
+			if (recalcPositions(g, true)){
 				MesquiteWindow.uncheckDoomed(this);
-				neverCalculated = false;
+				calculated++;
 				return;
 			}
 		}
@@ -370,6 +370,12 @@ public class MiniScroll extends MousePanel implements MiniControl, Explainable, 
 				return;
 			decrementButton.setEnabled(currentValue>minValue);
 		}
+	}
+	public int getMinimumValue () {  
+		return (int)minValue;
+	}
+	public int getMaximumValue () {  
+		return (int)maxValue;
 	}
 	public void setMaximumValueLong (long i) { 
 		if (i!=maxValue) {

@@ -484,7 +484,7 @@ public class PhoneHomeUtil {
 		String noticesFromHome = null;
 		try{
 			noticesFromHome = MesquiteFile.getURLContentsAsString(url, -1, false);
-			if (MesquiteTrunk.debugMode)
+		if (MesquiteTrunk.debugMode)
 				MesquiteMessage.warnProgrammer("Phone home to " + url + " successful ");
 
 		} catch (Exception e) {
@@ -520,7 +520,9 @@ public class PhoneHomeUtil {
 		int lastVersionNoticed = phoneHomeRecord.getLastVersionNoticed();
 
 		//String name = mmi.getName();
-
+		int xmlLoc = noticesFromHome.indexOf("xml");
+		if (xmlLoc<0 || xmlLoc > 32 ||  noticesFromHome.indexOf("href")<12)  // a kludge against html!!!
+		return null;
 		Element root = XMLUtil.getRootXMLElementFromString("mesquite",noticesFromHome);
 		if (root==null)
 			return null;
@@ -573,7 +575,7 @@ public class PhoneHomeUtil {
 				//INSTALLER: recording update record for later use in dialog and in menu items.
 				//vvvvvvvvvvvvvvvvvvvv====INSTALL/UPDATE SYSTEM ====vvvvvvvvvvvvvvvvvvvv
 				ListableVector v = null;
-				if (messageType.equalsIgnoreCase("update")){
+				if (messageType != null && messageType.equalsIgnoreCase("update")){
 					v = new ListableVector();
 					String packageName = messageElement.elementText("packageName");
 					String versionNum = messageElement.elementText("updateVersion");

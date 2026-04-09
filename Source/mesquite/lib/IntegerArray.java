@@ -212,6 +212,24 @@ public class IntegerArray  implements Listable  {
 		return -1;
 	}
 	/*...........................................................*/
+	// note: this will count same even if a and b have different numbers of some values, e.g. a = {1, 2, 2} and b = {1, 1, 2}
+	public static boolean sameValues(int[] a, int[] b){
+		if (a==null && b == null)
+			return true;
+		if (a==null || b == null)
+			return false;
+		if (a.length != b.length)
+			return false;
+		
+		for (int i=0; i<a.length; i++)
+			if (indexOf(b, a[i])<0)
+				return false;
+		for (int i=0; i<b.length; i++)
+			if (indexOf(a, b[i])<0)
+				return false;
+		return true;
+	}
+	/*...........................................................*/
 	public static int countSame(int[] a, int match){
 		if (a==null)
 			return 0;
@@ -270,6 +288,15 @@ public class IntegerArray  implements Listable  {
 				index=i;
 		}
 		return index;
+	}
+	/*...........................................................*/
+	public int maximum(){
+		if (values==null)
+			return MesquiteInteger.unassigned;
+		MesquiteNumber d = new MesquiteNumber(MesquiteInteger.unassigned);
+		for (int i=0; i<values.length; i++)
+			d.setMeIfIAmLessThan(values[i]);
+		return d.getIntValue();
 	}
 	/*...........................................................*/
 	public static int maximum(int[] values){
@@ -455,6 +482,41 @@ public class IntegerArray  implements Listable  {
 		d[second] = temp;
 	}
 	/*...........................................................*/
+	public static void moveRowsToDestinations(int[][] d, int[] destinations) {
+		if (d == null || d.length == 0 || destinations == null)
+			return;
+		int numRows = d[0].length;
+		int[] newValues = new int[numRows];
+		for (int column = 0; column<d.length; column++){
+			for (int i=0; i<numRows; i++) {
+				if (i<destinations.length)
+					newValues[destinations[i]]=d[column][i];
+				else 
+					newValues[i]=d[column][i];
+			}
+			for (int i=0; i<numRows; i++)
+				d[column][i]=newValues[i];
+		}
+	}
+	/*...........................................................*/
+	public void movePartsToDestinations( int[] destinations) {
+		movePartsToDestinations(values,destinations);
+	}
+	/*...........................................................*/
+	public static void movePartsToDestinations(int[] d, int[] destinations) {
+		if (d == null || destinations == null)
+			return;
+		int[] newValues = new int[d.length];
+		for (int i=0; i<d.length; i++) {
+			if (i<destinations.length)
+				newValues[destinations[i]]=d[i];
+			else 
+				newValues[i]=d[i];
+		}
+		for (int i=0; i<d.length; i++)
+			d[i]=newValues[i];
+	}
+	/*...........................................................*/
 	public static int[] moveParts(int[] d, int starting, int num, int justAfter) {
 		if (d==null || num<=0 || starting<0 || starting>=d.length)
 			return d;
@@ -506,18 +568,26 @@ public class IntegerArray  implements Listable  {
 	}
 	/*...........................................................*/
 	public static String toString(int[] vector){
+		return toString(vector, " ", true);
+	}
+	/*...........................................................*/
+	public String toString(String spacer, boolean brackets){
+		return toString(values, spacer, brackets);
+	}
+	/*...........................................................*/
+	public static String toString(int[] vector, String spacer, boolean brackets){
 		if (vector==null ||  vector.length==0)
 			return null;  
 		StringBuffer result = new StringBuffer(vector.length*2);
-		result.append('[');
+		if (brackets) result.append('[');
 		for (int i=0; i<vector.length; i++) {
 			if (vector[i] == MesquiteInteger.unassigned)
 				result.append('?');
 			else
 				result.append(Integer.toString(vector[i]));
-			result.append(' ');
+			result.append(spacer);
 		}
-		result.append(']');
+		if (brackets) result.append(']');
 		return result.toString();
 	}
 	/** returns a string listing the elements of the array that are equal to the passed number.  In the format

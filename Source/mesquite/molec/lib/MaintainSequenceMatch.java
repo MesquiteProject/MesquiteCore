@@ -315,6 +315,9 @@ class SeqCheckThread  extends Thread {
 		this.ownerModule = ownerModule;
 		this.text = text;
 	}
+	public String toString(){
+		return "SeqCheckThread " + super.toString();
+	}
 	public void run() {
 		while (!abort) { 
 			try {

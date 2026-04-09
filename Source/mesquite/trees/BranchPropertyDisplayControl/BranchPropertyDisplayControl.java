@@ -82,7 +82,10 @@ import mesquite.lib.ui.DoubleField;
 import mesquite.lib.ui.ExtensibleDialog;
 import mesquite.lib.ui.ListDialog;
 import mesquite.lib.ui.MQJLabel;
+import mesquite.lib.ui.MesquiteCheckMenuItem;
 import mesquite.lib.ui.MesquiteImage;
+import mesquite.lib.ui.MesquiteMenu;
+import mesquite.lib.ui.MesquiteMenuItem;
 import mesquite.lib.ui.MesquitePopup;
 import mesquite.lib.ui.MesquiteWindow;
 import mesquite.lib.ui.Priority0;
@@ -154,6 +157,17 @@ public class BranchPropertyDisplayControl extends TreeDisplayAssistantI implemen
 				list[i].showing = show;
 			}
 		}
+		for (int i =0; i<extras.size(); i++){
+			NodeAssocDisplayExtra e = (NodeAssocDisplayExtra)extras.elementAt(i);
+			e.changeInShowing();
+		}
+		parametersChanged();
+	}
+	/*...............................................................................*/
+	public void pleaseShowHide(DisplayableBranchProperty property, boolean show){
+		if (property == null)
+			return;		
+		property.showing = show;
 		for (int i =0; i<extras.size(); i++){
 			NodeAssocDisplayExtra e = (NodeAssocDisplayExtra)extras.elementAt(i);
 			e.changeInShowing();
@@ -690,6 +704,39 @@ class NodeAssocDisplayExtra extends TreeDisplayExtra implements Commandable, Tre
 	}
 
 	/*.................................................................................................................*/
+	MesquiteMenu makeShowHideItemsSubmenu(MesquiteTree tree){ //0 elsewhere; 1 = screen display; 2 = popup
+		MesquiteMenu showHideSubmenu = new MesquiteMenu("Show/Hide Properties of Branches/Nodes");
+		DisplayableBranchProperty blP = (DisplayableBranchProperty)controlModule.propertyList.getElement(MesquiteTree.branchLengthName);
+		String command = "showProperty";
+		String check = "";
+		if (blP.showing) {
+			command = "hideProperty";
+			check = " ✓";
+		}
+		MesquiteCheckMenuItem mmi = null;
+		mmi = new MesquiteCheckMenuItem(MesquiteTree.branchLengthName + check, ownerModule, new MesquiteCommand(command, this), ParseUtil.tokenize(MesquiteTree.branchLengthName), null);
+		showHideSubmenu.add(mmi);
+
+		DisplayableBranchProperty[] properties = tree.getPropertyRecords();
+		if (properties == null || properties.length == 0)
+			return null;
+		for (int i= 0; i<properties.length; i++) {
+			boolean propertyShowing = false;
+			DisplayableBranchProperty p = (DisplayableBranchProperty)controlModule.propertyList.getElement(properties[i].getName());
+			if (p != null)
+				propertyShowing = p.showing;
+			check = "";
+			command = "showProperty";
+			if (propertyShowing) {
+				command = "hideProperty";
+				check = " ✓";
+			}
+			mmi = new MesquiteCheckMenuItem(properties[i].getName()  + check, ownerModule, new MesquiteCommand(command, this), ParseUtil.tokenize(properties[i].getName()), null);
+			showHideSubmenu.add(mmi);
+		}
+		return showHideSubmenu;
+	}
+	/*.................................................................................................................*/
 	String[] stringsAtNode(MesquiteTree tree, int node, boolean showingAll, boolean showNamesRegardless, ListableVector nameCodes, int forWhere){ //0 elsewhere; 1 = screen display; 2 = popup
 		Vector nodeStrings = new Vector();
 		for (int p = 0; p< controlModule.propertyList.size(); p++){
@@ -736,7 +783,7 @@ class NodeAssocDisplayExtra extends TreeDisplayExtra implements Commandable, Tre
 				for (int i = 0; i<strings.length; i++) {
 					addToPopup(popup, strings[i], branchFound, responseNumber++);
 				}
-			
+
 			addToPopup(popup, "-", branchFound, -1);
 			if (!lengthsConsistent(myTree, branchFound)){
 				addToPopup(popup, "Inconsistency in branch lengths!", branchFound, -1);
@@ -746,14 +793,12 @@ class NodeAssocDisplayExtra extends TreeDisplayExtra implements Commandable, Tre
 				addToPopup(popup, "-", branchFound, -1);
 			}
 		}
+		MesquiteMenu showHideSubmenu = makeShowHideItemsSubmenu(myTree);
+		if (showHideSubmenu != null)
+			popup.add(showHideSubmenu);
 		popup.addItem("Control Display of Properties on Tree...", ownerModule, new MesquiteCommand("showDialog", ownerModule));
 	}
-	/*.................................................................................................................*
-	public void cursorTouchBranch(Tree tree, int N, Graphics g, int modifiers, boolean isArrowTool){
-		if (MesquiteEvent.rightClick(modifiers) && isArrowTool){
-			showPopup(N);
-		}
-	}
+
 	/*...........................................*/
 	MesquitePopup myPopup;
 	ListableVector popupKeys = new ListableVector();
@@ -797,6 +842,11 @@ class NodeAssocDisplayExtra extends TreeDisplayExtra implements Commandable, Tre
 			addToPopup(myPopup,"-", branchFound, -1);
 		}
 		myPopup.addItem("Control Display of Properties on Tree...", ownerModule, new MesquiteCommand("showDialog", ownerModule));
+
+		MesquiteMenu showHideSubmenu = makeShowHideItemsSubmenu(myTree);
+		if (showHideSubmenu != null)
+			myPopup.add(showHideSubmenu);
+
 		myPopup.showPopup((int)treeDisplay.getTreeDrawing().x[branchFound], (int)treeDisplay.getTreeDrawing().y[branchFound]);
 	}
 
@@ -893,7 +943,7 @@ class NodeAssocDisplayExtra extends TreeDisplayExtra implements Commandable, Tre
 								if (AlertDialog.query(controlModule.containerOfModule(), "Make array of strings?", "Do you want to attach an array of strings to this branch/node?"))
 									d = new StringArray(0);
 								else
-								return null;
+									return null;
 							}
 							else if (example instanceof StringArray){
 								d = new StringArray(0);
@@ -927,7 +977,7 @@ class NodeAssocDisplayExtra extends TreeDisplayExtra implements Commandable, Tre
 										sArray.setValue(count, text);
 										count++;
 									}
-									
+
 
 								}
 								myTree.setAssociatedObject(nameRef, branchFound, sArray);
@@ -951,6 +1001,18 @@ class NodeAssocDisplayExtra extends TreeDisplayExtra implements Commandable, Tre
 
 				}
 			}	 	
+		}
+		else if (checker.compare(this.getClass(), "Shows property", "[property]", commandName, "showProperty")) {
+			String propertyName= parser.getFirstToken(arguments);
+			DisplayableBranchProperty property = (DisplayableBranchProperty)controlModule.propertyList.getElement(propertyName);
+			if (property != null) 
+				controlModule.pleaseShowHide(property, true);
+		}
+		else if (checker.compare(this.getClass(), "Hides property", "[property name]", commandName, "hideProperty")) {
+			String propertyName= parser.getFirstToken(arguments);
+			DisplayableBranchProperty property = (DisplayableBranchProperty)controlModule.propertyList.getElement(propertyName);
+			if (property != null)
+				controlModule.pleaseShowHide(property, false);
 		}
 		return null;
 	}

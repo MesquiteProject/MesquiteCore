@@ -345,7 +345,6 @@ public class RowNamesPanel extends EditorPanel implements FocusListener  {
 		touchRow=-1;
 		int possibleTouch = findRow(x, y);
 		boolean isArrowEquivalent = ((TableTool)tool).isArrowKeyOnRow(x,table);
-
 		touchX=-1;
 		if (x>getBounds().width-8) {
 			touchX=x;
@@ -355,7 +354,7 @@ public class RowNamesPanel extends EditorPanel implements FocusListener  {
 		else
 			if (possibleTouch>=0 && possibleTouch<table.numRowsTotal) {
 				table.startAutoScrollThread(this);
-				if (tool != null && isArrowEquivalent && table.getUserMoveRow() && table.isRowSelected(possibleTouch) && !MesquiteEvent.shiftKeyDown(modifiers) && !MesquiteEvent.commandOrControlKeyDown(modifiers)) {
+				if (tool != null && isArrowEquivalent && table.getUserMoveRow() && table.isRowSelected(possibleTouch) && !MesquiteEvent.rightClick(modifiers) && !MesquiteEvent.shiftKeyDown(modifiers) && !MesquiteEvent.commandOrControlKeyDown(modifiers)) {
 					touchY=y;
 					lastY = y;
 					touchRow=possibleTouch;

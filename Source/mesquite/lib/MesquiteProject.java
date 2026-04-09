@@ -340,6 +340,8 @@ public class MesquiteProject extends Attachable implements Listable, MesquiteLis
 	/*.................................................................................................................*/
 	/** returns the ith TreeVector */
 	public TreeVector getTreesByNumber(Taxa taxa, int i) {
+		if (taxa == null)
+			return getTreesByNumber(i);
 		if (i < getNumberTreeVectors(taxa)){
 			int count = 0;
 			for (int k = 0; k<treeVectors.size(); k++){
@@ -374,6 +376,23 @@ public class MesquiteProject extends Attachable implements Listable, MesquiteLis
 			if (name.equals(trees.getName()))
 				return trees;
 		}
+		return null;
+	}
+	/*.................................................................................................................*/
+	/** returns the Trees by user choice */
+	public TreeVector chooseTrees(MesquiteWindow window, Taxa taxa, String message) {
+		int numV = treeVectors.size();
+		if (taxa != null)
+			numV = getNumberTreeVectors(taxa);
+		String[] tvNames = new String[numV];
+		for (int i=0; i<numV;i++) {
+			TreeVector tv =  getTreesByNumber(taxa, i);
+			tvNames[i] = tv.getName();
+		}
+		int whichTV = ListDialog.queryList(window, "Select trees", message, null, tvNames, 0, "Select", "Cancel");
+		if (whichTV>=0 && whichTV<numV)
+			return getTreesByNumber(taxa, whichTV);
+		
 		return null;
 	}
 
@@ -2099,13 +2118,16 @@ public class MesquiteProject extends Attachable implements Listable, MesquiteLis
 	/** returns the jth of data sets belonging to a given file*/
 	public mesquite.lib.characters.CharacterData getCharacterMatrix(MesquiteFile f, Taxa taxa, Object dataClass, int j, boolean visibleOnly) {  //MesquiteProject only
 		int count=0;
+		
 		for (int i=0; i<datas.size(); i++) { 
 			mesquite.lib.characters.CharacterData data = (mesquite.lib.characters.CharacterData)datas.elementAt(i);
-
-			if ((!visibleOnly || data.isUserVisible()) && !data.isDoomed() && (f== null || data.getFile()==f) && (taxa == null || taxa == data.getTaxa()) && (dataClass == null || compatibleMatrix(dataClass, data))) {
-				if (count==j) {
+			if ((!visibleOnly || data.isUserVisible()) 
+					&& !data.isDoomed() 
+					&& (f== null || data.getFile()==f) 
+					&& (taxa == null || taxa == data.getTaxa()) 
+					&& (dataClass == null || compatibleMatrix(dataClass, data))) {
+				if (count==j)
 					return data;
-				}
 				count++;
 			}
 		}

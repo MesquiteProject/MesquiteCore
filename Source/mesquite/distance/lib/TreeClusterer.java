@@ -52,7 +52,7 @@ public abstract class TreeClusterer extends MesquiteModule {
  	 		else
  				return false;
   		}
-		return true;
+		return super.superStartJob(arguments,condition,hiredByName);
 	}
 	/*.................................................................................................................*/
   	 public Snapshot getSnapshot(MesquiteFile file) {

@@ -206,6 +206,30 @@ public class Double2DArray {
 		numT=newNumT;
 	}
 	/*...........................................................*/
+	public double maximum(){
+		if (values==null)
+			return MesquiteDouble.unassigned;
+		MesquiteNumber d = new MesquiteNumber(MesquiteDouble.unassigned);
+		for (int ic = 0; ic<values.length; ic++)
+			for (int i=0; i<values[ic].length; i++) {
+				if (MesquiteDouble.isCombinable(values[ic][i]))
+					d.setMeIfIAmLessThan(values[ic][i]);
+			}
+		return d.getDoubleValue();
+	}
+	/*...........................................................*/
+	public double minimum(){
+		if (values==null)
+			return MesquiteDouble.unassigned;
+		MesquiteNumber d = new MesquiteNumber(MesquiteDouble.unassigned);
+		for (int ic = 0; ic<values.length; ic++)
+			for (int i=0; i<values[ic].length; i++){
+				if (MesquiteDouble.isCombinable(values[ic][i]))
+					d.setMeIfIAmMoreThan(values[ic][i]);
+			}
+		return d.getDoubleValue();
+	}
+	/*...........................................................*/
 	public static double maximum(double[][] values, boolean ignoreUncombinable){
 		if (values==null)
 			return MesquiteDouble.unassigned;

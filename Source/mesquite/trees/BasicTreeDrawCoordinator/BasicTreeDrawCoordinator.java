@@ -16,10 +16,12 @@ package mesquite.trees.BasicTreeDrawCoordinator;
 
 import java.awt.Color;
 import java.awt.Component;
+import java.awt.Composite;
 import java.awt.Container;
 import java.awt.Dimension;
 import java.awt.FontMetrics;
 import java.awt.Graphics;
+import java.awt.Shape;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 
@@ -27,6 +29,7 @@ import com.lowagie.text.pdf.PdfGraphics2D;
 
 import mesquite.lib.Associable;
 import mesquite.lib.CommandChecker;
+import mesquite.lib.Debugg;
 import mesquite.lib.EmployeeNeed;
 import mesquite.lib.Listable;
 import mesquite.lib.ListableVector;
@@ -811,7 +814,7 @@ class BasicTreeDisplay extends TreeDisplay  implements KeyListener {
 		int initialPending = repaintsPending;
 		which =0;
 		if (bailOut(initialPending)) return;
-		if (getParent().getBackground()!=getBackground())
+		if (getParent() != null && getParent().getBackground()!=getBackground())
 			getParent().setBackground(getBackground());
 		if (bailOut(initialPending)) return;
 
@@ -868,9 +871,18 @@ class BasicTreeDisplay extends TreeDisplay  implements KeyListener {
 				stage = 1;	
 
 				if (bailOut(initialPending)) return;
-				getTreeDrawing().drawTree(tree, dRoot, g); //ALLOW other drawnRoots!
-				
-				getTreeDrawing().drawDebuggingLines(tree, dRoot, g); //there's a boolean there to turn off/on
+				int treeMuted = getMuteMode();
+				if (treeMuted<2) {
+					Composite composite = ColorDistribution.getComposite(g);
+					if (treeMuted == 1)
+						ColorDistribution.setComposite(g, ColorDistribution.alphaComposite03);
+
+					getTreeDrawing().drawTree(tree, dRoot, g); //ALLOW other drawnRoots!
+					if (treeMuted == 1)
+						ColorDistribution.setComposite(g, composite);
+
+				}
+					getTreeDrawing().drawDebuggingLines(tree, dRoot, g); //there's a boolean there to turn off/on
 				//showNodeLocations(tree, g, tree.getRoot());
 				stage = 2;
 
@@ -890,8 +902,9 @@ class BasicTreeDisplay extends TreeDisplay  implements KeyListener {
 					((DrawTreeCoordinator)ownerModule).getNamesTask().drawNames(this, tree, dRoot, g);
 				stage = 6;
 				if (bailOut(initialPending)) return;
-				if (getTreeDrawing()!=null && tree !=null && getHighlightedBranch() > 0) 
-					getTreeDrawing().highlightBranch(tree, getHighlightedBranch(),g); 
+
+					if (getTreeDrawing()!=null && tree !=null && getHighlightedBranch() > 0) 
+						getTreeDrawing().highlightBranch(tree, getHighlightedBranch(),g); 
 				stage = 7;
 				if (bailOut(initialPending)) return;
 			}
@@ -919,6 +932,7 @@ class BasicTreeDisplay extends TreeDisplay  implements KeyListener {
 
 	public void update(Graphics g){
 			super.update(g);
+			
 	}
 	private int which = 0;
 

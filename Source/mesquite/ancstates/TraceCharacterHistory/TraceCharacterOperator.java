@@ -20,6 +20,7 @@ import java.awt.TextArea;
 
 import mesquite.categ.lib.CategoricalState;
 import mesquite.lib.Commandable;
+import mesquite.lib.Debugg;
 import mesquite.lib.MesquiteInteger;
 import mesquite.lib.MesquiteModule;
 import mesquite.lib.MesquiteString;

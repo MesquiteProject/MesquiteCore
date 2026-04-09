@@ -81,6 +81,9 @@ public class CharactersBlock extends NexusBlock {
 				MesquiteTrunk.mesquiteTrunk.alert("WARNING: the data being written appears to be corrupt, possibly because of a crash.  DO NOT RELY ON THIS DATA without checking it over very carefully.  " + s + " (" + data + ")");
 			}
 			MesquiteTrunk.mesquiteTrunk.logln("      Writing " + getName());
+			if (data.getNumTaxaWithAnyApplicable() == 0)
+				MesquiteTrunk.mesquiteTrunk.logln("\n      NOTE: Matrix contains no data (" + data.getName() + ")\n");
+
 			data.getMatrixManager().writeCharactersBlock(data, this, file, progIndicator);
 			data.resetCellMetadata();
 		}
