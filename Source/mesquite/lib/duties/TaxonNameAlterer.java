@@ -25,7 +25,8 @@ import mesquite.lib.taxa.Taxa;
 public abstract class TaxonNameAlterer extends MesquiteModule  {
 	protected MesquiteTable table;
 	protected Taxa taxa;
-	
+	protected String kindName = "taxon";
+	protected String KindName = "Taxon";
    	public Class getDutyClass() {
    	 	return TaxonNameAlterer.class;
    	 }
@@ -47,7 +48,10 @@ public abstract class TaxonNameAlterer extends MesquiteModule  {
  	public  boolean getOptions(Taxa taxa, int firstSelected){
    		return true;
    	}
-
+public void setNameOfKindBeingRenamed(String kind, String Kind){
+	this.kindName = kind;
+	this.KindName = Kind;
+}
 	/*.................................................................................................................*/
    	/** A stub method for doing any necessary cleanup after taxon names have been altered.*/
    	public void cleanupAfterAlterTaxonNames(){

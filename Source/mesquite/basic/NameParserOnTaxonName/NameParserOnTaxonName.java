@@ -25,7 +25,7 @@ import mesquite.lib.taxa.Taxa;
 
 /* ======================================================================== */
 public class NameParserOnTaxonName extends TaxonNameAlterer {
-	NameParser nameParser = new NameParser(this, "taxon");
+	NameParser nameParser;
 	/*.................................................................................................................*/
 	public boolean startJob(String arguments, Object condition, boolean hiredByName){
 		loadPreferences();
@@ -51,7 +51,8 @@ public class NameParserOnTaxonName extends TaxonNameAlterer {
 	public boolean getOptions(Taxa taxa, int firstSelected){
 		if (MesquiteThread.isScripting())
 			return true;
-
+		if (nameParser == null)
+			nameParser = new NameParser(this, kindName);
 		if (taxa.getNumTaxa()==1)
 			nameParser.setExamples(new String[]{taxa.getTaxonName(0)});
 		else if (taxa.numberSelected()==1){
@@ -65,8 +66,8 @@ public class NameParserOnTaxonName extends TaxonNameAlterer {
 		}
 		String helpString = null;
 
-		boolean ok = nameParser.queryOptions("Options for trimming taxon names", "Taxon names will be trimmed by keeping or deleting parts of them", 
-				"In trimming the taxon names,", helpString);
+		boolean ok = nameParser.queryOptions("Options for trimming " + kindName +" names", KindName + " names will be trimmed by keeping or deleting parts of them", 
+				"In trimming the " + kindName +" names,", helpString);
 		if (ok)
 			storePreferences();
 		return ok;
@@ -80,6 +81,8 @@ public class NameParserOnTaxonName extends TaxonNameAlterer {
 	public boolean alterName(Taxa taxa, int it){
 		boolean nameChanged = false;
 		String name = taxa.getTaxonName(it);
+		if (nameParser == null)
+			nameParser = new NameParser(this, kindName);
 
 		if (name!=null){
 			String newName = nameParser.extractPart(taxa.getTaxonName(it));

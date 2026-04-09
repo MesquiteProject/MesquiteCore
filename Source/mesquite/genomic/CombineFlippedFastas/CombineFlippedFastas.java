@@ -65,9 +65,10 @@ public class CombineFlippedFastas extends GeneralFileMakerMultiple {
 		if (!goAhead)
 			return false;
 		if (alterNames == 1) {
-			nameAlterer = (TaxonNameAlterer)hireEmployee(TaxonNameAlterer.class, "How to alter locus names (even though some say \"taxon names\")");
+			nameAlterer = (TaxonNameAlterer)hireNamedEmployee(TaxonNameAlterer.class, "#NameParserOnTaxonName");
 			if (nameAlterer == null)
 				return false;
+			nameAlterer.setNameOfKindBeingRenamed("locus", "Locus");
 		}
 		return true;
 	}
@@ -116,15 +117,17 @@ public class CombineFlippedFastas extends GeneralFileMakerMultiple {
 		id.appendToHelpString(helpString);
 
 
-
 		id.addBlankLine();
+
 		RadioButtons radio = id.addRadioButtons(new String[] {"Don't alter locus names", "Alter locus names"},alterNames);
 		id.addBlankLine();
-		id.addLargeOrSmallTextLabel("Note: If you choose to alter the locus names, some of the subsequent choices "
+		id.addHorizontalLine(1);
+		id.addBlankLine();
+	/*	id.addLargeOrSmallTextLabel("NOTE: If you choose to alter the locus names, some of the subsequent choices "
 				+"refer to \"taxon names\", but it's actually the locus names that are getting altered."
 				+" The reason for this misnaming is that Mesquite is set to interpret rows "
 				+"in a file as taxa, but in these single-taxon FASTA files, the rows are loci.");
-
+*/
 		id.completeAndShowDialog(true);
 
 		if (buttonPressed.getValue()==0)  {

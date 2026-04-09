@@ -43,7 +43,7 @@ public class RemoveTaxonPrefixSuffix extends TaxonNameAlterer {
    			return true;
 		MesquiteInteger buttonPressed = new MesquiteInteger(1);
 		ExtensibleDialog queryDialog = new ExtensibleDialog(containerOfModule(), "Remove Prefix or Suffix",  buttonPressed);
-		queryDialog.addLabel("Remove the prefix or suffix of taxon name", Label.CENTER);
+		queryDialog.addLabel("Remove the prefix or suffix of " + kindName +" name", Label.CENTER);
 		SingleLineTextField searchField = queryDialog.addTextField("Delimiter:", searchText, 12, true);
 		Checkbox suffixBox = queryDialog.addCheckBox("Remove Suffix (otherwise Prefix)", suffix.getValue());
 		queryDialog.completeAndShowDialog(true);
