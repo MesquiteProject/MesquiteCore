@@ -212,7 +212,7 @@ public class Parallelizer {
 		setItemStatus(firstItem, BEINGCALCULATED);  //should be redundant, given the AndReserve
 		ppFirst = owner.doFirstCalculation_Parallel(firstItem, this, firstResult); 
 		if (firstResult.getValue() != ResultCodes.NO_ERROR) {
-			Debugg.errln("Error in first result " + firstResult.getValue());
+			System.err.println("Error in first result " + firstResult.getValue());
 			setItemStatus(firstItem, FAILURE);
 			if (stopWithFirstItemFailure  || firstResult.getValue() == ResultCodes.USERCANCELONINITIALIZE){
 				return firstResult.getValue();

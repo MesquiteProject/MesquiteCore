@@ -62,7 +62,7 @@ public class ShortestSequenceInMatrix extends NumberForMatrix {
 	} 
 	/*.................................................................................................................*/
 	public int getVersionOfFirstRelease(){
-		return NEXTRELEASE;  
+		return 403;  
 	}
 
 	/*.................................................................................................................*/
