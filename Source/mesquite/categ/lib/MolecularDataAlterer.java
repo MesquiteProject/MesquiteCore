@@ -29,6 +29,9 @@ public abstract class MolecularDataAlterer extends DataAlterer  {
 	public CompatibilityTest getCompatibilityTest(){
 		return new RequiresAnyMolecularData();
 	}
+	 public String[] getDefaultModule() {
+		 return new String[] {"#AMultipleAlignService", "#RemoveGapsOnlyChars" ,"#RemoveTermGapsOnlyChars", "#TrimSequences" };
+	 }
 
 }
 

@@ -1248,6 +1248,7 @@ class BasicTreeWindow extends MesquiteWindow implements Fittable, MesquiteListen
 		ownerModule.addMenuItem("Copy Tree", copyCommand);
 		ownerModule.addMenuItem("Copy Tree (Simple Newick)", ownerModule.makeCommand("copyTreeSimple", this));
 		ownerModule.addMenuItem("Paste Tree", pasteCommand);
+		ownerModule.addMenuItem("Paste Tree (Allow t0, t1, ...)", new MesquiteCommand("pastet0", this));
 		//ownerModule.addMenuSeparator();				
 		//ownerModule.addMenuItem("Edited Tree Handling Options...", ownerModule.makeCommand("queryEditedTreeMode", this));
 		ownerModule.addMenuSeparator();
@@ -3068,9 +3069,11 @@ class BasicTreeWindow extends MesquiteWindow implements Fittable, MesquiteListen
 				clip.setContents(ss, ss);
 			}
 		}
-		else if (checker.compare(this.getClass(), "Pastes a description of the tree", null, commandName, "Paste")) {
-			Debugg.errln("arguments " + arguments);
+		else if (checker.compare(this.getClass(), "Pastes a description of the tree", null, commandName, "Pastet0")) {
 			return pasteFromClipboard(true);
+		}
+		else if (checker.compare(this.getClass(), "Pastes a description of the tree", null, commandName, "Paste")) {
+			return pasteFromClipboard(false);
 		}
 		/*else if (checker.compare(this.getClass(), "Pastes a description of the tree, allowing t0, t1, t2 names", null, commandName, "Paste")) {
 			return pasteFromClipboard(true);

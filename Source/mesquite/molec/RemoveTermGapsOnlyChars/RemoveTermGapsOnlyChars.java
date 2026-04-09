@@ -11,21 +11,20 @@ Mesquite's web site is http://mesquiteproject.org
 This source code and its compiled class files are free and modifiable under the terms of 
 GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
 */
-package mesquite.align.RemoveGapsOnlyChars;
+package mesquite.molec.RemoveTermGapsOnlyChars;
 /*~~  */
 
 import mesquite.categ.lib.MolecularData;
 import mesquite.categ.lib.MolecularDataAlterer;
 import mesquite.lib.ResultCodes;
 import mesquite.lib.UndoReference;
-import mesquite.lib.characters.AltererWholeCharacterAddRemove;
+import mesquite.lib.characters.AltererDataRemove;
 import mesquite.lib.characters.CharacterData;
 import mesquite.lib.duties.DataAltererParallelizable;
 import mesquite.lib.table.MesquiteTable;
-import mesquite.molec.lib.SequenceTrimmer;
 
 /* ======================================================================== */
-public class RemoveGapsOnlyChars extends SequenceTrimmer {
+public class RemoveTermGapsOnlyChars extends MolecularDataAlterer implements AltererDataRemove, DataAltererParallelizable{
 	/*.................................................................................................................*/
 	public boolean startJob(String arguments, Object condition, boolean hiredByName) {
 		return true;
@@ -35,58 +34,40 @@ public class RemoveGapsOnlyChars extends SequenceTrimmer {
    	public boolean requestPrimaryChoice(){
    		return true;  
    	}
-   	
+	
 	/*.................................................................................................................*/
    	/** Called to alter data in those cells selected in table*/
-	public boolean trimMatrix(CharacterData cData, UndoReference undoReference){
+   	public int alterData(CharacterData cData, MesquiteTable table,  UndoReference undoReference){
 		if (!(cData instanceof MolecularData))
-			return false;
+			return ResultCodes.INCOMPATIBLE_DATA;
 		MolecularData data = (MolecularData)cData;
-		int oldNumChars = data.getNumChars();
-		data.removeCharactersThatAreEntirelyGaps(false);
-		logln("" + (oldNumChars-data.getNumChars()) +  " characters removed");
-/*		if (oldNumChars!=data.getNumChars()) {
-			data.notifyListeners(this, new Notification(MesquiteListener.PARTS_DELETED));
-			data.notifyInLinked(new Notification(MesquiteListener.PARTS_DELETED));
-			return true;
-		}
-*/
-		if ( oldNumChars!=data.getNumChars())
-		return true;
-		return false;
-
+		boolean changed = data.stripRightTerminalGaps(false);
+		boolean leftChanged = data.stripLeftTerminalGaps(false);
+		changed = changed || leftChanged;
+		if (changed)
+			return ResultCodes.SUCCEEDED;
+			return ResultCodes.MEH;
    	}
 	/*.................................................................................................................*/
   	 public boolean showCitation() {
 		return false;
    	 }
- 	/*.................................................................................................................*/
-   	 public boolean isSubstantive(){
-   	 	return true;
-   	 }
 	/*.................................................................................................................*/
    	 public boolean isPrerelease(){
    	 	return false;
    	 }
- 	/*.................................................................................................................*/
-  	/** returns the version number at which this module was first released.  If 0, then no version number is claimed.  If a POSITIVE integer
-  	 * then the number refers to the Mesquite version.  This should be used only by modules part of the core release of Mesquite.
-  	 * If a NEGATIVE integer, then the number refers to the local version of the package, e.g. a third party package*/
-     	public int getVersionOfFirstRelease(){
-     		return -100;  
-     	}
-  	/*.................................................................................................................*/
+	/*.................................................................................................................*/
     	 public String getNameForMenuItem() {
-		return "Remove Gaps-Only Characters";
+		return "Remove Terminal Gaps-Only Characters";
    	 }
 	/*.................................................................................................................*/
     	 public String getName() {
-    			return "Remove Gaps-Only Characters";
+		return "Remove Terminal Gaps-Only Characters";
    	 }
 	/*.................................................................................................................*/
  	/** returns an explanation of what the module does.*/
  	public String getExplanation() {
- 		return "Removes all characters that are gaps only." ;
+ 		return "Removes characters at edges of matrix that are gaps only." ;
    	 }
    	 
 }

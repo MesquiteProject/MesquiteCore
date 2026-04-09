@@ -162,7 +162,6 @@ public class ExportNEXUSTreeFile extends FileInterpreterI {
 	/*.................................................................................................................*/
 	public boolean exportFile(MesquiteFile file, String arguments) { //if file is null, consider whole project open to export
 		Arguments args = new Arguments(new Parser(arguments), true);
-		Debugg.errln("EXPOERR");
 		boolean usePrevious = args.parameterExists("usePrevious");
 		Listable[] blocks = getProject().getFileElements(TreeVector.class);
 		if (blocks ==null) {

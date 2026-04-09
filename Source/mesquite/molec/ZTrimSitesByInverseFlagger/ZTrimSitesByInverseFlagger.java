@@ -11,7 +11,7 @@ Mesquite's web site is http://mesquiteproject.org
 This source code and its compiled class files are free and modifiable under the terms of 
 GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
  */
-package mesquite.genomic.TrimSitesByInverseFlagger;
+package mesquite.molec.ZTrimSitesByInverseFlagger;
 import java.util.Vector;
 
 import mesquite.lib.Bits;
@@ -30,7 +30,7 @@ import mesquite.lib.duties.MatrixFlaggerForTrimmingSites;
 import mesquite.molec.lib.SequenceTrimmer;
 
 
-public class TrimSitesByInverseFlagger extends SequenceTrimmer  {
+public class ZTrimSitesByInverseFlagger extends SequenceTrimmer  {
 	protected CharacterData data;
 	protected MatrixFlagger flaggerTask; // hired by specific subclasses representing those flaggers
 	/*.................................................................................................................*/

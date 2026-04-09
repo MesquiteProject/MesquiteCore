@@ -11,21 +11,21 @@ Mesquite's web site is http://mesquiteproject.org
 This source code and its compiled class files are free and modifiable under the terms of 
 GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
 */
-package mesquite.molec.CollapseEdges;
+package mesquite.parsimony.RemoveInvariant;
 /*~~  */
 
-import mesquite.categ.lib.MolecularData;
-import mesquite.categ.lib.MolecularDataAlterer;
+import mesquite.categ.lib.CategoricalData;
+import mesquite.lib.Bits;
 import mesquite.lib.ResultCodes;
 import mesquite.lib.UndoReference;
-import mesquite.lib.characters.AltererWholeCharacterAddRemove;
+import mesquite.lib.characters.AltererDataRemove;
 import mesquite.lib.characters.CharacterData;
+import mesquite.lib.duties.DataAlterer;
 import mesquite.lib.duties.DataAltererParallelizable;
 import mesquite.lib.table.MesquiteTable;
-import mesquite.molec.lib.SequenceTrimmer;
 
 /* ======================================================================== */
-public class CollapseEdges extends SequenceTrimmer{
+public class RemoveInvariant extends DataAlterer  implements AltererDataRemove, DataAltererParallelizable {
 	/*.................................................................................................................*/
 	public boolean startJob(String arguments, Object condition, boolean hiredByName) {
 		return true;
@@ -35,40 +35,69 @@ public class CollapseEdges extends SequenceTrimmer{
    	public boolean requestPrimaryChoice(){
    		return false;  
    	}
-	
+   	
+	public boolean removeCharactersThatAreInvariant(CategoricalData cData){
+		boolean removedSome = false;
+		Bits bits = new Bits(cData.getNumChars());
+		bits.clearAllBits();
+		for (int ic = 0; ic<cData.getNumChars(); ic++){  // first let's record which ones need deletion
+			if (!cData.charIsVariable(ic, false)) {
+				removedSome = true;
+				bits.setBit(ic);
+			}
+		}
+		
+		cData.deletePartsFlagged(bits, false);
+		cData.deleteInLinkedFlagged(bits, false);
+		return removedSome;
+	}
+
 	/*.................................................................................................................*/
    	/** Called to alter data in those cells selected in table*/
-	public boolean trimMatrix(CharacterData cData, UndoReference undoReference){
-		if (!(cData instanceof MolecularData))
-			return false;
-		MolecularData data = (MolecularData)cData;
-		boolean changed = data.stripRightTerminalGaps(false);
-		boolean leftChanged = data.stripLeftTerminalGaps(false);
-		changed = changed || leftChanged;
-		return changed;
+   	public int alterData(CharacterData cData, MesquiteTable table,  UndoReference undoReference){
+		if (!(cData instanceof CategoricalData))
+			return ResultCodes.INCOMPATIBLE_DATA;
+		CategoricalData data = (CategoricalData)cData;
+		int oldNumChars = data.getNumChars();
+		removeCharactersThatAreInvariant(data);
+		
+		logln("" + (oldNumChars-data.getNumChars()) +  " characters removed");
+		if (oldNumChars != data.getNumChars())
+			return ResultCodes.SUCCEEDED;
+			return ResultCodes.MEH;
    	}
 	/*.................................................................................................................*/
   	 public boolean showCitation() {
 		return false;
    	 }
+ 	/*.................................................................................................................*/
+   	 public boolean isSubstantive(){
+   	 	return true;
+   	 }
 	/*.................................................................................................................*/
    	 public boolean isPrerelease(){
    	 	return false;
    	 }
-	/*.................................................................................................................*/
+ 	/*.................................................................................................................*/
+  	/** returns the version number at which this module was first released.  If 0, then no version number is claimed.  If a POSITIVE integer
+  	 * then the number refers to the Mesquite version.  This should be used only by modules part of the core release of Mesquite.
+  	 * If a NEGATIVE integer, then the number refers to the local version of the package, e.g. a third party package*/
+     	public int getVersionOfFirstRelease(){
+     		return 270;  
+     	}
+  	/*.................................................................................................................*/
     	 public String getNameForMenuItem() {
-		return "Remove Terminal Gaps-Only Characters";
+		return "Remove Invariant Characters";
    	 }
 	/*.................................................................................................................*/
     	 public String getName() {
-		return "Remove Terminal Gaps-Only Characters";
+    			return "Remove Invariant Characters";
    	 }
 	/*.................................................................................................................*/
  	/** returns an explanation of what the module does.*/
  	public String getExplanation() {
- 		return "Removes characters at edges of matrix that are gaps only." ;
+ 		return "Removes all characters that have one state or fewer." ;
    	 }
    	 
 }
-
 

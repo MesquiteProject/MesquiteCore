@@ -27,14 +27,14 @@ import mesquite.lib.ResultCodes;
 import mesquite.lib.Snapshot;
 import mesquite.lib.UndoInstructions;
 import mesquite.lib.UndoReference;
-import mesquite.lib.characters.AltererWholeCharacterAddRemove;
+import mesquite.lib.characters.AltererDataRemove;
 import mesquite.lib.characters.CharacterData;
 import mesquite.lib.duties.DataAltererParallelizable;
 import mesquite.lib.table.MesquiteTable;
 import mesquite.molec.lib.SequenceTrimmer;
 
 /* ======================================================================== */
-public class TrimSequences extends MolecularDataAlterer implements AltererWholeCharacterAddRemove, DataAltererParallelizable {
+public class TrimSequences extends MolecularDataAlterer implements AltererDataRemove, DataAltererParallelizable {
 	public void getEmployeeNeeds(){  //This gets called on startup to harvest information; override this and inside, call registerEmployeeNeed
 		EmployeeNeed e2 = registerEmployeeNeed(SequenceTrimmer.class, getName() + " needs a module to trim sequences.",
 		"");

@@ -40,9 +40,6 @@ public abstract class DataAlterer extends MesquiteModule  {
  		return "Data Alterer";
    	}
    	
- 	 public String[] getDefaultModule() {
-	 	return new String[] {"#AMultipleAlignService", "#TrimSequences", "#RemoveAllGaps" ,"#CollapseEdges" };
-	 }
   	public long getNumCellsAltered(){
    		return numCellsAltered;
    	}
