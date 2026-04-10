@@ -20,6 +20,13 @@ public class BLASTResults {
 	protected int[] frame;
 	protected String[] sequence;
 	protected boolean[] reversed;
+	
+	protected int queryStartMatch[];
+	protected int queryEndMatch[];
+	protected int hitStartMatch[];
+	protected int hitEndMatch[];
+	protected boolean hitReversed[];
+
 	protected int numHits = 0;
 	int maxHits = 1;
 
@@ -36,6 +43,14 @@ public class BLASTResults {
 		frame = new int[maxHits];
 		ID = new String[maxHits];
 		reversed = new boolean[maxHits];
+		
+		
+		queryStartMatch = new int[maxHits];
+		queryEndMatch= new int[maxHits];
+		hitStartMatch= new int[maxHits];
+		hitEndMatch= new int[maxHits];
+		hitReversed= new boolean[maxHits];
+
 		zeroArrays();
 	}
 	public void zeroArrays() {
@@ -48,14 +63,51 @@ public class BLASTResults {
 			frame[i] = 0;
 			reversed[i] = false;
 			ID[i] = "";
+			queryStartMatch[i]=0;
+			queryEndMatch[i]=0;
+			hitStartMatch[i]=0;
+			hitEndMatch[i]=0;
+			hitReversed[i]=false;
 		}
 	}
+	public int getQueryStartMatch(int index) {
+		return queryStartMatch[index];
+	}
+	public void setQueryStartMatch(int value, int index) {
+		this.queryStartMatch[index] = value;
+	}
+	public int getQueryEndMatch(int index) {
+		return queryEndMatch[index];
+	}
+	public void setQueryEndMatch(int value, int index) {
+		this.queryEndMatch[index] = value;
+	}
+	public int getHitStartMatch(int index) {
+		return hitStartMatch[index];
+	}
+	public void setHitStartMatch(int value, int index) {
+		this.hitStartMatch[index] = value;
+	}
+	public int getHitEndMatch(int index) {
+		return hitEndMatch[index];
+	}
+	public void setHitEndMatch(int value, int index) {
+		this.hitEndMatch[index] = value;
+	}
+	public boolean getHitReversed(int index) {
+		return hitReversed[index];
+	}
+	public void setHitReversed(boolean value, int index) {
+		this.hitReversed[index] = value;
+	}
+
 	public double geteValue(int index) {
 		return eValue[index];
 	}
-	public void seteValue(double eValue, int index) {
-		this.eValue[index] = eValue;
+	public void seteValue(double value, int index) {
+		this.eValue[index] = value;
 	}
+
 	public double getBitScore(int index) {
 		return bitScore[index];
 	}
@@ -302,6 +354,13 @@ public class BLASTResults {
 
 										int queryFrame = MesquiteInteger.fromString(Hsp.elementText("Hsp_query-frame"));
 										setReversed(queryFrame<0, numHits);
+										setQueryStartMatch(MesquiteInteger.fromString(Hsp.elementText("Hsp_query-from")),numHits);
+										setQueryEndMatch(MesquiteInteger.fromString(Hsp.elementText("Hsp_query-to")),numHits);
+										setHitStartMatch(MesquiteInteger.fromString(Hsp.elementText("Hsp_hit-from")),numHits);
+										setHitEndMatch(MesquiteInteger.fromString(Hsp.elementText("Hsp_hit-to")),numHits);
+										setHitReversed(hitEndMatch[numHits]<hitStartMatch[numHits],numHits);
+											
+										
 
 										if (storeSequences)
 											setSequence(Hsp.elementText("Hsp_hseq"), numHits);
