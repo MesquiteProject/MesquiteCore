@@ -22,6 +22,7 @@ import mesquite.lib.CompatibilityTest;
 import mesquite.lib.MesquiteModule;
 import mesquite.lib.MesquiteStringBuffer;
 import mesquite.lib.MesquiteTrunk;
+import mesquite.lib.ObjectContainer;
 import mesquite.lib.StringUtil;
 import mesquite.lib.characters.CharacterData;
 import mesquite.lib.table.MesquiteTable;
@@ -54,7 +55,7 @@ public class BLASTSearch extends MolecDataSearcher {
 		return searchSelectedTaxa(data,table);
 	}
 	/*.................................................................................................................*/
-   	public synchronized boolean searchOneTaxon(CharacterData data, int it, int icStart, int icEnd){
+   	public synchronized boolean searchOneTaxon(CharacterData data, int it, int icStart, int icEnd, ObjectContainer objContainer){
    		if (data==null)
    			return false;
    		String firstLine = data.getTaxa().getTaxonName(it);

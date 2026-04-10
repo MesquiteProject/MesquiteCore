@@ -30,6 +30,8 @@ import mesquite.io.InterpretFastaDNA.InterpretFastaDNA;   //is this guaranteed t
 import mesquite.io.InterpretFastaProtein.InterpretFastaProtein;   //is this guaranteed to be an installed package?
 import mesquite.lib.Bits;
 import mesquite.lib.CommandRecord;
+import mesquite.lib.Debugg;
+import mesquite.lib.MesquiteBoolean;
 import mesquite.lib.MesquiteInteger;
 import mesquite.lib.MesquiteListener;
 import mesquite.lib.MesquiteMessage;
@@ -647,13 +649,13 @@ public class NCBIUtil {
 	}
 	/*.................................................................................................................*/
 	public static void importFASTASequences(CharacterData data, String fastaSequences, MesquiteModule mod,StringBuffer report, int insertAfterTaxonRequested, int referenceTaxon, boolean adjustNewSequences, boolean addNewInternalGaps){
-		importFASTASequences(data, fastaSequences, mod, report, insertAfterTaxonRequested, referenceTaxon, adjustNewSequences, addNewInternalGaps, "", "");
+		importFASTASequences(data, fastaSequences, mod, report, insertAfterTaxonRequested, referenceTaxon, adjustNewSequences, addNewInternalGaps, "", "", null, null);
 	}
 	/*.................................................................................................................*/
-	public static void importFASTASequences(CharacterData data, String fastaSequences, MesquiteModule mod,StringBuffer report, int insertAfterTaxonRequested, int referenceTaxon, boolean adjustNewSequences, boolean addNewInternalGaps, String prependToTaxonName, String appendToTaxonName){
+	public static void importFASTASequences(CharacterData data, String fastaSequences, MesquiteModule mod,StringBuffer report, int insertAfterTaxonRequested, int referenceTaxon, boolean adjustNewSequences, boolean addNewInternalGaps, String prependToTaxonName, String appendToTaxonName, MesquiteInteger charAddedToStart, BLASTResults blastResults){
 		if (data==null)
 			return;
-		
+		Debugg.println("******** in importFASTASequences ***********");
 		Taxa taxa = data.getTaxa();
 		int oldNumTaxa = taxa.getNumTaxa();
 		data.setCharNumChanging(true);
@@ -680,21 +682,85 @@ public class NCBIUtil {
 		}
 		
 		
-		if (adjustNewSequences) {
+		if (adjustNewSequences && blastResults!=null) {
 			MesquiteMessage.println("Adjusting sequences... ");
-			if (!data.someApplicableInTaxon(insertAfterTaxon, false)){  
+			if (!data.someApplicableInTaxon(referenceTaxon, false)){  
 				MesquiteMessage.println("The reference sequence contains no data; adjustment cancelled.");
 			    adjustNewSequences = false;
 			}
 			if (adjustNewSequences) {
+				Debugg.println("\n||||||||||\nQuery: " + referenceTaxon );
+				for (int it=itStart; it<=itEnd; it++) {
+					Debugg.println("   Incoming " + data.getTaxa().getTaxonName(it));
+					Debugg.println("   Hit " + (it-itStart));
+					Debugg.println("   blastResults.getQueryStartMatch(it-itStart): " + blastResults.getQueryStartMatch(it-itStart));
+					Debugg.println("   blastResults.getQueryEndMatch(it-itStart): " + blastResults.getQueryEndMatch(it-itStart));
+					Debugg.println("   blastResults.getHitStartMatch(it-itStart): " + blastResults.getHitStartMatch(it-itStart));
+					Debugg.println("   blastResults.getHitEndMatch(it-itStart): " + blastResults.getHitEndMatch(it-itStart));
+					int startOfQueryInMatrix = data.firstApplicable(referenceTaxon);
+					int hitStartMatch = 0;
+					if (blastResults.getHitReversed(it-itStart)) {
+						Debugg.println("** reversed **");
+						if (data instanceof DNAData){
+							((DNAData)data).reverseComplement(0, data.getNumChars(), it, false, true);  // then we need to reverse them back.
+						} else
+							((MolecularData)data).reverse(0, data.getNumChars(), it, false, false);  // then we need to reverse them back.
+						((MolecularData)data).collapseGapsInCellBlock(it, 0, data.getNumChars()-1, false);
+						hitStartMatch = blastResults.getHitStartMatch(it-itStart); // that's the hit start that the response specifies.  But because it is reversed complemented, need to 
+						Debugg.println("   getHitStartMatch(it-itStart): " + blastResults.getHitStartMatch(it-itStart));
+						int endOfHit = data.lastApplicable(it);
+						Debugg.println("   endOfHit: " + endOfHit);
+						hitStartMatch = endOfHit-hitStartMatch+2;
+					} else
+						hitStartMatch = blastResults.getHitStartMatch(it-itStart); // 
+				//	int queryStartMatchOld = startOfQueryInMatrix+blastResults.getQueryStartMatch(it-itStart); // this is where we need to shift to
+					int queryStartMatch = data.nthApplicable(insertAfterTaxon, blastResults.getQueryStartMatch(it-itStart));
+					int shiftAmount = queryStartMatch-hitStartMatch+1;
+					Debugg.println("   start Of Query In Matrix: " + data.firstApplicable(insertAfterTaxon));
+				//	Debugg.println("   queryStartMatchOld: " + queryStartMatchOld);
+					Debugg.println("   queryStartMatch: " + queryStartMatch);
+					Debugg.println("   queryStartMatchFromBLAST: " + blastResults.getQueryStartMatch(it-itStart));
+					Debugg.println("   hitStartMatch: " + hitStartMatch);
+					Debugg.println("   shiftAmount: " + shiftAmount);
+//					public int shiftAllCells(int distance, int it,  boolean canExpand,  boolean includingLinked, boolean notify, MesquiteBoolean dataChanged, MesquiteInteger charAdded, MesquiteInteger distanceMoved){  //startBlock and endBlock are 0-based
+					MesquiteInteger charAdded = new MesquiteInteger(0);
+					((MolecularData)data).shiftAllCells(shiftAmount, it, true, true, false, null, charAdded, null);
+					Debugg.println("   charAdded: " + charAdded.getValue());
+					if (charAdded.getValue()<0 && charAddedToStart!=null) {
+						charAddedToStart.add(-charAdded.getValue());
+					}
+
+					
+
+					
+					/*
+					 *   
+		franiae
+	<Hsp_query-from>4</Hsp_query-from>
+      <Hsp_query-to>885</Hsp_query-to>
+      <Hsp_hit-from>911</Hsp_hit-from>
+      <Hsp_hit-to>30</Hsp_hit-to>
+
+
+	  <Hsp_query-from>1</Hsp_query-from>
+      <Hsp_query-to>884</Hsp_query-to>
+      <Hsp_hit-from>2086</Hsp_hit-from>
+      <Hsp_hit-to>2969</Hsp_hit-to>
+      */
+				}
 				
-				if (data instanceof DNAData){
+				
+			}
+			
+/*			if (adjustNewSequences) {
+					if (data instanceof DNAData){
 					MolecularDataUtil.reverseComplementSequencesIfNecessary((DNAData) data, mod, taxa, newTaxa, insertAfterTaxon, false, false);
 				}
 				
 				MolecularDataUtil.pairwiseAlignMatrix(mod, (MolecularData)data, referenceTaxon, newTaxa,0, addNewInternalGaps, true);
 				data.notifyListeners(mod, new Notification(CharacterData.DATA_CHANGED, null, null));
 			}
+			*/
 			MesquiteMessage.println("Import completed. ");
 		}
 
