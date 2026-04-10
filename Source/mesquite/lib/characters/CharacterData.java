@@ -2861,6 +2861,17 @@ public abstract class CharacterData extends FileElement implements MesquiteListe
 		}
 		return -1;
 	}
+	public int nthApplicable(int it, int n){
+		int count=0;
+		for (int ic= 0; ic<numChars; ic++) {
+			if (!isInapplicable(ic,it)) {
+				count++;
+				if (count==n)
+					return ic;
+			}
+		}
+		return -1;
+	}
 	public int lastApplicable(Bits whichTaxa){
 		int last = -1;
 		for (int it = 0; it<numTaxa; it++)
