@@ -104,7 +104,8 @@ public class RCFVofTaxonAndMatrix extends NumberForTaxonAndMatrix {
 		
 		if (!MesquiteDouble.isCombinable(rcfv)) {
 			result.setValue(MesquiteDouble.unassigned); 
-			resultString.setValue("RCFV cannot be calculated for this taxon");
+			if (resultString!=null)
+				resultString.setValue("RCFV cannot be calculated for this taxon");
 		}
 		else {
 			if (rcfv>0) {
@@ -129,11 +130,11 @@ public class RCFVofTaxonAndMatrix extends NumberForTaxonAndMatrix {
 	}
 
 	public String getName() {
-		return "RCFV of Matrix";
+		return "RCFV of Taxon";
 	} 
 
 	public String getExplanation(){
-		return "Calculates the RCFV (Relative Composition Frequency Variability) of the matrix.";
+		return "Calculates the RCFV (Relative Composition Frequency Variability) of the taxon for a matrix.";
 	}
 
 
