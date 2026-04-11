@@ -1,4 +1,4 @@
-package mesquite.molec.RCFV;
+package mesquite.molec.RCFVofMatrix;
 
 
 import mesquite.categ.lib.DNAData;
@@ -16,7 +16,7 @@ import mesquite.lib.characters.CharacterData;
 import mesquite.lib.characters.MCharactersDistribution;
 import mesquite.lib.duties.NumberForMatrix;
 
-public class RCFV extends NumberForMatrix {
+public class RCFVofMatrix extends NumberForMatrix {
 
 	public boolean startJob(String arguments, Object condition, boolean hiredByName) {
 		return true;
