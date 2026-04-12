@@ -9,32 +9,6 @@ public class StatsUtil {
     /**
      * Implements Silverman's Rule of Thumb for bandwidth selection.
      */
-    public static double calculateSilvermanBandwidth(double[] data) {
-        int n = data.length;
-        double std = calculateStandardDeviation(data);
-        double iqr = calculateIQR(data);
-        
-        // Silverman's adaptive rule: min(std, iqr/1.34)
-        double a = Math.min(std, iqr / 1.34);
-        return 0.9 * a * Math.pow(n, -0.2);
-    }
-
-    /**
-     * Standard Gaussian Kernel Density Estimation at point x.
-     */
-    public static double calculateKDE(double x, double[] data, double h) {
-        double sum = 0;
-        for (double xi : data) {
-            double u = (x - xi) / h;
-            sum += gaussianKernel(u);
-        }
-        return sum / (data.length * h);
-    }
-
-    private static double gaussianKernel(double u) {
-        return (1.0 / Math.sqrt(2 * Math.PI)) * Math.exp(-0.5 * u * u);
-    }
-
     private static double calculateStandardDeviation(double[] data) {
         double mean = Arrays.stream(data).average().orElse(0.0);
         double sumSq = 0;
@@ -52,6 +26,34 @@ public class StatsUtil {
         int index = (int) Math.ceil(percentile / 100.0 * sortedData.length);
         return sortedData[Math.max(0, index - 1)];
     }
+
+    public static double calculateSilvermanBandwidth(double[] data) {
+        int n = data.length;
+        double std = calculateStandardDeviation(data);
+        double iqr = calculateIQR(data);
+        
+        // Silverman's adaptive rule: min(std, iqr/1.34)
+        double a = Math.min(std, iqr / 1.34);
+        return 0.9 * a * Math.pow(n, -0.2);
+    }
+
+    /**
+     * Standard Gaussian Kernel Density Estimation at point x.
+     */
+
+    public static double calculateKDE(double x, double[] data, double h) {
+        double sum = 0;
+        for (double xi : data) {
+            double u = (x - xi) / h;
+            sum += gaussianKernel(u);
+        }
+        return sum / (data.length * h);
+    }
+
+    private static double gaussianKernel(double u) {
+        return (1.0 / Math.sqrt(2 * Math.PI)) * Math.exp(-0.5 * u * u);
+    }
+
 	/* ................................................................................................................. *
 	public static boolean[] getOutliersUsingKDE(MesquiteModule ownerModule, double[] xData, double alpha) {
         double[] data = {10, 12, 11, 13, 12, 11, 100}; // 100 is a clear outlier
@@ -74,10 +76,7 @@ public class StatsUtil {
 	/* ................................................................................................................. */
 
 	
-	
-	
-	
-	
+
 
 	    /**
 	     * Calculates the CDF at a specific point using KDE with Silverman's Rule.
