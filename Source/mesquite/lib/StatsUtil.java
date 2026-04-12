@@ -15,7 +15,7 @@ public class StatsUtil {
 		for (double x : data) sumSq += Math.pow(x - mean, 2);
 		return Math.sqrt(sumSq / (data.length - 1));
 	}
-
+/*
 	private static double calculateIQR(double[] data) {
 		double q1 = getPercentile(data, 25);
 		double q3 = getPercentile(data, 75);
@@ -26,6 +26,16 @@ public class StatsUtil {
 		int index = (int) Math.ceil(percentile / 100.0 * sortedData.length);
 		return sortedData[Math.max(0, index - 1)];
 	}
+*/
+
+	private static double calculateIQR(double[] data) {
+		double[] sorted = data.clone();
+		Arrays.sort(sorted);
+		double q1 = sorted[(int) (sorted.length * 0.25)];
+		double q3 = sorted[(int) (sorted.length * 0.75)];
+		return q3 - q1;
+	}
+
 
 	public static double calculateSilvermanBandwidth(double[] data) {
 		int n = data.length;
@@ -123,26 +133,10 @@ public class StatsUtil {
 		return z >= 0 ? ans : -ans;
 	}
 
-	private static double getStandardDeviation(double[] data) {
-		double mean = Arrays.stream(data).average().orElse(0.0);
-		double sumSq = 0;
-		for (double d : data) sumSq += Math.pow(d - mean, 2);
-		return Math.sqrt(sumSq / (data.length - 1));
-	}
-
-	private static double getIQR(double[] data) {
-		double[] sorted = data.clone();
-		Arrays.sort(sorted);
-		double q1 = sorted[(int) (sorted.length * 0.25)];
-		double q3 = sorted[(int) (sorted.length * 0.75)];
-		return q3 - q1;
-	}
-
 	public static boolean[] getOutliersUsingKDE(double[] xData, double alpha) {
 		boolean[] outliers = new boolean[xData.length];
 		for (int i=0; i<outliers.length; i++)
 			outliers[i]=false;
-		Arrays.sort(xData);
 		double h = calculateSilvermanBandwidth(xData);
 
 		double outlierThreshold = 1.0-alpha;
