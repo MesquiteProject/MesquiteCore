@@ -88,6 +88,32 @@ public class CharacterPartition  extends CharObjectSpecsSet {
 	}
  	/*.................................................................................................................*/
 	/**/
+	public boolean anyInGroup(CharactersGroup target){
+		int num =0;
+		for (int i=0; i<getNumberOfParts(); i++) {
+			CharactersGroup mq = getCharactersGroup(i);
+			if (mq==target)
+				return true;
+		}
+		return false;
+	}
+  	/*.................................................................................................................*/
+	/**/
+	public CharactersGroup getGroupIfPresent(String targetName){
+		CharactersGroupVector groups = (CharactersGroupVector)getProject().getFileElement(CharactersGroupVector.class, 0);
+		CharactersGroup target = groups.findGroup(targetName);
+		if (target == null)
+			return null;
+		int num =0;
+		for (int i=0; i<getNumberOfParts(); i++) {
+			CharactersGroup mq = getCharactersGroup(i);
+			if (mq==target)
+				return target;
+		}
+		return null;
+	}
+	/*.................................................................................................................*/
+	/**/
 	public boolean getAnyCurrentlyUnassigned(){
 		for (int i=0; i<getNumberOfParts(); i++) {
 			CharactersGroup mq = getCharactersGroup(i);

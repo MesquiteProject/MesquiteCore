@@ -450,6 +450,23 @@ public abstract class CharacterData extends FileElement implements MesquiteListe
 			return uniqueIDs[ic];
 		return null;
 	}
+	public void setSelectedCharactersInGroup(CharactersGroup target, boolean selected){
+		CharacterPartition partition = (CharacterPartition) getCurrentSpecsSet(CharacterPartition.class);
+		if (partition == null)
+			return;
+		for (int ic = 0; ic<numChars; ic++){
+			if (partition.getCharactersGroup(ic) == target){
+				setSelected(ic, selected);
+			}
+		}
+	}
+	public CharactersGroup getGroupIfPresent(String targetName){
+		CharacterPartition partition = (CharacterPartition) getCurrentSpecsSet(CharacterPartition.class);
+		if (partition==null){
+			return null;
+		}
+		return (CharactersGroup)partition.getGroupIfPresent(targetName);
+	}
 
 	public CharactersGroup getCurrentGroup(int ic) {
 		CharacterPartition partition = (CharacterPartition) getCurrentSpecsSet(CharacterPartition.class);

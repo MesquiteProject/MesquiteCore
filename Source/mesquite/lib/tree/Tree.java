@@ -129,7 +129,7 @@ public interface Tree extends Listable {
 	sister to the right, returns 0 (which is not a valid node designation).*/
 	public int nextSisterOfNode(int node);
 	/** Returns the node's sister immediately to the left.  If the node has no 
-	sister to the right, returns 0 (which is not a valid node designation).*/
+	sister to the left, returns 0 (which is not a valid node designation).*/
 	public int previousSisterOfNode(int node);
 	/** Returns true if branch1 and branch2 are sisters by their mother (i.e., primary parent).
 	There is currently no method to return whether two nodes share at least one parent.*/

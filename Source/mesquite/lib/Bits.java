@@ -1182,6 +1182,46 @@ public class Bits implements Listable, Nameable {
 		}
 		return newValues;
 	}
+	/* ........................................................... */
+	//union the second into the first. If B is longer, does not carry values over
+	public static void unionInto (boolean[] valuesA, boolean[] valuesB) {
+		if (valuesA == null)
+			return;
+		if (valuesB == null)
+			for (int i = 0; i< valuesA.length; i++) valuesA[i] = false;
+		else {
+			for (int i = 0; i< valuesA.length && i< valuesB.length; i++)
+				valuesA[i] = valuesA[i] || valuesB[i];
+		}
+	}
+	/* ........................................................... */
+	//intersect the second into the first.  If B is longer, does not touch values of A
+	public static void intersectionInto (boolean[] valuesA, boolean[] valuesB) {
+		if (valuesA == null)
+			return;
+		if (valuesB == null)
+			for (int i = 0; i< valuesA.length; i++) valuesA[i] = false;
+		else {
+			for (int i = 0; i< valuesA.length && i< valuesB.length; i++)
+				valuesA[i] = valuesA[i] && valuesB[i];
+		}
+	}
+	/* ........................................................... */
+	//Sets array to all false
+	public static void allFalse (boolean[] values) {
+		if (values == null)
+			return;
+		for (int i = 0; i< values.length; i++)
+			values[i] = false;
+	}
+	/* ........................................................... */
+	//Sets array to all true
+	public static void allTrue (boolean[] values) {
+		if (values == null)
+			return;
+		for (int i = 0; i< values.length; i++)
+			values[i] = true;
+	}
 
 	/*------------------------------------------*/
 	public static String toString(int[] bits) {

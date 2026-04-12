@@ -57,6 +57,8 @@ import mesquite.lib.RandomBetween;
 import mesquite.lib.StringArray;
 import mesquite.lib.StringUtil;
 import mesquite.lib.characters.CharacterData;
+import mesquite.lib.characters.CharactersGroup;
+import mesquite.lib.characters.CharactersGroupVector;
 import mesquite.lib.duties.FileCoordinator;
 import mesquite.lib.duties.TreesManager;
 import mesquite.lib.taxa.Taxa;
@@ -4425,6 +4427,21 @@ and the tree has been rerooted. Properties that belong to nodes implicitly have 
 
 	}
 
+	public CharactersGroup findLinkedCharactersGroup(CharacterData data){
+		CharactersGroup group = null;
+		String treeName = getName();
+		if (data != null)
+			group = data.getGroupIfPresent(treeName);
+		if (group == null)
+			group = data.getGroupIfPresent(StringUtil.getAllButLastItem(treeName, "."));
+		if (group == null)
+			group = data.getGroupIfPresent(StringUtil.getAllButLastItem(treeName, "#"));
+		if (group == null && treeName != null) {
+			if (treeName.endsWith("+"))
+				group = data.getGroupIfPresent(treeName.substring(0, treeName.length()-1));
+		}
+		return group;
+	}
 	public CharacterData findLinkedMatrix(MesquiteProject project){
 		CharacterData d = null;
 		Object obj = getAttachment("fromMatrix", MesquiteString.class);
