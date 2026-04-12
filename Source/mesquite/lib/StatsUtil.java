@@ -148,7 +148,7 @@ public class StatsUtil {
 			count++;
 		}
 
-		return null;
+		return outliers;
 	}
 
 

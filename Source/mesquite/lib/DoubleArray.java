@@ -499,6 +499,23 @@ public class DoubleArray implements Listable, Nameable  {
 
 	}
 	/*...........................................................*/
+	public static void sortByFirst(double[] array, int[] other){
+		if (array==null || array.length<=1 || other==null || other.length<=1 || array.length !=other.length)
+			return;
+
+		for (int i=1; i<array.length; i++) {
+			for (int j= i-1; j>=0 && array[j]>array[j+1]; j--) {
+				double temp = array[j];
+				array[j] = array[j+1];
+				array[j+1]=temp;
+				int tempI = other[j];
+				other[j] = other[j+1];
+				other[j+1]=tempI;
+			}
+		}
+
+	}
+	/*...........................................................*/
 	public int getSize() {
 		if (values==null)
 			return 0;
