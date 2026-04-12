@@ -414,6 +414,10 @@ public class MolecularData extends CategoricalData {
 		if (adjustDirections && trackInversions)
 			MesquiteMessage.warnProgrammer("tradeStatesBetweenCharactersInternal does not yet handle direction tracking!"); //deal with inversions
 	}
+	/* ................................................................................................................. */
+	public double[] getStateFrequencies(int it){
+		return null;
+	}
 
 	/* .......................................... DNAData .................................................. */
 	public boolean isReversed( int it) {

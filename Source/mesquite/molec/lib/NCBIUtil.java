@@ -30,6 +30,8 @@ import mesquite.io.InterpretFastaDNA.InterpretFastaDNA;   //is this guaranteed t
 import mesquite.io.InterpretFastaProtein.InterpretFastaProtein;   //is this guaranteed to be an installed package?
 import mesquite.lib.Bits;
 import mesquite.lib.CommandRecord;
+import mesquite.lib.Debugg;
+import mesquite.lib.MesquiteBoolean;
 import mesquite.lib.MesquiteInteger;
 import mesquite.lib.MesquiteListener;
 import mesquite.lib.MesquiteMessage;
@@ -647,13 +649,12 @@ public class NCBIUtil {
 	}
 	/*.................................................................................................................*/
 	public static void importFASTASequences(CharacterData data, String fastaSequences, MesquiteModule mod,StringBuffer report, int insertAfterTaxonRequested, int referenceTaxon, boolean adjustNewSequences, boolean addNewInternalGaps){
-		importFASTASequences(data, fastaSequences, mod, report, insertAfterTaxonRequested, referenceTaxon, adjustNewSequences, addNewInternalGaps, "", "");
+		importFASTASequences(data, fastaSequences, mod, report, insertAfterTaxonRequested, referenceTaxon, adjustNewSequences, addNewInternalGaps, "", "", null, null);
 	}
 	/*.................................................................................................................*/
-	public static void importFASTASequences(CharacterData data, String fastaSequences, MesquiteModule mod,StringBuffer report, int insertAfterTaxonRequested, int referenceTaxon, boolean adjustNewSequences, boolean addNewInternalGaps, String prependToTaxonName, String appendToTaxonName){
+	public static void importFASTASequences(CharacterData data, String fastaSequences, MesquiteModule mod,StringBuffer report, int insertAfterTaxonRequested, int referenceTaxon, boolean adjustNewSequences, boolean addNewInternalGaps, String prependToTaxonName, String appendToTaxonName, MesquiteInteger charAddedToStart, BLASTResults blastResults){
 		if (data==null)
 			return;
-		
 		Taxa taxa = data.getTaxa();
 		int oldNumTaxa = taxa.getNumTaxa();
 		data.setCharNumChanging(true);
@@ -680,21 +681,66 @@ public class NCBIUtil {
 		}
 		
 		
-		if (adjustNewSequences) {
+		if (adjustNewSequences && blastResults!=null) {
 			MesquiteMessage.println("Adjusting sequences... ");
-			if (!data.someApplicableInTaxon(insertAfterTaxon, false)){  
+			if (!data.someApplicableInTaxon(referenceTaxon, false)){  
 				MesquiteMessage.println("The reference sequence contains no data; adjustment cancelled.");
 			    adjustNewSequences = false;
 			}
 			if (adjustNewSequences) {
+				for (int it=itStart; it<=itEnd; it++) {
+				//	int startOfQueryInMatrix = data.firstApplicable(referenceTaxon);
+					int hitStartMatch = 0;
+					if (blastResults.getHitReversed(it-itStart)) {
+						if (data instanceof DNAData){
+							((DNAData)data).reverseComplement(0, data.getNumChars(), it, false, true);  // then we need to reverse them back.
+						} else
+							((MolecularData)data).reverse(0, data.getNumChars(), it, false, false);  // then we need to reverse them back.
+						((MolecularData)data).collapseGapsInCellBlock(it, 0, data.getNumChars()-1, false);
+						hitStartMatch = blastResults.getHitStartMatch(it-itStart); // that's the hit start that the response specifies.  But because it is reversed complemented, need to 
+						int endOfHit = data.lastApplicable(it);
+						hitStartMatch = endOfHit-hitStartMatch+2;
+					} else
+						hitStartMatch = blastResults.getHitStartMatch(it-itStart); // 
+					int queryStartMatch = data.nthApplicable(insertAfterTaxon, blastResults.getQueryStartMatch(it-itStart));
+					int shiftAmount = queryStartMatch-hitStartMatch+1;
+					MesquiteInteger charAdded = new MesquiteInteger(0);
+					((MolecularData)data).shiftAllCells(shiftAmount, it, true, true, false, null, charAdded, null);
+					if (charAdded.getValue()<0 && charAddedToStart!=null) {
+						charAddedToStart.add(-charAdded.getValue());
+					}
+
+					
+
+					
+					/*
+					 *   
+		franiae
+	<Hsp_query-from>4</Hsp_query-from>
+      <Hsp_query-to>885</Hsp_query-to>
+      <Hsp_hit-from>911</Hsp_hit-from>
+      <Hsp_hit-to>30</Hsp_hit-to>
+
+
+	  <Hsp_query-from>1</Hsp_query-from>
+      <Hsp_query-to>884</Hsp_query-to>
+      <Hsp_hit-from>2086</Hsp_hit-from>
+      <Hsp_hit-to>2969</Hsp_hit-to>
+      */
+				}
 				
-				if (data instanceof DNAData){
+				
+			}
+			
+/*			if (adjustNewSequences) {
+					if (data instanceof DNAData){
 					MolecularDataUtil.reverseComplementSequencesIfNecessary((DNAData) data, mod, taxa, newTaxa, insertAfterTaxon, false, false);
 				}
 				
 				MolecularDataUtil.pairwiseAlignMatrix(mod, (MolecularData)data, referenceTaxon, newTaxa,0, addNewInternalGaps, true);
 				data.notifyListeners(mod, new Notification(CharacterData.DATA_CHANGED, null, null));
 			}
+			*/
 			MesquiteMessage.println("Import completed. ");
 		}
 

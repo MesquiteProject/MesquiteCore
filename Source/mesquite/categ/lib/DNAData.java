@@ -1123,6 +1123,26 @@ public class DNAData extends MolecularData {
 		return sb.toString();
 	}
 	/* ................................................................................................................. */
+	public double[] getStateFrequencies(int it){
+		int[] freq = new int[4];
+		for (int i = 0; i < 4; i++)
+			freq[i] = 0;
+		int count = 0;
+			for (int ic = 0; ic < getNumChars(); ic++) {
+				long s = getStateRaw(ic, it);
+				if (!CategoricalState.isUnassigned(s) && !CategoricalState.isInapplicable(s)) {
+					count++;
+					for (int i = 0; i < 4; i++)
+						if (CategoricalState.isElement(s, i))
+							freq[i]++;
+				}
+			}
+		if (count!=0)
+			return new double[] {	((double) freq[0]) / count,((double) freq[1]) / count,((double) freq[2]) / count,((double) freq[3]) / count};
+		return null;
+
+	}
+	/* ................................................................................................................. */
 	public double[] getBaseFrequencies(){
 		int[] freq = new int[4];
 		for (int i = 0; i < 4; i++)

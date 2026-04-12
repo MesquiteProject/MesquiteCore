@@ -16,6 +16,7 @@ package mesquite.lib.duties;
 import mesquite.lib.CompatibilityTest;
 import mesquite.lib.MesquiteInteger;
 import mesquite.lib.MesquiteModule;
+import mesquite.lib.ObjectContainer;
 import mesquite.lib.characters.CharacterStateTest;
 import mesquite.lib.table.MesquiteTable;
 
@@ -43,11 +44,6 @@ public abstract class DataSearcher extends MesquiteModule  {
    	}
    	
 	/*.................................................................................................................*/
-   	/** Processing to be done after each search.  Returns true iff the number of columns changed in the process).*/
-   	public boolean processAfterEachTaxonSearch(mesquite.lib.characters.CharacterData data, int it, int passNumber){
-   		return false;
-   	}
-	/*.................................................................................................................*/
 	/** message if search failed to find anything.  */
 	public void unsuccessfulSearchMessage(){
 	}
@@ -62,20 +58,40 @@ public abstract class DataSearcher extends MesquiteModule  {
 	public int getNumberOfProcessingPassesPerSearch() {
 		return 1;
 	}
-	
+	/*.................................................................................................................*/
+   	/** Processing to be done after each search.  Returns true iff the number of columns changed in the process).*/
+   	public boolean processAfterEachTaxonSearch(mesquite.lib.characters.CharacterData data, int it, int passNumber, Object object){
+   		return false;
+   	}
+
+	/*.................................................................................................................*
+   	/** Called to search the data selected .  If you use the searchSelectedTaxa method of this class, 
+   	then you must supply a real method for this, not just this stub. 
+   	public boolean searchOneTaxon(mesquite.lib.characters.CharacterData data, int it, int icStart, int icEnd){
+   		return false;
+   	}
+	/*.................................................................................................................*/
+   	/** Called to search the data selected .  If you use the searchSelectedTaxa method of this class, 
+   	then you must supply a real method for this, not just this stub. */
+   	public boolean searchOneTaxon(mesquite.lib.characters.CharacterData data, int it, int icStart, int icEnd, ObjectContainer objContainer){
+   		return false;
+   	}
+	/*.................................................................................................................*/
+
 	
    	/** Called to search data in a table. This is used if the searching procedure can be done on the selected region in one taxon
    	at a time, independent of all other taxa.  If the searching procedure involves dependencies between taxa,
    	then a different method must be built.  */
    	public boolean searchSelectedTaxa(mesquite.lib.characters.CharacterData data, MesquiteTable table){
+   		ObjectContainer objContainer = new ObjectContainer();
 		boolean did=false;
  		if (table==null && data!=null){    // alter entire matrix
  			if (canSearchMoreThanOnePiece() || data.getNumTaxa()==1)
  				return false;
 			for (int j=0; j<data.getNumTaxa(); j++) {
-				if (searchOneTaxon(data,j,0,data.getNumChars())) {
+				if (searchOneTaxon(data,j,0,data.getNumChars(), objContainer)) {
  					for (int i=0; i<getNumberOfProcessingPassesPerSearch(); i++) 
- 						processAfterEachTaxonSearch(data, j, i); 
+ 						processAfterEachTaxonSearch(data, j, i, objContainer.getObject()); 
 				}
 				else
 					unsuccessfulSearchMessage();
@@ -90,10 +106,10 @@ public abstract class DataSearcher extends MesquiteModule  {
  			MesquiteInteger lastColumn = new MesquiteInteger();
  	
  			while (table.nextSingleRowBlockSelected(row, firstColumn, lastColumn)) { 
- 				if (searchOneTaxon(data,row.getValue(), firstColumn.getValue(), lastColumn.getValue())){
+ 				if (searchOneTaxon(data,row.getValue(), firstColumn.getValue(), lastColumn.getValue(), objContainer)){
 					boolean resetColumns = false;
  					for (int i=0; i<getNumberOfProcessingPassesPerSearch(); i++) {
- 						if (processAfterEachTaxonSearch(data, row.getValue(), i))
+ 						if (processAfterEachTaxonSearch(data, row.getValue(), i, objContainer.getObject()))
  							resetColumns=true;
  					}
 					if (resetColumns){  //
@@ -112,12 +128,6 @@ public abstract class DataSearcher extends MesquiteModule  {
  	 			searchInvokedMessage();
  		}
 		return did;
-   	}
-	/*.................................................................................................................*/
-   	/** Called to search the data selected .  If you use the searchSelectedTaxa method of this class, 
-   	then you must supply a real method for this, not just this stub. */
-   	public boolean searchOneTaxon(mesquite.lib.characters.CharacterData data, int it, int icStart, int icEnd){
-   		return false;
    	}
 	/*.................................................................................................................*/
 	/** Returns CompatibilityTest so other modules know if this is compatible with some object. */

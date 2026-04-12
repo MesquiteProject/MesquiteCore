@@ -40,6 +40,7 @@ import mesquite.lib.MesquiteMessage;
 import mesquite.lib.MesquiteString;
 import mesquite.lib.MesquiteStringBuffer;
 import mesquite.lib.Notification;
+import mesquite.lib.ObjectContainer;
 import mesquite.lib.Parser;
 import mesquite.lib.StringArray;
 import mesquite.lib.StringUtil;
@@ -48,6 +49,7 @@ import mesquite.lib.table.MesquiteTable;
 import mesquite.lib.ui.DoubleField;
 import mesquite.lib.ui.ExtensibleDialog;
 import mesquite.molec.lib.BLASTResults;
+import mesquite.molec.lib.BLASTResultsArray;
 import mesquite.molec.lib.Blaster;
 import mesquite.molec.lib.NCBIUtil;
 
@@ -186,7 +188,7 @@ public class TopBlastMatches extends MolecDataSearcher implements ItemListener {
 		fetchTaxonomyCheckBox = dialog.addCheckBox("fetch taxonomic lineage",fetchTaxonomy);
 		importCheckBox = dialog.addCheckBox("import top matches into matrix",importTopMatches);
 		interleaveResultsCheckBox = dialog.addCheckBox("insert found sequence after query sequence that was BLASTed",interleaveResults);
-		adjustSequencesCheckBox = dialog.addCheckBox("reverse complement if needed and align imported sequences",adjustSequences);
+		adjustSequencesCheckBox = dialog.addCheckBox("shift imported sequences (and reverse complement if needed)",adjustSequences);
 		addInternalGapsCheckBox = dialog.addCheckBox("allow new internal gaps during alignment",addInternalGaps);
 		appendQueryNameCheckBox = dialog.addCheckBox("append query name to hit name",appendQueryName);
 
@@ -316,11 +318,19 @@ public class TopBlastMatches extends MolecDataSearcher implements ItemListener {
 	}
 	/*.................................................................................................................*/
 	/** Processing to be done after each search. Returns true if  */
-	public boolean processAfterEachTaxonSearch(CharacterData data, int it, int passNumber){
+	public boolean processAfterEachTaxonSearch(CharacterData data, int it, int passNumber, Object object){
 		logln("\nSearch results: \n"+ results.toString());
 		//		logln("**** IDs: " +StringArray.toString(ID)); 
 		int numTaxaAdded =0;
+		BLASTResultsArray blastResultsArray;
 
+		BLASTResults blastResults;
+		if (object instanceof BLASTResultsArray) {
+			blastResultsArray = (BLASTResultsArray)object;
+			blastResults= blastResultsArray.getResults(passNumber);
+		}
+		else
+			return false;
 
 		if (importTopMatches){  
 			if (!databaseCompatibleForImport(data)) {
@@ -362,10 +372,11 @@ public class TopBlastMatches extends MolecDataSearcher implements ItemListener {
 					appendToTaxonName = " ["+data.getTaxa().getTaxonName(it)+"]";
 				if (!foundTaxonName.isBlank())
 					prependToTaxonName = foundTaxonName.getValue();
-
+				MesquiteInteger charAddedToStart = new MesquiteInteger(0);
 				numTaxaAdded = data.getNumTaxa();
-				if (StringUtil.notEmpty(newSequencesAsFasta))
-					NCBIUtil.importFASTASequences(data, newSequencesAsFasta, this, results, insertAfterTaxon, it, adjustSequences, addInternalGaps, prependToTaxonName, appendToTaxonName);
+				if (StringUtil.notEmpty(newSequencesAsFasta)) {
+					NCBIUtil.importFASTASequences(data, newSequencesAsFasta, this, results, insertAfterTaxon, it, adjustSequences, addInternalGaps, prependToTaxonName, appendToTaxonName, charAddedToStart, blastResults);
+				}
 				else
 					logln("BLAST database returned no sequences in response to query.");
 				data.notifyListeners(this, new Notification(MesquiteListener.PARTS_ADDED));
@@ -377,16 +388,16 @@ public class TopBlastMatches extends MolecDataSearcher implements ItemListener {
 				if (interleaveResults) { 
 					//lastSearched.add(numTaxaAdded);
 				}
-			}
+				}
 				 */
+				table.scrollToColumn(table.getFirstColumnVisible()+charAddedToStart.getValue()+1);
 				return data.getNumChars()!=originalNumChars;
 			}
 		}
 		return true;
 	}
-
 	/*.................................................................................................................*/
-	public boolean searchOneTaxon(CharacterData data, int it, int icStart, int icEnd){
+	public boolean searchOneTaxon(CharacterData data, int it, int icStart, int icEnd, ObjectContainer objContainer){
 		if (data==null || blasterTask==null)
 			return false;
 		String sequenceName = data.getTaxa().getTaxonName(it);
@@ -407,6 +418,7 @@ public class TopBlastMatches extends MolecDataSearcher implements ItemListener {
 		String errorMessage = "";
 		if (numDatabases==0)
 			errorMessage = "No databases to search";
+		BLASTResultsArray blastResultsArray = new BLASTResultsArray(numDatabases);
 
 
 		for (int iDatabase = 0; iDatabase<numDatabases; iDatabase++) {
@@ -424,6 +436,7 @@ public class TopBlastMatches extends MolecDataSearcher implements ItemListener {
 			}
 
 			BLASTResults blastResults = new BLASTResults(maxHits);
+			blastResultsArray.setResults(iDatabase,blastResults);
 
 			if (saveResultsToFile)
 				saveBLASTReport(sequenceName+" to " + blasterTask.getDatabaseName(),response.toString());
@@ -470,6 +483,8 @@ public class TopBlastMatches extends MolecDataSearcher implements ItemListener {
 			results.append("-----------\n");
 
 		}
+		objContainer.setObject(blastResultsArray);
+
 
 		if (StringUtil.notEmpty(errorMessage))
 			MesquiteMessage.discreetNotifyUser(errorMessage);
@@ -481,6 +496,7 @@ public class TopBlastMatches extends MolecDataSearcher implements ItemListener {
 	/** Called to search on the data in selected cells.  Returns true if data searched*/
 	public boolean searchData(CharacterData data, MesquiteTable table){
 		this.data = data;
+		this.table = table;
 		results.setLength(0);
 		if (!(data instanceof DNAData || data instanceof ProteinData)){
 			discreetAlert( "Only DNA or protein data can be searched using this module.");

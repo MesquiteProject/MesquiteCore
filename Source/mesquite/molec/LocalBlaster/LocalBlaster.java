@@ -579,7 +579,7 @@ public class LocalBlaster extends Blaster implements ActionListener,  AppUser, P
 			else
 				success = false;
 		}
-//		if (!MesquiteTrunk.developmentMode)
+//		if (!MesquiteTrunk.developmentMode)   //Debugg.println  need to uncomment this before release.
 //			deleteSupportDirectory();
 		if (! success) {
 			if (okToInteractWithUser(MesquiteModule.CAN_PROCEED_ANYWAY, "BLAST failed")){

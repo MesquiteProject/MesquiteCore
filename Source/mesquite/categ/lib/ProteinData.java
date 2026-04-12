@@ -320,6 +320,30 @@ public class ProteinData extends MolecularData {
 			return super.statesToStringCore(ic,s);
 	}
 
+	/* ................................................................................................................. */
+	public double[] getStateFrequencies(int it){
+		int[] freq = new int[ProteinState.maxProteinState];
+		for (int i = 0; i <=ProteinState.maxProteinState; i++)
+			freq[i] = 0;
+		int count = 0;
+			for (int ic = 0; ic < getNumChars(); ic++) {
+				long s = getStateRaw(ic, it);
+				if (!CategoricalState.isUnassigned(s) && !CategoricalState.isInapplicable(s)) {
+					count++;
+					for (int i = 0; i <=ProteinState.maxProteinState; i++)
+						if (CategoricalState.isElement(s, i))
+							freq[i]++;
+				}
+			}
+		if (count!=0) {
+			double[] freqs = new double[ProteinState.maxProteinState+1];
+			for (int i = 0; i <=ProteinState.maxProteinState; i++)
+				freqs[i]= ((double) freq[0]) / count;
+			return freqs;
+		}
+		return null;
+
+	}
 
 	/*..........................................  ProteinData  ..................................................*/
    	/** appends to buffer string describing the state(s) of character ic in taxon it.*/

@@ -20,6 +20,7 @@ import mesquite.categ.lib.CategDataAlterer;
 import mesquite.categ.lib.DNAData;
 import mesquite.categ.lib.MolecularDataUtil;
 import mesquite.lib.Bits;
+import mesquite.lib.Debugg;
 import mesquite.lib.IntegerField;
 import mesquite.lib.MesquiteBoolean;
 import mesquite.lib.MesquiteDouble;
@@ -180,6 +181,7 @@ public boolean queryOptions(int it, int max) {
 							whichTaxa.setBit(it);
 							added = data.moveCells(startBlock, endBlock, distance, whichTaxa, true, false, true, false, dataChanged, charAdded, null);
 						} else {
+							Debugg.println("||||||  \n shift: " + (firstColumn.getValue()-matchStart.getValue()));
 							added = data.shiftAllCells(firstColumn.getValue()-matchStart.getValue(), it, true, true, true, dataChanged,charAdded, null);
 						}
 						if (charAdded.isCombinable() && charAdded.getValue()!=0 && data instanceof DNAData) {
