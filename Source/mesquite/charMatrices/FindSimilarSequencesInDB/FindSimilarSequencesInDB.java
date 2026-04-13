@@ -71,7 +71,7 @@ public class FindSimilarSequencesInDB extends DataWindowAssistantI {
 				}
 				MolecDataSearcher tda= (MolecDataSearcher)hireNamedEmployee(MolecDataSearcher.class, arguments);
 				if (tda!=null) {
-					boolean a = tda.searchData(data, table);
+					boolean a = tda.searchData(data, table, false);
 					if (a) {
 						table.repaintAll();
 						data.notifyListeners(this, new Notification(MesquiteListener.DATA_CHANGED));

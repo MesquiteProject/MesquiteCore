@@ -22,15 +22,19 @@ import java.net.MalformedURLException;
 import java.net.URL;
 
 import mesquite.categ.lib.CategDataSearcher;
+import mesquite.categ.lib.CategoricalData;
 import mesquite.categ.lib.DNAData;
 import mesquite.categ.lib.MolecDataSearcher;
 import mesquite.categ.lib.ProteinData;
 import mesquite.categ.lib.RequiresAnyMolecularData;
+import mesquite.externalCommunication.lib.RemoteProcessCommunicator;
+import mesquite.lib.CommandChecker;
 import mesquite.lib.CompatibilityTest;
 import mesquite.lib.EmployeeNeed;
 import mesquite.lib.IntegerArray;
 import mesquite.lib.IntegerField;
 import mesquite.lib.MesquiteBoolean;
+import mesquite.lib.MesquiteCommandAbsorber;
 import mesquite.lib.MesquiteDouble;
 import mesquite.lib.MesquiteFile;
 import mesquite.lib.MesquiteFileUtil;
@@ -39,24 +43,29 @@ import mesquite.lib.MesquiteListener;
 import mesquite.lib.MesquiteMessage;
 import mesquite.lib.MesquiteString;
 import mesquite.lib.MesquiteStringBuffer;
+import mesquite.lib.MesquiteThread;
 import mesquite.lib.Notification;
 import mesquite.lib.ObjectContainer;
 import mesquite.lib.Parser;
+import mesquite.lib.ResultCodes;
 import mesquite.lib.StringArray;
 import mesquite.lib.StringUtil;
 import mesquite.lib.characters.CharacterData;
+import mesquite.lib.duties.TWindowMaker;
 import mesquite.lib.table.MesquiteTable;
 import mesquite.lib.ui.DoubleField;
 import mesquite.lib.ui.ExtensibleDialog;
+import mesquite.lib.ui.MesquiteWindow;
 import mesquite.molec.lib.BLASTResults;
 import mesquite.molec.lib.BLASTResultsArray;
 import mesquite.molec.lib.Blaster;
 import mesquite.molec.lib.NCBIUtil;
+import mesquite.trees.lib.SimpleTreeWindow;
 
 
 /* ======================================================================== */
 public class TopBlastMatches extends MolecDataSearcher implements ItemListener { 
-	MesquiteTable table;
+	MesquiteTable table=null;
 	CharacterData data;
 	StringBuffer results;
 	String[] accessionNumbers;
@@ -76,6 +85,8 @@ public class TopBlastMatches extends MolecDataSearcher implements ItemListener {
 	boolean adjustSequences = false;
 	boolean addInternalGaps = false;
 	boolean appendQueryName = false;
+	boolean alwaysImportDataIfPossible=false;
+	
 	//	boolean blastx = false;
 	int maxTime = 300;
 	//	static int upperMaxHits = 30;
@@ -160,11 +171,37 @@ public class TopBlastMatches extends MolecDataSearcher implements ItemListener {
 	private void checkEnabling(){
 		//importCheckBox.setEnabled(!blastXCheckBox.getState());
 		fetchTaxonomyCheckBox.setEnabled( saveFileCheckBox.getState());
+		importCheckBox.setEnabled( !getAlwaysImportDataIfPossible());	
+		
 	}
 	/*.................................................................................................................*/
 	public void itemStateChanged(ItemEvent e) {
 		checkEnabling();
 	}
+	
+	public boolean getAlwaysImportDataIfPossible() {
+		return alwaysImportDataIfPossible;
+	}
+
+	public void setAlwaysImportDataIfPossible(boolean alwaysImportDataIfPossible) {
+		this.alwaysImportDataIfPossible = alwaysImportDataIfPossible;
+	}
+
+	protected boolean optionsHaveBeenSet = false;
+
+	/*.................................................................................................................*/
+	protected boolean doQueryOptions() {
+		return !optionsHaveBeenSet;
+	}
+	/*.................................................................................................................*/
+	public Object doCommand(String commandName, String arguments, CommandChecker checker) {
+		if (checker.compare(this.getClass(), "Tells searcher to behave as if options have been set", "[true/false]", commandName, "optionsHaveBeenSet")) {
+			optionsHaveBeenSet = MesquiteBoolean.fromTrueFalseString(parser.getFirstToken(arguments));
+		}
+		else return super.doCommand(commandName, arguments, checker);
+		return null;
+	}	
+
 	/*.................................................................................................................*/
 	public boolean queryOptions() {
 		MesquiteInteger buttonPressed = new MesquiteInteger(1);
@@ -186,6 +223,8 @@ public class TopBlastMatches extends MolecDataSearcher implements ItemListener {
 		saveFileCheckBox = dialog.addCheckBox("save summary report and BLAST responses",saveResultsToFile);
 		blastTypeChoice = dialog.addPopUpMenu("BLAST type for nucleotides", Blaster.getBlastTypeNames(), blastType);
 		fetchTaxonomyCheckBox = dialog.addCheckBox("fetch taxonomic lineage",fetchTaxonomy);
+		if (getAlwaysImportDataIfPossible())
+			importTopMatches=true;
 		importCheckBox = dialog.addCheckBox("import top matches into matrix",importTopMatches);
 		interleaveResultsCheckBox = dialog.addCheckBox("insert found sequence after query sequence that was BLASTed",interleaveResults);
 		adjustSequencesCheckBox = dialog.addCheckBox("shift imported sequences (and reverse complement if needed)",adjustSequences);
@@ -390,7 +429,8 @@ public class TopBlastMatches extends MolecDataSearcher implements ItemListener {
 				}
 				}
 				 */
-				table.scrollToColumn(table.getFirstColumnVisible()+charAddedToStart.getValue()+1);
+				if (table!=null)
+					table.scrollToColumn(table.getFirstColumnVisible()+charAddedToStart.getValue()+1);
 				return data.getNumChars()!=originalNumChars;
 			}
 		}
@@ -492,19 +532,23 @@ public class TopBlastMatches extends MolecDataSearcher implements ItemListener {
 		//accessionNumbers = blastResults.getAccessions();
 		return someHits;
 	}
+
 	/*.................................................................................................................*/
 	/** Called to search on the data in selected cells.  Returns true if data searched*/
-	public boolean searchData(CharacterData data, MesquiteTable table){
+	public boolean searchData(CharacterData data, MesquiteTable table, boolean useSelectedRowsOnly){
 		this.data = data;
-		this.table = table;
+		this.table = table;  // note:  may be null!!
 		results.setLength(0);
 		if (!(data instanceof DNAData || data instanceof ProteinData)){
 			discreetAlert( "Only DNA or protein data can be searched using this module.");
 			return false;
 		} 
 		else {
-			if (!queryOptions())
-				return false;
+			if (doQueryOptions() && !MesquiteThread.isScripting()) 
+				if (!queryOptions()){
+					return false;
+				}
+			optionsHaveBeenSet = true;
 			if (wordSize>7 && (blastType==Blaster.BLASTX || data instanceof ProteinData)) {
 				MesquiteMessage.discreetNotifyUser("wordSize must be 7 or less if amino acids are the query or if the query database contains amino acid data; wordsize reset to 7." );
 				wordSize=7;
@@ -521,7 +565,7 @@ public class TopBlastMatches extends MolecDataSearcher implements ItemListener {
 				table.convertColumnSelectionToRows(true);
 
 
-			boolean searchOK = searchSelectedTaxa(data,table);
+			boolean searchOK = searchSelectedTaxa(data,table, useSelectedRowsOnly); 
 			if (saveResultsToFile)
 				saveResults(results);
 			return searchOK;
