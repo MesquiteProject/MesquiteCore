@@ -129,7 +129,7 @@ public String preparePreferencesForXML () {
    		UndoInstructions undoInstructions = data.getUndoInstructionsAllMatrixCells(new int[] {UndoInstructions.NO_CHAR_TAXA_CHANGES});
 		boolean noRowsSelected =  table == null || !table.anyRowSelected() ;
 		for (int it = 0; it<data.getNumTaxa(); it++){
-			if (table==null || noRowsSelected || table.isRowSelected(it)) {
+			if (table==null || noRowsSelected || table.isRowSelected(it)) {  
 				int cellsAltered = 0;
 				boolean done = false;
 				int startOfFirstDataRegion = -1;

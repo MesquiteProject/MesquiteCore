@@ -87,6 +87,9 @@ public class TopBlastMatches extends MolecDataSearcher implements ItemListener {
 	boolean appendQueryName = false;
 	boolean alwaysImportDataIfPossible=false;
 	
+	protected boolean optionsHaveBeenSet = false;
+	boolean usercanceled=false;
+
 	//	boolean blastx = false;
 	int maxTime = 300;
 	//	static int upperMaxHits = 30;
@@ -187,7 +190,6 @@ public class TopBlastMatches extends MolecDataSearcher implements ItemListener {
 		this.alwaysImportDataIfPossible = alwaysImportDataIfPossible;
 	}
 
-	protected boolean optionsHaveBeenSet = false;
 
 	/*.................................................................................................................*/
 	protected boolean doQueryOptions() {
@@ -532,7 +534,6 @@ public class TopBlastMatches extends MolecDataSearcher implements ItemListener {
 		//accessionNumbers = blastResults.getAccessions();
 		return someHits;
 	}
-
 	/*.................................................................................................................*/
 	/** Called to search on the data in selected cells.  Returns true if data searched*/
 	public boolean searchData(CharacterData data, MesquiteTable table, boolean useSelectedRowsOnly){
@@ -544,10 +545,14 @@ public class TopBlastMatches extends MolecDataSearcher implements ItemListener {
 			return false;
 		} 
 		else {
-			if (doQueryOptions() && !MesquiteThread.isScripting()) 
+			if (doQueryOptions() && !MesquiteThread.isScripting()) {
+				if (usercanceled)
+					return false;
 				if (!queryOptions()){
+					usercanceled = true;
 					return false;
 				}
+			}
 			optionsHaveBeenSet = true;
 			if (wordSize>7 && (blastType==Blaster.BLASTX || data instanceof ProteinData)) {
 				MesquiteMessage.discreetNotifyUser("wordSize must be 7 or less if amino acids are the query or if the query database contains amino acid data; wordsize reset to 7." );
