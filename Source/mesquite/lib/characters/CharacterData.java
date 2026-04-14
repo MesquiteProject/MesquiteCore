@@ -2492,6 +2492,23 @@ public abstract class CharacterData extends FileElement implements MesquiteListe
 	/** sets the state of character ic in taxon it to the default state (which in some circumstances may be inapplicable, e.g. gaps for molecular data)*/
 	public  abstract void deassign(int ic, int it);
 
+	/*..........................................    ..................................................*/
+	/** returns whether the character ic is inapplicable to taxon it*/
+	public  boolean hasDataToLeft(int ic, int it){
+		for (int icc = ic-1; icc>=0; icc--)  //look left for state
+			if (!isInapplicable(icc, it))
+				return true;
+		return false;
+	}
+	/*..........................................    ..................................................*/
+	/** returns whether the character ic is inapplicable to taxon it*/
+	public  boolean hasDataToRight(int ic, int it){
+		for (int icc = ic+1; icc<getNumChars(); icc++)  //look right for state
+			if (!isInapplicable(icc, it))
+				return true;
+		return false;
+	}
+
 	public boolean hasDataForTaxon(int it){
 		int numChars = getNumChars();
 		for (int ic=0; ic<numChars; ic++) {
