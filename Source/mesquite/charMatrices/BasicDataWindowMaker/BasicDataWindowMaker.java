@@ -4136,10 +4136,14 @@ class MatrixTable extends mesquite.lib.table.CMTable implements MesquiteDroppedF
 	public void drawMatrixCell(Graphics g, int x, int y, int w, int h, int column, int row, boolean selected) {
 		if (data == null)
 			return;
-		boolean writeStates = !showBirdsEyeView.getValue() && showStates.getValue();
+		boolean writeStates = showStates.getValue();
+		if (showBirdsEyeView.getValue())
+			writeStates=false;
+		else if (showDarkEmptySequences.getValue() && !data.hasDataForTaxon(row))
+			writeStates = false;
 		boolean leaveEdges = !reduceCellBorders.getValue() && writeStates && !tight.getValue();
+		
 		drawMatrixCell(g, x, y, w, h, column, row, selected, writeStates, leaveEdges);
-
 	}
 
 	public CellColorer getCellColorer() {
