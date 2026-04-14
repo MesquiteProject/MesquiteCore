@@ -98,11 +98,11 @@ public class HighlightInternalPartialTriplets extends DataWindowAssistantID impl
 		if (!data.isInapplicable(ic, it))  // has a base
 			if (data.isInPartialTriplet(ic, it, null))  // is in a partial triplet
 				if (data.getCodonPosition(ic)==1 && (data.hasDataToLeft(ic, it) && data.hasDataToRight(ic+2,it))) // is internal
-					return Color.blue;
+					return Color.red;
 				else if (data.getCodonPosition(ic)==2 && (data.hasDataToLeft(ic-1, it) && data.hasDataToRight(ic+1,it))) // is internal
-					return Color.blue;
+					return Color.red;
 				else if (data.getCodonPosition(ic)==3 && (data.hasDataToLeft(ic-2, it) && data.hasDataToRight(ic,it))) // is internal
-					return Color.blue;
+					return Color.red;
 		Color color = data.getColorOfStates(ic, it);
 		//return color;
 		return ColorDistribution.brighter(color, 0.15);
