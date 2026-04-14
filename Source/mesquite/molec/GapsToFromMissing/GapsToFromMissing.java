@@ -58,8 +58,8 @@ public class GapsToFromMissing extends CategDataAlterer implements AltererConver
 		}
 		preferencesSet = true;
 	}
-/*.................................................................................................................*/
-public String preparePreferencesForXML () {
+	/*.................................................................................................................*/
+	public String preparePreferencesForXML () {
 		StringBuffer buffer = new StringBuffer(200);
 		StringUtil.appendXMLTag(buffer, 2, "mode", mode);  
 		StringUtil.appendXMLTag(buffer, 2, "gapsToMissing", gapsToMissing);  
@@ -67,19 +67,24 @@ public String preparePreferencesForXML () {
 		return buffer.toString();
 	}
 
-	private synchronized boolean cellToConvert(CategoricalData data, int ic, int it) {
- 		if (data.isInapplicable(ic, it) && gapsToMissing)
- 			return true;
- 		if (data.isUnassigned(ic, it) && !gapsToMissing)
- 			return true;
- 		return false;
- 	}
- 	private synchronized long conversionValue() {
- 		if (gapsToMissing)
- 			return CategoricalState.unassigned;
- 		else 
- 			return CategoricalState.inapplicable;
- 	}
+	/*.................................................................................................................*/
+	private synchronized boolean cellToConvert(CategoricalData data, int ic, int it, boolean singleCellBlockSelected, int icStart,int  icEnd, int itStart,int  itEnd) {
+		if (singleCellBlockSelected)
+			if (!(ic>=icStart && ic <=icEnd && it >= itStart && it<=itEnd))  // not in the block
+				return false;
+		if (data.isInapplicable(ic, it) && gapsToMissing)
+			return true;
+		if (data.isUnassigned(ic, it) && !gapsToMissing)
+			return true;
+		return false;
+	}
+	/*.................................................................................................................*/
+	private synchronized long conversionValue() {
+		if (gapsToMissing)
+			return CategoricalState.unassigned;
+		else 
+			return CategoricalState.inapplicable;
+	}
 
 	/*.................................................................................................................*/
 	public boolean queryOptions(CategoricalData data) {
@@ -88,14 +93,14 @@ public String preparePreferencesForXML () {
 		MesquiteInteger buttonPressed = new MesquiteInteger(1);
 		ExtensibleDialog queryDialog = new ExtensibleDialog(containerOfModule(), "Gaps <-> Missing",buttonPressed);  //MesquiteTrunk.mesquiteTrunk.containerOfModule()
 		queryDialog.addLabel("Converting Gaps to Missing or Missing to Gaps");
-		
+
 		int defaultValue = 0;
 		if (!gapsToMissing)
 			defaultValue=1;
 		RadioButtons choices = queryDialog.addRadioButtons (new String[]{"Convert Gaps to Missing", "Convert Missing to Gaps"}, defaultValue);
-		
+
 		queryDialog.addHorizontalLine(1);
-		
+
 		if (data.getTaxa().anySelected())
 			queryDialog.addLabel("Within selected sequences, ");
 		else
@@ -112,7 +117,6 @@ public String preparePreferencesForXML () {
 		queryDialog.dispose();
 		return (buttonPressed.getValue()==0);
 	}
-
 	/*.................................................................................................................*/
 	/** Called to alter data in those cells selected in table*/
 	public synchronized int alterData(CharacterData dData, MesquiteTable table,  UndoReference undoReference){
@@ -126,8 +130,15 @@ public String preparePreferencesForXML () {
 			if (!queryOptions(data))
 				return -1;
 		}
-   		UndoInstructions undoInstructions = data.getUndoInstructionsAllMatrixCells(new int[] {UndoInstructions.NO_CHAR_TAXA_CHANGES});
+		UndoInstructions undoInstructions = data.getUndoInstructionsAllMatrixCells(new int[] {UndoInstructions.NO_CHAR_TAXA_CHANGES});
 		boolean noRowsSelected =  table == null || !table.anyRowSelected() ;
+		MesquiteInteger firstRow = new MesquiteInteger();
+		MesquiteInteger lastRow = new MesquiteInteger();
+		MesquiteInteger firstColumn = new MesquiteInteger();
+		MesquiteInteger lastColumn = new MesquiteInteger();
+		boolean singleCellBlockSelected = table.singleCellBlockSelected(firstRow, lastRow,  firstColumn, lastColumn);
+
+
 		for (int it = 0; it<data.getNumTaxa(); it++){
 			if (table==null || noRowsSelected || table.isRowSelected(it)) {  
 				int cellsAltered = 0;
@@ -135,7 +146,7 @@ public String preparePreferencesForXML () {
 				int startOfFirstDataRegion = -1;
 				int endOfLastDataRegion = -1;
 				for (int ic = 0; ic<data.getNumChars() && !done; ic++){  //the first terminal region
-					if (cellToConvert(data, ic, it)) {  // this is a cell that fits the criteria in terms of is gap to convert or is missing to convert
+					if (cellToConvert(data, ic, it, singleCellBlockSelected, firstColumn.getValue(), lastColumn.getValue(), firstRow.getValue(), lastRow.getValue())) {  // this is a cell that fits the criteria in terms of is gap to convert or is missing to convert
 						if (mode==ALLREGIONS || mode==TERMINALREGION) {
 							data.setState(ic, it, conversionValue());
 							if (!MesquiteLong.isCombinable(numCellsAltered))
@@ -151,7 +162,7 @@ public String preparePreferencesForXML () {
 				if (done){  
 					done = false;
 					for (int ic = data.getNumChars()-1; ic>=0 && !done; ic--){  // the end terminal region
-						if (cellToConvert(data, ic, it)) {
+						if (cellToConvert(data, ic, it, singleCellBlockSelected, firstColumn.getValue(), lastColumn.getValue(), firstRow.getValue(), lastRow.getValue())) {  // this is a cell that fits the criteria in terms of is gap to convert or is missing to convert
 							if (mode==ALLREGIONS || mode==TERMINALREGION) {
 								data.setState(ic, it, conversionValue());
 								if (!MesquiteLong.isCombinable(numCellsAltered))
@@ -168,7 +179,7 @@ public String preparePreferencesForXML () {
 				if (done && (mode==ALLREGIONS || mode==INTERNALREGION)) {
 					done = false;
 					for (int ic = startOfFirstDataRegion; ic<endOfLastDataRegion; ic++){  // now let's scan the internal regions
-						if (cellToConvert(data, ic, it)) {
+						if (cellToConvert(data, ic, it, singleCellBlockSelected, firstColumn.getValue(), lastColumn.getValue(), firstRow.getValue(), lastRow.getValue())) {  // this is a cell that fits the criteria in terms of is gap to convert or is missing to convert
 							data.setState(ic, it, conversionValue());
 							if (!MesquiteLong.isCombinable(numCellsAltered))
 								numCellsAltered = 0;
