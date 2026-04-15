@@ -228,6 +228,8 @@ public class MAFFTAlign extends ExternalSequenceAligner implements ItemListener{
 	public void processQueryProgramOptions(ExtensibleDialog dialog) {
 		if (letMAFFTChooseCoresCheckBox!=null)
 			letMAFFTChooseCores = letMAFFTChooseCoresCheckBox.getState();
+		else
+			letMAFFTChooseCores = false;
 		int temp = alignmentMethodChoice.getSelectedIndex();
 		if (temp>=0)
 			alignmentMethod = temp;
@@ -239,8 +241,9 @@ public class MAFFTAlign extends ExternalSequenceAligner implements ItemListener{
 	/*.................................................................................................................*/
 	public String getQueryProgramOptions() {
 		String options = "";
-		if (letMAFFTChooseCores)
+		if (letMAFFTChooseCores && howManyCoresMayIUse()>1) {
 			options+=" --thread -1 ";
+		}
 		if (alignmentMethodText == null)
 			options += " ";
 		else
