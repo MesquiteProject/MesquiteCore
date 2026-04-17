@@ -38,7 +38,7 @@ public class ListOfTaxonIDsInFileTaxonSelector extends TaxonSelector {
 		loadPreferences();
 		if (!MesquiteThread.isScripting()){
 			fileList = getListFromFile();
-			if (StringUtil.notEmpty(fileList) && !queryOptions())
+			if (StringUtil.notEmpty(fileList))
 				return false;
 		}
 		return true;
@@ -64,7 +64,7 @@ public class ListOfTaxonIDsInFileTaxonSelector extends TaxonSelector {
 		return NEXTRELEASE;  
 	}
 	
-	/*.................................................................................................................*/
+	/*.................................................................................................................*
 	public boolean queryOptions() {
 		MesquiteInteger buttonPressed = new MesquiteInteger(1);
 		ExtensibleDialog dialog = new ExtensibleDialog(containerOfModule(), "Select Taxa from List of Taxon IDs In File",buttonPressed);  //MesquiteTrunk.mesquiteTrunk.containerOfModule()
