@@ -11,7 +11,7 @@ Mesquite's web site is http://mesquiteproject.org
 This source code and its compiled class files are free and modifiable under the terms of 
 GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
 */
-package mesquite.basic.ListInFileTaxonSelector;
+package mesquite.basic.ListOfTaxonIDsInFileTaxonSelector;
 
 import java.awt.Checkbox;
 
@@ -22,13 +22,15 @@ import mesquite.lib.MesquiteListener;
 import mesquite.lib.MesquiteString;
 import mesquite.lib.MesquiteThread;
 import mesquite.lib.Notification;
+import mesquite.lib.Parser;
 import mesquite.lib.StringUtil;
 import mesquite.lib.characters.CharacterData;
 import mesquite.lib.duties.TaxonSelector;
+import mesquite.lib.misc.VoucherInfoFromOTUIDDB;
 import mesquite.lib.taxa.Taxa;
 import mesquite.lib.ui.ExtensibleDialog;
 
-public class ListInFileTaxonSelector extends TaxonSelector {
+public class ListOfTaxonIDsInFileTaxonSelector extends TaxonSelector {
 	String fileList = "";
 	boolean caseSensitive = false;
 
@@ -59,15 +61,15 @@ public class ListInFileTaxonSelector extends TaxonSelector {
 	 * then the number refers to the Mesquite version.  This should be used only by modules part of the core release of Mesquite.
 	 * If a NEGATIVE integer, then the number refers to the local version of the package, e.g. a third party package*/
 	public int getVersionOfFirstRelease(){
-		return 310;  
+		return NEXTRELEASE;  
 	}
 	
 	/*.................................................................................................................*/
 	public boolean queryOptions() {
 		MesquiteInteger buttonPressed = new MesquiteInteger(1);
-		ExtensibleDialog dialog = new ExtensibleDialog(containerOfModule(), "Select Taxa from List In File",buttonPressed);  //MesquiteTrunk.mesquiteTrunk.containerOfModule()
+		ExtensibleDialog dialog = new ExtensibleDialog(containerOfModule(), "Select Taxa from List of Taxon IDs In File",buttonPressed);  //MesquiteTrunk.mesquiteTrunk.containerOfModule()
 
-		dialog.addLabel("Select Taxa from List In File");
+		dialog.addLabel("Select Taxa from List of Taxon IDs In File");
 
 		Checkbox caseSensitiveBox = dialog.addCheckBox("case sensitive", caseSensitive);
 
@@ -82,11 +84,44 @@ public class ListInFileTaxonSelector extends TaxonSelector {
 	}
 
 	/*.................................................................................................................*/
+	public boolean codesMatch(String OTUIDCode, String incomingCode) {
+		if (StringUtil.blank(OTUIDCode))
+			return false;
+		if (!OTUIDCode.contains("/"))  // doesn't contain multiple entries
+			return OTUIDCode.equalsIgnoreCase(incomingCode);
+		Parser parser = new Parser(OTUIDCode);
+		parser.setPunctuationString("/");
+		String code = parser.getFirstToken();
+		code = StringUtil.stripBoundingWhitespace(code);
+		while (StringUtil.notEmpty(code)) {
+			if (code.equalsIgnoreCase(incomingCode))
+				return true;
+			code = parser.getNextToken();
+			code = StringUtil.stripBoundingWhitespace(code);
+		}
+		return false;
+
+	}
+
+	/*.................................................................................................................*/
+	public int getTaxonNumber(Taxa taxa, String token) {
+		if (StringUtil.blank(token))
+			return -1;
+		String code = "";
+		for (int it=0; it<taxa.getNumTaxa(); it++) {
+			code = (String)taxa.getAssociatedString(VoucherInfoFromOTUIDDB.voucherCodeRef, it);
+			if (codesMatch(code, token))
+						return it;
+		}
+		return -1;
+	}
+
+	/*.................................................................................................................*/
 	private String getListFromFile () {
 
 		MesquiteString directoryName = new MesquiteString("");
 		MesquiteString fileName = new MesquiteString("");
-		String filePath = MesquiteFile.openFileDialog("Choose file containing list of taxa.",  directoryName,  fileName);
+		String filePath = MesquiteFile.openFileDialog("Choose file containing list of taxon IDs.",  directoryName,  fileName);
 		if (filePath != null) {
 			String s = MesquiteFile.getFileContentsAsString(filePath);
 			if (StringUtil.blank(s)) { 
@@ -109,7 +144,7 @@ public class ListInFileTaxonSelector extends TaxonSelector {
 		if (lines==null || lines.length==0)
 			return;
 		for (int i=0; i<lines.length; i++) {
-			int it=taxa.whichTaxonNumber(lines[i],caseSensitive,false);
+			int it=getTaxonNumber(taxa, lines[i]);
 			if (it>=0 && it<taxa.getNumTaxa()){
 				taxa.setSelected(it, true);
 				changed = true;
@@ -125,13 +160,13 @@ public class ListInFileTaxonSelector extends TaxonSelector {
 	}
 
 	public String getName() {
-		return "Select Taxa from List In File";
+		return "Select Taxa from List of Taxon IDs In File";
 	}
 	public String getNameForMenuItem() {
-		return "Select Taxa from List In File...";
+		return "Select Taxa from List of Taxon IDs In File...";
 	}
 	public String getExplanation() {
-		return "Select all taxa whose names appear in a list in a simple text file.  The file should consist of one column, listing the names.";
+		return "Select all taxa whose Taxon IDs appear in a list in a simple text file.  The file should consist of one column, listing the Taxon IDs.";
 	}
 
 
