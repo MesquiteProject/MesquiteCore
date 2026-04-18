@@ -38,7 +38,7 @@ public class ListOfTaxonIDsInFileTaxonSelector extends TaxonSelector {
 		loadPreferences();
 		if (!MesquiteThread.isScripting()){
 			fileList = getListFromFile();
-			if (StringUtil.notEmpty(fileList))
+			if (StringUtil.blank(fileList))
 				return false;
 		}
 		return true;

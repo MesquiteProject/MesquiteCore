@@ -36,7 +36,7 @@ public class ListOfNamesInFileTaxonSelector extends TaxonSelector {
 		loadPreferences();
 		if (!MesquiteThread.isScripting()){
 			fileList = getListFromFile();
-			if (StringUtil.notEmpty(fileList) && !queryOptions())
+			if (StringUtil.blank(fileList) || !queryOptions())
 				return false;
 		}
 		return true;

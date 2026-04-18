@@ -680,6 +680,7 @@ public abstract class ListWindow extends TableWindow implements KeyListener, Mes
 			UndoInstructions undoInstructions = new UndoInstructions(UndoInstructions.PARTS_MOVED,assoc);
 			undoInstructions.recordPreviousOrder(assoc);
 			UndoReference undoReference = new UndoReference(undoInstructions, ownerModule);
+			boolean contiguousSel = assoc.contiguousSelection();
 
 			if (column>=0 && row >=0) {
 				long[] fullChecksumBefore=null;
@@ -696,9 +697,16 @@ public abstract class ListWindow extends TableWindow implements KeyListener, Mes
 					text[i] = table.getMatrixText(column, i);
 				}
 
+
+
 				for (int i=1; i<assoc.getNumberOfParts(); i++) {
 					for (int j= i-1; j>=0 && compare(gT, text[j], text[j+1]); j--) {
-						swapParts(assoc, j, j+1, text);
+						if (contiguousSel && assoc.getSelected(row)) {  // if it is a contiguous selection only sort within the selection.
+							if (assoc.getSelected(i) && assoc.getSelected(j))
+								swapParts(assoc, j, j+1, text);
+						} else {
+							swapParts(assoc, j, j+1, text);
+						}
 					}
 				}
 				if (assoc instanceof ListableVector && ((ListableVector)assoc).size()>0){
@@ -729,9 +737,14 @@ public abstract class ListWindow extends TableWindow implements KeyListener, Mes
 				for (int i=0; i<assoc.getNumberOfParts(); i++) {
 					text[i] = getRowNameForSorting(i);
 				}
-				for (int i=1; i<assoc.getNumberOfParts(); i++) {
+				for (int i=1; i<assoc.getNumberOfParts(); i++) {		
 					for (int j= i-1; j>=0 && compare(gT, text[j], text[j+1]); j--) {
-						swapParts(assoc, j, j+1, text);
+						if (contiguousSel && assoc.getSelected(row)) {  // if it is a contiguous selection only sort within the selection.
+							if (assoc.getSelected(i) && assoc.getSelected(j))
+								swapParts(assoc, j, j+1, text);
+						} else {
+							swapParts(assoc, j, j+1, text);
+						}
 					}
 				}
 				if (assoc instanceof ListableVector && ((ListableVector)assoc).size()>0){

@@ -3784,6 +3784,14 @@ public class MesquiteTable extends MesquitePanel implements KeyListener, MouseWh
 			selectRowNames(0, numRowsTotal - 1);
 			repaintAll();
 		}
+		else if (MesquiteEvent.optionKeyDown(modifiers) && ! anyColumnSelected() && anyRowSelected()) {
+			Bits rowsSel = rowsSelected[0].cloneBits(); 
+			deselectAllNotify();
+			for (int row=0; row<numRowsTotal; row++) {
+					if (rowsSel.isBitOn(row)) selectCell(column, row);
+		
+			}
+		}
 		else if ((MesquiteEvent.shiftKeyDown(modifiers) || MesquiteEvent.commandOrControlKeyDown(modifiers)) && anyColumnSelected()) {
 			if (MesquiteEvent.commandOrControlKeyDown(modifiers)) {
 				if (isColumnSelected(column)) {
