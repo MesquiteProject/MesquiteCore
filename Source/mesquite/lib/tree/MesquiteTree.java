@@ -1700,6 +1700,11 @@ public class MesquiteTree extends Associable implements AdjustableTree, Listable
 	/** Returns the array of daughters of a node.  Normally it will be best to cycle through the
 	daughters as shown in the recursion example in the documentation for the Tree class.*/
 	public int[] daughtersOfNode(int node) {
+		return daughtersOfNode(node, null);
+	}
+	/** Returns the array of daughters of a node.  Normally it will be best to cycle through the
+	daughters as shown in the recursion example in the documentation for the Tree class.*/
+	public int[] daughtersOfNode(int node, int[] daughters){
 		if (!inBounds(node))
 			return null;
 		int thisSister = firstDaughterOfNode(node);
@@ -1708,7 +1713,13 @@ public class MesquiteTree extends Associable implements AdjustableTree, Listable
 			count ++;
 			thisSister = nextSisterOfNode(thisSister);
 		}
-		int[] desc = new int[count];
+		int[] desc;
+		if (daughters!= null && daughters.length>count){
+			IntegerArray.zeroArray(daughters);
+			desc = daughters;
+		}
+		else
+			desc = new int[count];
 		count=0;
 		thisSister = firstDaughterOfNode(node);
 		while (nodeExists(thisSister)) {
@@ -1797,6 +1808,13 @@ public class MesquiteTree extends Associable implements AdjustableTree, Listable
 		return count;
 	}
 	/*-----------------------------------------*/
+	/** Returns the number of sisters of the node.*/
+	public int numberOfSistersOfNode(int node) {
+		if (!inBounds(node) || node == root)
+			return 0;
+		return numberOfDaughtersOfNode(motherOfNode(node))-1;
+	}
+	/*-----------------------------------------*/
 	/** Returns if branchD is descendant of branchA, then which daughter of branchA does it descend from?
 		Returns 0 if not descendant.*/
 	public int whichDaughterDescendantOf(int branchD, int branchA) { 
@@ -1815,6 +1833,39 @@ public class MesquiteTree extends Associable implements AdjustableTree, Listable
 			}
 			return 0;
 		}
+	}
+	/** Returns the array of sisters of a node.*/
+	public int[] sistersOfNode(int node, int[] sisters){
+		if (!inBounds(node) || !inBounds(motherOfNode(node)))
+			return null;
+		int mother = motherOfNode(node);
+		int numSisters = numberOfDaughtersOfNode(mother)-1;
+		int thisSister = firstDaughterOfNode(mother);
+		int[] desc;
+		if (sisters!= null && sisters.length>numSisters){
+			IntegerArray.zeroArray(sisters);
+			desc = sisters;
+		}
+		else
+			desc = new int[numSisters];
+		int count=0;
+		thisSister = firstDaughterOfNode(mother);
+		while (nodeExists(thisSister)) {
+			if (thisSister != node){
+				desc[count] = thisSister;
+				count ++;
+			}
+			thisSister = nextSisterOfNode(thisSister);
+		}
+		return desc;
+	}
+	/*-----------------------------------------*/
+/** Returns the node's single sister if it has one.  If the node has no sister or more than two sisters, returns 0 (which is not a valid node designation).*/
+	public int singleSisterOfNode(int node){
+		int sister = nextSisterOfNode(node);
+		if (sister == 0)
+			sister = previousSisterOfNode(node);
+		return sister;
 	}
 	/*-----------------------------------------*/
 	/** Returns the node's sister immediately to the right.  If the node has no
@@ -2171,6 +2222,30 @@ public class MesquiteTree extends Associable implements AdjustableTree, Listable
 		if (numTerms>0)
 			fillTermAr(node, result, count);
 		return result;
+	}
+	/*-----------------------------------------*/
+	private void fillTermArB(int node, boolean[] ar){
+		if (nodeIsTerminal(node)) {
+			int it = taxonNumberOfNode(node);
+			if (it< ar.length)
+				ar[it] = true;
+		}
+		else
+			for (int d = firstDaughterOfNode(node); nodeExists(d); d = nextSisterOfNode(d))
+				fillTermArB(d, ar);
+	}
+	/*-----------------------------------------*/
+	/** Returns list of terminal taxa of clade of node, as a boolean array, at least numTaxa long. Bit k is set if taxon k is in the clade*/
+	public boolean[] setBitsTerminalTaxa(int node, boolean[] tips){
+		if (!inBounds(node))
+			return null;
+		if (tips == null || tips.length<getTaxa().getNumTaxa())
+			tips = new boolean[getTaxa().getNumTaxa()];
+		else
+			Bits.allFalse(tips);
+		MesquiteInteger count = new MesquiteInteger(0);
+			fillTermArB(node, tips);
+		return tips;
 	}
 	/*.................................................................................................................*/
 	/** Returns node whose clade has this list of taxa. -1 if no equivalent found. */
@@ -2849,6 +2924,38 @@ public class MesquiteTree extends Associable implements AdjustableTree, Listable
 			return branchLength[node];
 	}
 	/*-----------------------------------------*/
+	private double pathSumToAncestor(int node, int anc, double ifUnassigned){
+		double sum = 0;
+		while (node != anc && node != subRoot){
+			sum += getBranchLength(node, ifUnassigned);
+			node = motherOfNode(node);
+		}
+		if (node == subRoot)
+			return -1;
+		return sum;
+	}
+	/** Returns the sum of branch lengths between two node.  If the branch length is unassigned, add the double passed in*/
+	public double getBranchLengthPath(int nodeA, int nodeB, double ifUnassigned){
+		if (nodeB == nodeA)
+			return 0;
+		else if (!nodeExists(nodeB)|!nodeExists(nodeA))
+			return 0;
+		else if (descendantOf(nodeA, nodeB) )
+			return pathSumToAncestor(nodeA, nodeB, ifUnassigned);
+		else if (descendantOf(nodeB, nodeA) )
+			return pathSumToAncestor(nodeB, nodeA, ifUnassigned);
+		else {
+			int a = nodeA;
+			while (a!=subRoot) {
+				a = motherOfNode(a);
+				if (descendantOf(nodeB, a)) {
+					return pathSumToAncestor(nodeA, a, ifUnassigned) + pathSumToAncestor(nodeB, a, ifUnassigned);
+				}
+			}
+			return 0;
+		}
+	}
+	/*-----------------------------------------*/
 	/** Returns the branch length of the node.  If the branch length is unassigned, pass back the double passed in*/
 	public  double getBranchLength(int node, double ifUnassigned) { 
 		if (!inBounds(node))
@@ -3217,7 +3324,7 @@ public class MesquiteTree extends Associable implements AdjustableTree, Listable
 			int taxon = taxa.whichTaxonNumber(c, false, permitTruncTaxNames && !permitTaxaBlockEnlargement);
 
 			if (taxon>=0){
-				System.out.println("Observed taxon " + c + " in ancestral position; not yet allowed by Mesquite.  Tree will not be read in properly. ");
+				System.out.println("Observed taxon " + c + " (" + taxa.getTaxonName(taxon) + ") in ancestral position; not yet allowed by Mesquite.  Tree will not be read in properly. ");
 			}
 
 			setNodeLabel(c, sN); 

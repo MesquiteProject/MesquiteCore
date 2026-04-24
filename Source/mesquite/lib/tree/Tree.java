@@ -111,6 +111,9 @@ public interface Tree extends Listable {
 	/** Returns the array of daughters of a node.  Normally it will be best to cycle through the
 	daughters as shown in the recursion example in the documentation for the Tree class.*/
 	public int[] daughtersOfNode(int node);
+	/** Returns the array of daughters of a node.  Normally it will be best to cycle through the
+	daughters as shown in the recursion example in the documentation for the Tree class.*/
+	public int[] daughtersOfNode(int node, int[] daughters);
 	/** Returns true if branchD is an immediate daughter of branchA */
 	public boolean daughterOf(int branchD, int branchA); 
 	/** Returns true if node is the first (leftmost) daughter of its mother.*/
@@ -131,6 +134,13 @@ public interface Tree extends Listable {
 	/** Returns the node's sister immediately to the left.  If the node has no 
 	sister to the left, returns 0 (which is not a valid node designation).*/
 	public int previousSisterOfNode(int node);
+	/** Returns the node's single sister if it has one.  If the node has no sister or more than two sisters
+	, returns 0 (which is not a valid node designation).*/
+	public int singleSisterOfNode(int node);
+	/** Returns the array of sisters of a node.*/
+	public int[] sistersOfNode(int node, int[] sisters);
+	/** Returns the number of sisters of the node.*/
+	public int numberOfSistersOfNode(int node);
 	/** Returns true if branch1 and branch2 are sisters by their mother (i.e., primary parent).
 	There is currently no method to return whether two nodes share at least one parent.*/
 	public boolean nodesAreSisters(int branch1, int branch2); 
@@ -177,6 +187,7 @@ public interface Tree extends Listable {
 	public int rightmostTerminalOfNode(int node);
 	/** Returns list of terminal taxa of clade of node.*/
 	public Bits getTerminalTaxaAsBits(int node);
+	public boolean[] setBitsTerminalTaxa(int node, boolean[] tips);
 	/** Returns list of terminal taxa of clade of node.*/
 	public int[] getTerminalTaxa(int node);
 	/** Returns list of terminal taxa NOT in clade of node, as bits.*/
@@ -302,6 +313,8 @@ public interface Tree extends Listable {
 	public double getBranchLength(int node); 
 	/** Returns the branch length of the node.  If the branch length is unassigned, pass back the double passed in*/
 	public double getBranchLength(int node, double ifUnassigned); 
+	/** Returns the sum of branch lengths between two node.  If the branch length is unassigned, add the double passed in*/
+	public double getBranchLengthPath(int nodeA, int nodeB, double ifUnassigned); 
 	public boolean branchLengthUnassigned(int node);
 	public double tallestPathAboveNode (int node);
 	public double tallestPathAboveNodeUR (int anc, int node);

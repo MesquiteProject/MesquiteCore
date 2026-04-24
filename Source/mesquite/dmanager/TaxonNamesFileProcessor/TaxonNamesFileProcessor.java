@@ -2,7 +2,6 @@ package mesquite.dmanager.TaxonNamesFileProcessor;
 
 import mesquite.lib.CommandChecker;
 import mesquite.lib.CompatibilityTest;
-import mesquite.lib.Debugg;
 import mesquite.lib.EmployeeNeed;
 import mesquite.lib.MesquiteFile;
 import mesquite.lib.MesquiteProject;
@@ -28,11 +27,13 @@ public class TaxonNamesFileProcessor extends FileProcessor {
 			utilityTask = (TaxonNameAlterer)hireNamedEmployee(TaxonNameAlterer.class, arguments);
 			if (utilityTask == null)
 				return sorry(getName() + " couldn't start because the requested taxon name alterer wasn't successfully hired.");
-		}
+			utilityTask.setNameOfKindBeingRenamed("taxon", "Taxon");
+	}
 		else {
 			utilityTask = (TaxonNameAlterer)hireEmployee(TaxonNameAlterer.class, "Taxon Name alterer");
 			if (utilityTask == null)
 				return sorry(getName() + " couldn't start because no taxon name alterer module obtained.");
+			utilityTask.setNameOfKindBeingRenamed("taxon", "Taxon");
 		}
 		return true;
 	}
@@ -68,6 +69,7 @@ public class TaxonNamesFileProcessor extends FileProcessor {
  			TaxonNameAlterer temp =  (TaxonNameAlterer)replaceEmployee(TaxonNameAlterer.class, arguments, "Method to alter taxon names", utilityTask);
  			if (temp!=null) {
  				utilityTask = temp;
+ 				utilityTask.setNameOfKindBeingRenamed("taxon", "Taxon");
  				return utilityTask;
  			}
  

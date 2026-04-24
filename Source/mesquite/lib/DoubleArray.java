@@ -66,6 +66,7 @@ public class DoubleArray implements Listable, Nameable  {
 	public double[] getMatrix(){
 		return values;
 	}
+
 	/*...........................................................*/
 	public double getValue(int index){
 		if (!legalIndex(index))
@@ -123,6 +124,13 @@ public class DoubleArray implements Listable, Nameable  {
 			return;
 		for (int i=0; i<values.length; i++)
 			values[i] =  0;
+	}
+	public static void zeroArray(double[] []values){
+		if (values==null)
+			return;
+		for (int i=0; i<values.length; i++)
+			for (int k = 0; k<values[i].length; k++)
+			values[i][k] =  0;
 	}
 	/*...........................................................*/
 	public void deassignArray(){
@@ -459,6 +467,14 @@ public class DoubleArray implements Listable, Nameable  {
 		return d.getDoubleValue();
 	}
 	/*...........................................................*/
+	public static int numCombinable(double[] values){
+		int count = 0;
+		for (int i=0; i<values.length; i++)
+			if (MesquiteDouble.isCombinable(values[i]))
+					count++;
+		return count;
+	}
+	/*...........................................................*/
 	public boolean fillNextUnassigned(double v){
 		for (int i=0; i<values.length; i++)
 			if (values[i]== MesquiteDouble.unassigned) {
@@ -554,6 +570,15 @@ public class DoubleArray implements Listable, Nameable  {
 		String s = "[ ";
 		for (int i=0; i<values.length; i++)
 			s +=  MesquiteDouble.toString(values[i]) + " ";
+		s += "]";
+		return s;
+	}
+	public static String toStringDigitsSpecified(double[] values, int digits) {
+		if (values==null)
+			return "";
+		String s = "[ ";
+		for (int i=0; i<values.length; i++)
+			s +=  MesquiteDouble.toStringDigitsSpecified(values[i], digits) + " ";
 		s += "]";
 		return s;
 	}

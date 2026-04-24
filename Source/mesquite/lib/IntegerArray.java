@@ -567,6 +567,20 @@ public class IntegerArray  implements Listable  {
 		return "IntegerArray " + toString(values);
 	}
 	/*...........................................................*/
+	public static String toString(int[] vector, int maxIndex){
+		StringBuffer result = new StringBuffer(vector.length*2);
+		result.append('[');
+		for (int i=0; i < maxIndex && i<vector.length; i++) {
+			if (vector[i] == MesquiteInteger.unassigned)
+				result.append('?');
+			else
+				result.append(Integer.toString(vector[i]));
+			result.append(" ");
+		}
+		result.append(']');
+		return result.toString();
+	}
+	/*...........................................................*/
 	public static String toString(int[] vector){
 		return toString(vector, " ", true);
 	}

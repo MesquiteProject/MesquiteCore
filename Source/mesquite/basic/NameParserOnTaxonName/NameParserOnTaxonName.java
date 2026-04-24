@@ -28,8 +28,13 @@ public class NameParserOnTaxonName extends TaxonNameAlterer {
 	NameParser nameParser;
 	/*.................................................................................................................*/
 	public boolean startJob(String arguments, Object condition, boolean hiredByName){
-		loadPreferences();
 		return true;
+	}
+	public void setNameOfKindBeingRenamed(String kind, String Kind){
+		super.setNameOfKindBeingRenamed(kind, Kind);
+		if (nameParser == null)
+			nameParser = new NameParser(this, kindName);
+		loadPreferences();
 	}
 	/*.................................................................................................................*/
 	public String preparePreferencesForXML () {
@@ -81,9 +86,9 @@ public class NameParserOnTaxonName extends TaxonNameAlterer {
 	public boolean alterName(Taxa taxa, int it){
 		boolean nameChanged = false;
 		String name = taxa.getTaxonName(it);
-		if (nameParser == null)
+		if (nameParser == null){
 			nameParser = new NameParser(this, kindName);
-
+		}
 		if (name!=null){
 			String newName = nameParser.extractPart(taxa.getTaxonName(it));
 			//Could check if this would be a duplicate taxon name. If taxa.whichTaxonNumber(newName) >=0, then the name already exists. ;
@@ -94,6 +99,8 @@ public class NameParserOnTaxonName extends TaxonNameAlterer {
 	}
 	/*.................................................................................................................*/
 	public Snapshot getSnapshot(MesquiteFile file) {
+		if (nameParser == null)
+			return null;
 		Snapshot temp = new Snapshot();
 		temp.addLine("getNameParser");
 		temp.addLine("tell It");

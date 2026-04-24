@@ -794,6 +794,15 @@ public class Bits implements Listable, Nameable {
 				return true;
 		return false;
 	}
+	/*------------------------------------------*/
+	public static boolean anyBitsOn(boolean[] array) {
+		if (array == null)
+			return false;
+		for (int i = 0; i < array.length; i++)
+			if (array[i])
+				return true;
+		return false;
+	}
 
 	/*------------------------------------------*
 	public boolean anyBitsOff () {
@@ -1215,12 +1224,50 @@ public class Bits implements Listable, Nameable {
 			values[i] = false;
 	}
 	/* ........................................................... */
+	//Sets array to all false
+	public static void allFalse (boolean[][] values) {
+		if (values == null)
+			return;
+		for (int i = 0; i< values.length; i++)
+			for (int k = 0; k< values[i].length;k++)
+			values[i][k] = false;
+	}
+	/* ........................................................... */
+	//Sets array to all false
+	public static void allFalse (boolean[][][] values) {
+		if (values == null)
+			return;
+		for (int i = 0; i< values.length; i++)
+			for (int k = 0; k< values[i].length;k++)
+				for (int j = 0; j< values[i][k].length;j++)
+			values[i][k][j] = false;
+	}
+	/* ........................................................... */
 	//Sets array to all true
 	public static void allTrue (boolean[] values) {
 		if (values == null)
 			return;
 		for (int i = 0; i< values.length; i++)
 			values[i] = true;
+	}
+	/* ........................................................... */
+	//Sets array to all true
+	public static void allTrue (boolean[][] values) {
+		if (values == null)
+			return;
+		for (int i = 0; i< values.length; i++)
+			for (int k = 0; k< values[i].length;k++)
+			values[i][k] = true;
+	}
+	/* ........................................................... */
+	//Sets array to all true
+	public static void allTrue (boolean[][][] values) {
+		if (values == null)
+			return;
+		for (int i = 0; i< values.length; i++)
+			for (int k = 0; k< values[i].length;k++)
+				for (int j = 0; j< values[i][k].length;j++)
+			values[i][k][j] = true;
 	}
 
 	/*------------------------------------------*/
@@ -1234,6 +1281,18 @@ public class Bits implements Listable, Nameable {
 			else
 				s += '0';
 		}
+		return s;
+	}
+	/*------------------------------------------*/
+	public static String toStringAsList(boolean[] bits) {
+		if (bits == null)
+			return null;
+		String s = "[";
+		for (int i = 0; i < bits.length; i++) {
+			if (bits[i])
+				s += " " + i;
+		}
+		s +=" ]";
 		return s;
 	}
 

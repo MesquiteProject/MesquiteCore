@@ -151,5 +151,20 @@ public class StatsUtil {
 		return outliers;
 	}
 
+	public static double[] getOutlierPValuesUsingKDE(double[] xData) {
+		double[] outliers = new double[xData.length];
+		for (int i=0; i<outliers.length; i++)
+			outliers[i]=1.0;
+		double h = calculateSilvermanBandwidth(xData);
+
+		int count = 0;
+		for (double x : xData) {
+			double cdfValue = estimateCDF(xData, h, x);
+			if (count<outliers.length)
+				outliers[count]=1-cdfValue;
+			count++;
+		}
+		return outliers;
+	}
 
 }

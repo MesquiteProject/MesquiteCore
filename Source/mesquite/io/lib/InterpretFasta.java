@@ -25,7 +25,6 @@ import mesquite.io.InterpretFastaProtein.InterpretFastaProtein;
 import mesquite.lib.Arguments;
 import mesquite.lib.CommandChecker;
 import mesquite.lib.CommandRecord;
-import mesquite.lib.Debugg;
 import mesquite.lib.EmployeeNeed;
 import mesquite.lib.ExporterDialog;
 import mesquite.lib.MesquiteBoolean;
@@ -168,7 +167,7 @@ public abstract class InterpretFasta extends FileInterpreterI implements ReadFil
 							else if (data.getNumChars()>500)
 								numCharToAdd=100;
 
-							
+
 						}
 						setFastaState(data,ic, newTaxon, c);    // setting state to that specified by character c
 					}
@@ -249,8 +248,8 @@ public abstract class InterpretFasta extends FileInterpreterI implements ReadFil
 			line=parser.getRawNextDarkLine();
 		int taxonNumber = -1;
 
-		boolean verbose = true;
-		
+		boolean verbose = false;
+
 		boolean abort = false;
 		subParser.setString(line); //sets the string to be used by the parser to "line" and sets the pos to 0
 		subParser.setPunctuationString(">");
@@ -261,15 +260,15 @@ public abstract class InterpretFasta extends FileInterpreterI implements ReadFil
 		//StringMatcher nameMatcher = null;
 		//	if (MesquiteTrunk.debugMode)
 		//		nameMatcher = (MesquiteStringMatcher)hireNamedEmployee(MesquiteStringMatcher.class, "#PrefixedStringMatcher"); //TEMP
-
+		boolean previousTaxonHadNoData = false;
 
 		while (!StringUtil.blank(line) && !abort) {
 
 			//parser.setPunctuationString(null);
 
 			token = subParser.getRemaining();  //taxon Name past the >
-			if (verbose) MesquiteMessage.errln("LINE raw [" + line + "] TOKEN [" + token  + "]");
-			
+			if (verbose) MesquiteMessage.errln("\nLINE raw [" + line + "] TOKEN [" + token  + "]");
+
 			if (removePhyluceUCEfixes){  //this can be set in code, but for user, use Keep/Delete Parts of names
 				if (token.indexOf("_")>=0 && token.indexOf("|")>=0){
 					token = token.substring(token.indexOf("uce-")+1, token.length()-1);
@@ -298,7 +297,7 @@ public abstract class InterpretFasta extends FileInterpreterI implements ReadFil
 				-- add taxon, and fill its sequence here
 				-- after sequence added, look to see if it is longer than previous version. If so, replace
 				-- delete added taxon
-				*/
+				 */
 				if (verbose) MesquiteMessage.errln("  --duplicateTaxon " + taxonNumber + " " + token);
 				if (replaceDataOfTaxonWithSameNameInt==DONTADD) {
 					skipThisSequence = true;
@@ -366,6 +365,7 @@ public abstract class InterpretFasta extends FileInterpreterI implements ReadFil
 
 			if (taxonNumber>=0)
 				t = taxa.getTaxon(taxonNumber);
+			boolean nextLineIsAnotherTaxon = false;
 
 			if (t!=null) {
 				recordAsNewlyAddedTaxon(taxa,taxonNumber);
@@ -378,58 +378,77 @@ public abstract class InterpretFasta extends FileInterpreterI implements ReadFil
 					CommandRecord.tick("Reading taxon " + taxonNumber+": "+token);
 					progIndicator.setCurrentValue(pos);
 				}
+
 				if (file!=null)
 					line = file.readLine(">");  // pull in sequence up until next >
 				else
 					line = parser.getRemainingUntilChar('>', true);
 				if (line==null) break;
-				if (verbose) MesquiteMessage.errln("  --sequence line " + line + " " + token);
-				
-				//================ READING SEQUENCE ===============
-				subParser.setString(line); 
-				int ic = 0;
-				progIndicator.setSecondaryMessage("Reading character 1");
+				if (previousTaxonHadNoData)
+					line = ">" + line;
 
-				while (subParser.getPosition()<line.length()) {
-					char c=subParser.nextDarkChar();
-					if (c!= '\0') {
-						if (data.getNumChars() <= ic) {
-							int numChars = data.getNumChars();
-							int numToAdd = 1;
-							if (numChars>10000) {
-								numToAdd=1000;
-							} else	if (numChars>5000) {
-								numToAdd=500;
-							} else if (numChars>2000) {
-								numToAdd=100;
-							} else if (numChars>200) {
-								numToAdd=10;
-							} 								
-							data.addCharacters(numChars-1, numToAdd, false);   // add characters
-							data.addInLinked(numChars-1, numToAdd, false);
+				previousTaxonHadNoData = false;
+				nextLineIsAnotherTaxon = line.contains(">");
+				if (verbose) MesquiteMessage.errln("  --sequence line [" + line + "] token [" + token + "]");
+
+				if (nextLineIsAnotherTaxon){
+					if (verbose) MesquiteMessage.errln("  --NEXT LINE IS ANOTHER TAXON " + line);
+					line = StringUtil.stripTrailingWhitespace(line);
+					token = subParser.getFirstToken(line); //sets the string to be used by the parser to "line" and sets the pos to 0
+					//line = line.substring(line.indexOf(">") +1, line.length());
+					if (verbose) MesquiteMessage.errln("  --STRIPPED [" + line  + "] token [" + token + "]");
+					previousTaxonHadNoData = true;
+				}
+				else {
+					//================ READING SEQUENCE ===============
+					if (verbose) MesquiteMessage.errln("  --READING SEQUENCE " + line);
+					subParser.setString(line); 
+					int ic = 0;
+					progIndicator.setSecondaryMessage("Reading character 1");
+
+					while (subParser.getPosition()<line.length()) {
+						char c=subParser.nextDarkChar();
+						if (c!= '\0') {
+							if (data.getNumChars() <= ic) {
+								int numChars = data.getNumChars();
+								int numToAdd = 1;
+								if (numChars>10000) {
+									numToAdd=1000;
+								} else	if (numChars>5000) {
+									numToAdd=500;
+								} else if (numChars>2000) {
+									numToAdd=100;
+								} else if (numChars>200) {
+									numToAdd=10;
+								} 								
+								data.addCharacters(numChars-1, numToAdd, false);   // add characters
+								data.addInLinked(numChars-1, numToAdd, false);
+							}
+							if (!skipThisSequence)
+								setFastaState(data,ic, taxonNumber, c);    // setting state to that specified by character c
 						}
-						if (!skipThisSequence)
-							setFastaState(data,ic, taxonNumber, c);    // setting state to that specified by character c
-					}
-					if (numFilledChars<ic) //DAVIDCHECK This had been after the ic += 1 which led to a blank site at end for some matrices
-						numFilledChars=ic; 
-					ic += 1;
-					if (ic % 100==0)//== 0 && timer.timeSinceVeryStartInSeconds() % 1.0 <0.001)
-						progIndicator.setSecondaryMessage("Reading character " + ic);
+						if (numFilledChars<ic) //DAVIDCHECK This had been after the ic += 1 which led to a blank site at end for some matrices
+							numFilledChars=ic; 
+						ic += 1;
+						if (ic % 100==0)//== 0 && timer.timeSinceVeryStartInSeconds() % 1.0 <0.001)
+							progIndicator.setSecondaryMessage("Reading character " + ic);
 
+					}
 				}
 				//================ sequence read finished ===============
 				if (duplicateTaxon && replaceDataOfTaxonWithSameNameInt==USELONGEST){
 					if (verbose) MesquiteMessage.errln("  --dup taxon & USELONGEST " + line + " " + token);
-					int origSeqLen = data.getTotalNumApplicable(origTaxonNumber, false);
-					int incomingSeqLen = data.getTotalNumApplicable(taxonNumber, false);
-					if (origSeqLen < incomingSeqLen){
-						CharacterState cs = null;
-						for (int ik = 0; ik<data.getNumChars(); ik++){
-							cs = data.getCharacterState(cs, ik, taxonNumber);
-							data.setState(ik, origTaxonNumber, cs);
+					if (!nextLineIsAnotherTaxon){
+						int origSeqLen = data.getTotalNumApplicable(origTaxonNumber, false);
+						int incomingSeqLen = data.getTotalNumApplicable(taxonNumber, false);
+						if (origSeqLen < incomingSeqLen){
+							CharacterState cs = null;
+							for (int ik = 0; ik<data.getNumChars(); ik++){
+								cs = data.getCharacterState(cs, ik, taxonNumber);
+								data.setState(ik, origTaxonNumber, cs);
+							}
+							logln("Duplicate name (" + taxa.getTaxonName(origTaxonNumber) + "). Character data replaced because incoming had more data.");
 						}
-						logln("Duplicate name (" + taxa.getTaxonName(origTaxonNumber) + "). Character data replaced because incoming had more data.");
 					}
 					taxa.deleteTaxa(taxonNumber, 1, true);
 					taxonNumber = origTaxonNumber;
@@ -438,25 +457,28 @@ public abstract class InterpretFasta extends FileInterpreterI implements ReadFil
 					taxa.setSelected(taxonNumber, true);
 
 			}  //taxon not null ==================================
-			
+
 			if (added) 
 				lastTaxonNumber++;
 			//			file.readLine(sb);
-			if (file!=null) {
-				line = file.readNextDarkLine();		// added 1.01
-				pos = file.getFilePosition();
+			if (!nextLineIsAnotherTaxon){
+				if (file!=null) {
+					line = file.readNextDarkLine();		// added 1.01
+					pos = file.getFilePosition();  //used only for progress indicator
+				}
+				else {
+					line = parser.getRawNextDarkLine();
+					pos = parser.getPosition(); //used only for progress indicator
+				}
+				subParser.setString(line); //sets the string to be used by the parser to "line" and sets the pos to 0
 			}
-			else {
-				line = parser.getRawNextDarkLine();
-				pos = parser.getPosition();
-			}
-			subParser.setString(line); //sets the string to be used by the parser to "line" and sets the pos to 0
-			
+			if (verbose) MesquiteMessage.errln("  --next line [" + line + "] POS [" + pos + "]");
+
 			if (file !=null && file.getFileAborted()) 
 				abort = true;
-	
+
 		} //Line not blank ==================================
-		
+
 		if (getMultiFileImport() && getImportFileNumber()>=getTotalFilesToImport()-1)  // last import
 			if (getOriginalNumTaxa()>0 && getMaximumTaxonFilled()>=getOriginalNumTaxa() && getMaximumTaxonFilled()<taxa.getNumTaxa()-1)    
 				if (!taxa.taxaHaveAnyData(getMaximumTaxonFilled()+1, taxa.getNumTaxa()-1))
@@ -762,7 +784,7 @@ public abstract class InterpretFasta extends FileInterpreterI implements ReadFil
 				if (StringUtil.notEmpty(sup))
 					outputBuffer.append(sup);
 				outputBuffer.append(getLineEnding());
-				
+
 				for (int ic = 0; ic<numChars; ic++) {
 					if ((!writeOnlySelectedData || (data.getSelected(ic))) && (writeExcludedCharacters || data.isCurrentlyIncluded(ic))&& (writeCharactersWithNoData || data.hasDataForCharacter(ic))){
 						long currentSize = outputBuffer.length();
@@ -793,7 +815,7 @@ public abstract class InterpretFasta extends FileInterpreterI implements ReadFil
 						if (wroteMoreThanOneSymbol) {
 							data.showCell(ic, it, true);
 							alert("Sorry, this data matrix can't be exported to this format (some character states aren't represented by a single symbol [char. " + CharacterStates.toExternal(ic) + ", taxon " + Taxon.toExternal(it) + "])");
-						return false;
+							return false;
 						}
 						if (timer.timeCurrentBout()>2000) {
 							double proportion = 1.0*it*ic/totalCells;
