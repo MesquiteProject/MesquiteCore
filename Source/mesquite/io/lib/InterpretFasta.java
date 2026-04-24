@@ -249,7 +249,8 @@ public abstract class InterpretFasta extends FileInterpreterI implements ReadFil
 			line=parser.getRawNextDarkLine();
 		int taxonNumber = -1;
 
-
+		boolean verbose = true;
+		
 		boolean abort = false;
 		subParser.setString(line); //sets the string to be used by the parser to "line" and sets the pos to 0
 		subParser.setPunctuationString(">");
@@ -266,7 +267,9 @@ public abstract class InterpretFasta extends FileInterpreterI implements ReadFil
 
 			//parser.setPunctuationString(null);
 
-			token = subParser.getRemaining();  //taxon Name
+			token = subParser.getRemaining();  //taxon Name past the >
+			if (verbose) MesquiteMessage.errln("LINE raw [" + line + "] TOKEN [" + token  + "]");
+			
 			if (removePhyluceUCEfixes){  //this can be set in code, but for user, use Keep/Delete Parts of names
 				if (token.indexOf("_")>=0 && token.indexOf("|")>=0){
 					token = token.substring(token.indexOf("uce-")+1, token.length()-1);
@@ -290,13 +293,13 @@ public abstract class InterpretFasta extends FileInterpreterI implements ReadFil
 			boolean replace = false;
 			boolean skipThisSequence = false;
 			if (duplicateTaxon) {   // a taxon number of the same name exists
-				
 				/*here implement replaceDataOfTaxonWithSameNameInt==USELONGEST as follows:
 				-- treat as add taxon
 				-- add taxon, and fill its sequence here
 				-- after sequence added, look to see if it is longer than previous version. If so, replace
 				-- delete added taxon
 				*/
+				if (verbose) MesquiteMessage.errln("  --duplicateTaxon " + taxonNumber + " " + token);
 				if (replaceDataOfTaxonWithSameNameInt==DONTADD) {
 					skipThisSequence = true;
 
@@ -313,9 +316,8 @@ public abstract class InterpretFasta extends FileInterpreterI implements ReadFil
 			}
 			added=false;
 
-
-
 			if (replace) {
+				if (verbose) MesquiteMessage.errln("  --replace " + taxonNumber + " " + token);
 				CharacterState cs = data.makeCharacterState(); //so as to get the default state
 				int numChars = data.getNumChars();
 				if (taxonNumber<lastTaxonNumber)
@@ -326,7 +328,9 @@ public abstract class InterpretFasta extends FileInterpreterI implements ReadFil
 				if (selectIncoming)
 					taxa.setSelected(taxonNumber, true);
 
-			} else if (!skipThisSequence) {  // adding to end, not replacing an existing one
+			} 
+			else if (!skipThisSequence) {  // adding to end, not replacing an existing one
+				if (verbose) MesquiteMessage.errln("  --not skip " + taxonNumber + " " + token);
 				if (getLastNewTaxonFilled()>-1 && getMultiFileImport()) {
 					taxonNumber = getLastNewTaxonFilled()+1;
 					if (taxonNumber>taxa.getNumTaxa())
@@ -379,6 +383,9 @@ public abstract class InterpretFasta extends FileInterpreterI implements ReadFil
 				else
 					line = parser.getRemainingUntilChar('>', true);
 				if (line==null) break;
+				if (verbose) MesquiteMessage.errln("  --sequence line " + line + " " + token);
+				
+				//================ READING SEQUENCE ===============
 				subParser.setString(line); 
 				int ic = 0;
 				progIndicator.setSecondaryMessage("Reading character 1");
@@ -411,7 +418,9 @@ public abstract class InterpretFasta extends FileInterpreterI implements ReadFil
 						progIndicator.setSecondaryMessage("Reading character " + ic);
 
 				}
+				//================ sequence read finished ===============
 				if (duplicateTaxon && replaceDataOfTaxonWithSameNameInt==USELONGEST){
+					if (verbose) MesquiteMessage.errln("  --dup taxon & USELONGEST " + line + " " + token);
 					int origSeqLen = data.getTotalNumApplicable(origTaxonNumber, false);
 					int incomingSeqLen = data.getTotalNumApplicable(taxonNumber, false);
 					if (origSeqLen < incomingSeqLen){
@@ -428,7 +437,8 @@ public abstract class InterpretFasta extends FileInterpreterI implements ReadFil
 				if (selectIncoming)
 					taxa.setSelected(taxonNumber, true);
 
-			}
+			}  //taxon not null ==================================
+			
 			if (added) 
 				lastTaxonNumber++;
 			//			file.readLine(sb);
@@ -441,10 +451,12 @@ public abstract class InterpretFasta extends FileInterpreterI implements ReadFil
 				pos = parser.getPosition();
 			}
 			subParser.setString(line); //sets the string to be used by the parser to "line" and sets the pos to 0
-			if (file !=null && file.getFileAborted()) {
+			
+			if (file !=null && file.getFileAborted()) 
 				abort = true;
-			}
-		}
+	
+		} //Line not blank ==================================
+		
 		if (getMultiFileImport() && getImportFileNumber()>=getTotalFilesToImport()-1)  // last import
 			if (getOriginalNumTaxa()>0 && getMaximumTaxonFilled()>=getOriginalNumTaxa() && getMaximumTaxonFilled()<taxa.getNumTaxa()-1)    
 				if (!taxa.taxaHaveAnyData(getMaximumTaxonFilled()+1, taxa.getNumTaxa()-1))
