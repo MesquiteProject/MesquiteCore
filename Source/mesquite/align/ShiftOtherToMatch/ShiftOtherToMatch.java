@@ -181,7 +181,6 @@ public boolean queryOptions(int it, int max) {
 							whichTaxa.setBit(it);
 							added = data.moveCells(startBlock, endBlock, distance, whichTaxa, true, false, true, false, dataChanged, charAdded, null);
 						} else {
-							Debugg.println("||||||  \n shift: " + (firstColumn.getValue()-matchStart.getValue()));
 							added = data.shiftAllCells(firstColumn.getValue()-matchStart.getValue(), it, true, true, true, dataChanged,charAdded, null);
 						}
 						if (charAdded.isCombinable() && charAdded.getValue()!=0 && data instanceof DNAData) {

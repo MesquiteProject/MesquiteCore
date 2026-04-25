@@ -11,7 +11,7 @@ Mesquite's web site is http://mesquiteproject.org
 This source code and its compiled class files are free and modifiable under the terms of 
 GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
  */
-package mesquite.align.ColorGapsInCodingSequence; 
+package mesquite.align.HighlightInternalGaps; 
 
 import java.awt.Color;
 
@@ -28,7 +28,7 @@ import mesquite.lib.ui.ColorRecord;
 
 
 /* ======================================================================== */
-public class ColorGapsInCodingSequence extends DataWindowAssistantID implements CellColorer, CellColorerMatrix {
+public class HighlightInternalGaps extends DataWindowAssistantID implements CellColorer, CellColorerMatrix {
 	MesquiteTable table;
 	protected DNAData data;
 
@@ -49,7 +49,7 @@ public class ColorGapsInCodingSequence extends DataWindowAssistantID implements 
 	 * then the number refers to the Mesquite version.  This should be used only by modules part of the core release of Mesquite.
 	 * If a NEGATIVE integer, then the number refers to the local version of the package, e.g. a third party package*/
 	public int getVersionOfFirstRelease(){
-		return 275;  
+		return NEXTRELEASE;  
 	}
 	/*.................................................................................................................*/
 	public boolean isPrerelease(){
@@ -63,14 +63,16 @@ public class ColorGapsInCodingSequence extends DataWindowAssistantID implements 
 	}
 	/*.................................................................................................................*/
 	public String getName() {
-		return "Highlight Gaps in Coding Regions";
+		return "Highlight Internal Gaps in Coding Regions";
 	}
+	/*.................................................................................................................*
+
 	public String getNameForMenuItem() {
 		return "Highlight Gaps in Coding Regions";
 	}
 	/*.................................................................................................................*/
 	public String getExplanation() {
-		return "Highlights gaps if site has a codon position, or if both sites to either side have codon positions, and if sites to both sides have states or missing.";
+		return "Highlights gaps if it is in a coding region, and has bases to the left and right.";
 	}
 	/*.................................................................................................................*/
 	public void viewChanged(){
@@ -78,38 +80,35 @@ public class ColorGapsInCodingSequence extends DataWindowAssistantID implements 
 	public String getCellString(int ic, int it){
 		if (!isActive())
 			return null;
-			return "Cells colored to highlight gaps if site has a codon position, or if both sites to either side have codon positions, and if sites to both sides have states or missing";
+			return "Cells colored to highlight gaps if gaps if it is in a coding region, and has bases to the left and right.";
 	}
 	ColorRecord[] legend;
 	/*.................................................................................................................*/
 	public ColorRecord[] getLegendColors(){
 		return null;
-		/*if (data == null)
-			return null;
-		legend = new ColorRecord[ProteinState.maxProteinState+1];
-		Color color;
-		for (int is = 0; is<=ProteinState.maxProteinState; is++) {
-			 if (emphasizeDegeneracy.getValue()) {
-				 color = ProteinData.getProteinColorOfState(is);
-				 color = ((DNAData)data).alterColorToDeemphasizeDegeneracy(is,color);
-			 } else
-				 color = ProteinData.getProteinColorOfState(is);
-			 legend[is] = new ColorRecord(color, ProteinData.getStateLongName(is));
-		}
-		return legend;
-	*/
 	}
 	/*.................................................................................................................*/
 	public String getColorsExplanation(){
 		if (data == null)
 			return null;
-		/*  		if (data.getClass() == CategoricalData.class){
-   			return "Colors of states may vary from character to character";
-   		}
-		 */
 		return null;
 	}
 	/*.................................................................................................................*/
+
+	public Color getCellColor(int ic, int it){
+		if (ic<0 || it<0)
+			return null;
+		if (data == null)
+			return null;
+		if (data.isInternalInapplicable(ic, it))
+				return Color.blue;
+
+		Color color = data.getColorOfStates(ic, it);
+		//return color;
+		return ColorDistribution.brighter(color, 0.15);
+	}
+	/*.................................................................................................................*
+	 * This is the old version, from before Mesquite 4.04
 
 	public Color getCellColor(int ic, int it){
 
@@ -117,16 +116,22 @@ public class ColorGapsInCodingSequence extends DataWindowAssistantID implements 
 			return null;
 		if (data == null)
 			return null;
-			if (data.isInapplicable(ic, it) && (((data.isCoding(ic-1) && !data.isInapplicable(ic-1, it)) || (data.isCoding(ic-2) && !data.isInapplicable(ic-2, it))) && ((data.isCoding(ic+1)&& !data.isInapplicable(ic+1, it)) || (data.isCoding(ic+2)&& !data.isInapplicable(ic+2, it))))){
+		if (data.isInapplicable(ic, it))
+				if ((((data.isCoding(ic-1) && !data.isInapplicable(ic-1, it)) 
+					|| (data.isCoding(ic-2) && !data.isInapplicable(ic-2, it))) && ((data.isCoding(ic+1)&& !data.isInapplicable(ic+1, it)) 
+					|| (data.isCoding(ic+2)&& !data.isInapplicable(ic+2, it))))){
 				return Color.blue;
 			}
-		
-			
-			Color color = data.getColorOfStates(ic, it);
-			//return color;
-			return ColorDistribution.brighter(color, 0.15);
-		
+
+
+		Color color = data.getColorOfStates(ic, it);
+		//return color;
+		return ColorDistribution.brighter(color, 0.15);
+	
+			// old explanation: return "Cells colored to highlight gaps if site has a codon position, or if both sites to either side have codon positions, and if sites to both sides have states or missing";
+
 	}
+	*/
 	public CompatibilityTest getCompatibilityTest(){
 		return new RequiresAnyDNAData();
 	}

@@ -46,13 +46,13 @@ public class BLASTSearch extends MolecDataSearcher {
    	 	return false;
    	 }
    	/** Called to search on the data in selected cells.  Returns true if data searched*/
-   	public boolean searchData(CharacterData data, MesquiteTable table){
+   	public boolean searchData(CharacterData data, MesquiteTable table, boolean useSelectedRowsOnly){
 		this.data = data;
 		if (!(data instanceof DNAData || data instanceof ProteinData)){
 			discreetAlert( "Only DNA or protein data can be searched using this module.");
 			return false;
 		}
-		return searchSelectedTaxa(data,table);
+		return searchSelectedTaxa(data,table, useSelectedRowsOnly);
 	}
 	/*.................................................................................................................*/
    	public synchronized boolean searchOneTaxon(CharacterData data, int it, int icStart, int icEnd, ObjectContainer objContainer){

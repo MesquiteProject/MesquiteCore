@@ -11,7 +11,7 @@ Mesquite's web site is http://mesquiteproject.org
 This source code and its compiled class files are free and modifiable under the terms of 
 GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
 */
-package mesquite.basic.ListInFileTaxonSelector;
+package mesquite.basic.ListOfNamesInFileTaxonSelector;
 
 import java.awt.Checkbox;
 
@@ -28,7 +28,7 @@ import mesquite.lib.duties.TaxonSelector;
 import mesquite.lib.taxa.Taxa;
 import mesquite.lib.ui.ExtensibleDialog;
 
-public class ListInFileTaxonSelector extends TaxonSelector {
+public class ListOfNamesInFileTaxonSelector extends TaxonSelector {
 	String fileList = "";
 	boolean caseSensitive = false;
 
@@ -36,7 +36,7 @@ public class ListInFileTaxonSelector extends TaxonSelector {
 		loadPreferences();
 		if (!MesquiteThread.isScripting()){
 			fileList = getListFromFile();
-			if (StringUtil.notEmpty(fileList) && !queryOptions())
+			if (StringUtil.blank(fileList) || !queryOptions())
 				return false;
 		}
 		return true;
@@ -65,9 +65,9 @@ public class ListInFileTaxonSelector extends TaxonSelector {
 	/*.................................................................................................................*/
 	public boolean queryOptions() {
 		MesquiteInteger buttonPressed = new MesquiteInteger(1);
-		ExtensibleDialog dialog = new ExtensibleDialog(containerOfModule(), "Select Taxa from List In File",buttonPressed);  //MesquiteTrunk.mesquiteTrunk.containerOfModule()
+		ExtensibleDialog dialog = new ExtensibleDialog(containerOfModule(), "Select Taxa from List of Names In File",buttonPressed);  //MesquiteTrunk.mesquiteTrunk.containerOfModule()
 
-		dialog.addLabel("Select Taxa from List In File");
+		dialog.addLabel("Select Taxa from List of Names In File");
 
 		Checkbox caseSensitiveBox = dialog.addCheckBox("case sensitive", caseSensitive);
 
@@ -125,10 +125,10 @@ public class ListInFileTaxonSelector extends TaxonSelector {
 	}
 
 	public String getName() {
-		return "Select Taxa from List In File";
+		return "Select Taxa from List of Names In File";
 	}
 	public String getNameForMenuItem() {
-		return "Select Taxa from List In File...";
+		return "Select Taxa from List of Names In File...";
 	}
 	public String getExplanation() {
 		return "Select all taxa whose names appear in a list in a simple text file.  The file should consist of one column, listing the names.";
