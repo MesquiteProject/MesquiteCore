@@ -1405,6 +1405,14 @@ public class Taxa extends FileElement implements NameableWithNotify {
 		} else
 			return "";
 	}
+	/* ................................................................................................................. */
+	public String[] getNames() {
+		String[] names = new String[numTaxa];
+		for (int it = 0; it < numTaxa; it++) {
+			names[it] =taxon[it].getName();
+		}
+		return names;
+	}
 
 	/* ................................................................................................................. */
 	public int getLongestTaxonNameLength() {
