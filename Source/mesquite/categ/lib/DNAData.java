@@ -1464,6 +1464,13 @@ public class DNAData extends MolecularData {
 		complement(icStart, icEnd, it, adjustCellLinked);
 	}
 
+	/* .......................................... DNAData .................................................. */
+	/**
+	 * Does the reverse complement of the data for the entire sequence in taxon it. If reverseTerminalGaps is true, then it reversed the entire stretch; if it is false, it only reverses from the first non-gap to last non-gap in the stretch.
+	 */
+	public void reverseComplement(int it, boolean reverseTerminalGaps, boolean adjustCellLinked) {
+		reverseComplement(0, getNumChars()-1, it, reverseTerminalGaps, adjustCellLinked);
+	}
 
 	public void reverseComplement(int icStart, int icEnd, boolean adjustCellLinked) { //NOTE: this version reverses character metadata (codon positions, etc.)
 		reverse(icStart, icEnd, adjustCellLinked);
