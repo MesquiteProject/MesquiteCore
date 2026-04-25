@@ -190,6 +190,9 @@ public class CombineFlippedFastas extends GeneralFileMakerMultiple {
 		return false;
 	}
 	
+	boolean processRevCompUCEs = false; //$%$revComp
+	FastaHeaderProcessor fastaHeaderProcessor; //$%$revComp
+
 	/*.................................................................................................................*/
 	public void processDirectory(String directoryPath, MesquiteProject project){
 		if (StringUtil.blank(directoryPath) || project == null)
@@ -306,7 +309,11 @@ public class CombineFlippedFastas extends GeneralFileMakerMultiple {
 
 
 								if (loci != null){
-
+									
+									if (processRevCompUCEs) {//$%$revComp
+										fastaHeaderProcessor = new FastaHeaderProcessor(loci.getNames());
+									}
+									
 									//First, alter the names of the loci if requested <<<<======= NEW 4.01 Altering the name of the loci
 									if (nameAlterer != null)
 										nameAlterer.alterTaxonNames(loci, null);
@@ -411,6 +418,9 @@ public class CombineFlippedFastas extends GeneralFileMakerMultiple {
 													locusMatrix.setState(ic, receivingTaxonNumber, state);
 
 												}
+											}
+											if (processRevCompUCEs && locusMatrix instanceof DNAData) {//$%$revComp
+												fastaHeaderProcessor.process((DNAData)locusMatrix, iLocus, receivingTaxonNumber);;
 											}
 										}
 										if (files.length<20)
@@ -535,3 +545,39 @@ public class CombineFlippedFastas extends GeneralFileMakerMultiple {
 
 
 }
+
+
+
+
+class FastaHeaderProcessor {//$%$revComp
+	String[] headers=null;
+	boolean[] revComp=null;
+	public FastaHeaderProcessor (String[] headers) {
+		if (headers!=null) {
+			this.headers = new String[headers.length];
+			for (int i=0; i<headers.length; i++)
+				this.headers[i]=headers[i];
+			revComp = new boolean[headers.length];
+			processRevCompInfo();
+		}
+	}
+	
+	
+	void processRevCompInfo () { 
+		for (int it=0; it<headers.length; it++) {
+			String locusName = headers[it];
+			String orientationSymbol = StringUtil.getFirstSubString(locusName, "orient:{'", "'}");
+			if ("-".equals(orientationSymbol))
+				revComp[it] = true;
+			else if ("+".equals(orientationSymbol))
+				revComp[it] = false;
+		}
+	}
+
+	public void process (DNAData locusMatrix, int iLocus, int receivingTaxonNumber) { 
+		if (revComp[iLocus])
+			((DNAData)locusMatrix).reverseComplement(receivingTaxonNumber, false, false);
+	}
+
+}
+
