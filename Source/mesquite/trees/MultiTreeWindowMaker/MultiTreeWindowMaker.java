@@ -287,7 +287,7 @@ public class MultiTreeWindowMaker extends FileAssistantT implements TreeDisplayH
 }
 
 /* ======================================================================== */
-class MultiTreeWindow extends MesquiteWindow implements MouseWheelListener, Commandable  {
+class MultiTreeWindow extends MesquiteWindow implements KeyListener, Commandable  {
 	public TreeDisplay[] treeDisplays;
 	public DrawTreeCoordinator treeDrawCoordTask;
 	TreeSourceDefinite treeSourceTask;
@@ -319,6 +319,7 @@ class MultiTreeWindow extends MesquiteWindow implements MouseWheelListener, Comm
 		numColumns = MTWmodule.numColumns;
 		numRows = MTWmodule.numRows;
 		setBackground(Color.white);
+		addKeyListener(this,this);
 
 
 		messagePanel=new MessagePanel(getColorScheme());
@@ -456,6 +457,23 @@ class MultiTreeWindow extends MesquiteWindow implements MouseWheelListener, Comm
 						legend.adjustLocation();
 					}
 				}
+		}
+	}
+	public void keyTyped(KeyEvent e) {
+	}
+
+	
+	public void keyPressed(KeyEvent e) {
+	} 
+	public void keyReleased(KeyEvent e) {
+		int keyCode = e.getKeyCode();
+		switch( keyCode ) { 
+		case KeyEvent.VK_UP:
+			keyUpPressed();
+			break;
+		case KeyEvent.VK_DOWN:
+			keyDownPressed();
+			break;
 		}
 	}
 	/*.................................................................................................................*/
@@ -700,7 +718,7 @@ class MultiTreeWindow extends MesquiteWindow implements MouseWheelListener, Comm
 }
 
 
-class MultiTreeScrollPanel extends MQPanel implements MouseWheelListener, KeyListener { // HANDMADETreeScrollPane
+class MultiTreeScrollPanel extends MQPanel implements MouseWheelListener { 
 	MultiTreeWindow window;
 //	MTWScroll treeScroll;
 //	Panel port;
@@ -709,7 +727,6 @@ class MultiTreeScrollPanel extends MQPanel implements MouseWheelListener, KeyLis
 	public MultiTreeScrollPanel(MultiTreeWindow window) {
 		super();
 		addMouseWheelListener(this);
-		addKeyListener(this);
 		this.window = window;
 	}
 
@@ -717,41 +734,6 @@ class MultiTreeScrollPanel extends MQPanel implements MouseWheelListener, KeyLis
 		window.mouseWheelMoved(e);
 	}
 
-	public void keyTyped(KeyEvent e) {
-		int keyCode = e.getKeyCode();
-		switch( keyCode ) { 
-		case KeyEvent.VK_UP:
-			window.keyUpPressed();
-			break;
-		case KeyEvent.VK_DOWN:
-			window.keyDownPressed();
-			break;
-		}
-	}
-
-	
-	public void keyPressed(KeyEvent e) {
-		int keyCode = e.getKeyCode();
-		switch( keyCode ) { 
-		case KeyEvent.VK_UP:
-			window.keyUpPressed();
-			break;
-		case KeyEvent.VK_DOWN:
-			window.keyDownPressed();
-			break;
-		}
-	} 
-	public void keyReleased(KeyEvent e) {
-		int keyCode = e.getKeyCode();
-		switch( keyCode ) { 
-		case KeyEvent.VK_UP:
-			window.keyUpPressed();
-			break;
-		case KeyEvent.VK_DOWN:
-			window.keyDownPressed();
-			break;
-		}
-	}
 }
 
 /* ======================================================================== */
