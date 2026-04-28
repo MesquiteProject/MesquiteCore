@@ -45,7 +45,18 @@ public class RatioLongestBranches extends NumberForTree {
 	/*-----------------------------------------*/
  	public void getLongestBranches(Tree tree, int node, MesquiteDouble longest, MesquiteDouble secondLongest) {
  		double length = tree.getBranchLength(node);
- 		if (tree.getRoot() != node && MesquiteDouble.isCombinable(length)){
+ 		int root = tree.getRoot();
+ 		if (tree.motherOfNode(node) == root && !tree.nodeIsPolytomous(root)){
+ 			//daughter of bifurcating root. Sum lengths for single unrooted branch crossing root, and count it only if first daughter.
+ 			if (tree.firstDaughterOfNode(root) == node){
+ 				int sister = tree.singleSisterOfNode(node);
+ 				double sisterLength = tree.getBranchLength(sister);
+ 				length = MesquiteDouble.add(length, sisterLength);
+ 			}
+ 			else
+ 				length = 0;
+ 		}
+ 		if (root != node && MesquiteDouble.isCombinable(length)){
  			double currentLongest = longest.getValue();
  			double currentSecondLongest = secondLongest.getValue();
  			if (!longest.isCombinable() || MesquiteDouble.lessThan(currentLongest, length, 0)){
