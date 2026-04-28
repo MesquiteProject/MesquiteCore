@@ -13,11 +13,20 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
  */
 package mesquite.trees.MultiTreeWindowMaker;
 
+import java.awt.Adjustable;
+import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Component;
+import java.awt.Dimension;
 import java.awt.Graphics;
+import java.awt.Panel;
+import java.awt.Point;
 import java.awt.Rectangle;
 import java.awt.Scrollbar;
+import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
+import java.awt.event.MouseWheelEvent;
+import java.awt.event.MouseWheelListener;
 import java.util.Enumeration;
 
 import mesquite.lib.CommandChecker;
@@ -33,6 +42,7 @@ import mesquite.lib.MesquiteModule;
 import mesquite.lib.MesquiteString;
 import mesquite.lib.MesquiteThread;
 import mesquite.lib.MesquiteTimer;
+import mesquite.lib.MesquiteTrunk;
 import mesquite.lib.Notification;
 import mesquite.lib.ParseUtil;
 import mesquite.lib.Snapshot;
@@ -51,6 +61,7 @@ import mesquite.lib.tree.TreeDisplayHolder;
 import mesquite.lib.tree.TreeVector;
 import mesquite.lib.ui.InfoBar;
 import mesquite.lib.ui.Legend;
+import mesquite.lib.ui.MQPanel;
 import mesquite.lib.ui.MesquiteMenuSpec;
 import mesquite.lib.ui.MesquitePDFFile;
 import mesquite.lib.ui.MesquitePanel;
@@ -276,7 +287,7 @@ public class MultiTreeWindowMaker extends FileAssistantT implements TreeDisplayH
 }
 
 /* ======================================================================== */
-class MultiTreeWindow extends MesquiteWindow implements Commandable  {
+class MultiTreeWindow extends MesquiteWindow implements MouseWheelListener, Commandable  {
 	public TreeDisplay[] treeDisplays;
 	public DrawTreeCoordinator treeDrawCoordTask;
 	TreeSourceDefinite treeSourceTask;
@@ -290,7 +301,7 @@ class MultiTreeWindow extends MesquiteWindow implements Commandable  {
 	int firstTree=0;
 	int maxDisplays = 100;
 	MessagePanel messagePanel;
-	MesquitePanel containingPanel;
+	MultiTreeScrollPanel containingPanel;
 	MesquiteTimer timer;
 	TreeVector trees;
 
@@ -309,18 +320,21 @@ class MultiTreeWindow extends MesquiteWindow implements Commandable  {
 		numRows = MTWmodule.numRows;
 		setBackground(Color.white);
 
+
 		messagePanel=new MessagePanel(getColorScheme());
 		addToWindow(messagePanel);
 		messagePanel.setVisible(true);
 		MesquiteMenuSpec aux = ownerModule.addAuxiliaryMenu("Analysis:Trees");
 		ownerModule.addModuleMenuItems(aux, MesquiteModule.makeCommand("newAssistant",  this), TreeDisplayAssistantMA.class);
-		treeScroll = new MTWScroll(this, 0, 2, 0, treeSourceTask.getNumberOfTrees(taxa)/numColumns + 1); //-1
+//		public MTWScroll (MultiTreeWindow w, int value, int visible, int min, int max){
+//	treeScroll = new MTWScroll(this, 0, 2, 0, treeSourceTask.getNumberOfTrees(taxa)/numColumns + 1); //-1
+		treeScroll = new MTWScroll(this, 0,numRows, 0, treeSourceTask.getNumberOfTrees(taxa)/numColumns + 1); //-1
 		addToWindow(treeScroll);
 		treeDisplays =treeDrawCoordTask.createTreeDisplays(maxDisplays,taxa, this);
 		setTreeSource(treeSourceTask);
 
 
-		containingPanel = new MesquitePanel();
+		containingPanel = new MultiTreeScrollPanel(this);
 		addToWindow(containingPanel);
 		for (int itree = 0; itree<maxDisplays; itree++) {
 			containingPanel.add(treeDisplays[itree]);
@@ -336,6 +350,7 @@ class MultiTreeWindow extends MesquiteWindow implements Commandable  {
 		sizeDisplays(false);
 		addAssistantsDI(ownerModule);
 		resetTitle();
+
 	}
 	protected void addAssistantsDI(MesquiteModule ownerModule){
 		ownerModule.hireAllEmployees(TreeDisplayAssistantDI.class);
@@ -626,6 +641,38 @@ class MultiTreeWindow extends MesquiteWindow implements Commandable  {
 	public int getNumRows(){
 		return numRows;
 	}
+	public void mouseWheelMoved(MouseWheelEvent e) {
+		int amount = e.getScrollAmount() * 2;
+		boolean blockScroll = e.getScrollType() == MouseWheelEvent.WHEEL_BLOCK_SCROLL;
+		boolean upleft=false;
+		upleft = e.getWheelRotation()<0;
+		if (blockScroll)
+			amount = treeScroll.getBlockIncrement();
+		else
+			amount = treeScroll.getUnitIncrement() * amount;
+		if (upleft) {
+			amount = -amount;
+			if (treeScroll.getValue() == 0)
+				amount = 0;
+		}
+		if (amount != 0) {
+			treeScroll.setValue(treeScroll.getValue() + amount); 
+			treeScroll.updateView();
+		}
+
+	}
+
+	public void keyUpPressed() {
+		treeScroll.setValue(treeScroll.getValue() - numRows); 
+		treeScroll.updateView();
+
+	}
+	
+	public void keyDownPressed() {
+		treeScroll.setValue(treeScroll.getValue() +numRows); 
+		treeScroll.updateView();
+	}
+
 	/*.................................................................................................................*/
 	public void windowResized() {
 		super.windowResized();
@@ -652,15 +699,76 @@ class MultiTreeWindow extends MesquiteWindow implements Commandable  {
 	}
 }
 
+
+class MultiTreeScrollPanel extends MQPanel implements MouseWheelListener, KeyListener { // HANDMADETreeScrollPane
+	MultiTreeWindow window;
+//	MTWScroll treeScroll;
+//	Panel port;
+//	TreeDisplay treeDisplay;
+
+	public MultiTreeScrollPanel(MultiTreeWindow window) {
+		super();
+		addMouseWheelListener(this);
+		addKeyListener(this);
+		this.window = window;
+	}
+
+	public void mouseWheelMoved(MouseWheelEvent e) {
+		window.mouseWheelMoved(e);
+	}
+
+	public void keyTyped(KeyEvent e) {
+		int keyCode = e.getKeyCode();
+		switch( keyCode ) { 
+		case KeyEvent.VK_UP:
+			window.keyUpPressed();
+			break;
+		case KeyEvent.VK_DOWN:
+			window.keyDownPressed();
+			break;
+		}
+	}
+
+	
+	public void keyPressed(KeyEvent e) {
+		int keyCode = e.getKeyCode();
+		switch( keyCode ) { 
+		case KeyEvent.VK_UP:
+			window.keyUpPressed();
+			break;
+		case KeyEvent.VK_DOWN:
+			window.keyDownPressed();
+			break;
+		}
+	} 
+	public void keyReleased(KeyEvent e) {
+		int keyCode = e.getKeyCode();
+		switch( keyCode ) { 
+		case KeyEvent.VK_UP:
+			window.keyUpPressed();
+			break;
+		case KeyEvent.VK_DOWN:
+			window.keyDownPressed();
+			break;
+		}
+	}
+}
+
 /* ======================================================================== */
 class MTWScroll extends MesquiteScrollbar {
 	MultiTreeWindow w;
+	int visible;
 	public MTWScroll (MultiTreeWindow w, int value, int visible, int min, int max){
 		super(Scrollbar.VERTICAL, value, visible, min, max);
+		this.visible = visible;
 		this.w=w;
 	}
 
 	public void scrollTouched(){
+		int currentValue = getValue();
+		w.setFirstTree(currentValue*w.numColumns);
+	}
+	public void updateView(){
 		int currentValue = getValue();
 		w.setFirstTree(currentValue*w.numColumns);
 	}
