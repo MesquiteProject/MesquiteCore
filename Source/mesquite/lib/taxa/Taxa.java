@@ -477,6 +477,11 @@ public class Taxa extends FileElement implements NameableWithNotify {
 
 	/* ................................................................................................................. */
 	/** returns which taxon (i.e., its number) has the given name */
+	public int getTaxonNumberFromName(String taxonName) {
+		return whichTaxonNumber(taxonName, false);
+	}
+	/* ................................................................................................................. */
+	/** returns which taxon (i.e., its number) has the given name */
 	public int whichTaxonNumber(String taxonName) {
 		return whichTaxonNumber(taxonName, false);
 	}
