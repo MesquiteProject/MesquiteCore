@@ -2642,7 +2642,8 @@ public abstract class MesquiteWindow implements Listable, Commandable, OwnedByMo
 		else
 			temp.addLine("offInfoBar");
 		 */
-		parentFrame.resetFullDimensions();
+		if (parentFrame != null)
+			parentFrame.resetFullDimensions();
 		temp.addLine("setExplanationSize " + explanationHeight);
 		temp.addLine("setAnnotationSize " + annotationHeight);
 		temp.addLine("setFontIncAnnot " + StringUtil.tokenize(Integer.toString(annotationArea.fontIncrement)));

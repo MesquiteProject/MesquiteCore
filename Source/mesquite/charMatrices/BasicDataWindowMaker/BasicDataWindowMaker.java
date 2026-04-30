@@ -4975,7 +4975,7 @@ class MatrixTable extends mesquite.lib.table.CMTable implements MesquiteDroppedF
 
 	/* ............................................................................................................... */
 	private void checkTouchCurrentCell(int oldColumn, int oldRow) {
-		if (((TableTool) window.getCurrentTool()).getTouchOnArrowKey()) {
+		if (window != null && window.getCurrentTool() != null && ((TableTool) window.getCurrentTool()).getTouchOnArrowKey()) {
 			if (singleTableCellSelected()) {
 				Dimension sel = getFirstTableCellSelected();
 				if (oldColumn != sel.width || oldRow != sel.height) {

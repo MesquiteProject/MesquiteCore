@@ -223,6 +223,10 @@ public class FlagByGblocks extends MatrixFlaggerForTrimming implements ActionLis
 		ExtensibleDialog dialog = new ExtensibleDialog(containerOfModule(),  "Options for Gblocks",buttonPressed);  
 		AppChooser appChooser = new AppChooser("Gblocks", "Gblocks", useBuiltInIfAvailable, alternativeManualPath);
 		appChooser.addToDialog(dialog);
+		if (MesquiteTrunk.isMacOSX())
+			dialog.addLargeOrSmallTextLabel("On macOS: Gblocks is too old to be stamped as safe, and so when you first use it, the system may ask you to move it to the trash."
+				+" If this happens, don't ask to move it to the trash, but instead go to System Preferences to enable its running. On some versions of macOS you can enable it as follows: go to Privacy & Security, scroll down"
+				+ " to Security, and it should say \"gblocks-0.91b... was blocked...\". Hit the Open Anyway button, and try again.");
 		dialog.addHorizontalLine(1);
 		dialog.addBlankLine();
 		if (b1<0.5)

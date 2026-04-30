@@ -41,6 +41,7 @@ import mesquite.lib.taxa.TaxaTreeDisplay;
 import mesquite.lib.ui.BarDecoration;
 import mesquite.lib.ui.ColorDistribution;
 import mesquite.lib.ui.GraphicsUtil;
+import mesquite.lib.ui.MesquiteTool;
 import mesquite.lib.ui.MesquiteWindow;
 import mesquite.lib.ui.TextRotator;
 
@@ -1164,6 +1165,26 @@ public class TreeDisplay extends TaxaTreeDisplay  {
 
 	public void setShowBranchColors(boolean showBranchColors) {
 		this.showBranchColors = showBranchColors;
+	}
+	/*_________________________________________________*/
+	//This is overridden in BasicTreeDisplay with a more sophisticated one
+	public void mouseDown(int modifiers, int clickCount, long when, int x, int y, MesquiteTool tool) {
+		if (MesquiteWindow.checkDoomed(this))
+			return;
+		boolean somethingTouched = false;
+			try{
+				Graphics g = getGraphics();
+				if (ownerModule.getEmployer() instanceof TreeDisplayActive)
+					somethingTouched = ((TreeDisplayActive)ownerModule.getEmployer()).mouseDownInTreeDisplay(modifiers,x,y,this, g);
+				if (g!=null)
+					g.dispose();
+			}
+			catch(Exception e){
+			}
+
+		if (!somethingTouched)
+			super.panelTouched(modifiers, x,y, true);
+		MesquiteWindow.uncheckDoomed(this);
 	}
 
 }
