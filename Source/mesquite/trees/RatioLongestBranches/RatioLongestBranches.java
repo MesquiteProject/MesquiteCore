@@ -13,20 +13,38 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
 */
 package mesquite.trees.RatioLongestBranches;
 
+import java.awt.Checkbox;
+
+import mesquite.lib.CommandChecker;
+import mesquite.lib.MesquiteBoolean;
+import mesquite.lib.MesquiteCommand;
 import mesquite.lib.MesquiteDouble;
+import mesquite.lib.MesquiteFile;
+import mesquite.lib.MesquiteInteger;
 import mesquite.lib.MesquiteNumber;
 import mesquite.lib.MesquiteString;
+import mesquite.lib.MesquiteThread;
+import mesquite.lib.Snapshot;
 import mesquite.lib.duties.NumberForTree;
 import mesquite.lib.tree.Tree;
+import mesquite.lib.tree.TreeUtil;
+import mesquite.lib.ui.ExtensibleDialog;
 
 /** this is a silly little module that can be used as a demonstration for NumberForTree modules */
 public class RatioLongestBranches extends NumberForTree {
 	MesquiteNumber nt;
+	boolean unrooted = true;
+
 	/*.................................................................................................................*/
 	public boolean startJob(String arguments, Object condition, boolean hiredByName) {
+		if (!MesquiteThread.isScripting()){
+			if (!queryOptions())
+				return false;
+		}
  		nt= new MesquiteNumber();
- 		return true;
-  	 }
+		addMenuItem("Branch Length Ratio Options...", new MesquiteCommand("queryOptions", this));
+		return true;
+	}
 	/*.................................................................................................................*/
    	 public boolean isSubstantive(){
    	 	return true;
@@ -43,42 +61,56 @@ public class RatioLongestBranches extends NumberForTree {
  		return 361;  
  	}
 	/*-----------------------------------------*/
- 	public void getLongestBranches(Tree tree, int node, MesquiteDouble longest, MesquiteDouble secondLongest) {
- 		double length = tree.getBranchLength(node);
- 		int root = tree.getRoot();
- 		if (tree.motherOfNode(node) == root && !tree.nodeIsPolytomous(root)){
- 			//daughter of bifurcating root. Sum lengths for single unrooted branch crossing root, and count it only if first daughter.
- 			if (tree.firstDaughterOfNode(root) == node){
- 				int sister = tree.singleSisterOfNode(node);
- 				double sisterLength = tree.getBranchLength(sister);
- 				length = MesquiteDouble.add(length, sisterLength);
- 			}
- 			else
- 				length = 0;
- 		}
- 		if (root != node && MesquiteDouble.isCombinable(length)){
- 			double currentLongest = longest.getValue();
- 			double currentSecondLongest = secondLongest.getValue();
- 			if (!longest.isCombinable() || MesquiteDouble.lessThan(currentLongest, length, 0)){
- 				longest.setValue(length);
- 				secondLongest.setValue(currentLongest);
- 			}
- 			else if (!secondLongest.isCombinable() || MesquiteDouble.lessThan(currentSecondLongest, length, 0)){
- 				secondLongest.setValue(length);
- 			}
- 		}
- 			for (int d = tree.firstDaughterOfNode(node); tree.nodeExists(d); d = tree.nextSisterOfNode(d))
- 				getLongestBranches(tree, d, longest, secondLongest);
- 		
- 	}
 	/*.................................................................................................................*/
+	public Snapshot getSnapshot(MesquiteFile file) { 
+		Snapshot temp = new Snapshot();
+		temp.addLine("unrooted " + unrooted);
+		return temp;
+	}
+
+	/*.................................................................................................................*/
+	public boolean queryOptions(){
+		MesquiteInteger buttonPressed = new MesquiteInteger(1);
+		ExtensibleDialog dialog = new ExtensibleDialog(containerOfModule(),  "Flag by Ratio of Longest Branches",buttonPressed);  
+		Checkbox unrootedCB = dialog.addCheckBox("Treat tree as unrooted", unrooted);
+
+		dialog.addBlankLine();
+		dialog.completeAndShowDialog(true);
+		if (buttonPressed.getValue()==0)  {
+			unrooted = unrootedCB.getState();
+		}
+		dialog.dispose();
+		return (buttonPressed.getValue()==0);
+	}
+	/*.................................................................................................................*/
+	public Object doCommand(String commandName, String arguments, CommandChecker checker) {
+		if (checker.compare(this.getClass(), "Queries options", null, commandName, "queryOptions")) {
+			if (queryOptions()){
+				if (!MesquiteThread.isScripting()){
+					parametersChanged();
+				}
+			}
+		}
+		else if (checker.compare(this.getClass(), "Sets whether to treat trees as unrooted.", "[true or false]", commandName, "unrooted")) {
+			boolean temp = MesquiteBoolean.fromTrueFalseString(parser.getFirstToken(arguments));
+			if (temp != unrooted){
+				unrooted = temp; 
+				if (!MesquiteThread.isScripting()){
+					parametersChanged();
+				}
+			}
+		}
+		else
+			return  super.doCommand(commandName, arguments, checker);
+		return null;
+	}	/*.................................................................................................................*/
 	public void calculateNumber(Tree tree, MesquiteNumber result, MesquiteString resultString) {
     	 if (result==null || tree==null)
     	 		return;
     	clearResultAndLastResult(result);
     	MesquiteDouble longest = new MesquiteDouble();
     	MesquiteDouble secondLongest = new MesquiteDouble();
-    	getLongestBranches(tree, tree.getRoot(), longest, secondLongest);
+    	TreeUtil.getLongestBranches(tree, tree.getRoot(), null, longest, secondLongest, unrooted);
     	if (longest.isCombinable() && secondLongest.isCombinable() && secondLongest.getValue() != 0){
 		nt.setValue(longest.getValue()/secondLongest.getValue());
 		result.setValue(nt);

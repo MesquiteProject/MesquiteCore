@@ -18,6 +18,7 @@ package mesquite.trees.DefiniteTreeSource;
 import java.awt.Color;
 
 import mesquite.lib.CommandChecker;
+import mesquite.lib.Debugg;
 import mesquite.lib.EmployeeNeed;
 import mesquite.lib.MesquiteCommand;
 import mesquite.lib.MesquiteDouble;
@@ -32,12 +33,14 @@ import mesquite.lib.Selectionable;
 import mesquite.lib.Snapshot;
 import mesquite.lib.duties.TreeSource;
 import mesquite.lib.duties.TreeSourceDefinite;
+import mesquite.lib.duties.TreeVectorHolder;
 import mesquite.lib.taxa.Taxa;
 import mesquite.lib.tree.Tree;
+import mesquite.lib.tree.TreeVector;
 import mesquite.lib.ui.MesquiteMenuItemSpec;
 import mesquite.lib.ui.MesquiteSubmenuSpec;
 
-public class DefiniteTreeSource extends TreeSourceDefinite implements NameHolder {
+public class DefiniteTreeSource extends TreeSourceDefinite implements NameHolder, TreeVectorHolder {
 	public String getName() {
 		return "Definite Tree Source";
 	}
@@ -103,6 +106,12 @@ public class DefiniteTreeSource extends TreeSourceDefinite implements NameHolder
 	public void employeeQuit(MesquiteModule employee) {
 		if (employee == treeSource)  // character source quit and none rehired automatically
 			iQuit();
+	}
+	public TreeVector getCurrentTreeVector(Taxa taxa){
+		if (treeSource instanceof TreeVectorHolder){
+			return ((TreeVectorHolder)treeSource).getCurrentTreeVector(taxa);
+		}
+		return null;
 	}
 
 	/*.................................................................................................................*/

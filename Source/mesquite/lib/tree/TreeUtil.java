@@ -574,6 +574,45 @@ public class TreeUtil {
 
 	}
 
+	/*.................................................................................................................*/
+	public static void getLongestBranches(Tree tree, int node, Bits longestBranches, MesquiteDouble longest, MesquiteDouble secondLongest, boolean unrooted) {
+ 		double length = tree.getBranchLength(node);
+ 		int root = tree.getRoot();
+ 		if (unrooted && tree.motherOfNode(node) == root && !tree.nodeIsPolytomous(root)){
+ 			//daughter of bifurcating root. Sum lengths for single unrooted branch crossing root, and count it only if first daughter.
+ 			if (tree.firstDaughterOfNode(root) == node){
+ 				int sister = tree.singleSisterOfNode(node);
+ 				double sisterLength = tree.getBranchLength(sister);
+ 				length = MesquiteDouble.add(length, sisterLength);
+ 			}
+ 			else
+ 				length = 0;
+ 		}
+ 		if (root != node && MesquiteDouble.isCombinable(length)){
+ 			double currentLongest = longest.getValue();
+ 			double currentSecondLongest = secondLongest.getValue();
+ 			if (!longest.isCombinable() || MesquiteDouble.lessThan(currentLongest, length, 0)){
+ 				longest.setValue(length);
+ 			if (longestBranches != null){
+ 				if (longestBranches.getSize()< tree.getNumNodeSpaces()) longestBranches.resetSize(tree.getNumNodeSpaces());
+ 				longestBranches.clearAllBits();
+ 				longestBranches.setBit(node);
+ 			}
+ 				secondLongest.setValue(currentLongest);
+ 			}
+ 			else if (!secondLongest.isCombinable() || MesquiteDouble.lessThan(currentSecondLongest, length, 0)){
+ 				secondLongest.setValue(length); //this could be a second node with the same longest, or a new second longest
+ 				if (longestBranches != null && longest.getValue() == secondLongest.getValue())
+ 					longestBranches.setBit(node);
+ 			}
+ 			else if (longestBranches != null && currentLongest == length){
+ 					longestBranches.setBit(node);
+ 			}
+ 
+ 		}
+ 			for (int d = tree.firstDaughterOfNode(node); tree.nodeExists(d); d = tree.nextSisterOfNode(d))
+ 				getLongestBranches(tree, d, longestBranches, longest, secondLongest, unrooted);
+ 	}
 
 
 

@@ -330,6 +330,7 @@ public class ColorDistribution {
 	public static Composite alphaComposite2 =  AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 0.2f);
 	public static Composite alphaComposite3 =  AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 0.3f);
 	public static Composite alphaComposite5 =  AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 0.5f);
+	public static Composite alphaCompositeFULL =  AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 1f);
 	static Composite storedComposite = null;
 	static float prevCompositeFloat = 0;
 

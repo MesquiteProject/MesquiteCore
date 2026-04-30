@@ -108,6 +108,7 @@ import mesquite.lib.duties.TreeDisplayAssistantI;
 import mesquite.lib.duties.TreeDisplayAsstShowToggleable;
 import mesquite.lib.duties.TreeInfoPanelAssistant;
 import mesquite.lib.duties.TreeSource;
+import mesquite.lib.duties.TreeVectorHolder;
 import mesquite.lib.duties.TreeWDIAssistant;
 import mesquite.lib.duties.TreeWindowAssistant;
 import mesquite.lib.duties.TreeWindowAssistantA;
@@ -168,7 +169,7 @@ import mesquite.trees.BranchPropertiesList.BranchPropertiesList;
 import mesquite.trees.lib.TreeInfoExtraPanel;
 
 /** Makes and manages a Tree Window for tree editing and visualization */
-public class BasicTreeWindowMaker extends TreeWindowMaker implements CommandableOwner, TreeContext, TreeDisplayActive, TreeDisplayHolder {
+public class BasicTreeWindowMaker extends TreeWindowMaker implements CommandableOwner, TreeContext, TreeDisplayActive, TreeDisplayHolder, TreeVectorHolder {
 
 	public String getName() {
 		return "Tree Window";
@@ -338,6 +339,14 @@ public class BasicTreeWindowMaker extends TreeWindowMaker implements Commandable
 				return m;
 		}
 		return super.findMenuAmongEmployers(label);
+	}
+	/*.................................................................................................................*/
+	 /**Returns tree vector.*/
+	public TreeVector getCurrentTreeVector(Taxa taxa){
+		if (treeSourceTask instanceof TreeVectorHolder){
+			return ((TreeVectorHolder)treeSourceTask).getCurrentTreeVector(taxa);
+		}
+		return null;
 	}
 
 	/*--------------------------------------*/

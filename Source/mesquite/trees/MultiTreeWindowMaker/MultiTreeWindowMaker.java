@@ -31,6 +31,7 @@ import java.util.Enumeration;
 
 import mesquite.lib.CommandChecker;
 import mesquite.lib.Commandable;
+import mesquite.lib.Debugg;
 import mesquite.lib.EmployeeNeed;
 import mesquite.lib.MesquiteBoolean;
 import mesquite.lib.MesquiteCommand;
@@ -53,6 +54,7 @@ import mesquite.lib.duties.TreeDisplayAssistantDI;
 import mesquite.lib.duties.TreeDisplayAssistantMA;
 import mesquite.lib.duties.TreeSource;
 import mesquite.lib.duties.TreeSourceDefinite;
+import mesquite.lib.duties.TreeVectorHolder;
 import mesquite.lib.taxa.Taxa;
 import mesquite.lib.tree.Tree;
 import mesquite.lib.tree.TreeDisplay;
@@ -71,7 +73,7 @@ import mesquite.lib.ui.MesquiteWindow;
 import mesquite.lib.ui.MessagePanel;
 
 /* ======================================================================== */
-public class MultiTreeWindowMaker extends FileAssistantT implements TreeDisplayHolder {
+public class MultiTreeWindowMaker extends FileAssistantT implements TreeDisplayHolder, TreeVectorHolder {
 	public void getEmployeeNeeds(){  //This gets called on startup to harvest information; override this and inside, call registerEmployeeNeed
 		EmployeeNeed e = registerEmployeeNeed(DrawTreeCoordinator.class, getName() + "  needs a module to coordinate tree drawing.",
 				"This is arranged automatically");
@@ -130,6 +132,17 @@ public class MultiTreeWindowMaker extends FileAssistantT implements TreeDisplayH
  	public boolean allowsReorientation(){
  		return true;
  	}
+ 	
+	/*.................................................................................................................*/
+	 /**Returns tree vector.*/
+	public TreeVector getCurrentTreeVector(Taxa taxa){
+		if (treeSourceTask instanceof TreeVectorHolder){
+			return ((TreeVectorHolder)treeSourceTask).getCurrentTreeVector(taxa);
+		}
+		return null;
+	}
+
+ 	
 	public void employeeQuit(MesquiteModule m){
 		if (m == treeDrawCoordTask)
 			iQuit();

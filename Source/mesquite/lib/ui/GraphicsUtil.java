@@ -856,6 +856,31 @@ public class GraphicsUtil {
 		g.setColor(oldColor);
 		ColorDistribution.setComposite(g, composite);		
 	}
+	public static void fillFadingOval (Graphics g, double x, double y, double w, double h, Color color) {
+		Composite composite = ColorDistribution.getComposite(g);
+		Color oldColor = g.getColor();
+		g.setColor(color);
+		int step = 0;
+		ColorDistribution.setTransparentGraphics(g,ColorDistribution.alphaComposite05); 
+		fillOval(g, x, y, w, h);
+		ColorDistribution.setTransparentGraphics(g,ColorDistribution.alphaComposite1); 
+		fillOval(g, x + step*w/10.0, y + step*h/10.0, w-step*w/5.0, h - step*h/5.0);
+		step++;
+		ColorDistribution.setTransparentGraphics(g,ColorDistribution.alphaComposite2); 
+		fillOval(g, x + step*w/10.0, y + step*h/10.0, w-step*w/5.0, h - step*h/5.0);
+		step++;
+		ColorDistribution.setTransparentGraphics(g,ColorDistribution.alphaComposite3); 
+		fillOval(g, x + step*w/10.0, y + step*h/10.0, w-step*w/5.0, h - step*h/5.0);
+		step++;
+		ColorDistribution.setTransparentGraphics(g,ColorDistribution.alphaComposite5); 
+		fillOval(g, x + step*w/10.0, y + step*h/10.0, w-step*w/5.0, h - step*h/5.0);
+		step++;
+		ColorDistribution.setTransparentGraphics(g,ColorDistribution.alphaCompositeFULL); 
+		fillOval(g, x + step*w/10.0, y + step*h/10.0, w-step*w/5.0, h - step*h/5.0);
+		step++;
+		g.setColor(oldColor);
+		ColorDistribution.setComposite(g, composite);		
+	}
 	public static void fillTransparentSelectionRectangle (Graphics g, int x, int y, int w, int h) {
 		Composite composite = ColorDistribution.getComposite(g);
 		ColorDistribution.setTransparentGraphics3(g);		

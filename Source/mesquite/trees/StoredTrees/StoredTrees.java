@@ -40,6 +40,7 @@ import mesquite.lib.Selectionable;
 import mesquite.lib.Snapshot;
 import mesquite.lib.StringUtil;
 import mesquite.lib.duties.TreeSource;
+import mesquite.lib.duties.TreeVectorHolder;
 import mesquite.lib.duties.TreesManager;
 import mesquite.lib.taxa.Taxa;
 import mesquite.lib.tree.MesquiteTree;
@@ -50,7 +51,7 @@ import mesquite.lib.ui.MesquiteMenuItemSpec;
 import mesquite.lib.ui.MesquiteSubmenuSpec;
 
 /** Supplies trees from tree blocks stored in the project.*/
-public class StoredTrees extends TreeSource implements MesquiteListener {
+public class StoredTrees extends TreeSource implements MesquiteListener, TreeVectorHolder {
 	int currentTree=0;
 	TreeVector currentTreeBlock = null;
 	TreeVector lastUsedTreeBlock = null;
@@ -117,6 +118,11 @@ public class StoredTrees extends TreeSource implements MesquiteListener {
 		return s;
 	}
 
+	/*.................................................................................................................*/
+	 /**Returns tree vector.*/
+	public TreeVector getCurrentTreeVector(Taxa taxa){
+		return currentTreeBlock;
+	}
 	/*.................................................................................................................*/
 	public Snapshot getSnapshot(MesquiteFile file) {
 		Snapshot temp = new Snapshot();

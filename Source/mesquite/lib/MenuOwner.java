@@ -678,7 +678,7 @@ public abstract class MenuOwner implements Doomable { // EMBEDDED: extends Apple
 			c.setDefaultArguments("#" + mbi.getClassName());
 			addMenuItem(whichMenu, mbi.getNameForMenuItem(), c);
 		}
-		
+
 		mmis.disconnect();
 	}
 	/*............................................................................. */
@@ -699,7 +699,7 @@ public abstract class MenuOwner implements Doomable { // EMBEDDED: extends Apple
 			c.setDefaultArguments("#" + mbi.getClassName());
 			addItemToSubmenu(whichMenu,whichSubMenu, mbi.getNameForMenuItem(), c);
 		}
-		
+
 		mmis.disconnect();
 	}
 	/*............................................................................. */
@@ -953,6 +953,7 @@ public abstract class MenuOwner implements Doomable { // EMBEDDED: extends Apple
 	 */
 
 	public final void composeMenuBar(MesquiteMenuBar menuBar, MesquiteWindow whichWindow) {
+
 		if (module.isDoomed())
 			return;
 		if (System.getProperty("os.name").indexOf("Mac OS") < 0 && whichWindow.menusMinimal())
@@ -1017,7 +1018,6 @@ public abstract class MenuOwner implements Doomable { // EMBEDDED: extends Apple
 			MesquiteMenu myMenu = null;
 			if (moduleMenuSpec != null)
 				myMenu = MesquiteMenu.getMenu(moduleMenuSpec);
-
 			MesquiteMenu ancestralMenu = null;
 			if (module.isDoomed())
 				return;
@@ -1194,8 +1194,8 @@ public abstract class MenuOwner implements Doomable { // EMBEDDED: extends Apple
 		if (menu != null) { // why is this menu and not menuToUse????
 			menuVector.add(menu);
 		}
-		
-		
+
+
 		if (auxiliaryMenusHighPriority != null) {
 			int num = auxiliaryMenusHighPriority.size();
 			for (int i = 0; i < num; i++) {
@@ -1206,8 +1206,8 @@ public abstract class MenuOwner implements Doomable { // EMBEDDED: extends Apple
 				}
 			}
 		}
-		
-	
+
+
 		ListableVector L = module.getEmployeeVector();
 		if (L != null) {
 			int num = L.size();
@@ -1442,7 +1442,7 @@ public abstract class MenuOwner implements Doomable { // EMBEDDED: extends Apple
 			wMenu.add("-");
 			wMenu.add(whichWindow.fitWindowMenuItem);
 			whichWindow.setPopTileMenuItemNames();
-			
+
 			if (!whichWindow.isPoppedOut()) {
 				wMenu.add(whichWindow.popOutWindowMenuItem);
 				wMenu.add(whichWindow.tileOutWindowMenuItem);
@@ -1617,8 +1617,8 @@ public abstract class MenuOwner implements Doomable { // EMBEDDED: extends Apple
 		else {
 			if (menuTracing)
 				MesquiteMessage.notifyProgrammer("Composing menu of " + module.getName());
-			
-				addMyMenuItems(menu);
+
+			addMyMenuItems(menu);
 			ListableVector L = module.getEmployeeVector();
 			if (L != null) {
 				int num = L.size();
@@ -1659,8 +1659,8 @@ public abstract class MenuOwner implements Doomable { // EMBEDDED: extends Apple
 							}
 						}
 						if (mb.auxiliaryMenusHighPriority != null) {
-							num = mb.auxiliaryMenusHighPriority.size();
-							for (int j = 0; j < num; j++) {
+							int num2 = mb.auxiliaryMenusHighPriority.size();
+							for (int j = 0; j < num2; j++) {
 								obj = mb.auxiliaryMenusHighPriority.elementAt(j);
 								MesquiteMenuSpec m = (MesquiteMenuSpec) obj;
 								if (m != null) {
@@ -1669,8 +1669,8 @@ public abstract class MenuOwner implements Doomable { // EMBEDDED: extends Apple
 							}
 						}
 						if (mb.auxiliaryMenus != null) {
-							num = mb.auxiliaryMenus.size();
-							for (int j = 0; j < num; j++) {
+							int num3 = mb.auxiliaryMenus.size();
+							for (int j = 0; j < num3; j++) {
 								obj = mb.auxiliaryMenus.elementAt(j);
 								MesquiteMenuSpec m = (MesquiteMenuSpec) obj;
 								if (m != null) {
@@ -1696,9 +1696,10 @@ public abstract class MenuOwner implements Doomable { // EMBEDDED: extends Apple
 			ListableVector L = module.getEmployeeVector();
 			if (L != null) {
 				int num = L.size();
-				for (int i = 0; i < num; i++) {
-					Object obj = L.elementAt(i);
+				for (int k = 0; k< num; k++) {
+					Object obj = L.elementAt(k);
 					MesquiteModule mb = (MesquiteModule) obj;
+
 					if (mb != null && mb.getUseMenubar() && !mb.usingGuestMenu && mb.window == null) {
 						if (mb.moduleMenuSpec != null) {
 							MesquiteMenu menu = MesquiteMenu.getMenu(mb.moduleMenuSpec);
@@ -1709,8 +1710,8 @@ public abstract class MenuOwner implements Doomable { // EMBEDDED: extends Apple
 							}
 						}
 						if (mb.auxiliaryMenusHighPriority != null) {
-							num = mb.auxiliaryMenusHighPriority.size();
-							for (int j = 0; j < num; j++) {
+							int num2 = mb.auxiliaryMenusHighPriority.size();
+							for (int j = 0; j < num2; j++) {
 								obj = mb.auxiliaryMenusHighPriority.elementAt(j);
 								MesquiteMenuSpec m = (MesquiteMenuSpec) obj;
 								if (m != null) {
@@ -1719,8 +1720,8 @@ public abstract class MenuOwner implements Doomable { // EMBEDDED: extends Apple
 							}
 						}
 						if (mb.auxiliaryMenus != null) {
-							num = mb.auxiliaryMenus.size();
-							for (int j = 0; j < num; j++) {
+							int num3 = mb.auxiliaryMenus.size();
+							for (int j = 0; j < num3; j++) {
 								obj = mb.auxiliaryMenus.elementAt(j);
 								MesquiteMenuSpec m = (MesquiteMenuSpec) obj;
 								if (m != null) {
@@ -1819,100 +1820,100 @@ public abstract class MenuOwner implements Doomable { // EMBEDDED: extends Apple
 			return false;
 		if (mmi.getDutyClass() != null) { // module dutyClass specified; need to create list of modules to choose
 			MesquiteModuleInfo mbi = null;
-		//	int count = 0;
-			
+			//	int count = 0;
+
 			while ((mbi = getNextCompatibleModuleOfDuty(mbi, mmi)) != null) {
-	/*		while (count++ < 128 && (mbi = MesquiteTrunk.mesquiteModulesInfoVector.findNextModule(mmi.getDutyClass(),
+				/*		while (count++ < 128 && (mbi = MesquiteTrunk.mesquiteModulesInfoVector.findNextModule(mmi.getDutyClass(),
 					mbi)) != null) {
 				if (moduleIsCompatible(mmi, mbi) && mbi.getUserChooseable()
 					&& (mmi.getChoicePrimarySecondary()==0 || (mmi.getChoicePrimarySecondary() == 1 && mbi.primaryChoiceRequested()) || (mmi.getChoicePrimarySecondary() == -1 && !mbi.primaryChoiceRequested()))){
 
-*/
-					int hiddenStatus = 0;
-					if ((!InterfaceManager.isFilterable(menu)
-							|| (hiddenStatus = InterfaceManager.isHiddenMenuItem(mmi, mbi.getNameForMenuItem(),
-									StringUtil.tokenize(mbi.getName()), mmi.command, mbi.getModuleClass(),
-									mmi.getDutyClass())) != InterfaceManager.HIDDEN)) {
-						if (mbi.getHireSubchoice() == null) {
-							MesquiteMenuItem m = new MesquiteMenuItem(mbi.getNameForMenuItem(), null /* mmi.ownerModule */,
-									mmi.command, StringUtil.tokenize(mbi.getName()));
-							m.setHiddenStatus(hiddenStatus, mmi.getDutyClass());
-							m.setDocument(mmi.getDocumentItems());
-							m.setReferent(mbi);
-							int shortcut = mbi.getShortcutForMenuItem();
-							if (shortcut >= 0)
-								m.setShortcut(new MenuShortcut(shortcut, mbi.getShortcutForMenuItemNeedsShift()));
-							MesquiteMenu.add(menu, m);
+				 */
+				int hiddenStatus = 0;
+				if ((!InterfaceManager.isFilterable(menu)
+						|| (hiddenStatus = InterfaceManager.isHiddenMenuItem(mmi, mbi.getNameForMenuItem(),
+								StringUtil.tokenize(mbi.getName()), mmi.command, mbi.getModuleClass(),
+								mmi.getDutyClass())) != InterfaceManager.HIDDEN)) {
+					if (mbi.getHireSubchoice() == null) {
+						MesquiteMenuItem m = new MesquiteMenuItem(mbi.getNameForMenuItem(), null /* mmi.ownerModule */,
+								mmi.command, StringUtil.tokenize(mbi.getName()));
+						m.setHiddenStatus(hiddenStatus, mmi.getDutyClass());
+						m.setDocument(mmi.getDocumentItems());
+						m.setReferent(mbi);
+						int shortcut = mbi.getShortcutForMenuItem();
+						if (shortcut >= 0)
+							m.setShortcut(new MenuShortcut(shortcut, mbi.getShortcutForMenuItemNeedsShift()));
+						MesquiteMenu.add(menu, m);
 
-						} else {
-							MesquiteSubmenu submenu = MesquiteSubmenu.getSubmenu(mbi.getNameForMenuItem(), menu, module); // make
-							// submenu
-							submenu.setHiddenStatus(hiddenStatus, mmi.getDutyClass());
-							submenu.setReferent(mbi);
-							MesquiteMenu.add(menu, submenu);
+					} else {
+						MesquiteSubmenu submenu = MesquiteSubmenu.getSubmenu(mbi.getNameForMenuItem(), menu, module); // make
+						// submenu
+						submenu.setHiddenStatus(hiddenStatus, mmi.getDutyClass());
+						submenu.setReferent(mbi);
+						MesquiteMenu.add(menu, submenu);
 
-							// populate it with subchoices
-							MesquiteModuleInfo smbi = null;
-							int count2 = 0;
-							int countPrimary2 = 0;
-							int countOthers2 = 0;
-							if (EmployerEmployee.useOtherChoices)
-								while (count2++ < 128
-										&& (smbi = MesquiteTrunk.mesquiteModulesInfoVector.findNextModuleFilteredByNot(
-												mbi.getHireSubchoice(), mbi.getDontHireSubchoice(), smbi)) != null) {
-									if (!smbi.getUserChooseable())
-										;
-									else if (smbi.isPrimary(mbi.getHireSubchoice()))
-										countPrimary2++;
-									else
-										countOthers2++;
-								}
-							boolean useOthers2 = EmployerEmployee.useOtherChoices && countOthers2 > 0 && countPrimary2 > 0;
-							Listable[] others2 = null;
-							if (useOthers2)
-								others2 = new Listable[countOthers2];
-							smbi = null;
-							countOthers2 = 0;
-							count2 = 0;
+						// populate it with subchoices
+						MesquiteModuleInfo smbi = null;
+						int count2 = 0;
+						int countPrimary2 = 0;
+						int countOthers2 = 0;
+						if (EmployerEmployee.useOtherChoices)
 							while (count2++ < 128
 									&& (smbi = MesquiteTrunk.mesquiteModulesInfoVector.findNextModuleFilteredByNot(
 											mbi.getHireSubchoice(), mbi.getDontHireSubchoice(), smbi)) != null) {
-								int hiddenStatus2 = 0;
 								if (!smbi.getUserChooseable())
 									;
-								else if (InterfaceManager.isFilterable(submenu)
-										&& (hiddenStatus2 = InterfaceManager.isHiddenMenuItem(mmi,
-												smbi.getNameForMenuItem(),
-												"$ " + StringUtil.tokenize(mbi.getName()) + "  "
-														+ StringUtil.tokenize(smbi.getName()),
-														mmi.command, smbi.getModuleClass(),
-														mbi.getHireSubchoice())) == InterfaceManager.HIDDEN)
-									;
-								else if (useOthers2 && !smbi.isPrimary(mbi.getHireSubchoice()))
-									others2[countOthers2++] = smbi;
-								else {
-									MesquiteMenuItem m = new MesquiteMenuItem(smbi.getNameForMenuItem(),
-											null /* mmi.ownerModule */, mmi.command,
-											"$ " + StringUtil.tokenize(mbi.getName()) + "  "
-													+ StringUtil.tokenize(smbi.getName()));
-									m.setDocument(mmi.getDocumentItems());
-									m.setHiddenStatus(hiddenStatus2, mbi.getHireSubchoice());
-									m.setReferent(smbi);
-									int shortcut = smbi.getShortcutForMenuItem();
-									if (shortcut >= 0)
-										m.setShortcut(new MenuShortcut(shortcut, smbi.getShortcutForMenuItemNeedsShift()));
-									submenu.add(m);
-								}
+								else if (smbi.isPrimary(mbi.getHireSubchoice()))
+									countPrimary2++;
+								else
+									countOthers2++;
 							}
-							if (useOthers2) {
-								// make new mesquite menu item "others"
-								submenu.add(new MenuItem("-"));
-								MesquiteMenuItem othersItem = new MesquiteMenuItem("Other Choices...", null, mmi.command,
-										"$ " + StringUtil.tokenize(mbi.getName()) + "  ");
-								othersItem.setOthers(others2);
-								submenu.add(othersItem);
+						boolean useOthers2 = EmployerEmployee.useOtherChoices && countOthers2 > 0 && countPrimary2 > 0;
+						Listable[] others2 = null;
+						if (useOthers2)
+							others2 = new Listable[countOthers2];
+						smbi = null;
+						countOthers2 = 0;
+						count2 = 0;
+						while (count2++ < 128
+								&& (smbi = MesquiteTrunk.mesquiteModulesInfoVector.findNextModuleFilteredByNot(
+										mbi.getHireSubchoice(), mbi.getDontHireSubchoice(), smbi)) != null) {
+							int hiddenStatus2 = 0;
+							if (!smbi.getUserChooseable())
+								;
+							else if (InterfaceManager.isFilterable(submenu)
+									&& (hiddenStatus2 = InterfaceManager.isHiddenMenuItem(mmi,
+											smbi.getNameForMenuItem(),
+											"$ " + StringUtil.tokenize(mbi.getName()) + "  "
+													+ StringUtil.tokenize(smbi.getName()),
+													mmi.command, smbi.getModuleClass(),
+													mbi.getHireSubchoice())) == InterfaceManager.HIDDEN)
+								;
+							else if (useOthers2 && !smbi.isPrimary(mbi.getHireSubchoice()))
+								others2[countOthers2++] = smbi;
+							else {
+								MesquiteMenuItem m = new MesquiteMenuItem(smbi.getNameForMenuItem(),
+										null /* mmi.ownerModule */, mmi.command,
+										"$ " + StringUtil.tokenize(mbi.getName()) + "  "
+												+ StringUtil.tokenize(smbi.getName()));
+								m.setDocument(mmi.getDocumentItems());
+								m.setHiddenStatus(hiddenStatus2, mbi.getHireSubchoice());
+								m.setReferent(smbi);
+								int shortcut = smbi.getShortcutForMenuItem();
+								if (shortcut >= 0)
+									m.setShortcut(new MenuShortcut(shortcut, smbi.getShortcutForMenuItemNeedsShift()));
+								submenu.add(m);
 							}
 						}
+						if (useOthers2) {
+							// make new mesquite menu item "others"
+							submenu.add(new MenuItem("-"));
+							MesquiteMenuItem othersItem = new MesquiteMenuItem("Other Choices...", null, mmi.command,
+									"$ " + StringUtil.tokenize(mbi.getName()) + "  ");
+							othersItem.setOthers(others2);
+							submenu.add(othersItem);
+						}
+					}
 					//}
 				}
 			}
@@ -2120,7 +2121,7 @@ public abstract class MenuOwner implements Doomable { // EMBEDDED: extends Apple
 			// "Other Choice..." system.
 			// if (EmployerEmployee.useOtherChoices)
 			while ((mbi = getNextCompatibleModuleOfDuty(mbi, msms)) != null) {
-/*			while (count++ < 128 && (mbi = MesquiteTrunk.mesquiteModulesInfoVector.findNextModule(msms.getDutyClass(),
+				/*			while (count++ < 128 && (mbi = MesquiteTrunk.mesquiteModulesInfoVector.findNextModule(msms.getDutyClass(),
 					mbi)) != null) {
 				if (moduleIsCompatible(msms, mbi)
 						&& (msms.getChoicePrimarySecondary()==0 || (msms.getChoicePrimarySecondary() == 1 && mbi.primaryChoiceRequested()) || (msms.getChoicePrimarySecondary() == -1 && !mbi.primaryChoiceRequested()))) {
@@ -2128,10 +2129,10 @@ public abstract class MenuOwner implements Doomable { // EMBEDDED: extends Apple
 					if (!mbi.getUserChooseable())
 						;
 					else  */
-					if (mbi.isPrimary(msms.getDutyClass()))
-						countPrimary++;
-					else
-						countOthers++;
+				if (mbi.isPrimary(msms.getDutyClass()))
+					countPrimary++;
+				else
+					countOthers++;
 				//}
 			}
 			boolean useOthers = EmployerEmployee.useOtherChoices && countOthers > 0 && countPrimary > 0 && msms.getChoicePrimarySecondary()==0;
@@ -2142,156 +2143,156 @@ public abstract class MenuOwner implements Doomable { // EMBEDDED: extends Apple
 			countOthers = 0;
 			count = 0;
 			while ((mbi = getNextCompatibleModuleOfDuty(mbi, msms)) != null) {
-			/*while (count++ < 128 && (mbi = MesquiteTrunk.mesquiteModulesInfoVector.findNextModule(msms.getDutyClass(),
+				/*while (count++ < 128 && (mbi = MesquiteTrunk.mesquiteModulesInfoVector.findNextModule(msms.getDutyClass(),
 					mbi)) != null) {
 				if (moduleIsCompatible(msms, mbi)
 						&& (msms.getChoicePrimarySecondary()==0 || (msms.getChoicePrimarySecondary() == 1 && mbi.primaryChoiceRequested()) || (msms.getChoicePrimarySecondary() == -1 && !mbi.primaryChoiceRequested()))) {
-*/
-					boolean primary = mbi.isPrimary(msms.getDutyClass());
-					int hiddenStatus = 0;
-					if (!mbi.getUserChooseable())
-						;
-					else if (useOthers && !primary)
-						others[countOthers++] = mbi;
-					else if (msms.isFilterable() && (hiddenStatus = InterfaceManager.isHiddenMenuItem(msms,
-							mbi.getNameForMenuItem(), StringUtil.tokenize(mbi.getName()), msms.command,
-							mbi.getModuleClass(), msms.getDutyClass())) == InterfaceManager.HIDDEN) {
-					} else if (mbi.getHireSubchoice() == null) { // potential employee hasn't indicated it would like
-						// subemployee submenu
-						if (submenu.getSelected() != null) { // selected string available for checkmark
-							MesquiteCheckMenuItem m = new MesquiteCheckMenuItem(mbi.getNameForMenuItem(), null,
-									msms.command, StringUtil.tokenize(mbi.getName()), submenu.getSelected());
-							// m.setDocument(msms.getDocumentItems());
-							if (mbi.getShortcutForMenuItem() >= 0)
-								m.setShortcut(new MenuShortcut(mbi.getShortcutForMenuItem(),
-										mbi.getShortcutForMenuItemNeedsShift()));
-							m.setReferent(mbi);
-							m.setHiddenStatus(hiddenStatus, msms.getDutyClass());
-							if (primary)
-								primaryItems[countItems++] = m;
-							else
-								secondaryItems[countOthers++] = m;
-							// submenu.add(m);
-						} else {
-							MesquiteMenuItem m = new MesquiteMenuItem(mbi.getNameForMenuItem(), null, msms.command,
-									StringUtil.tokenize(mbi.getName()));
-							if (mbi.getShortcutForMenuItem() >= 0)
-								m.setShortcut(new MenuShortcut(mbi.getShortcutForMenuItem(),
-										mbi.getShortcutForMenuItemNeedsShift()));
-							m.setDocument(msms.getDocumentItems());
-							m.setReferent(mbi);
-							m.setHiddenStatus(hiddenStatus, msms.getDutyClass());
-							if (primary)
-								primaryItems[countItems++] = m;
-							else
-								secondaryItems[countOthers++] = m;
-
-							// submenu.add(m);
-						}
-					} else { // potential employee has indicated it would like subemployee submenu
-						MesquiteSubmenu submenu2 = MesquiteSubmenu.getSubmenu(mbi.getNameForMenuItem(), submenu,
-								module); // make submenu
-						submenu2.setHiddenStatus(hiddenStatus, msms.getDutyClass());
+				 */
+				boolean primary = mbi.isPrimary(msms.getDutyClass());
+				int hiddenStatus = 0;
+				if (!mbi.getUserChooseable())
+					;
+				else if (useOthers && !primary)
+					others[countOthers++] = mbi;
+				else if (msms.isFilterable() && (hiddenStatus = InterfaceManager.isHiddenMenuItem(msms,
+						mbi.getNameForMenuItem(), StringUtil.tokenize(mbi.getName()), msms.command,
+						mbi.getModuleClass(), msms.getDutyClass())) == InterfaceManager.HIDDEN) {
+				} else if (mbi.getHireSubchoice() == null) { // potential employee hasn't indicated it would like
+					// subemployee submenu
+					if (submenu.getSelected() != null) { // selected string available for checkmark
+						MesquiteCheckMenuItem m = new MesquiteCheckMenuItem(mbi.getNameForMenuItem(), null,
+								msms.command, StringUtil.tokenize(mbi.getName()), submenu.getSelected());
+						// m.setDocument(msms.getDocumentItems());
+						if (mbi.getShortcutForMenuItem() >= 0)
+							m.setShortcut(new MenuShortcut(mbi.getShortcutForMenuItem(),
+									mbi.getShortcutForMenuItemNeedsShift()));
+						m.setReferent(mbi);
+						m.setHiddenStatus(hiddenStatus, msms.getDutyClass());
 						if (primary)
-							primaryItems[countItems++] = submenu2;
+							primaryItems[countItems++] = m;
 						else
-							secondaryItems[countOthers++] = submenu2;
-						// submenu.add(submenu2);
-						submenu2.setReferent(mbi);
-						// populate it with subchoices
-						MesquiteModuleInfo smbi = null;
-						int count2 = 0;
-						int countPrimary2 = 0;
-						int countOthers2 = 0;
-						zeroArray(primaryItems2);
-						zeroArray(secondaryItems2);
-						int countItems2 = 0;
-						// if (EmployerEmployee.useOtherChoices)
-						while (count2++ < 128
-								&& (smbi = MesquiteTrunk.mesquiteModulesInfoVector.findNextModuleFilteredByNot(
-										mbi.getHireSubchoice(), mbi.getDontHireSubchoice(), smbi)) != null) {
-							if (!smbi.getUserChooseable())
-								;
-							else if (smbi.isPrimary(mbi.getHireSubchoice()))
-								countPrimary2++;
-							else
-								countOthers2++;
-						}
-						boolean useOthers2 = EmployerEmployee.useOtherChoices && countOthers2 > 0 && countPrimary2 > 0;
-						Listable[] others2 = null;
-						if (useOthers2)
-							others2 = new Listable[countOthers2];
-						smbi = null;
-						countOthers2 = 0;
-						count2 = 0;
-						while (count2++ < 128
-								&& (smbi = MesquiteTrunk.mesquiteModulesInfoVector.findNextModuleFilteredByNot(
-										mbi.getHireSubchoice(), mbi.getDontHireSubchoice(), smbi)) != null) {
-							boolean primary2 = smbi.isPrimary(mbi.getHireSubchoice());
-							int hiddenStatus2 = 0;
-							// TODO: this tokenization of the names for argument will not work if name of
-							// module includes ' -- must use full tokenization/detokenization
-							if (!smbi.getUserChooseable()
-									|| (msms.isFilterable() && (hiddenStatus2 = InterfaceManager.isHiddenMenuItem(msms,
-											smbi.getNameForMenuItem(),
-											"$ " + StringUtil.tokenize(mbi.getName()) + "  "
-													+ StringUtil.tokenize(smbi.getName()),
-													msms.command, smbi.getModuleClass(),
-													mbi.getHireSubchoice())) == InterfaceManager.HIDDEN))
-								;
-							else if (useOthers2 && !primary2)
-								others2[countOthers2++] = smbi;
-							else if (submenu.getSelected() != null) { // selected string available for checkmark
-								MesquiteCheckMenuItem m = new MesquiteCheckMenuItem(smbi.getNameForMenuItem(), null,
-										msms.command, "$ " + StringUtil.tokenize(mbi.getName()) + "  "
-												+ StringUtil.tokenize(smbi.getName()),
-												submenu.getSelected());
-								// m.setDocument(msms.getDocumentItems());
-								if (smbi.getShortcutForMenuItem() >= 0)
-									m.setShortcut(new MenuShortcut(smbi.getShortcutForMenuItem(),
-											smbi.getShortcutForMenuItemNeedsShift()));
-								m.setReferent(smbi);
-								m.setHiddenStatus(hiddenStatus2, mbi.getHireSubchoice());
-								// submenu2.add(m);
-								if (primary2)
-									primaryItems2[countItems2++] = m;
-								else
-									secondaryItems2[countOthers2++] = m;
-							} else {
-								MesquiteMenuItem m = new MesquiteMenuItem(smbi.getNameForMenuItem(), null, msms.command,
+							secondaryItems[countOthers++] = m;
+						// submenu.add(m);
+					} else {
+						MesquiteMenuItem m = new MesquiteMenuItem(mbi.getNameForMenuItem(), null, msms.command,
+								StringUtil.tokenize(mbi.getName()));
+						if (mbi.getShortcutForMenuItem() >= 0)
+							m.setShortcut(new MenuShortcut(mbi.getShortcutForMenuItem(),
+									mbi.getShortcutForMenuItemNeedsShift()));
+						m.setDocument(msms.getDocumentItems());
+						m.setReferent(mbi);
+						m.setHiddenStatus(hiddenStatus, msms.getDutyClass());
+						if (primary)
+							primaryItems[countItems++] = m;
+						else
+							secondaryItems[countOthers++] = m;
+
+						// submenu.add(m);
+					}
+				} else { // potential employee has indicated it would like subemployee submenu
+					MesquiteSubmenu submenu2 = MesquiteSubmenu.getSubmenu(mbi.getNameForMenuItem(), submenu,
+							module); // make submenu
+					submenu2.setHiddenStatus(hiddenStatus, msms.getDutyClass());
+					if (primary)
+						primaryItems[countItems++] = submenu2;
+					else
+						secondaryItems[countOthers++] = submenu2;
+					// submenu.add(submenu2);
+					submenu2.setReferent(mbi);
+					// populate it with subchoices
+					MesquiteModuleInfo smbi = null;
+					int count2 = 0;
+					int countPrimary2 = 0;
+					int countOthers2 = 0;
+					zeroArray(primaryItems2);
+					zeroArray(secondaryItems2);
+					int countItems2 = 0;
+					// if (EmployerEmployee.useOtherChoices)
+					while (count2++ < 128
+							&& (smbi = MesquiteTrunk.mesquiteModulesInfoVector.findNextModuleFilteredByNot(
+									mbi.getHireSubchoice(), mbi.getDontHireSubchoice(), smbi)) != null) {
+						if (!smbi.getUserChooseable())
+							;
+						else if (smbi.isPrimary(mbi.getHireSubchoice()))
+							countPrimary2++;
+						else
+							countOthers2++;
+					}
+					boolean useOthers2 = EmployerEmployee.useOtherChoices && countOthers2 > 0 && countPrimary2 > 0;
+					Listable[] others2 = null;
+					if (useOthers2)
+						others2 = new Listable[countOthers2];
+					smbi = null;
+					countOthers2 = 0;
+					count2 = 0;
+					while (count2++ < 128
+							&& (smbi = MesquiteTrunk.mesquiteModulesInfoVector.findNextModuleFilteredByNot(
+									mbi.getHireSubchoice(), mbi.getDontHireSubchoice(), smbi)) != null) {
+						boolean primary2 = smbi.isPrimary(mbi.getHireSubchoice());
+						int hiddenStatus2 = 0;
+						// TODO: this tokenization of the names for argument will not work if name of
+						// module includes ' -- must use full tokenization/detokenization
+						if (!smbi.getUserChooseable()
+								|| (msms.isFilterable() && (hiddenStatus2 = InterfaceManager.isHiddenMenuItem(msms,
+										smbi.getNameForMenuItem(),
 										"$ " + StringUtil.tokenize(mbi.getName()) + "  "
-												+ StringUtil.tokenize(smbi.getName()));
-								if (smbi.getShortcutForMenuItem() >= 0)
-									m.setShortcut(new MenuShortcut(smbi.getShortcutForMenuItem(),
-											smbi.getShortcutForMenuItemNeedsShift()));
-								m.setDocument(msms.getDocumentItems());
-								m.setHiddenStatus(hiddenStatus2, mbi.getHireSubchoice());
-								m.setReferent(smbi);
-								// submenu2.add(m);
-								if (primary2)
-									primaryItems2[countItems2++] = m;
-								else
-									secondaryItems2[countOthers2++] = m;
-							}
-						}
-						for (int i = 0; i < primaryItems2.length && primaryItems2[i] != null; i++)
-							submenu2.add(primaryItems2[i]);
-						if (!useOthers2 && countOthers2 > 0 && countItems2 > 0) {
-							submenu2.add(new MenuItem("-"));
-							submenu2.add(new MenuItem("-"));
-						}
-						for (int i = 0; i < secondaryItems2.length && secondaryItems2[i] != null; i++)
-							submenu2.add(secondaryItems2[i]);
-						if (useOthers2) {
-							// make new mesquite menu item "others"
-							submenu2.add(new MenuItem("-"));
-							MesquiteMenuItem othersItem2 = new MesquiteMenuItem("Other Choices...", null, msms.command,
-									"$ " + StringUtil.tokenize(mbi.getName()) + "  ");
-							othersItem2.setOthers(others2);
-							submenu2.add(othersItem2);
+												+ StringUtil.tokenize(smbi.getName()),
+												msms.command, smbi.getModuleClass(),
+												mbi.getHireSubchoice())) == InterfaceManager.HIDDEN))
+							;
+						else if (useOthers2 && !primary2)
+							others2[countOthers2++] = smbi;
+						else if (submenu.getSelected() != null) { // selected string available for checkmark
+							MesquiteCheckMenuItem m = new MesquiteCheckMenuItem(smbi.getNameForMenuItem(), null,
+									msms.command, "$ " + StringUtil.tokenize(mbi.getName()) + "  "
+											+ StringUtil.tokenize(smbi.getName()),
+											submenu.getSelected());
+							// m.setDocument(msms.getDocumentItems());
+							if (smbi.getShortcutForMenuItem() >= 0)
+								m.setShortcut(new MenuShortcut(smbi.getShortcutForMenuItem(),
+										smbi.getShortcutForMenuItemNeedsShift()));
+							m.setReferent(smbi);
+							m.setHiddenStatus(hiddenStatus2, mbi.getHireSubchoice());
+							// submenu2.add(m);
+							if (primary2)
+								primaryItems2[countItems2++] = m;
+							else
+								secondaryItems2[countOthers2++] = m;
+						} else {
+							MesquiteMenuItem m = new MesquiteMenuItem(smbi.getNameForMenuItem(), null, msms.command,
+									"$ " + StringUtil.tokenize(mbi.getName()) + "  "
+											+ StringUtil.tokenize(smbi.getName()));
+							if (smbi.getShortcutForMenuItem() >= 0)
+								m.setShortcut(new MenuShortcut(smbi.getShortcutForMenuItem(),
+										smbi.getShortcutForMenuItemNeedsShift()));
+							m.setDocument(msms.getDocumentItems());
+							m.setHiddenStatus(hiddenStatus2, mbi.getHireSubchoice());
+							m.setReferent(smbi);
+							// submenu2.add(m);
+							if (primary2)
+								primaryItems2[countItems2++] = m;
+							else
+								secondaryItems2[countOthers2++] = m;
 						}
 					}
-		//		}
+					for (int i = 0; i < primaryItems2.length && primaryItems2[i] != null; i++)
+						submenu2.add(primaryItems2[i]);
+					if (!useOthers2 && countOthers2 > 0 && countItems2 > 0) {
+						submenu2.add(new MenuItem("-"));
+						submenu2.add(new MenuItem("-"));
+					}
+					for (int i = 0; i < secondaryItems2.length && secondaryItems2[i] != null; i++)
+						submenu2.add(secondaryItems2[i]);
+					if (useOthers2) {
+						// make new mesquite menu item "others"
+						submenu2.add(new MenuItem("-"));
+						MesquiteMenuItem othersItem2 = new MesquiteMenuItem("Other Choices...", null, msms.command,
+								"$ " + StringUtil.tokenize(mbi.getName()) + "  ");
+						othersItem2.setOthers(others2);
+						submenu2.add(othersItem2);
+					}
+				}
+				//		}
 
 			}
 			for (int i = 0; i < primaryItems.length && primaryItems[i] != null; i++)
@@ -2671,10 +2672,10 @@ public abstract class MenuOwner implements Doomable { // EMBEDDED: extends Apple
 			if (proj != null && numLinkedFiles > 0) {
 				if (!MesquiteTrunk.isApplet()) {
 					MesquiteSubmenu includeMergeSubmenu = addSubmenuIfAbsent(newMenu,proj.includeMergeSubmenuSpec);
-				//	if (includeMergeSubmenu.getItemCount() == 0)
-				//		newMenu.remove(includeMergeSubmenu);
-				
-					
+					//	if (includeMergeSubmenu.getItemCount() == 0)
+					//		newMenu.remove(includeMergeSubmenu);
+
+
 					/*	MesquiteSubmenu includeMergeSubmenu =MesquiteSubmenu.getSubmenu("Include & Merge", newMenu, module.getFileCoordinator());
 					newMenu.add(includeMergeSubmenu);
 					includeMergeSubmenu.add(new MesquiteMenuItem("Include File...", MesquiteModule.mesquiteTrunk,
@@ -3367,7 +3368,7 @@ public abstract class MenuOwner implements Doomable { // EMBEDDED: extends Apple
 				MesquiteMessage.printStackTrace("Exception in surveySpecs of MenuOwner");
 			else {
 				MesquiteMessage.warnProgrammer("Exception in surveySpecs of MenuOwner");
-			e.printStackTrace();
+				e.printStackTrace();
 			}
 		}
 
