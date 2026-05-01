@@ -2941,6 +2941,15 @@ public abstract class MesquiteWindow implements Listable, Commandable, OwnedByMo
 			}
 		}
 		else if (checker.compare(MesquiteWindow.class, "Toggles whether this window is tiled out or not", null, commandName, "toggleTileOutWindow")) {  
+			if (arguments != null){
+				if (arguments.equalsIgnoreCase("true") || arguments.equalsIgnoreCase("on")){
+					setPopAsTile(true);
+					popOut(true);
+				}
+				else if (arguments.equalsIgnoreCase("false") || arguments.equalsIgnoreCase("off"))
+					popIn();
+				return null;
+			}
 			if (isPoppedOut()){
 				popIn();
 				popOutWindowMSpec.setEnabled(true);
@@ -2951,6 +2960,15 @@ public abstract class MesquiteWindow implements Listable, Commandable, OwnedByMo
 			}
 		}
 		else if (checker.compare(MesquiteWindow.class, "Toggles whether this window is popped out or not", null, commandName, "togglePopOutWindow")) { 
+			if (arguments != null){
+				if (arguments.equalsIgnoreCase("true") || arguments.equalsIgnoreCase("on")){
+					setPopAsTile(false);
+					popOut(true);
+				}
+				else if (arguments.equalsIgnoreCase("false") || arguments.equalsIgnoreCase("off"))
+					popIn();
+				return null;
+			}
 			if (isPoppedOut())
 				popIn();  
 			else if (compactWindows){

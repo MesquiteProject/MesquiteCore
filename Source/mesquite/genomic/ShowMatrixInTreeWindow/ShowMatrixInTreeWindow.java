@@ -26,6 +26,7 @@ import java.awt.event.ItemListener;
 import mesquite.categ.lib.CategoricalData;
 import mesquite.categ.lib.MolecularData;
 import mesquite.lib.CommandChecker;
+import mesquite.lib.Commandable;
 import mesquite.lib.DoubleArray;
 import mesquite.lib.ListableVector;
 import mesquite.lib.MesquiteBoolean;
@@ -34,7 +35,10 @@ import mesquite.lib.MesquiteDouble;
 import mesquite.lib.MesquiteEvent;
 import mesquite.lib.MesquiteFile;
 import mesquite.lib.MesquiteInteger;
+import mesquite.lib.MesquiteListener;
 import mesquite.lib.MesquiteModule;
+import mesquite.lib.MesquiteString;
+import mesquite.lib.MesquiteThread;
 import mesquite.lib.Notification;
 import mesquite.lib.Snapshot;
 import mesquite.lib.StringUtil;
@@ -376,7 +380,7 @@ public class ShowMatrixInTreeWindow extends TreeWindowAssistantI implements Item
 
 }
 
-class ShowMatrixLinkedExtra extends TreeDisplayExtra implements TreeDisplayBkgdExtra {
+class ShowMatrixLinkedExtra extends TreeDisplayExtra implements TreeDisplayBkgdExtra, Commandable {
 	ShowMatrixInTreeWindow ownerModule;
 	TreeDisplay treeDisplay;
 	TreeDrawing treeDrawing;
@@ -1006,10 +1010,37 @@ class ShowMatrixLinkedExtra extends TreeDisplayExtra implements TreeDisplayBkgdE
 			}
 			else
 				popup.addItem("Show Matrix with Tree...", ownerModule, new MesquiteCommand("queryOptions", ownerModule), "");
+			if (tree.nodeIsTerminal(branch)){
+				CharacterData linkedMatrix = ((MesquiteTree)treeDisplay.getTree()).findLinkedMatrix(ownerModule.getProject());
+				if (linkedMatrix != null)
+					popup.addItem("Delete Data for This Taxon from " + linkedMatrix.getName(), ownerModule, new MesquiteCommand("deleteLinkedData", this), Integer.toString(branch));
+			}
 		}
 		catch (Exception e){
 		}
 
+	}
+	
+	/*.................................................................................................................*/
+	public Object doCommand(String commandName, String arguments, CommandChecker checker) {
+		if (checker.compare(this.getClass(), "Deletes data linked to tip", null, commandName, "deleteLinkedData")) {
+			int branch = MesquiteInteger.fromString(arguments);
+			if (MesquiteInteger.isCombinable(branch)){
+				MesquiteTree tree = (MesquiteTree)treeDisplay.getTree();
+				if (tree.nodeIsTerminal(branch)){
+					CharacterData linkedMatrix = tree.findLinkedMatrix(ownerModule.getProject());
+					int it = tree.taxonNumberOfNode(branch);
+					for (int ic = 0; ic<linkedMatrix.getNumChars(); ic++){
+						linkedMatrix.deassign(ic, it);
+					}
+					linkedMatrix.notifyListeners(this, new Notification(MesquiteListener.DATA_CHANGED));
+					
+				}
+		}
+			return null;
+		}
+
+		return null;
 	}
 	public void cursorMove(Tree tree, int x, int y, Graphics g){
 		if (edgeGrabber.contains(x, y)) {

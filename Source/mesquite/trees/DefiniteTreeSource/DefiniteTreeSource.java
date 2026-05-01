@@ -155,6 +155,12 @@ public class DefiniteTreeSource extends TreeSourceDefinite implements NameHolder
 
 		}
 	}
+	
+ 	 /**Returns tree source wrapped.*/
+ 	public TreeSource getTreeSource(){
+ 		return treeSource;
+ 	}
+
 	/*.................................................................................................................*/
 	MesquiteInteger pos = new MesquiteInteger(0);
 	public Object doCommand(String commandName, String arguments, CommandChecker checker) {
@@ -171,6 +177,10 @@ public class DefiniteTreeSource extends TreeSourceDefinite implements NameHolder
 			else {
 				discreetAlert( "Unable to activate tree source \"" + arguments + "\"  for use by " + employer.getName());
 			}
+		}
+		else if (checker.compare(this.getClass(), "Returns module supplying trees", "[]", commandName, "getTreeSource")) {
+			
+				return treeSource;
 		}
 		else if (checker.compare(this.getClass(), "Sets the number of trees", "[number of trees]", commandName, "assignNumTrees")) {
 			int newNum = MesquiteInteger.fromFirstToken(arguments, pos);

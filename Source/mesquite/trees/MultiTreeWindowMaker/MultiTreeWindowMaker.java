@@ -73,6 +73,8 @@ import mesquite.lib.tree.TreeVector;
 import mesquite.lib.ui.InfoBar;
 import mesquite.lib.ui.Legend;
 import mesquite.lib.ui.MQPanel;
+import mesquite.lib.ui.MesquiteMenu;
+import mesquite.lib.ui.MesquiteMenuItem;
 import mesquite.lib.ui.MesquiteMenuSpec;
 import mesquite.lib.ui.MesquitePDFFile;
 import mesquite.lib.ui.MesquitePanel;
@@ -83,6 +85,7 @@ import mesquite.lib.ui.MesquiteTool;
 import mesquite.lib.ui.MesquiteWindow;
 import mesquite.lib.ui.MessagePanel;
 import mesquite.lib.ui.Priority0;
+import mesquite.trees.BasicTreeWindowCoord.BasicTreeWindowCoord;
 
 /* ======================================================================== */
 public class MultiTreeWindowMaker extends FileAssistantT implements TreeDisplayHolder, TreeDisplayActive, TreeVectorHolder {
@@ -104,6 +107,7 @@ public class MultiTreeWindowMaker extends FileAssistantT implements TreeDisplayH
 	MesquiteCommand tstC;
 	MesquiteBoolean legendBotRight = new MesquiteBoolean(false);
 	MesquiteModule previousMatrixWindowMaker = null;
+	MesquiteModule sepTreeWindowMaker = null;
 
 	/*.................................................................................................................*/
 	public boolean startJob(String arguments, Object condition, boolean hiredByName) {
@@ -141,13 +145,13 @@ public class MultiTreeWindowMaker extends FileAssistantT implements TreeDisplayH
 		return false;
 	}
 
- 	/** Returns true if other modules can control the orientation */
- 	public boolean allowsReorientation(){
- 		return true;
- 	}
- 	
+	/** Returns true if other modules can control the orientation */
+	public boolean allowsReorientation(){
+		return true;
+	}
+
 	/*.................................................................................................................*/
-	 /**Returns tree vector.*/
+	/**Returns tree vector.*/
 	public TreeVector getCurrentTreeVector(Taxa taxa){
 		if (treeSourceTask instanceof TreeVectorHolder){
 			return ((TreeVectorHolder)treeSourceTask).getCurrentTreeVector(taxa);
@@ -155,7 +159,7 @@ public class MultiTreeWindowMaker extends FileAssistantT implements TreeDisplayH
 		return null;
 	}
 
- 	
+
 	public void employeeQuit(MesquiteModule m){
 		if (m == treeDrawCoordTask)
 			iQuit();
@@ -319,7 +323,7 @@ public class MultiTreeWindowMaker extends FileAssistantT implements TreeDisplayH
 				if (obj instanceof TreeDisplayExtra) {
 					TreeDisplayExtra tce = (TreeDisplayExtra) obj;
 					if (tce.cursorTouchField(treeDisplay.getTree(), g, x, y, modifiers, 0))
-					return true;
+						return true;
 				}
 			}
 			if (MesquiteEvent.rightClick(modifiers)){
@@ -423,8 +427,8 @@ class MultiTreeWindow extends MesquiteWindow implements KeyListener, Commandable
 		messagePanel.setVisible(true);
 		MesquiteMenuSpec aux = ownerModule.addAuxiliaryMenu("Analysis:Trees");
 		ownerModule.addModuleMenuItems(aux, MesquiteModule.makeCommand("newAssistant",  this), TreeDisplayAssistantMA.class);
-//		public MTWScroll (MultiTreeWindow w, int value, int visible, int min, int max){
-//	treeScroll = new MTWScroll(this, 0, 2, 0, treeSourceTask.getNumberOfTrees(taxa)/numColumns + 1); //-1
+		//		public MTWScroll (MultiTreeWindow w, int value, int visible, int min, int max){
+		//	treeScroll = new MTWScroll(this, 0, 2, 0, treeSourceTask.getNumberOfTrees(taxa)/numColumns + 1); //-1
 		treeScroll = new MTWScroll(this, 0,numRows, 0, treeSourceTask.getNumberOfTrees(taxa)/numColumns + 1); //-1
 		addToWindow(treeScroll);
 		treeDisplays =treeDrawCoordTask.createTreeDisplays(maxDisplays,taxa, this);
@@ -435,7 +439,7 @@ class MultiTreeWindow extends MesquiteWindow implements KeyListener, Commandable
 		addToWindow(containingPanel);
 		for (int itree = 0; itree<maxDisplays; itree++) {
 			containingPanel.add(treeDisplays[itree]);
-			treeDisplays[itree].addExtra(new MTWExtra(ownerModule, treeDisplays[itree]));
+			treeDisplays[itree].addExtra(new MTWExtra(ownerModule, treeDisplays[itree], itree));
 		}
 
 		/*
@@ -471,7 +475,7 @@ class MultiTreeWindow extends MesquiteWindow implements KeyListener, Commandable
 	to be self-titling so that when things change (names of files, tree blocks, etc.)
 	they can reset their titles properly*/
 	public void resetTitle(){
-		setTitle("Trees"); 
+		setTitle("Multi-Trees Window"); 
 	}
 	/*.................................................................................................................*/
 	public void printWindow(MesquitePrintJob pjob) {
@@ -559,7 +563,7 @@ class MultiTreeWindow extends MesquiteWindow implements KeyListener, Commandable
 	public void keyTyped(KeyEvent e) {
 	}
 
-	
+
 	public void keyPressed(KeyEvent e) {
 	} 
 	public void keyReleased(KeyEvent e) {
@@ -782,7 +786,7 @@ class MultiTreeWindow extends MesquiteWindow implements KeyListener, Commandable
 		treeScroll.updateView();
 
 	}
-	
+
 	public void keyDownPressed() {
 		treeScroll.setValue(treeScroll.getValue() +numRows); 
 		treeScroll.updateView();
@@ -817,9 +821,9 @@ class MultiTreeWindow extends MesquiteWindow implements KeyListener, Commandable
 
 class MultiTreeScrollPanel extends MQPanel implements MouseWheelListener { 
 	MultiTreeWindow window;
-//	MTWScroll treeScroll;
-//	Panel port;
-//	TreeDisplay treeDisplay;
+	//	MTWScroll treeScroll;
+	//	Panel port;
+	//	TreeDisplay treeDisplay;
 
 	public MultiTreeScrollPanel(MultiTreeWindow window) {
 		super();
@@ -860,48 +864,103 @@ class MTWScroll extends MesquiteScrollbar {
 /* ======================================================================== */
 class MTWExtra extends TreeDisplayExtra implements Commandable {
 	MultiTreeWindowMaker module;
-	public MTWExtra(MultiTreeWindowMaker module, TreeDisplay treeDisplay){
+	int whichTreeDisplay = -1;
+	public MTWExtra(MultiTreeWindowMaker module, TreeDisplay treeDisplay, int whichTreeDisplay){
 		super(module, treeDisplay);
 		this.module = module;
+		this.whichTreeDisplay = whichTreeDisplay;
 	}
+
+	public boolean cursorTouchField(Tree tree, Graphics g, int x, int y, int modifiers, int clickID){
+		return false;
+	}
+
 	/**Add any desired menu items to the right click popup*/
 	public void addToRightClickPopup(MesquitePopup popup, MesquiteTree tree, int branch){
-		CharacterData data = ((MesquiteTree)treeDisplay.getTree()).findLinkedMatrix(ownerModule.getProject());
-		if (data != null)
-			popup.addItem("Show Linked Matrix...", ownerModule, new MesquiteCommand("showLinked", this), null);
+		CharacterData data = ((MesquiteTree)treeDisplay.getTree()).findLinkedMatrix(module.getProject());
+		MesquiteProject proj = module.getProject();
+		if (activeTreeWindow())
+			popup.addItem("Show Tree in Tree Window", module, new MesquiteCommand("showInTreeWindow", this), "continue");
+		else {
+			MesquiteMenu whereWindowSubmenu = new MesquiteMenu("Show Tree in Tree Window");
+			MesquiteMenuItem mmi = new MesquiteMenuItem("In Window", module, new MesquiteCommand("showInTreeWindow", this), "in");
+			whereWindowSubmenu.add(mmi);
+			mmi = new MesquiteMenuItem("In Separate Tile", module, new MesquiteCommand("showInTreeWindow", this), "tile");
+			whereWindowSubmenu.add(mmi);
+			mmi = new MesquiteMenuItem("Popped Out as Separate Window", module, new MesquiteCommand("showInTreeWindow", this), "poppedOut");
+			whereWindowSubmenu.add(mmi);
+
+			popup.add(whereWindowSubmenu);			
+		}
+		if (data != null) {
+			if (activeDataWindow())
+				popup.addItem("Show Linked Matrix", module, new MesquiteCommand("showLinkedMatrix", this), "continue");
+			else {
+				MesquiteMenu whereWindowSubmenu = new MesquiteMenu("Show Linked Matrix");
+				MesquiteMenuItem mmi = new MesquiteMenuItem("In Window", module, new MesquiteCommand("showLinkedMatrix", this), "in");
+				whereWindowSubmenu.add(mmi);
+				mmi = new MesquiteMenuItem("In Separate Tile", module, new MesquiteCommand("showLinkedMatrix", this), "tile");
+				whereWindowSubmenu.add(mmi);
+				mmi = new MesquiteMenuItem("Popped Out as Separate Window", module, new MesquiteCommand("showLinkedMatrix", this), "poppedOut");
+				whereWindowSubmenu.add(mmi);
+
+				popup.add(whereWindowSubmenu);			
+			}
+		}
 	}
-	/*public boolean cursorTouchField(Tree tree, Graphics g, int x, int y, int modifiers, int clickID){
-		Debugg.errln("TOUCH " + modifiers);
-		return false;
-	}*/
+
+
 	/*.................................................................................................................*/
 	public Object doCommand(String commandName, String arguments, CommandChecker checker) {
-		if (checker.compare(this.getClass(), "Shows linked", null, commandName, "showLinked")) {
+		if (checker.compare(this.getClass(), "Shows linked matrix", null, commandName, "showLinkedMatrix")) {
 			MesquiteTree myTree = (MesquiteTree)treeDisplay.getTree();
-			CharacterData data = myTree.findLinkedMatrix(ownerModule.getProject());
+			int where = 0;
+			if (arguments == null || arguments.equals("in"))
+				where = 0;
+			else if (arguments.equalsIgnoreCase("tile"))
+				where = 1;
+			else if (arguments.equalsIgnoreCase("poppedOut"))
+				where = 2;
+
+			CharacterData data = myTree.findLinkedMatrix(module.getProject());
 			if (data == null)
 				module.logln("Sorry; no matrix linked to the tree has been found");
 			else
-				showMatrix(data);
+				showMatrix(data, where);
+			return null;
+		}
+		else if (checker.compare(this.getClass(), "Shows tree in regular tree window", null, commandName, "showInTreeWindow")) {
+			int where = 0;
+			if (arguments == null || arguments.equals("in"))
+				where = 0;
+			else if (arguments.equalsIgnoreCase("tile"))
+				where = 1;
+			else if (arguments.equalsIgnoreCase("poppedOut"))
+				where = 2;
+				showTreeInWindow(where);
 			return null;
 		}
 		return null;
 	}
-	int m = 0;
-	public void showMatrix(CharacterData data) {
-		MesquiteModule bdwC = ownerModule.findNearestColleagueWithDuty(BasicDataWindowCoord.class);
-		MesquiteProject proj = ownerModule.getProject();
+	/*---------------------------------------------------------------*/
+	boolean activeDataWindow(){
+		return module.previousMatrixWindowMaker != null && !module.previousMatrixWindowMaker.isDoomed();
+	}
+	/*---------------------------------------------------------------*/
+	public void showMatrix(CharacterData data, int where) {
+		MesquiteModule bdwC = module.findNearestColleagueWithDuty(BasicDataWindowCoord.class);
+		MesquiteProject proj = module.getProject();
 		int imNext = proj.getMatrixNumber(data);
-		if (module.previousMatrixWindowMaker == null){
-			CommandRecord previous = MesquiteThread.getCurrentCommandRecord();
-			CommandRecord record = new CommandRecord(true);
-			MesquiteThread.setCurrentCommandRecord(record);
+		if (!activeDataWindow()){
 			MesquiteModule mb = (MesquiteModule)bdwC.doCommand("showExtraDataWindow", Integer.toString(imNext));
 			MesquiteWindow mw = mb.containerOfModule();
-			mw.doCommand("toggleTileOutWindow","true", CommandChecker.defaultChecker);
-			MesquiteThread.setCurrentCommandRecord(previous);
+			if (where == 1)
+				mw.doCommand("toggleTileOutWindow","true", CommandChecker.defaultChecker);
+			else if (where == 2)
+				mw.doCommand("togglePopOutWindow","true", CommandChecker.defaultChecker);
 			module.previousMatrixWindowMaker = (MesquiteModule)mb;		
-			}
+
+		}
 		else {
 			CommandRecord previous = MesquiteThread.getCurrentCommandRecord();
 			CommandRecord record = new CommandRecord(true);
@@ -917,6 +976,58 @@ class MTWExtra extends TreeDisplayExtra implements Commandable {
 			MesquiteWindow oldWindow = module.previousMatrixWindowMaker.containerOfModule();
 			oldWindow.doCommand("closeWindow","true", CommandChecker.defaultChecker);
 			module.previousMatrixWindowMaker = mb;
+		}
+	}
+	/*---------------------------------------------------------------*/
+	boolean activeTreeWindow(){
+		return module.sepTreeWindowMaker != null && !module.sepTreeWindowMaker.isDoomed();
+	}
+	/*---------------------------------------------------------------*/
+	public void showTreeInWindow(int where) {
+		int whichTree = module.multiTreeWindow.firstTree + whichTreeDisplay;
+		MesquiteModule btwC = module.findNearestColleagueWithDuty(BasicTreeWindowCoord.class);
+		MesquiteProject proj = module.getProject();
+		String taxaRef = proj.getTaxaReferenceInternal(treeDisplay.getTree().getTaxa());
+		TreeSource tSource = module.treeSourceTask.getTreeSource();
+		String cloneCommandTreeSource =  Snapshot.getSnapshotCommands(tSource, null, "");
+		if (!activeTreeWindow()){
+			MesquiteModule.incrementMenuResetSuppression();	
+			CommandRecord previous = MesquiteThread.getCurrentCommandRecord();
+			CommandRecord record = new CommandRecord(true);
+				MesquiteThread.setCurrentCommandRecord(record);
+			MesquiteModule mb = (MesquiteModule)btwC.doCommand("makeTreeWindow", taxaRef);
+			Puppeteer p = new Puppeteer(module);
+			cloneCommandTreeSource = "setTreeSource #" + tSource.getClassName() + ";\ntell It;\n" + cloneCommandTreeSource;
+			cloneCommandTreeSource = cloneCommandTreeSource + "\nendTell;\ngetWindow;\ntell It;\nsetTreeNumber " + (whichTree+1) + ";\nendTell;\n";
+			//if (mb != null)
+			//	Debugg.errln("MB " + mb.getName());
+			//Debugg.errln("COMMANDS\n" + cloneCommandTreeSource);
+			Object obj = p.sendCommands(mb, cloneCommandTreeSource, new MesquiteInteger(0), "", false, null,CommandChecker.defaultChecker);
+			MesquiteThread.setCurrentCommandRecord(previous);
+
+			if (mb != null){
+				MesquiteWindow mw = mb.containerOfModule();
+			if (where == 1)
+				mw.doCommand("toggleTileOutWindow","true", CommandChecker.defaultChecker);
+			else if (where == 2)
+				mw.doCommand("togglePopOutWindow","true", CommandChecker.defaultChecker);
+			mw.doCommand("showWindow","true", CommandChecker.defaultChecker);
+			}
+			module.sepTreeWindowMaker = (MesquiteModule)mb;		
+			MesquiteModule.decrementMenuResetSuppression();	
+
+		}
+		else {
+			CommandRecord previous = MesquiteThread.getCurrentCommandRecord();
+			CommandRecord record = new CommandRecord(true);
+			MesquiteThread.setCurrentCommandRecord(record);
+			cloneCommandTreeSource = "setTreeSource #" + tSource.getClassName() + ";\ntell It;\n" + cloneCommandTreeSource;
+			cloneCommandTreeSource = cloneCommandTreeSource + "\nendTell;\ngetWindow;\ntell It;\nsetTreeNumber " + (whichTree+1) + ";\nendTell;\n";
+			Puppeteer p = new Puppeteer(module.sepTreeWindowMaker);
+			MesquiteModule.incrementMenuResetSuppression();	
+			Object obj = p.sendCommands(module.sepTreeWindowMaker, cloneCommandTreeSource, new MesquiteInteger(0), "", false, null,CommandChecker.defaultChecker);
+			MesquiteModule.decrementMenuResetSuppression();	
+			MesquiteThread.setCurrentCommandRecord(previous);
 		}
 	}
 	public void setTree(Tree tree) {

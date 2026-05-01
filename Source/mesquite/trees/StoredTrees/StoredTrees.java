@@ -568,13 +568,18 @@ public class StoredTrees extends TreeSource implements MesquiteListener, TreeVec
 				return getDefaultTree(taxa);
 			int code = checkTreeBlock(taxa, false);
 			if (code <0) {
+				if (MesquiteTrunk.developmentMode)
+					System.err.println("WARNING: getTree checkTreeBlock code " + code);
 					return null;
 			}
 			if (currentTreeBlock != null && currentTreeBlock.size()>0) {
 				if (itree<currentTreeBlock.size()) {
 					Tree t = (Tree)currentTreeBlock.elementAt(itree);
-					if (t == null)
+					if (t == null) {
+						System.err.println("WARNING: getTree no element at " + itree);
+						Debugg.printStackTrace();
 						return null;
+					}
 					t.setFileIndex(itree);
 
 					if (t instanceof MesquiteTree)
@@ -589,6 +594,7 @@ public class StoredTrees extends TreeSource implements MesquiteListener, TreeVec
 	   				if (t instanceof MesquiteTree)
 	   					((MesquiteTree)t).setAssignedNumber(currentTree);
 					 */
+					System.err.println("WARNING: getTree beyond available number " + itree);
 					return null;
 				}
 			}
@@ -610,6 +616,7 @@ public class StoredTrees extends TreeSource implements MesquiteListener, TreeVec
 					first = false;
 				}
 				//return taxa.getDefaultTree();
+				System.err.println("WARNING: getTree other problem " + itree);
 				return null;
 			}
 		}

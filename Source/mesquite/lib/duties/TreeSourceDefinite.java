@@ -38,7 +38,7 @@ public abstract class TreeSourceDefinite extends MesquiteModule implements Items
    	 }
    	 
    	 public String[] getDefaultModule() {
-   	 	return new String[] {"#FiniteTreeSourceCoord"};
+   	 	return new String[] {"#DefiniteTreeSource"};
    	 }
    	/** Called to provoke any necessary initialization.  This helps prevent the module's intialization queries to the user from
    	happening at inopportune times (e.g., while a long chart calculation is in mid-progress)*/
@@ -58,7 +58,10 @@ public abstract class TreeSourceDefinite extends MesquiteModule implements Items
    	 /**Returns name of ith tree.*/
    	public abstract String getTreeNameString(Taxa taxa, int i);
    	
- 
+  	 /**Returns tree source wrapped.*/
+  	public abstract TreeSource getTreeSource();
+  	
+
 	/*===== For ItemsSource interface ======*/
    	/** returns item numbered ic*/
    	public Object getItem(Taxa taxa, int ic){

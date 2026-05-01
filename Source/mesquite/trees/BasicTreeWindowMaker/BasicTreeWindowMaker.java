@@ -686,6 +686,9 @@ public class BasicTreeWindowMaker extends TreeWindowMaker implements Commandable
 			else if (basicTreeWindow != null)
 				basicTreeWindow.showTree();
 		}
+		else if (checker.compare(this.getClass(), "Returns the source of trees", "", commandName, "getTreeSource")) {
+			return treeSourceTask;
+		}
 		else if (checker.compare(this.getClass(), "Sets the source of trees", "[name of tree source module]", commandName, "setTreeSourceSuppressed")) {
 			TreeSource temp = (TreeSource) replaceEmployee(TreeSource.class, arguments, "Source of trees", treeSourceTask);
 			if (temp != null) {
