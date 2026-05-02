@@ -279,43 +279,48 @@ public class TreesFromSelMatricesParallel extends CharMatricesListUtility {
 			if (storageChoice == SINGLE_TREE_BLOCK) {  //accumulate into single tree block, and put in file
 				TreeVector trees = new TreeVector(((CharacterData)datas.elementAt(0)).getTaxa());
 				String annot = null;
-				for (int i= 0; i< machine.treeBlocks.size(); i++){
-					TreeVector tV = (TreeVector)machine.treeBlocks.elementAt(i);
-					for (int it = 0; it<tV.size(); it++){
-						trees.addElement(tV.elementAt(it), false);
-						annot = tV.getAnnotation();
-					}
+				for (int i= 0; i< machine.treeBlocks.length; i++){
+					TreeVector tV = (TreeVector)machine.treeBlocks[i];
+					if (tV != null)
+						for (int it = 0; it<tV.size(); it++){
+							trees.addElement(tV.elementAt(it), false);
+							annot = tV.getAnnotation();
+						}
 				}
 				trees.setName("Trees from matrices (" + inferenceTask.getName() + ")");
 				trees.setAnnotation("Information for trees from last of the matrices analyzed: " + annot, false);
 				trees.addToFile(getProject().getHomeFile(), getProject(), findElementManager(Tree.class));
 			}
 			else if (storageChoice == MULTIPLE_TREE_BLOCKS){
-				for (int i= 0; i< machine.treeBlocks.size(); i++){
+				for (int i= 0; i< machine.treeBlocks.length; i++){
 					TreeVector trees = new TreeVector(((CharacterData)datas.elementAt(0)).getTaxa());
-					TreeVector tV = (TreeVector)machine.treeBlocks.elementAt(i);
-					for (int it = 0; it<tV.size(); it++){
-						trees.addElement(tV.elementAt(it), false);
+					TreeVector tV = (TreeVector)machine.treeBlocks[i];
+					if (tV != null){
+						for (int it = 0; it<tV.size(); it++){
+							trees.addElement(tV.elementAt(it), false);
+						}
+						trees.setAnnotation("Information for trees from last of the matrices analyzed: " + tV.getAnnotation(), false);
+						trees.setName("Trees (" + inferenceTask.getName() + ") from matrix " + tV.getName());
+						trees.addToFile(getProject().getHomeFile(), getProject(), findElementManager(Tree.class));
 					}
-					trees.setAnnotation("Information for trees from last of the matrices analyzed: " + tV.getAnnotation(), false);
-					trees.setName("Trees (" + inferenceTask.getName() + ") from matrix " + tV.getName());
-					trees.addToFile(getProject().getHomeFile(), getProject(), findElementManager(Tree.class));
 				}
 			}
 			else if (storageChoice == MULTIPLE_FILES){
-				for (int i= 0; i< machine.treeBlocks.size(); i++){
-					TreeVector tV = (TreeVector)machine.treeBlocks.elementAt(i);
-					//SAVE TREE FILE 
-					String fileName = tV.getName() + ".trees";
-					MesquiteFile.putFileContents(basePath+fileName, "", false); //path, contents, ascii
-					for (int it = 0; it<tV.size(); it++){
-						Tree tree = tV.getTree(it);
-						if (tree != null)
-							MesquiteFile.appendFileContents(basePath+fileName, tree.writeTree() + "\n", false); //path, contents, ascii
-						else
-							System.err.println("Tree null " + i + " " +it);
+				for (int i= 0; i< machine.treeBlocks.length; i++){
+					TreeVector tV = (TreeVector)machine.treeBlocks[i];
+					if (tV != null){
+						//SAVE TREE FILE 
+						String fileName = tV.getName() + ".trees";
+						MesquiteFile.putFileContents(basePath+fileName, "", false); //path, contents, ascii
+						for (int it = 0; it<tV.size(); it++){
+							Tree tree = tV.getTree(it);
+							if (tree != null)
+								MesquiteFile.appendFileContents(basePath+fileName, tree.writeTree() + "\n", false); //path, contents, ascii
+							else
+								System.err.println("Tree null " + i + " " +it);
+						}
+						MesquiteFile.appendFileContents(treeFileListPath, basePath+fileName + "\n", false); //path, contents, ascii
 					}
-					MesquiteFile.appendFileContents(treeFileListPath, basePath+fileName + "\n", false); //path, contents, ascii
 				}
 			}
 
@@ -437,7 +442,8 @@ class TreeInferenceParallelMachine implements Parallelizable {
 		pp.responsibleEmployer = ownerModule;
 		pp.employees = new MesquiteModule[]{(MesquiteModule)ownerModule.inferenceTask};
 		pp.threadObjects = new Object[]{ ownerModule.matrixSourceTask};
-
+		treeBlocks = new TreeVector[datas.size()];
+		countItemsDone = 0;
 		parallelizer.setItemStatus(firstItem, Parallelizer.BEINGCALCULATED);  //prob not necessary
 		int result = doItemCalculation_Parallel(firstItem, pp, parallelizer);
 		resultCode.setValue(result);
@@ -468,7 +474,8 @@ class TreeInferenceParallelMachine implements Parallelizable {
 		pp.threadObjects = new Object[]{matrixSourceTask};
 		return pp; 
 	}
-	ListableVector treeBlocks = new ListableVector();
+	TreeVector[] treeBlocks;
+	int countItemsDone = 0;
 	/*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~*/
 	/*\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\*/
 	public int doItemCalculation_Parallel(int item, ParallelParams params, Parallelizer parallelizer) {
@@ -501,13 +508,14 @@ class TreeInferenceParallelMachine implements Parallelizable {
 			}
 		}
 		ownerModule.log(".");
-		treeBlocks.addElement(trees, false);
-		int numSoFarDone = treeBlocks.size();
+		treeBlocks[item]= trees;
+		countItemsDone++;
+		int numSoFarDone = countItemsDone;
 		String message = "\nTrees inferred from " +numSoFarDone + " matri";
 		if (numSoFarDone == 1)
 			message += "x";
 		else
-		message += "ces";
+			message += "ces";
 		message += ". Matrix just completed: " + matrix.getName();
 		progIndicator.setText(message);
 		int tot = parallelizer.getTotalCalculated();
