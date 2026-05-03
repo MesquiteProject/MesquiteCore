@@ -36,6 +36,7 @@ import mesquite.lib.NameReference;
 import mesquite.lib.ProjectReadThread;
 import mesquite.lib.StringUtil;
 import mesquite.lib.duties.DrawNamesTreeDisplay;
+import mesquite.lib.duties.DrawTreeCoordinator;
 import mesquite.lib.taxa.Taxa;
 import mesquite.lib.taxa.TaxaTreeDisplay;
 import mesquite.lib.ui.BarDecoration;
@@ -105,6 +106,9 @@ public class TreeDisplay extends TaxaTreeDisplay  {
 	private int minDist=8;
 	int minForTerminalBoxes = 0;
 	public int bufferForScaleEtc = 30;
+	
+	//number of characters shown in taxon name. 0 = all
+	public int abbreviationLength = 0;
 
 	/**  What is the mode for highlighting selected taxa in tree displays? */
 	public static final int sTHM_NONE = 0;
@@ -460,8 +464,12 @@ public class TreeDisplay extends TaxaTreeDisplay  {
 	}
 	public void redoCalculations(int code){
 		try {
-		if (treeDrawing!=null && tree !=null)
+		if (treeDrawing!=null && tree !=null) {
+			if (ownerModule instanceof DrawTreeCoordinator)
+				((DrawTreeCoordinator)ownerModule).aboutToRecalculateTreeDisplay(this);
+
 			treeDrawing.recalculatePositions(tree); //to force node locs recalc
+		}
 		}
 		catch (IllegalPathStateException e){
 			redoCalculationsMainThread();

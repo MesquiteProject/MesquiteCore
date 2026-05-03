@@ -112,6 +112,7 @@ public class BasicDrawTaxonNames extends DrawNamesTreeDisplay {
 	protected FontMetrics fm;
 	protected int rise;
 	protected int descent;
+	protected int abbreviationLength = 0;
 	protected int oldNumTaxa=0;
 	protected MesquiteString fontSizeName, fontName;
 	protected MesquiteBoolean shadePartition, showFootnotes;
@@ -178,6 +179,7 @@ public class BasicDrawTaxonNames extends DrawNamesTreeDisplay {
 		showTaxonNames = new MesquiteBoolean(true);
 		addCheckMenuItemToSubmenu(textMenu, namesMenu, "Show Taxon Names", makeCommand("toggleShowNames", this), showTaxonNames);
 		angleMenuItem = addMenuItem(textMenu, "Taxon Name Angle...", makeCommand("namesAngle", this));
+		addMenuItem(textMenu, "Abbreviate Taxon Names...", makeCommand("abbreviateNames", this));
 
 		centerNodeLabels = new MesquiteBoolean(false);
 		centerNodeLabelItem = addCheckMenuItemToSubmenu(textMenu, branchNamesMenu, "Center Branch Names", makeCommand("toggleCenterNodeNames", this), centerNodeLabels);
@@ -211,6 +213,9 @@ public class BasicDrawTaxonNames extends DrawNamesTreeDisplay {
 		treeDrawing = null;
 		textRotator = null;
 		super.endJob();
+	}
+	public void aboutToRecalculateTreeDisplay(TreeDisplay treeDisplay){
+		treeDisplay.abbreviationLength = abbreviationLength;
 	}
 	/*.................................................................................................................*/
 	double highlightMultiplier(){
@@ -246,6 +251,7 @@ public class BasicDrawTaxonNames extends DrawNamesTreeDisplay {
 		/*End new code added Feb.15.07 oliver*/
 		temp.addLine("toggleShowNames " + showTaxonNames.toOffOnString());
 		temp.addLine("namesAngle " + MesquiteDouble.toString(namesAngle));
+		temp.addLine("abbreviateNames " + abbreviationLength);
 		return temp;
 	}
 	/*.................................................................................................................*/
@@ -421,6 +427,18 @@ public class BasicDrawTaxonNames extends DrawNamesTreeDisplay {
 				}
 			}
 		}
+		else if (checker.compare(this.getClass(), "Sets the maximum number of characters shown in the taxon names", "[number of characters]", commandName, "abbreviateNames")) {
+			int numChars = MesquiteInteger.fromString(arguments, new MesquiteInteger(0));
+			if (!MesquiteThread.isScripting() && !(numChars == 0 || MesquiteInteger.isPositive(numChars)))
+				numChars = MesquiteInteger.queryInteger(containerOfModule(), "Abbreviate Taxon Names", "Maximum number of characters shown in taxon names (0=all)", abbreviationLength);
+			if (numChars == 0 || MesquiteInteger.isPositive(numChars)) {
+				abbreviationLength = numChars;
+				if (treeDisplay != null) {
+					treeDisplay.abbreviationLength = abbreviationLength;
+				}
+				parametersChanged();
+			}
+		}
 		else if (checker.compare(this.getClass(), "Sets color of taxon names", "[name of color]", commandName, "setColor")) {
 			String token = ParseUtil.getFirstToken(arguments, stringPos);
 			Color bc = ColorDistribution.getStandardColor(token);
@@ -449,6 +467,9 @@ public class BasicDrawTaxonNames extends DrawNamesTreeDisplay {
 		return (float)((maxValue - value)/(maxValue-minValue)*0.8 + 0.2);
 	}
 	public void setTree(Tree tree) {
+		if (treeDisplay != null)
+			treeDisplay.abbreviationLength = abbreviationLength;
+
 		if (shader != null ){
 			calcShades(tree);
 		}
@@ -530,7 +551,7 @@ public class BasicDrawTaxonNames extends DrawNamesTreeDisplay {
 			zapNamePolysCollapsed(tree, d);
 	}
 	MesquiteInteger pos = new MesquiteInteger();
-	
+
 	/*_________________________________________________*/
 	double furthestTip(Tree tree, int node){
 		if  (tree.nodeIsTerminal(node) && (!tree.withinCollapsedClade(node) || tree.isLeftmostTerminalOfCollapsedClade(node))) {   //terminal
@@ -545,7 +566,7 @@ public class BasicDrawTaxonNames extends DrawNamesTreeDisplay {
 			if (treeDisplay.isUp() || treeDisplay.isLeft())
 				furthest = MesquiteDouble.minimum(f, furthest);
 			else
-			furthest = MesquiteDouble.maximum(f, furthest);
+				furthest = MesquiteDouble.maximum(f, furthest);
 		}
 		return furthest;
 	}
@@ -558,17 +579,29 @@ public class BasicDrawTaxonNames extends DrawNamesTreeDisplay {
 				TaxaGroup commonGroupInClade = getCladeNameGroup(tree, tree.deepestCollapsedAncestor(node), partition);
 				if (commonGroupInClade != null){
 					boolean foundElsewhere = groupElsewhere(tree, tree.getRoot(), tree.deepestCollapsedAncestor(node), commonGroupInClade, partition);
-					if (!foundElsewhere)
-						return commonGroupInClade.getName();
+					if (!foundElsewhere) {
+						String s = commonGroupInClade.getName();
+						if (abbreviationLength>0 && s.length()>abbreviationLength)
+							s = s.substring(0, abbreviationLength);
+						return s;
+					}
 				}
 			}
-			int taxonNumber = tree.taxonNumberOfNode(node);
-			return "Clade of " + tree.getTaxa().getName(taxonNumber);
+			int taxonNumber = tree.taxonNumberOfNode(node); {
+			String s = "Clade of " + tree.getTaxa().getName(taxonNumber);
+			if (abbreviationLength>0 && s.length()>abbreviationLength)
+				s = s.substring(0, abbreviationLength);
+			return s;
+			}
 		}
-		else
-			return cc;
+		else {
+			String s = cc;
+			if (abbreviationLength>0 && s.length()>abbreviationLength)
+				s = s.substring(0, abbreviationLength);
+			return s;
+		}
 	}
-	
+
 	/*.................................................................................................................*/
 	TaxaGroup getCladeNameGroup(Tree tree, int node, TaxaPartition partition) {
 		if (partition == null)
@@ -586,7 +619,7 @@ public class BasicDrawTaxonNames extends DrawNamesTreeDisplay {
 			if (dGroup == null)
 				nullDaughters = true;
 			if (commonGroup == null)
-					commonGroup = dGroup;
+				commonGroup = dGroup;
 			else if (dGroup != commonGroup)
 				return null;
 		}
@@ -655,20 +688,20 @@ public class BasicDrawTaxonNames extends DrawNamesTreeDisplay {
 			}
 			else if (tree.isLeftmostTerminalOfCollapsedClade(N)){
 				if (!treeDisplay.collapsedCladeNameAtDescendant){
-				horiz = treeDrawing.x[tree.deepestCollapsedAncestor(N)];
-				vert = treeDrawing.y[tree.deepestCollapsedAncestor(N)];
-			}
+					horiz = treeDrawing.x[tree.deepestCollapsedAncestor(N)];
+					vert = treeDrawing.y[tree.deepestCollapsedAncestor(N)];
+				}
 				else {
 					if (treeDisplay.isUp() || treeDisplay.isDown()){
 						horiz = treeDrawing.x[tree.deepestCollapsedAncestor(N)];
 					}
 					else if (treeDisplay.isRight() || treeDisplay.isLeft()){
-							vert = treeDrawing.y[tree.deepestCollapsedAncestor(N)];
+						vert = treeDrawing.y[tree.deepestCollapsedAncestor(N)];
 					}
 					else {
 						horiz = treeDrawing.x[tree.deepestCollapsedAncestor(N)];
 						vert = treeDrawing.y[tree.deepestCollapsedAncestor(N)];
-				}
+					}
 				}
 			}
 			int lengthString;
@@ -699,6 +732,8 @@ public class BasicDrawTaxonNames extends DrawNamesTreeDisplay {
 					MesquiteMessage.warnProgrammer("error: taxon name null");
 				return;
 			}
+			if (abbreviationLength>0 && s.length()>abbreviationLength)
+				s = s.substring(0, abbreviationLength);
 			Taxon taxon = taxa.getTaxon(taxonNumber);
 			if (taxon== null){
 				if (warn)
@@ -724,7 +759,7 @@ public class BasicDrawTaxonNames extends DrawNamesTreeDisplay {
 				taxonColor = tempColor;
 			}
 			Font previousFont = gL.getFont();
-			
+
 			if (tree.isLeftmostTerminalOfCollapsedClade(N)){
 				gL.setFont(currentFontsCollapsed[treeDisplay.collapsedCladeHighlightMode]);
 				underlined = treeDisplay.collapsedCladeUnderline;
@@ -790,7 +825,7 @@ public class BasicDrawTaxonNames extends DrawNamesTreeDisplay {
 			}
 			gL.setColor(taxonColor); 
 
-			
+
 			Font font = gL.getFont();
 			FontMetrics fontMet = gL.getFontMetrics(font);
 			lengthString = fontMet.stringWidth(s); //what to do if underlined?
@@ -827,7 +862,7 @@ public class BasicDrawTaxonNames extends DrawNamesTreeDisplay {
 			// ####################################### Taxon names for NodeLocsStandard trees ####################################################
 			else if ((treeDrawing.labelOrientation[N]==270) || treeDisplay.getOrientation()==TreeDisplay.UP) { // ################## === UP === ####################
 				//if there is a tipsField, then vert changes from the one based on the tip's y, to the one based on fields
-				
+
 				horiz += treeDrawing.getEdgeWidth()/2;
 				if (Math.abs(treeDrawing.namesAngle)<0.01) {
 					horiz -= StringUtil.getStringDrawLength(gL,"A");
@@ -865,7 +900,7 @@ public class BasicDrawTaxonNames extends DrawNamesTreeDisplay {
 					if (treeDisplay.totalTipsFieldDistance()>0){
 						vert = treeDisplay.effectiveFieldHeight()+treeDisplay.effectiveFieldTopMargin()-treeDisplay.getTipsMargin();
 					}
-				vert += centeringOffset;
+					vert += centeringOffset;
 					if (!nameExposedOnTree(tree, taxonNumber))
 						setBounds(namePolys[taxonNumber], 0, 0, 0, 0);
 					else
@@ -890,9 +925,9 @@ public class BasicDrawTaxonNames extends DrawNamesTreeDisplay {
 						horiz = treeDisplay.effectiveFieldWidth()+treeDisplay.effectiveFieldLeftMargin()-treeDisplay.getTipsMargin();
 					}
 					else {
-					//At this point horiz is just the x of the terminal node
-					//centering offset is just the left shift if we are to centre taxon names! (e.g. for mirror tree window)
-					horiz += centeringOffset;
+						//At this point horiz is just the x of the terminal node
+						//centering offset is just the left shift if we are to centre taxon names! (e.g. for mirror tree window)
+						horiz += centeringOffset;
 					}
 					if (!nameExposedOnTree(tree, taxonNumber))
 						setBounds(namePolys[taxonNumber], 0, 0, 0, 0);
@@ -927,7 +962,7 @@ public class BasicDrawTaxonNames extends DrawNamesTreeDisplay {
 					}
 					else {
 						horiz -= centeringOffset;
-				}
+					}
 					if (!nameExposedOnTree(tree, taxonNumber))
 						setBounds(namePolys[taxonNumber], 0, 0, 0, 0);
 					else
@@ -1046,7 +1081,7 @@ public class BasicDrawTaxonNames extends DrawNamesTreeDisplay {
 				GraphicsUtil.fillTransparentBorderedSelectionPolygon(gL, namePolys[taxonNumber]);
 			}
 
-				gL.setFont(previousFont);
+			gL.setFont(previousFont);
 		}   //end terminal ##############################################################################################
 		else {
 			for (int d = tree.firstDaughterOfNode(N); tree.nodeExists(d); d = tree.nextSisterOfNode(d))
@@ -1167,6 +1202,7 @@ public class BasicDrawTaxonNames extends DrawNamesTreeDisplay {
 	public void drawNames(TreeDisplay treeDisplay,  Tree tree, int drawnRoot, Graphics g) {
 		if (treeDisplay==null)
 			return; // alert("tree display null in draw taxon names");
+		treeDisplay.abbreviationLength = abbreviationLength;
 
 		resetAngleMenuItem(treeDisplay);
 		if (tree==null)
@@ -1263,6 +1299,8 @@ public class BasicDrawTaxonNames extends DrawNamesTreeDisplay {
 			if (tree.isLeftmostTerminalOfCollapsedClade(N)){
 				s = getCladeName(N, partitions);
 			}
+			if (abbreviationLength>0 && s.length()>abbreviationLength)
+				s = s.substring(0, abbreviationLength);
 
 			int lengthString = fm.stringWidth(s); 
 			if (lengthString>longestString)
@@ -1311,7 +1349,7 @@ public class BasicDrawTaxonNames extends DrawNamesTreeDisplay {
 			findNameOnTree(tree, drawnRoot, x, y);
 		}
 		return foundTaxon; 
-		
+
 	}
 
 	/*.................................................................................................................*/

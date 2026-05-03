@@ -1263,6 +1263,9 @@ public class NodeLocsStandard extends NodeLocsVH {
 			}
 			else
 				s = tree.getTaxa().getName(tree.taxonNumberOfNode(N));
+			if (treeDisplay.abbreviationLength>0 && s.length()>treeDisplay.abbreviationLength)
+				s = s.substring(0, treeDisplay.abbreviationLength);
+
 			if (s==null)
 				return 0;
 			else if (treeDisplay.selectedTaxonHighlightMode > TreeDisplay.sTHM_GREYBOX && tree.getTaxa().getSelected(tree.taxonNumberOfNode(N)))

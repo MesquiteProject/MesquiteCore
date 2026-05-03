@@ -58,6 +58,8 @@ public abstract class DrawTree extends MesquiteModule  {
 	public boolean hasPreferredSize(){
 		return false;
 	}
+	public void aboutToRecalculateTreeDisplay(TreeDisplay treeDisplay){
+	}
 	
 	/** Returns true if other modules can control the orientation */
 	public boolean allowsReorientation(){

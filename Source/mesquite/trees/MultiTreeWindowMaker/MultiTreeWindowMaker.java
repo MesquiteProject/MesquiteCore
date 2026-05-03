@@ -54,6 +54,7 @@ import mesquite.lib.ParseUtil;
 import mesquite.lib.Puppeteer;
 import mesquite.lib.Snapshot;
 import mesquite.lib.characters.CharacterData;
+import mesquite.lib.duties.DrawNamesTreeDisplay;
 import mesquite.lib.duties.DrawTreeCoordinator;
 import mesquite.lib.duties.FileAssistantT;
 import mesquite.lib.duties.TreeDisplayAssistant;
@@ -185,13 +186,18 @@ public class MultiTreeWindowMaker extends FileAssistantT implements TreeDisplayH
 	}
 	/*.................................................................................................................*/
 	public void employeeParametersChanged(MesquiteModule employee, MesquiteModule source, Notification notification) {
-		if (employee!=treeDrawCoordTask)
+		if (employee!=treeDrawCoordTask){
 			if ((multiTreeWindow!=null) ) 
 				multiTreeWindow.renew();
 			else if ((multiTreeWindow!=null)  && Notification.getCode(notification) != MesquiteListener.SELECTION_CHANGED) {
 				multiTreeWindow.contentsChanged();
 				multiTreeWindow.renew();
 			}
+		}
+		else if (source instanceof DrawNamesTreeDisplay){
+			multiTreeWindow.contentsChanged();
+			multiTreeWindow.renew();
+		}
 	}
 	/*.................................................................................................................*/
 	public Snapshot getSnapshot(MesquiteFile file) {
@@ -613,6 +619,7 @@ class MultiTreeWindow extends MesquiteWindow implements KeyListener, Commandable
 		}
 		setFirstTree(0);
 		for (int itree=0; itree<(numColumns*numRows)&& itree<treeDisplays.length; itree++) {
+			treeDisplays[itree].redoCalculations(44513);
 			treeDisplays[itree].repaint();
 		}
 	}

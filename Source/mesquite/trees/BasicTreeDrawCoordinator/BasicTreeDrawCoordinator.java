@@ -199,6 +199,15 @@ public class BasicTreeDrawCoordinator extends DrawTreeCoordinator {
 	public Dimension getPreferredSize(){  
 		return  treeDrawTask.getPreferredSize();
 	}
+	
+	/** Tells the coordinator that the tree display is to be recalculated, in case the taxon name drawer, DrawTree, or anything else wants to set anything */
+	public void aboutToRecalculateTreeDisplay(TreeDisplay treeDisplay){
+		if (treeDrawTask != null)
+			treeDrawTask.aboutToRecalculateTreeDisplay(treeDisplay);
+		if (terminalNamesTask != null)
+			terminalNamesTask.aboutToRecalculateTreeDisplay(treeDisplay);
+	}
+
 	/*.................................................................................................................*/
 	MesquiteModule getTreeWindowMaker() {
 		TreeWindowMaker tw = (TreeWindowMaker) findEmployerWithDuty(TreeWindowMaker.class);

@@ -49,6 +49,10 @@ public abstract class DrawNamesTreeDisplay extends MesquiteModule  {
    	 TreeDisplay here) */
 	public void setTree(Tree tree) {
 	}
+	
+	/** Tells the coordinator that the tree display is to be recalculated, in case the taxon name drawer, DrawTree, or anything else wants to set anything */
+	public abstract void aboutToRecalculateTreeDisplay(TreeDisplay treeDisplay);
+
 	public abstract  int findTaxon(Tree tree, int drawnRoot, int x, int y);
    	 /** Fill taxon M's taxon name box with current color. */
 	public abstract  void fillTaxon(Graphics g, int M);

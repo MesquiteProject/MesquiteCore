@@ -84,6 +84,8 @@ public abstract class DrawTreeCoordinator extends MesquiteModule  {
 	/** sets branch color */
 	public abstract void setBranchColor(Color c);
 
+	/** Tells the coordinator that the tree display is to be recalculated, in case the taxon name drawer, DrawTree, or anything else wants to set anything */
+	public abstract void aboutToRecalculateTreeDisplay(TreeDisplay treeDisplay);
 
 
 	/** Add tree display assistant */
