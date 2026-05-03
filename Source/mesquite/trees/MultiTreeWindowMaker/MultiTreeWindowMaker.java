@@ -706,7 +706,7 @@ class MultiTreeWindow extends MesquiteWindow implements KeyListener, Commandable
 				Tree tree = sourceTree.cloneTree();
 				trees.addElement(tree, false); //for notification of taxa changes
 				treeDisplays[itree].setTree(tree);
-				treeDisplays[itree].setNotice(Integer.toString(itree+treeNum + 1) + ". " + tree.getName()); // for debugging purposes???
+				treeDisplays[itree].setNotice(Integer.toString(itree+treeNum + 1) + ": " + tree.getName()); // for debugging purposes???
 				treeDisplays[itree].suppressDrawing(false);
 				if (itree<numColumns*numRows&& itree<treeDisplays.length) {
 					treeDisplays[itree].setVisible(true);

@@ -8,11 +8,16 @@ import mesquite.categ.lib.MolecularDataUtil;
 import mesquite.categ.lib.ProteinData;
 import mesquite.categ.lib.ProteinState;
 import mesquite.categ.lib.RequiresAnyMolecularData;
+import mesquite.lib.CommandChecker;
 import mesquite.lib.CompatibilityTest;
 import mesquite.lib.Debugg;
+import mesquite.lib.MesquiteBoolean;
+import mesquite.lib.MesquiteCommandAbsorber;
 import mesquite.lib.MesquiteDouble;
+import mesquite.lib.MesquiteFile;
 import mesquite.lib.MesquiteNumber;
 import mesquite.lib.MesquiteString;
+import mesquite.lib.Snapshot;
 import mesquite.lib.characters.CharacterData;
 import mesquite.lib.characters.MCharactersDistribution;
 import mesquite.lib.duties.NumberForMatrix;
@@ -22,8 +27,10 @@ import mesquite.lib.taxa.Taxon;
 
 public class RCFVofTaxonAndMatrix extends NumberForTaxonAndMatrix {
 	Taxa currentTaxa = null;
+	MesquiteBoolean countAsAAs = new MesquiteBoolean(false);
 
 	public boolean startJob(String arguments, Object condition, boolean hiredByName) {
+		addCheckMenuItem(null, "Calculate RCFV Based on AA Translation", makeCommand("toggleCountAsAA",  this), countAsAAs);
 		return true;
 	} 
 
@@ -32,6 +39,31 @@ public class RCFVofTaxonAndMatrix extends NumberForTaxonAndMatrix {
 		currentTaxa = taxa;
 
 	}
+	/*.................................................................................................................*/
+	public Snapshot getSnapshot(MesquiteFile file) { 
+		Snapshot temp = new Snapshot();
+		temp.addLine("toggleCountAsAA " + countAsAAs.toOffOnString());
+		return temp;
+	}
+
+	/*.................................................................................................................*/
+	public Object doCommand(String commandName, String arguments, CommandChecker checker) {
+		 if (checker.compare(this.getClass(), "Eats command", "[on or off]", commandName, "getEmployee")) {  //to eat command for matrix source
+			return new MesquiteCommandAbsorber();
+		} else
+		 if (checker.compare(this.getClass(), "Sets whether the calculation is based on translated AAs", "[on or off]", commandName, "toggleCountAsAA")) {
+			boolean current = countAsAAs.getValue();
+			countAsAAs.toggleValue(parser.getFirstToken(arguments));
+			if (current!=countAsAAs.getValue()) {
+				outputInvalid();
+				parametersChanged();
+			}
+		} 
+		else
+			return  super.doCommand(commandName, arguments, checker);
+		return null;
+	}
+
 	/*.................................................................................................................*/
 
 	public void calculateNumber(Taxon taxon, MCharactersDistribution data, MesquiteNumber result, MesquiteString resultString) {
@@ -57,13 +89,15 @@ public class RCFVofTaxonAndMatrix extends NumberForTaxonAndMatrix {
 		currentTaxa = taxa;
 
 		double rcfv=0.0;
+		boolean analyzeAsAminoAcids = countAsAAs.getValue();   // Debuggg DAVIDCHECK
+
 		if (parentData instanceof DNAData){
 			DNAData dnaData = (DNAData)parentData;			
-			rcfv=MolecularDataUtil.getRCFVofTaxon(dnaData, it);
+			rcfv=MolecularDataUtil.getRCFVofTaxon(dnaData, it, analyzeAsAminoAcids);
 		}
 		else  if (parentData instanceof ProteinData){
 			ProteinData pData = (ProteinData)parentData;
-			rcfv=MolecularDataUtil.getRCFVofTaxon(pData, it);
+			rcfv=MolecularDataUtil.getRCFVofTaxon(pData, it, true);
 		}
 		
 		

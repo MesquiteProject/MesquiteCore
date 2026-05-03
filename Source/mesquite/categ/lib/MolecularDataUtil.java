@@ -409,18 +409,32 @@ public class MolecularDataUtil {
 		}
 	}
 	/*.................................................................................................................*/
-	public static double getRCFVofTaxon (MolecularData data, int taxonNumber) {
+	public static double getRCFVofTaxon (MolecularData data, int taxonNumber, boolean analyzeAsAminoAcids) {
 		int numStates=DNAState.maxDNAState+1;
-		if (data instanceof ProteinData) 
+		if (data instanceof ProteinData || analyzeAsAminoAcids) 
 			numStates=ProteinState.maxProteinState+1;
-		int numTaxa = data.getNumTaxa();
+		
+		MolecularData dataToCalculate = data;
+		boolean proteinDataCreated = false;
+		if (analyzeAsAminoAcids && !(data instanceof ProteinData)) {
+			if (!((DNAData)data).someCoding()) {  //
+				return MesquiteDouble.unassigned;
+			}
+			dataToCalculate = (ProteinData)((DNAData)data).getProteinData(null, false);   // NEED TO CHECK THAT IN CODONS
+			if (dataToCalculate==null) {
+				return MesquiteDouble.unassigned;
+			} 
+			proteinDataCreated = true;
+		}
+
+		int numTaxa = dataToCalculate.getNumTaxa();
 		double[][] baseFreqs = new double[numStates][numTaxa];
 		double[] averageBaseFreq = new double[numStates];
 		for (int is=0; is<numStates;is++)
 			averageBaseFreq[is] = 0.0;
 		int numTaxaWithData = 0;
 		for (int it=0; it<numTaxa; it++) {
-			double[] freqs = data.getStateFrequencies(it);
+			double[] freqs = dataToCalculate.getStateFrequencies(it);
 			if(freqs==null) {
 				freqs=new double[numStates];
 				for (int is=0; is<numStates;is++) {
@@ -445,6 +459,9 @@ public class MolecularDataUtil {
 					rcfv=0.0;
 				rcfv+=Math.abs(baseFreqs[is][taxonNumber] - averageBaseFreq[is]) ;
 			}
+		if (proteinDataCreated) {
+			dataToCalculate.dispose();
+		}
 		return rcfv;
 	}
 
@@ -455,17 +472,16 @@ public class MolecularDataUtil {
 			numStates=ProteinState.maxProteinState+1;
 		
 		MolecularData dataToCalculate = data;
-		DNAData tempData=null;
+		boolean proteinDataCreated = false;
 		if (analyzeAsAminoAcids && !(data instanceof ProteinData)) {
-			/*tempData = (DNAData)data.cloneData();
-			tempData.addToFile(tempData.getFile(), tempData.getProject(), ownerModule.findElementManager(DNAData.class)); //THIS
-			tempData.collapseGapsInCellBlock(0, tempData.getNumTaxa(), 0, tempData.getNumChars()-1, false);
-			tempData.setAllCodonPositions(ownerModule,1,true,true);
-			*/
+			if (!((DNAData)data).someCoding()) {  //
+				return MesquiteDouble.unassigned;
+			}
 			dataToCalculate = (ProteinData)((DNAData)data).getProteinData(null, false);   // NEED TO CHECK THAT IN CODONS
 			if (dataToCalculate==null) {
 				return MesquiteDouble.unassigned;
 			} 
+			proteinDataCreated = true;
 		}
 
 		double rcfv=0.0;
@@ -500,8 +516,8 @@ public class MolecularDataUtil {
 					rcfv+=Math.abs(baseFreqs[is][it] - averageBaseFreq[is]) ;
 		}
 		rcfv = rcfv/numTaxaWithData;
-		if (tempData!=null && analyzeAsAminoAcids && !(data instanceof ProteinData)) {
-			tempData.dispose();
+		if (proteinDataCreated) {
+			dataToCalculate.dispose();
 		}
 
 		return rcfv;
