@@ -445,6 +445,7 @@ class MultiTreeWindow extends MesquiteWindow implements KeyListener, Commandable
 		addToWindow(containingPanel);
 		for (int itree = 0; itree<maxDisplays; itree++) {
 			containingPanel.add(treeDisplays[itree]);
+			treeDisplays[itree].tightScaleBar = true;
 			treeDisplays[itree].addExtra(new MTWExtra(ownerModule, treeDisplays[itree], itree));
 		}
 
@@ -1006,9 +1007,6 @@ class MTWExtra extends TreeDisplayExtra implements Commandable {
 			Puppeteer p = new Puppeteer(module);
 			cloneCommandTreeSource = "setTreeSource #" + tSource.getClassName() + ";\ntell It;\n" + cloneCommandTreeSource;
 			cloneCommandTreeSource = cloneCommandTreeSource + "\nendTell;\ngetWindow;\ntell It;\nsetTreeNumber " + (whichTree+1) + ";\nendTell;\n";
-			//if (mb != null)
-			//	Debugg.errln("MB " + mb.getName());
-			//Debugg.errln("COMMANDS\n" + cloneCommandTreeSource);
 			Object obj = p.sendCommands(mb, cloneCommandTreeSource, new MesquiteInteger(0), "", false, null,CommandChecker.defaultChecker);
 			MesquiteThread.setCurrentCommandRecord(previous);
 

@@ -631,6 +631,18 @@ public class StringUtil {
 			return s.substring(0,s.indexOf(separator));
 		return s;
 	}
+
+	/*.................................................................................................................*/
+	/** Abbreviates a string.  */
+	public static String abbreviate(String line, int abbreviationLength, boolean addEllipsis) {
+		if (line!= null && abbreviationLength>0 && line.length()>abbreviationLength) {
+			line = line.substring(0, abbreviationLength);
+			if (addEllipsis)
+				line += "…";
+		}
+		return line;
+	}
+
 	/*.................................................................................................................*/
 	/** returns the  item in a string, JUST after beforeString up until afterString */
 	public static String getPiece(String line, String beforeString, String afterString) {
@@ -663,7 +675,7 @@ public class StringUtil {
 	public static String getAllButLastItem(String line, String separator1, String separator2) {
 		return getAllButLastItem(line, separator1, separator2, false);
 	}
-	
+
 	/*.................................................................................................................*/
 	/** returns everything in front of the last item in a string, separated into parts by whichever is last of the two separators*/
 	public static String getAllButLastItem(String line, String separator1, String separator2, boolean removeTrailingSeparators) {
@@ -691,8 +703,8 @@ public class StringUtil {
 			return line;
 		return line.substring(0, last);
 	}
-	
-	
+
+
 	/*.................................................................................................................*/
 	/** returns everything in a string AFTER a particular substring; returns empty string if substring not present*/
 	public static String getAllAfterSubString(String line, String subString) {
@@ -1313,7 +1325,7 @@ public class StringUtil {
 			return true;
 		if (c==0)
 			return false;  
-			return defaultWhitespace.indexOf(c)>=0;
+		return defaultWhitespace.indexOf(c)>=0;
 	}
 	/*.................................................................................................................*/
 	public static boolean whitespace(char c, String whitespaceString) {
@@ -1595,7 +1607,7 @@ public class StringUtil {
 	/** This encodes a string returned by the path from URI so that it can be used as the path to give to URI.
 	Note that this cannot use the standard URLEncoder logic, as that replaces spaces with +, which will break
 	the AppBuilder code as that will mean that any path with a space in it will not match reality.  */
-	
+
 	public static String encodeURIPath(String s){
 		if (s==null) return null;
 		StringBuffer buffer = new StringBuffer(s.length()*2);
@@ -1641,12 +1653,12 @@ public class StringUtil {
 	public static String protectForWindows(String s) { 
 		return protectFilePathForWindows(s);
 	}
-	
+
 	public static String protectFilePathForWindows(String s) {  
 		return "\"" + s + "\"";
 	}
-	
-	
+
+
 	/*.................................................................................................................*/
 	public static String protectFilePathForUnix(String filePath){  
 		return protectFilePathForUnix(filePath, true);
@@ -1670,11 +1682,11 @@ public class StringUtil {
 	 * For example, it is used in formulating a batch file to be used to run an external alignment program.  
 	 * This particular version of protectForUnix (in which escapeSpaces is passed) is never called directly as of November 2016, as
 	 * in all cases that it is called, escapeSpaces is true, so protectForUnix(s) is called instead. */
-	
+
 	public static String protectFilePathForUnix(String filePath, boolean escapeSpaces) {
 		//As of June 2015, stripping accents turned off, because it meant the file path was no longer correct
 		if (filePath==null) return null;
-		
+
 		// remove fancy quotes:
 		filePath = filePath.replaceAll("[\\u201C\\u201D]", "\\\"");
 
@@ -1707,12 +1719,12 @@ public class StringUtil {
 		}
 		return buffer.toString();  		 
 	}
-	
+
 	/** This is the old name for protectFilePathForUnix
 	 * @deprecated */
-	 public  static String protectForUnix(String s) {
-		 return protectFilePathForUnix(s);
-		}
+	public  static String protectForUnix(String s) {
+		return protectFilePathForUnix(s);
+	}
 
 	/*.................................................................................................................*/
 	public static String protectForXML(String s) {
@@ -1879,31 +1891,31 @@ public class StringUtil {
 		}
 		return sb.toString();
 	}
-	
+
 
 
 	/** This is a general method to take a string, and remove any "fancy" characters in it.  Accented characters are converted
- * to their unaccented equivalent.  If some of the stricter variants are used (e.g., if onlyAlphaNumeric is true), then all characters 
- * other than letters and numbers are removed (or converted to underscores if alphaNumericAndUnderscore is true).
- * */
-public static String cleanseStringOfFancyChars(String s, boolean onlyAlphaNumeric, boolean alphaNumericAndUnderscore){
-	if (s==null) {
-		return null;
-	}
-	// replace fancy quotes with straight quotes
-	s = s.replaceAll("[\\u2018\\u2019]", "'").replaceAll("[\\u201C\\u201D]", "\"");
+	 * to their unaccented equivalent.  If some of the stricter variants are used (e.g., if onlyAlphaNumeric is true), then all characters 
+	 * other than letters and numbers are removed (or converted to underscores if alphaNumericAndUnderscore is true).
+	 * */
+	public static String cleanseStringOfFancyChars(String s, boolean onlyAlphaNumeric, boolean alphaNumericAndUnderscore){
+		if (s==null) {
+			return null;
+		}
+		// replace fancy quotes with straight quotes
+		s = s.replaceAll("[\\u2018\\u2019]", "'").replaceAll("[\\u201C\\u201D]", "\"");
 
-	// strip accent characters
-	s = Normalizer.normalize(s, Normalizer.Form.NFD).replaceAll("\\p{InCombiningDiacriticalMarks}+", "");
+		// strip accent characters
+		s = Normalizer.normalize(s, Normalizer.Form.NFD).replaceAll("\\p{InCombiningDiacriticalMarks}+", "");
 
-	if (onlyAlphaNumeric) {
-		s = s.replaceAll("[^a-zA-Z0-9]", "");
+		if (onlyAlphaNumeric) {
+			s = s.replaceAll("[^a-zA-Z0-9]", "");
+		}
+		else if (alphaNumericAndUnderscore) {
+			s = s.replaceAll("[^a-zA-Z0-9_]", "_");
+		}
+		return s;
 	}
-	else if (alphaNumericAndUnderscore) {
-		s = s.replaceAll("[^a-zA-Z0-9_]", "_");
-	}
-	return s;
-}
 
 	/*.................................................................................................................*/
 	public static String cleanseStringOfFancyChars(String s){
@@ -2036,13 +2048,13 @@ public static String cleanseStringOfFancyChars(String s, boolean onlyAlphaNumeri
 			return true;
 		if (a == null || b == null) 
 			return false;
-		
+
 		if (b.length()> a.length())
 			return false;
-		
+
 		int endingSize = b.length();
 		String aEnding = a.substring(a.length()-endingSize, a.length());
-		
+
 		return b.equalsIgnoreCase(aEnding);
 	}
 

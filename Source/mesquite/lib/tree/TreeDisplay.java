@@ -100,6 +100,8 @@ public class TreeDisplay extends TaxaTreeDisplay  {
 	public boolean fixedScalingOn = false;
 	/**  Records whether to show the scale bar.*/
 	public boolean inhibitDefaultScaleBar = false;
+	/**  Records whether to show the scale bar tight against the tree (e.g. for Multi-Tree window).*/
+	public boolean tightScaleBar = false;
 	/**  If true, then in text version draw the extra information directly on the tree; otherwise use node lists*/
 	public boolean textVersionDrawOnTree = false;
 	private int dist=8;

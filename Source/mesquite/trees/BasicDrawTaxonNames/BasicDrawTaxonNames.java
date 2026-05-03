@@ -581,24 +581,19 @@ public class BasicDrawTaxonNames extends DrawNamesTreeDisplay {
 					boolean foundElsewhere = groupElsewhere(tree, tree.getRoot(), tree.deepestCollapsedAncestor(node), commonGroupInClade, partition);
 					if (!foundElsewhere) {
 						String s = commonGroupInClade.getName();
-						if (abbreviationLength>0 && s.length()>abbreviationLength)
-							s = s.substring(0, abbreviationLength);
+						s = StringUtil.abbreviate(s, abbreviationLength, true);
 						return s;
 					}
 				}
 			}
 			int taxonNumber = tree.taxonNumberOfNode(node); {
 			String s = "Clade of " + tree.getTaxa().getName(taxonNumber);
-			if (abbreviationLength>0 && s.length()>abbreviationLength)
-				s = s.substring(0, abbreviationLength);
+			s = StringUtil.abbreviate(s, abbreviationLength, true);
 			return s;
 			}
 		}
 		else {
-			String s = cc;
-			if (abbreviationLength>0 && s.length()>abbreviationLength)
-				s = s.substring(0, abbreviationLength);
-			return s;
+			return StringUtil.abbreviate(cc, abbreviationLength, true);
 		}
 	}
 
@@ -732,8 +727,7 @@ public class BasicDrawTaxonNames extends DrawNamesTreeDisplay {
 					MesquiteMessage.warnProgrammer("error: taxon name null");
 				return;
 			}
-			if (abbreviationLength>0 && s.length()>abbreviationLength)
-				s = s.substring(0, abbreviationLength);
+			s = StringUtil.abbreviate(s, abbreviationLength, true);
 			Taxon taxon = taxa.getTaxon(taxonNumber);
 			if (taxon== null){
 				if (warn)
@@ -1299,8 +1293,7 @@ public class BasicDrawTaxonNames extends DrawNamesTreeDisplay {
 			if (tree.isLeftmostTerminalOfCollapsedClade(N)){
 				s = getCladeName(N, partitions);
 			}
-			if (abbreviationLength>0 && s.length()>abbreviationLength)
-				s = s.substring(0, abbreviationLength);
+			s = StringUtil.abbreviate(s, abbreviationLength, true);
 
 			int lengthString = fm.stringWidth(s); 
 			if (lengthString>longestString)

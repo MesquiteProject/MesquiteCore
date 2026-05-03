@@ -1263,8 +1263,7 @@ public class NodeLocsStandard extends NodeLocsVH {
 			}
 			else
 				s = tree.getTaxa().getName(tree.taxonNumberOfNode(N));
-			if (treeDisplay.abbreviationLength>0 && s.length()>treeDisplay.abbreviationLength)
-				s = s.substring(0, treeDisplay.abbreviationLength);
+			s = StringUtil.abbreviate(s, treeDisplay.abbreviationLength, true);
 
 			if (s==null)
 				return 0;
@@ -1708,6 +1707,8 @@ public class NodeLocsStandard extends NodeLocsVH {
 	public void calculateScale(double totalTreeHeight, double totalScaleHeight, double scaling, Tree tree, int drawnRoot, TreeDisplay treeDisplay, double extraDepthAtRootRequested) {
 		TreeDrawing treeDrawing = treeDisplay.getTreeDrawing();
 		double buffer = treeDisplay.getTaxonSpacing()/4;
+		if (treeDisplay.tightScaleBar)
+			buffer = -buffer;
 		double[] scaleValues = null;
 
 		if (treeDisplay.getOrientation()==TreeDisplay.UP) {
