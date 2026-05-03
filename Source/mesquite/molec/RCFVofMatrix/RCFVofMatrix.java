@@ -4,6 +4,7 @@ package mesquite.molec.RCFVofMatrix;
 import mesquite.categ.lib.DNAData;
 import mesquite.categ.lib.DNAState;
 import mesquite.categ.lib.MolecularData;
+import mesquite.categ.lib.MolecularDataUtil;
 import mesquite.categ.lib.ProteinData;
 import mesquite.categ.lib.ProteinState;
 import mesquite.categ.lib.RequiresAnyMolecularData;
@@ -26,42 +27,6 @@ public class RCFVofMatrix extends NumberForMatrix {
 	public void initialize(MCharactersDistribution data) {
 	} 
 	/*.................................................................................................................*/
-	public double getRCFV (MolecularData data, int numStates) {
-		double rcfv=0.0;
-		int numTaxa = data.getNumTaxa();
-		double[][] baseFreqs = new double[numStates][numTaxa];
-		double[] averageBaseFreq = new double[numStates];
-		for (int is=0; is<numStates;is++)
-			averageBaseFreq[is] = 0.0;
-		int numTaxaWithData = 0;
-		for (int it=0; it<numTaxa; it++) {
-			double[] freqs = data.getStateFrequencies(it);
-			if(freqs==null) {
-				freqs=new double[numStates];
-				for (int is=0; is<numStates;is++) {
-					freqs[is]=MesquiteDouble.unassigned;
-					baseFreqs[is][it]=freqs[is];
-				}
-			} else {
-				numTaxaWithData++;
-				for (int is=0; is<numStates;is++) {
-					baseFreqs[is][it]=freqs[is];
-					averageBaseFreq[is] += baseFreqs[is][it];
-				}
-			}
-		}
-		for (int is=0; is<numStates;is++) {
-			averageBaseFreq[is] = averageBaseFreq[is] /numTaxaWithData;
-		}
-		for (int it=0; it<numTaxa; it++) {
-			for (int is=0; is<numStates;is++)
-				if (MesquiteDouble.isCombinable(baseFreqs[is][it]))
-					rcfv+=Math.abs(baseFreqs[is][it] - averageBaseFreq[is]) ;
-		}
-		rcfv = rcfv/numTaxaWithData;
-		return rcfv;
-	}
-	/*.................................................................................................................*/
 
 	public void calculateNumber(MCharactersDistribution data, MesquiteNumber result, MesquiteString resultString) {
 		if (result == null || data == null)
@@ -81,13 +46,15 @@ public class RCFVofMatrix extends NumberForMatrix {
 			return;
 		}
 		double rcfv=0.0;
+		boolean analyzeAsAminoAcids = false;   // control
+		
 		if (parentData instanceof DNAData){
 			DNAData dnaData = (DNAData)parentData;			
-			rcfv=getRCFV(dnaData,DNAState.maxDNAState+1);
+			rcfv=MolecularDataUtil.getRCFVofMatrix(this, dnaData, analyzeAsAminoAcids);
 		}
 		else  if (parentData instanceof ProteinData){
 			ProteinData pData = (ProteinData)parentData;
-			rcfv=getRCFV(pData,ProteinState.maxProteinState+1);
+			rcfv=MolecularDataUtil.getRCFVofMatrix(this,pData, true);
 		}
 		
 		

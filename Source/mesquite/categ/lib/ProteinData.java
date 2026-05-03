@@ -322,7 +322,7 @@ public class ProteinData extends MolecularData {
 
 	/* ................................................................................................................. */
 	public double[] getStateFrequencies(int it){
-		int[] freq = new int[ProteinState.maxProteinState];
+		int[] freq = new int[ProteinState.maxProteinState+1];
 		for (int i = 0; i <=ProteinState.maxProteinState; i++)
 			freq[i] = 0;
 		int count = 0;

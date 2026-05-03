@@ -4,6 +4,7 @@ package mesquite.molec.RCFVofTaxonAndMatrix;
 import mesquite.categ.lib.DNAData;
 import mesquite.categ.lib.DNAState;
 import mesquite.categ.lib.MolecularData;
+import mesquite.categ.lib.MolecularDataUtil;
 import mesquite.categ.lib.ProteinData;
 import mesquite.categ.lib.ProteinState;
 import mesquite.categ.lib.RequiresAnyMolecularData;
@@ -30,42 +31,6 @@ public class RCFVofTaxonAndMatrix extends NumberForTaxonAndMatrix {
 	public void initialize(Taxa taxa) {
 		currentTaxa = taxa;
 
-	} 
-	/*.................................................................................................................*/
-	public double getRCFV (MolecularData data, int taxonNumber, int numStates) {
-		int numTaxa = data.getNumTaxa();
-		double[][] baseFreqs = new double[numStates][numTaxa];
-		double[] averageBaseFreq = new double[numStates];
-		for (int is=0; is<numStates;is++)
-			averageBaseFreq[is] = 0.0;
-		int numTaxaWithData = 0;
-		for (int it=0; it<numTaxa; it++) {
-			double[] freqs = data.getStateFrequencies(it);
-			if(freqs==null) {
-				freqs=new double[numStates];
-				for (int is=0; is<numStates;is++) {
-					freqs[is]=MesquiteDouble.unassigned;
-					baseFreqs[is][it]=freqs[is];
-				}
-			} else {
-				numTaxaWithData++;
-				for (int is=0; is<numStates;is++) {
-					baseFreqs[is][it]=freqs[is];
-					averageBaseFreq[is] += baseFreqs[is][it];
-				}
-			}
-		}
-		for (int is=0; is<numStates;is++) {
-			averageBaseFreq[is] = averageBaseFreq[is] /numTaxaWithData;
-		}
-		double rcfv=MesquiteDouble.unassigned;
-		for (int is=0; is<numStates;is++)
-			if (MesquiteDouble.isCombinable(baseFreqs[is][taxonNumber])) {
-				if (!MesquiteDouble.isCombinable(rcfv))
-					rcfv=0.0;
-				rcfv+=Math.abs(baseFreqs[is][taxonNumber] - averageBaseFreq[is]) ;
-			}
-		return rcfv;
 	}
 	/*.................................................................................................................*/
 
@@ -94,11 +59,11 @@ public class RCFVofTaxonAndMatrix extends NumberForTaxonAndMatrix {
 		double rcfv=0.0;
 		if (parentData instanceof DNAData){
 			DNAData dnaData = (DNAData)parentData;			
-			rcfv=getRCFV(dnaData, it, DNAState.maxDNAState+1);
+			rcfv=MolecularDataUtil.getRCFVofTaxon(dnaData, it);
 		}
 		else  if (parentData instanceof ProteinData){
 			ProteinData pData = (ProteinData)parentData;
-			rcfv=getRCFV(pData, it, ProteinState.maxProteinState+1);
+			rcfv=MolecularDataUtil.getRCFVofTaxon(pData, it);
 		}
 		
 		

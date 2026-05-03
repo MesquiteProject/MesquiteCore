@@ -6,6 +6,7 @@ import mesquite.align.lib.AlignUtil;
 import mesquite.align.lib.PairwiseAligner;
 import mesquite.lib.Bits;
 import mesquite.lib.MesquiteBoolean;
+import mesquite.lib.MesquiteDouble;
 import mesquite.lib.MesquiteInteger;
 import mesquite.lib.MesquiteListener;
 import mesquite.lib.MesquiteModule;
@@ -407,5 +408,104 @@ public class MolecularDataUtil {
 			int stops = getMinimumStops(data, it, modelSet);
 		}
 	}
+	/*.................................................................................................................*/
+	public static double getRCFVofTaxon (MolecularData data, int taxonNumber) {
+		int numStates=DNAState.maxDNAState+1;
+		if (data instanceof ProteinData) 
+			numStates=ProteinState.maxProteinState+1;
+		int numTaxa = data.getNumTaxa();
+		double[][] baseFreqs = new double[numStates][numTaxa];
+		double[] averageBaseFreq = new double[numStates];
+		for (int is=0; is<numStates;is++)
+			averageBaseFreq[is] = 0.0;
+		int numTaxaWithData = 0;
+		for (int it=0; it<numTaxa; it++) {
+			double[] freqs = data.getStateFrequencies(it);
+			if(freqs==null) {
+				freqs=new double[numStates];
+				for (int is=0; is<numStates;is++) {
+					freqs[is]=MesquiteDouble.unassigned;
+					baseFreqs[is][it]=freqs[is];
+				}
+			} else {
+				numTaxaWithData++;
+				for (int is=0; is<numStates;is++) {
+					baseFreqs[is][it]=freqs[is];
+					averageBaseFreq[is] += baseFreqs[is][it];
+				}
+			}
+		}
+		for (int is=0; is<numStates;is++) {
+			averageBaseFreq[is] = averageBaseFreq[is] /numTaxaWithData;
+		}
+		double rcfv=MesquiteDouble.unassigned;
+		for (int is=0; is<numStates;is++)
+			if (MesquiteDouble.isCombinable(baseFreqs[is][taxonNumber])) {
+				if (!MesquiteDouble.isCombinable(rcfv))
+					rcfv=0.0;
+				rcfv+=Math.abs(baseFreqs[is][taxonNumber] - averageBaseFreq[is]) ;
+			}
+		return rcfv;
+	}
+
+	/*.................................................................................................................*/
+	public static double getRCFVofMatrix (MesquiteModule ownerModule, MolecularData data, boolean analyzeAsAminoAcids) {
+		int numStates=DNAState.maxDNAState+1;
+		if (data instanceof ProteinData || analyzeAsAminoAcids) 
+			numStates=ProteinState.maxProteinState+1;
+		
+		MolecularData dataToCalculate = data;
+		DNAData tempData=null;
+		if (analyzeAsAminoAcids && !(data instanceof ProteinData)) {
+			/*tempData = (DNAData)data.cloneData();
+			tempData.addToFile(tempData.getFile(), tempData.getProject(), ownerModule.findElementManager(DNAData.class)); //THIS
+			tempData.collapseGapsInCellBlock(0, tempData.getNumTaxa(), 0, tempData.getNumChars()-1, false);
+			tempData.setAllCodonPositions(ownerModule,1,true,true);
+			*/
+			dataToCalculate = (ProteinData)((DNAData)data).getProteinData(null, false);   // NEED TO CHECK THAT IN CODONS
+			if (dataToCalculate==null) {
+				return MesquiteDouble.unassigned;
+			} 
+		}
+
+		double rcfv=0.0;
+		int numTaxa = dataToCalculate.getNumTaxa();
+		double[][] baseFreqs = new double[numStates][numTaxa];
+		double[] averageBaseFreq = new double[numStates];
+		for (int is=0; is<numStates;is++)
+			averageBaseFreq[is] = 0.0;
+		int numTaxaWithData = 0;
+		for (int it=0; it<numTaxa; it++) {
+			double[] freqs = dataToCalculate.getStateFrequencies(it);
+			if(freqs==null) {
+				freqs=new double[numStates];
+				for (int is=0; is<numStates;is++) {
+					freqs[is]=MesquiteDouble.unassigned;
+					baseFreqs[is][it]=freqs[is];
+				}
+			} else {
+				numTaxaWithData++;
+				for (int is=0; is<numStates;is++) {
+					baseFreqs[is][it]=freqs[is];
+					averageBaseFreq[is] += baseFreqs[is][it];
+				}
+			}
+		}
+		for (int is=0; is<numStates;is++) {
+			averageBaseFreq[is] = averageBaseFreq[is] /numTaxaWithData;
+		}
+		for (int it=0; it<numTaxa; it++) {
+			for (int is=0; is<numStates;is++)
+				if (MesquiteDouble.isCombinable(baseFreqs[is][it]))
+					rcfv+=Math.abs(baseFreqs[is][it] - averageBaseFreq[is]) ;
+		}
+		rcfv = rcfv/numTaxaWithData;
+		if (tempData!=null && analyzeAsAminoAcids && !(data instanceof ProteinData)) {
+			tempData.dispose();
+		}
+
+		return rcfv;
+	}
+
 
 }
