@@ -30,7 +30,7 @@ public class RCFVofTaxonAndMatrix extends NumberForTaxonAndMatrix {
 	MesquiteBoolean countAsAAs = new MesquiteBoolean(false);
 
 	public boolean startJob(String arguments, Object condition, boolean hiredByName) {
-		//addCheckMenuItem(null, "Calculate RCFV Based on AA Translation", makeCommand("toggleCountAsAA",  this), countAsAAs);
+		addCheckMenuItem(null, "Calculate RCFV Based on AA Translation", makeCommand("toggleCountAsAA",  this), countAsAAs);
 		return true;
 	} 
 
