@@ -8,24 +8,59 @@ import mesquite.categ.lib.MolecularDataUtil;
 import mesquite.categ.lib.ProteinData;
 import mesquite.categ.lib.ProteinState;
 import mesquite.categ.lib.RequiresAnyMolecularData;
+import mesquite.lib.CommandChecker;
 import mesquite.lib.CompatibilityTest;
 import mesquite.lib.Debugg;
+import mesquite.lib.MesquiteBoolean;
+import mesquite.lib.MesquiteCommandAbsorber;
 import mesquite.lib.MesquiteDouble;
+import mesquite.lib.MesquiteFile;
 import mesquite.lib.MesquiteNumber;
 import mesquite.lib.MesquiteString;
+import mesquite.lib.Snapshot;
 import mesquite.lib.characters.CharacterData;
 import mesquite.lib.characters.MCharactersDistribution;
 import mesquite.lib.duties.NumberForMatrix;
 
 public class RCFVofMatrix extends NumberForMatrix {
 
+
+	MesquiteBoolean countAsAAs = new MesquiteBoolean(false);
+	/*.................................................................................................................*/
 	public boolean startJob(String arguments, Object condition, boolean hiredByName) {
+		addCheckMenuItem(null, "Calculate Based on AA Translation", makeCommand("toggleCountAsAA",  this), countAsAAs);
 		return true;
-	} 
+	}
 
 	/** Called to provoke any necessary initialization.  This helps prevent the module's initialization queries to the user from happening at inopportune times (e.p., while a long chart calculation is in mid-progress*/
 	public void initialize(MCharactersDistribution data) {
 	} 
+	
+	/*.................................................................................................................*/
+	public Snapshot getSnapshot(MesquiteFile file) { 
+		Snapshot temp = new Snapshot();
+		temp.addLine("toggleCountAsAA " + countAsAAs.toOffOnString());
+		return temp;
+	}
+
+	/*.................................................................................................................*/
+	public Object doCommand(String commandName, String arguments, CommandChecker checker) {
+		 if (checker.compare(this.getClass(), "Eats command", "[on or off]", commandName, "getEmployee")) {  //to eat command for matrix source
+			return new MesquiteCommandAbsorber();
+		} else
+		 if (checker.compare(this.getClass(), "Sets whether the calculation is based on translated AAs", "[on or off]", commandName, "toggleCountAsAA")) {
+			boolean current = countAsAAs.getValue();
+			countAsAAs.toggleValue(parser.getFirstToken(arguments));
+			if (current!=countAsAAs.getValue()) {
+				outputInvalid();
+				parametersChanged();
+			}
+		} 
+		else
+			return  super.doCommand(commandName, arguments, checker);
+		return null;
+	}
+
 	/*.................................................................................................................*/
 
 	public void calculateNumber(MCharactersDistribution data, MesquiteNumber result, MesquiteString resultString) {
@@ -46,7 +81,7 @@ public class RCFVofMatrix extends NumberForMatrix {
 			return;
 		}
 		double rcfv=0.0;
-		boolean analyzeAsAminoAcids = false;   // control
+		boolean analyzeAsAminoAcids = countAsAAs.getValue();   // control
 		
 		if (parentData instanceof DNAData){
 			DNAData dnaData = (DNAData)parentData;			

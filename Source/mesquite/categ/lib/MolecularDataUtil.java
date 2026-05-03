@@ -455,17 +455,16 @@ public class MolecularDataUtil {
 			numStates=ProteinState.maxProteinState+1;
 		
 		MolecularData dataToCalculate = data;
-		DNAData tempData=null;
+		boolean proteinDataCreated = false;
 		if (analyzeAsAminoAcids && !(data instanceof ProteinData)) {
-			/*tempData = (DNAData)data.cloneData();
-			tempData.addToFile(tempData.getFile(), tempData.getProject(), ownerModule.findElementManager(DNAData.class)); //THIS
-			tempData.collapseGapsInCellBlock(0, tempData.getNumTaxa(), 0, tempData.getNumChars()-1, false);
-			tempData.setAllCodonPositions(ownerModule,1,true,true);
-			*/
+			if (!((DNAData)data).someCoding()) {  //
+				return MesquiteDouble.unassigned;
+			}
 			dataToCalculate = (ProteinData)((DNAData)data).getProteinData(null, false);   // NEED TO CHECK THAT IN CODONS
 			if (dataToCalculate==null) {
 				return MesquiteDouble.unassigned;
 			} 
+			proteinDataCreated = true;
 		}
 
 		double rcfv=0.0;
@@ -500,8 +499,8 @@ public class MolecularDataUtil {
 					rcfv+=Math.abs(baseFreqs[is][it] - averageBaseFreq[is]) ;
 		}
 		rcfv = rcfv/numTaxaWithData;
-		if (tempData!=null && analyzeAsAminoAcids && !(data instanceof ProteinData)) {
-			tempData.dispose();
+		if (proteinDataCreated) {
+			dataToCalculate.dispose();
 		}
 
 		return rcfv;
