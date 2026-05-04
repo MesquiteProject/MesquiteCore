@@ -339,6 +339,14 @@ public class StringUtil {
 		}
 		return s;
 	}
+	/*.................................................................................................................*/
+	/** appends to list a string, but as a list, e.g. "a, b, c, d". Primary function is to ask if the original is blank; if so the separator isn't added
+	 * */
+	public static String appendToList(String original, String addition, String separator){
+		if (blank(original))
+				return addition;
+		else return original + separator + addition;
+	}
 
 	/*.................................................................................................................*/
 	/** truncates string if bigger than given size*/

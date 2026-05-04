@@ -19,6 +19,7 @@ import java.util.Vector;
 
 import mesquite.lib.CommandChecker;
 import mesquite.lib.CommandRecord;
+import mesquite.lib.Debugg;
 import mesquite.lib.EmployeeNeed;
 import mesquite.lib.MesquiteBoolean;
 import mesquite.lib.MesquiteFile;
@@ -33,6 +34,7 @@ import mesquite.lib.Snapshot;
 import mesquite.lib.StringArray;
 import mesquite.lib.duties.NumberForTree;
 import mesquite.lib.table.MesquiteTable;
+import mesquite.lib.tree.MesquiteTree;
 import mesquite.lib.tree.Tree;
 import mesquite.lib.tree.TreeVector;
 import mesquite.lib.ui.MesquiteColorTable;
@@ -226,6 +228,9 @@ public class NumForTreeList extends TreeListAssistant implements MesquiteListene
 		for (int ic=0; ic<numTrees; ic++) {
 			CommandRecord.tick("Number for tree in tree list; examining tree " + ic);
 			Tree tree = treesBlock.getTree(ic);
+			if (ic>20 && ic < 26)
+				Debugg.errln("NfTL " + ic + " " + tree.getID() + " " + ((MesquiteTree)tree).getVersionNumber() + " " + tree.getName());
+			
 			//	if (tree instanceof MesquiteTree)
 			//		((MesquiteTree)tree).setAssignedNumber(ic);
 			mn.setToUnassigned();

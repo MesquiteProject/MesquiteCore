@@ -1706,6 +1706,8 @@ public class NodeLocsStandard extends NodeLocsVH {
 	//returned are startingX, starting Y, ending X, ending Y, starting scale value, ending scale value
 	public void calculateScale(double totalTreeHeight, double totalScaleHeight, double scaling, Tree tree, int drawnRoot, TreeDisplay treeDisplay, double extraDepthAtRootRequested) {
 		TreeDrawing treeDrawing = treeDisplay.getTreeDrawing();
+		if (treeDrawing == null)
+			return;
 		double buffer = treeDisplay.getTaxonSpacing()/4;
 		if (treeDisplay.tightScaleBar)
 			buffer = -buffer;
