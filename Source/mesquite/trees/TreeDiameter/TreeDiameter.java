@@ -15,7 +15,7 @@ created:
 25 May 08 (DRM)
  */
 
-package mesquite.genomic.TreeDiameter;
+package mesquite.trees.TreeDiameter;
 
 
 import mesquite.lib.DoubleArray;
