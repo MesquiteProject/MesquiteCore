@@ -103,6 +103,15 @@ public class TreeVector extends ListableVector implements Trees, Commandable, Id
 			return list;
 		return "<h2>Tree block \"" + StringUtil.protectForXML(getName()) + "\"</h2><ul>" + list + "</ul>";
 	}
+	/*.................................................................................................................*/
+ public int whichTreeByForm(Tree target){
+			for (int i = 0; i< size(); i++){
+				MesquiteTree treeI = (MesquiteTree)elementAt(i);
+				if (treeI.equalsTopology((MesquiteTree)target, true))
+					return i;
+			}
+			return -1;
+	 }
 
 	/*.................................................................................................................*/
 	public void attachCloneToFile(MesquiteFile f, ElementManager manager){
