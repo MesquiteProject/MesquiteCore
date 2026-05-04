@@ -160,7 +160,7 @@ public class TreeUtil {
 		}
 		return rotated;
 	}
-	
+
 
 	/*======================================================*/
 	static int stateHasntBranch = 1<<0;
@@ -511,7 +511,7 @@ public class TreeUtil {
 					MesquiteMessage.print(" " + (iTree + 1));
 				else if ((iTree+1) % 100 == 0)
 					MesquiteMessage.print(" .");
-				
+
 			}
 			if (oldLoc < stringLoc.getValue()){
 				t.setName(treeNameBase + (iTree+1));
@@ -576,44 +576,73 @@ public class TreeUtil {
 
 	/*.................................................................................................................*/
 	public static void getLongestBranches(Tree tree, int node, Bits longestBranches, MesquiteDouble longest, MesquiteDouble secondLongest, boolean unrooted) {
- 		double length = tree.getBranchLength(node);
- 		int root = tree.getRoot();
- 		if (unrooted && tree.motherOfNode(node) == root && !tree.nodeIsPolytomous(root)){
- 			//daughter of bifurcating root. Sum lengths for single unrooted branch crossing root, and count it only if first daughter.
- 			if (tree.firstDaughterOfNode(root) == node){
- 				int sister = tree.singleSisterOfNode(node);
- 				double sisterLength = tree.getBranchLength(sister);
- 				length = MesquiteDouble.add(length, sisterLength);
- 			}
- 			else
- 				length = 0;
- 		}
- 		if (root != node && MesquiteDouble.isCombinable(length)){
- 			double currentLongest = longest.getValue();
- 			double currentSecondLongest = secondLongest.getValue();
- 			if (!longest.isCombinable() || MesquiteDouble.lessThan(currentLongest, length, 0)){
- 				longest.setValue(length);
- 			if (longestBranches != null){
- 				if (longestBranches.getSize()< tree.getNumNodeSpaces()) longestBranches.resetSize(tree.getNumNodeSpaces());
- 				longestBranches.clearAllBits();
- 				longestBranches.setBit(node);
- 			}
- 				secondLongest.setValue(currentLongest);
- 			}
- 			else if (!secondLongest.isCombinable() || MesquiteDouble.lessThan(currentSecondLongest, length, 0)){
- 				secondLongest.setValue(length); //this could be a second node with the same longest, or a new second longest
- 				if (longestBranches != null && longest.getValue() == secondLongest.getValue())
- 					longestBranches.setBit(node);
- 			}
- 			else if (longestBranches != null && currentLongest == length){
- 					longestBranches.setBit(node);
- 			}
- 
- 		}
- 			for (int d = tree.firstDaughterOfNode(node); tree.nodeExists(d); d = tree.nextSisterOfNode(d))
- 				getLongestBranches(tree, d, longestBranches, longest, secondLongest, unrooted);
- 	}
+		double length = tree.getBranchLength(node);
+		int root = tree.getRoot();
+		if (unrooted && tree.motherOfNode(node) == root && !tree.nodeIsPolytomous(root)){
+			//daughter of bifurcating root. Sum lengths for single unrooted branch crossing root, and count it only if first daughter.
+			if (tree.firstDaughterOfNode(root) == node){
+				int sister = tree.singleSisterOfNode(node);
+				double sisterLength = tree.getBranchLength(sister);
+				length = MesquiteDouble.add(length, sisterLength);
+			}
+			else
+				length = 0;
+		}
+		if (root != node && MesquiteDouble.isCombinable(length)){
+			double currentLongest = longest.getValue();
+			double currentSecondLongest = secondLongest.getValue();
+			if (!longest.isCombinable() || MesquiteDouble.lessThan(currentLongest, length, 0)){
+				longest.setValue(length);
+				if (longestBranches != null){
+					if (longestBranches.getSize()< tree.getNumNodeSpaces()) longestBranches.resetSize(tree.getNumNodeSpaces());
+					longestBranches.clearAllBits();
+					longestBranches.setBit(node);
+				}
+				secondLongest.setValue(currentLongest);
+			}
+			else if (!secondLongest.isCombinable() || MesquiteDouble.lessThan(currentSecondLongest, length, 0)){
+				secondLongest.setValue(length); //this could be a second node with the same longest, or a new second longest
+				if (longestBranches != null && longest.getValue() == secondLongest.getValue())
+					longestBranches.setBit(node);
+			}
+			else if (longestBranches != null && currentLongest == length){
+				longestBranches.setBit(node);
+			}
 
+		}
+		for (int d = tree.firstDaughterOfNode(node); tree.nodeExists(d); d = tree.nextSisterOfNode(d))
+			getLongestBranches(tree, d, longestBranches, longest, secondLongest, unrooted);
+	}
+
+	/*.................................................................................................................*/
+	/*.................................................................................................................*/
+	public static double getTreeLongestPath(Tree tree, int node, MesquiteDouble maxDiam) {
+		if (tree.nodeIsTerminal(node))
+			return 0;
+		double maxPath = 0;
+		double secondMaxPath = 0;
+		for (int d = tree.firstDaughterOfNode(node); tree.nodeExists(d); d = tree.nextSisterOfNode(d)) {
+			double path = getTreeLongestPath(tree, d, maxDiam) + tree.getBranchLength(d, 0);
+			if (path > maxPath) {
+				secondMaxPath = maxPath;
+				maxPath = path;
+			}
+			else if (path == maxPath) 
+				secondMaxPath = maxPath;
+			else if (path > secondMaxPath)
+				secondMaxPath = path;
+		}
+		double diamWithin = maxPath + secondMaxPath;
+		if (diamWithin>maxDiam.getValue())
+			maxDiam.setValue(diamWithin);
+		return maxPath;
+
+	}
+	public static double getTreeDiameter(Tree tree) {
+		MesquiteDouble diam = new MesquiteDouble(0);
+		getTreeLongestPath(tree, tree.getRoot(), diam);
+		return diam.getValue();
+	}
 
 
 }

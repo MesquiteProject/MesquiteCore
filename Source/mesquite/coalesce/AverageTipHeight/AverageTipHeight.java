@@ -15,7 +15,7 @@ created:
 25 May 08 (DRM)
  */
 
-package mesquite.coalesce.AverageTreeDepth;
+package mesquite.coalesce.AverageTipHeight;
 
 
 import mesquite.lib.DoubleArray;
@@ -26,14 +26,14 @@ import mesquite.lib.duties.NumberForTree;
 import mesquite.lib.tree.Tree;
 
 /* ======================================================================== */
-public class AverageTreeDepth extends NumberForTree {
+public class AverageTipHeight extends NumberForTree {
 	double[] pathLengths = null;
 	/*.................................................................................................................*/
 	public boolean startJob(String arguments, Object condition, boolean hiredByName) {
 		return true;
 	}
 
-	public void treeDepth(Tree tree, int node, double depth) {
+	public void tipHeight(Tree tree, int node, double depth) {
 		if (!tree.branchLengthUnassigned(node) && tree.getRoot()!=node)  //don't count the root
 			depth+= tree.getBranchLength(node);
 		if (tree.nodeIsTerminal(node)) { 
@@ -41,7 +41,7 @@ public class AverageTreeDepth extends NumberForTree {
 		}
 		else {
 			for (int daughter = tree.firstDaughterOfNode(node); tree.nodeExists(daughter); daughter = tree.nextSisterOfNode(daughter)) {
-				treeDepth(tree, daughter,depth);
+				tipHeight(tree, daughter,depth);
 			}
 		}
 	}
@@ -57,7 +57,7 @@ public class AverageTreeDepth extends NumberForTree {
 		if (tree.hasBranchLengths()) {
 			pathLengths = new double[tree.getNumNodeSpaces()];
 			DoubleArray.deassignArray(pathLengths);
-			treeDepth(tree, tree.getRoot(),0.0);
+			tipHeight(tree, tree.getRoot(),0.0);
 			int count = 0;
 			double total = 0.0;
 			for (int i=0;i<pathLengths.length; i++){
@@ -74,7 +74,7 @@ public class AverageTreeDepth extends NumberForTree {
 		else
 			result.setValue(0);
 		if (resultString!=null)
-			resultString.setValue("Average Tree Depth: "+ result.toString());
+			resultString.setValue("Average Tip Height: "+ result.toString());
 		saveLastResult(result);
 		saveLastResultString(resultString);
 	}
@@ -96,7 +96,7 @@ public class AverageTreeDepth extends NumberForTree {
 	}
 	/*.................................................................................................................*/
 	public String getName() {
-		return "Average Tree Depth";
+		return "Average Tip Height";
 	}
 	/*.................................................................................................................*/
 	public String getExplanation() {
