@@ -228,9 +228,6 @@ public class NumForTreeList extends TreeListAssistant implements MesquiteListene
 		for (int ic=0; ic<numTrees; ic++) {
 			CommandRecord.tick("Number for tree in tree list; examining tree " + ic);
 			Tree tree = treesBlock.getTree(ic);
-			if (ic>20 && ic < 26)
-				Debugg.errln("NfTL " + ic + " " + tree.getID() + " " + ((MesquiteTree)tree).getVersionNumber() + " " + tree.getName());
-			
 			//	if (tree instanceof MesquiteTree)
 			//		((MesquiteTree)tree).setAssignedNumber(ic);
 			mn.setToUnassigned();
