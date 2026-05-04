@@ -279,7 +279,12 @@ public abstract class TreeDisplayExtra implements Listable, OwnedByModule {
 	/**to inform TreeDisplayExtra that cursor has just exited name of terminal taxon M*/
 	public void cursorExitTaxon(Tree tree, int M, Graphics g){}
 	/**to inform TreeDisplayExtra that cursor has just touched name of terminal taxon M*/
-	public void cursorTouchTaxon(Tree tree, int M, Graphics g, int modifiers, MesquiteTool tool){ //$%$%$%
+	public boolean cursorTouchTaxon(Tree tree, int M, Graphics g, int modifiers, MesquiteTool tool){ //$%$%$%
+		cursorTouchTaxon(tree, M, g);
+		return false;
+	}
+	/**to inform TreeDisplayExtra that cursor has just touched name of terminal taxon M*
+	public boolean cursorTouchTaxon(Tree tree, int M, Graphics g, int modifiers, MesquiteTool tool){ //$%$%$%
 		cursorTouchTaxon(tree, M, g);
 	}
 	/**to inform TreeDisplayExtra that cursor has just touched name of terminal taxon M*/

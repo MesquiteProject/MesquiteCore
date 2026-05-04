@@ -1159,7 +1159,7 @@ class BasicTreeDisplay extends TreeDisplay  implements KeyListener {
 	}
 	/*_________________________________________________*/
 	public void fillTaxon(Graphics g, int M) {
-		((DrawTreeCoordinator)ownerModule).getNamesTask().fillTaxon(g, M);
+		((DrawTreeCoordinator)ownerModule).getNamesTask().fillTaxon(getTreeDrawing(), g, M);
 	}
 	/*_________________________________________________*/
 	public void redrawTaxa(Graphics g, int M) {

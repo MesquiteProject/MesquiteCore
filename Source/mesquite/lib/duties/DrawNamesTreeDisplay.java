@@ -19,6 +19,7 @@ import java.awt.Graphics;
 import mesquite.lib.MesquiteModule;
 import mesquite.lib.tree.Tree;
 import mesquite.lib.tree.TreeDisplay;
+import mesquite.lib.tree.TreeDrawing;
 
 /* ======================================================================== */
 /**This is superclass of Mesquite modules that draw terminal taxon names on trees.  Relies on information in the
@@ -53,9 +54,9 @@ public abstract class DrawNamesTreeDisplay extends MesquiteModule  {
 	/** Tells the coordinator that the tree display is to be recalculated, in case the taxon name drawer, DrawTree, or anything else wants to set anything */
 	public abstract void aboutToRecalculateTreeDisplay(TreeDisplay treeDisplay);
 
-	public abstract  int findTaxon(Tree tree, int drawnRoot, int x, int y);
+	public abstract  int findTaxon(TreeDrawing treeDrawing, Tree tree, int drawnRoot, int x, int y);
    	 /** Fill taxon M's taxon name box with current color. */
-	public abstract  void fillTaxon(Graphics g, int M);
+	public abstract  void fillTaxon(TreeDrawing treeDrawing, Graphics g, int M);
    	 /** Force a complete redraw of the names next time names are drawn. */
 	public void invalidateNames(TreeDisplay treeDisplay) {}
 

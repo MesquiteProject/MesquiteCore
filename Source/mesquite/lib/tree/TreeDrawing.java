@@ -60,6 +60,7 @@ public abstract class TreeDrawing  {
 	public double[] yDashed; //
 	public double[] xSolid; //
 	public double[] ySolid; //
+
 	/**labelOrientation indicates where label is to be drawn w.r.t. node, in degrees. 0 = normal horizontal 
 	writing to right of node, as would be done for a tree with orientation RIGHT.
 	This does not represent simple rotation, i.e. 180 is on left side, but the writing is not upside down.  Thus

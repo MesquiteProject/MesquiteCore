@@ -3951,7 +3951,7 @@ class BasicTreeWindow extends MesquiteWindow implements Fittable, MesquiteListen
 		int drawnRoot = treeDisplay.getTreeDrawing().getDrawnRoot(); // TODO: remember drawnRoot!!!
 		if (!tree.nodeExists(drawnRoot))
 			drawnRoot = tree.getRoot();
-		return treeDrawCoordTask.getNamesTask().findTaxon(tree, drawnRoot, x, y);
+		return treeDrawCoordTask.getNamesTask().findTaxon(treeDisplay.getTreeDrawing(), tree, drawnRoot, x, y);
 	}
 
 	/* _________________________________________________ */
@@ -4170,7 +4170,11 @@ class BasicTreeWindow extends MesquiteWindow implements Fittable, MesquiteListen
 			if (nameFound != -1) { // it is in a taxon
 				currentTreeTool.taxonTouched(nameFound, tree, modifiers);
 				taxonTouched = nameFound;
-				notifyExtrasOfTaxonTouch(g, nameFound, modifiers, currentTreeTool);
+				if (MesquiteEvent.rightClick(modifiers)){
+					showTreePopup(x, y, tree, tree.nodeOfTaxonNumber(taxonTouched)); 
+				}
+				else
+					notifyExtrasOfTaxonTouch(g, nameFound, modifiers, currentTreeTool);
 				if (highlightedTaxon >= 0)
 					RevertTaxon(g, highlightedTaxon);
 				return true;
