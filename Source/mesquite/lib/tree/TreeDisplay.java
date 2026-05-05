@@ -350,11 +350,14 @@ public class TreeDisplay extends TaxaTreeDisplay  {
 	
 	//Distance from tip to taxon name
 	boolean tndExplicitlySet = false;
-	public void setMinimumTaxonNameDistanceFromTip(int minForTerminalBoxes, int min) {
-		this.minForTerminalBoxes = minForTerminalBoxes;
+	public void setMinimumTaxonNameDistanceFromTip(int minForTerminalBoxes, int min) { //pass -ve to indicate no change
+		if (minForTerminalBoxes>=0)
+			this.minForTerminalBoxes = minForTerminalBoxes;
+		if (min>=0) {
 		this.minDist = min;
 		if (!tndExplicitlySet || dist<minDist)
 			dist = minDist;
+		}
 	}
 	public void setTaxonNameDistanceFromTip(int newDist) { //called only by MirrorTree
 		if (newDist>=minDist) {

@@ -12,6 +12,7 @@ import java.awt.Label;
 import java.awt.Rectangle;
 import java.awt.geom.Path2D;
 import java.awt.geom.Rectangle2D;
+import java.awt.geom.RoundRectangle2D;
 import java.util.Enumeration;
 import java.util.Vector;
 
@@ -206,7 +207,7 @@ public class SquareLineTree extends DrawTree implements SquareTipDrawer {
 			boolean current = trianglesForCollapsed.getValue();
 			trianglesForCollapsed.toggleValue(parser.getFirstToken(arguments));
 			if (current!=trianglesForCollapsed.getValue()) {
-				
+
 				Enumeration e = drawings.elements();
 				while (e.hasMoreElements()) {
 					Object obj = e.nextElement();
@@ -524,7 +525,7 @@ class SquareLineTreeDrawing extends TreeDrawing  {
 				if (spotSize<2)
 					spotSize=2;
 			}
-			
+
 			treeDisplay.setMinimumTaxonNameDistanceFromTip(useEdgeWidth(), spotSize/2+ 4);
 		}
 		else if (treeDisplay.getTraceMode())
@@ -614,7 +615,7 @@ class SquareLineTreeDrawing extends TreeDrawing  {
 			}
 		}
 	}
-	
+
 
 	/*_________________________________________________*/
 	public   void drawTree(Tree tree, int drawnRoot, Graphics g) {
@@ -635,16 +636,21 @@ class SquareLineTreeDrawing extends TreeDrawing  {
 		if (MesquiteTree.OK(tree)) {
 			if (tree.getNumNodeSpaces()!=numNodes)
 				resetNumNodes(tree.getNumNodeSpaces());
-		//	if (!tree.nodeExists(getDrawnRoot()))
-		//		setDrawnRoot(tree.getRoot());
+			//	if (!tree.nodeExists(getDrawnRoot()))
+			//		setDrawnRoot(tree.getRoot());
 			calcBranchStuff(tree, getDrawnRoot());
 		}
 	}
 
-
+	float getTerminalBoxWidth(int minSize){
+		int ew = useEdgeWidth()-1;
+		if (ew < minSize)
+			ew = minSize;
+		return ew;
+	}
 	/*_________________________________________________*/
 	public  boolean isInTerminalBox(Tree tree, int node, int xPos, int yPos){
-		int ew = useEdgeWidth()-1;
+		float ew = getTerminalBoxWidth(0);
 		if (treeDisplay.getOrientation()==treeDisplay.UP) 
 			return xPos> x[node] && xPos < x[node]+ew && yPos > y[node]-ew-3 && yPos < y[node]-3;
 			else if (treeDisplay.getOrientation()==treeDisplay.DOWN)
@@ -656,8 +662,13 @@ class SquareLineTreeDrawing extends TreeDrawing  {
 						else 
 							return xPos> x[node] && xPos < x[node]+ew && yPos > y[node] && yPos < y[node] + ew;
 	}
+
 	/*_________________________________________________*/
 	public  void fillTerminalBoxWithColors(Tree tree, int node, ColorDistribution colors, Graphics g){
+		fillTerminalBoxWithColorsMinSize(tree, node, colors, g, 0, 0);
+	}
+	/*_________________________________________________*/
+	public  void fillTerminalBoxWithColorsMinSize(Tree tree, int node, ColorDistribution colors, Graphics g, int minSize, float arc){
 		if (showSpots()){
 			fillBranchWithColors(tree, node, colors, g);
 			return;
@@ -665,29 +676,57 @@ class SquareLineTreeDrawing extends TreeDrawing  {
 		float localInset = 0;
 		if (getShowEdgeLines())
 			localInset=inset;
-		Rectangle2D box;
-		Rectangle2D colorBox;
 		Graphics2D g2 = (Graphics2D)g;
-		int numColors = colors.getNumColors();
-		float ew = useEdgeWidth()-1;
-		// the 0.5 values are the halfline width to deal with pen positioning
-		if (treeDisplay.getOrientation()==treeDisplay.UP) 
-			box = new Rectangle2D.Double(x[node]+0.5, y[node]-ew-2, ew, ew);
-		else if (treeDisplay.getOrientation()==treeDisplay.DOWN)
-			box = new Rectangle2D.Double(x[node]+0.5, y[node]+2, ew, ew);
-		else  if (treeDisplay.getOrientation()==treeDisplay.RIGHT) 
-			box = new Rectangle2D.Double(x[node]+2, y[node]+0.5, ew, ew);
-		else  if (treeDisplay.getOrientation()==treeDisplay.LEFT)
-			box = new Rectangle2D.Double(x[node]-ew-2, y[node]+0.5, ew, ew);
-		else 
-			box = new Rectangle2D.Double(x[node], y[node], ew, ew);
-		for (int i=0; i<numColors; i++) {
-			g2.setColor(colors.getColor(i, !tree.anySelected()|| tree.getSelected(node)));
-			colorBox = new Rectangle2D.Double(box.getX() + (i*box.getWidth()/numColors), box.getY(), box.getWidth()-  (i*box.getWidth()/numColors), box.getHeight());
-			g2.fill(colorBox);
+		if (arc<=0F){
+			Rectangle2D box;
+			Rectangle2D colorBox;
+			int numColors = colors.getNumColors();
+			float ew = getTerminalBoxWidth(minSize);
+			float centerOffset = (float)((ew-useEdgeWidth())/2.0);
+			// the 0.5 values are the halfline width to deal with pen positioning
+			if (treeDisplay.getOrientation()==treeDisplay.UP) 
+				box = new Rectangle2D.Double(x[node]-centerOffset, y[node]-ew-2, ew, ew);
+			else if (treeDisplay.getOrientation()==treeDisplay.DOWN)
+				box = new Rectangle2D.Double(x[node]-centerOffset, y[node]+2, ew, ew);
+			else  if (treeDisplay.getOrientation()==treeDisplay.RIGHT) 
+				box = new Rectangle2D.Double(x[node]+2, y[node]-centerOffset, ew, ew);
+			else  if (treeDisplay.getOrientation()==treeDisplay.LEFT)
+				box = new Rectangle2D.Double(x[node]-ew-2, y[node]-centerOffset, ew, ew);
+			else 
+				box = new Rectangle2D.Double(x[node], y[node], ew, ew);
+			for (int i=0; i<numColors; i++) {
+				g2.setColor(colors.getColor(i, !tree.anySelected()|| tree.getSelected(node)));
+				colorBox = new Rectangle2D.Double(box.getX() + (i*box.getWidth()/numColors), box.getY(), box.getWidth()-  (i*box.getWidth()/numColors), box.getHeight());
+				g2.fill(colorBox);
+			}
+			g2.setColor(treeDisplay.getBranchColor(node));
+			g2.draw(box);
 		}
-		g2.setColor(treeDisplay.getBranchColor(node));
-		g2.draw(box);
+		else {
+			RoundRectangle2D box;
+			RoundRectangle2D colorBox;
+			int numColors = colors.getNumColors();
+			float ew = getTerminalBoxWidth(minSize);
+			float centerOffset = (float)((ew-useEdgeWidth())/2.0);
+			// the 0.5 values are the halfline width to deal with pen positioning
+			if (treeDisplay.getOrientation()==treeDisplay.UP) 
+				box = new RoundRectangle2D.Double(x[node]-centerOffset, y[node]-ew-2, ew, ew, arc, arc);
+			else if (treeDisplay.getOrientation()==treeDisplay.DOWN)
+				box = new RoundRectangle2D.Double(x[node]-centerOffset, y[node]+2, ew, ew, arc, arc);
+			else  if (treeDisplay.getOrientation()==treeDisplay.RIGHT) 
+				box = new RoundRectangle2D.Double(x[node]+2, y[node]-centerOffset, ew, ew, arc, arc);
+			else  if (treeDisplay.getOrientation()==treeDisplay.LEFT)
+				box = new RoundRectangle2D.Double(x[node]-ew-2, y[node]-centerOffset, ew, ew, arc, arc);
+			else 
+				box = new RoundRectangle2D.Double(x[node], y[node], ew, ew, arc, arc);
+			for (int i=0; i<numColors; i++) {
+				g2.setColor(colors.getColor(i, !tree.anySelected()|| tree.getSelected(node)));
+				colorBox = new RoundRectangle2D.Double(box.getX() + (i*box.getWidth()/numColors), box.getY(), box.getWidth()-  (i*box.getWidth()/numColors), box.getHeight(), arc, arc);
+				g2.fill(colorBox);
+			}
+			g2.setColor(treeDisplay.getBranchColor(node));
+			g2.draw(box);
+		}
 	}
 	/*_________________________________________________*
 	public void fillBranchWithMissingData(Tree tree, int node, Graphics g) {
@@ -721,7 +760,7 @@ class SquareLineTreeDrawing extends TreeDrawing  {
 		//		return true;
 		return ownerModule.showSpots.getValue();
 	}
-	
+
 	/*_________________________________________________*/
 	int triangleFillMode = 3; //options currently: -1 opaque; 0, don't fill, i.e. fully transparent; 2 very transparent, 3 more opaque, 5 more opaque
 	/*_________________________________________________*/
@@ -742,21 +781,21 @@ class SquareLineTreeDrawing extends TreeDrawing  {
 				if (!(showSpots() && ownerModule.colorCirclesOnly)){
 					if (tree.isLeftmostTerminalOfCollapsedClade(node)){
 						if (triangleWidthInCollapsed()>0){ //this will have to re-ask about the number of colors, since now it's the ancestor's
-								if (numColors==1){
-									g.setColor(colors.getColor(0, !tree.anySelected()|| tree.getSelected(node)));
-									DrawTreeUtil.fillOneTriangle(treeDisplay, x, y, useEdgeWidth(), useEdgeWidth(), localInset, triangleFillMode, tree, g, node);
-								}
-								else {
-									double thickness = 1.0*fillWidth/colors.getNumColors();
-									for (int i=0; i<numColors; i++) {
-										double start = i*thickness;
-										color = colors.getColor(i);
-										if (color != null){
-											g.setColor(color);
-											DrawTreeUtil.fillOneTriangle(treeDisplay, x, y, useEdgeWidth(), thickness, start, 0, tree, g, node);
-										}
+							if (numColors==1){
+								g.setColor(colors.getColor(0, !tree.anySelected()|| tree.getSelected(node)));
+								DrawTreeUtil.fillOneTriangle(treeDisplay, x, y, useEdgeWidth(), useEdgeWidth(), localInset, triangleFillMode, tree, g, node);
+							}
+							else {
+								double thickness = 1.0*fillWidth/colors.getNumColors();
+								for (int i=0; i<numColors; i++) {
+									double start = i*thickness;
+									color = colors.getColor(i);
+									if (color != null){
+										g.setColor(color);
+										DrawTreeUtil.fillOneTriangle(treeDisplay, x, y, useEdgeWidth(), thickness, start, 0, tree, g, node);
 									}
-								
+								}
+
 							}
 						}
 						else {
@@ -775,36 +814,36 @@ class SquareLineTreeDrawing extends TreeDrawing  {
 				if (!(showSpots() && ownerModule.colorCirclesOnly))
 					if (tree.isLeftmostTerminalOfCollapsedClade(node) && triangleWidthInCollapsed()>0){
 						if (numColors==1){
-								g.setColor(colors.getColor(0));
-								DrawTreeUtil.fillOneTriangle(treeDisplay, x, y, useEdgeWidth(),useEdgeWidth(), localInset, triangleFillMode, tree, g, node);
-							}
-							else {
-								double thickness = 1.0*fillWidth/colors.getNumColors();
-								for (int i=0; i<numColors; i++) {
-									double start = i*thickness;
-									color = colors.getColor(i);
-									if (color != null){
-										g.setColor(color);
-										DrawTreeUtil.fillOneTriangle(treeDisplay, x, y, useEdgeWidth(), thickness, start, 0, tree, g, node);
-									}
+							g.setColor(colors.getColor(0));
+							DrawTreeUtil.fillOneTriangle(treeDisplay, x, y, useEdgeWidth(),useEdgeWidth(), localInset, triangleFillMode, tree, g, node);
+						}
+						else {
+							double thickness = 1.0*fillWidth/colors.getNumColors();
+							for (int i=0; i<numColors; i++) {
+								double start = i*thickness;
+								color = colors.getColor(i);
+								if (color != null){
+									g.setColor(color);
+									DrawTreeUtil.fillOneTriangle(treeDisplay, x, y, useEdgeWidth(), thickness, start, 0, tree, g, node);
 								}
+							}
 						}
 					}
 					else
 						for (int i=0; i<numColors; i++) {
-						if ((color = colors.getColor(i, !tree.anySelected()|| tree.getSelected(node)))!=null)
-							g.setColor(color);
-						float thickness = fillWidth/numColors;
-						float start = i*thickness+localInset;
-						if (tree.isLeftmostTerminalOfCollapsedClade(node)){
-							if (triangleWidthInCollapsed()==0){
-								DrawTreeUtil.fillOneSquareLineBranch(treeDisplay, xSolid, ySolid, useEdgeWidth(), treeDisplay.getTree(), g, node, start,  thickness, localInset,emphasizeNodes(),nodePoly(node), defaultStroke);
-								DrawTreeUtil.fillOneSquareLineBranch(treeDisplay, xDashed, yDashed, useEdgeWidth(), treeDisplay.getTree(), g, node, start,  thickness, localInset,emphasizeNodes(),nodePoly(node), dashedStroke);
+							if ((color = colors.getColor(i, !tree.anySelected()|| tree.getSelected(node)))!=null)
+								g.setColor(color);
+							float thickness = fillWidth/numColors;
+							float start = i*thickness+localInset;
+							if (tree.isLeftmostTerminalOfCollapsedClade(node)){
+								if (triangleWidthInCollapsed()==0){
+									DrawTreeUtil.fillOneSquareLineBranch(treeDisplay, xSolid, ySolid, useEdgeWidth(), treeDisplay.getTree(), g, node, start,  thickness, localInset,emphasizeNodes(),nodePoly(node), defaultStroke);
+									DrawTreeUtil.fillOneSquareLineBranch(treeDisplay, xDashed, yDashed, useEdgeWidth(), treeDisplay.getTree(), g, node, start,  thickness, localInset,emphasizeNodes(),nodePoly(node), dashedStroke);
+								}
 							}
+							else if (!tree.withinCollapsedClade(node))
+								DrawTreeUtil.fillOneSquareLineBranch(treeDisplay,x,y,useEdgeWidth(), treeDisplay.getTree(), g, node, start,  thickness, localInset,emphasizeNodes(),nodePoly(node), defaultStroke) ;
 						}
-						else if (!tree.withinCollapsedClade(node))
-							DrawTreeUtil.fillOneSquareLineBranch(treeDisplay,x,y,useEdgeWidth(), treeDisplay.getTree(), g, node, start,  thickness, localInset,emphasizeNodes(),nodePoly(node), defaultStroke) ;
-					}
 				if (showSpots()){
 					boolean select = !tree.anySelected()|| tree.getSelected(node);
 					double xN = x[node] + centeringOffsetX;
