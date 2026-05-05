@@ -204,6 +204,7 @@ public class TreeListAttachment extends TreeListAssistant {
 				Listable L = ListDialog.queryList(containerOfModule(), "Select item", "What attachments to tree should be shown?", MesquiteString.helpString, names, 0);
 				if (L!=null)
 					nameOfAttached = L.getName();
+				else iQuit();
 			} 
 
 		}

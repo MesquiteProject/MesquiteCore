@@ -537,6 +537,7 @@ class MultiTreeWindow extends MesquiteWindow implements KeyListener, Commandable
 		treeDisplays =treeDrawCoordTask.createTreeDisplays(maxDisplays,taxa, this);
 		setTreeSource(treeSourceTask);
 
+		setIcon(MesquiteModule.getRootImageDirectoryPath() + "windowIcons/trees.gif");
 
 		containingPanel = new MultiTreeScrollPanel(this);
 		addToWindow(containingPanel);

@@ -16,6 +16,7 @@ package mesquite.lists.TreesList;
 
 import java.util.Enumeration;
 
+import mesquite.categ.lib.MolecularData;
 import mesquite.lib.Associable;
 import mesquite.lib.CommandChecker;
 import mesquite.lib.EmployeeNeed;
@@ -377,6 +378,8 @@ class TreesListWindow extends ListableVectorWindow implements MesquiteListener {
 		if (currentTreeBlock!=null)
 			currentTreeBlock.addListener(this); 
 		getTable().setRowAssociable(currentTreeBlock);
+		setIcon(MesquiteModule.getRootImageDirectoryPath() + "windowIcons/list.gif");
+
 		resetTitle();
 	}
 	/*.................................................................................................................*/
