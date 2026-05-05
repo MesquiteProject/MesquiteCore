@@ -14,6 +14,7 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
 package mesquite.lists.BooleanForTreeList;
 /*~~  */
 
+import java.awt.Color;
 import java.util.Vector;
 
 import mesquite.lib.CommandChecker;
@@ -33,10 +34,13 @@ import mesquite.lib.duties.BooleanForTree;
 import mesquite.lib.table.MesquiteTable;
 import mesquite.lib.tree.Tree;
 import mesquite.lib.tree.TreeVector;
+import mesquite.lib.ui.MesquiteColorTable;
 import mesquite.lists.lib.TreeListAssistant;
 
 /* ======================================================================== */
 public class BooleanForTreeList extends TreeListAssistant implements MesquiteListener, Pausable{
+	MesquiteBoolean shadeCells = new MesquiteBoolean(false);
+
 	/*.................................................................................................................*/
 	public String getName() {
 		return "Boolean for Tree (in List of Trees window)";
@@ -72,6 +76,7 @@ public class BooleanForTreeList extends TreeListAssistant implements MesquiteLis
 				return sorry("Boolean for tree (for list) can't start because no calculator module was successfully hired");
 			}
 		}
+		addCheckMenuItem(null, "Color Cells", makeCommand("toggleShadeCells",  this), shadeCells); 
 		return true;
 	}
 	/** Returns whether or not it's appropriate for an employer to hire more than one instance of this module.  
@@ -91,9 +96,11 @@ public class BooleanForTreeList extends TreeListAssistant implements MesquiteLis
 		Snapshot temp = new Snapshot();
 		temp.addLine("suppress"); 
 		temp.addLine("setValueTask ", booleanTask); 
+		temp.addLine("toggleShadeCells " + shadeCells.toOffOnString());
 		temp.addLine("desuppress"); 
 		return temp;
 	}
+	
 	/*.................................................................................................................*/
 	public Object doCommand(String commandName, String arguments, CommandChecker checker) {
 		if (checker.compare(this.getClass(), "Sets module that calculates a boolean for a tree", "[name of module]", commandName, "setValueTask")) {
@@ -105,6 +112,14 @@ public class BooleanForTreeList extends TreeListAssistant implements MesquiteLis
 					parametersChanged();
 				}
 				return temp;
+			}
+		}
+		else if (checker.compare(this.getClass(), "Sets whether or not to color cells", "[on or off]", commandName, "toggleShadeCells")) {
+			boolean current = shadeCells.getValue();
+			shadeCells.toggleValue(parser.getFirstToken(arguments));
+			if (current!=shadeCells.getValue()) {
+				outputInvalid();
+				parametersChanged();
 			}
 		}
 		else if (checker.compare(this.getClass(), "Suppresses calculation", null, commandName, "suppress")) {
@@ -230,6 +245,23 @@ public class BooleanForTreeList extends TreeListAssistant implements MesquiteLis
 		if (booleanTask==null)
 			return "888888";
 		return booleanTask.getVeryShortName()+"   ";
+	}
+	public Color getColorForTree(int ic){
+		if (booleanList==null)
+			return null;
+		if (booleanList.getValue(ic)<0)
+			return null;
+		else if (booleanList.getValue(ic)==1)
+			return MesquiteColorTable.getGreenScale(0.3, 0, 1, false);
+		else
+			return MesquiteColorTable.getRedScale(0.3, 0, 1, false);
+		//return na.toString(ic);
+	}
+	/** Gets background color for cell for row ic.  Override it if you want to change the color from the default. */
+	public Color getBackgroundColorOfCell(int ic, boolean selected){
+		if (!shadeCells.getValue())
+			return null;
+		return getColorForTree(ic);
 	}
 	/*.................................................................................................................*/
 	public boolean isPrerelease(){
