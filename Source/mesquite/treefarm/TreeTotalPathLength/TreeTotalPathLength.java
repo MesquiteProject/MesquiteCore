@@ -15,12 +15,13 @@ package mesquite.treefarm.TreeTotalPathLength;
 
 import mesquite.lib.MesquiteNumber;
 import mesquite.lib.MesquiteString;
+import mesquite.lib.duties.BranchLengthStatistic;
 import mesquite.lib.duties.NumberForTree;
 import mesquite.lib.tree.Tree;
 
 
 /* ======================================================================== */
-public class TreeTotalPathLength extends NumberForTree {
+public class TreeTotalPathLength extends NumberForTree implements BranchLengthStatistic {
 	/*.................................................................................................................*/
 	public boolean startJob(String arguments, Object condition, boolean hiredByName) {
  		return true;
@@ -86,5 +87,10 @@ public class TreeTotalPathLength extends NumberForTree {
   	 public String getExplanation() {
 		return "Calculates the sum of branch lengths of the tree, treating unassigned lengths as 0.  The length of the root is counted.";
    	 }
+ 	/*.................................................................................................................*/
+ 	public boolean requestPrimaryChoice(){
+ 		return true;
+ 	}
+
 }
 

@@ -25,9 +25,10 @@ import mesquite.lib.MesquiteString;
 import mesquite.lib.duties.NumberForTree;
 import mesquite.lib.tree.Tree;
 import mesquite.lib.tree.TreeUtil;
+import mesquite.lib.duties.BranchLengthStatistic;
 
 /* ======================================================================== */
-public class TreeDiameter extends NumberForTree {
+public class TreeDiameter extends NumberForTree implements BranchLengthStatistic {
 	double[] pathLengths = null;
 	/*.................................................................................................................*/
 	public boolean startJob(String arguments, Object condition, boolean hiredByName) {
@@ -62,6 +63,10 @@ public class TreeDiameter extends NumberForTree {
 		return NEXTRELEASE;  
 	}
 
+	/*.................................................................................................................*/
+	public boolean requestPrimaryChoice(){
+		return true;
+	}
 	/*.................................................................................................................*/
 	public boolean isSubstantive(){
 		return true;

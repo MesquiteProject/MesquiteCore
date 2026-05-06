@@ -1545,6 +1545,7 @@ class TreesRPanel extends ElementPanel {
 
 		addCommand(false, null, "View\nConsensus", "View Consensus", new MesquiteCommand("showConsensusInWindow", element));
 		addCommand(false, "trees.gif", "List &\nManage\nTrees", "List & Manage Trees", new MesquiteCommand("showMe", element));
+		addCommand(false, "trees.gif", "Show\nIn\nMulti-Tree\nWindow", "Show in Multi-Tree Window", new MesquiteCommand("showMulti", element));
 		addCommand(false, "chart.gif", "Chart\nTrees", "Chart Trees", new MesquiteCommand("chart", this));
 		addCommand(true, null, "-", "-", null);
 

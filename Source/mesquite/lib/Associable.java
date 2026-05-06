@@ -391,6 +391,9 @@ public ListableVector getAssociatesOfKind(int kind){
 	public long getVersionNumber(){
 		return versionNumber;
 	}
+	public void incrementVersionQuietly(){
+		versionNumber++;
+	}
 	
 	protected void incrementVersion(int code, boolean notify){
 		versionNumber++;

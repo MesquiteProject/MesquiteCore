@@ -15,11 +15,13 @@ package mesquite.lib.tree;
 
 import java.awt.MenuItem;
 import java.util.Vector;
+import java.util.zip.CRC32;
 
 import mesquite.lib.CommandChecker;
 import mesquite.lib.CommandRecord;
 import mesquite.lib.Commandable;
 import mesquite.lib.CompatibilityChecker;
+import mesquite.lib.Debugg;
 import mesquite.lib.EmployerEmployee;
 import mesquite.lib.Identifiable;
 import mesquite.lib.Listable;
@@ -37,6 +39,7 @@ import mesquite.lib.MesquiteThread;
 import mesquite.lib.MesquiteTrunk;
 import mesquite.lib.Notification;
 import mesquite.lib.ParseUtil;
+import mesquite.lib.Puppeteer;
 import mesquite.lib.StringUtil;
 import mesquite.lib.duties.ElementManager;
 import mesquite.lib.taxa.Taxa;
@@ -76,6 +79,24 @@ public class TreeVector extends ListableVector implements Trees, Commandable, Id
 	public String getUniqueID() {
 		return uniqueID;
 	}
+	
+	//accumulates checksum for vector's trees
+	public void getVersionsChecksum(CRC32 checksum){
+		for (int it = 0; it< size(); it++){
+			Tree tree = getTree(it);
+			checksum.update(Long.toString(tree.getVersionNumber()).getBytes());
+			checksum.update(Long.toString(tree.getID()).getBytes());
+		}
+	}
+
+	//accumulates checksum for vector's trees
+	public void getFormChecksum(CRC32 checksum){
+		for (int it = 0; it< size(); it++){
+			Tree tree = getTree(it);
+			tree.getFormChecksum(tree.getRoot(), checksum);
+		}
+	}
+
 	public String getDefaultIconFileName(){ //for small 16 pixel icon at left of main bar
 		return "treesSmall.gif";
 	}
@@ -371,6 +392,29 @@ public class TreeVector extends ListableVector implements Trees, Commandable, Id
 					((MesquiteModule)manager).doCommand("showConsensusInWindow" ,Integer.toString(getFile().getProject().getFileElementNumber(this, getClass())), CommandChecker.defaultChecker);
 					MesquiteThread.setCurrentCommandRecord(oldR);
 				}
+			}
+			return null;
+		}
+		else if (checker.compare(this.getClass(), "Shows trees in multi-tree window", null, commandName, "showMulti")) {
+			MesquiteModule bfc = getProject().getCoordinatorModule();
+			if (bfc!=null) {
+					CommandRecord oldR = MesquiteThread.getCurrentCommandRecord();
+					CommandRecord scr = new CommandRecord(true);
+					MesquiteThread.setCurrentCommandRecord(scr);
+					String script = "newAssistant  #mesquite.trees.MultiTreeWindowMaker.MultiTreeWindowMaker;\ntell It;\nsetTaxa "
+					+ getProject().getTaxaReferenceExternal(taxa)
+					+ ";\ngetTreeSource #mesquite.trees.DefiniteTreeSource.DefiniteTreeSource;\ntell It;"
+					+ "\nsetTreeSource #mesquite.trees.StoredTrees.StoredTrees;\ntell It;\nsetTreeBlock "
+					+ Integer.toString(getProject().getFileElementNumber(this, getClass())) + ";"
+					+ "\nsetTreeBlockID " + StringUtil.tokenize(getUniqueID())+";\nendTell;\nendTell;\nmakeWindow;\n"
+
+					+ "tell It;\nsetActive;\nsetAsFront;\nendTell;\nshowWindow;\nendTell;\n";
+					Puppeteer p = new Puppeteer(bfc);
+					MesquiteInteger pos = new MesquiteInteger(0);
+					MesquiteModule.incrementMenuResetSuppression();	
+					Object obj = p.sendCommands(bfc, script, pos, "", false, null,CommandChecker.defaultChecker);
+					MesquiteModule.decrementMenuResetSuppression();	
+					MesquiteThread.setCurrentCommandRecord(oldR);
 			}
 			return null;
 		}

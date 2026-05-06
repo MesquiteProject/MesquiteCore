@@ -17,10 +17,11 @@ import mesquite.lib.MesquiteNumber;
 import mesquite.lib.MesquiteString;
 import mesquite.lib.duties.NumberForTree;
 import mesquite.lib.tree.Tree;
+import mesquite.lib.duties.BranchLengthStatistic;
 
 
 /* ======================================================================== */
-public class TreeDepth extends NumberForTree {
+public class TreeDepth extends NumberForTree implements BranchLengthStatistic {
 	/*.................................................................................................................*/
 	public boolean startJob(String arguments, Object condition, boolean hiredByName) {
  		return true;
@@ -81,5 +82,9 @@ public class TreeDepth extends NumberForTree {
   	 public String getExplanation() {
 		return "Calculates the deepest path (in branch length) from terminals to the root, treating unassigned lengths as 0.  The length of the root is not counted.";
    	 }
+ 	/*.................................................................................................................*/
+ 	public boolean requestPrimaryChoice(){
+ 		return true;
+ 	}
 }
 

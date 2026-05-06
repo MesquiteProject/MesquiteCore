@@ -465,10 +465,14 @@ class TreesListWindow extends ListableVectorWindow implements MesquiteListener {
 		return true;  //TODO: respond
 	}
 	/*.................................................................................................................*/
+	long previousNotification = 0;
 	/** passes which object changed*/
 	public void changed(Object caller, Object obj, Notification notification){
 		UndoReference undoReference = Notification.getUndoReference(notification);
 		int code = Notification.getCode(notification);
+		if (notification.getNotificationNumber() == previousNotification) //already received
+			return;
+		previousNotification = notification.getNotificationNumber();
 		if (obj instanceof TreeVector && (TreeVector)obj ==currentTreeBlock) {
 			if (code==MesquiteListener.NAMES_CHANGED) {
 				getTable().redrawRowNames();
@@ -487,7 +491,7 @@ class TreesListWindow extends ListableVectorWindow implements MesquiteListener {
 				else
 					setUndoer();
 			}
-			else if (code==MesquiteListener.PARTS_DELETED) {
+			else if (code==MesquiteListener.PARTS_DELETED || code == MesquiteListener.BRANCHES_REARRANGED) {
 				getTable().setNumRows(currentTreeBlock.size());
 				getTable().synchronizeRowSelection(currentTreeBlock);
 				treesListModule.forceRecalculations();

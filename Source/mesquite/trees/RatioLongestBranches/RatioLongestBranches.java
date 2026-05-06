@@ -29,9 +29,10 @@ import mesquite.lib.duties.NumberForTree;
 import mesquite.lib.tree.Tree;
 import mesquite.lib.tree.TreeUtil;
 import mesquite.lib.ui.ExtensibleDialog;
+import mesquite.lib.duties.BranchLengthStatistic;
 
 /** this is a silly little module that can be used as a demonstration for NumberForTree modules */
-public class RatioLongestBranches extends NumberForTree {
+public class RatioLongestBranches extends NumberForTree  implements BranchLengthStatistic {
 	MesquiteNumber nt;
 	boolean unrooted = true;
 
@@ -53,6 +54,10 @@ public class RatioLongestBranches extends NumberForTree {
    	 public boolean isPrerelease(){
    	 	return false;
    	 }
+ 	/*.................................................................................................................*/
+ 	public boolean requestPrimaryChoice(){
+ 		return true;
+ 	}
  	/*.................................................................................................................*/
  	/** returns the version number at which this module was first released.  If 0, then no version number is claimed.  If a POSITIVE integer
  	 * then the number refers to the Mesquite version.  This should be used only by modules part of the core release of Mesquite.

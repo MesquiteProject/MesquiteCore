@@ -13,6 +13,8 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
  */
 package mesquite.lib.tree;
 
+import java.util.zip.CRC32;
+
 import mesquite.lib.Bits;
 import mesquite.lib.DoubleArray;
 import mesquite.lib.IntegerArray;
@@ -50,6 +52,9 @@ public interface Tree extends Listable {
 	public boolean isLocked();
 	public long getID();
 	public long getVersionNumber();
+	/** updates the checksum for the node sequence, tips numbers, and branch lengths */
+	public void getFormChecksum(int node, CRC32 checksum);
+
 	public Taxa getTaxa();
 	public int getRoot();
 	public int getSubRoot();

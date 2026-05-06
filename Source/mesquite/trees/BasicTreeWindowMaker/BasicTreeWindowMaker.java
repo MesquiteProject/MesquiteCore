@@ -260,8 +260,8 @@ public class BasicTreeWindowMaker extends TreeWindowMaker implements Commandable
 		if (MesquiteThread.isScripting() || (arguments == null || !arguments.equalsIgnoreCase("edit")))
 			treeSourceTask = (TreeSource) hireCompatibleEmployee(TreeSource.class, condition, "Source of trees (Tree window)");
 		else {
-		treeSourceTask = (TreeSource) hireNamedEmployee(TreeSource.class, "$ #StoredTrees laxMode", taxa, false); 
-		editMode = true;
+			treeSourceTask = (TreeSource) hireNamedEmployee(TreeSource.class, "$ #StoredTrees laxMode", taxa, false); 
+			editMode = true;
 		}
 
 		if (treeSourceTask == null)
@@ -341,7 +341,7 @@ public class BasicTreeWindowMaker extends TreeWindowMaker implements Commandable
 		return super.findMenuAmongEmployers(label);
 	}
 	/*.................................................................................................................*/
-	 /**Returns tree vector.*/
+	/**Returns tree vector.*/
 	public TreeVector getCurrentTreeVector(Taxa taxa){
 		if (treeSourceTask instanceof TreeVectorHolder){
 			return ((TreeVectorHolder)treeSourceTask).getCurrentTreeVector(taxa);
@@ -765,7 +765,7 @@ public class BasicTreeWindowMaker extends TreeWindowMaker implements Commandable
 							TreeDisplayAsstShowToggleable tdawsc = (TreeDisplayAsstShowToggleable)mb;
 							tdawsc.toggleShowExtras();
 							return null;
-							
+
 						}
 						count++;
 					}
@@ -831,7 +831,7 @@ public class BasicTreeWindowMaker extends TreeWindowMaker implements Commandable
 		else if (employee instanceof TreeSource) {
 			if (suppressEPCResponse)
 				return;
-			
+
 			int code = Notification.getCode(notification);
 			if (code == MesquiteListener.BLOCK_DELETED && (employee.nameMatches("StoredTrees") || (employee.nameMatches("ConsensusTree")))) {
 				disconnectFromTreeBlock(true);
@@ -933,11 +933,11 @@ public class BasicTreeWindowMaker extends TreeWindowMaker implements Commandable
 				basicTreeWindow.addAssistant(tca);
 			}
 		}
-		
+
 		//println("@
 		MesquiteSubmenuSpec showHideSM = addSubmenu(null, "Show/Hide", new MesquiteCommand("showExtra", this), getEmployeeVector());
 		showHideSM.setListableFilter(TreeDisplayAsstShowToggleable.class);
-		
+
 		btw.sizeDisplay();
 		MesquiteMenuSpec aux = addAuxiliaryMenu("Analysis:Tree");
 		MesquiteCommand mC = makeCommand("newWindowAssistant", basicTreeWindow);
@@ -2297,7 +2297,7 @@ class BasicTreeWindow extends MesquiteWindow implements Fittable, MesquiteListen
 			treeDisplay.repaint();
 		}
 		else {
-				resetForTreeSource(setToZero, true, false, MesquiteInteger.inapplicable);
+			resetForTreeSource(setToZero, true, false, MesquiteInteger.inapplicable);
 		}
 	}
 
@@ -2488,7 +2488,7 @@ class BasicTreeWindow extends MesquiteWindow implements Fittable, MesquiteListen
 		palette.paletteScroll.setMinimumValue(MesquiteTree.toExternal(0));
 		int numTrees = treeSourceTask.getNumberOfTrees(taxa);
 		palette.paletteScroll.setMaximumValue(MesquiteTree.toExternal(numTrees - 1));
-		
+
 		if (windowModule.pinToLastTree.getValue() || (currentTreeNumber >= numTrees && MesquiteInteger.isCombinable(numTrees))) {
 			currentTreeNumber = numTrees - 1;
 			goToTreeNumber(currentTreeNumber, true);
@@ -2999,10 +2999,15 @@ class BasicTreeWindow extends MesquiteWindow implements Fittable, MesquiteListen
 				return null;
 			if (originalTree != null && treeEdited) {
 				((MesquiteTree) originalTree).setToClone(tree);
-				if (originalTree != null)
-					((MesquiteTree) originalTree).notifyListeners(this, new Notification(MesquiteListener.BRANCHES_REARRANGED));
-				if (originalTree != null && ((MesquiteTree) originalTree).getTreeVector() != null)
-					((MesquiteTree) originalTree).getTreeVector().notifyListeners(this, new Notification(MesquiteListener.PARTS_CHANGED));
+				Notification notification = new Notification(MesquiteListener.BRANCHES_REARRANGED);
+				if (originalTree != null) {
+					((MesquiteTree) originalTree).notifyListeners(this, notification);
+					TreeVector tv = ((MesquiteTree) originalTree).getTreeVector();
+					if (tv != null){
+						tv.incrementVersionQuietly(); //so that things relying on versin to decide if to update know that a tree has changed
+						tv.notifyListeners(this, notification);
+					}
+				}
 				treeEdited = false;
 				zapPreviousEdited(true);
 				editedByHand = false;
@@ -3031,8 +3036,8 @@ class BasicTreeWindow extends MesquiteWindow implements Fittable, MesquiteListen
 			resetTitle();
 		}
 		else if (checker.compare(this.getClass(), "Goes to the previous tree in the tree source.  THIS RUNS ON GUI THREAD.", null, commandName, "previousTree")) {
-		if (windowModule.pinToLastTree.getValue())
-			windowModule.logln("Tree window is pinned to the last tree. Unpin via the menu item Tree>Pin to Last Tree");
+			if (windowModule.pinToLastTree.getValue())
+				windowModule.logln("Tree window is pinned to the last tree. Unpin via the menu item Tree>Pin to Last Tree");
 			palette.paletteScroll.decrement(0);
 		}
 		else if (checker.compare(this.getClass(), "Goes to the last tree in the tree source.  THIS RUNS ON GUI THREAD.", null, commandName, "lastTree")) {
@@ -3044,7 +3049,7 @@ class BasicTreeWindow extends MesquiteWindow implements Fittable, MesquiteListen
 			stepThroughTrees();
 		}
 		else if (checker.compare(this.getClass(), "Pins the tree window to the last tree.", null, commandName, "pinToLastTree")) {
-			
+
 			boolean current = windowModule.pinToLastTree.getValue();
 			windowModule.pinToLastTree.toggleValue(new Parser().getFirstToken(arguments));
 			if (current!=windowModule.pinToLastTree.getValue() && windowModule.pinToLastTree.getValue()){
@@ -3053,7 +3058,7 @@ class BasicTreeWindow extends MesquiteWindow implements Fittable, MesquiteListen
 			}
 			else if (!MesquiteThread.isScripting()) // if scripting, then current tree will have been set that way
 				goToTreeNumber(0, true);
-				
+
 			setScrollEnabled(!windowModule.pinToLastTree.getValue());
 		}
 		else if (checker.compare(this.getClass(), "Goes to the next tree in the tree source.", null, commandName, "goToNextTree")) {
@@ -4139,7 +4144,7 @@ class BasicTreeWindow extends MesquiteWindow implements Fittable, MesquiteListen
 		taxonTouched = -1;
 		MesquiteDouble fraction = new MesquiteDouble();
 		int branchFound = findBranch(x, y, fraction);
-	if (branchFound != 0) { // in a branch
+		if (branchFound != 0) { // in a branch
 			branchFrom = branchFound;
 			if (currentTreeTool.informTransfer()) {
 				// branchFrom=branchFound;
@@ -4559,8 +4564,8 @@ class BasicTreeWindow extends MesquiteWindow implements Fittable, MesquiteListen
 		int node = tree.nodeOfTaxonNumber(taxon);
 		if (tree.isLeftmostTerminalOfCollapsedClade(node)){
 			// clade is collapsed; operate on whole clade
-				taxa.setSelected(taxon, true);
-				selectAllTaxaInClade(tree, node);
+			taxa.setSelected(taxon, true);
+			selectAllTaxaInClade(tree, node);
 		}
 		else if (commandDown)
 			taxa.setSelected(taxon, !taxa.getSelected(taxon));
@@ -5028,7 +5033,7 @@ class BasicTreeWindow extends MesquiteWindow implements Fittable, MesquiteListen
 			}
 		}
 		return null;
-		}
+	}
 	/* ................................................................................................................. */
 	public Tree setTree(String TreeDescription, boolean acceptT0Names) {
 		return setTree(TreeDescription, null, acceptT0Names);
@@ -5092,7 +5097,7 @@ class BasicTreeWindow extends MesquiteWindow implements Fittable, MesquiteListen
 	Tree setTree(String TreeDescription, String name, boolean acceptT0Names) {
 		if (ownerModule == null || ownerModule.isDoomed())
 			return null;
-	if (taxa != null && taxa.isDoomed()) {
+		if (taxa != null && taxa.isDoomed()) {
 			ownerModule.iQuit();
 			return null;
 		}
@@ -5154,7 +5159,7 @@ class BasicTreeWindow extends MesquiteWindow implements Fittable, MesquiteListen
 
 	/* ................................................................................................................. */
 	Tree setCloneOfTree(Tree treeToClone, boolean resetOriginal, MesquiteBoolean editStatusToSet, boolean suppressTreeSet) { // displays copy for editing
-	if (taxa != null && taxa.isDoomed()) {
+		if (taxa != null && taxa.isDoomed()) {
 			ownerModule.iQuit();
 			return null;
 		}
@@ -5244,7 +5249,7 @@ class BasicTreeWindow extends MesquiteWindow implements Fittable, MesquiteListen
 			hookCurrentTree();
 			long nowTreeID = tree.getID();
 			long nowTreeVersion = tree.getVersionNumber();
-			
+
 			if (nowTreeID != treeID || nowTreeVersion != treeVersion)
 				treeChanged(true);
 			return tree;

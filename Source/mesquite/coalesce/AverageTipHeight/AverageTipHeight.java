@@ -24,9 +24,10 @@ import mesquite.lib.MesquiteNumber;
 import mesquite.lib.MesquiteString;
 import mesquite.lib.duties.NumberForTree;
 import mesquite.lib.tree.Tree;
+import mesquite.lib.duties.BranchLengthStatistic;
 
 /* ======================================================================== */
-public class AverageTipHeight extends NumberForTree {
+public class AverageTipHeight extends NumberForTree implements BranchLengthStatistic {
 	double[] pathLengths = null;
 	/*.................................................................................................................*/
 	public boolean startJob(String arguments, Object condition, boolean hiredByName) {
@@ -101,5 +102,9 @@ public class AverageTipHeight extends NumberForTree {
 	/*.................................................................................................................*/
 	public String getExplanation() {
 		return "Calculates the average path length (in branch length) from terminals to the root, treating unassigned lengths as 0.  The length of the root is not counted.";
+	}
+	/*.................................................................................................................*/
+	public boolean requestPrimaryChoice(){
+		return true;
 	}
 }

@@ -19,6 +19,7 @@ package mesquite.lib.tree;
 import java.math.BigInteger;
 import java.util.Random;
 import java.util.Vector;
+import java.util.zip.CRC32;
 
 import mesquite.lib.Associable;
 import mesquite.lib.Bits;
@@ -572,17 +573,19 @@ public class MesquiteTree extends Associable implements AdjustableTree, Listable
 	public long getTaxaVersion(){
 		return taxaVersion;
 	}
-	/** sets whether or not this is a MrBayes consensus tree.*
-	public void setReadingMrBayesConTree(boolean value) {
-		readingMrBayesConTree = true;
+	/*----------------------------------------*/
+	/** updates the checksum for the node sequence, tips numbers, and branch lengths */
+	public void getFormChecksum(int node, CRC32 checksum){
+		if (nodeIsTerminal(node))
+			checksum.update(Integer.toString(taxonNumberOfNode(node)).getBytes());
+		checksum.update(Integer.toString(node).getBytes());
+		double branchLength = getBranchLength(node);
+		if (MesquiteDouble.isCombinable(branchLength))
+			checksum.update(Double.toString(branchLength).getBytes());
+		for (int d = firstDaughterOfNode(node); nodeExists(d); d = nextSisterOfNode(d)) {
+			getFormChecksum(d, checksum);
+		}
 	}
-
-	/** sets whether or not this is a MrBayes consensus tree.*
-	public boolean getReadingMrBayesConTree() {
-		return readingMrBayesConTree;
-	}
-
-
 	/*----------------------------------------*/
 	private int recordMinTerms(Tree tree, int node, int[] minTerms){
 		if (tree.nodeIsTerminal(node)) {
@@ -1860,7 +1863,7 @@ public class MesquiteTree extends Associable implements AdjustableTree, Listable
 		return desc;
 	}
 	/*-----------------------------------------*/
-/** Returns the node's single sister if it has one.  If the node has no sister or more than two sisters, returns 0 (which is not a valid node designation).*/
+	/** Returns the node's single sister if it has one.  If the node has no sister or more than two sisters, returns 0 (which is not a valid node designation).*/
 	public int singleSisterOfNode(int node){
 		int sister = nextSisterOfNode(node);
 		if (sister == 0)
@@ -2244,7 +2247,7 @@ public class MesquiteTree extends Associable implements AdjustableTree, Listable
 		else
 			Bits.allFalse(tips);
 		MesquiteInteger count = new MesquiteInteger(0);
-			fillTermArB(node, tips);
+		fillTermArB(node, tips);
 		return tips;
 	}
 	/*.................................................................................................................*/
@@ -2253,12 +2256,12 @@ public class MesquiteTree extends Associable implements AdjustableTree, Listable
 		int[] tTaxa = getTerminalTaxa(node);
 		if (IntegerArray.sameValues(tTaxa, tipsToMatch))
 			return node;
-			for (int daughter = firstDaughterOfNode(node); nodeExists(daughter); daughter = nextSisterOfNode(daughter)) {
-				int found = findCladeWithTaxa(daughter, tipsToMatch);
-				if (found >= 0)
-					return found;
-			}
-			return -1;
+		for (int daughter = firstDaughterOfNode(node); nodeExists(daughter); daughter = nextSisterOfNode(daughter)) {
+			int found = findCladeWithTaxa(daughter, tipsToMatch);
+			if (found >= 0)
+				return found;
+		}
+		return -1;
 	}
 	/*-----------------------------------------*/
 	private void gNAtHeight(int node, double target, int[] nodes, double heightToAncestor, double lengthIfUnassigned, MesquiteInteger count){

@@ -16,11 +16,12 @@ package mesquite.trees.ProportionBrLengthsTerminal;
 import mesquite.lib.MesquiteDouble;
 import mesquite.lib.MesquiteNumber;
 import mesquite.lib.MesquiteString;
+import mesquite.lib.duties.BranchLengthStatistic;
 import mesquite.lib.duties.NumberForTree;
 import mesquite.lib.tree.Tree;
 
 /** this is a silly little module that can be used as a demonstration for NumberForTree modules */
-public class ProportionBrLengthsTerminal extends NumberForTree {
+public class ProportionBrLengthsTerminal extends NumberForTree implements BranchLengthStatistic {
 	MesquiteNumber nt;
 	/*.................................................................................................................*/
 	public boolean startJob(String arguments, Object condition, boolean hiredByName) {
@@ -29,6 +30,10 @@ public class ProportionBrLengthsTerminal extends NumberForTree {
 	}
 	/*.................................................................................................................*/
 	public boolean isSubstantive(){
+		return true;
+	}
+	/*.................................................................................................................*/
+	public boolean requestPrimaryChoice(){
 		return true;
 	}
 	/*.................................................................................................................*/
