@@ -143,7 +143,7 @@ public abstract class TreeDrawing  {
 	}
 	/*.................................................................................................................*/
 	/** Find which terminal box is at x,y */
-	public int findTerminalBox(Tree tree,  int N, int x, int y) {
+	private int findTerminalBox(Tree tree,  int N, int x, int y, int minSize) {
 		int foundTaxon =-1;
 		if  (tree.nodeIsTerminal(N)) {   //terminal
 
@@ -156,23 +156,32 @@ public abstract class TreeDrawing  {
 				MesquiteMessage.warnProgrammer("error:  taxon number too large found in findTerminalBox (" + taxonNumber + ") node: " + N); 
 				return -1;
 			}
-			if (isInTerminalBox(tree, N, x, y))
+			if (isInTerminalBoxMinSize(tree, N, x, y, minSize))
 				return taxonNumber;
 		}
 		else {
 			for (int d = tree.firstDaughterOfNode(N); tree.nodeExists(d) && foundTaxon==-1; d = tree.nextSisterOfNode(d)){
-				foundTaxon=findTerminalBox(tree, d, x, y);
+				foundTaxon=findTerminalBox(tree, d, x, y, minSize);
 			}
 		}
 		return foundTaxon;
+	}
+	public int findTerminalBox(Tree tree, int x, int y, int minSize){
+		int drawnRoot = getDrawnRoot(); 
+	//	if (!tree.nodeExists(drawnRoot))
+	//		drawnRoot = tree.getRoot();
+		return findTerminalBox(tree, drawnRoot, x, y, minSize); 
 	}
 	public int findTerminalBox(Tree tree, int x, int y){
 		int drawnRoot = getDrawnRoot(); 
 	//	if (!tree.nodeExists(drawnRoot))
 	//		drawnRoot = tree.getRoot();
-		return findTerminalBox(tree, drawnRoot, x, y); 
+		return findTerminalBox(tree, drawnRoot, x, y, 0); 
 	}
 
+	public  boolean isInTerminalBoxMinSize(Tree tree, int node, int xPos, int yPos, int minSize){
+		return isInTerminalBox(tree, node, xPos, yPos);
+	}
 	public  boolean isInTerminalBox(Tree tree, int node, int xPos, int yPos){
 		return false;
 	}

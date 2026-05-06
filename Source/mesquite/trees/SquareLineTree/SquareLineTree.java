@@ -662,6 +662,20 @@ class SquareLineTreeDrawing extends TreeDrawing  {
 						else 
 							return xPos> x[node] && xPos < x[node]+ew && yPos > y[node] && yPos < y[node] + ew;
 	}
+	public  boolean isInTerminalBoxMinSize(Tree tree, int node, int xPos, int yPos, int minSize){
+		float ew = getTerminalBoxWidth(minSize);
+		float centerOffset = (float)((ew-useEdgeWidth())/2.0);
+		if (treeDisplay.getOrientation()==treeDisplay.UP) 
+			return xPos> x[node]-centerOffset && xPos < x[node]-centerOffset+ew && yPos > y[node]-ew-3 && yPos < y[node]-3;
+			else if (treeDisplay.getOrientation()==treeDisplay.DOWN)
+				return xPos> x[node]-centerOffset && xPos < x[node]-centerOffset+ew && yPos > y[node]+1 && yPos < y[node]+ew+1;
+				else  if (treeDisplay.getOrientation()==treeDisplay.RIGHT) 
+					return xPos> x[node]+1 && xPos < x[node]+ew +1 && yPos > y[node]-centerOffset && yPos < y[node] -centerOffset+ ew;
+					else  if (treeDisplay.getOrientation()==treeDisplay.LEFT)
+						return xPos> x[node]-ew-3 && xPos < x[node]-3 && yPos > y[node]-centerOffset && yPos < y[node] -centerOffset+ ew;
+						else 
+							return xPos> x[node] && xPos < x[node]+ew && yPos > y[node] && yPos < y[node] + ew;
+	}
 
 	/*_________________________________________________*/
 	public  void fillTerminalBoxWithColors(Tree tree, int node, ColorDistribution colors, Graphics g){
