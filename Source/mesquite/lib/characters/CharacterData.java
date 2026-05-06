@@ -4310,6 +4310,7 @@ public abstract class CharacterData extends FileElement implements MesquiteListe
 	public Tree getBasisTree(){
 		return basisTree;
 	}
+	/*------------------*/
 	public boolean selectLinkedTrees(MesquiteProject project, boolean notify){
 		ListableVector treeVectors = project.getTreeVectors();
 		boolean selAny = false;
@@ -4333,6 +4334,26 @@ public abstract class CharacterData extends FileElement implements MesquiteListe
 			}
 		}
 		return selAny;
+	}
+	/*------------------*/
+	public int getNumberOfFirstLinkedTree(MesquiteProject project){
+		ListableVector treeVectors = project.getTreeVectors();
+
+		for (int j=0; j<treeVectors.size(); j++){
+			boolean sel = false;
+			TreeVector trees = (TreeVector)treeVectors.elementAt(j);
+			//now we have this tree vector. Let's see if this matrix has matches among the trees, and select those trees
+			if (trees.getTaxa() == getTaxa()){
+				for (int itr = 0; itr<trees.size(); itr++){
+					MesquiteTree tree = (MesquiteTree) trees.getTree(itr);
+					CharacterData d = tree.findLinkedMatrix(project);
+					if (d == this){
+						return itr;
+					}
+				}
+			}
+		}
+		return -1;
 	}
 	/* ---------------- for HNode interface ----------------------*/
 	public Image getHImage(){

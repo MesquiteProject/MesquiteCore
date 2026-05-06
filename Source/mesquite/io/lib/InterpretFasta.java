@@ -592,6 +592,7 @@ public abstract class InterpretFasta extends FileInterpreterI implements ReadFil
 	protected String uniqueSuffix = "";
 	protected boolean exportT0T1TaxonNames = false;  //accessible only by doCommand
 	protected boolean convertPolyToUnc = false;  //accessible only by doCommand
+	protected boolean exportTaxonNamesWithUniqueMatrixTaxonNumberCode = false;  //accessible only by doCommand
 	/*.................................................................................................................*/
 	public String preparePreferencesForXML () {
 		StringBuffer buffer = new StringBuffer(200);
@@ -645,6 +646,9 @@ public abstract class InterpretFasta extends FileInterpreterI implements ReadFil
 		}
 		else if (checker.compare(this.getClass(), "Sets whether or not to export to t0 t1 taxon names.", "[true or false]", commandName, "exportT0T1TaxonNames")) {
 			exportT0T1TaxonNames = MesquiteBoolean.fromTrueFalseString(parser.getFirstToken(arguments));
+		}
+		else if (checker.compare(this.getClass(), "Sets whether or not to export to taxon names appended with \"|MatrixName_TaxonNumber\".", "[true or false]", commandName, "exportTaxonNamesWithUniqueMatrixTaxonNumberCode")) {
+			exportTaxonNamesWithUniqueMatrixTaxonNumberCode = MesquiteBoolean.fromTrueFalseString(parser.getFirstToken(arguments));
 		}
 		else if (checker.compare(this.getClass(), "Sets whether or not to export to convert polymorphisms to uncertainties.", "[true or false]", commandName, "convertPolyToUnc")) {
 			convertPolyToUnc = MesquiteBoolean.fromTrueFalseString(parser.getFirstToken(arguments));
@@ -721,6 +725,8 @@ public abstract class InterpretFasta extends FileInterpreterI implements ReadFil
 	protected String getTaxonName(Taxa taxa, int it, CharacterData data){
 		if (exportT0T1TaxonNames){
 			return "t" + it;
+		} else if (exportTaxonNamesWithUniqueMatrixTaxonNumberCode){
+			return StringUtil.cleanseStringOfFancyChars(taxa.getTaxonName(it),false,true)+"|"+StringUtil.cleanseStringOfFancyChars(data.getName(),false,true)+"_"+it;
 		}
 		else if (simplifyTaxonName)
 			return StringUtil.cleanseStringOfFancyChars(taxa.getTaxonName(it)+uniqueSuffix,false,true);
