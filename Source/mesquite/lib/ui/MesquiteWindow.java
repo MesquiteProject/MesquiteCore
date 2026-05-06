@@ -2454,7 +2454,7 @@ public abstract class MesquiteWindow implements Listable, Commandable, OwnedByMo
 	public void resetMenus(boolean generateRegardless){
 		if (ownerModule == null || ownerModule.isDoomed())
 			return;
-		if (!generateRegardless && refreshMenusOnlyFrontWindows && parentFrame.frontWindow != this){ //this is the short circuit that makes it so that only frontmost windows have their menus reset
+		if (getMenuBar()!= null && getParentFrame().getMenuBar() != null && !generateRegardless && refreshMenusOnlyFrontWindows && parentFrame.frontWindow != this){ //this is the short circuit that makes it so that only frontmost windows have their menus reset
 			needMenuBarReset = true;
 			return;
 		}
@@ -2502,8 +2502,12 @@ public abstract class MesquiteWindow implements Listable, Commandable, OwnedByMo
 		resetMenuTime.end();
 	}
 	public void setMenuBar(MenuBar mbar) {
-		if (parentFrame!=null)
+		if (parentFrame!=null){
+			if (parentFrame.getMenuBar() == null)
+				parentFrame.setMenuBar(menuBar);
+			else
 			parentFrame.setMenuBar(this, menuBar);  //this actually calls the setMenuBar only if this window is at front
+		}
 	}
 	public MenuBar getMenuBar() {
 		return menuBar;

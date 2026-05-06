@@ -612,7 +612,7 @@ public class MesquiteThread extends Thread implements CommandRecordHolder {
 						if (win.getOwnerModule()!= null && win.getOwnerModule().getProject()!= null && !win.getOwnerModule().getProject().developing){
 							if (win.getParentFrame().getMenuBar()== null) {  //uh ho, should have menu
 								if (MesquiteTrunk.developmentMode)
-									System.err.println("No menu bar in " + win.getName());
+									System.err.println("No menu bar in " + win.getName() + " " + win.getParentFrame());
 								MesquiteTrunk.mesquiteTrunk.resetMenusCommand.doItMainThread(null, null, null);
 								break;
 							}

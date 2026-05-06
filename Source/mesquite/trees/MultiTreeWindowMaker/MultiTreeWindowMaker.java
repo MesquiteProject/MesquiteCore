@@ -1007,6 +1007,9 @@ class MTWExtra extends TreeDisplayExtra implements Commandable, TreeDisplayExtra
 		return true;
 	}
 
+	
+	//NOTE: THIS could use ShowLinkedMatrixMachine. The latter was derived from this code
+	
 	/**Add any desired menu items to the right click popup*/
 	public void addToRightClickPopup(MesquitePopup popup, MesquiteTree tree, int branch){
 		if (tree.nodeExists(branch)){
