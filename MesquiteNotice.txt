@@ -1,0 +1,7 @@
+Mesquite cannot find the resources in its folder. There are some possible reasons:
+
+— Mesquite_Folder could be within a folder that has punctuation or special characters in its name, such as + or # or something else. To run Mesquite (and most other bioinformatics programs), please ensure that your folders do not include most punctuation or special characters. Also, its a good idea to avoid spaces in the file names. Generally, underscores (_) and dashes (-) are acceptable.
+
+— Mesquite_Folder could be within a read-only disk image or zipped archive. To run Mesquite properly, please move Mesquite_Folder onto your computer's storage.
+
+— Mesquite_Folder has had some of its contents deleted. Please find the components, or download Mesquite again.

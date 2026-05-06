@@ -173,6 +173,14 @@ public class TreesList extends ListLVModule {
 					assistant.setUseMenubar(false);
 				}*/
 			}
+			if (currentTreeBlock.anyLinkedMatrices()){
+				assistant = (TreeListAssistant)hireNamedEmployee(TreeListAssistant.class, "#TreeListLinkedMatrix");
+				if (assistant!= null){
+					((ListWindow)getModuleWindow()).addListAssistant(assistant);
+					assistant.setUseMenubar(false);
+				}
+			}
+			
 		}
 		for (int i = 0; i<getEmployeeVector().size(); i++){
 			Object mb = getEmployeeVector().elementAt(i);

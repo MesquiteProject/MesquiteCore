@@ -83,6 +83,18 @@ public class MesquiteBoolean implements Listable, Nameable {
 			}
 		}
 	}
+	public void setValue(MesquiteBoolean b) {
+		if (b == null)
+			return;
+		if (b.isUnassigned())
+			setToUnassigned();
+		else if (isUnassigned() || b.getValue() != getValue()) {
+			setValue(b.getValue());
+			if (cmis!=null) {
+				MesquiteTrunk.resetCheckMenuItems();
+			}
+		}
+	}
 	public void setValue(String b) {
 		unassigned = true;
 		if (b == null){

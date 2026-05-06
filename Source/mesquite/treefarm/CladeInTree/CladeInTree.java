@@ -66,7 +66,9 @@ public class CladeInTree extends BooleanForTree implements MesquiteListener {
 		}
 		
 		if (!taxa.anySelected()) {
- 			return;
+			result.setToUnassigned();
+			resultString.setValue("No taxa selected");
+			return;
 		}
 		boolean bt = tree.isClade(taxa.getSelectedBits());
 		result.setValue(bt);

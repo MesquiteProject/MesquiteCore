@@ -35,7 +35,7 @@ import mesquite.lib.duties.BranchLengthStatistic;
 public class RatioLongestBranches extends NumberForTree  implements BranchLengthStatistic {
 	MesquiteNumber nt;
 	boolean unrooted = true;
-
+boolean ignoreRootDaughters = false;
 	/*.................................................................................................................*/
 	public boolean startJob(String arguments, Object condition, boolean hiredByName) {
 		if (!MesquiteThread.isScripting()){
@@ -70,6 +70,7 @@ public class RatioLongestBranches extends NumberForTree  implements BranchLength
 	public Snapshot getSnapshot(MesquiteFile file) { 
 		Snapshot temp = new Snapshot();
 		temp.addLine("unrooted " + unrooted);
+		temp.addLine("ignoreRootDaughters " + ignoreRootDaughters);
 		return temp;
 	}
 
@@ -78,11 +79,13 @@ public class RatioLongestBranches extends NumberForTree  implements BranchLength
 		MesquiteInteger buttonPressed = new MesquiteInteger(1);
 		ExtensibleDialog dialog = new ExtensibleDialog(containerOfModule(),  "Flag by Ratio of Longest Branches",buttonPressed);  
 		Checkbox unrootedCB = dialog.addCheckBox("Treat tree as unrooted", unrooted);
+		Checkbox ignoreRootDaughtersCB = dialog.addCheckBox("If rooted, ignore daughters of root", ignoreRootDaughters);
 
 		dialog.addBlankLine();
 		dialog.completeAndShowDialog(true);
 		if (buttonPressed.getValue()==0)  {
 			unrooted = unrootedCB.getState();
+			ignoreRootDaughters = ignoreRootDaughtersCB.getState();
 		}
 		dialog.dispose();
 		return (buttonPressed.getValue()==0);
@@ -105,7 +108,16 @@ public class RatioLongestBranches extends NumberForTree  implements BranchLength
 				}
 			}
 		}
-		else
+		else if (checker.compare(this.getClass(), "Sets whether to treat trees as unrooted.", "[true or false]", commandName, "ignoreRootDaughters")) {
+			boolean temp = MesquiteBoolean.fromTrueFalseString(parser.getFirstToken(arguments));
+			if (temp != ignoreRootDaughters){
+				ignoreRootDaughters = temp; 
+				if (!MesquiteThread.isScripting()){
+					parametersChanged();
+				}
+			}
+		}
+	else
 			return  super.doCommand(commandName, arguments, checker);
 		return null;
 	}	/*.................................................................................................................*/
@@ -115,7 +127,7 @@ public class RatioLongestBranches extends NumberForTree  implements BranchLength
     	clearResultAndLastResult(result);
     	MesquiteDouble longest = new MesquiteDouble();
     	MesquiteDouble secondLongest = new MesquiteDouble();
-    	TreeUtil.getLongestBranches(tree, tree.getRoot(), null, longest, secondLongest, unrooted);
+    	TreeUtil.getLongestBranches(tree, tree.getRoot(), null, longest, secondLongest, unrooted, ignoreRootDaughters);
     	if (longest.isCombinable() && secondLongest.isCombinable() && secondLongest.getValue() != 0){
 		nt.setValue(longest.getValue()/secondLongest.getValue());
 		result.setValue(nt);

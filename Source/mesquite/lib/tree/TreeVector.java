@@ -702,6 +702,20 @@ public class TreeVector extends ListableVector implements Trees, Commandable, Id
 				}
 			}
 	}
+	
+	public boolean anyLinkedMatrices(){
+		for (int i=0; i<size(); i++) {
+			Object o = elementAt(i);
+			if (o !=null && o instanceof MesquiteTree) {
+				MesquiteTree tree = (MesquiteTree)o;
+				if (tree.findLinkedMatrix(getProject()) != null)
+					return true;
+				}
+			}
+		
+		return false;
+	}
+
 	/*-----------------------------------------*/
 	/** For MesquiteListener interface.  Asks whether it's ok to delete the object as far as the listener is concerned (e.g., is it in use?)*/
 	public boolean okToDispose(Object obj, int queryUser){

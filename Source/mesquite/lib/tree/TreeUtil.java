@@ -575,10 +575,13 @@ public class TreeUtil {
 	}
 
 	/*.................................................................................................................*/
-	public static void getLongestBranches(Tree tree, int node, Bits longestBranches, MesquiteDouble longest, MesquiteDouble secondLongest, boolean unrooted) {
+	public static void getLongestBranches(Tree tree, int node, Bits longestBranches, MesquiteDouble longest, MesquiteDouble secondLongest, boolean unrooted, boolean ignoreRootDaughters) {
 		double length = tree.getBranchLength(node);
 		int root = tree.getRoot();
-		if (unrooted && tree.motherOfNode(node) == root && !tree.nodeIsPolytomous(root)){
+		if (!unrooted && tree.motherOfNode(node) == root && ignoreRootDaughters){
+			length = 0;
+		}
+		else if (unrooted && tree.motherOfNode(node) == root && !tree.nodeIsPolytomous(root)){
 			//daughter of bifurcating root. Sum lengths for single unrooted branch crossing root, and count it only if first daughter.
 			if (tree.firstDaughterOfNode(root) == node){
 				int sister = tree.singleSisterOfNode(node);
@@ -611,7 +614,7 @@ public class TreeUtil {
 
 		}
 		for (int d = tree.firstDaughterOfNode(node); tree.nodeExists(d); d = tree.nextSisterOfNode(d))
-			getLongestBranches(tree, d, longestBranches, longest, secondLongest, unrooted);
+			getLongestBranches(tree, d, longestBranches, longest, secondLongest, unrooted, ignoreRootDaughters);
 	}
 
 	/*.................................................................................................................*/

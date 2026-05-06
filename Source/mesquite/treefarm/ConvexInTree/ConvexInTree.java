@@ -65,7 +65,9 @@ public class ConvexInTree extends BooleanForTree implements MesquiteListener {
 			currentTaxa.addListener(this);
 		}
 		if (!taxa.anySelected()) {
- 			return;
+			result.setToUnassigned();
+			resultString.setValue("No taxa selected");
+			return;
 		}
 		boolean bt = tree.isConvex(taxa.getSelectedBits());
 		result.setValue(bt);
