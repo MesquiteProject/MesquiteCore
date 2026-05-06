@@ -19,6 +19,7 @@ import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.geom.Point2D;
 
+import mesquite.lib.Debugg;
 import mesquite.lib.MesquiteDouble;
 import mesquite.lib.MesquiteInteger;
 import mesquite.lib.MesquiteMessage;
@@ -136,7 +137,10 @@ public abstract class TreeDrawing  {
 	}
 	/** Fill terminal box of node "node" with indicated set of colors */
 	public abstract void fillTerminalBoxWithColors(Tree tree, int node, ColorDistribution colors, Graphics g);
-
+	/*_________________________________________________*/
+	public  void fillTerminalBoxWithColorsMinSize(Tree tree, int node, ColorDistribution colors, Graphics g, int minSize, float corner){
+		fillTerminalBoxWithColors(tree, node, colors, g);
+	}
 	/*.................................................................................................................*/
 	/** Find which terminal box is at x,y */
 	public int findTerminalBox(Tree tree,  int N, int x, int y) {
