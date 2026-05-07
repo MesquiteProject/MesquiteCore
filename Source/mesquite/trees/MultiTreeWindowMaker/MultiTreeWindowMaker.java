@@ -116,13 +116,16 @@ public class MultiTreeWindowMaker extends FileAssistantT implements TreeDisplayH
 	/*.................................................................................................................*/
 	public boolean startJob(String arguments, Object condition, boolean hiredByName) {
 		taxa = getProject().chooseTaxa(containerOfModule(), "For which block of taxa do you want to show a Multi-tree window?");
+		if (taxa != null)
+			taxa.addListener(this);
+
 		treeDrawCoordTask= (DrawTreeCoordinator)hireEmployee(DrawTreeCoordinator.class, null);
 		if (treeDrawCoordTask == null)
 			return sorry(getName() + " couldn't start because no tree draw coordinating module obtained.");
 		makeMenu("Multi-Tree");
 		int numberOfTrees;
 		treeSourceTask = (TreeSourceDefinite)hireNamedEmployee(TreeSourceDefinite.class, "$ #DefiniteTreeSource #StoredTrees");
-
+	
 		if (treeSourceTask == null) {
 			return sorry(getName() + " couldn't start because no source of trees obtained.");
 		} else {
@@ -239,7 +242,11 @@ public class MultiTreeWindowMaker extends FileAssistantT implements TreeDisplayH
 		if (checker.compare(this.getClass(), "Sets the taxa block", "[block reference, number, or name]", commandName, "setTaxa")){
 			Taxa t = getProject().getTaxa(checker.getFile(), parser.getFirstToken(arguments));
 			if (t!=null){
+				if (t != taxa)
+					taxa.removeListener(this);
+				
 				taxa = t;
+				taxa.addListener(this);
 				return taxa;
 			}
 		} 
@@ -310,6 +317,18 @@ public class MultiTreeWindowMaker extends FileAssistantT implements TreeDisplayH
 
 		return null;
 	}
+	
+	/* ................................................................................................................. */
+	/** passes which object changed (from MesquiteListener interface) */
+	public void changed(Object caller, Object obj, Notification notification) {
+		int code = Notification.getCode(notification);
+		int[] parameters = Notification.getParameters(notification);
+		if (obj instanceof Taxa && (Taxa) obj == taxa) {
+			multiTreeWindow.renew(false);
+		}
+		super.changed(caller, obj, notification);
+	}
+
 	/*.................................................................................................................*/
 	public String getName() {
 		return "Multi Tree Window";
