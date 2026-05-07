@@ -617,7 +617,7 @@ class MultiTreeWindow extends MesquiteWindow implements KeyListener, Commandable
 	to be self-titling so that when things change (names of files, tree blocks, etc.)
 	they can reset their titles properly*/
 	public void resetTitle(){
-		setTitle("Multi-Trees Window"); 
+		setTitle("Multi-Tree Window"); 
 	}
 	/*.................................................................................................................*/
 	public void printWindow(MesquitePrintJob pjob) {
