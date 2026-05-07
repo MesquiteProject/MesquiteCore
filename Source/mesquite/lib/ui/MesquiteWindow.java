@@ -1647,7 +1647,6 @@ public abstract class MesquiteWindow implements Listable, Commandable, OwnedByMo
 			explanationHeight = height;
 		else
 			explanationHeight = 0;
-
 		setWindowSize(MesquiteInteger.unassigned, h - (explanationHeight - oldEH));  //unassigned
 	}
 	/*.................................................................................................................*/

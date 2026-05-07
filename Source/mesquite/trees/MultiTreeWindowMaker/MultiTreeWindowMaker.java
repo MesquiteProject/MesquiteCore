@@ -395,9 +395,36 @@ public class MultiTreeWindowMaker extends FileAssistantT implements TreeDisplayH
 			}
 		}
 	}
-
+	int oldTaxonFound = -1;
 	/*_________________________________________________*/
 	public boolean mouseMoveInTreeDisplay(int modifiers, int x, int y, TreeDisplay treeDisplay, Graphics g) {
+		int branchFound = findBranch(treeDisplay, x, y);
+		int taxonFound = findTaxon(treeDisplay, x, y);
+
+		if (MesquiteEvent.rightClick(modifiers)){
+			showTreePopup(x, y, treeDisplay, branchFound); 
+			return true;
+		}
+		if (treeDisplay.getExtras() != null) {
+			Enumeration e = treeDisplay.getExtras().elements();
+			while (e.hasMoreElements()) {
+				Object obj = e.nextElement();
+				if (obj instanceof TreeDisplayExtraMW) {
+					TreeDisplayExtra tce = (TreeDisplayExtra) obj;
+				if (taxonFound >=0) {
+						tce.cursorEnterTaxon(treeDisplay.getTree(), taxonFound, g);
+						oldTaxonFound = taxonFound;
+					}
+					else if (taxonFound <0 && oldTaxonFound >=0) {
+						tce.cursorExitTaxon(treeDisplay.getTree(), taxonFound, g);
+						oldTaxonFound = -1;
+					}
+					else 
+						tce.cursorMove(treeDisplay.getTree(), x, y, g, 0, null);
+			//	public void cursorMove(Tree tree, int x, int y, Graphics g, int modifiers, MesquiteTool tool){
+				}
+			}
+		}
 		MTWExtra extra = findExtra(treeDisplay);
 		int t = findTaxon(treeDisplay, x, y);
 		if (t == extra.highlightedTaxon)
@@ -563,6 +590,9 @@ class MultiTreeWindow extends MesquiteWindow implements KeyListener, Commandable
 		treeScroll.setVisible(true);
 		sizeDisplays(false);
 		addAssistantsDI(ownerModule);
+		setShowExplanation(true);
+		//setShowAnnotation(true);
+		setAnnotation("" ,"");
 		resetTitle();
 
 	}
@@ -761,7 +791,7 @@ class MultiTreeWindow extends MesquiteWindow implements KeyListener, Commandable
 		totalHeight = getHeight() - 16;
 		treeScroll.setBounds(totalWidth, 0, 16, totalHeight);
 		containingPanel.setBounds(0,0,totalWidth, totalHeight);
-
+		int maxLow = 0;
 		for (int itree=0; itree<(numColumns*numRows)&& itree<treeDisplays.length; itree++) {
 			if (treeDisplays[itree] !=null){
 				treeDisplays[itree].setTipsMargin(0);
@@ -772,6 +802,10 @@ class MultiTreeWindow extends MesquiteWindow implements KeyListener, Commandable
 				treeDisplays[itree].setFieldSize(totalWidth/numColumns,totalHeight/numRows);
 				treeDisplays[itree].setSize(totalWidth/numColumns,totalHeight/numRows);
 				treeDisplays[itree].setLocation(((itree) % numColumns)*totalWidth/numColumns, (itree / numColumns)*totalHeight/numRows);
+				int yLoc = totalHeight/numRows + (itree / numColumns)*totalHeight/numRows;
+				if (yLoc>maxLow)
+					maxLow = yLoc;
+				
 				if (hide) {
 					treeDisplays[itree].setVisible(false);
 				}
