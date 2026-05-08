@@ -82,6 +82,8 @@ public interface Tree extends Listable {
 	public boolean nodeIsTerminal(int node);
 	/** Returns whether taxon is part of tree. */
 	public boolean taxonInTree(int taxonNum);
+	/** Returns whether the set of taxa in setOfTaxa are all part of tree. */
+	public boolean taxaInTree(Bits setOfTaxa);
 	/** Returns the taxon number of the node.  This is -1 if the node is internal,
 	the taxon number if terminal.*/
 	public int taxonNumberOfNode(int node); 

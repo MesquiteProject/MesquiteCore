@@ -2521,6 +2521,17 @@ public class MesquiteTree extends Associable implements AdjustableTree, Listable
 			findTaxonInTree(root, taxonNum);
 		return taxonWasFound;
 	}
+	/** Returns whether the set of taxa in setOfTaxa are all part of tree. */
+	public boolean taxaInTree(Bits setOfTaxa){
+		if (setOfTaxa==null || !setOfTaxa.anyBitsOn())
+			return false;
+		boolean taxonMissing=false;
+		for (int it = 0; it<setOfTaxa.getSize(); it++) {
+			if (setOfTaxa.isBitOn(it) && !taxonInTree(it))
+				return false;
+		}
+		return true;
+	}
 	/*-----------------------------------------*/
 	public int nextInPreorder(int node){
 		if (nodeIsInternal(node))
