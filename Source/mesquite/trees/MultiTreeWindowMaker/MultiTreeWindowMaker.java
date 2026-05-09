@@ -818,10 +818,10 @@ class MultiTreeWindow extends MesquiteWindow implements KeyListener, Commandable
 
 				treeDisplays[itree].setFrame(true);
 				treeDisplays[itree].suppressNames = !MTWmodule.namesVisible.getValue();
-				treeDisplays[itree].setFieldSize(totalWidth/numColumns,totalHeight/numRows);
-				treeDisplays[itree].setSize(totalWidth/numColumns,totalHeight/numRows);
-				treeDisplays[itree].setLocation(((itree) % numColumns)*totalWidth/numColumns, (itree / numColumns)*totalHeight/numRows);
-				int yLoc = totalHeight/numRows + (itree / numColumns)*totalHeight/numRows;
+				treeDisplays[itree].setFieldSize(totalWidth/numColumns-1,totalHeight/numRows);
+				treeDisplays[itree].setSize(totalWidth/numColumns-1,totalHeight/numRows);
+				treeDisplays[itree].setLocation(((itree) % numColumns)*(totalWidth+1)/numColumns, (int)(itree*1.0 / numColumns)*totalHeight/numRows);
+				int yLoc = totalHeight/numRows + (int)(itree*1.0 / numColumns)*totalHeight/numRows;
 				if (yLoc>maxLow)
 					maxLow = yLoc;
 				
