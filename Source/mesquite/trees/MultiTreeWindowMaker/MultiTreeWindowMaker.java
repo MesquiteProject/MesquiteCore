@@ -803,7 +803,7 @@ class MultiTreeWindow extends MesquiteWindow implements KeyListener, Commandable
 		sizeDisplays(false);
 	}
 	/*.................................................................................................................*/
-	public void sizeDisplays(boolean hide){
+	public synchronized void sizeDisplays(boolean hide){
 		if (treeScroll == null || messagePanel == null || containingPanel == null)
 			return;
 		totalWidth = getWidth()-16;
@@ -818,10 +818,14 @@ class MultiTreeWindow extends MesquiteWindow implements KeyListener, Commandable
 
 				treeDisplays[itree].setFrame(true);
 				treeDisplays[itree].suppressNames = !MTWmodule.namesVisible.getValue();
-				treeDisplays[itree].setFieldSize(totalWidth/numColumns-1,totalHeight/numRows);
-				treeDisplays[itree].setSize(totalWidth/numColumns-1,totalHeight/numRows);
-				treeDisplays[itree].setLocation(((itree) % numColumns)*(totalWidth+1)/numColumns, (int)(itree*1.0 / numColumns)*totalHeight/numRows);
-				int yLoc = totalHeight/numRows + (int)(itree*1.0 / numColumns)*totalHeight/numRows;
+		
+				int leftEdge = ((itree) % numColumns)*totalWidth/numColumns;
+				treeDisplays[itree].setFieldSize(totalWidth/numColumns,totalHeight/numRows);
+				treeDisplays[itree].setSize(totalWidth/numColumns,totalHeight/numRows);
+				treeDisplays[itree].setLocation(leftEdge, (itree / numColumns)*totalHeight/numRows);
+				int yLoc = totalHeight/numRows + (itree / numColumns)*totalHeight/numRows;
+
+				
 				if (yLoc>maxLow)
 					maxLow = yLoc;
 				
@@ -1001,6 +1005,7 @@ class MultiTreeScrollPanel extends MQPanel implements MouseWheelListener {
 		super();
 		addMouseWheelListener(this);
 		this.window = window;
+		setLayout(null);
 	}
 
 	public void mouseWheelMoved(MouseWheelEvent e) {

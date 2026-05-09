@@ -26,6 +26,7 @@ import java.util.Enumeration;
 import java.util.Vector;
 
 import mesquite.lib.CommandChecker;
+import mesquite.lib.Debugg;
 import mesquite.lib.MesquiteCommand;
 import mesquite.lib.MesquiteDouble;
 import mesquite.lib.MesquiteInteger;
