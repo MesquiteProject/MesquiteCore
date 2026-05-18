@@ -142,6 +142,13 @@ public class IntegerArray  implements Listable  {
 		for (int i=0; i<values.length; i++)
 			values[i] =  0;
 	}
+	public static void zeroArray(int[][] values){
+		if (values==null)
+			return;
+		for (int i=0; i<values.length; i++)
+			for (int k = 0; k<values[i].length; k++)
+				values[i][k] =  0;
+	}
 	/*...........................................................*/
 	public void deassignArray(){
 		for (int i=0; i<values.length; i++)

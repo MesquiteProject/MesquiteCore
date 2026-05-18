@@ -138,6 +138,14 @@ public class DoubleArray implements Listable, Nameable  {
 			values[i] =  MesquiteDouble.unassigned;
 	}
 	/*...........................................................*/
+	public static void deassignArray(double[][] values){
+		if (values==null)
+			return;
+		for (int i=0; i<values.length; i++)
+			for (int k = 0; k<values[i].length; k++)
+				values[i][k] =  MesquiteDouble.unassigned;
+	}
+	/*...........................................................*/
 	public static void deassignArray(double[] values){
 		if (values==null)
 			return;

@@ -418,6 +418,11 @@ public class CategoricalState extends CharacterState{
 		}
 	}
 	/*..........................................CategoricalState.....................................*/
+	/**returns whether this is not uncertain, missing, inapplicable, polymorphic, or uncertain */
+	public static boolean hasSingleCertainState(long s) {
+		return isCombinable(s)&& !isUncertain(s) && !hasMultipleStates(s);
+	}
+	/*..........................................CategoricalState.....................................*/
 	/**return maximum value of states in state set s */
 	public static int maximum(long s) {
 		if (s==0L) {
