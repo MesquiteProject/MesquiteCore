@@ -1053,7 +1053,8 @@ class MTWExtra extends TreeDisplayExtra implements Commandable, TreeDisplayExtra
 
 	public boolean cursorTouchField(Tree tree, Graphics g, int x, int y, int modifiers, int clickID){
 		Taxa taxa = tree.getTaxa();
-		setSelectTipsInClade((MesquiteTree)tree, tree.getRoot(), taxa, false);
+		taxa.deselectAll();
+	//	setSelectTipsInClade((MesquiteTree)tree, tree.getRoot(), taxa, false);
 		taxa.notifyListeners(this, new Notification(MesquiteListener.SELECTION_CHANGED));
 		return false;
 	}
