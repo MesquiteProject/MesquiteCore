@@ -400,6 +400,8 @@ public class Mesquite extends MesquiteTrunk
 		if (verboseStartup) System.out.println("main init 4");
 
 
+		matrixEditsReportDirectoryPath = MesquiteTrunk.supportFilesDirectory.getAbsolutePath();
+		matrixEditsReportFilePath = matrixEditsReportDirectoryPath+MesquiteFile.fileSeparator+matrixEditsReportFileName;
 
 		MesquiteModule.prefsDirectory = new File(supportFilesPath + sep + "Mesquite_Prefs"); //checking both possible names
 		File prefsFile = new File(prefsDirectory.toString() + sep + "Mesquite.pref");

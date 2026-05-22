@@ -3313,10 +3313,6 @@ class MatrixTable extends mesquite.lib.table.CMTable implements MesquiteDroppedF
 	MesquiteBoolean paleInapplicable;
 	MesquiteBoolean paleMissing;
 	
-	boolean recordClear= false;
-	String clearReportFileName = "ClearReport.txt";
-	String clearDirectoryPath = MesquiteTrunk.supportFilesDirectory.getAbsolutePath();
-	String clearReportFilePath = clearDirectoryPath+MesquiteFile.fileSeparator+clearReportFileName;
 
 	int birdsEyeWidth = 2;
 	static double showPaleExcludedValueText = 0.40;
@@ -5362,11 +5358,11 @@ class MatrixTable extends mesquite.lib.table.CMTable implements MesquiteDroppedF
 	boolean suppressAutosize = false;
 	/* ................................................................................................................. */
 	protected void appendToClearReport(String s) {
-		if (recordClear) {
-			if (!MesquiteFile.fileExists(clearReportFilePath))
-				MesquiteFile.putFileContents(clearReportFilePath, s, true);
+		if (MesquiteTrunk.recordMatrixEdits) {
+			if (!MesquiteFile.fileExists(MesquiteTrunk.matrixEditsReportFilePath))
+				MesquiteFile.putFileContents(MesquiteTrunk.matrixEditsReportFilePath, s, true);
 			else
-				MesquiteFile.appendFileContents(clearReportFilePath, s, true);
+				MesquiteFile.appendFileContents(MesquiteTrunk.matrixEditsReportFilePath, s, true);
 		}
 	}
 
@@ -5404,9 +5400,9 @@ class MatrixTable extends mesquite.lib.table.CMTable implements MesquiteDroppedF
 					changed = true;
 				}
 			}
-			if (recordClear) {
+			if (MesquiteTrunk.recordMatrixEdits) {
 				if (isRowSelected(j))
-					appendToClearReport(data.getName()+"\t" + taxa.getTaxonName(j)+"\t[" + StringUtil.getDateTime()+"]\n");
+					appendToClearReport(data.getName()+"\t" + taxa.getTaxonName(j)+"\t[" + StringUtil.getDateTime()+"]\tclear\n");
 			}
 		}
 		if (cut) {

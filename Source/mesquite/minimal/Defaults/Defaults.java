@@ -66,12 +66,13 @@ public class Defaults extends MesquiteInit  {
 	/*.................................................................................................................*/
 	MesquiteBoolean respectFileSpecificResourceWidth, useOtherChoices, console, askSeed, useReports, permitXOR;
 	MesquiteBoolean taxonTruncTrees, permitSpaceUnderscoreEquivalentTrees, printTreeNameByDefault, protectGraphics;
-	MesquiteBoolean tabbedWindows, debugMode, wizards, logAll, phoneHome, secondaryChoicesOnInDialogs, subChoicesOnInDialogs, tilePopouts; 
+	MesquiteBoolean tabbedWindows, debugMode, wizards, logAll, phoneHome, secondaryChoicesOnInDialogs, subChoicesOnInDialogs, tilePopouts, recordMatrixEdits; 
 	MesquiteString themeName;
 	StringArray themes;
 	/*.................................................................................................................*/
 	public boolean startJob(String arguments, Object condition, boolean hiredByName) {
 		useOtherChoices = new MesquiteBoolean(false);
+		recordMatrixEdits = new MesquiteBoolean(false);
 		askSeed = new MesquiteBoolean(false);
 		console = new MesquiteBoolean(MesquiteTrunk.mesquiteTrunk.logWindow.isConsoleMode());
 		logAll = new MesquiteBoolean(MesquiteCommand.logEverything);
@@ -147,6 +148,7 @@ public class Defaults extends MesquiteInit  {
 		MesquiteTrunk.mesquiteTrunk.addCheckMenuItemToSubmenu(MesquiteTrunk.fileMenu, MesquiteTrunk.defaultsSubmenu, "Permit Partial Names in Tree Reading", makeCommand("togglePartNamesTrees",  this), taxonTruncTrees);
 		MesquiteTrunk.mesquiteTrunk.addCheckMenuItemToSubmenu(MesquiteTrunk.fileMenu, MesquiteTrunk.defaultsSubmenu, "Permit Spaces and Underscores Equivalent in Tree Reading", makeCommand("toggleSpaceUnderscoreTrees",  this), permitSpaceUnderscoreEquivalentTrees);
 		MesquiteTrunk.mesquiteTrunk.addCheckMenuItemToSubmenu(MesquiteTrunk.fileMenu, MesquiteTrunk.defaultsSubmenu, "Print Tree Names by Default", makeCommand("printTreeNameByDefault",  this), printTreeNameByDefault);
+		MesquiteTrunk.mesquiteTrunk.addCheckMenuItemToSubmenu(MesquiteTrunk.fileMenu, MesquiteTrunk.defaultsSubmenu, "Record Matrix Edits to File", makeCommand("toggleRecordMatrixEdits",  this), recordMatrixEdits);
 		MesquiteTrunk.mesquiteTrunk.addItemToSubmenu(MesquiteTrunk.fileMenu, MesquiteTrunk.defaultsSubmenu, "Matrix Limits for Undo...", makeCommand("setMaxMatrixSizeUndo",  this));
 		MesquiteTrunk.mesquiteTrunk.addItemToSubmenu(MesquiteTrunk.fileMenu, MesquiteTrunk.defaultsSubmenu, "Python Settings...", makeCommand("pythonSettings",  this));
 
@@ -271,6 +273,10 @@ public class Defaults extends MesquiteInit  {
 			debugMode.setValue(content);
 			MesquiteTrunk.debugMode = debugMode.getValue();
 		}
+		else if ("recordMatrixEdits".equalsIgnoreCase(tag)){
+			recordMatrixEdits.setValue(content);
+			MesquiteTrunk.recordMatrixEdits = recordMatrixEdits.getValue();
+		}
 		else if ("wizards".equalsIgnoreCase(tag)){
 			wizards.setValue(content);
 			MesquiteDialog.useWizards = wizards.getValue();
@@ -367,7 +373,8 @@ public class Defaults extends MesquiteInit  {
 		StringUtil.appendXMLTag(buffer, 2, "consoleMode", console);   
 		StringUtil.appendXMLTag(buffer, 2, "storedAsDefault", CharacterSource.storedAsDefault);   
 		StringUtil.appendXMLTag(buffer, 2, "closeIfMatrixDeleted", CharacterSource.closeIfMatrixDeleted);   
-		//StringUtil.appendXMLTag(buffer, 2, "closeIfTreeBlockDeleted", TreeSource.closeIfTreeBlockDeleted);   
+		StringUtil.appendXMLTag(buffer, 2, "recordMatrixEdits", recordMatrixEdits);   
+	//StringUtil.appendXMLTag(buffer, 2, "closeIfTreeBlockDeleted", TreeSource.closeIfTreeBlockDeleted);   
 		return buffer.toString();
 	}
 	/*.................................................................................................................*
@@ -681,6 +688,11 @@ public class Defaults extends MesquiteInit  {
 			CharacterSource.closeIfMatrixDeleted.toggleValue(null);
 			storePreferences();
 			return CharacterSource.closeIfMatrixDeleted;
+		}
+		else if (checker.compare(getClass(), "Sets whether to record some edits in matrices", null, commandName, "toggleRecordMatrixEdits")) {
+			recordMatrixEdits.toggleValue(null);
+			storePreferences();
+			return recordMatrixEdits;
 		}
 		/*	else if (checker.compare(getClass(), "Sets whether to close a tree window automatically if the tree block it uses is deleted", null, commandName, "toggleCloseIfTreeBlockDeleted")) {
 			TreeSource.closeIfTreeBlockDeleted.toggleValue(null);
