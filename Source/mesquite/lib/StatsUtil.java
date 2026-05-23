@@ -44,6 +44,13 @@ public class StatsUtil {
 
 		// Silverman's adaptive rule: min(std, iqr/1.34)
 		double a = Math.min(std, iqr / 1.34);
+		if (a == 0)
+			System.err.println("Silverman a = 0"); //Debugg.println this is a kludge
+		if (a == 0)
+			a = (std + (iqr/1.34))/2;
+		if (n == 0)
+			System.err.println("Silverman n = 0");  //Debugg.println this is a kludge
+		
 		return 0.9 * a * Math.pow(n, -0.2);
 	}
 
@@ -156,7 +163,8 @@ public class StatsUtil {
 		for (int i=0; i<outliers.length; i++)
 			outliers[i]=1.0;
 		double h = calculateSilvermanBandwidth(xData);
-
+		if (h == 0)
+			System.err.println("Silverman Bandwith zero ");
 		int count = 0;
 		for (double x : xData) {
 			double cdfValue = estimateCDF(xData, h, x);

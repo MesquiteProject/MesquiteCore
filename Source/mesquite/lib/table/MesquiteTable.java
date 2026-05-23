@@ -43,6 +43,7 @@ import javax.swing.text.JTextComponent;
 import mesquite.lib.Associable;
 import mesquite.lib.Bits;
 import mesquite.lib.CommandChecker;
+import mesquite.lib.Debugg;
 import mesquite.lib.MesquiteBoolean;
 import mesquite.lib.MesquiteCommand;
 import mesquite.lib.MesquiteEvent;
@@ -6058,8 +6059,12 @@ public class MesquiteTable extends MesquitePanel implements KeyListener, MouseWh
 	public void setShowRowNames(boolean showRowNames) {
 		this.showRowNames = showRowNames;
 	}
-
+	long wheelMoves = 0;
+	public static int wheelDelay = 1;
+	
 	public synchronized void mouseWheelMoved(MouseWheelEvent e) {   //scrollwheel
+		if (wheelMoves++ % wheelDelay != 0)
+			return;
 		int amount = e.getScrollAmount();  //verticalScrollPageIncrement, numColumnsVisible
 		boolean blockScroll = e.getScrollType()==MouseWheelEvent.WHEEL_BLOCK_SCROLL;
 		boolean vert = !e.isShiftDown();

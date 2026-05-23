@@ -26,6 +26,8 @@ import java.awt.geom.Arc2D;
 import java.awt.geom.Line2D;
 import java.awt.geom.Path2D;
 
+import mesquite.lib.MesquiteDouble;
+import mesquite.lib.tree.MesquiteTree;
 import mesquite.lib.tree.Tree;
 import mesquite.lib.tree.TreeDisplay;
 import mesquite.lib.tree.TreeDrawing;
@@ -34,7 +36,9 @@ import mesquite.lib.ui.GraphicsUtil;
 
 
 public class DrawTreeUtil {
-
+	/*=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=*/
+	/*###################### For SquareLineTree, SquareTree, BallsNSticks especially ###################*/
+	/*=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=*/
 	private static int getOffset(int width, int edgeWidth) {
 		return (width-edgeWidth)/2;
 	}
@@ -956,6 +960,111 @@ public class DrawTreeUtil {
 		return false;
 	}
 
+	/*=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=*/
+	/*################### For Node/branch/tree clouds for HighlightConcerns & others ###################*/
+	/*=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=~=*/
+	public static void drawTipCloud(TreeDisplay treeDisplay, MesquiteTree tree, int node, Graphics g, Color color, double sizeMultiplier){
+		double edgeWidth = treeDisplay.getTreeDrawing().getEdgeWidth();
+		double centeringOffsetX = 0; double centeringOffsetY =0;
+		if (treeDisplay.isUp()){
+			centeringOffsetX = edgeWidth/2;
+			centeringOffsetY = edgeWidth/2;
+		}
+		else if (treeDisplay.isDown()){
+			centeringOffsetX = edgeWidth/2;
+			centeringOffsetY = -edgeWidth/2;
+		}
+		else if (treeDisplay.isRight()){
+			centeringOffsetY = edgeWidth/2;
+			centeringOffsetX = -edgeWidth/2;
+		}
+		else if (treeDisplay.isLeft())
+			centeringOffsetY = edgeWidth/2;
+		double x = treeDisplay.getTreeDrawing().x[node] + centeringOffsetX;
+		double y = treeDisplay.getTreeDrawing().y[node] + centeringOffsetY;
+		double cloudWidth = MesquiteDouble.minimum(treeDisplay.getTaxonSpacing()*sizeMultiplier,  treeDisplay.getTreeDrawing().useEdgeWidth()*sizeMultiplier*5);
+		GraphicsUtil.fillFadingOval(g, x-cloudWidth/2, y-cloudWidth/2, cloudWidth,cloudWidth, color);
+	}
 
+	/*_________________________________________________________________*/
+
+	public static void drawBranchCloud(TreeDisplay treeDisplay, MesquiteTree tree, int node, Graphics g, Color color, double sizeMultiplier){
+		double edgeWidth = treeDisplay.getTreeDrawing().getEdgeWidth();
+		double centeringOffsetX = 0; double centeringOffsetY =0;
+		if (treeDisplay.isUp()){
+			centeringOffsetX = edgeWidth/2;
+			centeringOffsetY = edgeWidth/2;
+		}
+		else if (treeDisplay.isDown()){
+			centeringOffsetX = edgeWidth/2;
+			centeringOffsetY = -edgeWidth/2;
+		}
+		else if (treeDisplay.isRight()){
+			centeringOffsetY = edgeWidth/2;
+			centeringOffsetX = -edgeWidth/2;
+		}
+		else if (treeDisplay.isLeft())
+			centeringOffsetY = edgeWidth/2;
+
+		//input treeDisplay, node, g, adjMliplier,. Centering offsets calculated on the fly
+
+		double bx = treeDisplay.getTreeDrawing().lineBaseX[node];
+		double by = treeDisplay.getTreeDrawing().lineBaseY[node];
+		double tx = treeDisplay.getTreeDrawing().lineTipX[node];
+		double ty = treeDisplay.getTreeDrawing().lineTipY[node];
+		double centreX = (bx+tx)/2.0 + centeringOffsetX;
+		double centreY =(by+ty)/2.0 + centeringOffsetY;
+		double cloudWidth = MesquiteDouble.minimum(treeDisplay.getTaxonSpacing()*sizeMultiplier,  treeDisplay.getTreeDrawing().useEdgeWidth()*sizeMultiplier*4);
+		if (cloudWidth<2*treeDisplay.getTreeDrawing().useEdgeWidth())
+			cloudWidth = 2*treeDisplay.getTreeDrawing().useEdgeWidth();
+		double cloudLength = cloudWidth;
+		if (bx == tx){ //up down
+			cloudLength = Math.abs(by-ty)/1.3;
+			if (cloudLength < cloudWidth)
+				cloudLength = cloudWidth;
+			GraphicsUtil.fillFadingOval(g, centreX-cloudWidth/2, centreY-cloudLength/2, cloudWidth,cloudLength, color);
+		}
+		else if (by == ty){ // left right
+			cloudLength = Math.abs(bx-tx)/1.3;
+			if (cloudLength < cloudWidth)
+				cloudLength = cloudWidth;
+			GraphicsUtil.fillFadingOval(g, centreX-cloudLength/2, centreY-cloudWidth/2, cloudLength,cloudWidth, color);
+		}
+		else
+			GraphicsUtil.fillFadingOval(g, centreX-cloudWidth/2, centreY-cloudWidth/2, cloudWidth,cloudWidth, color);
+
+	}
+	/*_________________________________________________________________*/
+	public static void drawTreeCloud(TreeDisplay treeDisplay, MesquiteTree tree, Graphics g, Color color, double sizeMultiplier){
+		double spanTree = 0;
+		double subRootX = treeDisplay.getTreeDrawing().lineBaseX[tree.getRoot()];
+		double subRootY = treeDisplay.getTreeDrawing().lineBaseY[tree.getRoot()];
+
+		if (treeDisplay.isUp()){
+			subRootY = treeDisplay.effectiveFieldHeight() + treeDisplay.effectiveFieldBottomMargin();
+			spanTree = Math.abs(treeDisplay.getTreeDrawing().x[tree.rightmostTerminalOfNode(tree.getRoot())]-treeDisplay.getTreeDrawing().x[tree.leftmostTerminalOfNode(tree.getRoot())])*0.6;
+		}
+		else if (treeDisplay.isDown()){
+			subRootY = 0;
+			spanTree = Math.abs(treeDisplay.getTreeDrawing().x[tree.rightmostTerminalOfNode(tree.getRoot())]-treeDisplay.getTreeDrawing().x[tree.leftmostTerminalOfNode(tree.getRoot())])*0.6;
+		}
+		else if (treeDisplay.isRight()){
+			spanTree = Math.abs(treeDisplay.getTreeDrawing().y[tree.rightmostTerminalOfNode(tree.getRoot())]-treeDisplay.getTreeDrawing().y[tree.leftmostTerminalOfNode(tree.getRoot())])*0.6;
+			subRootX = 0; //treeDisplay.effectiveFieldLeftMargin();
+		}
+		else if (treeDisplay.isLeft()){
+			spanTree = Math.abs(treeDisplay.getTreeDrawing().y[tree.rightmostTerminalOfNode(tree.getRoot())]-treeDisplay.getTreeDrawing().y[tree.leftmostTerminalOfNode(tree.getRoot())])*0.6;
+			subRootX = treeDisplay.effectiveFieldWidth() + treeDisplay.effectiveFieldRightMargin();
+		}
+
+		double cloudWidth = MesquiteDouble.minimum(treeDisplay.getTaxonSpacing()*(sizeMultiplier+1),  treeDisplay.getTreeDrawing().useEdgeWidth()*(sizeMultiplier+1)*5);
+		tree.rightmostTerminalOfNode(tree.getRoot());
+		if (treeDisplay.isUp() || treeDisplay.isDown())
+			GraphicsUtil.fillFadingOval(g, subRootX-spanTree/2, subRootY-cloudWidth/2, spanTree,cloudWidth, color);
+		else if (treeDisplay.isLeft() || treeDisplay.isRight())
+			GraphicsUtil.fillFadingOval(g, subRootX-cloudWidth/2, subRootY-spanTree/2, cloudWidth,spanTree, color);
+		else
+			GraphicsUtil.fillFadingOval(g, subRootX-cloudWidth/2, subRootY-cloudWidth/2, cloudWidth,cloudWidth, color);
+	}	
 
 }

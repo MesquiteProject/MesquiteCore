@@ -131,6 +131,11 @@ public abstract class Attachable extends Listened implements HTMLDescribable {
 				md.setName(b.getName());
 				attach(md);
 			}
+			else if (obj instanceof MesquiteFlag){ //todo: add attachments of other sorts also
+				MesquiteFlag b = (MesquiteFlag)obj;
+				MesquiteFlag md = new MesquiteFlag(b);
+				attach(md);
+			}
 			else {
 				MesquiteMessage.warnProgrammer("ERROR: setAttachments encountered attachment of unknown type.  This is not handled yet. " + obj.getClass() + "  " + obj);
 			}
@@ -157,6 +162,32 @@ public abstract class Attachable extends Listened implements HTMLDescribable {
 			}
 		}
 		return null;
+	}
+	public Object[] getAttachmentStartsWith(String name, Class c){
+		if (attachments==null)
+			return null;
+		int count = 0;
+		for (int i=0; i<attachments.size(); i++) {
+			Object obj = attachments.elementAt(i);
+			if (obj instanceof Listable && (c == null || c.isAssignableFrom(obj.getClass()))){
+				Listable b = (Listable)obj;
+				if (name== null || StringUtil.startsWithIgnoreCase(b.getName(), name))
+					count++;
+			}
+		}
+		if (count == 0)
+			return null;
+		Object[] results = new Object[count];
+		count = 0;
+		for (int i=0; i<attachments.size(); i++) {
+			Object obj = attachments.elementAt(i);
+			if (obj instanceof Listable && (c == null || c.isAssignableFrom(obj.getClass()))){
+				Listable b = (Listable)obj;
+				if (name== null || StringUtil.startsWithIgnoreCase(b.getName(), name))
+					results[count++] = b;	
+			}
+		}
+		return results;
 	}
 	public String listAttachments(){
 		String s = " Attachments of ";
@@ -208,6 +239,13 @@ public abstract class Attachable extends Listened implements HTMLDescribable {
 						first = false;
 						s += ParseUtil.tokenize(((MesquiteString)obj).getName()) + " = " + ParseUtil.tokenize(((MesquiteString)obj).getValue())+ " ";
 					}
+					else if (obj instanceof MesquiteFlag){
+						if (!first)
+							s += ", ";
+						first = false;
+						s += ((MesquiteFlag)obj).writeDescription()+ " ";
+					}
+					
 				}
 			}
 		if (StringUtil.blank(s))
@@ -231,7 +269,13 @@ public abstract class Attachable extends Listened implements HTMLDescribable {
 		if (StringUtil.blank(value))
 			return false;
 		if (reportReading) MesquiteMessage.println("!!!~~KEY " + key + " VALUE " + value + " pos " + pos.getValue());
-		if (value.equalsIgnoreCase("on")) {
+		if (key.startsWith("flag")){
+			MesquiteFlag mflag = new MesquiteFlag();
+			mflag.readDescription(value);
+			mflag.setName(key);
+		attachIfUniqueName(mflag);
+		}
+		else if (value.equalsIgnoreCase("on")) {
 			MesquiteBoolean mb = new MesquiteBoolean(true);
 			mb.setName(key);
 			attachIfUniqueName(mb);

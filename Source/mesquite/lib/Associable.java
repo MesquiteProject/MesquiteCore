@@ -159,53 +159,53 @@ public abstract class Associable extends Attachable implements Commandable, Anno
 		return sT;
 	}
 
-public ListableVector getAssociatesOfKind(int kind){
-	ListableVector v = new ListableVector();
-	if (kind == Associable.BITS){
-		if (bits!=null) {
-			for (int i=0; i<bits.size(); i++) {
-				v.addElement((Listable)bits.elementAt(i), false);
+	public ListableVector getAssociatesOfKind(int kind){
+		ListableVector v = new ListableVector();
+		if (kind == Associable.BITS){
+			if (bits!=null) {
+				for (int i=0; i<bits.size(); i++) {
+					v.addElement((Listable)bits.elementAt(i), false);
+				}
 			}
 		}
-	}
-	else if (kind == Associable.LONGS){
-		if (longs!=null) {
-			for (int i=0; i<longs.size(); i++) {
-				Object obj = longs.elementAt(i);
-				Listable b = (Listable)longs.elementAt(i);
-				v.addElement(b, false);
+		else if (kind == Associable.LONGS){
+			if (longs!=null) {
+				for (int i=0; i<longs.size(); i++) {
+					Object obj = longs.elementAt(i);
+					Listable b = (Listable)longs.elementAt(i);
+					v.addElement(b, false);
+				}
 			}
 		}
-	}
-	else if (kind == Associable.DOUBLES){
-		if (doubles!=null) {
-			for (int i=0; i<doubles.size(); i++) {
-				Object obj = doubles.elementAt(i);
-				Listable b = (Listable)doubles.elementAt(i);
-				v.addElement(b, false);
+		else if (kind == Associable.DOUBLES){
+			if (doubles!=null) {
+				for (int i=0; i<doubles.size(); i++) {
+					Object obj = doubles.elementAt(i);
+					Listable b = (Listable)doubles.elementAt(i);
+					v.addElement(b, false);
+				}
 			}
 		}
-	}
-	else if (kind == Associable.STRINGS){
-		if (strings!=null) {
-			for (int i=0; i<strings.size(); i++) {
-				Object obj = strings.elementAt(i);
-				Listable b = (Listable)strings.elementAt(i);
-				v.addElement(b, false);
+		else if (kind == Associable.STRINGS){
+			if (strings!=null) {
+				for (int i=0; i<strings.size(); i++) {
+					Object obj = strings.elementAt(i);
+					Listable b = (Listable)strings.elementAt(i);
+					v.addElement(b, false);
+				}
 			}
 		}
-	}
-	else if (kind == Associable.OBJECTS){
-		if (objects!=null) {
-			for (int i=0; i<objects.size(); i++) {
-				Object obj = objects.elementAt(i);
-				Listable b = (Listable)objects.elementAt(i);
-				v.addElement(b, false);
+		else if (kind == Associable.OBJECTS){
+			if (objects!=null) {
+				for (int i=0; i<objects.size(); i++) {
+					Object obj = objects.elementAt(i);
+					Listable b = (Listable)objects.elementAt(i);
+					v.addElement(b, false);
+				}
 			}
 		}
+		return v;
 	}
-	return v;
-}
 
 	public String getTextVersionAssociates(String nameOfPart){
 		if (bits == null && longs == null && doubles == null && objects == null && strings == null)
@@ -296,7 +296,7 @@ public ListableVector getAssociatesOfKind(int kind){
 		}
 		return s;
 	}
-	
+
 	//makes the associated info of a part of this equal to that of otherPart of other associable
 	public void equalizeParts(Associable other, int otherPart, int part){
 		if (other==null || part >= getNumberOfParts() || otherPart >= other.getNumberOfParts())
@@ -391,13 +391,22 @@ public ListableVector getAssociatesOfKind(int kind){
 	public long getVersionNumber(){
 		return versionNumber;
 	}
-	public void incrementVersionQuietly(){
-		versionNumber++;
-	}
 	
+	boolean incrementActive = true;
+	public void setActiveIncrementVersion(boolean active){ //a bit dangerous; not thread safe. To be used only in very local calculation, and immediately turned back on.
+		incrementActive = active;
+	}
+
+	public void incrementVersionQuietly(){
+		if (incrementActive)
+			versionNumber++;
+	}
+
 	protected void incrementVersion(int code, boolean notify){
-		versionNumber++;
+		if (incrementActive)
+			versionNumber++;
 		setDirty(true);
+
 	}
 
 	public int getNumberOfParts() {
@@ -520,7 +529,8 @@ public ListableVector getAssociatesOfKind(int kind){
 	public void setDirty(boolean d){
 
 		if (d == true){
-			versionNumber++;
+			if (incrementActive)
+				versionNumber++;
 		}
 		dirty = d;
 	}
@@ -946,42 +956,50 @@ public ListableVector getAssociatesOfKind(int kind){
 			for (int i=0; i<objects.size(); i++) {
 				ObjectArray b = (ObjectArray)objects.elementAt(i);
 				Object obj = b.getValue(node);
-				if (obj!=null && (obj instanceof Listable || obj instanceof String)){
-					if (!first)
-						s += ", ";
-					first = false;
-					if (obj instanceof DoubleArray){
-						DoubleArray ddoubles = (DoubleArray)obj;
-						s+= StringUtil.tokenize(b.getName()) + " = {";
-						boolean firstD = true;
-						for (int k = 0; k<ddoubles.getSize(); k++){
-							if (!firstD)
-								s += ", ";
-							firstD = false;
-							s += MesquiteDouble.toString(ddoubles.getValue(k));
+				if (obj!=null) {
+					if (obj instanceof MesquiteFlag){
+						if (!first)
+							s += ", ";
+						first = false;
+						s += ((MesquiteFlag)obj).writeDescription()+ " ";
+					}
+					else if ((obj instanceof Listable || obj instanceof String)){
+						if (!first)
+							s += ", ";
+						first = false;
+						if (obj instanceof DoubleArray){
+							DoubleArray ddoubles = (DoubleArray)obj;
+							s+= StringUtil.tokenize(b.getName()) + " = {";
+							boolean firstD = true;
+							for (int k = 0; k<ddoubles.getSize(); k++){
+								if (!firstD)
+									s += ", ";
+								firstD = false;
+								s += MesquiteDouble.toString(ddoubles.getValue(k));
+							}
+							s+=  "} ";
 						}
-						s+=  "} ";
-					}
-					else if (obj instanceof StringArray){
-						StringArray sstrings = (StringArray)obj;
-						s+= StringUtil.tokenize(b.getName()) + " = {";
-						boolean firstD = true;
-						for (int k = 0; k<sstrings.getSize(); k++){
-							if (!firstD)
-								s += ", ";
-							firstD = false;
-							s += ParseUtil.tokenize(sstrings.getValue(k));
+						else if (obj instanceof StringArray){
+							StringArray sstrings = (StringArray)obj;
+							s+= StringUtil.tokenize(b.getName()) + " = {";
+							boolean firstD = true;
+							for (int k = 0; k<sstrings.getSize(); k++){
+								if (!firstD)
+									s += ", ";
+								firstD = false;
+								s += ParseUtil.tokenize(sstrings.getValue(k));
+							}
+							s+=  "} ";
 						}
-						s+=  "} ";
-					}
-					else if (obj instanceof String){
-						MesquiteMessage.printStackTrace("Associable: writing string in objectarray!");
-						s+= StringUtil.tokenize(b.getName()) + " = " + ParseUtil.tokenize((String)obj) + " ";
-					}
-					else {
-						MesquiteMessage.warnProgrammer("Warning: Saving of objects of type " + obj.getClass() +" in Associables not yet working!");
-						if (MesquiteTrunk.developmentMode)
-							MesquiteMessage.printStackTrace();
+						else if (obj instanceof String){
+							MesquiteMessage.printStackTrace("Associable: writing string in objectarray!");
+							s+= StringUtil.tokenize(b.getName()) + " = " + ParseUtil.tokenize((String)obj) + " ";
+						}
+						else {
+							MesquiteMessage.warnProgrammer("Warning: Saving of objects of type " + obj.getClass() +" in Associables not yet working!");
+							if (MesquiteTrunk.developmentMode)
+								MesquiteMessage.printStackTrace();
+						}
 					}
 				}
 			}
@@ -1026,7 +1044,13 @@ public ListableVector getAssociatesOfKind(int kind){
 			//}
 			if (StringUtil.blank(value))
 				return;
-			if (key.equals("color")){ //special case; reading old color possibly
+			if (key.startsWith("flag")){
+				MesquiteFlag mflag = new MesquiteFlag();
+				mflag.readDescription(value);
+				mflag.setName(key);
+				setAssociatedObject(NameReference.getNameReference(key), node, mflag);
+			}
+			else if (key.equals("color")){ //special case; reading old color possibly
 				int oldColor = MesquiteInteger.fromString(value);
 				if (value.length()<=2 && oldColor>=0 && oldColor<20) //old color; convert
 					value =ColorDistribution.hexFromColor(oldColor);
@@ -1038,7 +1062,7 @@ public ListableVector getAssociatesOfKind(int kind){
 				LongArray b = getAssociatedLongs(nRef);
 				if (b != null)
 					b.setBetweenness(true);
-					*/
+				 */
 			}
 			else if (key.equalsIgnoreCase("setBetweenDouble")) {//note this is not for the node, but for the tree. This is to read an old Mesquite 3 convention
 				/* disabled as that is now controlled otherwise
@@ -1046,7 +1070,7 @@ public ListableVector getAssociatesOfKind(int kind){
 				DoubleArray b = getAssociatedDoubles(nRef);
 				if (b != null)
 					b.setBetweenness(true);
-					*/
+				 */
 			}
 			else if (key.equalsIgnoreCase("setBetweenObject")) {//note this is not for the node, but for the tree. This is to read an old Mesquite 3 convention
 				/* disabled as that is now controlled otherwise
@@ -1054,7 +1078,7 @@ public ListableVector getAssociatesOfKind(int kind){
 				ObjectArray b = getAssociatedObjects(nRef);
 				if (b != null)
 					b.setBetweenness(true);
-					*/
+				 */
 			}
 			else if (key.equalsIgnoreCase("triangled")) { //note this is not for the node, but for the tree. This is to read an old Mesquite 3 convention
 				NameReference nr = makeAssociatedBits("collapsed");
@@ -1832,7 +1856,7 @@ public ListableVector getAssociatesOfKind(int kind){
 		incrementVersion(MesquiteListener.ASSOCIATED_CHANGED, false);
 		return true;
 	}	
-	
+
 	public boolean mergeParts (int into, int from){  //THIS deals with merging strings ONLY; for others, there isn't an obvious sense of merging 
 		if (into>numParts || into<0) 
 			return false;
@@ -1851,7 +1875,7 @@ public ListableVector getAssociatesOfKind(int kind){
 						merged = null;
 				}
 				else if (StringUtil.blank(sFrom)){
-						merged = sInto;
+					merged = sInto;
 				}
 				else
 					merged = sInto + "; " + sFrom;
@@ -2058,7 +2082,7 @@ public ListableVector getAssociatesOfKind(int kind){
 	public int nextSelectedIfAny(int previous) {
 		if (!anySelected())
 			return previous +1;
-		
+
 		for (int i = previous+1; i<getNumberOfParts(); i++) {
 			if (selected.isBitOn(i))
 				return i;
@@ -2071,7 +2095,7 @@ public ListableVector getAssociatesOfKind(int kind){
 	public int nextPart(int previous, boolean selectedOnly) {
 		if (!selectedOnly || !anySelected())
 			return previous +1;
-		
+
 		for (int i = previous+1; i<getNumberOfParts(); i++) {
 			if (selected.isBitOn(i))
 				return i;
@@ -2184,6 +2208,29 @@ public ListableVector getAssociatesOfKind(int kind){
 		}
 		return null;
 	}
+	
+	public Bits[] getAssociatedBitsStartsWith(String nameStart){
+		if (bits!=null && nameStart!=null) {
+			int count = 0;
+			for (int i=0; i<bits.size(); i++) {
+				Bits b = (Bits)bits.elementAt(i);
+				if (b !=null && b.getNameReference()!= null && StringUtil.startsWithIgnoreCase(b.getName(),nameStart)) 
+					count++;
+			}
+			if (count == 0)
+				return null;
+			Bits[] results = new Bits[count];
+			count = 0;
+			for (int i=0; i<bits.size(); i++) {
+				Bits b = (Bits)bits.elementAt(i);
+				if (b !=null && b.getNameReference()!= null && StringUtil.startsWithIgnoreCase(b.getName(),nameStart)) {
+					results[count++] = b;
+				}
+			}
+			return results;
+		}
+		return null;
+	}
 	public void clearAllAssociatedBits(NameReference nRef){
 		boolean found = false;
 		if (bits!=null && nRef!=null) {
@@ -2282,6 +2329,30 @@ public ListableVector getAssociatesOfKind(int kind){
 		}
 		return null;
 	}
+	
+	public LongArray[] getAssociatedLongsStartsWith(String nameStart){
+		if (longs!=null && nameStart!=null) {
+			int count = 0;
+			for (int i=0; i<longs.size(); i++) {
+				LongArray b = (LongArray)longs.elementAt(i);
+				if (b !=null && b.getNameReference()!= null && StringUtil.startsWithIgnoreCase(b.getName(),nameStart)) 
+					count++;
+			}
+			if (count == 0)
+				return null;
+			LongArray[] results = new LongArray[count];
+			count = 0;
+			for (int i=0; i<longs.size(); i++) {
+				LongArray b = (LongArray)longs.elementAt(i);
+				if (b !=null && b.getNameReference()!= null && StringUtil.startsWithIgnoreCase(b.getName(),nameStart)) {
+					results[count++] = b;
+				}
+			}
+			return results;
+		}
+		return null;
+	}
+
 	public void deassignAllAssociatedLongs(NameReference nRef){
 		boolean found = false;
 		if (longs!=null && nRef!=null) {
@@ -2386,6 +2457,29 @@ public ListableVector getAssociatesOfKind(int kind){
 		}
 		return null;
 	}
+	
+	public DoubleArray[] getAssociatedDoublesStartsWith(String nameStart){
+		if (doubles!=null && nameStart!=null) {
+			int count = 0;
+			for (int i=0; i<doubles.size(); i++) {
+				DoubleArray b = (DoubleArray)doubles.elementAt(i);
+				if (b !=null && b.getNameReference()!= null && StringUtil.startsWithIgnoreCase(b.getName(),nameStart)) 
+					count++;
+			}
+			if (count == 0)
+				return null;
+			DoubleArray[] results = new DoubleArray[count];
+			count = 0;
+			for (int i=0; i<doubles.size(); i++) {
+				DoubleArray b = (DoubleArray)doubles.elementAt(i);
+				if (b !=null && b.getNameReference()!= null && StringUtil.startsWithIgnoreCase(b.getName(),nameStart)) {
+					results[count++] = b;
+				}
+			}
+			return results;
+		}
+		return null;
+	}
 	public void zeroAllAssociatedDoubles(NameReference nRef){
 		boolean found = false;
 		if (doubles!=null && nRef!=null) {
@@ -2430,7 +2524,7 @@ public ListableVector getAssociatesOfKind(int kind){
 				removeAssociatedLongs(nRef);   //delete longs as no longer needed
 			}
 
-			
+
 			if (b==null)
 				return;
 			b.setValue(index, value);
@@ -2494,6 +2588,29 @@ public ListableVector getAssociatesOfKind(int kind){
 					return b; 
 				}
 			}
+		}
+		return null;
+	}
+	
+	public StringArray[] getAssociatedStringsStartsWith(String nameStart){
+		if (strings!=null && nameStart!=null) {
+			int count = 0;
+			for (int i=0; i<strings.size(); i++) {
+				StringArray b = (StringArray)strings.elementAt(i);
+				if (b !=null && b.getNameReference()!= null && StringUtil.startsWithIgnoreCase(b.getName(),nameStart)) 
+					count++;
+			}
+			if (count == 0)
+				return null;
+			StringArray[] results = new StringArray[count];
+			count = 0;
+			for (int i=0; i<strings.size(); i++) {
+				StringArray b = (StringArray)strings.elementAt(i);
+				if (b !=null && b.getNameReference()!= null && StringUtil.startsWithIgnoreCase(b.getName(),nameStart)) {
+					results[count++] = b;
+				}
+			}
+			return results;
 		}
 		return null;
 	}
@@ -2620,6 +2737,28 @@ public ListableVector getAssociatesOfKind(int kind){
 		return null;
 	}
 
+	public NameReference[] getAssociatedObjectsStartsWith(String nameStart){
+		if (objects!=null && nameStart!=null) {
+			int count = 0;
+			for (int i=0; i<objects.size(); i++) {
+				ObjectArray b = (ObjectArray)objects.elementAt(i);
+				if (b !=null && b.getNameReference()!= null && StringUtil.startsWithIgnoreCase(b.getName(),nameStart)) 
+					count++;
+			}
+			if (count == 0)
+				return null;
+			NameReference[] results = new NameReference[count];
+			count = 0;
+			for (int i=0; i<objects.size(); i++) {
+				ObjectArray b = (ObjectArray)objects.elementAt(i);
+				if (b !=null && b.getNameReference()!= null && StringUtil.startsWithIgnoreCase(b.getName(),nameStart)) {
+					results[count++] = b.getNameReference();
+				}
+			}
+			return results;
+		}
+		return null;
+	}
 	public void zeroAllAssociatedObjects(NameReference nRef){
 		boolean found = false;
 		if (objects!=null && nRef!=null) {
@@ -2636,7 +2775,7 @@ public ListableVector getAssociatesOfKind(int kind){
 
 	static boolean assocStringObjectWarned = false;
 	boolean assocStringObjectFound = false;
-	
+
 	public void setAssociatedObject(NameReference nRef, int index, Object value){
 		if (value instanceof String){
 			assocStringObjectFound = true;
@@ -2673,29 +2812,29 @@ public ListableVector getAssociatesOfKind(int kind){
 			return null;
 		if (objects != null)
 			for (int i=0; i<objects.size(); i++) {
-			ObjectArray b = (ObjectArray)objects.elementAt(i);
-			if (b !=null && nRef.equals(b.getNameReference())) {
-				if (b.getValue(index) instanceof String && MesquiteTrunk.developmentMode && !assocStringObjectWarned){
-					MesquiteMessage.println("String found saved in Associable as object (b); Associable: " + getClass() + ".");
-					MesquiteMessage.printStackTrace("");
-					assocStringObjectWarned = true;
+				ObjectArray b = (ObjectArray)objects.elementAt(i);
+				if (b !=null && nRef.equals(b.getNameReference())) {
+					if (b.getValue(index) instanceof String && MesquiteTrunk.developmentMode && !assocStringObjectWarned){
+						MesquiteMessage.println("String found saved in Associable as object (b); Associable: " + getClass() + ".");
+						MesquiteMessage.printStackTrace("");
+						assocStringObjectWarned = true;
+					}
+					return b.getValue(index); 
 				}
-				return b.getValue(index); 
 			}
-		}
 		//Not found. Checking Strings in case it's an old style request
 		if (strings != null)
 			for (int i=0; i<strings.size(); i++) {
 				StringArray b = (StringArray)strings.elementAt(i);
-			if (b !=null && nRef.equals(b.getNameReference())) {
-				if (MesquiteTrunk.developmentMode && !assocStringObjectWarned){
-					MesquiteMessage.println("String found saved in Associable as object (c); Associable: " + getClass() + ".");
-					MesquiteMessage.printStackTrace("");
-					assocStringObjectWarned = true;
+				if (b !=null && nRef.equals(b.getNameReference())) {
+					if (MesquiteTrunk.developmentMode && !assocStringObjectWarned){
+						MesquiteMessage.println("String found saved in Associable as object (c); Associable: " + getClass() + ".");
+						MesquiteMessage.printStackTrace("");
+						assocStringObjectWarned = true;
+					}
+					return b.getValue(index); 
 				}
-				return b.getValue(index); 
 			}
-		}
 
 		return null;
 	}
@@ -2728,7 +2867,7 @@ public ListableVector getAssociatesOfKind(int kind){
 		}
 		return false;
 	}
-/* Disabled until this can be worked via settings also
+	/* Disabled until this can be worked via settings also
 	public void setAssociatedBitsBetweenness(NameReference nref, boolean between){
 		Bits b = getAssociatedBits(nref);
 		if (b != null)
@@ -2754,7 +2893,7 @@ public ListableVector getAssociatesOfKind(int kind){
 		if (b != null)
 			b.setBetweenness(between);
 	}
-*/
+	 */
 }
 
 

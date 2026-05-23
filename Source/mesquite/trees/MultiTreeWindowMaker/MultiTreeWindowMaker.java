@@ -148,6 +148,16 @@ public class MultiTreeWindowMaker extends FileAssistantT implements TreeDisplayH
 		}
 		return true;
 	}
+	/*............................................................................. */
+	/** Finds a menu of given name from employers */
+	public MesquiteMenuSpec findMenu(String menuName) {
+		if (treeDrawCoordTask != null){
+			MesquiteMenuSpec tdcM = treeDrawCoordTask.findMenu(menuName);
+			if (tdcM != null)
+				return tdcM;
+		}
+		return super.findMenu(menuName);
+	}
 
 	public boolean isPrerelease(){
 		return false;
@@ -195,19 +205,19 @@ public class MultiTreeWindowMaker extends FileAssistantT implements TreeDisplayH
 	public void employeeParametersChanged(MesquiteModule employee, MesquiteModule source, Notification notification) {
 		if (employee == treeSourceTask || source == treeSourceTask){
 			if ((multiTreeWindow!=null) ) 
-				multiTreeWindow.renew(false);
+				multiTreeWindow.renew(false, false);
 		}
 		else if (employee!=treeDrawCoordTask){
 			if ((multiTreeWindow!=null) ) 
-				multiTreeWindow.renew(false);
+				multiTreeWindow.renew(true, false);
 			else if ((multiTreeWindow!=null)  && Notification.getCode(notification) != MesquiteListener.SELECTION_CHANGED) {
 				multiTreeWindow.contentsChanged();
-				multiTreeWindow.renew(false);
+				multiTreeWindow.renew(true, false);
 			}
 		}
 		else if (source instanceof DrawNamesTreeDisplay){
 			multiTreeWindow.contentsChanged();
-			multiTreeWindow.renew(false);
+			multiTreeWindow.renew(true, false);
 		}
 	}
 	/*.................................................................................................................*/
@@ -324,7 +334,7 @@ public class MultiTreeWindowMaker extends FileAssistantT implements TreeDisplayH
 		int code = Notification.getCode(notification);
 		int[] parameters = Notification.getParameters(notification);
 		if (obj instanceof Taxa && (Taxa) obj == taxa) {
-			multiTreeWindow.renew(false);
+			multiTreeWindow.renew(Notification.appearsCosmeticOrSelection(notification), false);
 		}
 		super.changed(caller, obj, notification);
 	}
@@ -753,7 +763,7 @@ class MultiTreeWindow extends MesquiteWindow implements KeyListener, Commandable
 					treeDisplays[itree].repaint();
 				}
 				contentsChanged();
-				renew(false);
+				renew(false, false);
 				return tda;
 			}
 		}
@@ -763,8 +773,8 @@ class MultiTreeWindow extends MesquiteWindow implements KeyListener, Commandable
 	}
 	/*.................................................................................................................*/
 
-	public void renew(boolean resetZero) {
-		if (treeScroll!=null && treeSourceTask!=null)
+	public void renew(boolean redrawOnly, boolean resetToZero) {
+		if (!redrawOnly && treeScroll!=null && treeSourceTask!=null)
 			treeScroll.setMaximum(treeSourceTask.getNumberOfTrees(taxa)/numColumns + 1); //-1);
 		if (treeSourceTask!=null) {
 			if (ownerModule.getProject().getNumberTaxas()<=1)
@@ -772,10 +782,12 @@ class MultiTreeWindow extends MesquiteWindow implements KeyListener, Commandable
 			else
 				messagePanel.setMessage("Trees for taxa \"" + taxa.getName() + "\" from " + treeSourceTask.getNameAndParameters());
 		}
-		if (resetZero)
+		if (!redrawOnly){
+			if (resetToZero)
 			setFirstTree(0);
 		else
 			setFirstTree(firstTree);
+		}
 		for (int itree=0; itree<(numColumns*numRows)&& itree<treeDisplays.length; itree++) {
 			treeDisplays[itree].redoCalculations(44513);
 			treeDisplays[itree].repaint();
@@ -864,7 +876,7 @@ class MultiTreeWindow extends MesquiteWindow implements KeyListener, Commandable
 		sizeDisplays(false);
 		firstTree = treeNum;
 		trees.removeAllElements(false);
-		for (int itree=0; itree<(maxDisplays); itree++) {
+		for (int itree=0; itree<(maxDisplays); itree++) { //Debugg.println: this should not do max, but current number. Redo this if # displays changes
 			Tree sourceTree=null;
 			if (itree+treeNum <treeSourceTask.getNumberOfTrees(taxa))
 				sourceTree = treeSourceTask.getTree(taxa, itree+treeNum);
