@@ -187,6 +187,11 @@ public abstract class MesquiteTrunk extends MesquiteModule
 	public static PhoneHomeThread phoneHomeThread;
 	public static LinuxGWAThread linuxGWAThread;
 
+	public static boolean recordMatrixEdits = false;
+	public static String matrixEditsReportFileName = "MatrixEdits.txt";
+	public static String matrixEditsReportDirectoryPath;
+	public static String matrixEditsReportFilePath;
+
 	/** The panel in which all Mesquite "windows" fit if run as applet embedded in page.*/
 	public Panel embeddedPanel;
 

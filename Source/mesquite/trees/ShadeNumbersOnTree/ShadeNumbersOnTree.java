@@ -46,6 +46,7 @@ import mesquite.lib.ui.MesquiteSubmenuSpec;
 public class ShadeNumbersOnTree extends DisplayNumbersAtNodes {
 	TreeDisplay treeDisplay;
 	MesquiteBoolean backRect;
+	MesquiteBoolean emphasizeText;
 	MesquiteBoolean useLogScale;
 	MesquiteColorTable colorTable = new ContColorTable();
  	Vector labellers;
@@ -54,12 +55,14 @@ public class ShadeNumbersOnTree extends DisplayNumbersAtNodes {
 	public boolean startJob(String arguments, Object condition, boolean hiredByName) {
 		backRect = new MesquiteBoolean(false);
 		useLogScale = new MesquiteBoolean(false);
+		emphasizeText = new MesquiteBoolean(false);
 		MesquiteSubmenuSpec mss = addSubmenu(null, "Display");
 		addCheckMenuItemToSubmenu(null, mss, "Label nodes", makeCommand("toggleLabels", this), showLabels);
 		addItemToSubmenu(null, mss, "Digits...", makeCommand("setDigits",  this));
 		addCheckMenuItemToSubmenu(null, mss, "Display as percentage", makeCommand("toggleDisplayPercentage", this), usePercentages);  
 		addCheckMenuItemToSubmenu(null, mss, "Include labels for terminals", makeCommand("toggleLabelTerminals", this), labelTerminals);  
 		addCheckMenuItemToSubmenu(null, mss, "Labels with background", makeCommand("toggleRectangle", this), backRect);
+		addCheckMenuItemToSubmenu(null, mss, "Emphasize Labels", makeCommand("toggleEmphasizeText", this), emphasizeText);
 		addItemToSubmenu(null, mss, "-", null);
 		addCheckMenuItemToSubmenu(null, mss, "Shade branches by value", makeCommand("toggleShade", this), shadeBranches);
 		addCheckMenuItemToSubmenu(null, mss, "Color shading", makeCommand("toggleColor", this), shadeInColor);
@@ -74,6 +77,7 @@ public class ShadeNumbersOnTree extends DisplayNumbersAtNodes {
   	 	temp.addLine("toggleLabelTerminals " + labelTerminals.toOffOnString());
   	 	temp.addLine("toggleColor " + shadeInColor.toOffOnString());
   	 	temp.addLine("toggleShade " + shadeBranches.toOffOnString());
+  	 	temp.addLine("toggleEmphasizeText " + emphasizeText.toOffOnString());
   	 	temp.addLine("toggleRectangle " + backRect.toOffOnString());
   	 	temp.addLine("toggleLog " + useLogScale.toOffOnString());
   	 	temp.addLine("toggleDisplayPercentage " + usePercentages.toOffOnString());
@@ -87,6 +91,10 @@ public class ShadeNumbersOnTree extends DisplayNumbersAtNodes {
     	 	if (checker.compare(this.getClass(), "Sets whether or not nodes are labeled with text", "[on = labeled; off]", commandName, "toggleLabels")) {
     	 		showLabels.toggleValue(parser.getFirstToken(arguments));
     	 		parametersChanged();
+    	 	}
+    	 	else if (checker.compare(this.getClass(), "Sets whether text is emphasized", "[on = color; off]", commandName, "toggleEmphasizeText")) {
+    	 		emphasizeText.toggleValue(parser.getFirstToken(arguments));
+			parametersChanged();
     	 	}
     	 	else if (checker.compare(this.getClass(), "Sets whether shadings are shown in color or grayscale", "[on = color; off]", commandName, "toggleColor")) {
     	 		shadeInColor.toggleValue(parser.getFirstToken(arguments));
@@ -220,7 +228,7 @@ class ShadeNumbersDecorator extends TreeDecorator {
 			else if (treeDisplay.getOrientation() == treeDisplay.RIGHT) {
 				//nodeY=20;
 				if (labelHugsNode) {
-					nodeX-=stringWidth+2;
+					nodeX-=stringWidth+2+3;
 					nodeY+= fm.getMaxAscent()+2;
 				}
 				else
@@ -245,8 +253,10 @@ class ShadeNumbersDecorator extends TreeDecorator {
 				GraphicsUtil.drawString(g,s, nodeX +2, nodeY + fm.getMaxAscent()+1);
 				if (c!=null) g.setColor(c);
 			}
-			else
+			else if (ownerModule.emphasizeText.getValue())
 				StringUtil.highlightString(g, s, nodeX, nodeY, Color.blue, Color.white);
+			else
+				GraphicsUtil.drawString(g,s, nodeX,nodeY);
 
 		}
 	}
