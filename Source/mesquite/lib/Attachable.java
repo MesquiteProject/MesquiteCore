@@ -208,6 +208,31 @@ public abstract class Attachable extends Listened implements HTMLDescribable {
 		}
 		return s;
 	}
+	public String[] getAttachentTypesAndNames(){
+		String[] typesNames = new String[attachments.size()];
+		if (attachments!=null)
+			for (int i=0; i<attachments.size(); i++) {
+				Object obj = attachments.elementAt(i);
+				if (obj instanceof Listable && ((Listable)obj).getName()!=null){
+					if (obj instanceof MesquiteLong)
+						typesNames[i] = "Integer: " + ((Listable)obj).getName();
+					else if (obj instanceof MesquiteDouble)
+						typesNames[i] = "Decimal Number: " + ((Listable)obj).getName();
+					else if (obj instanceof MesquiteString)
+						typesNames[i] = "String: " + ((Listable)obj).getName();
+					else if (obj instanceof MesquiteBoolean)
+						typesNames[i] = "Boolean: " + ((Listable)obj).getName();
+					else if (obj instanceof MesquiteFlag)
+						typesNames[i] = "Flag: " + ((Listable)obj).getName();
+					else if (obj instanceof Listable)
+						typesNames[i] = "Object: " + ((Listable)obj).getName();
+					else 
+						typesNames[i] = "Object of type " + obj.getClass().getName();
+
+				}
+			}
+		return typesNames;
+	}
 	public String writeAttachments(){
 		String s = "";
 		boolean first = true;
@@ -245,7 +270,7 @@ public abstract class Attachable extends Listened implements HTMLDescribable {
 						first = false;
 						s += ((MesquiteFlag)obj).writeDescription()+ " ";
 					}
-					
+
 				}
 			}
 		if (StringUtil.blank(s))
@@ -273,7 +298,7 @@ public abstract class Attachable extends Listened implements HTMLDescribable {
 			MesquiteFlag mflag = new MesquiteFlag();
 			mflag.readDescription(value);
 			mflag.setName(key);
-		attachIfUniqueName(mflag);
+			attachIfUniqueName(mflag);
 		}
 		else if (value.equalsIgnoreCase("on")) {
 			MesquiteBoolean mb = new MesquiteBoolean(true);
@@ -292,7 +317,7 @@ public abstract class Attachable extends Listened implements HTMLDescribable {
 			attachIfUniqueName(mb);
 		}
 		else {
-			
+
 			pos.setValue(posBeforeValue);
 			double d = MesquiteDouble.fromString(assocString, pos);
 			if (reportReading) MesquiteMessage.println("  d " +  MesquiteDouble.toString(d) + " pos " + pos.getValue());
@@ -321,7 +346,7 @@ public abstract class Attachable extends Listened implements HTMLDescribable {
 					MesquiteLong mb = new MesquiteLong();
 					pos.setValue(posBeforeValue);
 					mb.setValue(MesquiteLong.fromString(assocString, pos));
-				
+
 					if (!mb.isCombinable())
 						return false;
 					mb.setName(key);

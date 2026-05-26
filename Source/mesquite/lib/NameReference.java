@@ -57,6 +57,13 @@ public class NameReference implements Listable {
 				return false;
 			return getValue().equalsIgnoreCase(name);
 		}
+	public boolean equalsReferenceOrString (NameReference nr){
+			if (nr == null)
+				return false;
+			if (nr==this)
+				return true;
+			return (nr.equalsString(value));
+	}
 /*
  * 	pre-4 version, anxious 
  * public boolean equals (NameReference nr){

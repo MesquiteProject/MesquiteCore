@@ -634,12 +634,6 @@ public abstract class Associable extends Attachable implements Commandable, Anno
 			return null;
 		String[] names = new String[total];
 		int count = 0;
-		if (bits!=null) {
-			for (int i=0; i<bits.size(); i++) {
-				Listable b = (Listable)bits.elementAt(i);
-				names[count++] = b.getName();
-			}
-		}
 		if (longs!=null) {
 			for (int i=0; i<longs.size(); i++) {
 				Object obj = longs.elementAt(i);
@@ -659,10 +653,68 @@ public abstract class Associable extends Attachable implements Commandable, Anno
 				names[count++] = b.getName();
 			}
 		}
+		if (bits!=null) {
+			for (int i=0; i<bits.size(); i++) {
+				Listable b = (Listable)bits.elementAt(i);
+				names[count++] = b.getName();
+			}
+		}
 		if (objects!=null) {
 			for (int i=0; i<objects.size(); i++) {
 				Listable b = (Listable)objects.elementAt(i);
 				names[count++] = b.getName();
+			}
+		}
+		return names;
+	}
+	public String[] getAssociatesTypesAndNames(){ 
+		int total = getNumberAssociatedBits() +getNumberAssociatedLongs() + getNumberAssociatedDoubles() + getNumberAssociatedStrings() + getNumberAssociatedObjects();
+		if (total == 0)
+			return null;
+		String[] names = new String[total];
+		int count = 0;
+		if (longs!=null) {
+			for (int i=0; i<longs.size(); i++) {
+				Object obj = longs.elementAt(i);
+				Listable b = (Listable)longs.elementAt(i);
+				names[count++] = "Integers: " + b.getName();
+			}
+		}
+		if (doubles!=null){
+			for (int i=0; i<doubles.size(); i++) {
+				Listable b = (Listable)doubles.elementAt(i);
+				names[count++] = "Decimal values: " + b.getName();
+			}
+		}
+		if (strings!=null){
+			for (int i=0; i<strings.size(); i++) {
+				Listable b = (Listable)strings.elementAt(i);
+				names[count++] = "Strings: " + b.getName();
+			}
+		}
+		if (bits!=null) {
+			for (int i=0; i<bits.size(); i++) {
+				Listable b = (Listable)bits.elementAt(i);
+				names[count++] = "Booleans: " + b.getName();
+			}
+		}
+		if (objects!=null) {
+			for (int i=0; i<objects.size(); i++) {
+				Object obj = objects.elementAt(i);
+				if (obj instanceof MesquiteFlag){
+					MesquiteFlag b = (MesquiteFlag)obj;
+					names[count++] = "Flag: " + b.getName();
+				}
+				else if (obj instanceof ObjectArray){
+					Listable b = (Listable)obj;
+					names[count++] = "Objects: " + b.getName();
+				}
+				else if (obj instanceof Listable){
+					Listable b = (Listable)obj;
+					names[count++] = "Object: " + b.getName();
+				}
+				else
+					names[count++] = "Object of type " + obj.getClass().getName();
 			}
 		}
 		return names;
