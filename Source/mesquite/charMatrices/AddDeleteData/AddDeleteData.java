@@ -37,6 +37,7 @@ import mesquite.lib.taxa.Taxa;
 import mesquite.lib.ui.AlertDialog;
 import mesquite.lib.ui.InfoBar;
 import mesquite.lib.ui.MesquiteMenuItemSpec;
+import mesquite.lib.ui.MesquitePopup;
 import mesquite.lib.ui.MesquiteWindow;
 
 /*

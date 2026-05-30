@@ -16,6 +16,8 @@ package mesquite.lib.duties;
 import mesquite.lib.MesquiteModule;
 import mesquite.lib.table.EditorPanel;
 import mesquite.lib.table.MesquiteTable;
+import mesquite.lib.tree.MesquiteTree;
+import mesquite.lib.ui.MesquitePopup;
 
 
 /* ======================================================================== */
@@ -62,6 +64,11 @@ public abstract class DataWindowAssistant extends MesquiteModule  {
 	public boolean columnTouched(boolean isArrowEquivalent, int column, EditorPanel panel, int x, int y,  int modifiers) {
 		return false;
 	}
+	/**Add any desired menu items to the right click popup. Assumes you alrady know table and data from setTableAndData */
+	public void addToRightClickPopup(MesquitePopup popup, int column, int row){
+		//popup.addItem("Show...", this, new MesquiteCommand("showSomething", this), "argument");
+	}
+
 	public void setActive(boolean a){
    		active = a;
    	}

@@ -20,6 +20,7 @@ import java.awt.Font;
 import java.awt.FontMetrics;
 import java.awt.Graphics;
 import java.awt.Image;
+import java.awt.MenuItem;
 import java.awt.Point;
 import java.awt.Shape;
 import java.awt.TextArea;
@@ -134,6 +135,8 @@ import mesquite.lib.table.TableTool;
 import mesquite.lib.table.TableWindow;
 import mesquite.lib.taxa.Taxa;
 import mesquite.lib.taxa.Taxon;
+import mesquite.lib.tree.MesquiteTree;
+import mesquite.lib.tree.TreeDisplayExtra;
 import mesquite.lib.ui.AlertDialog;
 import mesquite.lib.ui.ClosablePanel;
 import mesquite.lib.ui.ClosablePanelContainer;
@@ -154,6 +157,7 @@ import mesquite.lib.ui.MesquiteSubmenuSpec;
 import mesquite.lib.ui.MesquiteTool;
 import mesquite.lib.ui.MesquiteWindow;
 import mesquite.lib.ui.MousePanel;
+import mesquite.lib.ui.Priority0;
 import mesquite.lib.ui.QueryDialogs;
 import mesquite.lib.ui.StringInABox;
 import mesquite.lib.ui.ToolPalette;
@@ -3530,6 +3534,25 @@ class MatrixTable extends mesquite.lib.table.CMTable implements MesquiteDroppedF
 				e.printStackTrace();
 			}
 		}
+		else if (checker.compare(getClass(), "Paste contents of clipboard into matrix", "[character][taxon]", commandName, "setFootnote")) {
+			Parser parser = new Parser(arguments);
+			int column = MesquiteInteger.fromString(parser);
+			int row  = MesquiteInteger.fromString(parser);
+			if (!MesquiteInteger.isCombinable(column) && !MesquiteInteger.isCombinable(row))
+				return null;
+			String current = data.getAnnotation(column, row);
+			if (current == null) current = "";
+			MesquiteString value = new MesquiteString(current);
+			String message = "Set footnote for cell (character " +(column+1);
+			if (data.characterHasName(column))
+				message += " [" + data.getCharacterName(column) + "]";
+			message += " in taxon " +(row+1) + " [" + taxa.getTaxonName(row) + "])";
+			boolean result = QueryDialogs.queryString(window, "Set Footnote", message,  value, 4, false, false);
+			if (result){
+				data.setAnnotation(column, row, value.getValue());
+				data.notifyListeners(this, new Notification(MesquiteListener.ANNOTATION_CHANGED));
+			}
+		}
 		else
 			return super.doCommand(commandName, arguments, checker);
 		return null;
@@ -4959,21 +4982,38 @@ class MatrixTable extends mesquite.lib.table.CMTable implements MesquiteDroppedF
 			}
 		}
 		else if (row >= 0 && row<taxa.getNumTaxa() && column >= 0 && column<data.getNumChars()){
-			String current = data.getAnnotation(column, row);
-			if (current == null) current = "";
-			MesquiteString value = new MesquiteString(current);
-			String message = "Set footnote for cell (character " +(column+1);
-			if (data.characterHasName(column))
-				message += " [" + data.getCharacterName(column) + "]";
-			message += " in taxon " +(row+1) + " [" + taxa.getTaxonName(row) + "])";
-			boolean result = QueryDialogs.queryString(window, "Set Footnote", message,  value, 4, false, false);
-			if (result){
-				data.setAnnotation(column, row, value.getValue());
-				data.notifyListeners(this, new Notification(MesquiteListener.ANNOTATION_CHANGED));
-			}
+			showMatrixPopup(x, y, column, row);
 		}
 	}
 
+	MesquitePopup popup;
+	void showMatrixPopup(int x, int y, int column, int row){
+		if (data == null)
+			return;
+		if (popup==null)
+			popup = new MesquitePopup(matrix);
+		popup.removeAll();
+		popup.addItem("Character " + (column+1) + " taxon " + (row+1), editorModule, null, "");
+		popup.addItem("Edit footnote...", editorModule, new MesquiteCommand("setFootnote", this), Integer.toString(column) + " " + Integer.toString(row));
+		
+		notifyAssistantsOfRightClickPopup(popup, column, row);
+		if (popup.getItemCount()>0)
+			popup.showPopup(x, y);
+	}
+	/* ................................................................................................ */
+	void notifyAssistantsOfRightClickPopup(MesquitePopup popup, int column, int row) {
+			Enumeration e = editorModule.getEmployeeVector().elements();
+			while (e.hasMoreElements()) {
+				int numItems = popup.getItemCount();
+				Object obj = e.nextElement();
+				if (obj instanceof DataWindowAssistant) {
+					DataWindowAssistant dwa = (DataWindowAssistant) obj;
+					dwa.addToRightClickPopup(popup, column, row);
+				}
+				if (popup.getItemCount()>numItems)
+					popup.insert(new MenuItem("-"), numItems);
+			}
+	}
 	/* ............................................................................................................... */
 	private void checkTouchCurrentCell(int oldColumn, int oldRow) {
 		if (window != null && window.getCurrentTool() != null && ((TableTool) window.getCurrentTool()).getTouchOnArrowKey()) {
