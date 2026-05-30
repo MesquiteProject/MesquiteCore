@@ -23,7 +23,7 @@ import mesquite.lib.ui.ColorDistribution;
 /* ======================================================================== */
 /**To hold a flag on an object, including a name, and explanation, a colour, an integer (for bit flags), and a double value (initially built for nodes and trees).
  */
-public class MesquiteFlag implements Listable, Nameable {
+public class MesquiteFlag implements Explainable, Nameable {
 	int bits = 0;  //bit 0 is off/on
 	String name = null;
 	String hexColor = null;
@@ -75,6 +75,9 @@ public class MesquiteFlag implements Listable, Nameable {
 	public String getName(){
 		return name;
 	}
+	public String getExplanation(){
+		return explanation;
+	}
 	public void setBits(int s){
 		bits = s;
 	}
@@ -104,7 +107,7 @@ public class MesquiteFlag implements Listable, Nameable {
 		if (doubleValue != MesquiteDouble.unassigned)
 			s += "/ v: " +  MesquiteDouble.toString(doubleValue);
 		if (explanation != null)
-			s += "/ e: " +  explanation;
+			s += "/ e: " +  ParseUtil.tokenize(explanation);
 		if (atNode)
 			s +="/ a: " + atNode;
 		s = name + " = " + ParseUtil.tokenize(s);

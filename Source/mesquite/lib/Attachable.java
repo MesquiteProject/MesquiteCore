@@ -213,23 +213,56 @@ public abstract class Attachable extends Listened implements HTMLDescribable {
 		if (attachments!=null)
 			for (int i=0; i<attachments.size(); i++) {
 				Object obj = attachments.elementAt(i);
-				if (obj instanceof Listable && ((Listable)obj).getName()!=null){
+				String s = null;
+				if (obj instanceof Listable)
+					s = ((Listable)obj).getName();
+				if (s != null){
 					if (obj instanceof MesquiteLong)
-						typesNames[i] = "Integer: " + ((Listable)obj).getName();
+						typesNames[i] = "Integer: " + s;
 					else if (obj instanceof MesquiteDouble)
-						typesNames[i] = "Decimal Number: " + ((Listable)obj).getName();
+						typesNames[i] = "Decimal Number: " + s;
 					else if (obj instanceof MesquiteString)
-						typesNames[i] = "String: " + ((Listable)obj).getName();
+						typesNames[i] = "String: " + s;
 					else if (obj instanceof MesquiteBoolean)
-						typesNames[i] = "Boolean: " + ((Listable)obj).getName();
+						typesNames[i] = "Boolean: " + s;
 					else if (obj instanceof MesquiteFlag)
-						typesNames[i] = "Flag: " + ((Listable)obj).getName();
-					else if (obj instanceof Listable)
-						typesNames[i] = "Object: " + ((Listable)obj).getName();
+						typesNames[i] = "Flag: " + s;
 					else 
-						typesNames[i] = "Object of type " + obj.getClass().getName();
-
+						typesNames[i] = "Object: " + s;
 				}
+				else 
+					typesNames[i] = "Object of type " + obj.getClass().getName();
+
+			}
+		return typesNames;
+	}
+	public String[] getAttachentTypesAndExplanations(){
+		String[] typesNames = new String[attachments.size()];
+		if (attachments!=null)
+			for (int i=0; i<attachments.size(); i++) {
+				Object obj = attachments.elementAt(i);
+				String s = null;
+				if (obj instanceof Explainable)
+					s = ((Explainable)obj).getExplanation();
+				else if (obj instanceof Listable)
+					s = ((Listable)obj).getName();
+				if (s != null){
+					if (obj instanceof MesquiteLong)
+						typesNames[i] = "Integer: " + s;
+					else if (obj instanceof MesquiteDouble)
+						typesNames[i] = "Decimal Number: " + s;
+					else if (obj instanceof MesquiteString)
+						typesNames[i] = "String: " + s;
+					else if (obj instanceof MesquiteBoolean)
+						typesNames[i] = "Boolean: " + s;
+					else if (obj instanceof MesquiteFlag)
+						typesNames[i] = "Flag: " + s;
+					else 
+						typesNames[i] = "Object: " + s;
+				}
+				else 
+					typesNames[i] = "Object of type " + obj.getClass().getName();
+
 			}
 		return typesNames;
 	}
