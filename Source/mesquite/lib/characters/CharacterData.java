@@ -4553,6 +4553,32 @@ public abstract class CharacterData extends FileElement implements MesquiteListe
 			return "entries";
 	}
 
+	/*.................................................................................................................*/
+	public void scrollToStartOrEndOfData(MesquiteTable table, int row, boolean start) { 
+		int scrollBuff = 5;
+		if (table ==null || !MesquiteInteger.isCombinable(row))
+			return;
+		if (start) {
+			for (int ic=0; ic<getNumChars(); ic++) {
+				if (!isInapplicable(ic, row)){
+					int scrollChar = ic-scrollBuff;
+					if (scrollChar<0) scrollChar=0;
+					table.scrollToColumn(scrollChar);
+					break;
+				}
+			}
+		} else {
+			for (int ic=getNumChars()-1; ic>=0; ic--) {
+				if (!isInapplicable(ic, row)){
+					int scrollChar = ic-scrollBuff;
+					if (scrollChar<0) scrollChar=0;
+					table.scrollToColumn(scrollChar);
+					break;
+				}
+			}
+		}
+	}
+
 	/*..........................................CharacterData.....................................*/
 	/**merges the states for taxon it2 into it1  within this Data object 
 	 * Returns whether any choice was needed because both had data present*/

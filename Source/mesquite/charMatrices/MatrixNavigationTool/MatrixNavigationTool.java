@@ -48,6 +48,8 @@ public class MatrixNavigationTool extends DataWindowAssistantI {
 	MesquiteCommand moveToFirstRowCommand, moveToLastRowCommand;
 	MesquiteCommand scrollToCharacterCommand, scrollToBaseNumberCommand;
 	
+	int column = MesquiteInteger.unassigned;
+	int row = MesquiteInteger.unassigned;
 
 
 	/*.................................................................................................................*/
@@ -148,28 +150,6 @@ public class MatrixNavigationTool extends DataWindowAssistantI {
 		row = MesquiteInteger.unassigned;
 	}
 	/*.................................................................................................................*/
-	public void moveToStart(boolean start) { 
-		if (data == null || table ==null || !MesquiteInteger.isCombinable(column) || !MesquiteInteger.isCombinable(row))
-			return;
-		if (start) {
-			for (int ic=0; ic<data.getNumChars(); ic++) {
-				if (!data.isInapplicable(ic, row)){
-					table.scrollToColumn(ic);
-					break;
-				}
-			}
-		} else {
-			for (int ic=data.getNumChars()-1; ic>=0; ic--) {
-				if (!data.isInapplicable(ic, row)){
-					table.scrollToColumn(ic);
-					break;
-				}
-			}
-		}
-		column = MesquiteInteger.unassigned;
-		row = MesquiteInteger.unassigned;
-	}
-	/*.................................................................................................................*/
 	public void moveToRow(boolean firstRow) { 
 		if (data == null || table ==null || !MesquiteInteger.isCombinable(column) || !MesquiteInteger.isCombinable(row))
 			return;
@@ -180,8 +160,6 @@ public class MatrixNavigationTool extends DataWindowAssistantI {
 		column = MesquiteInteger.unassigned;
 		row = MesquiteInteger.unassigned;
 	}
-	int column = MesquiteInteger.unassigned;
-	int row = MesquiteInteger.unassigned;
 	/*.................................................................................................................*/
 	void makePopupMenu (String arguments) {
 		if (table!=null && data !=null && taxa!=null){
@@ -237,10 +215,18 @@ public class MatrixNavigationTool extends DataWindowAssistantI {
 			moveToNext(true);
 		}
 		else if (checker.compare(this.getClass(), "Move to First Data", "", commandName, "moveToFirstData")) {
-			moveToStart(true);
+			if (data!=null) {
+				data.scrollToStartOrEndOfData(table, row, true);
+				column = MesquiteInteger.unassigned;
+				row = MesquiteInteger.unassigned;
+			}
 		}
 		else if (checker.compare(this.getClass(), "Move to Last Data", "", commandName, "moveToLastData")) {
-			moveToStart(false);
+			if (data!=null) {
+				data.scrollToStartOrEndOfData(table, row, false);
+				column = MesquiteInteger.unassigned;
+				row = MesquiteInteger.unassigned;
+			}
 		}
 		else if (checker.compare(this.getClass(), "Move to First Row", "", commandName, "moveToFirstRow")) {
 			moveToRow(true);
