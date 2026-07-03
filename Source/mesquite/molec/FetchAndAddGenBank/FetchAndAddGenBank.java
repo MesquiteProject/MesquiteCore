@@ -84,15 +84,51 @@ public class FetchAndAddGenBank extends DataUtility {
 				for (int i=0; i<accessionNumbers.length; i++) 
 					if (!StringUtil.blank(accessionNumbers[i])) 				
 						logln ("Accession numbers " + accessionNumbers[i]);
+				StringBuffer report = new StringBuffer();
+
+//				StringBuffer fastaStringBuffer = new StringBuffer(100);
+				boolean importAccomplished = false;
+				for (int i=0; i<accessionNumbers.length; i++) 
+					if (!StringUtil.blank(accessionNumbers[i])) {				
+						logln("Requesting " + accessionNumbers[i]);
+						String fasta = NCBIUtil.getFastaFromAccession(accessionNumbers[i]);
+						NCBIUtil.importFASTASequences(data, fasta, this, report, -1, -1, false, false);
+						if (StringUtil.notEmpty(fasta))
+							importAccomplished = true;
+					}
+
+
+	//			NCBIUtil.importFASTASequences(data, fastaStringBuffer.toString(), this, report, -1, -1, false, false);
+				log(report.toString());
+				return importAccomplished;
+
+
+			} catch ( Exception e ){
+				// better warning
+				return false;
+			}
+		}
+		else
+			return false;
+	}
+	/*.................................................................................................................*
+	public boolean operateOnDataOld(CharacterData data){ 
+		this.data = data;
+
+		if (queryOptions()) {
+			logln("\nFetching GenBank entries: "  + genBankNumbers);
+
+			try {
+				String[] accessionNumbers = StringUtil.delimitedTokensToStrings(genBankNumbers,',',true);
+				for (int i=0; i<accessionNumbers.length; i++) 
+					if (!StringUtil.blank(accessionNumbers[i])) 				
+						logln ("Accession numbers " + accessionNumbers[i]);
 
 				logln("Querying for IDs of entries.");
 				String[] idList = NCBIUtil.getGenBankIDs(accessionNumbers, data instanceof DNAData,  this, true);
 				if (idList==null)
 					return false;
 				logln("IDs acquired.");
-					/*for (int i=0; i<idList.length; i++) 
-						if (!StringUtil.blank(idList[i])) 				
-							logln ("To Fetch " + idList[i]);*/
 
 				logln("\nRequesting sequences.\n");
 				StringBuffer report = new StringBuffer();

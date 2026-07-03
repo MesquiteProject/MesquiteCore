@@ -49,6 +49,11 @@ import mesquite.lib.XMLUtil;
 import mesquite.lib.characters.CharacterData;
 import mesquite.lib.taxa.Taxa;
 
+import java.io.*;
+import java.net.HttpURLConnection;
+import java.net.URI;
+import java.net.URL;
+
 
 /* ======================================================================== */
 /** A set of static methods for NCBI*/
@@ -60,6 +65,50 @@ public class NCBIUtil {
 	public final static NameReference FRAME = NameReference.getNameReference("GenBankFrame");
 	public final static NameReference TAXONOMY = NameReference.getNameReference("GenBankTaxonomy");
 
+	
+
+
+    public static String getFastaFromAccession(String accession) throws Exception {        
+        // Construct the NCBI E-fetch URL
+        String urlString = "https://eutils.ncbi.nlm.nih.gov/entrez/eutils/efetch.fcgi"
+                + "?db=nuccore" 
+                + "&id=" + accession 
+                + "&rettype=fasta" 
+                + "&retmode=text";
+
+        System.out.println("Connecting to NCBI E-utilities...");
+        
+            // Build URI and convert to URL safely
+            URI uri = URI.create(urlString);
+            URL url = uri.toURL();
+            
+            // Open the HTTP connection
+            HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+            connection.setRequestMethod("GET");
+            connection.setConnectTimeout(10000); // 10 seconds timeout
+            connection.setReadTimeout(10000);
+            connection.setRequestProperty("User-Agent", "Mesquite");
+
+            int responseCode = connection.getResponseCode();
+            if (responseCode == HttpURLConnection.HTTP_OK) {
+                StringBuilder response = new StringBuilder();
+                try (BufferedReader reader = new BufferedReader(
+                        new InputStreamReader(connection.getInputStream()))) {
+                    
+                    String line;
+                    while ((line = reader.readLine()) != null) {
+                        response.append(line).append("\n");
+                    }
+                }
+                connection.disconnect();
+               return response.toString();
+            } else {
+                connection.disconnect();
+                throw new RuntimeException("Failed to fetch data from GenBank. HTTP Error Code: " + responseCode);
+            }
+    }
+	
+	
 	
 	
 	/*.................................................................................................................*/
@@ -545,6 +594,15 @@ public class NCBIUtil {
 
 	}
 	static int maxGenBankRequest = 10;
+	
+	
+	
+	
+	
+	
+	
+	
+	
 	/*.................................................................................................................*/
 	public synchronized static String[] getGenBankIDs(String[] accessionNumbers, boolean nucleotides,  MesquiteModule mod, boolean writeLog){ 
 		if (accessionNumbers==null || accessionNumbers.length==0)
