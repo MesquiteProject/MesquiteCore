@@ -360,7 +360,8 @@ public class TopBlastMatches extends MolecDataSearcher implements ItemListener {
 	/*.................................................................................................................*/
 	/** Processing to be done after each search. Returns true if  */
 	public boolean processAfterEachTaxonSearch(CharacterData data, int it, int passNumber, Object object){
-		logln("\nSearch results: \n"+ results.toString());
+		if (passNumber==0)
+			logln("\nSearch results: \n"+ results.toString());
 		//		logln("**** IDs: " +StringArray.toString(ID)); 
 		int numTaxaAdded =0;
 		BLASTResultsArray blastResultsArray;
@@ -415,14 +416,15 @@ public class TopBlastMatches extends MolecDataSearcher implements ItemListener {
 					prependToTaxonName = foundTaxonName.getValue();
 				MesquiteInteger charAddedToStart = new MesquiteInteger(0);
 				numTaxaAdded = data.getNumTaxa();
+				StringBuffer localResults = new StringBuffer();
 				if (StringUtil.notEmpty(newSequencesAsFasta)) {
-					NCBIUtil.importFASTASequences(data, newSequencesAsFasta, this, results, insertAfterTaxon, it, adjustSequences, addInternalGaps, prependToTaxonName, appendToTaxonName, charAddedToStart, blastResults);
+					NCBIUtil.importFASTASequences(data, newSequencesAsFasta, this, localResults, insertAfterTaxon, it, adjustSequences, addInternalGaps, prependToTaxonName, appendToTaxonName, charAddedToStart, blastResults);
 				}
 				else
 					logln("BLAST database returned no sequences in response to query.");
 				data.notifyListeners(this, new Notification(MesquiteListener.PARTS_ADDED));
 				data.getTaxa().notifyListeners(this, new Notification(MesquiteListener.PARTS_ADDED));
-				logln(results.toString());
+				logln(localResults.toString());
 
 				numTaxaAdded = data.getNumTaxa()-numTaxaAdded;
 				/*			if (lastSearched!=null && lastSearched.isCombinable()) {
