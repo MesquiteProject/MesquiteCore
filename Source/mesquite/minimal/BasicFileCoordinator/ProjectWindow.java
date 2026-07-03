@@ -123,6 +123,8 @@ public class ProjectWindow extends MesquiteWindow implements MesquiteListener {
 				}
 			}
 		}
+		
+		
 		temp.addLine("desuppress");
 		return temp;
 	}

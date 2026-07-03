@@ -52,6 +52,7 @@ import mesquite.lib.MesquitePath2DFloat;
 import mesquite.lib.MesquiteProject;
 import mesquite.lib.MesquiteThread;
 import mesquite.lib.MesquiteTrunk;
+import mesquite.lib.Parser;
 import mesquite.lib.StringUtil;
 import mesquite.lib.SystemWindow;
 import mesquite.lib.duties.FileCoordinator;
@@ -1052,6 +1053,45 @@ public class MesquiteFrame extends Frame implements Commandable, MQComponent {
 		if (tabs !=null)
 			tabs.repaint();
 	}
+	/*.................................................................................................................*/
+	// TO RECOVER sequence of tabs on reread file
+	public String getWindowIDSequence(){
+		String seq = "";
+		for (int i = 1; i< windows.size(); i++){
+			MesquiteWindow w = (MesquiteWindow)windows.elementAt(i);
+			seq += " " + w.getID();
+		}
+		return seq;
+	}
+	MesquiteWindow findWindowOfSavedID(int savedID){
+		for (int i = 1; i< windows.size(); i++){
+			MesquiteWindow w = (MesquiteWindow)windows.elementAt(i);
+			if (w.savedID == savedID)
+				return w;
+		}
+		return null;
+	}
+	public void setWindowIDSequence(String ids){
+		Parser parser = new Parser(ids);
+		int id = MesquiteInteger.fromString(parser);
+		int where = 1;
+		while (MesquiteInteger.isCombinable(id)){
+			MesquiteWindow w = findWindowOfSavedID(id);
+			if (w != null){
+				if (windows.indexOf(w) != where){
+					windows.removeElement(w);
+					if (where >= windows.size())
+						windows.addElement(w);
+					else
+						windows.insertElementAt(w, where);
+				}
+				
+				where++;
+			}
+			 id = MesquiteInteger.fromString(parser);
+		}
+	}
+	/*.................................................................................................................*/
 
 	public void showFrontWindow(){
 		fixFrontness();
@@ -1654,6 +1694,7 @@ class FrameTabsPanel extends MousePanel {
 		}
 		return null;
 	}
+
 	public void mouseUp(int modifiers, int x, int y, MesquiteTool tool) {
 		try {
 			int i = findTab(x);

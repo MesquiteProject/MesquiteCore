@@ -131,6 +131,7 @@ public abstract class MesquiteWindow implements Listable, Commandable, OwnedByMo
 	protected Font currentFont;
 	public static Font defaultFont;
 	private String uniqueID; // id's of the window
+	public int savedID = 0; // used only for scripting to recover tab sequence
 
 	boolean suppressExplanationAreaUpdates=false;
 
@@ -2630,6 +2631,7 @@ public abstract class MesquiteWindow implements Listable, Commandable, OwnedByMo
 	public Snapshot getSnapshot(MesquiteFile file) { 
 		Snapshot temp = new Snapshot();
 		temp.addLine("setUniqueID " + StringUtil.tokenize(getUniqueID()));
+		temp.addLine("setSavedID " + getID());
 		if (isPoppedOut() && compactWindows){
 			if (popAsTile)
 				temp.addLine("popAsTile true");
@@ -2791,8 +2793,11 @@ public abstract class MesquiteWindow implements Listable, Commandable, OwnedByMo
 			else
 				setPopAsTile(false);
 		}
-		else if (checker.compare(MesquiteWindow.class, "Lists windows of frame", "[string]", commandName, "setUniqueID")) {
+		else if (checker.compare(MesquiteWindow.class, "Sets the unique id", "[string]", commandName, "setUniqueID")) {
 			setUniqueID(new Parser().getFirstToken(arguments));
+		}
+		else if (checker.compare(MesquiteWindow.class, "Remembers the previous ID", "[string]", commandName, "setSavedID")) {
+			savedID = MesquiteInteger.fromString(arguments);
 		}
 		else if (checker.compare(MesquiteWindow.class, "Lists windows of frame", null, commandName, "frame")) {
 			parentFrame.diagnose();

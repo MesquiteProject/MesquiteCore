@@ -88,6 +88,7 @@ import mesquite.lib.ui.ColorTheme;
 import mesquite.lib.ui.ExtensibleDialog;
 import mesquite.lib.ui.ListDialog;
 import mesquite.lib.ui.MesquiteDialog;
+import mesquite.lib.ui.MesquiteFrame;
 import mesquite.lib.ui.MesquiteMenuItemSpec;
 import mesquite.lib.ui.MesquiteMenuSpec;
 import mesquite.lib.ui.MesquiteSubmenuSpec;
@@ -1632,6 +1633,8 @@ public class BasicFileCoordinator extends FileCoordinator implements PackageIntr
 			temp.addLine("tell It");
 			temp.incorporate(pw.getLateSnapshot(file), true);
 			temp.addLine("endTell");
+			MesquiteFrame f = pw.getParentFrame();
+			temp.addLine("setTabSequence " + f.getWindowIDSequence());
 
 		}
 
@@ -2018,7 +2021,14 @@ public class BasicFileCoordinator extends FileCoordinator implements PackageIntr
 					mw.getParentFrame().toFront();
 			}
 		}
-		else if (checker.compare(this.getClass(), "Not used; placed here to suppress warning that command \"end\" from Mesquite block not handled", null, commandName, "end")) { //this is end of MesquiteBlock; placed here to suppress warning that command not handled
+		else if (checker.compare(this.getClass(), "Sets the order of tabs for windows on reopen", "[saved id of window for first tab][saved id of window for second tab]...", commandName, "setTabSequence")) {
+			if (pw != null){
+				MesquiteFrame f = pw.getParentFrame();
+				f.setWindowIDSequence(arguments);
+			}
+			return null;
+		}
+	else if (checker.compare(this.getClass(), "Not used; placed here to suppress warning that command \"end\" from Mesquite block not handled", null, commandName, "end")) { //this is end of MesquiteBlock; placed here to suppress warning that command not handled
 			return null;
 		}
 		else
