@@ -18,6 +18,7 @@ import mesquite.lib.CommandRecord;
 import mesquite.lib.MesquiteInteger;
 import mesquite.lib.MesquiteListener;
 import mesquite.lib.MesquiteModule;
+import mesquite.lib.MesquiteTrunk;
 import mesquite.lib.Notification;
 import mesquite.lib.UndoInstructions;
 import mesquite.lib.UndoReference;
@@ -26,6 +27,7 @@ import mesquite.lib.duties.DataWindowAssistantI;
 import mesquite.lib.misc.MesquiteCollator;
 import mesquite.lib.table.MesquiteTable;
 import mesquite.lib.table.TableTool;
+import mesquite.lib.ui.AlertDialog;
 import mesquite.lib.ui.MesquiteWindow;
 
 
@@ -107,9 +109,13 @@ public class SortChar extends DataWindowAssistantI {
 					discreetAlert("This matrix is marked as locked against editing. To unlock, uncheck the menu item Matrix>Current Matrix>Editing Not Permitted");
 	    	 		return null;
 	    	 	}
-//	   	 		if (data.isMolecularSequence())
-//	   	 			if (!AlertDialog.query(MesquiteTrunk.mesquiteTrunk.containerOfModule(), "Sort Sites?", "These are molecular sequences. Are you sure you want to reorder the sites?  It cannot be undone.", "Sort", "Cancel", 2))
-//	   	 				return null;
+	    	 	if (data.isEditInhibited()){
+					discreetAlert("This matrix is marked as locked against editing. To unlock, uncheck the menu item Matrix>Current Matrix>Editing Not Permitted");
+	    	 		return null;
+	    	 	}
+	   	 		if (data.isMolecularSequence())
+	   	 			if (!AlertDialog.query(MesquiteTrunk.mesquiteTrunk.containerOfModule(), "Sort Sites?", "These are molecular sequences. Are you sure you want to reorder the sites?  It cannot be undone.", "Sort", "Cancel", 2))
+	   	 				return null;
 	   	 		MesquiteInteger io = new MesquiteInteger(0);
 	   			int column= MesquiteInteger.fromString(arguments, io);
 	   			int row= MesquiteInteger.fromString(arguments, io);
