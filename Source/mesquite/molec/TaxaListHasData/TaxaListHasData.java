@@ -29,6 +29,7 @@ import mesquite.categ.lib.MolecularState;
 import mesquite.lib.Associable;
 import mesquite.lib.Bits;
 import mesquite.lib.CommandChecker;
+import mesquite.lib.Debugg;
 import mesquite.lib.EmployeeNeed;
 import mesquite.lib.ListableVector;
 import mesquite.lib.MesquiteCommand;
@@ -188,6 +189,11 @@ public class TaxaListHasData extends TaxonListAssistant  {
 			MesquiteMenuItem mEditCellItem = new MesquiteMenuItem("Edit Cell...", this, mcEditCell, null);
 			popup.add(mEditCellItem);
 			
+			MesquiteCommand mcViewData = makeCommand("viewData", this);
+			mcViewData.setDefaultArguments(""+ic);
+			MesquiteMenuItem mViewItem = new MesquiteMenuItem("View Data", this, mcViewData, null);
+			popup.add(mViewItem);
+
 			String copyMenuText = "Copy ";
 			if (observedStates != null) {
 				CharacterData data = observedStates.getParentData();
@@ -241,6 +247,18 @@ public class TaxaListHasData extends TaxonListAssistant  {
 		}
 		else if (checker.compare(this.getClass(), "Returns the matrix source", null, commandName, "getCharMatrixSource")) {
 			return matrixSourceTask;
+		}
+		else if (checker.compare(this.getClass(), "Opens the matrix to display the data for selected taxon", null, commandName, "viewData")) {
+			if (observedStates == null)
+				return null;
+			CharacterData data = observedStates.getParentData();
+			if (data == null)
+				return null;
+			int it = MesquiteInteger.fromString(parser.getFirstToken(arguments));
+			if (MesquiteInteger.isCombinable(it)) {
+				data.showRow(it, true, false, null);
+			}
+			return null;
 		}
 		else if (checker.compare(this.getClass(), "Copies the data for selected taxon", null, commandName, "copyData")) {
 			if (observedStates == null)
