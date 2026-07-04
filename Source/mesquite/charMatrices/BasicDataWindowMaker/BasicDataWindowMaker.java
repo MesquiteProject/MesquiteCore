@@ -254,7 +254,9 @@ public class BasicDataWindowMaker extends DataWindowMaker implements Commandable
 			return super.doCommand(commandName, arguments, checker);
 		return null;
 	}
-
+	CharacterData getMatrix(){
+		return data;
+	}
 	public void resignCellColorer(MesquiteModule m) {
 		if (bdw != null)
 			bdw.resignCellColorer(m);
@@ -326,6 +328,8 @@ public class BasicDataWindowMaker extends DataWindowMaker implements Commandable
 			bdw.toFront();
 		}
 	}
+	
+
 	public void focusOnRow(int it, boolean selectName, boolean selectRow){
 		if (bdw != null)
 			bdw.focusOnRow(it, selectName, selectRow);

@@ -26,6 +26,7 @@ import mesquite.lib.MesquiteThread;
 import mesquite.lib.Notification;
 import mesquite.lib.Puppeteer;
 import mesquite.lib.Snapshot;
+import mesquite.lib.duties.DataWindowMaker;
 import mesquite.lib.taxa.Taxa;
 import mesquite.lib.tree.MesquiteTree;
 import mesquite.lib.tree.Tree;
@@ -38,7 +39,7 @@ import mesquite.lib.ui.MesquiteWindow;
 
 public class ShowLinkedMatrixMachine implements Commandable  {
 	MesquiteModule module;
-	MesquiteModule matrixWindowModule;
+	DataWindowMaker matrixWindowModule;
 	MesquiteTree myTree;
 	public ShowLinkedMatrixMachine(MesquiteModule module){
 		this.module = module;
@@ -73,10 +74,18 @@ public class ShowLinkedMatrixMachine implements Commandable  {
 				mw.doCommand("toggleTileOutWindow","true", CommandChecker.defaultChecker);
 			else if (where == 2)
 				mw.doCommand("togglePopOutWindow","true", CommandChecker.defaultChecker);
-			matrixWindowModule = (MesquiteModule)mb;		
+			matrixWindowModule = (DataWindowMaker)mb;		
 
 		}
 		else {
+			if (matrixWindowModule.getCharacterData() == data){
+				if (matrixWindowModule.getModuleWindow() !=null) {
+					matrixWindowModule.getModuleWindow().setVisible(true);
+					matrixWindowModule.getModuleWindow().setShowExplanation(true);
+					matrixWindowModule.getModuleWindow().toFront();
+					return;
+				}
+			}
 			CommandRecord previous = MesquiteThread.getCurrentCommandRecord();
 			CommandRecord record = new CommandRecord(true);
 			MesquiteThread.setCurrentCommandRecord(record);
@@ -90,7 +99,7 @@ public class ShowLinkedMatrixMachine implements Commandable  {
 			MesquiteThread.setCurrentCommandRecord(previous);
 			MesquiteWindow oldWindow = matrixWindowModule.containerOfModule();
 			oldWindow.doCommand("closeWindow","true", CommandChecker.defaultChecker);
-			matrixWindowModule = mb;
+			matrixWindowModule = (DataWindowMaker)mb;		
 		}
 	}
 /*.................................................................................................................*/

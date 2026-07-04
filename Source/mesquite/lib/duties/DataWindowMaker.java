@@ -15,6 +15,7 @@ package mesquite.lib.duties;
 
 import mesquite.lib.MesquiteModule;
 import mesquite.lib.table.MesquiteTable;
+import mesquite.lib.characters.CharacterData;
 
 
 /* ======================================================================== */

@@ -1257,6 +1257,14 @@ class MTWExtra extends TreeDisplayExtra implements Commandable, TreeDisplayExtra
 
 		}
 		else {
+			if (module.previousMatrixWindowMaker.getCharacterData() == data){
+				if (module.previousMatrixWindowMaker.getModuleWindow() !=null) {
+					module.previousMatrixWindowMaker.getModuleWindow().setVisible(true);
+					module.previousMatrixWindowMaker.getModuleWindow().setShowExplanation(true);
+					module.previousMatrixWindowMaker.getModuleWindow().toFront();
+					return;
+				}
+			}
 			CommandRecord previous = MesquiteThread.getCurrentCommandRecord();
 			CommandRecord record = new CommandRecord(true);
 			MesquiteThread.setCurrentCommandRecord(record);
