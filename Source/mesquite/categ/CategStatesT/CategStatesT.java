@@ -51,8 +51,6 @@ public class CategStatesT extends NumberForTaxonIncr {
 	CategoricalDistribution observedStates =null;
 	MesquiteCommand cstC;
 	
-	//choice of what item to show
-	int currentItem=0;
 	/*.................................................................................................................*/
 	public boolean startJob(String arguments, Object condition, boolean hiredByName) {
  		characterSourceTask = (CharSourceCoordObed)hireCompatibleEmployee(CharSourceCoordObed.class, CategoricalState.class, "Source of characters (for Categorical States of Taxon)");
@@ -117,7 +115,6 @@ public class CategStatesT extends NumberForTaxonIncr {
    	 	Snapshot temp = new Snapshot();
   	 	temp.addLine( "getCharacterSource " , characterSourceTask);
   	 	temp.addLine("setCharacter " + CharacterStates.toExternal(currentChar));
-  	 	temp.addLine("setItem " + (currentItem));
     	 	return temp;
   	 }
 	/*.................................................................................................................*/
