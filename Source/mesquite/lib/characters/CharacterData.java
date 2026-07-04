@@ -4395,6 +4395,14 @@ public abstract class CharacterData extends FileElement implements MesquiteListe
 			dwm.focusOnCell(ic, it, selectAlso);
 		}
 	}
+	public void showRow(int it, boolean selectName, boolean selectRow, DataWindowMaker dwm){
+		if (dwm == null){
+			dwm = (DataWindowMaker)showMatrix();
+		}
+		if (dwm != null)
+			dwm.focusOnRow(it, selectName, selectRow);
+
+	}
 	public void showList(){
 		if (getManager() != null && getFile() != null) 
 			((Commandable)getManager()).doCommand("showCharacters", getFile().getProject().getCharMatrixReferenceInternal(this), CommandChecker.defaultChecker);

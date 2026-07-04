@@ -10,7 +10,7 @@ Mesquite's web site is http://mesquiteproject.org
 
 This source code and its compiled class files are free and modifiable under the terms of 
 GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
-*/
+ */
 package mesquite.lib.table;
 
 import java.awt.Cursor;
@@ -72,23 +72,41 @@ public abstract class TableWindow extends MesquiteWindow {
 		if (getTable()==null) return;
 		getTable().repaintAll();
 	}
-	
+
 	/** Return Mesquite commands that will put the table back to its current state (approximately). */
-  	 public Snapshot getSnapshot(MesquiteFile file) {  //this allows employees to be dealt with
-	   	 	if (getTable()==null)
-	   	 		return null;
-	   	 	Snapshot temp = new Snapshot();
-	   	 	Snapshot ts = getTable().getSnapshot(file);
-	   	 	if (ts!=null) {
-				temp.addLine("getTable");
-				
-				temp.addLine("tell It");
-				temp.incorporate(ts, true);
-				temp.addLine("endTell");
-	   	 	}
-			temp.incorporate(super.getSnapshot(file), false);
-	 	 	return temp;
-  	 }
+	public Snapshot getSnapshot(MesquiteFile file) {  //this allows employees to be dealt with
+		if (getTable()==null)
+			return null;
+		Snapshot temp = new Snapshot();
+		Snapshot ts = getTable().getSnapshot(file);
+		if (ts!=null) {
+			temp.addLine("getTable");
+
+			temp.addLine("tell It");
+			temp.incorporate(ts, true);
+			temp.addLine("endTell");
+		}
+		temp.incorporate(super.getSnapshot(file), false);
+		return temp;
+	}
+	/*...............................................................................................................*/
+	/*   */
+	public void focusOnRow(int it, boolean selectName, boolean selectRow){
+		MesquiteTable table = getTable();
+		if (table == null)
+			return;
+		table.scrollToRow(it);
+		if (selectName){
+			table.deselectAllRowNames();
+			table.selectRowName(it);
+		}
+		if (selectRow){
+			table.deselectAll();
+			table.selectRow(it);
+		}
+
+		table.repaintAll();
+	}
 	/*...............................................................................................................*/
 	/* these two methods are used for find facility  */
 	protected void selectAndFocus(int ic, int it){
@@ -138,7 +156,7 @@ public abstract class TableWindow extends MesquiteWindow {
 		//search cells
 		for (int ic = 0; ic<table.getNumColumns(); ic++) {
 			for (int it = 0; it<table.getNumRows(); it++) {
-			
+
 				String c = table.getMatrixTextForDisplay(ic, it);
 				if (StringUtil.foundIgnoreCase(c, s)){
 					if (count == i) {
@@ -156,11 +174,11 @@ public abstract class TableWindow extends MesquiteWindow {
 	/*.................................................................................................................*/
 	/** A request for the MesquiteModule to perform a command.  It is passed two strings, the name of the command and the arguments.
 	This should be overridden by any module that wants to respond to a command.*/
- 	public Object doCommand(String commandName, String arguments, CommandChecker checker) { 
+	public Object doCommand(String commandName, String arguments, CommandChecker checker) { 
 		if (checker.compare(MesquiteTable.class, "Returns the table object for the list window", null, commandName, "getTable")) {
 			return getTable();
 		}
-    	 	else if (checker.compare(this.getClass(), "Finds cell containing string, selects it and ensures it is shown", null, commandName, "findString")) {
+		else if (checker.compare(this.getClass(), "Finds cell containing string, selects it and ensures it is shown", null, commandName, "findString")) {
 			if (MesquiteThread.isScripting()) //todo: should support argument passed
 				return null;
 			findNumber = 0;
@@ -173,8 +191,8 @@ public abstract class TableWindow extends MesquiteWindow {
 				findNumber = 0;
 			else
 				findNumber = 1;
-    	 	}
-    	 	else if (checker.compare(this.getClass(), "Finds cell containing string, selects it and ensures it is shown", null, commandName, "findAgain")) {
+		}
+		else if (checker.compare(this.getClass(), "Finds cell containing string, selects it and ensures it is shown", null, commandName, "findAgain")) {
 			if (MesquiteThread.isScripting()) //todo: should support argument passed
 				return null;
 			if (StringUtil.blank(findString))
@@ -183,27 +201,27 @@ public abstract class TableWindow extends MesquiteWindow {
 				findNumber = 0;
 			else
 				findNumber++;
-    	 	}
+		}
 		else return  super.doCommand(commandName, arguments, checker);
 		return null;
- 	}
+	}
 	/*.................................................................................................................*/
 	public boolean shiftDown(String arguments){
 		if (StringUtil.blank(arguments))
 			return false;
-		 return (arguments.indexOf("shift")>=0);
+		return (arguments.indexOf("shift")>=0);
 	}
 	/*.................................................................................................................*/
 	public boolean commandDown(String arguments){
 		if (StringUtil.blank(arguments))
 			return false;
-		 return (arguments.indexOf("command")>=0);
+		return (arguments.indexOf("command")>=0);
 	}
 	/*.................................................................................................................*/
 	public boolean optionDown(String arguments){
 		if (StringUtil.blank(arguments))
 			return false;
-		 return (arguments.indexOf("option")>=0);
+		return (arguments.indexOf("option")>=0);
 	}
 	/*.................................................................................................................*/
 	public void paintContents(Graphics g) {
@@ -232,7 +250,7 @@ public abstract class TableWindow extends MesquiteWindow {
 	/*.................................................................................................................*/
 	public void printWindow(MesquitePrintJob pjob) {
 		if (getTable()==null) return;
-    	 	getTable().printTable(pjob, this);
+		getTable().printTable(pjob, this);
 	}
 	/*.................................................................................................................*/
 	public String getPrintToPDFMenuItemName() {
@@ -241,8 +259,8 @@ public abstract class TableWindow extends MesquiteWindow {
 
 	/*.................................................................................................................*/
 	/**
-	*@author Peter E. Midford
-	*/
+	 *@author Peter E. Midford
+	 */
 	public void windowToPDF(MesquitePDFFile pdfFile, int fitToPage) {
 		if (getTable()==null) return;
 		getTable().tableToPDF(pdfFile, this, fitToPage);
@@ -300,35 +318,35 @@ public abstract class TableWindow extends MesquiteWindow {
 		resetCursor();
 	}
 	/*.................................................................................................................*/
-    	 public void copyGraphicsPanel() {
+	public void copyGraphicsPanel() {
 		if (getTable()==null || getTable().getCopyCommand() == null) 
 			return;
 		getTable().getCopyCommand().doItMainThread("", null, this);  // command invoked
-   	 }
-    	 public String getCopySpecialName() {
+	}
+	public String getCopySpecialName() {
 		return "Copy Literal"; 
-   	 }
-    	 public MesquiteCommand getCopySpecialCommand() {
+	}
+	public MesquiteCommand getCopySpecialCommand() {
 		if (getTable()==null) return null;
 		return getTable().getCopyLiteralCommand(); 
-   	 }
-    	 public MesquiteCommand getPasteCommand() {
+	}
+	public MesquiteCommand getPasteCommand() {
 		if (getTable()==null) return null;
 		return getTable().getPasteCommand(); 
-   	 }
-    	 public MesquiteCommand getCutCommand() {
+	}
+	public MesquiteCommand getCutCommand() {
 		if (getTable()==null) return null;
 		return getTable().getCutCommand(); 
-   	 }
-    	 public MesquiteCommand getClearCommand() {
+	}
+	public MesquiteCommand getClearCommand() {
 		if (getTable()==null) return null;
 		return getTable().getClearCommand(); 
-   	 }
-  	public void selectAllGraphicsPanel(){
+	}
+	public void selectAllGraphicsPanel(){
 		if (getTable()==null && getTable().getSelectAllCommand()!=null) 
 			return;
 		getTable().getSelectAllCommand().doItMainThread(null, "", this); 
-   	 }
+	}
 }
 
 

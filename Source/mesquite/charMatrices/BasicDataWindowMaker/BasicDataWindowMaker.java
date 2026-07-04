@@ -326,6 +326,10 @@ public class BasicDataWindowMaker extends DataWindowMaker implements Commandable
 			bdw.toFront();
 		}
 	}
+	public void focusOnRow(int it, boolean selectName, boolean selectRow){
+		if (bdw != null)
+			bdw.focusOnRow(it, selectName, selectRow);
+	}
 	public void focusOnCell(int ic, int it, boolean selectAlso){
 		if (bdw != null)
 			bdw.focusOnCell(ic, it, selectAlso);

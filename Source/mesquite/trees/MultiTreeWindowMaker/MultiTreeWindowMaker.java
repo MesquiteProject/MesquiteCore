@@ -31,6 +31,8 @@ import java.awt.event.MouseWheelEvent;
 import java.awt.event.MouseWheelListener;
 import java.util.Enumeration;
 import java.util.Vector;
+
+import mesquite.categ.lib.MolecularData;
 import mesquite.charMatrices.BasicDataWindowCoord.BasicDataWindowCoord;
 import mesquite.lib.CommandChecker;
 import mesquite.lib.CommandRecord;
@@ -56,6 +58,7 @@ import mesquite.lib.ParseUtil;
 import mesquite.lib.Puppeteer;
 import mesquite.lib.Snapshot;
 import mesquite.lib.characters.CharacterData;
+import mesquite.lib.duties.DataWindowMaker;
 import mesquite.lib.duties.DrawNamesTreeDisplay;
 import mesquite.lib.duties.DrawTreeCoordinator;
 import mesquite.lib.duties.FileAssistantT;
@@ -110,7 +113,7 @@ public class MultiTreeWindowMaker extends FileAssistantT implements TreeDisplayH
 	int numRows = 2;
 	MesquiteCommand tstC;
 	MesquiteBoolean legendBotRight = new MesquiteBoolean(false);
-	MesquiteModule previousMatrixWindowMaker = null;
+	DataWindowMaker previousMatrixWindowMaker = null;
 	MesquiteModule sepTreeWindowMaker = null;
 
 	/*.................................................................................................................*/
@@ -1093,11 +1096,16 @@ class MTWExtra extends TreeDisplayExtra implements Commandable, TreeDisplayExtra
 			}
 			else {
 				Taxa taxa = tree.getTaxa();
-				if (taxa.getSelected(tree.taxonNumberOfNode(branch)))
+				int taxon = tree.taxonNumberOfNode(branch);
+				if (taxa.getSelected(taxon))
 					popup.addItem("Deselect Taxon", new MesquiteCommand("deselectTerminals", this), Integer.toString(branch));
 				else
 					popup.addItem("Select Taxon", new MesquiteCommand("selectTerminals", this), Integer.toString(branch));
-			}
+				CharacterData data = ((MesquiteTree)treeDisplay.getTree()).findLinkedMatrix(module.getProject());
+				if (data != null && data instanceof MolecularData) {
+						popup.addItem("Show Linked Sequence", module, new MesquiteCommand("showLinkedSequence", this), Integer.toString(taxon));
+				}			
+				}
 			return;
 		}
 		CharacterData data = ((MesquiteTree)treeDisplay.getTree()).findLinkedMatrix(module.getProject());
@@ -1177,6 +1185,20 @@ class MTWExtra extends TreeDisplayExtra implements Commandable, TreeDisplayExtra
 			showTreeInWindow(where);
 			return null;
 		}
+		/*Test case for other use problem here is that system doesn't */
+		 else if (checker.compare(this.getClass(), "Shows taxon's sequence in character matrix window", "[taxon number]", commandName, "showLinkedSequence")) {
+			int taxon = MesquiteInteger.fromString(arguments);
+			if (MesquiteInteger.isCombinable(taxon)){
+				MesquiteTree myTree = (MesquiteTree)treeDisplay.getTree();
+				CharacterData data = myTree.findLinkedMatrix(module.getProject());
+				if (data != null){
+					showMatrix(data, 0);
+					data.showRow(taxon, true, false, module.previousMatrixWindowMaker);
+				}
+			}
+			return null;
+		}
+
 		else if (checker.compare(this.getClass(), "Selects terminals in clade", null, commandName, "selectTerminals")) {
 			int branch = MesquiteInteger.fromString(arguments);
 			if (MesquiteInteger.isCombinable(branch)){
@@ -1231,7 +1253,7 @@ class MTWExtra extends TreeDisplayExtra implements Commandable, TreeDisplayExtra
 				mw.doCommand("toggleTileOutWindow","true", CommandChecker.defaultChecker);
 			else if (where == 2)
 				mw.doCommand("togglePopOutWindow","true", CommandChecker.defaultChecker);
-			module.previousMatrixWindowMaker = (MesquiteModule)mb;		
+			module.previousMatrixWindowMaker = (DataWindowMaker)mb;		
 
 		}
 		else {
@@ -1248,7 +1270,7 @@ class MTWExtra extends TreeDisplayExtra implements Commandable, TreeDisplayExtra
 			MesquiteThread.setCurrentCommandRecord(previous);
 			MesquiteWindow oldWindow = module.previousMatrixWindowMaker.containerOfModule();
 			oldWindow.doCommand("closeWindow","true", CommandChecker.defaultChecker);
-			module.previousMatrixWindowMaker = mb;
+			module.previousMatrixWindowMaker = (DataWindowMaker)mb;		
 		}
 	}
 	/*---------------------------------------------------------------*/
