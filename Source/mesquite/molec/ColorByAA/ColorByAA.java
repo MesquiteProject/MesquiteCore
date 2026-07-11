@@ -118,7 +118,7 @@ public class ColorByAA extends DataWindowAssistantID implements CellColorer, Cel
  		String s;
   		if (!MesquiteInteger.isCombinable(i))
   			s= "Codon position unassigned";
-  		if (i == 0)
+  		else if (i == 0)
   			s= "Non-coding";
   		else
   			s= "Codon position: " + i;
