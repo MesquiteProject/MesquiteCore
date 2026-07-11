@@ -891,6 +891,14 @@ public class StringUtil {
 		String endPart = line.substring(line.length()-halfLength, line.length());
 		return start + " … " + endPart;
 	}
+	public static String limitLength(String line, int cutToLength) {
+		if (blank(line))
+			return line;
+		else if (line.length()<= cutToLength)
+			return line;
+		String start = line.substring(0, cutToLength);
+		return start + "…";
+	}
 	/*.................................................................................................................*/
 	//TODO: quote should not be punctuation, and should be treated separately!!!!
 	private static String quote(String token, StringBuffer sb) {

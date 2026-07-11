@@ -383,7 +383,7 @@ public class TopBlastMatches extends MolecDataSearcher implements ItemListener {
 				if (interleaveResults)
 					insertAfterTaxon = it;
 				//NCBIUtil.getGenBankIDs(accessionNumbers, false,  this, false);
-				logln("About to import top matches.", true);
+				logln("About to import top matches in \"" + StringUtil.limitLength(blastResults.getDatabaseName(), 40)+"\"", true);
 
 				int count = 0;
 				for (int i=0; i<ID.length && i<passNumberOfIDs.length; i++) {  // find out how many of the IDs belong tho this pass number

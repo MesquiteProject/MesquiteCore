@@ -6,7 +6,9 @@ import java.util.List;
 import org.dom4j.Element;
 
 import mesquite.lib.MesquiteDouble;
+import mesquite.lib.MesquiteFile;
 import mesquite.lib.MesquiteInteger;
+import mesquite.lib.Parser;
 import mesquite.lib.StringUtil;
 import mesquite.lib.XMLUtil;
 
@@ -26,6 +28,9 @@ public class BLASTResults {
 	protected int hitStartMatch[];
 	protected int hitEndMatch[];
 	protected boolean hitReversed[];
+	
+	protected String databaseName;
+
 
 	protected int numHits = 0;
 	int maxHits = 1;
@@ -70,6 +75,13 @@ public class BLASTResults {
 			hitReversed[i]=false;
 		}
 	}
+	public String getDatabaseName() {
+		return databaseName;
+	}
+	public void setDatabaseName(String databaseName) {
+		this.databaseName = databaseName;
+	}
+
 	public int getQueryStartMatch(int index) {
 		return queryStartMatch[index];
 	}
@@ -319,6 +331,14 @@ public class BLASTResults {
 		if (blastOutputElement==null)
 			return false;
 		numHits = 0;
+		String db = blastOutputElement.elementText("BlastOutput_db");
+		if (StringUtil.notEmpty(db)) {
+			db=StringUtil.replace(db, "\"", "");
+			db = StringUtil.getLastItem(db, MesquiteFile.fileSeparator);
+			setDatabaseName(db);
+		}
+		
+
 		Element blastIterationsElement = blastOutputElement.element("BlastOutput_iterations");
 		if (blastIterationsElement!=null) {
 			Element IterationsElement = blastIterationsElement.element("Iteration");
