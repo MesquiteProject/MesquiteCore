@@ -53,6 +53,7 @@ public class MergeTaxa extends TaxonMerger {
 	boolean addMergedToName = true;
 	boolean addFootnoteWithOriginalNames = true;
 	boolean verboseReport = false;
+	boolean warningsToLogOnly = true;
 	/*.................................................................................................................*/
 	public boolean startJob(String arguments, Object condition, boolean hiredByName){
 		loadPreferences();
@@ -86,6 +87,8 @@ public class MergeTaxa extends TaxonMerger {
 			addFootnoteWithOriginalNames = MesquiteBoolean.fromTrueFalseString(content);
 		} else  if ("verboseReport".equalsIgnoreCase(tag)) {
 			verboseReport = MesquiteBoolean.fromTrueFalseString(content);
+		} else  if ("warningsToLogOnly".equalsIgnoreCase(tag)) {
+			warningsToLogOnly = MesquiteBoolean.fromTrueFalseString(content);
 		}  else  if ("keepUnmergedTaxa".equalsIgnoreCase(tag)) {
 			keepUnmergedTaxa = MesquiteBoolean.fromTrueFalseString(content);
 		}  
@@ -104,6 +107,7 @@ public class MergeTaxa extends TaxonMerger {
 		StringUtil.appendXMLTag(buffer, 2, "addMergedToName", addMergedToName);  
 		StringUtil.appendXMLTag(buffer, 2, "addFootnoteWithOriginalNames", addFootnoteWithOriginalNames);  
 		StringUtil.appendXMLTag(buffer, 2, "verboseReport", verboseReport);  
+		StringUtil.appendXMLTag(buffer, 2, "warningsToLogOnly", warningsToLogOnly);  
 		StringUtil.appendXMLTag(buffer, 2, "keepUnmergedTaxa", keepUnmergedTaxa);  
 		StringUtil.appendXMLTag(buffer, 2, "refuseIfConflict", refuseIfConflict);  
 
@@ -219,6 +223,7 @@ public class MergeTaxa extends TaxonMerger {
 		}
 		queryDialog.addLargeOrSmallTextLabel("CAUTION: You will not be able to undo this. Associated information like footnotes, attachments, and so forth may be lost from all but the first taxon.");
 		Checkbox verboseCB = queryDialog.addCheckBox("Give verbose report", verboseReport);
+		Checkbox warningsToLogOnlyCB = queryDialog.addCheckBox("Note about merged states to log only", warningsToLogOnly);
 		queryDialog.completeAndShowDialog(true);
 		if (buttonPressed.getValue()==0)  {
 			if (formTaxonName){
@@ -230,6 +235,7 @@ public class MergeTaxa extends TaxonMerger {
 			addFootnoteWithOriginalNames = addFootnoteWithOriginalNamesBox.getState();
 			mergeRule = mergeRulesRB.getValue();
 			verboseReport = verboseCB.getState();
+			warningsToLogOnly = warningsToLogOnlyCB.getState();
 			if (permitRetainOriginals)
 				keepUnmergedTaxa = keepUnmergedTaxaBox.getState();
 			if (permitRefuse)
@@ -369,7 +375,7 @@ public class MergeTaxa extends TaxonMerger {
 		if (addFootnoteWithOriginalNames)
 			taxa.setAnnotation(destinationTaxon, mergedNames);
 		if (reportRecord != null && !StringUtil.blank(report)){
-			if (!verboseReport)
+			if (!verboseReport && !warningsToLogOnly)
 				reportRecord.append("Matrices with data in multiple merged taxa: ");
 			reportRecord.append(report);
 			reportRecord.append("\n");

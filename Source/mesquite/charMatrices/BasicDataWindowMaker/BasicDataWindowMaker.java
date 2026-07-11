@@ -46,6 +46,7 @@ import java.util.Vector;
 
 import javax.swing.text.JTextComponent;
 
+import mesquite.align.lib.AlignUtil;
 import mesquite.categ.lib.CategDataEditorInitD;
 import mesquite.categ.lib.CategoricalData;
 import mesquite.categ.lib.CategoricalState;
@@ -94,11 +95,13 @@ import mesquite.lib.ObjectArray;
 import mesquite.lib.ParseUtil;
 import mesquite.lib.Parser;
 import mesquite.lib.Puppeteer;
+import mesquite.lib.ResultCodes;
 import mesquite.lib.Snapshot;
 import mesquite.lib.StringArray;
 import mesquite.lib.StringUtil;
 import mesquite.lib.UndoInstructions;
 import mesquite.lib.UndoReference;
+import mesquite.lib.characters.AlteredDataParameters;
 import mesquite.lib.characters.CharInclusionSet;
 import mesquite.lib.characters.CharacterData;
 import mesquite.lib.characters.CharacterState;
@@ -149,6 +152,7 @@ import mesquite.lib.ui.MQTextArea;
 import mesquite.lib.ui.MesquiteButton;
 import mesquite.lib.ui.MesquiteCheckMenuItem;
 import mesquite.lib.ui.MesquiteImage;
+import mesquite.lib.ui.MesquiteMenuItem;
 import mesquite.lib.ui.MesquiteMenuItemSpec;
 import mesquite.lib.ui.MesquiteMenuSpec;
 import mesquite.lib.ui.MesquitePopup;
@@ -581,6 +585,7 @@ class BasicDataWindow extends TableWindow implements MesquiteListener {
 
 		ownerModule.addCheckMenuItemToSubmenu(ownerModule.displayMenu, softnessSubmenu, "Darken Rows With No Data", MesquiteModule.makeCommand("toggleShowDarkEmptySequences", this), table.showDarkEmptySequences);
 		ownerModule.addCheckMenuItemToSubmenu(ownerModule.displayMenu, softnessSubmenu, "Darken Terminal Gaps/Inapplicable", MesquiteModule.makeCommand("toggleShowDarkTerminalGaps", this), table.showDarkTerminalGaps);
+		ownerModule.addItemToSubmenu(ownerModule.displayMenu, softnessSubmenu, "Flash Terminal Gaps/Inapplicable", MesquiteModule.makeCommand("flashDarkTerminalGaps", this));
 		ownerModule.addCheckMenuItemToSubmenu(ownerModule.displayMenu, softnessSubmenu, "Lighten Grid", MesquiteModule.makeCommand("toggleShowPaleGrid", this), table.showPaleGrid);
 		ownerModule.addCheckMenuItemToSubmenu(ownerModule.displayMenu, softnessSubmenu, "Lighten Cell Colors", MesquiteModule.makeCommand("toggleShowPaleCellColors", this), table.showPaleCellColors);
 		ownerModule.addCheckMenuItemToSubmenu(ownerModule.displayMenu, softnessSubmenu, "Lighten Gaps/Inapplicable", MesquiteModule.makeCommand("togglePaleInapplicable", this), table.paleInapplicable);
@@ -2407,6 +2412,21 @@ class BasicDataWindow extends TableWindow implements MesquiteListener {
 			table.setShowDarkTerminalGaps(showDarkTerminalGaps.getValue());
 			table.repaintAll();
 		}
+		else if (checker.compare(this.getClass(), "Flash terminal gaps.", "[]", commandName, "flashDarkTerminalGaps")) {
+			boolean current = table.getShowDarkTerminalGaps();
+			try {
+				for (int i=0; i<4; i++ ) {
+					Thread.sleep(100);
+					table.setShowDarkTerminalGaps(!current);
+					table.repaintAll();
+					Thread.sleep(100);
+					table.setShowDarkTerminalGaps(current);
+					table.repaintAll();
+				}
+			} catch (Exception e) {
+			}
+
+		}
 		else if (checker.compare(this.getClass(), "Sets whether or not gaps are pale.", "[on or off]", commandName, "togglePaleInapplicable")) {
 			table.paleInapplicable.toggleValue(ParseUtil.getFirstToken(arguments, pos));
 			table.repaintAll();
@@ -3425,6 +3445,9 @@ class MatrixTable extends mesquite.lib.table.CMTable implements MesquiteDroppedF
 	public void setShowDarkTerminalGaps(boolean showDarkTerminalGaps) {
 		this.showDarkTerminalGaps.setValue(showDarkTerminalGaps);
 	}
+	public boolean getShowDarkTerminalGaps() {
+		return this.showDarkTerminalGaps.getValue();
+	}
 	public void setShowPaleExcluded(boolean showPaleExcluded) {
 		this.showPaleExcluded.setValue(showPaleExcluded);
 	}
@@ -3555,6 +3578,56 @@ class MatrixTable extends mesquite.lib.table.CMTable implements MesquiteDroppedF
 			if (result){
 				data.setAnnotation(column, row, value.getValue());
 				data.notifyListeners(this, new Notification(MesquiteListener.ANNOTATION_CHANGED));
+			}
+		}
+		else if (checker.compare(getClass(), "Quick Shift following to match selected sequence", "[character][taxon]", commandName, "shiftFollowingToMatch")) {
+			Parser parser = new Parser(arguments);
+			int column = MesquiteInteger.fromString(parser);
+			int row  = MesquiteInteger.fromString(parser);
+			if (!MesquiteInteger.isCombinable(column) && !MesquiteInteger.isCombinable(row))
+				return null;
+			
+			UndoReference undoReference = new UndoReference();
+			AlteredDataParameters alteredDataParameters = new AlteredDataParameters();
+		   	int resultCode = AlignUtil.quickShiftFollowingToMatch(editorModule,  data, editorModule.getTable(),  row, column, null);
+		   	
+			if (resultCode== ResultCodes.SUCCEEDED) {
+				editorModule.getTable().repaintAll();
+				Notification notification = new Notification(MesquiteListener.DATA_CHANGED, alteredDataParameters.getParameters(), undoReference);
+				if (alteredDataParameters.getSubcodes()!=null)
+					notification.setSubcodes(alteredDataParameters.getSubcodes());
+				data.notifyListeners(this, notification);
+			}
+
+
+/*			String current = data.getAnnotation(column, row);
+			if (current == null) current = "";
+			MesquiteString value = new MesquiteString(current);
+			String message = "Set footnote for cell (character " +(column+1);
+			if (data.characterHasName(column))
+				message += " [" + data.getCharacterName(column) + "]";
+			message += " in taxon " +(row+1) + " [" + taxa.getTaxonName(row) + "])";
+			boolean result = QueryDialogs.queryString(window, "Set Footnote", message,  value, 4, false, false);
+			if (result){
+				data.setAnnotation(column, row, value.getValue());
+				data.notifyListeners(this, new Notification(MesquiteListener.ANNOTATION_CHANGED));
+			}
+			*/
+		}
+		else if (checker.compare(this.getClass(), "Move to Start of Data", "", commandName, "scrollToStart")) {
+			if (data!=null) {
+				Parser parser = new Parser(arguments);
+				int row  = MesquiteInteger.fromString(parser);
+				data.scrollToStartOrEndOfData(row, true, null);
+				row = MesquiteInteger.unassigned;
+			}
+		}
+		else if (checker.compare(this.getClass(), "Move to End of Data", "", commandName, "scrollToEnd")) {
+			if (data!=null) {
+				Parser parser = new Parser(arguments);
+				int row  = MesquiteInteger.fromString(parser);
+				data.scrollToStartOrEndOfData(row, false, null);
+				row = MesquiteInteger.unassigned;
 			}
 		}
 		else
@@ -4998,7 +5071,12 @@ class MatrixTable extends mesquite.lib.table.CMTable implements MesquiteDroppedF
 			popup = new MesquitePopup(matrix);
 		popup.removeAll();
 		popup.addItem("Character " + (column+1) + " taxon " + (row+1), editorModule, null, "");
+		popup.addItem("Scroll to start of data", editorModule, new MesquiteCommand("scrollToStart", this),  Integer.toString(row));
+		popup.addItem("Scroll to end of data", editorModule, new MesquiteCommand("scrollToEnd", this),  Integer.toString(row));
+		popup.addItem("Quick shift following to match", editorModule, new MesquiteCommand("shiftFollowingToMatch", this),   Integer.toString(column) + " " + Integer.toString(row));
 		popup.addItem("Edit footnote...", editorModule, new MesquiteCommand("setFootnote", this), Integer.toString(column) + " " + Integer.toString(row));
+		
+				
 		
 		notifyAssistantsOfRightClickPopup(popup, column, row);
 		if (popup.getItemCount()>0)

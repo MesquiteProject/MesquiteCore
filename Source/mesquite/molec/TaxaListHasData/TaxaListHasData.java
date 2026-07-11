@@ -193,6 +193,11 @@ public class TaxaListHasData extends TaxonListAssistant  {
 			mcViewData.setDefaultArguments(""+ic);
 			MesquiteMenuItem mViewItem = new MesquiteMenuItem("View Data", this, mcViewData, null);
 			popup.add(mViewItem);
+			
+			MesquiteCommand mcViewStartData = makeCommand("viewStartData", this);
+			mcViewStartData.setDefaultArguments(""+ic);
+			MesquiteMenuItem mViewStartItem = new MesquiteMenuItem("View Start of Data", this, mcViewStartData, null);
+			popup.add(mViewStartItem);
 
 			String copyMenuText = "Copy ";
 			if (observedStates != null) {
@@ -257,6 +262,19 @@ public class TaxaListHasData extends TaxonListAssistant  {
 			int it = MesquiteInteger.fromString(parser.getFirstToken(arguments));
 			if (MesquiteInteger.isCombinable(it)) {
 				data.showRow(it, true, false, null);
+			}
+			return null;
+		}
+		else if (checker.compare(this.getClass(), "Opens the matrix to display the start of the data for selected taxon", null, commandName, "viewStartData")) {
+			if (observedStates == null)
+				return null;
+			CharacterData data = observedStates.getParentData();
+			if (data == null)
+				return null;
+			int it = MesquiteInteger.fromString(parser.getFirstToken(arguments));
+			if (MesquiteInteger.isCombinable(it)) {
+				data.showRow(it, true, false, null);
+				data.scrollToStartOrEndOfData(it, true, null);
 			}
 			return null;
 		}

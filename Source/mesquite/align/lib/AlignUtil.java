@@ -19,18 +19,26 @@ import java.util.zip.CRC32;
 
 import mesquite.categ.lib.CategoricalData;
 import mesquite.categ.lib.CategoricalState;
+import mesquite.categ.lib.DNAData;
 import mesquite.categ.lib.MCategoricalDistribution;
 import mesquite.categ.lib.MolecularData;
+import mesquite.categ.lib.MolecularDataUtil;
+import mesquite.lib.Bits;
 import mesquite.lib.Integer2DArray;
 import mesquite.lib.IntegerField;
 import mesquite.lib.IntegerSqMatrixFields;
 import mesquite.lib.Long2DArray;
+import mesquite.lib.MesquiteBoolean;
 import mesquite.lib.MesquiteInteger;
 import mesquite.lib.MesquiteMessage;
 import mesquite.lib.MesquiteModule;
 import mesquite.lib.MesquiteStringBuffer;
 import mesquite.lib.MesquiteTrunk;
+import mesquite.lib.ResultCodes;
+import mesquite.lib.UndoReference;
 import mesquite.lib.characters.CharacterData;
+import mesquite.lib.characters.CharacterState;
+import mesquite.lib.table.MesquiteTable;
 import mesquite.lib.taxa.Taxa;
 import mesquite.lib.ui.ExtensibleDialog;
 import mesquite.lib.ui.MesquiteWindow;
@@ -626,5 +634,97 @@ public class AlignUtil {
 		return false;
 	}	
 
+	static double matchFraction=0.75;
+
+	/*.................................................................................................................*/
+	static boolean findMatchInSequence(CharacterData data, int masterRow, int masterStart, int masterEnd, int it, int start, MesquiteInteger matchEnd, CharacterState cs1, CharacterState cs2){
+		if (data.dataMatches(it, start, masterRow, masterStart, masterEnd, matchEnd, false, true, matchFraction, cs1, cs2)) {
+			return true;
+		}
+		return false;
+	}
+	/*.................................................................................................................*/
+	static boolean findMatch(CharacterData data, MesquiteTable table, int masterRow, int masterStart, int masterEnd, int it, MesquiteInteger matchStart, MesquiteInteger matchEnd, CharacterState cs1, CharacterState cs2){
+		for (int i = 0; i<data.getNumChars(); i++) {  // cycle through possible starting points of match
+			if (findMatchInSequence(data,masterRow, masterStart, masterEnd, it, i, matchEnd, cs1, cs2)){
+				matchStart.setValue(i);
+				return true;
+			}
+		}
+		return false;
+	}
+	/*.................................................................................................................*/
+   	public static int quickShiftFollowingToMatch(MesquiteModule ownerModule, CharacterData data, MesquiteTable table,  int taxonTouched, int characterTouched, UndoReference undoReference){
+		if (data==null || table==null)
+			return -10;
+		boolean shiftOneBlockOnly= false;
+		boolean reverseComplementIfNecessary = true;
+		CharacterState cs1;
+		CharacterState cs2 ;
+		MesquiteInteger row = new MesquiteInteger();
+		MesquiteInteger firstColumn = new MesquiteInteger();  // this is the first column selected in the block
+		MesquiteInteger lastColumn = new MesquiteInteger();  // this is the last column selected
+		int it1 = taxonTouched+1;
+		int it2 = data.getNumTaxa()-1;
+		if (table.onlySingleRowBlockSelected(row,firstColumn, lastColumn)) {
+			MesquiteBoolean dataChanged = new MesquiteBoolean (false);
+			MesquiteInteger charAdded = new MesquiteInteger(0);
+
+			cs1 = data.getCharacterState(null, 0, 0); //to serve as persistent container
+			cs2  = data.getCharacterState(null, 0, 0);
+			MesquiteInteger matchStart = new MesquiteInteger();  // this will receive from the matcher the start of the match in the candidate sequence
+			MesquiteInteger matchEnd = new MesquiteInteger();   // this will receive the end of the match
+			boolean match=false;
+			int totalAddedToStart = 0;
+			boolean someAdded = false;
+			for (int it = it1; it<=it2; it++) {  
+				if (row.getValue()!=it && data.hasDataForTaxon(it)) {  // June 2021 added hasDataForTaxon check
+					match = findMatch(data,table, row.getValue(), firstColumn.getValue(), lastColumn.getValue(), it,matchStart,matchEnd, cs1, cs2);
+					if (reverseComplementIfNecessary && !match && data instanceof DNAData) {
+						MolecularDataUtil.reverseComplementSequencesIfNecessary((DNAData)data, ownerModule, data.getTaxa(), it, it, row.getValue(), false, false, false);
+						match = findMatch(data,table, row.getValue(), firstColumn.getValue(), lastColumn.getValue(), it,matchStart,matchEnd,cs1, cs2);  // added 31 October 2015
+					}
+					if (match) {
+						int added = 0;
+						if (shiftOneBlockOnly) {
+							int startBlock = data.getStartofBlock(matchStart.getValue(), it, true);
+							int endBlock = data.getEndofBlock(matchStart.getValue(), it, true);
+							int distance = firstColumn.getValue()-matchStart.getValue();
+							Bits whichTaxa = new Bits(data.getNumTaxa());
+							whichTaxa.clearAllBits();
+							whichTaxa.setBit(it);
+							added = data.moveCells(startBlock, endBlock, distance, whichTaxa, true, false, true, false, dataChanged, charAdded, null);
+						} else {
+							added = data.shiftAllCells(firstColumn.getValue()-matchStart.getValue(), it, true, true, true, dataChanged,charAdded, null);
+						}
+						if (charAdded.isCombinable() && charAdded.getValue()!=0 && data instanceof DNAData) {
+							((DNAData)data).assignCodonPositionsToTerminalChars(charAdded.getValue());
+							//							((DNAData)data).assignGeneticCodeToTerminalChars(charAdded.getValue());
+						}
+						if (added!=0)
+							someAdded=true;
+						if (added<0) {
+							totalAddedToStart -=added;
+							firstColumn.add(-added);
+							lastColumn.add(-added);
+						}
+					}
+				}
+			}
+			if (totalAddedToStart>0) {
+				if (table!=null) {
+					table.shiftHorizScroll(totalAddedToStart);
+					table.selectBlock(firstColumn.getValue(), row.getValue(), lastColumn.getValue(), row.getValue());  //Wayne: why doesn't this select a block in the matrix?
+				}
+			}
+			if ( dataChanged.getValue())
+				return ResultCodes.SUCCEEDED;
+			return ResultCodes.MEH;
+		}
+		else {
+			ownerModule.logln( "A portion of only one sequence can be selected.");
+			return -13;
+		}
+   	}
 }
 

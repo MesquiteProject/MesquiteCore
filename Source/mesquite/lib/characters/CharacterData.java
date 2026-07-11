@@ -4587,6 +4587,16 @@ public abstract class CharacterData extends FileElement implements MesquiteListe
 		}
 	}
 
+	
+	public void scrollToStartOrEndOfData(int row, boolean start, DataWindowMaker dwm){
+		if (dwm == null){
+			dwm = (DataWindowMaker)showMatrix();
+		}
+		if (dwm != null)
+			scrollToStartOrEndOfData(dwm.getTable(),row,start);
+
+	}
+
 	/*..........................................CharacterData.....................................*/
 	/**merges the states for taxon it2 into it1  within this Data object 
 	 * Returns whether any choice was needed because both had data present*/

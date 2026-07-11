@@ -1008,8 +1008,10 @@ class ShowMatrixLinkedExtra extends TreeDisplayExtra implements TreeDisplayBkgdE
 				else if (ownerModule.getProject().getNumberCharMatrices(treeDisplay.getTree().getTaxa()) >0)
 					popup.addItem("Display of Matrix with Tree...", ownerModule, new MesquiteCommand("queryOptions", ownerModule), "");
 			}
-			else
+			else {
 				popup.addItem("Show Matrix with Tree...", ownerModule, new MesquiteCommand("queryOptions", ownerModule), "");
+			}
+			
 			if (tree.nodeIsTerminal(branch)){
 				CharacterData linkedMatrix = ((MesquiteTree)treeDisplay.getTree()).findLinkedMatrix(ownerModule.getProject());
 				if (linkedMatrix != null)
