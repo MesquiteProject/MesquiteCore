@@ -102,7 +102,7 @@ public class MesquiteFrame extends Frame implements Commandable, MQComponent {
 	public static long totalDisposed = 0;
 	public static long totalFinalized  = 0;
 	Color backgroundColor;
-	
+
 	public MesquiteFrame(boolean compactible, Color backgroundColor) {
 		super();
 		this.backgroundColor = backgroundColor;
@@ -143,16 +143,16 @@ public class MesquiteFrame extends Frame implements Commandable, MQComponent {
 		poptile.setLayout(poptileLayout = new CardLayout());
 		addComponentListener(new MWCE(this));
 		try {
-	            java.awt.Image icon = Toolkit.getDefaultToolkit().getImage(MesquiteModule.getRootPath() + "images" + MesquiteFile.fileSeparator + "openMesquite.png");
-	            setIconImage(icon);
-	    } 
+			java.awt.Image icon = Toolkit.getDefaultToolkit().getImage(MesquiteModule.getRootPath() + "images" + MesquiteFile.fileSeparator + "openMesquite.png");
+			setIconImage(icon);
+		} 
 		catch (UnsupportedOperationException e) {} 
 		catch (SecurityException e) {}
 
 		/* EMBEDDED if embedded remove this */
 		addWindowListener(new MWWE(this));
 	}
-	
+
 	//###########################################################
 	/*################################################################
 	 *  The following overrides were built to avoid the frequent StackOverflowErrors on Linux Java post-1.8, 
@@ -168,7 +168,7 @@ public class MesquiteFrame extends Frame implements Commandable, MQComponent {
 		super.setBounds(x,y,w,h);
 	}
 	public void superSetFont (Font f){
-	super.setFont(f);
+		super.setFont(f);
 	}
 	public void superSetSize (int w, int h){
 		super.setSize(w,h);
@@ -237,7 +237,7 @@ public class MesquiteFrame extends Frame implements Commandable, MQComponent {
 	/*###########################################################*/
 	//###########################################################
 
-	
+
 	public void finalize() throws Throwable {
 		totalFinalized++;
 		super.finalize();
@@ -250,7 +250,7 @@ public class MesquiteFrame extends Frame implements Commandable, MQComponent {
 			return;
 		super.setResizable(r);
 	}
-	
+
 
 	int maxScriptedMainWidth = 0;
 	int maxScriptedPoppedWidth = 0;
@@ -412,17 +412,17 @@ public class MesquiteFrame extends Frame implements Commandable, MQComponent {
 	public static String listComponentsAllWindows() {
 		String list = "##################################\n";
 		Vector frames = new Vector();
-	 for (int i = 0; i<MesquiteTrunk.windowVector.size(); i++) {
-		 MesquiteWindow window = (MesquiteWindow)MesquiteTrunk.windowVector.elementAt(i);
-		 MesquiteFrame frame = window.getParentFrame();
-		 if (frames.indexOf(frame)<0) {
-			 frames.addElement(frame);
-		 list += frame.listComponents() + "\n";
-		 }
-	 };
-	 return list;
+		for (int i = 0; i<MesquiteTrunk.windowVector.size(); i++) {
+			MesquiteWindow window = (MesquiteWindow)MesquiteTrunk.windowVector.elementAt(i);
+			MesquiteFrame frame = window.getParentFrame();
+			if (frames.indexOf(frame)<0) {
+				frames.addElement(frame);
+				list += frame.listComponents() + "\n";
+			}
+		};
+		return list;
 	}
-	
+
 	public void setResourcesState(boolean resourcesFullWindow, boolean resourcesClosedWhenMinimized, int resourcesWidth){
 		this.resourcesFullWindow = resourcesFullWindow; 
 		this.resourcesClosedWhenMinimized = resourcesClosedWhenMinimized; 
@@ -980,15 +980,15 @@ public class MesquiteFrame extends Frame implements Commandable, MQComponent {
 			return;
 		if (w.getTileLocation() == RESOURCES || isPrimarylMesquiteFrame)
 			return;
-		
+
 		for (int i = 0; i<windows.size(); i++){  //This is a workaround for bug in OS X Java 1.7 and higher by which panels behind would leak to panels in front
 			MesquiteWindow ww = (MesquiteWindow)windows.elementAt(i);
 			if (ww != w && ww.getTileLocation() == w.getTileLocation()){ 
 				ww.disconnectGraphics();
-				
+
 			}
 		}
-		
+
 		if (!w.isConnectedGraphics())
 			w.reconnectGraphics();
 
@@ -1032,7 +1032,7 @@ public class MesquiteFrame extends Frame implements Commandable, MQComponent {
 		if (tabs !=null)
 			tabs.repaint();
 	}
-	
+
 	public void OLDsetAsFrontWindow(MesquiteWindow w){
 		//	frontWindow = null;
 		if (w != null && windows.indexOf(w)>=0) {
@@ -1085,10 +1085,10 @@ public class MesquiteFrame extends Frame implements Commandable, MQComponent {
 					else
 						windows.insertElementAt(w, where);
 				}
-				
+
 				where++;
 			}
-			 id = MesquiteInteger.fromString(parser);
+			id = MesquiteInteger.fromString(parser);
 		}
 	}
 	/*.................................................................................................................*/
@@ -1157,7 +1157,7 @@ public class MesquiteFrame extends Frame implements Commandable, MQComponent {
 	public void resetFullDimensions(){
 		saveFullDimensions();
 	}
-		/*.................................................................................................................*/
+	/*.................................................................................................................*/
 	protected void saveFullDimensions(){
 		savedFullW = getBounds().width;
 		savedFullH = getBounds().height;
@@ -1234,7 +1234,7 @@ public class MesquiteFrame extends Frame implements Commandable, MQComponent {
 		setSavedDimensions(totalNeededWidth, totalNeededHeight);
 		setSize(totalNeededWidth, totalNeededHeight);
 		resetSizes(true);
-	for (int i = 0; i<windows.size(); i++){
+		for (int i = 0; i<windows.size(); i++){
 			MesquiteWindow w = (MesquiteWindow)windows.elementAt(i);
 			w.resetContentsSize();
 
@@ -1258,7 +1258,7 @@ public class MesquiteFrame extends Frame implements Commandable, MQComponent {
 			s += " tabHeight " + tabHeight;
 		return s;
 	}
-	
+
 	/*.................................................................................................................*/
 	public void resetSizes(boolean resizeContainedWindows){
 		resetSizes(resizeContainedWindows, false);
@@ -1450,16 +1450,16 @@ public class MesquiteFrame extends Frame implements Commandable, MQComponent {
 			closeWindowRequested();
 		}
 		else if (checker.compare(getClass(), "Requests resetSizes", null, commandName, "resetSizesDoingShow")) {
-				if (windows !=null && windows.size() >1 || frontMostInLocation(RESOURCES) != null)
-					setSize(savedW, savedHWithTabs);
-				else
-					setSize(savedW, savedHWithoutTabs);
-				resetSizes(true);
-			
+			if (windows !=null && windows.size() >1 || frontMostInLocation(RESOURCES) != null)
+				setSize(savedW, savedHWithTabs);
+			else
+				setSize(savedW, savedHWithoutTabs);
+			resetSizes(true);
+
 		}
 		else if (checker.compare(getClass(), "Requests resetSizes", null, commandName, "resetSizesSimple")) {
-			
-				resetSizes(true);
+
+			resetSizes(true);
 		}
 		return null;
 	}
@@ -1542,7 +1542,7 @@ public class MesquiteFrame extends Frame implements Commandable, MQComponent {
 
 		}
 
-				
+
 
 	}
 
@@ -1653,6 +1653,17 @@ class FrameTabsPanel extends MousePanel {
 		}
 		return lefts.length;
 	}
+	int findTabZone(int x){
+		if (lefts == null || lefts.length == 0)
+			return MesquiteInteger.unassigned;
+		if (x < lefts[0])
+			return -1;
+		for (int i = 0; i<rights.length; i++){
+			if (x < (lefts[i]+rights[i])/2)
+				return i;
+		}
+		return lefts.length;
+	}
 	int tabTouched = MesquiteInteger.unassigned;
 	public void mouseDown (int modifiers, int clickCount, long when, int x, int y, MesquiteTool tool) {
 		tabTouched = findTab(x);
@@ -1697,7 +1708,7 @@ class FrameTabsPanel extends MousePanel {
 
 	public void mouseUp(int modifiers, int x, int y, MesquiteTool tool) {
 		try {
-			int i = findTab(x);
+			int i = findTabZone(x);
 			if (i == MesquiteInteger.unassigned)
 				return;
 			if (tabTouched>=10000 || tabTouched <0)
@@ -1735,7 +1746,26 @@ class FrameTabsPanel extends MousePanel {
 
 				if (i>=10000)
 					i = i - 10000;
-				if (i<tabTouched && tabTouched > 1){  //can't be first window other than project panel
+				if (tabTouched >= 1){  //can't be first window other than project panel
+					if (i<=0)
+						i = 1;
+					int dropLocation = i;
+					if (i>tabTouched)
+						dropLocation--;
+					if (frame.windows.indexOf(w) != dropLocation){
+						frame.windows.removeElement(w);
+						if (dropLocation >= frame.windows.size())
+							frame.windows.addElement(w);
+						else
+							frame.windows.insertElementAt(w, dropLocation);
+					}
+					frame.showPage(w);
+					if (frame.project != null)
+						frame.project.getHomeFile().setDirtiedByCommand(true);
+					repaint();
+
+				}
+/*				if (i<tabTouched && tabTouched > 1){  //can't be first window other than project panel
 					if (i<=0)
 						i = 1;
 					if (frame.windows.indexOf(w) != i){
@@ -1746,6 +1776,8 @@ class FrameTabsPanel extends MousePanel {
 							frame.windows.insertElementAt(w, i);
 					}
 					frame.showPage(w);
+					if (frame.project != null)
+						frame.project.getHomeFile().setDirtiedByCommand(true);
 					repaint();
 
 				}
@@ -1758,8 +1790,11 @@ class FrameTabsPanel extends MousePanel {
 							frame.windows.insertElementAt(w, i);
 					}
 					frame.showPage(w);
+					if (frame.project != null)
+						frame.project.getHomeFile().setDirtiedByCommand(true);
 					repaint();
 				}
+				*/
 			}
 		}
 		catch (Exception e){
