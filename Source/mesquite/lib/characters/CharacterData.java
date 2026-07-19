@@ -4563,7 +4563,7 @@ public abstract class CharacterData extends FileElement implements MesquiteListe
 
 	/*.................................................................................................................*/
 	public void scrollToStartOrEndOfData(MesquiteTable table, int row, boolean start) { 
-		int scrollBuff = 5;
+		int scrollBuff = 10;
 		if (table ==null || !MesquiteInteger.isCombinable(row))
 			return;
 		if (start) {
