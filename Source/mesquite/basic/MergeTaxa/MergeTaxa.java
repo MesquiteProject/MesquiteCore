@@ -223,7 +223,7 @@ public class MergeTaxa extends TaxonMerger {
 		}
 		queryDialog.addLargeOrSmallTextLabel("CAUTION: You will not be able to undo this. Associated information like footnotes, attachments, and so forth may be lost from all but the first taxon.");
 		Checkbox verboseCB = queryDialog.addCheckBox("Give verbose report", verboseReport);
-		Checkbox warningsToLogOnlyCB = queryDialog.addCheckBox("Note about merged states to log only", warningsToLogOnly);
+		Checkbox warningsToLogOnlyCB = queryDialog.addCheckBox("Show note about merged states in log only", warningsToLogOnly);
 		queryDialog.completeAndShowDialog(true);
 		if (buttonPressed.getValue()==0)  {
 			if (formTaxonName){
