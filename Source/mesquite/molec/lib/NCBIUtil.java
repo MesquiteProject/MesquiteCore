@@ -719,19 +719,26 @@ public class NCBIUtil {
 		int insertAfterTaxon = taxa.getNumTaxa()-1;
 		if (insertAfterTaxonRequested>=0)
 			insertAfterTaxon = insertAfterTaxonRequested;
-		if (blastResults.getReadEntireContig()) {  // can just read them all in
+//		if (blastResults.getReadEntireContig()) {  // can just read them all in
 			if (data instanceof ProteinData) {
 				InterpretFastaProtein importer = new InterpretFastaProtein();
-				importer.readString(data,fastaSequences, insertAfterTaxon,prependToTaxonName, appendToTaxonName);
+				importer.readString(data,fastaSequences, insertAfterTaxon,prependToTaxonName, appendToTaxonName, blastResults);
 			} else {
 				InterpretFastaDNA importer = new InterpretFastaDNA();
-				importer.readString(data,fastaSequences, insertAfterTaxon,prependToTaxonName, appendToTaxonName);
+				importer.readString(data,fastaSequences, insertAfterTaxon,prependToTaxonName, appendToTaxonName, blastResults);
 			}
-		} else {  // but if we are reading only parts of contigs, we need to do them individually
+/*		} else {  // but if we are reading only parts of contigs, we need to do them individually
 			for (int iHit=0; iHit<blastResults.getNumHits(); iHit++) {
-				int startChar = blastResults.getHitStartMatch(iHit) - blastResults.getFlankingRegionSizeToRead();
+				int startChar = blastResults.getHitStartMatch(iHit);
+				int endChar = blastResults.getHitEndMatch(iHit);
+				if (blastResults.getHitStartMatch(iHit) < blastResults.getHitEndMatch(iHit)) {
+					startChar -= blastResults.getFlankingRegionSizeToRead();
+					endChar += blastResults.getFlankingRegionSizeToRead();
+				} else {
+					startChar += blastResults.getFlankingRegionSizeToRead();
+					endChar -= blastResults.getFlankingRegionSizeToRead();
+				}
 				if (startChar<0) startChar=0;
-				int endChar = blastResults.getHitEndMatch(iHit) + blastResults.getFlankingRegionSizeToRead();
 				if (data instanceof ProteinData) {
 					InterpretFastaProtein importer = new InterpretFastaProtein();
 					importer.readString(data,fastaSequences, insertAfterTaxon,prependToTaxonName, appendToTaxonName, iHit, startChar, endChar);
@@ -742,6 +749,7 @@ public class NCBIUtil {
 				
 			}
 		}
+		*/
 		data.setCharNumChanging(false);
 		taxa.notifyListeners(mod, new Notification(MesquiteListener.PARTS_ADDED));
 		data.notifyListeners(mod, new Notification(MesquiteListener.PARTS_ADDED));

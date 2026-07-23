@@ -25,6 +25,7 @@ import mesquite.io.InterpretFastaProtein.InterpretFastaProtein;
 import mesquite.lib.Arguments;
 import mesquite.lib.CommandChecker;
 import mesquite.lib.CommandRecord;
+import mesquite.lib.Debugg;
 import mesquite.lib.EmployeeNeed;
 import mesquite.lib.ExporterDialog;
 import mesquite.lib.MesquiteBoolean;
@@ -55,6 +56,7 @@ import mesquite.lib.ui.ExtensibleDialog;
 import mesquite.lib.ui.ProgressIndicator;
 import mesquite.lib.ui.RadioButtons;
 import mesquite.lib.ui.SingleLineTextField;
+import mesquite.molec.lib.BLASTResults;
 
 
 /* ============  a file interpreter for FASTA files ============*/
@@ -123,9 +125,9 @@ public abstract class InterpretFasta extends FileInterpreterI implements ReadFil
 	public abstract CharacterData createData(CharactersManager charTask, Taxa taxa);
 	/*.................................................................................................................*/
 	//NOTE: it is the responsibility of the caller to notify listeners of taxa and data that taxa & possibly characters have been added!
-	public void readString(CharacterData data, String s, int insertAfterTaxon, String prependToTaxonName, String appendToTaxonName, int sequenceToRead, int startChar, int endChar) {
-		boolean readAll = sequenceToRead<0;
-		boolean readPartOfSequence = startChar>-1;
+	public void readString(CharacterData data, String s, int insertAfterTaxon, String prependToTaxonName, String appendToTaxonName, BLASTResults blastResults) {
+		
+		boolean readEntireContig = blastResults.getReadEntireContig();
 		Taxa taxa = data.getTaxa();
 		//int numTaxa = taxa.getNumTaxa();
 		int newTaxon = insertAfterTaxon+1;
@@ -139,6 +141,9 @@ public abstract class InterpretFasta extends FileInterpreterI implements ReadFil
 		int numCharToAdd = 10;  // DRM June '14  to increase speed
 		int warnCount = 0;
 		int seqNumber =0;
+		int startChar = -1;
+		int endChar = -1;
+
 
 		while (!StringUtil.blank(line)) {
 
@@ -152,15 +157,30 @@ public abstract class InterpretFasta extends FileInterpreterI implements ReadFil
 				line = parser.getRemainingUntilChar('>');
 				line=StringUtil.stripWhitespace(line);
 				if (line==null) break;
-				if (!readAll && seqNumber!=sequenceToRead) {
-					seqNumber++;
-					continue;
+				if (!readEntireContig) {
+					startChar = blastResults.getHitStartMatch(seqNumber);
+					endChar = blastResults.getHitEndMatch(seqNumber);
+					if (startChar < endChar) {
+						startChar -= blastResults.getFlankingRegionSizeToRead();
+						endChar += blastResults.getFlankingRegionSizeToRead();
+					} else {
+						startChar += blastResults.getFlankingRegionSizeToRead();
+						endChar -= blastResults.getFlankingRegionSizeToRead();
+					}
+					if (startChar > endChar) {
+						int temp = endChar;
+						endChar=startChar;
+						startChar=temp;
+					}
+					if (startChar<0) startChar=0;
 				}
+
+				Debugg.println("startChar = " + startChar + ", endChar = " + endChar);
 				int ic = 0;
 				int added = 0;
 				for (int i=0; i<line.length(); i++) {
 					char c=line.charAt(i);
-					if (c!= '\0' && (!readPartOfSequence || (i >= startChar && i<=endChar))) {
+					if (c!= '\0' && (readEntireContig || (i >= startChar && i<=endChar))) {
 						if (data.getNumChars() <= ic) {
 							warnCount++;
 							data.addCharacters(data.getNumChars()-1, numCharToAdd, false);   // add a character if needed
@@ -194,7 +214,7 @@ public abstract class InterpretFasta extends FileInterpreterI implements ReadFil
 	
 	//NOTE: it is the responsibility of the caller to notify listeners of taxa and data that taxa & possibly characters have been added!
 	public void readString(CharacterData data, String s, int insertAfterTaxon, String prependToTaxonName, String appendToTaxonName) {
-		readString(data, s, insertAfterTaxon, prependToTaxonName, appendToTaxonName, -1, -1, -1);
+		readString(data, s, insertAfterTaxon, prependToTaxonName, appendToTaxonName, null);
 	}
 
 
