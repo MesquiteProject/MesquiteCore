@@ -83,7 +83,6 @@ public class TopBlastMatches extends MolecDataSearcher implements ItemListener {
 	boolean fetchTaxonomy = false;
 	boolean interleaveResults = true;
 	boolean adjustSequences = false;
-	boolean addInternalGaps = false;
 	boolean appendQueryName = false;
 	boolean alwaysImportDataIfPossible=false;
 	
@@ -131,8 +130,6 @@ public class TopBlastMatches extends MolecDataSearcher implements ItemListener {
 			interleaveResults = MesquiteBoolean.fromTrueFalseString(content);
 		else if ("adjustSequences".equalsIgnoreCase(tag))
 			adjustSequences = MesquiteBoolean.fromTrueFalseString(content);
-		else if ("addInternalGaps".equalsIgnoreCase(tag))
-			addInternalGaps = MesquiteBoolean.fromTrueFalseString(content);
 		else if ("appendQueryName".equalsIgnoreCase(tag))
 			appendQueryName = MesquiteBoolean.fromTrueFalseString(content);
 		else if ("blastType".equalsIgnoreCase(tag))
@@ -157,7 +154,6 @@ public class TopBlastMatches extends MolecDataSearcher implements ItemListener {
 		StringUtil.appendXMLTag(buffer, 2, "importTopMatches", importTopMatches);  
 		StringUtil.appendXMLTag(buffer, 2, "readEntireContig", readEntireContig);  
 		StringUtil.appendXMLTag(buffer, 2, "interleaveResults", interleaveResults);  
-		StringUtil.appendXMLTag(buffer, 2, "addInternalGaps", addInternalGaps);  
 		StringUtil.appendXMLTag(buffer, 2, "appendQueryName", appendQueryName);  
 		StringUtil.appendXMLTag(buffer, 2, "adjustSequences", adjustSequences);  
 		//		StringUtil.appendXMLTag(buffer, 2, "blastx", blastx);  
@@ -180,7 +176,6 @@ public class TopBlastMatches extends MolecDataSearcher implements ItemListener {
 	Checkbox readEntireContigCheckBox;
 	Checkbox interleaveResultsCheckBox;
 	Checkbox adjustSequencesCheckBox;
-	Checkbox addInternalGapsCheckBox;
 	Checkbox appendQueryNameCheckBox;
 	/*.................................................................................................................*/
 	private void checkEnabling(){
@@ -232,18 +227,17 @@ public class TopBlastMatches extends MolecDataSearcher implements ItemListener {
 
 		//		blastXCheckBox = dialog.addCheckBox("use blastx for nucleotides",blastx);
 		DoubleField eValueCutoffField = dialog.addDoubleField("Reject hits with eValues greater than: ", eValueCutoff, 20, 0.0, Double.MAX_VALUE);
-		blastTypeChoice = dialog.addPopUpMenu("BLAST type for nucleotides", Blaster.getBlastTypeNames(), blastType);
 		if (getAlwaysImportDataIfPossible())
 			importTopMatches=true;
 		importCheckBox = dialog.addCheckBox("import top matches into matrix",importTopMatches);
 		readEntireContigCheckBox = dialog.addCheckBox("import entire contig into matrix",readEntireContig);
 		IntegerField flankingRegionSizeField = dialog.addIntegerField("Flanking region length if importing partial contig:",  flankingRegionSizeToRead,5,0,MesquiteInteger.infinite);
 		interleaveResultsCheckBox = dialog.addCheckBox("insert found sequence after query sequence that was BLASTed",interleaveResults);
+		blastTypeChoice = dialog.addPopUpMenu("BLAST type for nucleotides", Blaster.getBlastTypeNames(), blastType);
 		adjustSequencesCheckBox = dialog.addCheckBox("shift imported sequences (and reverse complement if needed)",adjustSequences);
-		addInternalGapsCheckBox = dialog.addCheckBox("allow new internal gaps during alignment",addInternalGaps);
 		saveFileCheckBox = dialog.addCheckBox("save summary report and BLAST responses",saveResultsToFile);
 
-		dialog.addHorizontalLine(1);
+		dialog.addHorizontalLine(3);
 		fetchTaxonomyCheckBox = dialog.addCheckBox("fetch taxonomic lineage",fetchTaxonomy);
 		appendQueryNameCheckBox = dialog.addCheckBox("append query name to hit name",appendQueryName);
 		IntegerField maxHitsField = dialog.addIntegerField("Maximum number of matches:",  maxHits,5,1,blasterTask.getUpperLimitMaxHits());
@@ -267,7 +261,6 @@ public class TopBlastMatches extends MolecDataSearcher implements ItemListener {
 			readEntireContig = readEntireContigCheckBox.getState();
 			interleaveResults = interleaveResultsCheckBox.getState();
 			adjustSequences = adjustSequencesCheckBox.getState();
-			addInternalGaps = addInternalGapsCheckBox.getState();
 			flankingRegionSizeToRead = flankingRegionSizeField.getValue();
 			wordSize = wordSizeField.getValue();
 			appendQueryName = appendQueryNameCheckBox.getState();
@@ -437,7 +430,7 @@ public class TopBlastMatches extends MolecDataSearcher implements ItemListener {
 				numTaxaAdded = data.getNumTaxa();
 				StringBuffer localResults = new StringBuffer();
 				if (StringUtil.notEmpty(newSequencesAsFasta)) {
-					NCBIUtil.importFASTASequences(data, newSequencesAsFasta, this, localResults, insertAfterTaxon, it, adjustSequences, addInternalGaps, prependToTaxonName, appendToTaxonName, charAddedToStart, blastResults);
+					NCBIUtil.importFASTASequences(data, newSequencesAsFasta, this, localResults, insertAfterTaxon, it, adjustSequences, prependToTaxonName, appendToTaxonName, charAddedToStart, blastResults);
 				}
 				else
 					logln("BLAST database returned no sequences in response to query.");

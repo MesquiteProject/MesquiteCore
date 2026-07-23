@@ -706,11 +706,11 @@ public class NCBIUtil {
 			return null;
 	}
 	/*.................................................................................................................*/
-	public static void importFASTASequences(CharacterData data, String fastaSequences, MesquiteModule mod,StringBuffer report, int insertAfterTaxonRequested, int referenceTaxon, boolean adjustNewSequences, boolean addNewInternalGaps){
-		importFASTASequences(data, fastaSequences, mod, report, insertAfterTaxonRequested, referenceTaxon, adjustNewSequences, addNewInternalGaps, "", "", null, null);
+	public static void importFASTASequences(CharacterData data, String fastaSequences, MesquiteModule mod,StringBuffer report, int insertAfterTaxonRequested, int referenceTaxon, boolean adjustNewSequences){
+		importFASTASequences(data, fastaSequences, mod, report, insertAfterTaxonRequested, referenceTaxon, adjustNewSequences, "", "", null, null);
 	}
 	/*.................................................................................................................*/
-	public static void importFASTASequences(CharacterData data, String fastaSequences, MesquiteModule mod,StringBuffer report, int insertAfterTaxonRequested, int referenceTaxon, boolean adjustNewSequences, boolean addNewInternalGaps, String prependToTaxonName, String appendToTaxonName, MesquiteInteger charAddedToStart, BLASTResults blastResults){
+	public static void importFASTASequences(CharacterData data, String fastaSequences, MesquiteModule mod,StringBuffer report, int insertAfterTaxonRequested, int referenceTaxon, boolean adjustNewSequences, String prependToTaxonName, String appendToTaxonName, MesquiteInteger charAddedToStart, BLASTResults blastResults){
 		if (data==null)
 			return;
 		Taxa taxa = data.getTaxa();

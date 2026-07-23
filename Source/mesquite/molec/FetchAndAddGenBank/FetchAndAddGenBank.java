@@ -92,7 +92,7 @@ public class FetchAndAddGenBank extends DataUtility {
 					if (!StringUtil.blank(accessionNumbers[i])) {				
 						logln("Requesting " + accessionNumbers[i]);
 						String fasta = NCBIUtil.getFastaFromAccession(accessionNumbers[i]);
-						NCBIUtil.importFASTASequences(data, fasta, this, report, -1, -1, false, false);
+						NCBIUtil.importFASTASequences(data, fasta, this, report, -1, -1, false);
 						if (StringUtil.notEmpty(fasta))
 							importAccomplished = true;
 					}
