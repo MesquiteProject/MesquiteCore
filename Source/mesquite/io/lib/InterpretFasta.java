@@ -123,7 +123,9 @@ public abstract class InterpretFasta extends FileInterpreterI implements ReadFil
 	public abstract CharacterData createData(CharactersManager charTask, Taxa taxa);
 	/*.................................................................................................................*/
 	//NOTE: it is the responsibility of the caller to notify listeners of taxa and data that taxa & possibly characters have been added!
-	public void readString(CharacterData data, String s, int insertAfterTaxon, String prependToTaxonName, String appendToTaxonName) {
+	public void readString(CharacterData data, String s, int insertAfterTaxon, String prependToTaxonName, String appendToTaxonName, int sequenceToRead, int startChar, int endChar) {
+		boolean readAll = sequenceToRead<0;
+		boolean readPartOfSequence = startChar>-1;
 		Taxa taxa = data.getTaxa();
 		//int numTaxa = taxa.getNumTaxa();
 		int newTaxon = insertAfterTaxon+1;
@@ -136,6 +138,7 @@ public abstract class InterpretFasta extends FileInterpreterI implements ReadFil
 
 		int numCharToAdd = 10;  // DRM June '14  to increase speed
 		int warnCount = 0;
+		int seqNumber =0;
 
 		while (!StringUtil.blank(line)) {
 
@@ -149,12 +152,16 @@ public abstract class InterpretFasta extends FileInterpreterI implements ReadFil
 				line = parser.getRemainingUntilChar('>');
 				line=StringUtil.stripWhitespace(line);
 				if (line==null) break;
+				if (!readAll && seqNumber!=sequenceToRead) {
+					seqNumber++;
+					continue;
+				}
 				int ic = 0;
 				int added = 0;
 				for (int i=0; i<line.length(); i++) {
 					char c=line.charAt(i);
-					if (c!= '\0') {
-						if (data.getNumChars() <= i) {
+					if (c!= '\0' && (!readPartOfSequence || (i >= startChar && i<=endChar))) {
+						if (data.getNumChars() <= ic) {
 							warnCount++;
 							data.addCharacters(data.getNumChars()-1, numCharToAdd, false);   // add a character if needed
 							data.addInLinked(data.getNumChars()-1, numCharToAdd, false);
@@ -170,10 +177,11 @@ public abstract class InterpretFasta extends FileInterpreterI implements ReadFil
 
 						}
 						setFastaState(data,ic, newTaxon, c);    // setting state to that specified by character c
+						ic++;
 					}
-					ic++;
 				}
 				//				data.notifyListeners(this, new Notification(MesquiteListener.PARTS_ADDED, new int[] {data.getNumChars(), added}));
+				seqNumber++;
 			}
 			newTaxon++;
 			line = parser.getRawNextLine();
@@ -181,6 +189,12 @@ public abstract class InterpretFasta extends FileInterpreterI implements ReadFil
 			if (StringUtil.notEmpty(line))
 				token = firstLineParser.getFirstToken(line); //should be >
 		}
+	}
+
+	
+	//NOTE: it is the responsibility of the caller to notify listeners of taxa and data that taxa & possibly characters have been added!
+	public void readString(CharacterData data, String s, int insertAfterTaxon, String prependToTaxonName, String appendToTaxonName) {
+		readString(data, s, insertAfterTaxon, prependToTaxonName, appendToTaxonName, -1, -1, -1);
 	}
 
 

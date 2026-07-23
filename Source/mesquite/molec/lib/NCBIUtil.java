@@ -719,12 +719,28 @@ public class NCBIUtil {
 		int insertAfterTaxon = taxa.getNumTaxa()-1;
 		if (insertAfterTaxonRequested>=0)
 			insertAfterTaxon = insertAfterTaxonRequested;
-		if (data instanceof ProteinData) {
-			InterpretFastaProtein importer = new InterpretFastaProtein();
-			importer.readString(data,fastaSequences, insertAfterTaxon,prependToTaxonName, appendToTaxonName);
-		} else {
-			InterpretFastaDNA importer = new InterpretFastaDNA();
-			importer.readString(data,fastaSequences, insertAfterTaxon,prependToTaxonName, appendToTaxonName);
+		if (blastResults.getReadEntireContig()) {  // can just read them all in
+			if (data instanceof ProteinData) {
+				InterpretFastaProtein importer = new InterpretFastaProtein();
+				importer.readString(data,fastaSequences, insertAfterTaxon,prependToTaxonName, appendToTaxonName);
+			} else {
+				InterpretFastaDNA importer = new InterpretFastaDNA();
+				importer.readString(data,fastaSequences, insertAfterTaxon,prependToTaxonName, appendToTaxonName);
+			}
+		} else {  // but if we are reading only parts of contigs, we need to do them individually
+			for (int iHit=0; iHit<blastResults.getNumHits(); iHit++) {
+				int startChar = blastResults.getHitStartMatch(iHit) - blastResults.getFlankingRegionSizeToRead();
+				if (startChar<0) startChar=0;
+				int endChar = blastResults.getHitEndMatch(iHit) + blastResults.getFlankingRegionSizeToRead();
+				if (data instanceof ProteinData) {
+					InterpretFastaProtein importer = new InterpretFastaProtein();
+					importer.readString(data,fastaSequences, insertAfterTaxon,prependToTaxonName, appendToTaxonName, iHit, startChar, endChar);
+				} else {
+					InterpretFastaDNA importer = new InterpretFastaDNA();
+					importer.readString(data,fastaSequences, insertAfterTaxon,prependToTaxonName, appendToTaxonName, iHit, startChar, endChar);
+				}
+				
+			}
 		}
 		data.setCharNumChanging(false);
 		taxa.notifyListeners(mod, new Notification(MesquiteListener.PARTS_ADDED));
@@ -748,18 +764,23 @@ public class NCBIUtil {
 			if (adjustNewSequences) {
 				for (int it=itStart; it<=itEnd; it++) {
 				//	int startOfQueryInMatrix = data.firstApplicable(referenceTaxon);
-					int hitStartMatch = 0;
+					int hitStartMatch = blastResults.getHitStartMatch(it-itStart); // that's the hit start that the response specifies.  But because it is reversed complemented, need to 
+					if (!blastResults.getReadEntireContig()) {  // need to adjust hit start match as it is now only relative to part read in - and that is the flanking region length
+						int startChar = hitStartMatch- blastResults.getFlankingRegionSizeToRead();
+						if (startChar>=0) 
+							hitStartMatch=blastResults.getFlankingRegionSizeToRead();
+						else 
+							hitStartMatch=blastResults.getFlankingRegionSizeToRead()+startChar;
+					}
 					if (blastResults.getHitReversed(it-itStart)) {
 						if (data instanceof DNAData){
 							((DNAData)data).reverseComplement(0, data.getNumChars(), it, false, true);  // then we need to reverse them back.
 						} else
 							((MolecularData)data).reverse(0, data.getNumChars(), it, false, false);  // then we need to reverse them back.
 						((MolecularData)data).collapseGapsInCellBlock(it, 0, data.getNumChars()-1, false);
-						hitStartMatch = blastResults.getHitStartMatch(it-itStart); // that's the hit start that the response specifies.  But because it is reversed complemented, need to 
 						int endOfHit = data.lastApplicable(it);
 						hitStartMatch = endOfHit-hitStartMatch+2;
-					} else
-						hitStartMatch = blastResults.getHitStartMatch(it-itStart); // 
+					} 
 					int queryStartMatch = data.nthApplicable(insertAfterTaxon, blastResults.getQueryStartMatch(it-itStart));
 					int shiftAmount = queryStartMatch-hitStartMatch+1;
 					MesquiteInteger charAdded = new MesquiteInteger(0);

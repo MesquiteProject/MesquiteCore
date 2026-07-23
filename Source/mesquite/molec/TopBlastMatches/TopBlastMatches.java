@@ -87,6 +87,10 @@ public class TopBlastMatches extends MolecDataSearcher implements ItemListener {
 	boolean appendQueryName = false;
 	boolean alwaysImportDataIfPossible=false;
 	
+	int flankingRegionSizeToRead=2000;
+	boolean readEntireContig=false;
+
+	
 	protected boolean optionsHaveBeenSet = false;
 	boolean usercanceled=false;
 
@@ -119,6 +123,8 @@ public class TopBlastMatches extends MolecDataSearcher implements ItemListener {
 			fetchTaxonomy = MesquiteBoolean.fromTrueFalseString(content);
 		else if ("saveResultsToFile".equalsIgnoreCase(tag))
 			saveResultsToFile = MesquiteBoolean.fromTrueFalseString(content);
+		else if ("readEntireContig".equalsIgnoreCase(tag))
+			readEntireContig = MesquiteBoolean.fromTrueFalseString(content);
 		else if ("importTopMatches".equalsIgnoreCase(tag))
 			importTopMatches = MesquiteBoolean.fromTrueFalseString(content);
 		else if ("interleaveResults".equalsIgnoreCase(tag))
@@ -133,6 +139,8 @@ public class TopBlastMatches extends MolecDataSearcher implements ItemListener {
 			blastType = MesquiteInteger.fromString(content);
 		else if ("wordSize".equalsIgnoreCase(tag))
 			wordSize = MesquiteInteger.fromString(content);
+		else if ("flankingRegionSizeToRead".equalsIgnoreCase(tag))
+			flankingRegionSizeToRead = MesquiteInteger.fromString(content);
 		else if ("eValueCutoff".equalsIgnoreCase(tag))
 			eValueCutoff = MesquiteDouble.fromString(content);
 		else if ("maxTime".equalsIgnoreCase(tag))
@@ -147,6 +155,7 @@ public class TopBlastMatches extends MolecDataSearcher implements ItemListener {
 		StringUtil.appendXMLTag(buffer, 2, "fetchTaxonomy", fetchTaxonomy);  
 		StringUtil.appendXMLTag(buffer, 2, "maxTime", maxTime);  
 		StringUtil.appendXMLTag(buffer, 2, "importTopMatches", importTopMatches);  
+		StringUtil.appendXMLTag(buffer, 2, "readEntireContig", readEntireContig);  
 		StringUtil.appendXMLTag(buffer, 2, "interleaveResults", interleaveResults);  
 		StringUtil.appendXMLTag(buffer, 2, "addInternalGaps", addInternalGaps);  
 		StringUtil.appendXMLTag(buffer, 2, "appendQueryName", appendQueryName);  
@@ -157,6 +166,8 @@ public class TopBlastMatches extends MolecDataSearcher implements ItemListener {
 		StringUtil.appendXMLTag(buffer, 2, "blastType", blastType);  
 		StringUtil.appendXMLTag(buffer, 2, "wordSize", wordSize);  
 		StringUtil.appendXMLTag(buffer, 2, "saveResultsToFile", saveResultsToFile);  
+		StringUtil.appendXMLTag(buffer, 2, "flankingRegionSizeToRead", flankingRegionSizeToRead);  
+		
 
 		preferencesSet = true;
 		return buffer.toString();
@@ -166,6 +177,7 @@ public class TopBlastMatches extends MolecDataSearcher implements ItemListener {
 	Checkbox saveFileCheckBox ;
 	Checkbox fetchTaxonomyCheckBox;
 	Checkbox importCheckBox;
+	Checkbox readEntireContigCheckBox;
 	Checkbox interleaveResultsCheckBox;
 	Checkbox adjustSequencesCheckBox;
 	Checkbox addInternalGapsCheckBox;
@@ -218,21 +230,24 @@ public class TopBlastMatches extends MolecDataSearcher implements ItemListener {
 		dialog.appendToHelpString(sb.toString());
 
 
-		IntegerField maxHitsField = dialog.addIntegerField("Maximum number of matches:",  maxHits,5,1,blasterTask.getUpperLimitMaxHits());
 		//		blastXCheckBox = dialog.addCheckBox("use blastx for nucleotides",blastx);
 		DoubleField eValueCutoffField = dialog.addDoubleField("Reject hits with eValues greater than: ", eValueCutoff, 20, 0.0, Double.MAX_VALUE);
-		IntegerField wordSizeField = dialog.addIntegerField("Word size:",  wordSize,5,0,Integer.MAX_VALUE);
-		saveFileCheckBox = dialog.addCheckBox("save summary report and BLAST responses",saveResultsToFile);
 		blastTypeChoice = dialog.addPopUpMenu("BLAST type for nucleotides", Blaster.getBlastTypeNames(), blastType);
-		fetchTaxonomyCheckBox = dialog.addCheckBox("fetch taxonomic lineage",fetchTaxonomy);
 		if (getAlwaysImportDataIfPossible())
 			importTopMatches=true;
 		importCheckBox = dialog.addCheckBox("import top matches into matrix",importTopMatches);
+		readEntireContigCheckBox = dialog.addCheckBox("import entire contig into matrix",readEntireContig);
+		IntegerField flankingRegionSizeField = dialog.addIntegerField("Flanking region length if importing partial contig:",  flankingRegionSizeToRead,5,1,MesquiteInteger.infinite);
 		interleaveResultsCheckBox = dialog.addCheckBox("insert found sequence after query sequence that was BLASTed",interleaveResults);
 		adjustSequencesCheckBox = dialog.addCheckBox("shift imported sequences (and reverse complement if needed)",adjustSequences);
 		addInternalGapsCheckBox = dialog.addCheckBox("allow new internal gaps during alignment",addInternalGaps);
-		appendQueryNameCheckBox = dialog.addCheckBox("append query name to hit name",appendQueryName);
+		saveFileCheckBox = dialog.addCheckBox("save summary report and BLAST responses",saveResultsToFile);
 
+		dialog.addHorizontalLine(1);
+		fetchTaxonomyCheckBox = dialog.addCheckBox("fetch taxonomic lineage",fetchTaxonomy);
+		appendQueryNameCheckBox = dialog.addCheckBox("append query name to hit name",appendQueryName);
+		IntegerField maxHitsField = dialog.addIntegerField("Maximum number of matches:",  maxHits,5,1,blasterTask.getUpperLimitMaxHits());
+		IntegerField wordSizeField = dialog.addIntegerField("Word size:",  wordSize,5,0,Integer.MAX_VALUE);
 		IntegerField maxTimeField = dialog.addIntegerField("Maximum time for BLAST response (seconds):",  maxTime,5);
 		//	blastXCheckBox.addItemListener(this);
 		saveFileCheckBox.addItemListener(this);
@@ -249,9 +264,11 @@ public class TopBlastMatches extends MolecDataSearcher implements ItemListener {
 			blastType = blastTypeChoice.getSelectedIndex();
 			if (blastType<0) blastType=oldBlastType;
 			importTopMatches = importCheckBox.getState();
+			readEntireContig = readEntireContigCheckBox.getState();
 			interleaveResults = interleaveResultsCheckBox.getState();
 			adjustSequences = adjustSequencesCheckBox.getState();
 			addInternalGaps = addInternalGapsCheckBox.getState();
+			flankingRegionSizeToRead = flankingRegionSizeField.getValue();
 			wordSize = wordSizeField.getValue();
 			appendQueryName = appendQueryNameCheckBox.getState();
 			maxTime=maxTimeField.getValue();
@@ -370,6 +387,8 @@ public class TopBlastMatches extends MolecDataSearcher implements ItemListener {
 		if (object instanceof BLASTResultsArray) {
 			blastResultsArray = (BLASTResultsArray)object;
 			blastResults= blastResultsArray.getResults(passNumber);
+			blastResults.setFlankingRegionSizeToRead(flankingRegionSizeToRead);
+			blastResults.setReadEntireContig(readEntireContig);
 		}
 		else
 			return false;
