@@ -237,7 +237,7 @@ public class TopBlastMatches extends MolecDataSearcher implements ItemListener {
 			importTopMatches=true;
 		importCheckBox = dialog.addCheckBox("import top matches into matrix",importTopMatches);
 		readEntireContigCheckBox = dialog.addCheckBox("import entire contig into matrix",readEntireContig);
-		IntegerField flankingRegionSizeField = dialog.addIntegerField("Flanking region length if importing partial contig:",  flankingRegionSizeToRead,5,1,MesquiteInteger.infinite);
+		IntegerField flankingRegionSizeField = dialog.addIntegerField("Flanking region length if importing partial contig:",  flankingRegionSizeToRead,5,0,MesquiteInteger.infinite);
 		interleaveResultsCheckBox = dialog.addCheckBox("insert found sequence after query sequence that was BLASTed",interleaveResults);
 		adjustSequencesCheckBox = dialog.addCheckBox("shift imported sequences (and reverse complement if needed)",adjustSequences);
 		addInternalGapsCheckBox = dialog.addCheckBox("allow new internal gaps during alignment",addInternalGaps);
