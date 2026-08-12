@@ -127,7 +127,7 @@ public abstract class InterpretFasta extends FileInterpreterI implements ReadFil
 	//NOTE: it is the responsibility of the caller to notify listeners of taxa and data that taxa & possibly characters have been added!
 	public void readString(CharacterData data, String s, int insertAfterTaxon, String prependToTaxonName, String appendToTaxonName, BLASTResults blastResults) {
 		
-		boolean readEntireContig = blastResults.getReadEntireContig();
+		boolean readPartialContig = blastResults.getReadPartialContig();
 		Taxa taxa = data.getTaxa();
 		//int numTaxa = taxa.getNumTaxa();
 		int newTaxon = insertAfterTaxon+1;
@@ -157,7 +157,7 @@ public abstract class InterpretFasta extends FileInterpreterI implements ReadFil
 				line = parser.getRemainingUntilChar('>');
 				line=StringUtil.stripWhitespace(line);
 				if (line==null) break;
-				if (!readEntireContig) {
+				if (readPartialContig) {
 					startChar = blastResults.getHitStartMatch(seqNumber);
 					endChar = blastResults.getHitEndMatch(seqNumber);
 					if (startChar < endChar) {
@@ -175,12 +175,11 @@ public abstract class InterpretFasta extends FileInterpreterI implements ReadFil
 					if (startChar<0) startChar=0;
 				}
 
-				Debugg.println("startChar = " + startChar + ", endChar = " + endChar);
 				int ic = 0;
 				int added = 0;
 				for (int i=0; i<line.length(); i++) {
 					char c=line.charAt(i);
-					if (c!= '\0' && (readEntireContig || (i >= startChar && i<=endChar))) {
+					if (c!= '\0' && (!readPartialContig || (i >= startChar && i<=endChar))) {
 						if (data.getNumChars() <= ic) {
 							warnCount++;
 							data.addCharacters(data.getNumChars()-1, numCharToAdd, false);   // add a character if needed

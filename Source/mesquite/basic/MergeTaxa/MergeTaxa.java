@@ -375,9 +375,11 @@ public class MergeTaxa extends TaxonMerger {
 		if (addFootnoteWithOriginalNames)
 			taxa.setAnnotation(destinationTaxon, mergedNames);
 		if (reportRecord != null && !StringUtil.blank(report)){
-			if (!verboseReport && !warningsToLogOnly)
-				reportRecord.append("Matrices with data in multiple merged taxa: ");
-			reportRecord.append(report);
+			if (!warningsToLogOnly) {
+				if (!verboseReport)
+					reportRecord.append("Matrices with data in multiple merged taxa: "); 
+				reportRecord.append(report);
+			}
 			reportRecord.append("\n");
 		}
 

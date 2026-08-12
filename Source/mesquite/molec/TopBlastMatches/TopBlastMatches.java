@@ -87,7 +87,7 @@ public class TopBlastMatches extends MolecDataSearcher implements ItemListener {
 	boolean alwaysImportDataIfPossible=false;
 	
 	int flankingRegionSizeToRead=2000;
-	boolean readEntireContig=false;
+	boolean readPartialContig=true;
 
 	
 	protected boolean optionsHaveBeenSet = false;
@@ -122,8 +122,8 @@ public class TopBlastMatches extends MolecDataSearcher implements ItemListener {
 			fetchTaxonomy = MesquiteBoolean.fromTrueFalseString(content);
 		else if ("saveResultsToFile".equalsIgnoreCase(tag))
 			saveResultsToFile = MesquiteBoolean.fromTrueFalseString(content);
-		else if ("readEntireContig".equalsIgnoreCase(tag))
-			readEntireContig = MesquiteBoolean.fromTrueFalseString(content);
+		else if ("readPartialContig".equalsIgnoreCase(tag))
+			readPartialContig = MesquiteBoolean.fromTrueFalseString(content);
 		else if ("importTopMatches".equalsIgnoreCase(tag))
 			importTopMatches = MesquiteBoolean.fromTrueFalseString(content);
 		else if ("interleaveResults".equalsIgnoreCase(tag))
@@ -152,7 +152,7 @@ public class TopBlastMatches extends MolecDataSearcher implements ItemListener {
 		StringUtil.appendXMLTag(buffer, 2, "fetchTaxonomy", fetchTaxonomy);  
 		StringUtil.appendXMLTag(buffer, 2, "maxTime", maxTime);  
 		StringUtil.appendXMLTag(buffer, 2, "importTopMatches", importTopMatches);  
-		StringUtil.appendXMLTag(buffer, 2, "readEntireContig", readEntireContig);  
+		StringUtil.appendXMLTag(buffer, 2, "readPartialContig", readPartialContig);  
 		StringUtil.appendXMLTag(buffer, 2, "interleaveResults", interleaveResults);  
 		StringUtil.appendXMLTag(buffer, 2, "appendQueryName", appendQueryName);  
 		StringUtil.appendXMLTag(buffer, 2, "adjustSequences", adjustSequences);  
@@ -173,7 +173,7 @@ public class TopBlastMatches extends MolecDataSearcher implements ItemListener {
 	Checkbox saveFileCheckBox ;
 	Checkbox fetchTaxonomyCheckBox;
 	Checkbox importCheckBox;
-	Checkbox readEntireContigCheckBox;
+	Checkbox readPartialContigCheckBox;
 	Checkbox interleaveResultsCheckBox;
 	Checkbox adjustSequencesCheckBox;
 	Checkbox appendQueryNameCheckBox;
@@ -230,7 +230,7 @@ public class TopBlastMatches extends MolecDataSearcher implements ItemListener {
 		if (getAlwaysImportDataIfPossible())
 			importTopMatches=true;
 		importCheckBox = dialog.addCheckBox("import top matches into matrix",importTopMatches);
-		readEntireContigCheckBox = dialog.addCheckBox("import entire contig into matrix",readEntireContig);
+		readPartialContigCheckBox = dialog.addCheckBox("import only partial contig into matrix",readPartialContig);
 		IntegerField flankingRegionSizeField = dialog.addIntegerField("Flanking region length if importing partial contig:",  flankingRegionSizeToRead,5,0,MesquiteInteger.infinite);
 		interleaveResultsCheckBox = dialog.addCheckBox("insert found sequence after query sequence that was BLASTed",interleaveResults);
 		blastTypeChoice = dialog.addPopUpMenu("BLAST type for nucleotides", Blaster.getBlastTypeNames(), blastType);
@@ -258,7 +258,7 @@ public class TopBlastMatches extends MolecDataSearcher implements ItemListener {
 			blastType = blastTypeChoice.getSelectedIndex();
 			if (blastType<0) blastType=oldBlastType;
 			importTopMatches = importCheckBox.getState();
-			readEntireContig = readEntireContigCheckBox.getState();
+			readPartialContig = readPartialContigCheckBox.getState();
 			interleaveResults = interleaveResultsCheckBox.getState();
 			adjustSequences = adjustSequencesCheckBox.getState();
 			flankingRegionSizeToRead = flankingRegionSizeField.getValue();
@@ -381,7 +381,7 @@ public class TopBlastMatches extends MolecDataSearcher implements ItemListener {
 			blastResultsArray = (BLASTResultsArray)object;
 			blastResults= blastResultsArray.getResults(passNumber);
 			blastResults.setFlankingRegionSizeToRead(flankingRegionSizeToRead);
-			blastResults.setReadEntireContig(readEntireContig);
+			blastResults.setReadPartialContig(readPartialContig);
 		}
 		else
 			return false;

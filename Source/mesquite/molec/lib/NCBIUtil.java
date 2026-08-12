@@ -773,7 +773,7 @@ public class NCBIUtil {
 				for (int it=itStart; it<=itEnd; it++) {
 				//	int startOfQueryInMatrix = data.firstApplicable(referenceTaxon);
 					int hitStartMatch = blastResults.getHitStartMatch(it-itStart); // that's the hit start that the response specifies.  But because it is reversed complemented, need to 
-					if (!blastResults.getReadEntireContig()) {  // need to adjust hit start match as it is now only relative to part read in - and that is the flanking region length
+					if (blastResults.getReadPartialContig()) {  // need to adjust hit start match as it is now only relative to part read in - and that is the flanking region length
 						int startChar = hitStartMatch- blastResults.getFlankingRegionSizeToRead();
 						if (startChar>=0) 
 							hitStartMatch=blastResults.getFlankingRegionSizeToRead();

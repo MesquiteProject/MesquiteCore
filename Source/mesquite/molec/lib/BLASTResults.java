@@ -32,7 +32,7 @@ public class BLASTResults {
 	protected String databaseName;
 
 	//the following specify whether to read in the whole sequences or only part of them, and the size of the flanking regions to read in
-	protected boolean readEntireContig= false;
+	protected boolean readPartialContig= true;
 
 	protected int flankingRegionSizeToRead = 2000;
 
@@ -178,11 +178,11 @@ public class BLASTResults {
 	public int getNumHits() {
 		return numHits;
 	}
-	public boolean getReadEntireContig() {
-		return readEntireContig;
+	public boolean getReadPartialContig() {
+		return readPartialContig;
 	}
-	public void setReadEntireContig(boolean readEntireContig) {
-		this.readEntireContig = readEntireContig;
+	public void setReadPartialContig(boolean readPartialContig) {
+		this.readPartialContig = readPartialContig;
 	}
 	public int getFlankingRegionSizeToRead() {
 		return flankingRegionSizeToRead;

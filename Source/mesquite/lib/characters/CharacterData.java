@@ -4570,7 +4570,7 @@ public abstract class CharacterData extends FileElement implements MesquiteListe
 			for (int ic=0; ic<getNumChars(); ic++) {
 				if (!isInapplicable(ic, row)){
 					int scrollChar = ic-scrollBuff;
-					if (scrollChar<0) scrollChar=0;
+					if (scrollChar<1) scrollChar=1;
 					table.scrollToColumn(scrollChar);
 					break;
 				}
@@ -4579,7 +4579,7 @@ public abstract class CharacterData extends FileElement implements MesquiteListe
 			for (int ic=getNumChars()-1; ic>=0; ic--) {
 				if (!isInapplicable(ic, row)){
 					int scrollChar = ic-scrollBuff;
-					if (scrollChar<0) scrollChar=0;
+					if (scrollChar<1) scrollChar=1;
 					table.scrollToColumn(scrollChar);
 					break;
 				}
