@@ -1292,6 +1292,18 @@ public class MesquiteDouble implements Listable, Nameable {
   		catch (NullPointerException e){}
   		return impossible;
 	}
+	
+	public static boolean isNumber(String str) {
+	    if (StringUtil.blank(str)) {
+	        return false;
+	    }
+	    try {
+	        Double.parseDouble(str);
+	        return true;
+	    } catch (NumberFormatException e) {
+	        return false;
+	    }
+	}
 	/** Returns whether a string can be interpreted as a double. */
 	public static boolean interpretableAsDouble(String s,  MesquiteInteger pos) {
 		int oldPos = pos.getValue();

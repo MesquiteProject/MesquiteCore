@@ -86,8 +86,8 @@ public class CombineFlippedFastas extends GeneralFileMakerMultiple {
 		return buffer.toString();
 	}
 
-	
-	
+
+
 	boolean introductoryOptions() {
 		MesquiteInteger buttonPressed = new MesquiteInteger(1);
 		ExtensibleDialog id = new ExtensibleDialog(containerOfModule(), "Combining Single-Taxon (Mulit-locus) FASTA files",buttonPressed);
@@ -123,11 +123,11 @@ public class CombineFlippedFastas extends GeneralFileMakerMultiple {
 		id.addBlankLine();
 		id.addHorizontalLine(1);
 		id.addBlankLine();
-	/*	id.addLargeOrSmallTextLabel("NOTE: If you choose to alter the locus names, some of the subsequent choices "
+		/*	id.addLargeOrSmallTextLabel("NOTE: If you choose to alter the locus names, some of the subsequent choices "
 				+"refer to \"taxon names\", but it's actually the locus names that are getting altered."
 				+" The reason for this misnaming is that Mesquite is set to interpret rows "
 				+"in a file as taxa, but in these single-taxon FASTA files, the rows are loci.");
-*/
+		 */
 		id.completeAndShowDialog(true);
 
 		if (buttonPressed.getValue()==0)  {
@@ -158,7 +158,7 @@ public class CombineFlippedFastas extends GeneralFileMakerMultiple {
 				replacementRule = CharacterData.MERGE_preferReceiving;
 			else if (v == 2)
 				replacementRule = CharacterData.MERGE_preferIncoming;
-			
+
 		}
 		id.dispose();
 	}
@@ -167,10 +167,10 @@ public class CombineFlippedFastas extends GeneralFileMakerMultiple {
 	public boolean okToInteractWithUser(int howImportant, String messageToUser){
 		return firstFile;
 	}/**/
-	
+
 	String[] acceptableFileExtensions = new String[]{".fas", ".fasta", ".fna"};
 	/*.................................................................................................................*/
-	
+
 	public String getAcceptableFileExtensions () {
 		String s="";
 		for (int i=0; i<acceptableFileExtensions.length; i++) {
@@ -182,19 +182,19 @@ public class CombineFlippedFastas extends GeneralFileMakerMultiple {
 
 	}
 	/*.................................................................................................................*/
-	
+
 	public boolean acceptableFileName (String fileName) {
 		for (int i=0; i<acceptableFileExtensions.length; i++)
 			if (StringUtil.endsWithIgnoreCase(fileName, acceptableFileExtensions[i]))
-					return true;
+				return true;
 		return false;
 	}
-	
+
 	boolean processRevCompUCEs = false; //$%$revComp
 	FastaHeaderProcessor fastaHeaderProcessor; //$%$revComp
 
 	/*.................................................................................................................*/
-	public void processDirectory(String directoryPath, MesquiteProject project){
+	public void processDirectory(String directoryPath, MesquiteProject project, boolean newProject){
 		if (StringUtil.blank(directoryPath) || project == null)
 			return;
 		Taxa taxa= null;
@@ -225,6 +225,8 @@ public class CombineFlippedFastas extends GeneralFileMakerMultiple {
 		overallTime.start();
 		if (directory!=null) {
 			if (directory.exists() && directory.isDirectory()) {
+				int origNumMatrices = project.getNumberCharMatrices();
+				boolean[] matrixChanged = new boolean[origNumMatrices];
 				getProject().setNotificationsOnOff(false);
 				getProject().getCentralModelListener().setNotificationsOnOff(false);
 				int countWarnings = 0;
@@ -309,11 +311,11 @@ public class CombineFlippedFastas extends GeneralFileMakerMultiple {
 
 
 								if (loci != null){
-									
+
 									if (processRevCompUCEs) {//$%$revComp
 										fastaHeaderProcessor = new FastaHeaderProcessor(loci.getNames());
 									}
-									
+
 									//First, alter the names of the loci if requested <<<<======= NEW 4.01 Altering the name of the loci
 									if (nameAlterer != null)
 										nameAlterer.alterTaxonNames(loci, null);
@@ -358,6 +360,11 @@ public class CombineFlippedFastas extends GeneralFileMakerMultiple {
 												else if (lociAdded%10 == 0)
 													log(".");
 											}
+											else {
+												int whichMatrix = project.getMatrixNumber(locusMatrix);
+												if (whichMatrix>=0)
+													matrixChanged[whichMatrix]= true;
+											}
 
 											/*Now we have either found or made a locus matrix for the locus. 
 											 * Next, pull sequence into locus matrix 
@@ -380,7 +387,7 @@ public class CombineFlippedFastas extends GeneralFileMakerMultiple {
 														duplicateLocusNamesOptions();
 														replacementQueried = true;
 													}
-													
+
 													if (replacementRule == CharacterData.MERGE_preferReceiving) {
 														doTransfer = existingSeqLeng == 0 && incomingSeqLeng > 0;
 													}
@@ -453,6 +460,16 @@ public class CombineFlippedFastas extends GeneralFileMakerMultiple {
 				getProject().getCentralModelListener().setNotificationsOnOff(true);
 				if (!taxaNew)
 					taxa.notifyListeners(this, new Notification(MesquiteListener.PARTS_ADDED));
+				if (!newProject){
+					ListableVector datas = getProject().getCharacterMatrices();
+					if (origNumMatrices != project.getNumberCharMatrices()){
+						datas.notifyListeners(this, new Notification(MesquiteListener.PARTS_ADDED));
+					}
+					for (int i = 0; i<origNumMatrices; i++){
+						if (matrixChanged[i])
+							((CharacterData)datas.elementAt(i)).notifyListeners(this,  new Notification(MesquiteListener.DATA_CHANGED));
+					}
+				}
 			}
 		}
 		decrementNEXUSBlockSortSuppression();
@@ -484,7 +501,7 @@ public class CombineFlippedFastas extends GeneralFileMakerMultiple {
 			proj.getHomeFile().setFileName(fileSuggestion);
 			if (proj.getHomeFile().changeLocation("Save imported file as NEXUS file")) {
 				logln("Processing single-taxon FASTA files in directory " + directoryPath);
-				processDirectory(directoryPath, proj);
+				processDirectory(directoryPath, proj, true);
 				MesquiteWindow w = fileCoord.getModuleWindow();
 				if (w != null) {
 					w.setWindowSize(300, 300);  //so it has a decent window size if the user doesn't save again
@@ -561,8 +578,8 @@ class FastaHeaderProcessor {//$%$revComp
 			processRevCompInfo();
 		}
 	}
-	
-	
+
+
 	void processRevCompInfo () { 
 		for (int it=0; it<headers.length; it++) {
 			String locusName = headers[it];

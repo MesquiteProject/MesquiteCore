@@ -5523,6 +5523,7 @@ class MatrixTable extends mesquite.lib.table.CMTable implements MesquiteDroppedF
 				if (isCellSelected(i, j) || isRowSelected(j) || isColumnSelected(i)) {
 					data.setState(i, j, cs);
 					// returnedMatrixText(i,j,"?");
+
 					changed = true;
 				}
 			}

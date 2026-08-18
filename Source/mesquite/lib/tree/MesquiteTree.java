@@ -3336,8 +3336,9 @@ public class MesquiteTree extends Associable implements AdjustableTree, Listable
 		}
 		else {
 			int taxon = taxa.whichTaxonNumber(c, false, permitTruncTaxNames && !permitTaxaBlockEnlargement);
-
-			if (taxon>=0){
+			boolean isNumber = MesquiteDouble.isNumber(c);
+			
+			if (!isNumber && taxon>=0){  //as of 4.04, doesn't warn if number. Assumes it's bootstrap or such.
 				System.out.println("Observed taxon " + c + " (" + taxa.getTaxonName(taxon) + ") in ancestral position; not yet allowed by Mesquite.  Tree will not be read in properly. ");
 			}
 

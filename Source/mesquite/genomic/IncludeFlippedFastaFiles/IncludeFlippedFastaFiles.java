@@ -32,7 +32,7 @@ public class IncludeFlippedFastaFiles extends FileAssistantFM {
 		if (importerTask == null)
 			return false;
 		//importerTask.queryReplacementRules = true;
-		importerTask.processDirectory(directoryPath, getProject());
+		importerTask.processDirectory(directoryPath, getProject(), false);
 		iQuit();
 		return true;
 	}
