@@ -119,6 +119,7 @@ public class TraceCharacterOperator extends TreeDisplayDrawnExtra implements Cha
 			if (doPreps) {
 				traceModule.prepareHistory(myTree);
 			}
+
 			if (traceLegend==null  && traceModule.showLegend.getValue()) {
 				traceLegend = new TraceLegend(traceModule, this);
 				traceLegend.adjustScroll(traceModule.getNumberCurrentHistory(), traceModule.getNumberOfHistories(myTree)); 

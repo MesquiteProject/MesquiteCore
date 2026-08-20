@@ -74,6 +74,7 @@ public class StoredMatrices extends CharMatrixSource implements MesquiteListener
 			if (getHiredAs() != (CharMatrixObedSource.class)) {	//not hired as a obedient source 
 				mss = addSubmenu(null, "Stored Matrix " + sPurpose, makeCommand("setDataSet",  this), (ListableVector)getProject().datas); 
 				mss.setSelected(dataName);
+				mss.autoShowChoose = true;
 				setDataClass(dataClass);
 			}
 			return true;
@@ -85,6 +86,7 @@ public class StoredMatrices extends CharMatrixSource implements MesquiteListener
 			dataName = new MesquiteString();
 			if (getHiredAs() != (CharMatrixObedSource.class)) {	//not hired as a obedient source  
 				mss = addSubmenu(null, "Stored Matrix " + sPurpose, makeCommand("setDataSet",  this), (ListableVector)getProject().datas);
+				mss.autoShowChoose = true;
 				mss.setSelected(dataName);
 			}
 		}
@@ -216,9 +218,17 @@ public class StoredMatrices extends CharMatrixSource implements MesquiteListener
 		/*.................................................................................................................*/
 		public Object doCommand(String commandName, String arguments, CommandChecker checker) {
 			if (checker.compare(this.getClass(), "Sets which stored data matrix to use", "[matrix reference]", commandName, "setDataSet")) { 
-				CharacterData d = getProject().getCharacterMatrixByReference(checker.getFile(), taxa, dataClass, parser.getFirstToken(arguments), true);  //31 jul '10 added true for visible only
+				String dataReference = parser.getFirstToken(arguments);
+				CharacterData d = null;
+				if (StringUtil.blank(dataReference) && !MesquiteThread.isScripting()){
+					d = getProject().chooseData(containerOfModule(), taxa, dataClass, "Choose matrix");
+					if (d == null)
+						return null;
+				}
+				else
+					d = getProject().getCharacterMatrixByReference(checker.getFile(), taxa, dataClass, dataReference, true);  //31 jul '10 added true for visible only
 				if (d == null)
-					d = getProject().getCharacterMatrixByReference(checker.getFile(), taxa, dataClass, parser.getFirstToken(arguments));
+					d = getProject().getCharacterMatrixByReference(checker.getFile(), taxa, dataClass, dataReference);
 				if (d==null && CommandRecord.macro()){ //macro; at this point ask for user to choose
 					int which = queryUser(taxa);
 					if (MesquiteInteger.isCombinable(which)) {

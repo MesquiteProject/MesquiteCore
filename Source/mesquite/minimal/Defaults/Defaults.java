@@ -36,6 +36,7 @@ import mesquite.lib.duties.CharacterSource;
 import mesquite.lib.duties.DefaultsAssistant;
 import mesquite.lib.duties.FileCoordinator;
 import mesquite.lib.duties.MesquiteInit;
+import mesquite.lib.table.MesquiteTable;
 import mesquite.lib.tree.MesquiteTree;
 import mesquite.lib.tree.TreeDisplay;
 import mesquite.lib.ui.ColorTheme;
@@ -143,6 +144,7 @@ public class Defaults extends MesquiteInit  {
 		MesquiteTrunk.mesquiteTrunk.addCheckMenuItemToSubmenu(MesquiteTrunk.fileMenu, MesquiteTrunk.defaultsSubmenu,"Use File-Specific Project Panel Width", makeCommand("respectFileSpecificResourceWidth",  this), respectFileSpecificResourceWidth);
 		MesquiteTrunk.mesquiteTrunk.addCheckMenuItemToSubmenu(MesquiteTrunk.fileMenu, MesquiteTrunk.defaultsSubmenu,"Permit Inverted Highlights (XORMode)", makeCommand("toggleXORMode",  this), permitXOR);
 		MesquiteTrunk.mesquiteTrunk.addCheckMenuItemToSubmenu(MesquiteTrunk.fileMenu, MesquiteTrunk.defaultsSubmenu,"Thread-protect Graphics", makeCommand("protectGraphics",  this), protectGraphics);
+		MesquiteTrunk.mesquiteTrunk.addItemToSubmenu(MesquiteTrunk.fileMenu, MesquiteTrunk.defaultsSubmenu, "Mouse Wheel Sensitivity with Tables...", makeCommand("setMouseWheelInsensitivity",  this));
 		MesquiteTrunk.mesquiteTrunk.addCheckMenuItemToSubmenu(MesquiteTrunk.fileMenu, MesquiteTrunk.defaultsSubmenu, "Ask for Random Number Seeds", makeCommand("toggleAskSeed",  this), askSeed);
 		MesquiteTrunk.mesquiteTrunk.addCheckMenuItemToSubmenu(MesquiteTrunk.fileMenu, MesquiteTrunk.defaultsSubmenu, "Count Steps in Polymorphisms with Unord/Ord Parsimony", makeCommand("toggleCountStepsInTermPolymorphisms",  this), ParsAncStatesForModel.countStepsInTermPolymorphisms);
 		MesquiteTrunk.mesquiteTrunk.addCheckMenuItemToSubmenu(MesquiteTrunk.fileMenu, MesquiteTrunk.defaultsSubmenu, "Permit Partial Names in Tree Reading", makeCommand("togglePartNamesTrees",  this), taxonTruncTrees);
@@ -331,6 +333,11 @@ public class Defaults extends MesquiteInit  {
 			if (MesquiteInteger.isCombinable(defFontSize)) 
 				MesquiteFrame.resourcesFontSize = defFontSize;
 		}
+		else if ("mouseWheelInsensitivity".equalsIgnoreCase(tag)) {
+			int ins = MesquiteInteger.fromString(content);
+			if (MesquiteInteger.isCombinable(ins)) 
+				MesquiteTable.mouseWheelInsensitivity = ins;
+		}
 	//	else if ("suggestedDirectory".equalsIgnoreCase(tag)){
 	//		MesquiteTrunk.setSuggestedDirectory(StringUtil.cleanXMLEscapeCharacters(content));
 	//	}
@@ -374,6 +381,7 @@ public class Defaults extends MesquiteInit  {
 		StringUtil.appendXMLTag(buffer, 2, "storedAsDefault", CharacterSource.storedAsDefault);   
 		StringUtil.appendXMLTag(buffer, 2, "closeIfMatrixDeleted", CharacterSource.closeIfMatrixDeleted);   
 		StringUtil.appendXMLTag(buffer, 2, "recordMatrixEdits", recordMatrixEdits);   
+		StringUtil.appendXMLTag(buffer, 2, "mouseWheelInsensitivity", MesquiteTable.mouseWheelInsensitivity);   
 	//StringUtil.appendXMLTag(buffer, 2, "closeIfTreeBlockDeleted", TreeSource.closeIfTreeBlockDeleted);   
 		return buffer.toString();
 	}
@@ -528,6 +536,18 @@ public class Defaults extends MesquiteInit  {
 			if (!MesquiteInteger.isCombinable(delay) || delay == ShellScriptUtil.recoveryDelay)
 				return null;
 			ShellScriptUtil.recoveryDelay = delay;
+			MesquiteTrunk.mesquiteTrunk.storePreferences();
+
+		}
+		else if (checker.compare(getClass(), "Sets the insensitivity in responding to the movement of the mouse wheel", "", commandName, "setMouseWheelInsensitivity")) {
+			int delay = MesquiteInteger.fromString(arguments);
+			String helpString = "For some mice, especially Magic Mice on macOS, movements of the wheel can lead to cursor movement that is too quick with tables." +
+			" Enter 0 to indicate full sensitivity; 1 to move half as much, 2 to move 1/3 as much, 3 to move 1/4 as much, and so on.";
+			if (!MesquiteInteger.isCombinable(delay))
+				delay = MesquiteInteger.queryInteger(containerOfModule(), "Insensitivity", "Insensitivity of mouse wheel (0 = sensitive, default)", "", helpString, MesquiteTable.mouseWheelInsensitivity, 0, 100);
+			if (!MesquiteInteger.isCombinable(delay) || delay == MesquiteTable.mouseWheelInsensitivity)
+				return null;
+			MesquiteTable.mouseWheelInsensitivity = delay;
 			MesquiteTrunk.mesquiteTrunk.storePreferences();
 
 		}

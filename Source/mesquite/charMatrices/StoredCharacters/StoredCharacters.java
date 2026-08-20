@@ -35,6 +35,7 @@ import mesquite.lib.MesquiteThread;
 import mesquite.lib.Notification;
 import mesquite.lib.Selectionable;
 import mesquite.lib.Snapshot;
+import mesquite.lib.StringUtil;
 import mesquite.lib.characters.CharInclusionSet;
 import mesquite.lib.characters.CharacterData;
 import mesquite.lib.characters.CharacterDistribution;
@@ -46,6 +47,7 @@ import mesquite.lib.duties.CharacterSource;
 import mesquite.lib.taxa.Taxa;
 import mesquite.lib.ui.ListDialog;
 import mesquite.lib.ui.MesquiteSubmenuSpec;
+import mesquite.lib.ui.MesquiteWindow;
 
 /** Supplies characters from character matrices stored in the project.*/
 public class StoredCharacters extends CharacterSource implements MesquiteListener, Selectionable {
@@ -65,6 +67,7 @@ public class StoredCharacters extends CharacterSource implements MesquiteListene
 	public boolean startJob(String arguments, Object condition, boolean hiredByName) { 
 		dataName = new MesquiteString();
 		mss = addSubmenu(null, "Stored Matrix", makeCommand("setDataSet",  this), (ListableVector)getProject().datas);
+		mss.autoShowChoose = true;
 		mss.setSelected(dataName);
 		//can leave a hint in terms of an id of a matrix to use
 		String whichBlock = MesquiteThread.retrieveAndDeleteHint(this);
@@ -134,7 +137,14 @@ public class StoredCharacters extends CharacterSource implements MesquiteListene
 	public Object doCommand(String commandName, String arguments, CommandChecker checker) {
 		if (checker.compare(this.getClass(), "Sets which stored data matrix to use", "[matrix reference]", commandName, "setDataSet")) { //list doesn't filter by taxa but this does!!
 			String dataReference =parser.getFirstToken(arguments);
-			CharacterData d = getProject().getCharacterMatrixByReference(checker.getFile(), taxa, dataClass, dataReference, true);
+			CharacterData d = null;
+			if (StringUtil.blank(dataReference) && !MesquiteThread.isScripting()){
+				d = getProject().chooseData(containerOfModule(), taxa, dataClass, "Choose matrix");
+				if (d == null)
+					return null;
+			}
+			else
+				d = getProject().getCharacterMatrixByReference(checker.getFile(), taxa, dataClass, dataReference, true);
 			if (d == null)
 				d = getProject().getCharacterMatrixByReference(checker.getFile(), taxa, dataClass, dataReference);
 			if (d==null && CommandRecord.macro()){ //macro; at this point ask for user to choose

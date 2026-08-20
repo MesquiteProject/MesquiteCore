@@ -1743,7 +1743,7 @@ public abstract class MenuOwner implements Doomable { // EMBEDDED: extends Apple
 			return 0;
 		Enumeration e = mmi.getListableVector().elements();
 		int count = currentCount;
-		while (count++ < 128 && e.hasMoreElements()) {
+		while (count++ < maxListSubmenuItemCount && e.hasMoreElements()) {
 			Object obj = e.nextElement();
 			if (obj instanceof Listened && !((Listened) obj).isUserVisible()) {
 			} else if (!considerPriorities
@@ -1823,7 +1823,7 @@ public abstract class MenuOwner implements Doomable { // EMBEDDED: extends Apple
 			//	int count = 0;
 
 			while ((mbi = getNextCompatibleModuleOfDuty(mbi, mmi)) != null) {
-				/*		while (count++ < 128 && (mbi = MesquiteTrunk.mesquiteModulesInfoVector.findNextModule(mmi.getDutyClass(),
+				/*		while (count++ < maxListSubmenuItemCount && (mbi = MesquiteTrunk.mesquiteModulesInfoVector.findNextModule(mmi.getDutyClass(),
 					mbi)) != null) {
 				if (moduleIsCompatible(mmi, mbi) && mbi.getUserChooseable()
 					&& (mmi.getChoicePrimarySecondary()==0 || (mmi.getChoicePrimarySecondary() == 1 && mbi.primaryChoiceRequested()) || (mmi.getChoicePrimarySecondary() == -1 && !mbi.primaryChoiceRequested()))){
@@ -1858,7 +1858,7 @@ public abstract class MenuOwner implements Doomable { // EMBEDDED: extends Apple
 						int countPrimary2 = 0;
 						int countOthers2 = 0;
 						if (EmployerEmployee.useOtherChoices)
-							while (count2++ < 128
+							while (count2++ < maxListSubmenuItemCount
 									&& (smbi = MesquiteTrunk.mesquiteModulesInfoVector.findNextModuleFilteredByNot(
 											mbi.getHireSubchoice(), mbi.getDontHireSubchoice(), smbi)) != null) {
 								if (!smbi.getUserChooseable())
@@ -1875,7 +1875,7 @@ public abstract class MenuOwner implements Doomable { // EMBEDDED: extends Apple
 						smbi = null;
 						countOthers2 = 0;
 						count2 = 0;
-						while (count2++ < 128
+						while (count2++ < maxListSubmenuItemCount
 								&& (smbi = MesquiteTrunk.mesquiteModulesInfoVector.findNextModuleFilteredByNot(
 										mbi.getHireSubchoice(), mbi.getDontHireSubchoice(), smbi)) != null) {
 							int hiddenStatus2 = 0;
@@ -2005,7 +2005,7 @@ public abstract class MenuOwner implements Doomable { // EMBEDDED: extends Apple
 		return (mmi.getListableFilter() == null || mmi.getListableFilter().isAssignableFrom(mbi.getModuleClass())
 				|| ((CompatibilityChecker) mbi).isCompatible(mmi.getListableFilter(), null, null));
 	}
-
+	static final int maxListSubmenuItemCount = 64;
 	/*............................................................................. */
 	int fillSubmenuWithListable(int currentCount, Menu menu, MesquiteSubmenu submenu, MesquiteSubmenuSpec msms,
 			Object ccc, QualificationsTest qualificationsTest, MesquiteInteger j, int priorityLevel) {
@@ -2013,7 +2013,8 @@ public abstract class MenuOwner implements Doomable { // EMBEDDED: extends Apple
 			return 0;
 		Enumeration e = msms.getListableVector().elements();
 		int count = currentCount;
-		while (count++ < 128 && e.hasMoreElements()) {
+		int startingPlace = submenu.getItemCount();
+		while (count++ < maxListSubmenuItemCount && e.hasMoreElements()) {
 			Object obj = e.nextElement();
 
 			if (obj instanceof Listened && !((Listened) obj).isUserVisible()) {
@@ -2092,6 +2093,17 @@ public abstract class MenuOwner implements Doomable { // EMBEDDED: extends Apple
 
 			}
 		}
+		if (count>= maxListSubmenuItemCount){
+			if (msms.autoShowChoose && count>= maxListSubmenuItemCount){
+			MesquiteMenuItem m = new MesquiteMenuItem("Choose...", null , msms.command, null);
+			submenu.insert(m, startingPlace);
+			m = new MesquiteMenuItem("-", null , null, null);
+			submenu.insert(m, startingPlace+1);
+			}
+			MesquiteMenuItem m = new MesquiteMenuItem("[Too many items to show all]", null , msms.command, null);
+			submenu.add(m);
+			
+		}
 		return count;
 	}
 
@@ -2121,7 +2133,7 @@ public abstract class MenuOwner implements Doomable { // EMBEDDED: extends Apple
 			// "Other Choice..." system.
 			// if (EmployerEmployee.useOtherChoices)
 			while ((mbi = getNextCompatibleModuleOfDuty(mbi, msms)) != null) {
-				/*			while (count++ < 128 && (mbi = MesquiteTrunk.mesquiteModulesInfoVector.findNextModule(msms.getDutyClass(),
+				/*			while (count++ < maxListSubmenuItemCount && (mbi = MesquiteTrunk.mesquiteModulesInfoVector.findNextModule(msms.getDutyClass(),
 					mbi)) != null) {
 				if (moduleIsCompatible(msms, mbi)
 						&& (msms.getChoicePrimarySecondary()==0 || (msms.getChoicePrimarySecondary() == 1 && mbi.primaryChoiceRequested()) || (msms.getChoicePrimarySecondary() == -1 && !mbi.primaryChoiceRequested()))) {
@@ -2143,7 +2155,7 @@ public abstract class MenuOwner implements Doomable { // EMBEDDED: extends Apple
 			countOthers = 0;
 			count = 0;
 			while ((mbi = getNextCompatibleModuleOfDuty(mbi, msms)) != null) {
-				/*while (count++ < 128 && (mbi = MesquiteTrunk.mesquiteModulesInfoVector.findNextModule(msms.getDutyClass(),
+				/*while (count++ < maxListSubmenuItemCount && (mbi = MesquiteTrunk.mesquiteModulesInfoVector.findNextModule(msms.getDutyClass(),
 					mbi)) != null) {
 				if (moduleIsCompatible(msms, mbi)
 						&& (msms.getChoicePrimarySecondary()==0 || (msms.getChoicePrimarySecondary() == 1 && mbi.primaryChoiceRequested()) || (msms.getChoicePrimarySecondary() == -1 && !mbi.primaryChoiceRequested()))) {
@@ -2208,7 +2220,7 @@ public abstract class MenuOwner implements Doomable { // EMBEDDED: extends Apple
 					zeroArray(secondaryItems2);
 					int countItems2 = 0;
 					// if (EmployerEmployee.useOtherChoices)
-					while (count2++ < 128
+					while (count2++ < maxListSubmenuItemCount
 							&& (smbi = MesquiteTrunk.mesquiteModulesInfoVector.findNextModuleFilteredByNot(
 									mbi.getHireSubchoice(), mbi.getDontHireSubchoice(), smbi)) != null) {
 						if (!smbi.getUserChooseable())
@@ -2225,7 +2237,7 @@ public abstract class MenuOwner implements Doomable { // EMBEDDED: extends Apple
 					smbi = null;
 					countOthers2 = 0;
 					count2 = 0;
-					while (count2++ < 128
+					while (count2++ < maxListSubmenuItemCount
 							&& (smbi = MesquiteTrunk.mesquiteModulesInfoVector.findNextModuleFilteredByNot(
 									mbi.getHireSubchoice(), mbi.getDontHireSubchoice(), smbi)) != null) {
 						boolean primary2 = smbi.isPrimary(mbi.getHireSubchoice());
@@ -2579,7 +2591,7 @@ public abstract class MenuOwner implements Doomable { // EMBEDDED: extends Apple
 		Enumeration enumeration = proj.getFiles().elements();
 		MesquiteFile fi;
 		int count = 0;
-		while (count++ < 128 && enumeration.hasMoreElements()) {
+		while (count++ < maxListSubmenuItemCount && enumeration.hasMoreElements()) {
 			Object obj = enumeration.nextElement();
 			if (obj instanceof MesquiteFile) {
 				fi = (MesquiteFile) obj;

@@ -122,7 +122,7 @@ public class NameParser implements XMLPreferencesProcessor, ItemListener, TextLi
 		dialog.addHorizontalLine(1);
 
 		considerEndField = dialog.addCheckBox(iEPhrase(true) + " pieces from end of "+ objectName + " name", considerEnd);
-		numEndField = dialog.addIntegerField("Number of pieces to " + iEPhrase(false) + " from the end:", numFromStart, 3);
+		numEndField = dialog.addIntegerField("Number of pieces to " + iEPhrase(false) + " from the end:", numFromEnd, 3);
 		endBoundaryField = dialog.addTextField("String separating pieces at end:", endBoundary, 8, true);
 		includeEndBoundaryInNameField = dialog.addCheckBox("Include first delimiter", includeEndBoundaryInName);
 

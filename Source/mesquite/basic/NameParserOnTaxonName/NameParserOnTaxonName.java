@@ -14,6 +14,7 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
 package mesquite.basic.NameParserOnTaxonName;
 
 import mesquite.lib.CommandChecker;
+import mesquite.lib.Debugg;
 import mesquite.lib.MesquiteFile;
 import mesquite.lib.MesquiteModule;
 import mesquite.lib.MesquiteThread;
