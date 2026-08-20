@@ -40,8 +40,10 @@ import mesquite.lib.tree.AdjustableTree;
 import mesquite.lib.tree.MesquiteTree;
 import mesquite.lib.tree.Tree;
 import mesquite.lib.tree.TreeVector;
+import mesquite.lib.ui.MesquiteMenuSpec;
 import mesquite.lib.ui.MesquiteSubmenuSpec;
 import mesquite.lib.ui.MesquiteWindow;
+import mesquite.lists.lib.CharMatricesListUtility;
 import mesquite.lists.lib.ListLVModule;
 import mesquite.lists.lib.ListWindow;
 import mesquite.lists.lib.ListableVectorWindow;
@@ -145,8 +147,12 @@ public class TreesList extends ListLVModule {
 		listSubmenu = addSubmenu(null, "Tree Block", makeCommand("setTreeBlockInt",  this), manager.getTreeBlockVector());
 		listSubmenu.setCompatibilityCheck(taxa);
 
-		MesquiteSubmenuSpec mss2 = addSubmenu(null, "Utilities", MesquiteModule.makeCommand("doUtility",  this));
-		mss2.setList(TreeListUtility.class);
+		MesquiteMenuSpec mss2sm = addAuxiliaryMenu("Utilities");
+		addModuleMenuItems(mss2sm, makeCommand("doUtility", this), TreeListUtility.class);
+
+		
+	//	MesquiteSubmenuSpec mss2 = addSubmenu(null, "Utilities", MesquiteModule.makeCommand("doUtility",  this));
+	//	mss2.setList(TreeListUtility.class);
 		MesquiteSubmenuSpec mss3 = addSubmenu(null, "Tree Names", MesquiteModule.makeCommand("doNames",  this));
 		mss3.setList(ListableNameAlterer.class);
 	//addMenuItem( "Save selected set...", makeCommand("saveSelectedRows", this));

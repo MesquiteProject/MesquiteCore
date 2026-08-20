@@ -631,7 +631,7 @@ class BasicDataWindow extends TableWindow implements MesquiteListener {
 		ownerModule.addCheckMenuItem(ownerModule.displayMenu, "Show Changes Since Saved", MesquiteModule.makeCommand("toggleShowChanges", this), table.showChanges);
 		if (data instanceof CategoricalData && !(data instanceof DNAData) && !(data instanceof ProteinData))
 			ownerModule.addCheckMenuItem(ownerModule.displayMenu, "Lined States Explanation", MesquiteModule.makeCommand("toggleSeparateLines", this), table.statesSeparateLines);
-		linkedScrollingItem = ownerModule.addCheckMenuItem(ownerModule.displayMenu, "Linked Scrolling", MesquiteModule.makeCommand("toggleLinkedScrolling", this), linkedScrolling);
+		linkedScrollingItem = ownerModule.addCheckMenuItem(ownerModule.displayMenu, "Link Scrolling with Other Editors of Matrix", MesquiteModule.makeCommand("toggleLinkedScrolling", this), linkedScrolling);
 		linkedScrollingItem.setEnabled(false);
 
 
