@@ -112,7 +112,7 @@ public class ManageTrees extends TreesManager implements ItemListener {
 	boolean fillingTreesNow = false;
 	MesquiteBoolean separateThreadFill; 
 	MesquiteBoolean autoSaveInference ;
-	//todo: have a single TreeBlockFiller employee belong to the module causes re-entrancy problems, if several long searches are on separate threads.
+	//todo: have a single TreeBlockFiller employee belong to the module causes re-entrancy problems, if several long searches are on sxeparate threads.
 	//The searches themselves should work fine, but there is a possibility of user-interface confuses.
 
 	boolean showTreeFiller = false; //adds menu item that can be used to set default tree filler; an aid in writing scripts, for then the tree filler snapshot is put into files
@@ -876,8 +876,10 @@ public class ManageTrees extends TreesManager implements ItemListener {
 
 			int separateThread = 0;
 			MesquiteBoolean autoSave = new MesquiteBoolean(false);
-			if (!MesquiteThread.isScripting() && treeFillerTask.permitSeparateThreadWhenFilling())
-				separateThread= separateThreadQuery("Fill tree block", autoSave, false);
+			// As of 4.04, separate thread option eliminated.
+			
+			//if (!MesquiteThread.isScripting() && treeFillerTask.permitSeparateThreadWhenFilling())
+			//	separateThread= separateThreadQuery("Fill tree block", autoSave, false);
 			if (separateThread==1) {  //separateThread
 				fillingTreesNow = true;
 				TreeBlockThread tLT = new TreeBlockThread(this, treeFillerTask, trees, howManyTrees, autoSave, file);
@@ -1075,8 +1077,12 @@ public class ManageTrees extends TreesManager implements ItemListener {
 		}
 		int separateThread = 0;
 		MesquiteBoolean autoSave = new MesquiteBoolean(false);
-		if (!MesquiteThread.isScripting() && treeFillerTask.permitSeparateThreadWhenFilling())
-			separateThread= separateThreadQuery(taskName, autoSave, isInference);
+		//as of 4.04, separate thread option eliminated
+		
+		if (!MesquiteThread.isScripting() && isInference)
+			autoSave.setValue(AlertDialog.query(containerOfModule(), "Auto-save?", "Auto-save file after inference?"));
+		//if (!MesquiteThread.isScripting() && treeFillerTask.permitSeparateThreadWhenFilling())
+		//	separateThread= separateThreadQuery(taskName, autoSave, isInference);
 		if (separateThread==1) {   // separate
 			fillingTreesNow = true;
 			TreeBlockThread tLT = new TreeBlockThread(this, treeFillerTask, trees, howManyTrees, autoSave, file);
@@ -1144,8 +1150,9 @@ public class ManageTrees extends TreesManager implements ItemListener {
 		else
 			howManyTrees = treeSourceTask.getNumberOfTrees(taxa);
 		int separateThread = 0; 
-		if (!MesquiteThread.isScripting() && treeSourceTask.permitSeparateThreadWhenFilling())
-			separateThread= AlertDialog.query(containerOfModule(), "Separate Thread?", "Save tree file on separate thread? (Beware! If you use a separate thread, be careful not to reorder, delete, add or rename taxa while this calculation is in progress)","No", "Separate", "Cancel", 0, null);
+		//4.04 eliminate separate thread options. Simply annoying.
+		//if (!MesquiteThread.isScripting() && treeSourceTask.permitSeparateThreadWhenFilling())
+		//	separateThread= AlertDialog.query(containerOfModule(), "Sxeparate Thread?", "Save tree file on sxeparate thread? (Beware! If you use a separate thread, be careful not to reorder, delete, add or rename taxa while this calculation is in progress)","No", "Separate", "Cancel", 0, null);
 		MainThread.incrementSuppressWaitWindow();
 		MesquiteFileDialog fdlg= new MesquiteFileDialog(MesquiteTrunk.mesquiteTrunk.containerOfModule(), "File in which to Save Trees", FileDialog.SAVE);   // Save File dialog box
 		fdlg.setVisible(true);
