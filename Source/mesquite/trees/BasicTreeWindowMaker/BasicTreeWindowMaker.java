@@ -1216,7 +1216,7 @@ class BasicTreeWindow extends MesquiteWindow implements Fittable, MesquiteListen
 	boolean baseExplanationUsed = false;
 	boolean treeAnnotationShown = false;
 	MesquiteMenuItemSpec storeTreeMenuItem, storeTreeAsMenuItem, storeTreeAsOtherMenuItem, recoverEditedMenuItem;
-	MesquiteMenuItemSpec saveTreeAsPDFMenuItem;
+	MesquiteMenuItemSpec saveTreeAsPDFMenuItem, selectTreeInBlockMenuItem;
 	MesquiteMenuItemSpec floatLegendsItem;
 	int oldH = 0;
 	int oldV = 0;
@@ -1252,6 +1252,7 @@ class BasicTreeWindow extends MesquiteWindow implements Fittable, MesquiteListen
 		storeTreeMenuItem = ownerModule.addMenuItem("Store Tree", ownerModule.makeCommand("storeTree", this));
 		storeTreeAsMenuItem = ownerModule.addMenuItem("Store Tree As...", ownerModule.makeCommand("storeTreeAs", this));
 		storeTreeAsOtherMenuItem = ownerModule.addMenuItem("Store Tree In Tree Block As...", ownerModule.makeCommand("storeTreeAsOther", this));
+		selectTreeInBlockMenuItem = ownerModule.addMenuItem("Select Tree In Tree Block", ownerModule.makeCommand("selectTreeInBlock", this));
 
 		ownerModule.addMenuSeparator();
 		saveTreeAsPDFMenuItem = ownerModule.addMenuItem("Save Tree as PDF...", ownerModule.makeCommand("saveTreeAsPDF", this));
@@ -3019,6 +3020,17 @@ class BasicTreeWindow extends MesquiteWindow implements Fittable, MesquiteListen
 			}
 			return originalTree;
 		}
+		else if (checker.compare(this.getClass(), "Selects the current tree in its tree block, if the source is stored trees and the current tree isn't edited", null, commandName, "selectTreeInBlock")) {
+			if (!treeEdited && treeSourceTask instanceof TreeVectorHolder) {
+				TreeVector trees = ((TreeVectorHolder)treeSourceTask).getCurrentTreeVector(taxa);
+				int index = trees.indexOf(originalTree);
+				if (index>=0){
+					trees.setSelected(index, true);
+					trees.notifyListeners(this, new Notification(MesquiteListener.SELECTION_CHANGED));
+				}
+			}
+			return null;
+		}
 		else if (checker.compare(this.getClass(), "Saves tree as PDF.", null, commandName, "saveTreeAsPDF")) {
 			pdfWindow(MesquitePrintJob.AUTOFIT);
 		}
@@ -3730,6 +3742,8 @@ class BasicTreeWindow extends MesquiteWindow implements Fittable, MesquiteListen
 		dropHighlightedBranch.setValue(0);
 		branchFrom = 0;
 		storeTreeMenuItem.setEnabled(!treeSourceLocked());
+		selectTreeInBlockMenuItem.setEnabled(false);
+		
 		MesquiteTrunk.resetMenuItemEnabling();
 		checkPanelPositionsLegal();
 		resetBaseExplanation();
@@ -3814,6 +3828,8 @@ class BasicTreeWindow extends MesquiteWindow implements Fittable, MesquiteListen
 
 		// resetLockImage();
 		storeTreeMenuItem.setEnabled(!treeSourceLocked());
+		selectTreeInBlockMenuItem.setEnabled(!treeEdited && treeSourceTask instanceof TreeVectorHolder);
+
 		MesquiteTrunk.resetMenuItemEnabling();
 		treeAnnotationShown = true;
 		resetBaseExplanation();

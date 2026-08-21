@@ -3839,6 +3839,9 @@ class MatrixTable extends mesquite.lib.table.CMTable implements MesquiteDroppedF
 
 	/* ................................................................................................................. */
 	String molecToken(StringBuffer sb, boolean wholeEvenIfNoTab) {
+	/*	if (sb.indexOf("&")>=0) //possibly ask if !whileEvenIfNoTab
+			Debugg.println("here"); //put breakpoint here to catch it
+	*/		
 		if (sb.indexOf("\t") >= 0) {
 			String result = sb.substring(0, sb.indexOf("\t"));
 			sb.delete(0, sb.indexOf("\t") + 1);
