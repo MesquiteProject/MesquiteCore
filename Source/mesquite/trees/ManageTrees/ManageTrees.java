@@ -345,6 +345,7 @@ public class ManageTrees extends TreesManager implements ItemListener {
 		checkTreesVector();
 		MesquiteSubmenuSpec mmis = getFileCoordinator().addSubmenu(MesquiteTrunk.treesMenu, "List of Trees", makeCommand("showTrees",  this), treesVector); 
 		mmis.setBehaviorIfNoChoice(MesquiteSubmenuSpec.ONEMENUITEM_ZERODISABLE);
+		mmis.autoShowChoose = true;
 		getFileCoordinator().addMenuItem(MesquiteTrunk.treesMenu, "List of Tree Blocks", makeCommand("showTreeBlocks",  this));
 		getFileCoordinator().addMenuItem(MesquiteTrunk.treesMenu, "Delete Tree Blocks...", makeCommand("deleteTreeBlocks",  this));
 		getFileCoordinator().addMenuItem(MesquiteTrunk.treesMenu, "New Empty Block of Trees...", makeCommand("newTreeBlock",  this));
@@ -356,8 +357,9 @@ public class ManageTrees extends TreesManager implements ItemListener {
 		getFileCoordinator().addItemToSubmenu(MesquiteTrunk.treesMenu, mss, "Include Contents...", makeCommand("includeTreeFile",  this));
 		getFileCoordinator().addItemToSubmenu(MesquiteTrunk.treesMenu, mss, "Include Partial Contents...", makeCommand("includePartialTreeFile",  this));
 		 */
-		MesquiteSubmenuSpec mmis2 = getFileCoordinator().addSubmenu(MesquiteTrunk.treesMenu, "Save Copy of Tree Block...", makeCommand("exportTreesBlock",  this),  treesVector);
+		MesquiteSubmenuSpec mmis2 = getFileCoordinator().addSubmenu(MesquiteTrunk.treesMenu, "Save Copy of Tree Block", makeCommand("exportTreesBlock",  this),  treesVector);
 		mmis2.setBehaviorIfNoChoice(MesquiteSubmenuSpec.SHOW_SUBMENU);
+		mmis2.autoShowChoose = true;
 		getFileCoordinator().addSubmenu(MesquiteTrunk.treesMenu, "Save Copies of Tree Blocks", makeCommand("exportTreesBlocks",  this), TreeBlockSource.class);
 		if (showTreeFiller)
 			getFileCoordinator().addSubmenu(MesquiteTrunk.treesMenu, "SetTreeFillerTask", makeCommand("setTreeSource",  this), TreeBlockFiller.class);
@@ -473,7 +475,16 @@ public class ManageTrees extends TreesManager implements ItemListener {
 		}
 		else if (checker.compare(this.getClass(), "Shows lists of trees in a trees block", "[number of trees block; 0 based]", commandName, "showTrees")) {
 			int t = MesquiteInteger.fromFirstToken(arguments, pos);
-			if (StringUtil.blank(arguments) || !MesquiteInteger.isCombinable(t) || t>treesVector.size()) {
+			if (StringUtil.blank(arguments)) {
+				if (!MesquiteThread.isScripting()) {
+					TreeVector trees = getProject().chooseTrees(containerOfModule(), null, "Choose tree block");
+					if (trees == null)
+						return null;
+					showTrees(trees);
+
+				}
+			}
+			else if (!MesquiteInteger.isCombinable(t) || t>treesVector.size()) {
 				for (int i = 0; i< treesVector.size(); i++) {
 					showTrees((TreeVector)treesVector.elementAt(i));
 				}
@@ -579,21 +590,29 @@ public class ManageTrees extends TreesManager implements ItemListener {
 			}
 		}
 		else if (checker.compare(this.getClass(), "Saves copy of a trees block to a separate file", "[index of trees block]", commandName, "exportTreesBlock")) {
-			int t = MesquiteInteger.fromString(parser.getFirstToken(arguments));
+			TreeVector trees = null;
+			String path = null;
+			if (StringUtil.blank(arguments)){
+				trees = getProject().chooseTrees(containerOfModule(), null, "Choose tree block");
+
+			}
+			else {
+				int t = MesquiteInteger.fromString(parser.getFirstToken(arguments));
 			if (MesquiteInteger.isCombinable(t) && t< getProject().getNumberOfFileElements(TreeVector.class)) {
-				String path = parser.getNextToken();
+				path = parser.getNextToken();
 				int id = MesquiteInteger.fromString(path);
 				if (MesquiteInteger.isCombinable(id))
 					path = parser.getNextToken();
-				TreeVector d = (TreeVector)getProject().getFileElement(TreeVector.class, t);
-				if (d!=null) {
-					if (StringUtil.blank(path))
-						path = MesquiteFile.saveFileAsDialog("Save copy of tree block to file");
-					else
-						path = MesquiteFile.composePath(getProject().getHomeDirectoryName(), path);
-					if (!StringUtil.blank(path))
-						exportTreesBlock(d, path);
-				}
+				trees = (TreeVector)getProject().getFileElement(TreeVector.class, t);
+			}
+			}
+			if (trees!=null) {
+				if (StringUtil.blank(path))
+					path = MesquiteFile.saveFileAsDialog("Save copy of tree block to file");
+				else
+					path = MesquiteFile.composePath(getProject().getHomeDirectoryName(), path);
+				if (!StringUtil.blank(path))
+					exportTreesBlock(trees, path);
 			}
 
 		}
