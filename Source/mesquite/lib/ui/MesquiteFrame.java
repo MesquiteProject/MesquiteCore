@@ -1679,8 +1679,7 @@ class FrameTabsPanel extends MousePanel {
 	boolean sameTab(int tabDown, int tabUp){
 		if (tabDown == tabUp)
 			return true;
-	//	Debugg.println("tD " +tabDown, "
-		if (tabDown>=0 && tabDown<rights.length && tabUp>=0 && tabUp<rights.length){
+		if (tabDown>=0 && tabDown<rights.length && tabUp>=0){
 			if (rights[tabDown]<frame.leftPoptile){ //in left region, therefore same if tabUp is one less than tabDown
 				return tabDown == tabUp+1 || tabUp == rights.length;
 			}
