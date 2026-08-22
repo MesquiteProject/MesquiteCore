@@ -1191,6 +1191,21 @@ public class MesquiteNumber implements Listable, Nameable, WithStringDetails{
 	}
 	/*--------------------------------STRINGS--------------------------*/
 	/** Returns string representation of this number*/
+	public String toString(int digitsIfDouble) {
+		if (isUnassigned())
+			return "?"; //changed from "unassigned" June 02
+		else if (isInfinite())
+			return "infinite";
+		else if (valueClass==INT)
+			return MesquiteInteger.toString(intValue);// + " (int)";
+		else if (valueClass == LONG)
+			return MesquiteLong.toString(longValue);// + " (long)";
+		else if (valueClass == DOUBLE)
+			return MesquiteDouble.toStringDigitsSpecified(doubleValue, digitsIfDouble);// + " (double)";
+		else return "";
+	}
+	/*--------------------------------STRINGS--------------------------*/
+	/** Returns string representation of this number*/
 	public String toString() {
 		if (isUnassigned())
 			return "?"; //changed from "unassigned" June 02

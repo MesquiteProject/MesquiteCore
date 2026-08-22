@@ -134,7 +134,7 @@ public abstract class MesquiteTrunk extends MesquiteModule
 
 	/** Menu specifications of special menus owned by the trunk of Mesquite.*/
 	public static MesquiteMenuSpec fileMenu, editMenu, charactersMenu, treesMenu, analysisMenu, windowsMenu, helpMenu, utilitiesMenu;  
-	public static MesquiteSubmenuSpec defaultsSubmenu, setupSubmenu;
+	public static MesquiteSubmenuSpec defaultsSubmenu, setupSubmenu, utilitiesSubmenu;
 	/** Commands belonging to special menu items owned by the trunk of Mesquite.  */
 	public MesquiteCommand newFileCommand, openFileCommand, openRecentCommand, clearRecentCommand, openURLCommand, showLicenseCommand, resetMenusCommand, pendingCommandsCommand,  forceQuitCommand, quitCommand, showAllCommand, closeAllCommand, saveAllCommand;
 	//public MesquiteCommand currentCommandCommand;

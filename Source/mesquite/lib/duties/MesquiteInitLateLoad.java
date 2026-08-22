@@ -13,39 +13,24 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
 */
 package mesquite.lib.duties;
 
-import mesquite.lib.MesquiteCommand;
 import mesquite.lib.MesquiteModule;
-import mesquite.lib.MesquiteTrunk;
-import mesquite.lib.ui.MesquiteMenuItemSpec;
-import mesquite.lib.ui.MesquiteMenuSpec;
-import mesquite.lib.ui.MesquiteSubmenuSpec;
 
 
 /* ======================================================================== */
-/**Serves to hold a window for an employer.*/
+/**A class of modules that promises no particular services, but which is automatically hired by Mesquite at startup.*/
 
-public abstract class UtilitiesAssistant extends MesquiteModule   {
+public abstract class MesquiteInitLateLoad extends MesquiteModule  {
 
    	 public Class getDutyClass() {
-   	 	return UtilitiesAssistant.class;
+   	 	return MesquiteInitLateLoad.class;
    	 }
  	public String getDutyName() {
- 		return "Utilities Assistant";
+ 		return "Mesquite INIT Late Load";
    	 }
 
    	public boolean isSubstantive(){
    		return false;  
    	}
-   	
-   	/*NOTE: Utilities assistants should use these instead of the standard ways to make menu items
-   	*/
-   	public MesquiteMenuItemSpec addMenuItemToUtilitiesSubmenu(String label, MesquiteCommand command){
-   		return addItemToSubmenu(MesquiteTrunk.mesquiteTrunk.fileMenu, MesquiteTrunk.mesquiteTrunk.utilitiesSubmenu, label, command);
-   	}
-   	public MesquiteSubmenuSpec addSubmenuToUtilitiesSubmenu(String label, MesquiteCommand command){
-   		return addSubmenu(MesquiteTrunk.mesquiteTrunk.utilitiesSubmenu, label, command);
-   	}
-
 }
 
 

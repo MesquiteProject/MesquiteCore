@@ -66,7 +66,7 @@ public class ConvertFilesToBlastable extends UtilitiesAssistant implements Actio
 
 	/*.................................................................................................................*/
 	public boolean startJob(String arguments, Object condition, boolean hiredByName){
-		addMenuItem(null, "Make BLASTable files from FASTA...", makeCommand("makeBLASTable", this));
+		addMenuItemToUtilitiesSubmenu("Make BLASTable files from FASTA...", makeCommand("makeBLASTable", this));
 		loadPreferences();
 		appInfoFile = getAppInfoFile();
 		return true;

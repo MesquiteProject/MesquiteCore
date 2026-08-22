@@ -86,6 +86,7 @@ import mesquite.lib.PhoneHomeUtil;
 import mesquite.lib.ProjectRead;
 import mesquite.lib.ProjectReadThread;
 import mesquite.lib.Projects;
+import mesquite.lib.Puppeteer;
 import mesquite.lib.ShellScriptUtil;
 import mesquite.lib.SpecsSet;
 import mesquite.lib.StringArray;
@@ -96,7 +97,9 @@ import mesquite.lib.duties.FileCoordinator;
 import mesquite.lib.duties.GeneralFileMakerMultiple;
 import mesquite.lib.duties.GeneralFileMakerSingle;
 import mesquite.lib.duties.MesquiteInit;
+import mesquite.lib.duties.MesquiteInitLateLoad;
 import mesquite.lib.duties.TextDisplayer;
+import mesquite.lib.duties.UtilitiesAssistant;
 import mesquite.lib.duties.WindowHolder;
 import mesquite.lib.misc.ClassVector;
 import mesquite.lib.misc.HPanel;
@@ -832,6 +835,15 @@ public class Mesquite extends MesquiteTrunk
 			addMenuItem(helpMenu, "List modules new for next release", makeCommand("dumpNextReleaseModules",  this));
 		addMenuItem(helpMenu, "Show Developer Statistics", makeCommand("showStatistics",  this));
 
+		utilitiesSubmenu = addSubmenu(fileMenu, "Utilities");
+   		addItemToSubmenu(fileMenu, utilitiesSubmenu, "Send Script to Mesquite...", makeCommand("sendScript", this));
+		/* hire all inits */
+		if (verboseStartup) System.out.println("main init 29");
+		hireAllEmployees(MesquiteInit.class);
+		hireAllEmployees(MesquiteInitLateLoad.class);
+		
+		
+		
 		MesquiteSubmenuSpec mms = addSubmenu(fileMenu, "Activate/Deactivate Packages");
 		mms.setFilterable(false);
 		addItemToSubmenu(fileMenu, mms, "Use All Installed Packages", makeCommand("setConfigAll",  this));
@@ -850,9 +862,6 @@ public class Mesquite extends MesquiteTrunk
 		new MesquiteColorTable(); //initialize default charstate colors
 
 		resetContainingMenuBar();
-		/* hire all inits */
-		if (verboseStartup) System.out.println("main init 29");
-		hireAllEmployees(MesquiteInit.class);
 
 		logln("\n------------------------------------");
 		if (numExtra ==0)
@@ -1900,6 +1909,10 @@ public class Mesquite extends MesquiteTrunk
 	public Object doCommand(String commandName, String arguments, CommandChecker checker) {
 		if (checker.compare(this.getClass(), "A command that is ignored; can give to menu items so that they are active but do nothing", "[]", commandName, "null")) {
 			
+		}
+		else if (checker.compare(this.getClass(), "Sends a script to Mesquite", null, commandName, "sendScript")) {
+			Puppeteer p = new Puppeteer(this);
+			p.dialogScript(this, containerOfModule(), "Mesquite");
 		}
 		else if (checker.compare(this.getClass(), "Sets the packages of modules loaded at startup, using a configuration file", null, commandName, "setConfig")) {
 			//need Module Activation menu item with submenu items: Use All Installed Modules; Choose Module set
