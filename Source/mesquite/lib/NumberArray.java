@@ -13,6 +13,10 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
  */
 package mesquite.lib;
 
+import mesquite.categ.lib.CategoricalState;
+import mesquite.categ.lib.DNAState;
+import mesquite.categ.lib.ProteinState;
+
 /*Last documented:  August 1999 */
 
 /* ======================================================================== */
@@ -29,6 +33,7 @@ public class NumberArray {
 	public int valueClass = INT;
 	private int length = 0;  // the size of the array
 	private NameReference name;
+	private int categoricalStateRepresented = 0; //0 = no; 1 = standard; 2 = DNA; 3 = protein  NOTE: used as a kludge so that a LONG NumberArray can hold statesets
 
 	public NumberArray() {
 	}
@@ -73,6 +78,13 @@ public class NumberArray {
 	}
 	public int getValueClass(){
 		return valueClass;
+	}
+	/*...........................................................*/
+	public int representsCategoricalState(){
+		return categoricalStateRepresented;
+	}
+	public void setRepresentsCategoricalState(int s){
+		categoricalStateRepresented = s;
 	}
 	/*...........................................................*/
 	public void switchToDoubles(){
@@ -349,8 +361,10 @@ public class NumberArray {
 			setToInfinite(index);
 		else if (v.getValueClass()==INT)
 			setValue(index, v.getIntValue());
-		else if (v.getValueClass() == LONG)
+		else if (v.getValueClass() == LONG){
 			setValue(index, v.getLongValue());
+			setRepresentsCategoricalState(v.representsCategoricalState());
+		}
 		else if (v.getValueClass() == DOUBLE)
 			setValue(index, v.getDoubleValue());
 	}
@@ -1150,6 +1164,14 @@ public class NumberArray {
 			return MesquiteInteger.toString(intValues[index]);// + " (int)";
 		}
 		else if (valueClass == LONG) {
+			if (representsCategoricalState()>0){
+				if (representsCategoricalState() == 1)
+					return CategoricalState.toString(longValues[index]);
+				else if (representsCategoricalState() == 2)
+					return DNAState.toString(longValues[index]);
+				else if (representsCategoricalState() == 3)
+					return ProteinState.toString(longValues[index]);
+			}
 			return MesquiteLong.toString(longValues[index]);// + " (long)";
 		}
 		else if (valueClass == DOUBLE) {
@@ -1165,6 +1187,14 @@ public class NumberArray {
 			return MesquiteInteger.toString(intValues[index]);// + " (int)";
 		}
 		else if (valueClass == LONG) {
+			if (representsCategoricalState()>0){
+				if (representsCategoricalState() == 1)
+					return CategoricalState.toString(longValues[index]);
+				else if (representsCategoricalState() == 2)
+					return DNAState.toString(longValues[index]);
+				else if (representsCategoricalState() == 3)
+					return ProteinState.toString(longValues[index]);
+			}
 			return MesquiteLong.toString(longValues[index]);// + " (long)";
 		}
 		else if (valueClass == DOUBLE) {
@@ -1180,8 +1210,17 @@ public class NumberArray {
 				s += MesquiteInteger.toString(intValues[i]) + " ";
 		}
 		else if (valueClass == LONG) {
-			for (int i=0; i<length; i++)
-				s +=  MesquiteLong.toString(longValues[i]) + " ";
+			for (int i=0; i<length; i++) {
+				if (representsCategoricalState()>0){
+					if (representsCategoricalState() == 1)
+						s += CategoricalState.toString(longValues[i]) + " ";
+					else if (representsCategoricalState() == 2)
+						s += DNAState.toString(longValues[i]) + " ";
+					else if (representsCategoricalState() == 3)
+						s += ProteinState.toString(longValues[i]) + " ";
+				}
+				else s +=  MesquiteLong.toString(longValues[i]) + " ";
+			}
 		}
 		else if (valueClass == DOUBLE) {
 			for (int i=0; i<length; i++)
@@ -1200,8 +1239,17 @@ public class NumberArray {
 				s += MesquiteInteger.toString(intValues[i]) + spacer;
 		}
 		else if (valueClass == LONG) {
-			for (int i=0; i<length; i++)
-				s +=  MesquiteLong.toString(longValues[i]) +  spacer;
+			for (int i=0; i<length; i++){
+				if (representsCategoricalState()>0){
+					if (representsCategoricalState() == 1)
+						s += CategoricalState.toString(longValues[i]) + " ";
+					else if (representsCategoricalState() == 2)
+						s += DNAState.toString(longValues[i]) + " ";
+					else if (representsCategoricalState() == 3)
+						s += ProteinState.toString(longValues[i]) + " ";
+				}
+				else s +=  MesquiteLong.toString(longValues[i]) +  spacer;
+			}
 		}
 		else if (valueClass == DOUBLE) {
 			for (int i=0; i<length; i++)

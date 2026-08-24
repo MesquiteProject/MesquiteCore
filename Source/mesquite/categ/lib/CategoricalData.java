@@ -1160,6 +1160,14 @@ public class CategoricalData extends CharacterData {
 	}
 	/*..........................................  CategoricalData  ..................................................*/
 	/** returns Color for state of character, scaled to maxState (e.g. for tracing to yield white/black for binary) */
+	public static Color getCategColorOfState(int istate, int maxState, MesquiteColorTable colors){
+		if (colors == null)
+			return MesquiteColorTable.getDefaultColor(maxState,istate, MesquiteColorTable.COLORS);
+		else 
+			return colors.getColor(maxState,istate);
+	}
+	/*..........................................  CategoricalData  ..................................................*/
+	/** returns Color for state of character, scaled to maxState (e.g. for tracing to yield white/black for binary) */
 	public Color getColorOfState(int ic, int istate, int maxState, MesquiteColorTable colors){
 		if (colors == null)
 			return MesquiteColorTable.getDefaultColor(maxState,istate, MesquiteColorTable.COLORS);

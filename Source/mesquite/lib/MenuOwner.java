@@ -2105,7 +2105,7 @@ public abstract class MenuOwner implements Doomable { // EMBEDDED: extends Apple
 			submenu.insert(m, startingPlace+1);
 			}
 			else
-				Debugg.errln("[temporary] Submenu count exceeded for " + msms.getLabel() + " in " + menu.getLabel() + " count " + count); //Debugg.println
+				Debugg.errln("[t5] Submenu count exceeded for " + msms.getLabel() + " in " + menu.getLabel() + " count " + count); //Debugg.println
 			MesquiteMenuItem m = new MesquiteMenuItem("[Too many items to show all]", null , msms.command, null);
 			submenu.add(m);
 			

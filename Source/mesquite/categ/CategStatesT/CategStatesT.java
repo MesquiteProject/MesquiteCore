@@ -14,9 +14,16 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
 package mesquite.categ.CategStatesT;
 /*~~  */
 
+import java.awt.event.KeyEvent;
+
 import mesquite.categ.lib.CategoricalDistribution;
 import mesquite.categ.lib.CategoricalState;
+import mesquite.categ.lib.DNACharacterAdjustable;
+import mesquite.categ.lib.DNAEmbedded;
+import mesquite.categ.lib.ProteinAdjustable;
+import mesquite.categ.lib.ProteinEmbedded;
 import mesquite.lib.CommandChecker;
+import mesquite.lib.Debugg;
 import mesquite.lib.EmployeeNeed;
 import mesquite.lib.MesquiteCommand;
 import mesquite.lib.MesquiteFile;
@@ -59,6 +66,13 @@ public class CategStatesT extends NumberForTaxonIncr {
  		}
 		/**/
 		addMenuItem("Choose Character...", new MesquiteCommand("chooseCharacter", this));
+		MesquiteMenuItemSpec mms = addMenuItem("Next Character...", new MesquiteCommand("nextCharacter", this));
+		mms.setShortcut(KeyEvent.VK_EQUALS); 
+		//mms.setShortcutNeedsShift(true);
+
+		mms = addMenuItem("Previous Character...", new MesquiteCommand("previousCharacter", this));
+		mms.setShortcut(KeyEvent.VK_MINUS); 
+		//mms.setShortcutNeedsShift(true);
  		return true;
   	 }
   	 
@@ -126,16 +140,13 @@ public class CategStatesT extends NumberForTaxonIncr {
  			return characterSourceTask;
     	 	}
     	 	else if (checker.compare(this.getClass(), "Goes to the next character", null, commandName, "nextCharacter")) {
-    	 		if (currentChar>=characterSourceTask.getNumberOfCharacters(currentTaxa)-1)
-    	 			currentChar=0;
-    	 		else
+    	 		
+    	 		if (currentChar<characterSourceTask.getNumberOfCharacters(currentTaxa)-1)
     	 			currentChar++;
 				parametersChanged();
     	 	}
     	 	else if (checker.compare(this.getClass(), "Goes to the previous character", null, commandName, "previousCharacter")) {
-    	 		if (currentChar<=0)
-    	 			currentChar=characterSourceTask.getNumberOfCharacters(currentTaxa)-1;
-    	 		else
+    	 		if (currentChar>0)
     	 			currentChar--;
 				parametersChanged();
     	 	}
@@ -201,14 +212,23 @@ public class CategStatesT extends NumberForTaxonIncr {
 			
 		
 		long state = observedStates.getState(it); 
-		if (!(observedStates.isInapplicable(it) || observedStates.isUnassigned(it)) ) {
+
+		int stSub = 1;
+		if (observedStates instanceof DNAEmbedded || observedStates instanceof DNACharacterAdjustable)
+			stSub = 2;
+		else if (observedStates instanceof ProteinEmbedded || observedStates instanceof ProteinAdjustable)
+			stSub = 3;
+	//	if (!(observedStates.isInapplicable(it) || observedStates.isUnassigned(it)) ) {
 			num = new MesquiteNumber(state);
-			if (result!=null)
+			num.setRepresentsCategoricalState(stSub);
+			if (result!=null){
 				result.setValue(state);
+				result.setRepresentsCategoricalState(stSub);
+			}
 			if (resultString!=null)
 				resultString.setValue("State of character "+ currentChar + ": " + result.toString());
-		} else
-			result.setValue(MesquiteLong.unassigned);
+	//	} else
+	//		result.setValue(MesquiteLong.unassigned);
 		saveLastResult(result);
 		saveLastResultString(resultString);
 	}
