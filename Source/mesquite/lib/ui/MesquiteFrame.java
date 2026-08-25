@@ -1660,36 +1660,17 @@ class FrameTabsPanel extends MousePanel {
 		if (x < lefts[0])
 			return -1;
 		for (int i = 0; i<rights.length; i++){
-			if (rights[i]<frame.leftPoptile) //in the base (left) tile area
-				if (x < (lefts[i]+rights[i])/2)
-				return i;
-		}
-		for (int i = 0; i<rights.length; i++){
-			if (rights[i]>=frame.leftPoptile) //in the popped (right) tile area
-				if (x > (lefts[i]+rights[i])/2)
-				return i;
-		}
-		for (int i = 0; i<rights.length; i++){
-			if (x < (rights[i]))
-				return lefts.length; //within the bounds
-		}
-
-		return -1;
-	}
-	boolean sameTab(int tabDown, int tabUp){
-		if (tabDown == tabUp)
-			return true;
-		if (tabDown>=0 && tabDown<rights.length && tabUp>=0){
-			if (rights[tabDown]<frame.leftPoptile){ //in left region, therefore same if tabUp is one less than tabDown
-				return tabDown == tabUp+1 || tabUp == rights.length;
+			if (x > lefts[i]){
+				if (x < (lefts[i]+rights[i])/2) //in first half
+				return findTab(x-24); //in previous zone
+				if (x < rights[i])
+					return i;
 			}
-			else {
-				return tabDown == tabUp-1 || tabUp == rights.length;
-			}
-
 		}
-		return false;
+		return lefts.length;
+		
 	}
+
 	int tabTouched = MesquiteInteger.unassigned;
 	public void mouseDown (int modifiers, int clickCount, long when, int x, int y, MesquiteTool tool) {
 		tabTouched = findTab(x);
@@ -1734,12 +1715,10 @@ class FrameTabsPanel extends MousePanel {
 
 	public void mouseUp(int modifiers, int x, int y, MesquiteTool tool) {
 		try {
-			int tabZone = findTabZone(x);
-			if (tabZone == MesquiteInteger.unassigned)
-				return;
+			int tabUp = findTab(x);
 			if (tabTouched>=10000 || tabTouched <0)
 				return;
-			if (sameTab(tabTouched, tabZone)){  //down and up on same
+			if (tabTouched == tabUp){ //down and up on same
 				if (frame.permitGoAway(tabTouched) && x> lefts[tabTouched] + getGoAwayControlLeft() && x<lefts[tabTouched] +getGoAwayControlRight() && y >= getGoAwayControlTop() && y<=getGoAwayControlBottom()){
 					if (frame.goAwayOrShow(tabTouched))  //showing goaway
 						frame.windowGoAway(tabTouched);
@@ -1758,6 +1737,9 @@ class FrameTabsPanel extends MousePanel {
 				}
 			}
 			else if (tabTouched != MesquiteInteger.unassigned){
+				int tabZone = findTabZone(x);
+				if (tabZone == MesquiteInteger.unassigned)
+					return;
 				if (tabTouched<0 || tabTouched>= frame.windows.size())
 					return;
 				MesquiteWindow w = getWindow(tabTouched);
@@ -1791,7 +1773,7 @@ class FrameTabsPanel extends MousePanel {
 					repaint();
 
 				}
-/*				if (i<tabTouched && tabTouched > 1){  //can't be first window other than project panel
+				/*				if (i<tabTouched && tabTouched > 1){  //can't be first window other than project panel
 					if (i<=0)
 						i = 1;
 					if (frame.windows.indexOf(w) != i){
@@ -1820,7 +1802,7 @@ class FrameTabsPanel extends MousePanel {
 						frame.project.getHomeFile().setDirtiedByCommand(true);
 					repaint();
 				}
-				*/
+				 */
 			}
 		}
 		catch (Exception e){
