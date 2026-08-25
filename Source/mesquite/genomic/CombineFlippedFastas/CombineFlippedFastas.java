@@ -362,7 +362,7 @@ public class CombineFlippedFastas extends GeneralFileMakerMultiple {
 											}
 											else {
 												int whichMatrix = project.getMatrixNumber(locusMatrix);
-												if (whichMatrix>=0)
+												if (whichMatrix>=0 && whichMatrix<matrixChanged.length)
 													matrixChanged[whichMatrix]= true;
 											}
 
