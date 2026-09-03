@@ -338,7 +338,7 @@ public class TreeListAttachment extends TreeListAssistant {
 		if (a==null)
 			return "";
 		else
-			return "" + a;
+			return "+ " + a;
 	}
 	public String getWidestString(){
 		return " 88888888.8888 ";
