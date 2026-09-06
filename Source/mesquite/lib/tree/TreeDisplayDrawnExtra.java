@@ -13,12 +13,14 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
 */
 package mesquite.lib.tree;
 
+import mesquite.lib.MesquiteBoolean;
 import mesquite.lib.MesquiteModule;
 
 /* ======================================================================== */
 /** A subclass of TreeDisplayExtra.  Used only so that tree drawing knows that these are drawn above the
 tree and can be reordered.. */
 public abstract class TreeDisplayDrawnExtra extends TreeDisplayExtra {
+
 	public TreeDisplayDrawnExtra (MesquiteModule ownerModule, TreeDisplay treeDisplay) {
 		super(ownerModule, treeDisplay);
 	}

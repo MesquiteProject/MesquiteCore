@@ -761,6 +761,8 @@ class MultiTreeWindow extends MesquiteWindow implements KeyListener, Commandable
 				for (int itree=0; itree<(maxDisplays); itree++) {
 					TreeDisplayExtra tce = tda.createTreeDisplayExtra(treeDisplays[itree]);
 					tce.setTree(treeDisplays[itree].getTree());
+					if (tce.userAborted())
+						break;
 					treeDisplays[itree].addExtra(tce);
 					treeDisplays[itree].accumulateRequestsFromExtras(treeDisplays[itree].getTree());
 					treeDisplays[itree].repaint();
