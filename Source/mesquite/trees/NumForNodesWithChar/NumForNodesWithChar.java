@@ -14,12 +14,14 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
 package mesquite.trees.NumForNodesWithChar;
 
 import mesquite.lib.CommandChecker;
+import mesquite.lib.Debugg;
 import mesquite.lib.EmployeeNeed;
 import mesquite.lib.MesquiteCommand;
 import mesquite.lib.MesquiteFile;
 import mesquite.lib.MesquiteInteger;
 import mesquite.lib.MesquiteModule;
 import mesquite.lib.MesquiteString;
+import mesquite.lib.MesquiteThread;
 import mesquite.lib.NumberArray;
 import mesquite.lib.Snapshot;
 import mesquite.lib.characters.CharacterDistribution;
@@ -30,6 +32,7 @@ import mesquite.lib.duties.NumbersForNodes;
 import mesquite.lib.duties.NumbersForNodesAndChar;
 import mesquite.lib.taxa.Taxa;
 import mesquite.lib.tree.Tree;
+import mesquite.lib.ui.AlertDialog;
 import mesquite.lib.ui.MesquiteSubmenuSpec;
 
 /* ======================================================================== */
@@ -58,8 +61,13 @@ public class NumForNodesWithChar extends NumbersForNodes {
 	/*.................................................................................................................*/
 	public boolean startJob(String arguments, Object condition, boolean hiredByName){
 		numAndCharTask = (NumbersForNodesAndChar)hireCompatibleEmployee(NumbersForNodesAndChar.class, getCharacterClass(), "Calculator (for " + getName() + ")");
-		if (numAndCharTask == null)
+		if (numAndCharTask == null){
+			if (!MesquiteThread.isScripting()){
+				String s = getName() + " could not start, possibly because no calculators or no suitable characters are available.";
+			AlertDialog.notice(containerOfModule(),"Alert", s);
+			}
 			return sorry(getName() + " couldn't start because no calculator (for " + getName() + ") was obtained");
+		}
 		//assume hired as NumbersForNodes; thus responsible for getting characters
 		characterSourceTask = (CharSourceCoordObed)hireCompatibleEmployee(CharSourceCoordObed.class, numAndCharTask.getCompatibilityTest(), "Source of characters (for " + numAndCharTask.getName() + ")");
 		if (characterSourceTask == null)

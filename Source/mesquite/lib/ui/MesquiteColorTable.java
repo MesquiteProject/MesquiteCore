@@ -404,116 +404,133 @@ public  class MesquiteColorTable  {
 	}
 	/*--------------------------------------------------------------------------------------------------------------*/
 	/** gets green value for double "state" given range*/
-	public static Color getGreenScale(double state, double min, double max, boolean log, int power) {
-		if (state>= min && state <= max && min !=max) {
+	public static Color getGreenScale(double state, double min, double max, boolean log, double power, float greenBrightness) {
+		if (state <= min || min>=max)
+			return Color.white;
+		else if (state >= max)
+			return Color.green;
+		else {
 			double fraction = (state-min)/(max-min);   // the fraction, with 1 being black, 0 white
-			if (power>1) {
-				double origFraction=fraction;
-				for (int i = 1; i<=3; i++) {
-					fraction= fraction*origFraction;
-				}
-			}
+			if (power!= 1.0)
+				fraction = Math.pow(fraction, power);
+
 			if (log) {
 				fraction = (Math.exp(fraction)-1)/(Math.exp(1)-1);   
 			}
 			fraction = 1.0-fraction;   // the fraction, with 0 being black, 1 white
-			return new Color((float)fraction, (float)1, (float)fraction);
+			return new Color((float)fraction, greenBrightness, (float)fraction);
 		}
-		else
+	}
+	/*--------------------------------------------------------------------------------------------------------------*/
+	/** gets green value for double "state" given range*/
+	public static Color getGreenScale(double state, double min, double max, boolean log, double power) {
+		if (state <= min || min>=max)
 			return Color.white;
+		else if (state >= max)
+			return Color.green;
+		else {
+			double fraction = (state-min)/(max-min);   // the fraction, with 1 being black, 0 white
+			if (power!= 1.0)
+				fraction = Math.pow(fraction, power);
+
+			if (log) {
+				fraction = (Math.exp(fraction)-1)/(Math.exp(1)-1);   
+			}
+			fraction = 1.0-fraction;   // the fraction, with 0 being black, 1 white
+			return new Color((float)fraction, 1.0F, (float)fraction);
+		}
 	}
 	public static Color getGreenScale(double state, double min, double max, boolean log) {
-		return getGreenScale(state,min,max,log,1);
+		return getGreenScale(state,min,max,log,1.0);
 	}
 	/** gets green value for double "state" given range*/
-	public static Color getYellowScale(double state, double min, double max, boolean log, int power) {
-		if (state>= min && state <= max && min !=max) {
+	public static Color getYellowScale(double state, double min, double max, boolean log, double power) {
+		if (state <= min || min>=max)
+			return Color.white;
+		else if (state >= max)
+			return Color.yellow;
+		else {
 			double fraction = (state-min)/(max-min);   // the fraction, with 1 being black, 0 white
-			if (power>1) {
-				double origFraction=fraction;
-				for (int i = 1; i<=3; i++) {
-					fraction= fraction*origFraction;
-				}
-			}
+			if (power!= 1.0)
+				fraction = Math.pow(fraction, power);
+
 			if (log) {
 				fraction = (Math.exp(fraction)-1)/(Math.exp(1)-1);   
 			}
 			fraction = 1.0-fraction;   // the fraction, with 0 being black, 1 white
-			return new Color((float)1, (float)1, (float)fraction);
+			return new Color(1.0F, 1.0F, (float)fraction);
 		}
-		else
-			return Color.white;
+
 	}
 	public static Color getYellowScale(double state, double min, double max, boolean log) {
-		return getYellowScale(state,min,max,log,1);
+		return getYellowScale(state,min,max,log,1.0);
 	}
 	/** gets red value for double "state" given range*/
-	public static Color getRedScale(double state, double min, double max, boolean log, int power) {
-		if (state>= min && state <= max && min !=max) {
+	public static Color getRedScale(double state, double min, double max, boolean log, double power) {
+		if (state <= min || min>=max)
+			return Color.white;
+		else if (state >= max)
+			return Color.red;
+		else {
 			double fraction = (state-min)/(max-min);   // the fraction, with 1 being black, 0 white
-			if (power>1) {
-				double origFraction=fraction;
-				for (int i = 1; i<=3; i++) {
-					fraction= fraction*origFraction;
-				}
-			}
+			if (power!= 1.0)
+				fraction = Math.pow(fraction, power);
+
 			if (log) {
 				fraction = (Math.exp(fraction)-1)/(Math.exp(1)-1);   
 			}
 			fraction = 1.0-fraction;   // the fraction, with 0 being black, 1 white
-			return new Color((float)1, (float)fraction, (float)fraction);
+			return new Color(1.0F, (float)fraction, (float)fraction);
 		}
-		else
-			return Color.white;
+			
 	}
 	public static Color getRedScale(double state, double min, double max, boolean log) {
-		return getRedScale(state,min,max,log,1);
+		return getRedScale(state,min,max,log,1.0);
 	}
 	/** gets blue value for double "state" given range*/
-	public static Color getBlueScale(double state, double min, double max, boolean log, int power) {
-		if (state>= min && state <= max && min !=max) {
+	public static Color getBlueScale(double state, double min, double max, boolean log, double power) {
+		if (state <= min || min>=max)
+			return Color.white;
+		else if (state >= max)
+			return Color.blue;
+		else {
 			double fraction = (state-min)/(max-min);   // the fraction, with 1 being black, 0 white
-			if (power>1) {
-				double origFraction=fraction;
-				for (int i = 1; i<=3; i++) {
-					fraction= fraction*origFraction;
-				}
-			}
+			if (power!= 1.0)
+				fraction = Math.pow(fraction, power);
+
 			if (log) {
 				fraction = (Math.exp(fraction)-1)/(Math.exp(1)-1);   
 			}
 			fraction = 1.0-fraction;   // the fraction, with 0 being black, 1 white
-			return new Color((float)fraction, (float)fraction, (float)1);
+			return new Color((float)fraction, (float)fraction, 1.0F);
 		}
-		else
-			return Color.white;
+
 	}
 	public static Color getBlueScale(double state, double min, double max, boolean log) {
-		return getBlueScale(state,min,max,log,1);
+		return getBlueScale(state,min,max,log,1.0);
 	}
 	public static Color getBlueScale(int value, int min, int max) {
 		double state = (1.0*(value-min))/(max-min);
-		return getBlueScale(state,0,1.0,false,1);
+		return getBlueScale(state,0,1.0,false,1.0);
 	}
 
 	/** gets gray value for double "state" given range*/
-	public static Color getGrayScale(double state, double min, double max, boolean log, int power) {
-		if (state>= min && state <= max && min !=max) {
+	public static Color getGrayScale(double state, double min, double max, boolean log, double power) {
+		if (state <= min || min>=max)
+			return Color.white;
+		else if (state >= max)
+			return Color.black;
+		else {
 			double fraction = (state-min)/(max-min);   // the fraction, with 1 being black, 0 white
-			if (power>1) {
-				double origFraction=fraction;
-				for (int i = 1; i<=3; i++) {
-					fraction= fraction*origFraction;
-				}
-			}
+			if (power!= 1.0)
+				fraction = Math.pow(fraction, power);
+
 			if (log) {
 				fraction = (Math.exp(fraction)-1)/(Math.exp(1)-1);   
 			}
 			fraction = 1.0-fraction;   // the fraction, with 0 being black, 1 white
 			return new Color((float)fraction, (float)fraction, (float)fraction);
 		}
-		else
-			return Color.white;
 	}
 	public static Color getGrayScale(double state, double min, double max, boolean log) {
 		return getGrayScale(state,min,max,log,1);

@@ -11,18 +11,26 @@ Mesquite's web site is http://mesquiteproject.org
 This source code and its compiled class files are free and modifiable under the terms of 
 GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
 */
-package mesquite.lib.tree;
+package mesquite.lib.duties;
 
-import mesquite.lib.MesquiteBoolean;
 import mesquite.lib.MesquiteModule;
 
-/* ======================================================================== */
-/** A subclass of TreeDisplayExtra.  Used only so that tree drawing knows that these are drawn above the
-tree and can be reordered.. */
-public abstract class TreeDisplayDrawnExtra extends TreeDisplayExtra {
 
-	public TreeDisplayDrawnExtra (MesquiteModule ownerModule, TreeDisplay treeDisplay) {
-		super(ownerModule, treeDisplay);
-	}
+/* ======================================================================== */
+/**A class of modules that promises no particular services, but which is automatically hired by Mesquite at startup.*/
+
+public abstract class MesquiteInitLateLoad extends MesquiteModule  {
+
+   	 public Class getDutyClass() {
+   	 	return MesquiteInitLateLoad.class;
+   	 }
+ 	public String getDutyName() {
+ 		return "Mesquite INIT Late Load";
+   	 }
+
+   	public boolean isSubstantive(){
+   		return false;  
+   	}
 }
+
 

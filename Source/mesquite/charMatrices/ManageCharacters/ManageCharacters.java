@@ -263,6 +263,7 @@ public class ManageCharacters extends CharactersManager {
 	public void projectEstablished() {
 		getFileCoordinator().addMenuItem(MesquiteTrunk.charactersMenu, "-", null);
 		MesquiteSubmenuSpec mmis = getFileCoordinator().addSubmenu(MesquiteTrunk.charactersMenu, "List of Characters", makeCommand("showCharacters",  this),  (ListableVector)getProject().datas);
+		mmis.autoShowChoose = true;
 		calw = getFileCoordinator().addMenuItem(MesquiteTrunk.charactersMenu, "Close All Lists of Characters", makeCommand("closeAllListWindows",  this));
 		calw.setEnabled(false);
 		mmis.setBehaviorIfNoChoice(MesquiteSubmenuSpec.ONEMENUITEM_ZERODISABLE);
@@ -1102,11 +1103,10 @@ public class ManageCharacters extends CharactersManager {
 		}
 		else if (checker.compare(this.getClass(), "Shows the character list window for a specified data matrix; if a list window already exists, show it", "[optional: number of matrix to show]", commandName, "showCharacters")) {
 			if (StringUtil.blank(arguments)) {
-				for (int i = 0; i< getProject().getNumberCharMatrices(); i++) {  //restriction to checker.getFile() deleted 13 Dec 01
-					CharacterData data = getProject().getCharacterMatrix(i);
+				CharacterData data =  getProject().chooseData(containerOfModule(), null, null, "For which data matrix would you like to see the list of characters?");
 					if (data!=null && data.isUserVisible())
 						showCharactersList(data);//restriction to checker.getFile() deleted 13 Dec 01
-				}
+
 				return null;
 			}
 			else {

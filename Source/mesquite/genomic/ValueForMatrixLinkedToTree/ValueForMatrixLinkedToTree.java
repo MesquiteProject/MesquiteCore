@@ -11,54 +11,46 @@ Mesquite's web site is http://mesquiteproject.org
 This source code and its compiled class files are free and modifiable under the terms of 
 GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
 */
-package mesquite.trees.TreeValueUsingMatrix;
+package mesquite.genomic.ValueForMatrixLinkedToTree;
 
 import mesquite.lib.EmployeeNeed;
+
 import mesquite.lib.MesquiteModule;
 import mesquite.lib.MesquiteNumber;
 import mesquite.lib.MesquiteString;
 import mesquite.lib.Notification;
 import mesquite.lib.characters.MCharactersDistribution;
-import mesquite.lib.duties.MatrixSourceCoord;
-import mesquite.lib.duties.NumberForMatrixAndTree;
+import mesquite.lib.characters.CharacterData;
+import mesquite.lib.duties.NumberForMatrix;
 import mesquite.lib.duties.NumberForTree;
 import mesquite.lib.taxa.Taxa;
+import mesquite.lib.tree.MesquiteTree;
 import mesquite.lib.tree.Tree;
 
 
 /* ======================================================================== */
-public class TreeValueUsingMatrix extends NumberForTree {
-	public void getEmployeeNeeds(){  //This gets called on startup to harvest information; override this and inside, call registerEmployeeNeed
-		EmployeeNeed e = registerEmployeeNeed(MatrixSourceCoord.class, getName() + "  needs a source of matrices.",
-		"");
-		EmployeeNeed e2 = registerEmployeeNeed(NumberForMatrixAndTree.class, getName() + "  needs a method to calculate values for the trees using a matrix.",
-		"The method to calculate values can be selected initially");
-	}
+public class ValueForMatrixLinkedToTree extends NumberForTree {
 	/*.................................................................................................................*/
 	public  Class getHireSubchoice(){
-		return NumberForMatrixAndTree.class;
+		return NumberForMatrix.class;
 	}
 	/*.................................................................................................................*/
-	MatrixSourceCoord characterSourceTask;
-	NumberForMatrixAndTree numberTask;
+	NumberForMatrix numberTask;
 	Taxa oldTaxa = null;
     	 MCharactersDistribution matrix;
 
 	/*.................................................................................................................*/
 	public boolean startJob(String arguments, Object condition, boolean hiredByName) {
 		if (arguments !=null) {
-			numberTask = (NumberForMatrixAndTree)hireNamedEmployee(NumberForMatrixAndTree.class, arguments);
+			numberTask = (NumberForMatrix)hireNamedEmployee(NumberForMatrix.class, arguments);
 			if (numberTask == null)
 				return sorry(getName() + " couldn't start because the requested calculator module wasn't successfully hired.");
 		}
 		else {
-		numberTask = (NumberForMatrixAndTree)hireEmployee(NumberForMatrixAndTree.class, "Value to calculate for trees");
+		numberTask = (NumberForMatrix)hireEmployee(NumberForMatrix.class, "Value to calculate for linked matrices");
  		if (numberTask == null)
  			return sorry(getName() + " couldn't start because no counting module was obtained.");
 		}
-		characterSourceTask = (MatrixSourceCoord)hireCompatibleEmployee(MatrixSourceCoord.class, numberTask.getCompatibilityTest(), "Source of characters (for " + numberTask.getName() + ")");
- 		if (characterSourceTask == null)
- 			return sorry(getName() + " couldn't start because no source of characters was obtained.");
   		return true;
   	 }
   	 public void employeeQuit(MesquiteModule m){
@@ -83,7 +75,6 @@ public class TreeValueUsingMatrix extends NumberForTree {
    	/** Called to provoke any necessary initialization.  This helps prevent the module's intialization queries to the user from
    	happening at inopportune times (e.g., while a long chart calculation is in mid-progress)*/
    	public void initialize(Tree tree){
-   		characterSourceTask.initialize(tree.getTaxa());
    	}
 	MesquiteString cs = new MesquiteString();
 	/*.................................................................................................................*/
@@ -93,17 +84,18 @@ public class TreeValueUsingMatrix extends NumberForTree {
     	clearResultAndLastResult(result);
    	 	int count=0;
     	Taxa taxa = tree.getTaxa();
- 		matrix = characterSourceTask.getCurrentMatrix(tree);
+ 		CharacterData data = ((MesquiteTree)tree).findLinkedMatrix(getProject());
 		
-		if (matrix == null) {
+		if (data == null) {
 			if (resultString!=null)
-				resultString.setValue("Value for tree not calculated; no matrix supplied");
+				resultString.setValue("No linked matrix found");
 			return;
 		}
+		matrix = data.getMCharactersDistribution();
 		cs.setValue("");
-		numberTask.calculateNumber(tree, matrix, result, cs);
+		numberTask.calculateNumber(matrix, result, cs);
 		if (resultString!=null)
-			resultString.setValue(cs.getValue() + " (for matrix " + characterSourceTask.getCurrentMatrixName(tree.getTaxa()) + ")");
+			resultString.setValue(cs.getValue() + " (for matrix " + data.getName() + ")");
 		saveLastResult(result);
 		saveLastResultString(resultString);
 	}
@@ -114,28 +106,38 @@ public class TreeValueUsingMatrix extends NumberForTree {
 
 	/*.................................................................................................................*/
    	 public void employeeParametersChanged(MesquiteModule employee, MesquiteModule source, Notification notification) {
-   	 	if (employee==characterSourceTask) {
-			parametersChanged(notification);
-   	 	}
-   	 	else if (employee==numberTask) {
+   	 	if (employee==numberTask) {
 			parametersChanged(notification);
    	 	}
    	 }
 	/*.................................................................................................................*/
     	 public String getParameters() {
-		return "Value calculated: " + numberTask.getName() + "(Source of matrices: " + characterSourceTask.getNameAndParameters() + ")";
+		return "Value calculated for linked matrix: " + numberTask.getName();
    	 }
 	/*.................................................................................................................*/
     	 public String getNameAndParameters() {
-		return numberTask.getName() + "(Source of matrices: " + characterSourceTask.getNameAndParameters() + ")";
+    		 return numberTask.getNameAndParameters();
    	 }
 	/*.................................................................................................................*/
     	 public String getName() {
-		return "Tree value using character matrix";
+		return "Value for matrix linked to tree";
+   	 }
+    		/*.................................................................................................................*/
+    	 public String getVeryShortName() {
+		return "Linked matrix: " + numberTask.getVeryShortName();
    	 }
 	/*.................................................................................................................*/
   	 public String getExplanation() {
-		return "Calculates a value for the tree using a character data matrix.";
+		return "Calculates a value for the matrix linked to the tree.";
    	 }
+  	 
+ 	/*.................................................................................................................*/
+ 	/** returns the version number at which this module was first released.  If 0, then no version number is claimed.  If a POSITIVE integer
+ 	 * then the number refers to the Mesquite version.  This should be used only by modules part of the core release of Mesquite.
+ 	 * If a NEGATIVE integer, then the number refers to the local version of the package, e.g. a third party package*/
+ 	public int getVersionOfFirstRelease(){
+ 		return NEXTRELEASE;  
+ 	}
+
 }
 

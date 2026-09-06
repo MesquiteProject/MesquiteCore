@@ -30,7 +30,7 @@ public class MesquiteSubmenuSpec extends MesquiteMenuSpec{
 	public static final int ONESUBMENU_ZERODISABLE = 3;
 	int beh = ONESUBMENU_ZERODISABLE;
 	protected ListableVector items = new ListableVector();
-
+	public boolean autoShowChoose = false;
 	public static CommandChecker checkerMS = null;
 	
 	public MesquiteSubmenuSpec(MesquiteMenuSpec whichMenu, String submenuName,  MesquiteModule ownerModule) {

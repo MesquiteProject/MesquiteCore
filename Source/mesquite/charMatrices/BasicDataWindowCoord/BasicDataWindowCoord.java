@@ -46,8 +46,11 @@ public class BasicDataWindowCoord extends FileInit {
 	public boolean startJob(String arguments, Object condition, boolean hiredByName) {
 		elementsSubmenu = getFileCoordinator().addSubmenu(MesquiteTrunk.charactersMenu, "Character Matrix Editor", makeCommand("showDataWindow",  this));
 		elementsSubmenu.setBehaviorIfNoChoice(MesquiteSubmenuSpec.ONEMENUITEM_ZERODISABLE);
+		elementsSubmenu.autoShowChoose = true;
+		
 		newViewSubmenu = getFileCoordinator().addSubmenu(MesquiteTrunk.charactersMenu, "Extra Matrix Editor", makeCommand("showExtraDataWindow",  this));
 		newViewSubmenu.setBehaviorIfNoChoice(MesquiteSubmenuSpec.ONEMENUITEM_ZERODISABLE);
+		newViewSubmenu.autoShowChoose = true;
 		cadw = getFileCoordinator().addMenuItem(MesquiteTrunk.charactersMenu, "Close All Character Matrix Editors", makeCommand("closeAllMatrixWindows",  this));
 		cadw.setEnabled(false);
 		return true;

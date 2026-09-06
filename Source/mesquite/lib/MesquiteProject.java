@@ -397,6 +397,22 @@ public class MesquiteProject extends Attachable implements Listable, MesquiteLis
 	}
 
 	/*.................................................................................................................*/
+	/** returns which tree vector this is among those for the taxa */
+	public int getWhichTreeBlock(Taxa taxa, TreeVector trees) {
+			int count = 0;
+			for (int k = 0; k<treeVectors.size(); k++){
+				TreeVector treesK = (TreeVector)treeVectors.elementAt(k);
+				if (treesK.getTaxa() == taxa){
+					if (treesK == trees)
+						return count;
+					count++;
+				}
+				
+			}
+			return -1;
+		
+	}
+	/*.................................................................................................................*/
 	/** returns the number of Tree Vectors */
 	public int getNumberTreeVectors(Taxa t) {
 		int count = 0;

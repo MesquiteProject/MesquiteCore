@@ -83,6 +83,7 @@ public class SaveMatrixCopies extends FileInit implements ItemListener {
 	public void projectEstablished() {
 		MesquiteSubmenuSpec mmis2 = getFileCoordinator().addSubmenu(MesquiteTrunk.charactersMenu, "Save Copy of Matrix", makeCommand("saveCopMatrix",  this),  (ListableVector)getProject().datas);
 		mmis2.setBehaviorIfNoChoice(MesquiteSubmenuSpec.SHOW_SUBMENU);
+		mmis2.autoShowChoose = true;
 		getFileCoordinator().addSubmenu(MesquiteTrunk.charactersMenu, "Save Multiple Matrices", makeCommand("saveCopMatrices",  this), CharMatrixSource.class);
 		super.projectEstablished();
 	}
@@ -129,15 +130,21 @@ public class SaveMatrixCopies extends FileInit implements ItemListener {
 	/*.................................................................................................................*/
 	public Object doCommand(String commandName, String arguments, CommandChecker checker) {
 		if (checker.compare(this.getClass(), "Saves a copy of the character data matrix to a separate file", "[id number of data matrix]", commandName, "saveCopMatrix")) {
-			int t = MesquiteInteger.fromString(parser.getFirstToken(arguments));
-			if (MesquiteInteger.isCombinable(t) && t< getProject().getNumberCharMatricesVisible()) {
-				long id  = MesquiteLong.fromString(parser.getNextToken());
-				CharacterData d = getProject().getCharacterMatrixVisible(t);
-				if (d!=null) {
-					String path = MesquiteFile.saveFileAsDialog("Save copy of matrix to file");
-					if (!StringUtil.blank(path))
-						saveCopMatrix(d, path);
+			CharacterData d = null;
+			if (StringUtil.blank(arguments)){
+				d =  getProject().chooseData(containerOfModule(), null, null, "Which data matrix would you like to save to a separate file?");
+			}
+			else {
+				int t = MesquiteInteger.fromString(parser.getFirstToken(arguments));
+				if (MesquiteInteger.isCombinable(t) && t< getProject().getNumberCharMatricesVisible()) {
+					long id  = MesquiteLong.fromString(parser.getNextToken());
+					d = getProject().getCharacterMatrixVisible(t);
 				}
+			}
+			if (d!=null) {
+				String path = MesquiteFile.saveFileAsDialog("Save copy of matrix to file");
+				if (!StringUtil.blank(path))
+					saveCopMatrix(d, path);
 			}
 
 		}
@@ -175,7 +182,7 @@ public class SaveMatrixCopies extends FileInit implements ItemListener {
 				dialog.addLargeTextLabel(message);
 				dialog.addBlankLine();
 				useBaseName = dialog.addRadioButtons (new String[] {"Name files by matrix names", "Name files by base name and number"}, 0);
-				
+
 				baseLabel = dialog.addLabel("Base name for files:");
 				dialog.suppressNewPanel();
 				baseNameField = dialog.addTextField("untitled");
@@ -241,7 +248,7 @@ public class SaveMatrixCopies extends FileInit implements ItemListener {
 				boolean usePrevious = false;
 				tempDataFile.exporting =1;
 				ListableVector names = new ListableVector();
-				
+
 				try {
 					for (int iMatrix = 0; iMatrix<num; iMatrix++){
 						if (progIndicator!=null)
@@ -259,7 +266,7 @@ public class SaveMatrixCopies extends FileInit implements ItemListener {
 							fileName = names.getUniqueName(fileName, "-");
 							newMatrix = matrix.makeCharacterData(manager, taxa);
 							newMatrix.setName(characterSourceTask.getMatrixName(taxa, iMatrix));
-							
+
 							logln("Saving file " + basePath + fileName + "\n" + newMatrix.getExplanation() + "\n");	
 							newMatrix.addToFile(tempDataFile, getProject(), null);
 							TreeVector trees = null;
@@ -305,9 +312,9 @@ public class SaveMatrixCopies extends FileInit implements ItemListener {
 					}
 				}
 				names.dispose(true);
-				
+
 				tempDataFile.close();
-				
+
 				if (progIndicator!=null) 
 					progIndicator.goAway();
 

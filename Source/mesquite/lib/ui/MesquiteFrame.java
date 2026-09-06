@@ -42,6 +42,7 @@ import java.util.Vector;
 import mesquite.lib.CommandChecker;
 import mesquite.lib.Commandable;
 import mesquite.lib.Debugg;
+import mesquite.lib.IntegerArray;
 import mesquite.lib.MesquiteCommand;
 import mesquite.lib.MesquiteEvent;
 import mesquite.lib.MesquiteFile;
@@ -1659,11 +1660,17 @@ class FrameTabsPanel extends MousePanel {
 		if (x < lefts[0])
 			return -1;
 		for (int i = 0; i<rights.length; i++){
-			if (x < (lefts[i]+rights[i])/2)
-				return i;
+			if (x > lefts[i]){
+				if (x < (lefts[i]+rights[i])/2) //in first half
+				return findTab(x-24); //in previous zone
+				if (x < rights[i])
+					return i;
+			}
 		}
 		return lefts.length;
+		
 	}
+
 	int tabTouched = MesquiteInteger.unassigned;
 	public void mouseDown (int modifiers, int clickCount, long when, int x, int y, MesquiteTool tool) {
 		tabTouched = findTab(x);
@@ -1708,30 +1715,31 @@ class FrameTabsPanel extends MousePanel {
 
 	public void mouseUp(int modifiers, int x, int y, MesquiteTool tool) {
 		try {
-			int i = findTabZone(x);
-			if (i == MesquiteInteger.unassigned)
-				return;
+			int tabUp = findTab(x);
 			if (tabTouched>=10000 || tabTouched <0)
 				return;
-			if (i== tabTouched){  //down and up on same
-				if (frame.permitGoAway(i) && x> lefts[i] + getGoAwayControlLeft() && x<lefts[i] +getGoAwayControlRight() && y >= getGoAwayControlTop() && y<=getGoAwayControlBottom()){
-					if (frame.goAwayOrShow(i))  //showing goaway
-						frame.windowGoAway(i);
+			if (tabTouched == tabUp){ //down and up on same
+				if (frame.permitGoAway(tabTouched) && x> lefts[tabTouched] + getGoAwayControlLeft() && x<lefts[tabTouched] +getGoAwayControlRight() && y >= getGoAwayControlTop() && y<=getGoAwayControlBottom()){
+					if (frame.goAwayOrShow(tabTouched))  //showing goaway
+						frame.windowGoAway(tabTouched);
 					else
 						;
 				}
 				//				else if (frame.showMinimizeMaximize(i) && x> rights[i] - 20 && y >4 && y<20){
-				else if (frame.showMinimizeMaximize(i) && x< lefts[i] + 20 && y >12 && y<28){
-					frame.toggleMinimize(i);
+				else if (frame.showMinimizeMaximize(tabTouched) && x< lefts[tabTouched] + 20 && y >12 && y<28){
+					frame.toggleMinimize(tabTouched);
 				}
 				else {
 					MesquiteWindow w = getWindow(tabTouched);
 					if (isProjectWindow(w))
 						return;
-					frame.showPage(i);
+					frame.showPage(tabTouched);
 				}
 			}
 			else if (tabTouched != MesquiteInteger.unassigned){
+				int tabZone = findTabZone(x);
+				if (tabZone == MesquiteInteger.unassigned)
+					return;
 				if (tabTouched<0 || tabTouched>= frame.windows.size())
 					return;
 				MesquiteWindow w = getWindow(tabTouched);
@@ -1744,13 +1752,13 @@ class FrameTabsPanel extends MousePanel {
 					return;
 				}
 
-				if (i>=10000)
-					i = i - 10000;
+				if (tabZone>=10000)
+					tabZone = tabZone - 10000;
 				if (tabTouched >= 1){  //can't be first window other than project panel
-					if (i<=0)
-						i = 1;
-					int dropLocation = i;
-					if (i>tabTouched)
+					if (tabZone<=0)
+						tabZone = 1;
+					int dropLocation = tabZone;
+					if (tabZone>tabTouched)
 						dropLocation--;
 					if (frame.windows.indexOf(w) != dropLocation){
 						frame.windows.removeElement(w);
@@ -1765,7 +1773,7 @@ class FrameTabsPanel extends MousePanel {
 					repaint();
 
 				}
-/*				if (i<tabTouched && tabTouched > 1){  //can't be first window other than project panel
+				/*				if (i<tabTouched && tabTouched > 1){  //can't be first window other than project panel
 					if (i<=0)
 						i = 1;
 					if (frame.windows.indexOf(w) != i){
@@ -1794,7 +1802,7 @@ class FrameTabsPanel extends MousePanel {
 						frame.project.getHomeFile().setDirtiedByCommand(true);
 					repaint();
 				}
-				*/
+				 */
 			}
 		}
 		catch (Exception e){

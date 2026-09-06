@@ -131,7 +131,7 @@ public class ZeroSequencesTooShort extends SequenceTrimmer {
 		CharacterState cs = null;
 		boolean changed = false;
 		for (int it = 0; it<data.getNumTaxa(); it++) {
-			if (!lengthButNotEnough(data, it, 100, cs)){
+			if (!lengthButNotEnough(data, it, longEnough, cs)){
 				data.setToInapplicable(it);
 				logln("\nSequence too short in " + data.getTaxa().getTaxonName(it) + " for matrix " + data.getName()+"\n");
 				changed = true;

@@ -19,6 +19,7 @@ import java.awt.Panel;
 import java.util.Vector;
 
 import mesquite.lib.Listable;
+import mesquite.lib.MesquiteBoolean;
 import mesquite.lib.MesquiteModule;
 import mesquite.lib.OwnedByModule;
 import mesquite.lib.StringUtil;
@@ -41,6 +42,7 @@ public abstract class TreeDisplayExtra implements Listable, OwnedByModule {
 	public static int NORMAL = 2;
 	public static int ABOVE = 3;
 	int placement=NORMAL;
+	public MesquiteBoolean userAborted = new MesquiteBoolean(false);
 	
 	private Vector panels = new Vector();
 	public TreeDisplayExtra (MesquiteModule ownerModule, TreeDisplay treeDisplay) {
@@ -295,6 +297,10 @@ public abstract class TreeDisplayExtra implements Listable, OwnedByModule {
 	}
 	/**to inform TreeDisplayExtra that cursor has just moved OUTSIDE of taxa or branches*/
 	public void cursorMove(Tree tree, int x, int y, Graphics g){}
+	
+	public boolean userAborted() {
+		return userAborted.getValue();
+	}
 	
 	public void addPanelPlease(Panel p){
 		if (panels == null || treeDisplay == null || ownerModule == null)

@@ -784,8 +784,9 @@ public class MesquiteTable extends MesquitePanel implements KeyListener, MouseWh
 			}
 			for (int i = 0; i < numColumnsTotal; i++) {
 				if (isCellSelected(i, j) || isRowSelected(j) || isColumnSelected(i)) {
-					if (isCellEditable(i, j))
+					if (isCellEditable(i, j)){
 						returnedMatrixText(i, j, null);
+					}
 				}
 			}
 		}
@@ -6060,10 +6061,10 @@ public class MesquiteTable extends MesquitePanel implements KeyListener, MouseWh
 		this.showRowNames = showRowNames;
 	}
 	long wheelMoves = 0;
-	public static int wheelDelay = 1;
+	public static int mouseWheelInsensitivity = 0;
 	
 	public synchronized void mouseWheelMoved(MouseWheelEvent e) {   //scrollwheel
-		if (wheelMoves++ % wheelDelay != 0)
+		if (mouseWheelInsensitivity > 0 && wheelMoves++ % mouseWheelInsensitivity != 0)
 			return;
 		int amount = e.getScrollAmount();  //verticalScrollPageIncrement, numColumnsVisible
 		boolean blockScroll = e.getScrollType()==MouseWheelEvent.WHEEL_BLOCK_SCROLL;

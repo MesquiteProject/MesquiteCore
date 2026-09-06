@@ -310,6 +310,7 @@ public class TaxonList extends ListModule {
 	else if (checker.compare(this.getClass(), "Hires utility module to alter names of the taxa", "[name of module]", commandName, "doNames")) {
 			if (taxa !=null && getModuleWindow() != null && ((TableWindow)getModuleWindow()).getTable()!=null){
 				TaxonNameAlterer tda= (TaxonNameAlterer)hireNamedEmployee(TaxonNameAlterer.class, arguments);
+				tda.setNameOfKindBeingRenamed("taxon", "Taxon");
 				if (tda!=null) {
 					UndoReference undoReference = new UndoReference(new UndoInstructions(UndoInstructions.ALLTAXONNAMES,taxa, taxa), this);
 					int a = tda.alterTaxonNames(taxa, ((TableWindow)getModuleWindow()).getTable());

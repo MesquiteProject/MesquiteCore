@@ -13,6 +13,9 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
  */
 package mesquite.lib;
 
+import mesquite.categ.lib.CategoricalState;
+import mesquite.categ.lib.DNAState;
+import mesquite.categ.lib.ProteinState;
 import mesquite.lib.ui.MesquiteWindow;
 import mesquite.lib.ui.QueryDialogs;
 
@@ -36,6 +39,7 @@ public class MesquiteNumber implements Listable, Nameable, WithStringDetails{
 	public static final int DOUBLE = 2;
 	private boolean unassignedFlag = true; // have inappplicable?
 	private boolean infiniteFlag = false;
+	private int categStateRepresented = 0; //0 = no; 1 = standard; 2 = DNA; 3 = protein  NOTE: used as a kludge so that a LONG MesquiteNumber can hold a stateset
 	private MesquiteNumber temp = null;
 	private MesquiteNumber temp2 = null;
 	private MesquiteNumber[] auxiliaries = null;
@@ -75,11 +79,20 @@ public class MesquiteNumber implements Listable, Nameable, WithStringDetails{
 		totalCreated++;
 	}
 	
-	public void setWatchpoint(boolean w){
-		watchpoint = w;
-	}
+	/*...........................................................*/
 	public int getValueClass(){
 		return valueClass;
+	}
+	/*...........................................................*/
+	public int representsCategoricalState(){
+		return categStateRepresented;
+	}
+	public void setRepresentsCategoricalState(int s){
+		categStateRepresented = s;
+	}
+	/*...........................................................*/
+	public void setWatchpoint(boolean w){
+		watchpoint = w;
 	}
 	public void copyFrom(MesquiteNumber n){
 		intValue = n.intValue;
@@ -1191,6 +1204,30 @@ public class MesquiteNumber implements Listable, Nameable, WithStringDetails{
 	}
 	/*--------------------------------STRINGS--------------------------*/
 	/** Returns string representation of this number*/
+	public String toString(int digitsIfDouble) {
+		if (isUnassigned())
+			return "?"; //changed from "unassigned" June 02
+		else if (isInfinite())
+			return "infinite";
+		else if (valueClass==INT)
+			return MesquiteInteger.toString(intValue);// + " (int)";
+		else if (valueClass == LONG){
+			if (representsCategoricalState()>0){
+				if (representsCategoricalState() == 1)
+					return CategoricalState.toString(longValue);
+				else if (representsCategoricalState() == 2)
+					return DNAState.toString(longValue);
+				else if (representsCategoricalState() == 3)
+					return ProteinState.toString(longValue);
+			}
+		return MesquiteLong.toString(longValue);// + " (long)";
+		}
+		else if (valueClass == DOUBLE)
+			return MesquiteDouble.toStringDigitsSpecified(doubleValue, digitsIfDouble);// + " (double)";
+		else return "";
+	}
+	/*--------------------------------STRINGS--------------------------*/
+	/** Returns string representation of this number*/
 	public String toString() {
 		if (isUnassigned())
 			return "?"; //changed from "unassigned" June 02
@@ -1198,8 +1235,17 @@ public class MesquiteNumber implements Listable, Nameable, WithStringDetails{
 			return "infinite";
 		else if (valueClass==INT)
 			return MesquiteInteger.toString(intValue);// + " (int)";
-		else if (valueClass == LONG)
+		else if (valueClass == LONG){
+			if (representsCategoricalState()>0){
+				if (representsCategoricalState() == 1)
+					return CategoricalState.toString(longValue);
+				else if (representsCategoricalState() == 2)
+					return DNAState.toString(longValue);
+				else if (representsCategoricalState() == 3)
+					return ProteinState.toString(longValue);
+			}
 			return MesquiteLong.toString(longValue);// + " (long)";
+		}
 		else if (valueClass == DOUBLE)
 			return MesquiteDouble.toString(doubleValue);// + " (double)";
 		else return "";

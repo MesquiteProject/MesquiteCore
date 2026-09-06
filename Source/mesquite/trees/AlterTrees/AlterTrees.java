@@ -14,6 +14,8 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
 package mesquite.trees.AlterTrees;
 /*~~  */
 
+import java.util.Vector;
+
 import mesquite.lib.CommandRecord;
 import mesquite.lib.EmployeeNeed;
 import mesquite.lib.MesquiteListener;
@@ -87,6 +89,7 @@ public class AlterTrees extends TreeListUtility {
    		else if (numTrees>500)
    			dotFreq=10;
    		firstTime = true;
+		Vector v = pauseAllPausables();
 		for (int j=0; j<numTrees; j++){
 			if (doAll || trees.getSelected(j)){
 				Tree tree = trees.getTree(j);
@@ -100,6 +103,7 @@ public class AlterTrees extends TreeListUtility {
  				}
 			}
 		}
+		unpauseAllPausables(v);
 		logln("");
 		trees.notifyListeners(this, new Notification(MesquiteListener.UNKNOWN));
 		return true;

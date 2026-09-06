@@ -19,14 +19,15 @@ import mesquite.lib.EmployeeNeed;
 import mesquite.lib.MesquiteTrunk;
 import mesquite.lib.Puppeteer;
 import mesquite.lib.duties.MesquiteInit;
+import mesquite.lib.duties.MesquiteInitLateLoad;
 import mesquite.lib.duties.UtilitiesAssistant;
 
-public class Utilities extends MesquiteInit  {
+public class Utilities extends MesquiteInitLateLoad  {
 	public String getName() {
 		return "Utilities";
 	}
 	public String getExplanation() {
-		return "Provides a menu for utilities";
+		return "Organizes utilities by hiring them";
 	}
 	public void getEmployeeNeeds(){  //This gets called on startup to harvest information; override this and inside, call registerEmployeeNeed
 		EmployeeNeed e = registerEmployeeNeed(UtilitiesAssistant.class, "Utilities assistant modules perform various tasks.",
@@ -34,14 +35,14 @@ public class Utilities extends MesquiteInit  {
 	}
 	/*.................................................................................................................*/
 	public boolean startJob(String arguments, Object condition, boolean hiredByName) {
-		makeMenu("Utilities");
-		addMenuItem("Send Script to Mesquite...", makeCommand("sendScript", this));
+	//	addMenuItem(MesquiteTrunk.mesquiteTrunk.utilitiesSubmenu, "Send Script to Mesquite...", makeCommand("sendScript", this));
+   	//	addItemToSubmenu(MesquiteTrunk.mesquiteTrunk.fileMenu, MesquiteTrunk.mesquiteTrunk.utilitiesSubmenu, "Send Script to Mesquite...", makeCommand("sendScript", this));
 		hireAllEmployees(UtilitiesAssistant.class);
 		return true;
 	}
 
 	/*.................................................................................................................*/
-	/** Respond to commands sent to the window. */
+	/** Respond to commands sent to the window. *
 	public Object doCommand(String commandName, String arguments, CommandChecker checker) {
 		if (checker.compare(this.getClass(), "Sends a script to Mesquite", null, commandName, "sendScript")) {
 				Puppeteer p = new Puppeteer(MesquiteTrunk.mesquiteTrunk);
@@ -51,5 +52,6 @@ public class Utilities extends MesquiteInit  {
 			return  super.doCommand(commandName, arguments, checker);
 		return null;
 	}
+	*/
 }
 

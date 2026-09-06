@@ -14,6 +14,7 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
 package mesquite.ancstates.RecAncestralStates;
 
 import mesquite.lib.CommandChecker;
+import mesquite.lib.Debugg;
 import mesquite.lib.EmployeeNeed;
 import mesquite.lib.MesquiteBoolean;
 import mesquite.lib.MesquiteCommand;
@@ -218,7 +219,8 @@ public class RecAncestralStates extends CharHistorySource {
 			int ic = currentObservedStates.getParentCharacter();
 			if (cd != null && ic >=0 && MesquiteInteger.isCombinable(ic))
 				ns += " " + (ic+1);
-			resultString.prepend(ns + ": " + currentObservedStates.getName() + "\n");
+			if (ic>=0)
+				resultString.prepend(ns + ": " + currentObservedStates.getName() + "\n");
 		}
 		
 		if (history == null || !success) { 

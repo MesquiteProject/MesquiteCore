@@ -175,7 +175,13 @@ public abstract class ListWindow extends TableWindow implements KeyListener, Mes
 			MesquiteWindow.addKeyListener(this, this);
 		}
 		if (owner.rowsMovable()) {
-			MesquiteMenuItemSpec mm = ownerModule.addMenuItem( "Move Selected " + owner.getItemTypeNamePlural() + " To...", ownerModule.makeCommand("moveSelectedTo", this));
+			MesquiteSubmenuSpec mssMT = ownerModule.addSubmenu(null, "Move Selected " + owner.getItemTypeNamePlural() + " To");
+			MesquiteMenuItemSpec mm = ownerModule.addItemToSubmenu(null, mssMT, "Specified Place...", ownerModule.makeCommand("moveSelectedTo", this));
+			ownerModule.addItemToSubmenu(null, mssMT, "Start", ownerModule.makeCommand("moveSelectedToStart", this));
+			ownerModule.addItemToSubmenu(null, mssMT, "End", ownerModule.makeCommand("moveSelectedToEnd", this));
+			
+			
+			//MesquiteMenuItemSpec mm = ownerModule.addMenuItem( "Move Selected " + owner.getItemTypeNamePlural() + " To...", ownerModule.makeCommand("moveSelectedTo", this));
 			mm.setShortcut(KeyEvent.VK_M);
 		}
 		MesquiteSubmenuSpec mss2 =	ownerModule.addSubmenu(null,"Select");
@@ -806,6 +812,28 @@ public abstract class ListWindow extends TableWindow implements KeyListener, Mes
 			Vector v = owner.pauseAllPausables();
 			if (MesquiteInteger.isCombinable(justAfter))
 				table.selectedRowsDropped(justAfter-1); //-1 to convert to internal representation
+			owner.unpauseAllPausables(v);
+		}
+		else if (checker.compare(this.getClass(), "Moves the selected rows to start", "[]", commandName, "moveSelectedToStart")) {
+			if (!owner.rowsMovable())
+				return null;
+			if (!table.anyRowSelected()){
+				owner.discreetAlert( "Sorry, to move " + owner.getItemTypeNamePlural() + " they must be selected first in the List window");
+				return null;
+			}
+			Vector v = owner.pauseAllPausables();
+				table.selectedRowsDropped(-1); 
+			owner.unpauseAllPausables(v);
+		}
+		else if (checker.compare(this.getClass(), "Moves the selected rows to send", "[]", commandName, "moveSelectedToEnd")) {
+			if (!owner.rowsMovable())
+				return null;
+			if (!table.anyRowSelected()){
+				owner.discreetAlert( "Sorry, to move " + owner.getItemTypeNamePlural() + " they must be selected first in the List window");
+				return null;
+			}
+			Vector v = owner.pauseAllPausables();
+				table.selectedRowsDropped(table.getNumRows()); 
 			owner.unpauseAllPausables(v);
 		}
 		else if (checker.compare(this.getClass(), "Adds rows (and their corresponding objects)", "[number of rows to add]", commandName, "addRows")) {

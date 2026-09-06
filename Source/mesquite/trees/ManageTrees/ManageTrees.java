@@ -112,7 +112,7 @@ public class ManageTrees extends TreesManager implements ItemListener {
 	boolean fillingTreesNow = false;
 	MesquiteBoolean separateThreadFill; 
 	MesquiteBoolean autoSaveInference ;
-	//todo: have a single TreeBlockFiller employee belong to the module causes re-entrancy problems, if several long searches are on separate threads.
+	//todo: have a single TreeBlockFiller employee belong to the module causes re-entrancy problems, if several long searches are on sxeparate threads.
 	//The searches themselves should work fine, but there is a possibility of user-interface confuses.
 
 	boolean showTreeFiller = false; //adds menu item that can be used to set default tree filler; an aid in writing scripts, for then the tree filler snapshot is put into files
@@ -345,6 +345,7 @@ public class ManageTrees extends TreesManager implements ItemListener {
 		checkTreesVector();
 		MesquiteSubmenuSpec mmis = getFileCoordinator().addSubmenu(MesquiteTrunk.treesMenu, "List of Trees", makeCommand("showTrees",  this), treesVector); 
 		mmis.setBehaviorIfNoChoice(MesquiteSubmenuSpec.ONEMENUITEM_ZERODISABLE);
+		mmis.autoShowChoose = true;
 		getFileCoordinator().addMenuItem(MesquiteTrunk.treesMenu, "List of Tree Blocks", makeCommand("showTreeBlocks",  this));
 		getFileCoordinator().addMenuItem(MesquiteTrunk.treesMenu, "Delete Tree Blocks...", makeCommand("deleteTreeBlocks",  this));
 		getFileCoordinator().addMenuItem(MesquiteTrunk.treesMenu, "New Empty Block of Trees...", makeCommand("newTreeBlock",  this));
@@ -356,8 +357,9 @@ public class ManageTrees extends TreesManager implements ItemListener {
 		getFileCoordinator().addItemToSubmenu(MesquiteTrunk.treesMenu, mss, "Include Contents...", makeCommand("includeTreeFile",  this));
 		getFileCoordinator().addItemToSubmenu(MesquiteTrunk.treesMenu, mss, "Include Partial Contents...", makeCommand("includePartialTreeFile",  this));
 		 */
-		MesquiteSubmenuSpec mmis2 = getFileCoordinator().addSubmenu(MesquiteTrunk.treesMenu, "Save Copy of Tree Block...", makeCommand("exportTreesBlock",  this),  treesVector);
+		MesquiteSubmenuSpec mmis2 = getFileCoordinator().addSubmenu(MesquiteTrunk.treesMenu, "Save Copy of Tree Block", makeCommand("exportTreesBlock",  this),  treesVector);
 		mmis2.setBehaviorIfNoChoice(MesquiteSubmenuSpec.SHOW_SUBMENU);
+		mmis2.autoShowChoose = true;
 		getFileCoordinator().addSubmenu(MesquiteTrunk.treesMenu, "Save Copies of Tree Blocks", makeCommand("exportTreesBlocks",  this), TreeBlockSource.class);
 		if (showTreeFiller)
 			getFileCoordinator().addSubmenu(MesquiteTrunk.treesMenu, "SetTreeFillerTask", makeCommand("setTreeSource",  this), TreeBlockFiller.class);
@@ -473,7 +475,16 @@ public class ManageTrees extends TreesManager implements ItemListener {
 		}
 		else if (checker.compare(this.getClass(), "Shows lists of trees in a trees block", "[number of trees block; 0 based]", commandName, "showTrees")) {
 			int t = MesquiteInteger.fromFirstToken(arguments, pos);
-			if (StringUtil.blank(arguments) || !MesquiteInteger.isCombinable(t) || t>treesVector.size()) {
+			if (StringUtil.blank(arguments)) {
+				if (!MesquiteThread.isScripting()) {
+					TreeVector trees = getProject().chooseTrees(containerOfModule(), null, "Choose tree block");
+					if (trees == null)
+						return null;
+					showTrees(trees);
+
+				}
+			}
+			else if (!MesquiteInteger.isCombinable(t) || t>treesVector.size()) {
 				for (int i = 0; i< treesVector.size(); i++) {
 					showTrees((TreeVector)treesVector.elementAt(i));
 				}
@@ -579,21 +590,29 @@ public class ManageTrees extends TreesManager implements ItemListener {
 			}
 		}
 		else if (checker.compare(this.getClass(), "Saves copy of a trees block to a separate file", "[index of trees block]", commandName, "exportTreesBlock")) {
-			int t = MesquiteInteger.fromString(parser.getFirstToken(arguments));
+			TreeVector trees = null;
+			String path = null;
+			if (StringUtil.blank(arguments)){
+				trees = getProject().chooseTrees(containerOfModule(), null, "Choose tree block");
+
+			}
+			else {
+				int t = MesquiteInteger.fromString(parser.getFirstToken(arguments));
 			if (MesquiteInteger.isCombinable(t) && t< getProject().getNumberOfFileElements(TreeVector.class)) {
-				String path = parser.getNextToken();
+				path = parser.getNextToken();
 				int id = MesquiteInteger.fromString(path);
 				if (MesquiteInteger.isCombinable(id))
 					path = parser.getNextToken();
-				TreeVector d = (TreeVector)getProject().getFileElement(TreeVector.class, t);
-				if (d!=null) {
-					if (StringUtil.blank(path))
-						path = MesquiteFile.saveFileAsDialog("Save copy of tree block to file");
-					else
-						path = MesquiteFile.composePath(getProject().getHomeDirectoryName(), path);
-					if (!StringUtil.blank(path))
-						exportTreesBlock(d, path);
-				}
+				trees = (TreeVector)getProject().getFileElement(TreeVector.class, t);
+			}
+			}
+			if (trees!=null) {
+				if (StringUtil.blank(path))
+					path = MesquiteFile.saveFileAsDialog("Save copy of tree block to file");
+				else
+					path = MesquiteFile.composePath(getProject().getHomeDirectoryName(), path);
+				if (!StringUtil.blank(path))
+					exportTreesBlock(trees, path);
 			}
 
 		}
@@ -876,8 +895,10 @@ public class ManageTrees extends TreesManager implements ItemListener {
 
 			int separateThread = 0;
 			MesquiteBoolean autoSave = new MesquiteBoolean(false);
-			if (!MesquiteThread.isScripting() && treeFillerTask.permitSeparateThreadWhenFilling())
-				separateThread= separateThreadQuery("Fill tree block", autoSave, false);
+			// As of 4.04, separate thread option eliminated.
+			
+			//if (!MesquiteThread.isScripting() && treeFillerTask.permitSeparateThreadWhenFilling())
+			//	separateThread= separateThreadQuery("Fill tree block", autoSave, false);
 			if (separateThread==1) {  //separateThread
 				fillingTreesNow = true;
 				TreeBlockThread tLT = new TreeBlockThread(this, treeFillerTask, trees, howManyTrees, autoSave, file);
@@ -1075,8 +1096,12 @@ public class ManageTrees extends TreesManager implements ItemListener {
 		}
 		int separateThread = 0;
 		MesquiteBoolean autoSave = new MesquiteBoolean(false);
-		if (!MesquiteThread.isScripting() && treeFillerTask.permitSeparateThreadWhenFilling())
-			separateThread= separateThreadQuery(taskName, autoSave, isInference);
+		//as of 4.04, separate thread option eliminated
+		
+		if (!MesquiteThread.isScripting() && isInference)
+			autoSave.setValue(AlertDialog.query(containerOfModule(), "Auto-save?", "Auto-save file after inference?"));
+		//if (!MesquiteThread.isScripting() && treeFillerTask.permitSeparateThreadWhenFilling())
+		//	separateThread= separateThreadQuery(taskName, autoSave, isInference);
 		if (separateThread==1) {   // separate
 			fillingTreesNow = true;
 			TreeBlockThread tLT = new TreeBlockThread(this, treeFillerTask, trees, howManyTrees, autoSave, file);
@@ -1144,8 +1169,9 @@ public class ManageTrees extends TreesManager implements ItemListener {
 		else
 			howManyTrees = treeSourceTask.getNumberOfTrees(taxa);
 		int separateThread = 0; 
-		if (!MesquiteThread.isScripting() && treeSourceTask.permitSeparateThreadWhenFilling())
-			separateThread= AlertDialog.query(containerOfModule(), "Separate Thread?", "Save tree file on separate thread? (Beware! If you use a separate thread, be careful not to reorder, delete, add or rename taxa while this calculation is in progress)","No", "Separate", "Cancel", 0, null);
+		//4.04 eliminate separate thread options. Simply annoying.
+		//if (!MesquiteThread.isScripting() && treeSourceTask.permitSeparateThreadWhenFilling())
+		//	separateThread= AlertDialog.query(containerOfModule(), "Sxeparate Thread?", "Save tree file on sxeparate thread? (Beware! If you use a separate thread, be careful not to reorder, delete, add or rename taxa while this calculation is in progress)","No", "Separate", "Cancel", 0, null);
 		MainThread.incrementSuppressWaitWindow();
 		MesquiteFileDialog fdlg= new MesquiteFileDialog(MesquiteTrunk.mesquiteTrunk.containerOfModule(), "File in which to Save Trees", FileDialog.SAVE);   // Save File dialog box
 		fdlg.setVisible(true);
