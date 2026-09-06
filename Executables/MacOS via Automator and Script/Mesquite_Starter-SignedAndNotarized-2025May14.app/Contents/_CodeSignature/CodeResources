@@ -10,15 +10,11 @@
 		</data>
 		<key>Resources/Assets.car</key>
 		<data>
-		2K+GckNeJsYg0mnsAcuXvxZKJXE=
+		1asgte35t0XNisvnycP4aGmipIg=
 		</data>
 		<key>Resources/InfoPlist.loctable</key>
 		<data>
 		KEQC0DFC9lrETWe0E5eVGGsPylc=
-		</data>
-		<key>Resources/Mesquite.icns</key>
-		<data>
-		mqnGaSRzbpi8l2W1di+4pqXeH9s=
 		</data>
 	</dict>
 	<key>files2</key>
@@ -38,11 +34,11 @@
 		<dict>
 			<key>hash</key>
 			<data>
-			2K+GckNeJsYg0mnsAcuXvxZKJXE=
+			1asgte35t0XNisvnycP4aGmipIg=
 			</data>
 			<key>hash2</key>
 			<data>
-			gYa4GKjsB/mfON5K7obf9w2L4udLpdakQDZ1A65V+WA=
+			Xgq054HrP1eyabRZMpm0pFNNC86HMaE2/DNOSgA5p6Q=
 			</data>
 		</dict>
 		<key>Resources/InfoPlist.loctable</key>
@@ -56,25 +52,14 @@
 			3cSIcj64rHY2k+pLrnrgd1Li6hmbquwgX94QcefajJ8=
 			</data>
 		</dict>
-		<key>Resources/Mesquite.icns</key>
-		<dict>
-			<key>hash</key>
-			<data>
-			mqnGaSRzbpi8l2W1di+4pqXeH9s=
-			</data>
-			<key>hash2</key>
-			<data>
-			i5EC+dPX7zdVv0gkr98Ez5XSpVYjE3Zym2KoGfXHfAk=
-			</data>
-		</dict>
 		<key>document.wflow</key>
 		<dict>
 			<key>cdhash</key>
 			<data>
-			dwelfOvOupYKqqIAslDUy7i2yvk=
+			TrYlSi5SNunPLo3c+ngq46vFl2g=
 			</data>
 			<key>requirement</key>
-			<string>identifier document and anchor apple generic and certificate 1[field.1.2.840.113635.100.6.2.6] /* exists */ and certificate leaf[field.1.2.840.113635.100.6.1.13] /* exists */ and certificate leaf[subject.OU] = "8LT29UFQPL"</string>
+			<string>cdhash H"ed917af57ade81bec8672e5c01cfbfd3bb81ac36" or cdhash H"4eb6254a2e5236e9cf2e8ddcfa782ae3abc59768"</string>
 		</dict>
 	</dict>
 	<key>rules</key>
