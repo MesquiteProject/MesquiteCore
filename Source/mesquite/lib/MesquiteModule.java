@@ -89,7 +89,7 @@ public abstract class MesquiteModule extends EmployerEmployee implements Command
 	/*.................................................................................................................*/
 	/** returns build date of the Mesquite system (e.g., "22 September 2003") */
 	public final static String getBuildDate() {
-		return "21 August 2026";
+		return "6 September 2026";
 	}
 	/*.................................................................................................................*/
 	/** returns version of the Mesquite system */
@@ -107,7 +107,7 @@ public abstract class MesquiteModule extends EmployerEmployee implements Command
 	public final static int getBuildNumber() {
 		//as of 26 Dec 08, build naming changed from letter + number to just number.  Accordingly j105 became 473, based on
 		// highest build numbers of d51+e81+g97+h66+i69+j105 + 3 for a, b, c
-		return 1146;  
+		return 1147;  
 	}
 	//0.95.80    14 Mar 01 - first beta release 
 	//0.96  2 April 01 beta  - second beta release
@@ -1136,6 +1136,15 @@ public abstract class MesquiteModule extends EmployerEmployee implements Command
 	/*.................................................................................................................*/
 	public void processSingleXMLPreference (String tag, String content) {
 	}
+	/*
+	 Examples: 
+	 	otherOptions = parser.getFirstToken(content);	
+		useSelectedTaxaAsOutgroups.setFromTrueFalseString(content);
+		threads = MesquiteInteger.fromString(content);
+		defaultDrawer = StringUtil.cleanXMLEscapeCharacters(content);
+	 * */
+	
+	
 	/*.................................................................................................................*/
 	/** This is called following a "loadPreferences" call by a module.  A module can override it
 	to process the preferences string*/

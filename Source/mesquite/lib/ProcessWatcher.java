@@ -17,6 +17,7 @@ public interface ProcessWatcher {
 
 	public boolean continueProcess(Process proc);
 	
+	/** this is to be set by the ProcessWatcher if it detects the user has aborted */
 	public boolean userAborted();
 	
 	public boolean fatalErrorDetected();
