@@ -570,8 +570,9 @@ public class Mesquite extends MesquiteTrunk
 			prepareMesquite();
 		}
 		if (verboseStartup) System.out.println("main init 18");
-		if (isJavaVersionLessThan(1.8)){
-			discreetAlert("This version of Mesquite requires Java 1.8 or higher.  Please update your version of Java, or use an older version of Mesquite.  Please be aware however that earlier versions of Mesquite may have bugs that affect your results.  Please check the Mesquite website for information.");
+		if (isJavaVersionLessThan(1.9)){
+			discreetAlert("Your version of Java is 1.8 or earlier. This version of Mesquite should be run on Java 17 or higher, though it is able to partly run on requires Java 9.  "
+					+"Please update your version of Java, or use an older version of Mesquite.  Please be aware however that earlier versions of Mesquite may have bugs that affect your results.  Please check the Mesquite website for information.");
 			exit(true, 0);
 		}
 
