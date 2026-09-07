@@ -1142,6 +1142,7 @@ public abstract class MesquiteModule extends EmployerEmployee implements Command
 		useSelectedTaxaAsOutgroups.setFromTrueFalseString(content);
 		threads = MesquiteInteger.fromString(content);
 		defaultDrawer = StringUtil.cleanXMLEscapeCharacters(content);
+		warnUnsaved = MesquiteBoolean.fromTrueFalseString(content);
 	 * */
 	
 	
