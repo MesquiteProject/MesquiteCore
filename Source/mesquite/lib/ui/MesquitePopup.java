@@ -89,6 +89,11 @@ public class MesquitePopup extends PopupMenu {
 		}
 	}
 
+	public MesquiteSubmenu addSubmenu(String label, MesquiteModule module){
+		MesquiteSubmenu m = new MesquiteSubmenu(label, this, module);
+		add(m);
+		return m;
+	}
 
 	public void showPopup(int x, int y){
 		
