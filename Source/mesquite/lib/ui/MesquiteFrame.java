@@ -27,6 +27,7 @@ import java.awt.Image;
 import java.awt.Insets;
 import java.awt.Menu;
 import java.awt.MenuBar;
+import java.awt.MenuComponent;
 import java.awt.Panel;
 import java.awt.Rectangle;
 import java.awt.RenderingHints;
@@ -343,8 +344,12 @@ public class MesquiteFrame extends Frame implements Commandable, MQComponent {
 	public void setMenuBar(MenuBar mbar) {
 		if (getMenuBar() == mbar)
 			return;
-		if (!MesquiteThread.isReadingThread())
+		if (!MesquiteThread.isReadingThread()){
+		//	if (getMenuBar() != null)
+		//		removeItemsAsListeners(getMenuBar());
 			super.setMenuBar(mbar);
+		//	addItemsAsListeners(mbar);
+		}
 	}
 	public void setMenuBar(MesquiteWindow which, MenuBar mbar) {
 		if (which == frontWindow) {
@@ -357,7 +362,44 @@ public class MesquiteFrame extends Frame implements Commandable, MQComponent {
 		}
 		checkInsets(true);
 	}
+	
 
+	/*AWTEventListener =======
+	void removeItemsAsListeners(MenuComponent mc){
+		if (mc == null)
+			return;
+		if (mc instanceof MenuBar){
+			for (int i= 0; i< ((MenuBar)mc).getMenuCount(); i++)
+				removeItemsAsListeners(((MenuBar)mc).getMenu(i));
+		}
+		else if (mc instanceof Menu){
+			for (int i= 0; i< ((Menu)mc).getItemCount(); i++)
+				removeItemsAsListeners(((Menu)mc).getItem(i));
+		}
+		else if (mc instanceof MesquiteMenuItem){
+			getToolkit().removeAWTEventListener((MesquiteMenuItem)mc);
+		}
+		
+	}
+	public void addItemsAsListeners(MenuComponent mc){
+		if (mc == null)
+			return;
+		if (mc instanceof MenuBar){
+			for (int i= 0; i< ((MenuBar)mc).getMenuCount(); i++)
+				addItemsAsListeners(((MenuBar)mc).getMenu(i));
+		}
+		else if (mc instanceof Menu){
+			for (int i= 0; i< ((Menu)mc).getItemCount(); i++)
+				addItemsAsListeners(((Menu)mc).getItem(i));
+		}
+		else if (mc instanceof MesquiteMenuItem){
+			getToolkit().removeAWTEventListener((MesquiteMenuItem)mc);
+			getToolkit().addAWTEventListener((MesquiteMenuItem)mc,  0xFFFFFFFFFFFFFFFFL);
+			Debugg.errln(" !!!!!!! mc " + mc);
+		}
+	}
+	//AWTEventListener =======  */
+	
 	public int getNumWindows(){
 		return windows.size();
 	}

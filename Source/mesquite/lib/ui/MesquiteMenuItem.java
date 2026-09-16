@@ -13,19 +13,26 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
  */
 package mesquite.lib.ui;
 
+import java.awt.AWTEvent;
 import java.awt.MenuBar;
 import java.awt.MenuComponent;
 import java.awt.MenuContainer;
 import java.awt.MenuItem;
 import java.awt.MenuShortcut;
+import java.awt.Toolkit;
+import java.awt.event.AWTEventListener;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
+import java.util.EventListener;
 
 import javax.accessibility.AccessibleContext;
 
 import mesquite.lib.CommandChecker;
+import mesquite.lib.Debugg;
 import mesquite.lib.Journal;
 import mesquite.lib.Listable;
 import mesquite.lib.ListableVector;
@@ -88,7 +95,19 @@ public class MesquiteMenuItem extends MenuItem implements ActionListener {
 		}
 		totalCreated++;
 	}
-
+	
+	/*
+implement AWTEventListener
+here have addedToWindow that calls 
+		if (ownerModule != null && ownerModule.containerOfModule()!= null)
+			ownerModule.containerOfModule().getParentFrame().getToolkit().addAWTEventListener(this,  0xFFFFFFFFFFFFFFFFL);
+and call addedToWindow any time menu bar is attached to the frame
+	public void eventDispatched(AWTEvent event) {
+		Debugg.errln("dispatched " + event);
+	
+	}
+	*/
+	
 
 	public MesquiteMenuItem(String itemName, MesquiteModule ownerModule, MesquiteCommand command, String argument) {
 		this( itemName,  ownerModule,  command);
@@ -333,6 +352,7 @@ public class MesquiteMenuItem extends MenuItem implements ActionListener {
 		totalFinalized++;
 		super.finalize();
 	}
+
 }
 
 

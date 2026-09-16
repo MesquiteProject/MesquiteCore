@@ -209,6 +209,7 @@ public class MesquiteMenu extends Menu implements Commandable, Listable{
 			}
 
 		}
+
 		return super.add(mmi);
 	}
 	public static void add(Menu menu, MenuItem mmi) {
