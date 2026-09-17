@@ -1955,9 +1955,9 @@ public class ManageTrees extends TreesManager implements ItemListener {
 			block.append("\tLINK Taxa = " + StringUtil.tokenize(taxa.getName()));
 			block.append(endLine);
 		}
-		block.append("\tTRANSLATE" + StringUtil.lineEnding());
 		int writeMode = Tree.BY_NAMES;
 		if (useTranslationTable){
+			block.append("\tTRANSLATE" + StringUtil.lineEnding());
 			String tt =trees.getTranslationTable(includeClutter);
 			writeMode = Tree.BY_TABLE;
 			if (tt==null) {

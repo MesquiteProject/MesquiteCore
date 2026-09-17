@@ -23,6 +23,7 @@ import mesquite.categ.lib.DNAState;
 import mesquite.io.InterpretFastaDNA.InterpretFastaDNA;
 import mesquite.io.InterpretFlippedFastaDNA.InterpretFlippedFastaDNA;
 import mesquite.lib.CommandRecord;
+import mesquite.lib.Debugg;
 import mesquite.lib.Listable;
 import mesquite.lib.ListableVector;
 import mesquite.lib.MesquiteBoolean;
@@ -262,7 +263,7 @@ public class CombineFlippedFastas extends GeneralFileMakerMultiple {
 				DNAState state = new DNAState();
 
 				int lociAdded = 0;
-
+				long lastNotification = System.currentTimeMillis();
 				// ============ GOING THROUGH DIRECTORY OF FILES, each representing a taxon, within which each "taxon" represents a locus ===========
 				for (int i=0; i<files.length; i++) {
 					progIndicator.setCurrentValue(i);
@@ -324,7 +325,7 @@ public class CombineFlippedFastas extends GeneralFileMakerMultiple {
 									CharacterData incomingFlippedMatrix = project.getCharacterMatrix(file, loci, null, 0, false);
 									if (incomingFlippedMatrix != null){
 										progIndicator.setSecondaryMessage("Taxon: " + taxonName + " with " + loci.getNumTaxa() + " loci");
-
+										lastNotification = System.currentTimeMillis();
 										//OK, ready to go. Have matrix. Will add new taxon based on the name of the file, and transfer over its sequences
 										boolean existingTaxon = true;
 										int receivingTaxonNumber = taxa.whichTaxonNumber(taxonName);
@@ -339,6 +340,8 @@ public class CombineFlippedFastas extends GeneralFileMakerMultiple {
 										for (int iLocus = 0; iLocus < loci.getNumTaxa(); iLocus++){
 
 											CommandRecord.tick("For taxon " + taxonName + ", recovering sequence #" + (iLocus+1));
+											progIndicator.setSecondaryMessage("For taxon " + taxonName + ", recovering sequence #" + (iLocus+1));
+											lastNotification = System.currentTimeMillis();
 
 											//Get the name of the iLocus'th locus in the single-taxon fasta file
 											String locusName = loci.getTaxonName(iLocus);
@@ -424,6 +427,11 @@ public class CombineFlippedFastas extends GeneralFileMakerMultiple {
 													state = (DNAState)incomingFlippedMatrix.getCharacterState(state, ic, iLocus);
 													locusMatrix.setState(ic, receivingTaxonNumber, state);
 
+													if (System.currentTimeMillis() - lastNotification > 10000){
+														progIndicator.setSecondaryMessage("For taxon " + taxonName + ", recovering sequence #" + (iLocus+1) + " ic " + ic);
+														lastNotification = System.currentTimeMillis();	
+														Debugg.err(">");				
+													}
 												}
 											}
 											if (processRevCompUCEs && locusMatrix instanceof DNAData) {//$%$revComp
