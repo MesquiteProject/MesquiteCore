@@ -83,6 +83,8 @@ public class CharMatricesList extends ListLVModule {
 		charMatricesListWindow.	setIcon(MesquiteModule.getRootImageDirectoryPath() + "windowIcons/list.gif");
 
 		charMatricesListWindow.setDatas(datas);
+		charMatricesListWindow.setIcon(MesquiteModule.getRootImageDirectoryPath() + "windowIcons/list.gif");
+
 		setModuleWindow(charMatricesListWindow); 
 		((ListableVectorWindow)getModuleWindow()).setObject(datas);
 		datas.addListener(this);
