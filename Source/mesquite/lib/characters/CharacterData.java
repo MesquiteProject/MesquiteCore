@@ -83,10 +83,12 @@ import mesquite.lib.ui.AlertDialog;
 import mesquite.lib.ui.ColorDistribution;
 import mesquite.lib.ui.ColorTheme;
 import mesquite.lib.ui.HTMLDescribable;
+import mesquite.lib.ui.ListDialog;
 import mesquite.lib.ui.MesquiteFrame;
 import mesquite.lib.ui.MesquiteImage;
 import mesquite.lib.ui.MesquiteMenuItem;
 import mesquite.lib.ui.MesquitePopup;
+import mesquite.lib.ui.MesquiteWindow;
 
 /* last documented: April 2003 */
 /* ======================================================================== */
@@ -4309,6 +4311,33 @@ public abstract class CharacterData extends FileElement implements MesquiteListe
 	}
 	public Tree getBasisTree(){
 		return basisTree;
+	}
+	/*------------------*/
+	public TreeVector chooseLinkedTreeVector(MesquiteWindow window, MesquiteProject project){
+		ListableVector treeVectors = project.getTreeVectors();
+		boolean selAny = false;
+		ListableVector suitableTreeVectors = new ListableVector();
+		for (int j=0; j<treeVectors.size(); j++){
+			boolean sel = false;
+			TreeVector trees = (TreeVector)treeVectors.elementAt(j);
+			//now we have this tree vector. Let's see if this matrix has matches among the trees, and select those trees
+			if (trees.getTaxa() == getTaxa()){
+				for (int itr = 0; itr<trees.size(); itr++){
+					MesquiteTree tree = (MesquiteTree) trees.getTree(itr);
+					CharacterData d = tree.findLinkedMatrix(project);
+					if (d == this){
+						suitableTreeVectors.addElement(trees, false);
+						break;
+					}
+				}
+			}
+		}
+		if (suitableTreeVectors.size() == 0)
+			return null;
+		if (suitableTreeVectors.size() == 1)
+			return (TreeVector)suitableTreeVectors.elementAt(0);
+		Listable vectorChosen = ListDialog.queryList(window, "test", "test", null, suitableTreeVectors, 0);
+		return (TreeVector)vectorChosen;
 	}
 	/*------------------*/
 	public boolean selectLinkedTrees(MesquiteProject project, boolean notify){
