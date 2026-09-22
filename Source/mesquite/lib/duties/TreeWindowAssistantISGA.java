@@ -23,7 +23,7 @@ public abstract class TreeWindowAssistantISGA extends TreeWindowAssistant  {
    	 	return TreeWindowAssistantISGA.class;
    	 }
    	 public String[] getDefaultModule() {
-    	 	return new String[] {"#ABBABABASurvey", "#ABBABABAOnTree", "#GenePrefBranchMoveMap"};
+    	 	return new String[] {"#ABBABABASurvey", "#ABBABABAOnTree", "#MapDiscordantGenePreferences"};
     	 }
  	public String getDutyName() {
  		return "Assistant for Tree Window (Introgression Exploration)";
