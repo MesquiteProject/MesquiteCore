@@ -1237,7 +1237,7 @@ public class CategoricalData extends CharacterData {
 					return true;
 				if (CategoricalState.isCombinable(state)){
 					if (CategoricalState.cardinality(state)>1){ //polymorphic or uncertain
-						if (CategoricalState.isUncertain(state)){ //uncertain; ok if overlaps
+						if (CategoricalState.isUncertain(state)){ //uncertain; if overlaps counted as not a difference
 							intersection &= state;
 							if (intersection == 0L)
 								return true;

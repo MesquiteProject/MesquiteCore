@@ -55,6 +55,7 @@ import mesquite.lib.MesquiteTimer;
 import mesquite.lib.MesquiteTrunk;
 import mesquite.lib.Notification;
 import mesquite.lib.ParseUtil;
+import mesquite.lib.Pausable;
 import mesquite.lib.Puppeteer;
 import mesquite.lib.Snapshot;
 import mesquite.lib.characters.CharacterData;
@@ -95,7 +96,7 @@ import mesquite.lib.ui.Priority0;
 import mesquite.trees.BasicTreeWindowCoord.BasicTreeWindowCoord;
 
 /* ======================================================================== */
-public class MultiTreeWindowMaker extends FileAssistantT implements TreeDisplayHolder, TreeDisplayActive, TreeVectorHolder {
+public class MultiTreeWindowMaker extends FileAssistantT implements TreeDisplayHolder, TreeDisplayActive, TreeVectorHolder, Pausable {
 	public void getEmployeeNeeds(){  //This gets called on startup to harvest information; override this and inside, call registerEmployeeNeed
 		EmployeeNeed e = registerEmployeeNeed(DrawTreeCoordinator.class, getName() + "  needs a module to coordinate tree drawing.",
 				"This is arranged automatically");
@@ -170,6 +171,25 @@ public class MultiTreeWindowMaker extends FileAssistantT implements TreeDisplayH
 	public boolean allowsReorientation(){
 		return true;
 	}
+	/** to ask Pausable to pause*/
+	boolean paused = false;
+	public void addPausables(Vector pausables) {
+		if (pausables != null)
+			pausables.addElement(this);
+	}
+	public void pause(){
+		paused = true;
+	}
+	/** to ask a Pausable to unpause (i.e. to resume regular activity)*/
+	public void unpause(){
+		paused = false;
+		multiTreeWindow.renew(false, false);
+
+	}
+	/** to ask a Pausable whether it's paused.*/
+	public boolean isPaused(){
+		return paused;
+	}
 
 	/*.................................................................................................................*/
 	/**Returns tree vector.*/
@@ -206,6 +226,8 @@ public class MultiTreeWindowMaker extends FileAssistantT implements TreeDisplayH
 	}
 	/*.................................................................................................................*/
 	public void employeeParametersChanged(MesquiteModule employee, MesquiteModule source, Notification notification) {
+		if (paused)
+			return;
 		if (employee == treeSourceTask || source == treeSourceTask){
 			if ((multiTreeWindow!=null) ) 
 				multiTreeWindow.renew(false, false);
@@ -1197,8 +1219,8 @@ class MTWExtra extends TreeDisplayExtra implements Commandable, TreeDisplayExtra
 				int index = MesquiteInteger.fromString(arguments);
 				if (MesquiteInteger.isCombinable(index) && index >=0){
 					TreeVector trees = ((TreeVectorHolder)module.treeSourceTask).getCurrentTreeVector(treeDisplay.getTree().getTaxa());
-						trees.setSelected(index, true);
-						trees.notifyListeners(this, new Notification(MesquiteListener.SELECTION_CHANGED));
+					trees.setSelected(index, true);
+					trees.notifyListeners(this, new Notification(MesquiteListener.SELECTION_CHANGED));
 				}
 			}
 			return null;
