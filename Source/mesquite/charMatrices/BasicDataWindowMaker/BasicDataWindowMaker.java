@@ -108,6 +108,7 @@ import mesquite.lib.characters.CharacterState;
 import mesquite.lib.characters.CharacterStates;
 import mesquite.lib.characters.CharactersGroup;
 import mesquite.lib.characters.MatrixFlags;
+import mesquite.lib.characters.TaxaInfo;
 import mesquite.lib.duties.CellColorer;
 import mesquite.lib.duties.CellColorerCharacters;
 import mesquite.lib.duties.CellColorerMatrix;
@@ -458,6 +459,7 @@ class BasicDataWindow extends TableWindow implements MesquiteListener {
 	MesquiteBoolean infoPanelOn;
 	MesquiteBoolean editingNotPermitted = new MesquiteBoolean(false);
 	MesquiteBoolean showPaleExcluded = new MesquiteBoolean(false);
+	MesquiteBoolean strikeMarked = new MesquiteBoolean(true);
 
 	MesquiteBoolean showDarkTerminalGaps = new MesquiteBoolean(false);
 	MesquiteBoolean showDarkEmptySequences = new MesquiteBoolean(false);
@@ -595,6 +597,7 @@ class BasicDataWindow extends TableWindow implements MesquiteListener {
 		ownerModule.addCheckMenuItemToSubmenu(ownerModule.displayMenu, softnessSubmenu, "Lighten Gaps/Inapplicable", MesquiteModule.makeCommand("togglePaleInapplicable", this), table.paleInapplicable);
 		ownerModule.addCheckMenuItemToSubmenu(ownerModule.displayMenu, softnessSubmenu, "Lighten Missing", MesquiteModule.makeCommand("togglePaleMissing", this), table.paleMissing);
 		ownerModule.addCheckMenuItemToSubmenu(ownerModule.displayMenu, softnessSubmenu, "Lighten Excluded Characters", MesquiteModule.makeCommand("toggleShowPaleExcluded", this), showPaleExcluded);
+		ownerModule.addCheckMenuItemToSubmenu(ownerModule.displayMenu, softnessSubmenu, "Strike Marked Sequences", MesquiteModule.makeCommand("toggleStrikeMarked", this), strikeMarked);
 
 
 		ownerModule.addMenuItem(ownerModule.displayMenu, "-", null);
@@ -1100,6 +1103,7 @@ class BasicDataWindow extends TableWindow implements MesquiteListener {
 		temp.addLine("toggleShowPaleGrid " + table.showPaleGrid.toOffOnString());
 		temp.addLine("toggleShowPaleCellColors " + table.showPaleCellColors.toOffOnString());
 		temp.addLine("toggleShowPaleExcluded " + showPaleExcluded.toOffOnString());
+		temp.addLine("toggleStrikeMarked " + strikeMarked.toOffOnString());
 		temp.addLine("toggleShowDarkTerminalGaps " + showDarkTerminalGaps.toOffOnString());
 		temp.addLine("toggleShowDarkEmptySequences " + showDarkEmptySequences.toOffOnString());
 
@@ -2465,6 +2469,11 @@ class BasicDataWindow extends TableWindow implements MesquiteListener {
 			table.setShowPaleExcluded(showPaleExcluded.getValue());
 			table.repaintAll();
 		}
+		else if (checker.compare(this.getClass(), "Sets whether or not to strike marked sequences.", "[on or off]", commandName, "toggleStrikeMarked")) {
+			strikeMarked.toggleValue(ParseUtil.getFirstToken(arguments, pos));
+			table.setStrikeMarked(strikeMarked.getValue());
+			table.repaintAll();
+		}
 		else if (checker.compare(this.getClass(), "Sets whether or not empty sequences are dark.", "[on or off]", commandName, "toggleShowDarkEmptySequences")) {
 			showDarkEmptySequences.toggleValue(ParseUtil.getFirstToken(arguments, pos));
 			table.setShowDarkEmptySequences(showDarkEmptySequences.getValue());
@@ -3398,6 +3407,7 @@ class MatrixTable extends mesquite.lib.table.CMTable implements MesquiteDroppedF
 	MesquiteBoolean showBoldCellText;
 	MesquiteBoolean showPaleCellColors;
 	MesquiteBoolean showPaleExcluded;
+	MesquiteBoolean showStrikeMarked;
 	MesquiteBoolean showDarkEmptySequences;
 	MesquiteBoolean showDarkTerminalGaps;
 	MesquiteBoolean showEmptyDataAsClear;
@@ -3452,6 +3462,7 @@ class MatrixTable extends mesquite.lib.table.CMTable implements MesquiteDroppedF
 		showDarkEmptySequences = new MesquiteBoolean(false);
 		showEmptyDataAsClear = new MesquiteBoolean(false);
 		showPaleExcluded = new MesquiteBoolean(false);
+		showStrikeMarked = new MesquiteBoolean(true);
 		paleInapplicable = new MesquiteBoolean(true);
 		paleMissing = new MesquiteBoolean(false);
 		showBoldCellText = new MesquiteBoolean(false);
@@ -3515,6 +3526,9 @@ class MatrixTable extends mesquite.lib.table.CMTable implements MesquiteDroppedF
 		this.showPaleExcluded.setValue(showPaleExcluded);
 	}
 
+	public void setStrikeMarked(boolean strike) {
+		this.showStrikeMarked.setValue(strike);
+	}
 
 	/* ................................................................................................................. */
 	public void copyCells(StringBuffer s, boolean literal) {
@@ -4316,6 +4330,8 @@ class MatrixTable extends mesquite.lib.table.CMTable implements MesquiteDroppedF
 	public CellColorer getCellColorer() {
 		return cellColorer;
 	}
+	
+	NameReference markedNR = NameReference.getNameReference("marked");
 	public synchronized void drawMatrixCell(Graphics g, int x, int y, int w, int h, int column, int row, boolean selected, boolean writeStates, boolean leaveEdges) {
 		if (data == null)
 			return;
@@ -4378,7 +4394,7 @@ class MatrixTable extends mesquite.lib.table.CMTable implements MesquiteDroppedF
 			int red = fillColor.getRed();
 
 		}
-
+		
 		Color.RGBtoHSB(fillColor.getRed(), fillColor.getGreen(), fillColor.getBlue(), hsb);
 		//}
 		timers[timerNum++].end();
@@ -4394,7 +4410,18 @@ class MatrixTable extends mesquite.lib.table.CMTable implements MesquiteDroppedF
 
 		timers[timerNum++].end();
 		//@@@@@@@@@@@@@@@@@@ macOS time weight ca. 8% but only if selected blocks 
-
+		if (showStrikeMarked.getValue()){
+			Associable tInfo = data.getTaxaInfo(false);
+			if (tInfo!= null){
+				Bits bits = tInfo.getAssociatedBits(markedNR);
+				if (bits.isBitOn(row)) {
+					Color cc = g.getColor();
+					g.setColor(Color.white);
+					g.drawLine(x + 1, y + (h/2), x+w-2, y + (h/2));
+					g.setColor(cc);
+				}
+			}
+		}
 		if (selected) {
 			timers[timerNum].start(); // timing part 4
 			timers[timerNum].setID("ft");

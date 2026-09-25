@@ -34,6 +34,8 @@ import java.util.Vector;
 
 import mesquite.categ.lib.MolecularData;
 import mesquite.charMatrices.BasicDataWindowCoord.BasicDataWindowCoord;
+import mesquite.lib.Associable;
+import mesquite.lib.Bits;
 import mesquite.lib.CommandChecker;
 import mesquite.lib.CommandRecord;
 import mesquite.lib.Commandable;
@@ -53,12 +55,15 @@ import mesquite.lib.MesquiteString;
 import mesquite.lib.MesquiteThread;
 import mesquite.lib.MesquiteTimer;
 import mesquite.lib.MesquiteTrunk;
+import mesquite.lib.NameReference;
 import mesquite.lib.Notification;
 import mesquite.lib.ParseUtil;
+import mesquite.lib.Parser;
 import mesquite.lib.Pausable;
 import mesquite.lib.Puppeteer;
 import mesquite.lib.Snapshot;
 import mesquite.lib.characters.CharacterData;
+import mesquite.lib.characters.TaxaInfo;
 import mesquite.lib.duties.DataWindowMaker;
 import mesquite.lib.duties.DrawNamesTreeDisplay;
 import mesquite.lib.duties.DrawTreeCoordinator;
@@ -641,6 +646,7 @@ class MultiTreeWindow extends MesquiteWindow implements KeyListener, Commandable
 		}
 		 */
 
+		treeScroll.setBlockIncrement(numRows);
 		treeScroll.setVisible(true);
 		sizeDisplays(false);
 		addAssistantsDI(ownerModule);
@@ -963,6 +969,7 @@ class MultiTreeWindow extends MesquiteWindow implements KeyListener, Commandable
 			for (int itree = 0; itree<numColumns*numRows && itree<treeDisplays.length; itree++) {
 				treeDisplays[itree].setVisible(true);
 			}
+			treeScroll.setBlockIncrement(numRows);
 
 			setFirstTree(firstTree);
 			//sizeDisplays(false);
@@ -976,7 +983,7 @@ class MultiTreeWindow extends MesquiteWindow implements KeyListener, Commandable
 		return numRows;
 	}
 	public void mouseWheelMoved(MouseWheelEvent e) {
-		int amount = e.getScrollAmount() * 2;
+		int amount = e.getScrollAmount();
 		boolean blockScroll = e.getScrollType() == MouseWheelEvent.WHEEL_BLOCK_SCROLL;
 		boolean upleft=false;
 		upleft = e.getWheelRotation()<0;
@@ -1112,12 +1119,27 @@ class MTWExtra extends TreeDisplayExtra implements Commandable, TreeDisplayExtra
 	public void addToRightClickPopup(MesquitePopup popup, MesquiteTree tree, int branch){
 		if (tree.nodeExists(branch)){
 			if (tree.nodeIsInternal(branch)){
-				popup.addItem("Select All Taxa in Clade", new MesquiteCommand("selectTerminals", this), Integer.toString(branch));
-				popup.addItem("Deselect All Taxa in Clade", new MesquiteCommand("deselectTerminals", this), Integer.toString(branch));
+				popup.addItem("Select All Taxa In Clade", new MesquiteCommand("selectTerminals", this), Integer.toString(branch));
+				popup.addItem("Deselect All Taxa In Clade", new MesquiteCommand("deselectTerminals", this), Integer.toString(branch));
 				popup.addItem("-", (MesquiteCommand)null, null);
 				popup.addItem("Select All Taxa Outside of Clade", new MesquiteCommand("selectOutside", this), Integer.toString(branch));
 				popup.addItem("Deselect All Taxa Outside of Clade", new MesquiteCommand("deselectOutside", this), Integer.toString(branch));
-			}
+				int numInTree = tree.numberOfTerminalsInClade(tree.getRoot());
+				int numInClade = tree.numberOfTerminalsInClade(branch);
+				if (numInClade*2 != numInTree){
+					popup.addItem("-", (MesquiteCommand)null, null);
+					popup.addItem("Select Taxa in Smaller Partition", new MesquiteCommand("selectSmallerPartition", this), Integer.toString(branch));
+					popup.addItem("Deselect Taxa in Smaller Partition", new MesquiteCommand("deselectSmallerPartition", this), Integer.toString(branch));
+				}
+				CharacterData data = ((MesquiteTree)treeDisplay.getTree()).findLinkedMatrix(module.getProject());
+				if (data != null && data instanceof MolecularData) {
+					popup.addItem("-", (MesquiteCommand)null, null);
+					popup.addItem("Mark Linked Sequences In Clade", module, new MesquiteCommand("markLinkedSequencesClade", this), Integer.toString(branch) +" true true" );
+					popup.addItem("Mark Linked Sequences Outside of Clade", module, new MesquiteCommand("markLinkedSequencesClade", this), Integer.toString(branch) +" true false");
+					popup.addItem("Unmark Linked Sequences In Clade", module, new MesquiteCommand("markLinkedSequencesClade", this), Integer.toString(branch)+ " false true");
+					popup.addItem("Unmark Linked Sequences Outside of Clade", module, new MesquiteCommand("markLinkedSequencesClade", this), Integer.toString(branch) +" false false");
+				}			
+		}
 			else {
 				Taxa taxa = tree.getTaxa();
 				int taxon = tree.taxonNumberOfNode(branch);
@@ -1127,7 +1149,11 @@ class MTWExtra extends TreeDisplayExtra implements Commandable, TreeDisplayExtra
 					popup.addItem("Select Taxon", new MesquiteCommand("selectTerminals", this), Integer.toString(branch));
 				CharacterData data = ((MesquiteTree)treeDisplay.getTree()).findLinkedMatrix(module.getProject());
 				if (data != null && data instanceof MolecularData) {
+					popup.addItem("-", (MesquiteCommand)null, null);
 					popup.addItem("Show Linked Sequence", module, new MesquiteCommand("showLinkedSequence", this), Integer.toString(taxon));
+					popup.addItem("Mark Linked Sequence", module, new MesquiteCommand("markLinkedSequence", this), Integer.toString(taxon));
+					popup.addItem("Unmark Linked Sequence", module, new MesquiteCommand("unmarkLinkedSequence", this), Integer.toString(taxon));
+					
 				}			
 			}
 			return;
@@ -1184,6 +1210,22 @@ class MTWExtra extends TreeDisplayExtra implements Commandable, TreeDisplayExtra
 			for (int d = tree.firstDaughterOfNode(node); tree.nodeExists(d); d = tree.nextSisterOfNode(d)) 
 				setSelectTipsOutsideClade(tree, d, targetNode, taxa,  select);
 	}
+	NameReference markedNR = NameReference.getNameReference("marked");
+	/*-----------------------------------------*/
+	public void markTipsInClade(MesquiteTree tree,  int node, Bits bits, boolean select) {
+		if (tree.nodeIsTerminal(node))
+			bits.setBit(tree.taxonNumberOfNode(node), select);
+		for (int d = tree.firstDaughterOfNode(node); tree.nodeExists(d); d = tree.nextSisterOfNode(d)) 
+			markTipsInClade(tree, d, bits, select);
+	}
+	/*-----------------------------------------*/
+	public void markTipsOutsideClade(MesquiteTree tree,  int node, int targetNode, Bits bits, boolean select) {
+		if (tree.nodeIsTerminal(node))
+			bits.setBit(tree.taxonNumberOfNode(node), select);
+		else if (node != targetNode)
+			for (int d = tree.firstDaughterOfNode(node); tree.nodeExists(d); d = tree.nextSisterOfNode(d)) 
+				markTipsOutsideClade(tree, d, targetNode, bits,  select);
+	}
 	/*.................................................................................................................*/
 	public Object doCommand(String commandName, String arguments, CommandChecker checker) {
 		if (checker.compare(this.getClass(), "Shows linked matrix", null, commandName, "showLinkedMatrix")) {
@@ -1238,12 +1280,89 @@ class MTWExtra extends TreeDisplayExtra implements Commandable, TreeDisplayExtra
 			}
 			return null;
 		}
+		else if (checker.compare(this.getClass(), "Marks taxon's sequence in character matrix", "[taxon number]", commandName, "markLinkedSequence")) {
+			int taxon = MesquiteInteger.fromString(arguments);
+			if (MesquiteInteger.isCombinable(taxon)){
+				MesquiteTree myTree = (MesquiteTree)treeDisplay.getTree();
+				CharacterData data = myTree.findLinkedMatrix(module.getProject());
+				if (data != null){
+					Associable taxInfo = data.getTaxaInfo(true);
+					taxInfo.setAssociatedBit(markedNR, taxon, true);
+					data.notifyListeners(this, new Notification(MesquiteListener.ASSOCIATED_CHANGED));
+				}
+			}
+			return null;
+		}
+		else if (checker.compare(this.getClass(), "Unmarks taxon's sequence in character matrix", "[taxon number]", commandName, "unmarkLinkedSequence")) {
+			int taxon = MesquiteInteger.fromString(arguments);
+			if (MesquiteInteger.isCombinable(taxon)){
+				MesquiteTree myTree = (MesquiteTree)treeDisplay.getTree();
+				CharacterData data = myTree.findLinkedMatrix(module.getProject());
+				if (data != null){
+					Associable taxInfo = data.getTaxaInfo(true);
+					taxInfo.setAssociatedBit(markedNR, taxon, false);
+					data.notifyListeners(this, new Notification(MesquiteListener.ASSOCIATED_CHANGED));
+				}
+			}
+			return null;
+		}
+		else if (checker.compare(this.getClass(), "Marks/unmarks sequences in character matrix of taxa in/out of clade", "[branch number][inside][mark]", commandName, "markLinkedSequencesClade")) {
+			MesquiteInteger pos = new MesquiteInteger(0);
+			Parser parser = new Parser(arguments);
+			int branch = MesquiteInteger.fromString(parser.getFirstToken());
+			
+			boolean inside = MesquiteBoolean.fromTrueFalseString(parser.getNextToken());
+			boolean mark = MesquiteBoolean.fromTrueFalseString(parser.getNextToken());
+			if (MesquiteInteger.isCombinable(branch)){
+				MesquiteTree myTree = (MesquiteTree)treeDisplay.getTree();
+				CharacterData data = myTree.findLinkedMatrix(module.getProject());
+				if (data != null){
+					Associable taxInfo = data.getTaxaInfo(true);
+					NameReference nr = taxInfo.makeAssociatedBits("marked");
+					Bits bits = taxInfo.getAssociatedBits(nr);
+					if (inside)
+						markTipsInClade(myTree, branch, bits, mark);
+					else
+						markTipsOutsideClade(myTree, myTree.getRoot(), branch, bits, mark);
+					data.notifyListeners(this, new Notification(MesquiteListener.ASSOCIATED_CHANGED));
+				}
+			}
+			return null;
+		}
 
 		else if (checker.compare(this.getClass(), "Selects terminals in clade", null, commandName, "selectTerminals")) {
 			int branch = MesquiteInteger.fromString(arguments);
 			if (MesquiteInteger.isCombinable(branch)){
 				MesquiteTree tree = (MesquiteTree)treeDisplay.getTree();
 				setSelectTipsInClade(tree, branch, tree.getTaxa(), true);
+				tree.getTaxa().notifyListeners(this, new Notification(MesquiteListener.SELECTION_CHANGED));
+			}
+			return null;
+		}
+		else if (checker.compare(this.getClass(), "Selects terminals in or outside of clade, whichever is smaller number", null, commandName, "selectSmallerPartition")) {
+			int branch = MesquiteInteger.fromString(arguments);
+			if (MesquiteInteger.isCombinable(branch)){
+				MesquiteTree tree = (MesquiteTree)treeDisplay.getTree();
+				int numInTree = tree.numberOfTerminalsInClade(tree.getRoot());
+				int numInClade = tree.numberOfTerminalsInClade(branch);
+				if (numInClade*2<numInTree)
+					setSelectTipsInClade(tree, branch, tree.getTaxa(), true);
+				else
+					setSelectTipsOutsideClade(tree, tree.getRoot(), branch, tree.getTaxa(), true);
+				tree.getTaxa().notifyListeners(this, new Notification(MesquiteListener.SELECTION_CHANGED));
+			}
+			return null;
+		}
+		else if (checker.compare(this.getClass(), "Deselects terminals in or outside of clade, whichever is smaller number", null, commandName, "deselectSmallerPartition")) {
+			int branch = MesquiteInteger.fromString(arguments);
+			if (MesquiteInteger.isCombinable(branch)){
+				MesquiteTree tree = (MesquiteTree)treeDisplay.getTree();
+				int numInTree = tree.numberOfTerminalsInClade(tree.getRoot());
+				int numInClade = tree.numberOfTerminalsInClade(branch);
+				if (numInClade*2<numInTree)
+					setSelectTipsInClade(tree, branch, tree.getTaxa(), false);
+				else
+					setSelectTipsOutsideClade(tree, tree.getRoot(), branch, tree.getTaxa(), false);
 				tree.getTaxa().notifyListeners(this, new Notification(MesquiteListener.SELECTION_CHANGED));
 			}
 			return null;
@@ -1379,4 +1498,3 @@ class MTWExtra extends TreeDisplayExtra implements Commandable, TreeDisplayExtra
 	public void printOnTree(Tree tree, int drawnRoot, Graphics g) {
 	}
 }
-

@@ -721,6 +721,8 @@ public class NodeLocsStandard extends NodeLocsVH {
 
 	/*....................................................................................................*/
 	private void UPCalcTerminalLocs(TreeDisplay treeDisplay, TreeDrawing treeDrawing, Tree tree, int N) {
+		if (treeDrawing == null)
+			return;
 		if  (tree.nodeIsTerminal(N)) {   //terminal
 
 			double triangleSpacer = 0.0;
@@ -812,6 +814,8 @@ public class NodeLocsStandard extends NodeLocsVH {
 
 	/*....................................................................................................*/
 	private void DOWNCalcTerminalLocs(TreeDisplay treeDisplay, TreeDrawing treeDrawing, Tree tree, int N, double margin) {
+		if (treeDrawing == null)
+			return;
 		if  (tree.nodeIsTerminal(N)) {   //terminal
 
 
@@ -916,6 +920,8 @@ public class NodeLocsStandard extends NodeLocsVH {
 	}
 	/*....................................................................................................*/
 	private void RIGHTCalcTerminalLocs(TreeDisplay treeDisplay, TreeDrawing treeDrawing, Tree tree, int N, double margin) {
+		if (treeDrawing == null)
+			return;
 		if  (tree.nodeIsTerminal(N)) {   //terminal
 			double triangleSpacer = 0.0;
 			if (tree.withinCollapsedClade(N)){
@@ -1015,6 +1021,8 @@ public class NodeLocsStandard extends NodeLocsVH {
 
 	/*....................................................................................................*/
 	private void LEFTCalcTerminalLocs(TreeDisplay treeDisplay, TreeDrawing treeDrawing, Tree tree, int N) {
+		if (treeDrawing == null)
+			return;
 		if  (tree.nodeIsTerminal(N)) {   //terminal
 			double triangleSpacer = 0.0;
 			if (tree.withinCollapsedClade(N)){
