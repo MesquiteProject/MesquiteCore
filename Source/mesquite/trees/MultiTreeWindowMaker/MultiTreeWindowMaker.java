@@ -664,6 +664,7 @@ class MultiTreeWindow extends MesquiteWindow implements KeyListener, Commandable
 			if (obj instanceof TreeDisplayAssistantDI) {
 				TreeDisplayAssistant tda = (TreeDisplayAssistant)obj;
 				treeDrawCoordTask.addAssistantTask(tda);
+				treeDrawCoordTask.requestGuestMenuPlacement(tda);
 				for (int i=0; i<maxDisplays; i++){
 					TreeDisplayExtra tce = tda.createTreeDisplayExtra(treeDisplays[i]);
 					if (tce!=null) 
@@ -672,6 +673,8 @@ class MultiTreeWindow extends MesquiteWindow implements KeyListener, Commandable
 			}
 		}
 	}
+	
+
 	/*.................................................................................................................*/
 	/** When called the window will determine its own title.  MesquiteWindows need
 	to be self-titling so that when things change (names of files, tree blocks, etc.)
