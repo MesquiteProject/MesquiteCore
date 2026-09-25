@@ -15,6 +15,7 @@ package mesquite.minimal.Utilities;
 /*~~  */
 
 import mesquite.lib.CommandChecker;
+import mesquite.lib.Debugg;
 import mesquite.lib.EmployeeNeed;
 import mesquite.lib.MesquiteTrunk;
 import mesquite.lib.Puppeteer;
@@ -37,6 +38,7 @@ public class Utilities extends MesquiteInitLateLoad  {
 	public boolean startJob(String arguments, Object condition, boolean hiredByName) {
 	//	addMenuItem(MesquiteTrunk.mesquiteTrunk.utilitiesSubmenu, "Send Script to Mesquite...", makeCommand("sendScript", this));
    	//	addItemToSubmenu(MesquiteTrunk.mesquiteTrunk.fileMenu, MesquiteTrunk.mesquiteTrunk.utilitiesSubmenu, "Send Script to Mesquite...", makeCommand("sendScript", this));
+		Debugg.errln("@@@@@@@@@@@@@@@@@@@@@");
 		hireAllEmployees(UtilitiesAssistant.class);
 		return true;
 	}

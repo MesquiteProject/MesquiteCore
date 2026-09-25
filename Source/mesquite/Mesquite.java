@@ -96,6 +96,7 @@ import mesquite.lib.duties.FileCoordinator;
 import mesquite.lib.duties.GeneralFileMakerMultiple;
 import mesquite.lib.duties.GeneralFileMakerSingle;
 import mesquite.lib.duties.MesquiteInit;
+import mesquite.lib.duties.MesquiteInitLateLoad;
 import mesquite.lib.duties.TextDisplayer;
 import mesquite.lib.duties.WindowHolder;
 import mesquite.lib.misc.ClassVector;
@@ -888,6 +889,9 @@ public class Mesquite extends MesquiteTrunk
 			about.hide();
 		}
 		if (verboseStartup) System.out.println("main init 30");
+		MesquiteTrunk.utilitiesSubmenu = MesquiteTrunk.mesquiteTrunk.addSubmenu(MesquiteTrunk.fileMenu, "Utilities");
+		MesquiteTrunk.utilitiesSubmenu.setFilterable(false);
+		hireAllEmployees(MesquiteInitLateLoad.class);
 
 		/* */
 		addMenuItem(MesquiteTrunk.fileMenu, "Check Now for Notices/Installs...", new MesquiteCommand("checkNotices", this));
