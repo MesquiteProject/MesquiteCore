@@ -851,7 +851,6 @@ public class Mesquite extends MesquiteTrunk
 
 		new MesquiteColorTable(); //initialize default charstate colors
 
-		resetContainingMenuBar();
 		/* hire all inits */
 		if (verboseStartup) System.out.println("main init 29");
 		hireAllEmployees(MesquiteInit.class);
@@ -889,7 +888,7 @@ public class Mesquite extends MesquiteTrunk
 			about.hide();
 		}
 		if (verboseStartup) System.out.println("main init 30");
-		MesquiteTrunk.utilitiesSubmenu = MesquiteTrunk.mesquiteTrunk.addSubmenu(MesquiteTrunk.fileMenu, "Utilities");
+		MesquiteTrunk.utilitiesSubmenu = addSubmenu(MesquiteTrunk.fileMenu, "Utilities");
 		MesquiteTrunk.utilitiesSubmenu.setFilterable(false);
 		hireAllEmployees(MesquiteInitLateLoad.class);
 
@@ -904,7 +903,8 @@ public class Mesquite extends MesquiteTrunk
 
 		if (verboseStartup) System.out.println("main init 31");
 		decrementMenuResetSuppression();
-		
+		resetContainingMenuBar();
+	
 		
 		
 		if (MesquiteTrunk.mesquiteTrunk.isPrerelease()) 

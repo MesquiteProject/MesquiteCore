@@ -13,6 +13,7 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
 */
 package mesquite.lib.duties;
 
+import mesquite.lib.Debugg;
 import mesquite.lib.MesquiteCommand;
 import mesquite.lib.MesquiteModule;
 import mesquite.lib.MesquiteTrunk;
@@ -40,10 +41,10 @@ public abstract class UtilitiesAssistant extends MesquiteModule   {
    	/*NOTE: Utilities assistants should use these instead of the standard ways to make menu items
    	*/
    	public MesquiteMenuItemSpec addMenuItemToUtilitiesSubmenu(String label, MesquiteCommand command){
-   		return addItemToSubmenu(MesquiteTrunk.mesquiteTrunk.fileMenu, MesquiteTrunk.mesquiteTrunk.utilitiesSubmenu, label, command);
+   		return MesquiteTrunk.mesquiteTrunk.addItemToSubmenu(MesquiteTrunk.mesquiteTrunk.fileMenu, MesquiteTrunk.mesquiteTrunk.utilitiesSubmenu, label, command);
    	}
    	public MesquiteSubmenuSpec addSubmenuToUtilitiesSubmenu(String label, MesquiteCommand command){
-   		return addSubmenu(MesquiteTrunk.mesquiteTrunk.utilitiesSubmenu, label, command);
+   		return MesquiteTrunk.mesquiteTrunk.addSubmenu(MesquiteTrunk.mesquiteTrunk.utilitiesSubmenu, label, command);
    	}
 
 }

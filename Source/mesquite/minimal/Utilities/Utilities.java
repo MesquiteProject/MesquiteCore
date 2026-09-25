@@ -38,7 +38,6 @@ public class Utilities extends MesquiteInitLateLoad  {
 	public boolean startJob(String arguments, Object condition, boolean hiredByName) {
 	//	addMenuItem(MesquiteTrunk.mesquiteTrunk.utilitiesSubmenu, "Send Script to Mesquite...", makeCommand("sendScript", this));
    	//	addItemToSubmenu(MesquiteTrunk.mesquiteTrunk.fileMenu, MesquiteTrunk.mesquiteTrunk.utilitiesSubmenu, "Send Script to Mesquite...", makeCommand("sendScript", this));
-		Debugg.errln("@@@@@@@@@@@@@@@@@@@@@");
 		hireAllEmployees(UtilitiesAssistant.class);
 		return true;
 	}
