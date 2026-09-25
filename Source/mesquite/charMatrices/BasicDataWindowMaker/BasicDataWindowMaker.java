@@ -4414,7 +4414,7 @@ class MatrixTable extends mesquite.lib.table.CMTable implements MesquiteDroppedF
 			Associable tInfo = data.getTaxaInfo(false);
 			if (tInfo!= null){
 				Bits bits = tInfo.getAssociatedBits(markedNR);
-				if (bits.isBitOn(row)) {
+				if (bits != null && bits.isBitOn(row)) {
 					Color cc = g.getColor();
 					g.setColor(Color.white);
 					g.drawLine(x + 1, y + (h/2), x+w-2, y + (h/2));
