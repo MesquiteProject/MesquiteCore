@@ -83,10 +83,14 @@ public class AddTopBlastMatches extends MolecularDataAlterer implements DataAlte
      	public int getVersionOfFirstRelease(){
      		return NEXTRELEASE;  
      	}
-    /*.................................................................................................................*/
-      	 public boolean isPrerelease(){
-      	 	return true;
-      	 }
+     	/*.................................................................................................................*/
+     	public boolean requestPrimaryChoice(){
+     		return true;
+     	}
+     	/*.................................................................................................................*/
+     	public boolean isPrerelease(){
+     		return true;
+     	}
   	/*.................................................................................................................*/
     	 public String getNameForMenuItem() {
 		return "Add BLAST Matches Similar to Selected...";
