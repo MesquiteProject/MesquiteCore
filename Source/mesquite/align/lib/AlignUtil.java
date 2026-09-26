@@ -654,10 +654,9 @@ public class AlignUtil {
 		return false;
 	}
 	/*.................................................................................................................*/
-   	public static int quickShiftFollowingToMatch(MesquiteModule ownerModule, CharacterData data, MesquiteTable table,  int taxonTouched, int characterTouched, UndoReference undoReference){
+   	public static int quickShiftFollowingToMatch(MesquiteModule ownerModule, CharacterData data, MesquiteTable table,  int taxonTouched, int characterTouched, UndoReference undoReference, boolean shiftOneBlockOnly){
 		if (data==null || table==null)
 			return -10;
-		boolean shiftOneBlockOnly= false;
 		boolean reverseComplementIfNecessary = true;
 		CharacterState cs1;
 		CharacterState cs2 ;

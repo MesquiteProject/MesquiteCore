@@ -3666,7 +3666,41 @@ class MatrixTable extends mesquite.lib.table.CMTable implements MesquiteDroppedF
 
 			UndoReference undoReference = new UndoReference();
 			AlteredDataParameters alteredDataParameters = new AlteredDataParameters();
-			int resultCode = AlignUtil.quickShiftFollowingToMatch(editorModule,  data, editorModule.getTable(),  row, column, null);
+			int resultCode = AlignUtil.quickShiftFollowingToMatch(editorModule,  data, editorModule.getTable(),  row, column, null, false);
+
+			if (resultCode== ResultCodes.SUCCEEDED) {
+				editorModule.getTable().repaintAll();
+				Notification notification = new Notification(MesquiteListener.DATA_CHANGED, alteredDataParameters.getParameters(), undoReference);
+				if (alteredDataParameters.getSubcodes()!=null)
+					notification.setSubcodes(alteredDataParameters.getSubcodes());
+				data.notifyListeners(this, notification);
+			}
+
+
+			/*			String current = data.getAnnotation(column, row);
+			if (current == null) current = "";
+			MesquiteString value = new MesquiteString(current);
+			String message = "Set footnote for cell (character " +(column+1);
+			if (data.characterHasName(column))
+				message += " [" + data.getCharacterName(column) + "]";
+			message += " in taxon " +(row+1) + " [" + taxa.getTaxonName(row) + "])";
+			boolean result = QueryDialogs.queryString(window, "Set Footnote", message,  value, 4, false, false);
+			if (result){
+				data.setAnnotation(column, row, value.getValue());
+				data.notifyListeners(this, new Notification(MesquiteListener.ANNOTATION_CHANGED));
+			}
+			 */
+		}
+		else if (checker.compare(getClass(), "Quick Shift single block in following to match selected sequence", "[character][taxon]", commandName, "shiftFollowingBlockToMatch")) {
+			Parser parser = new Parser(arguments);
+			int column = MesquiteInteger.fromString(parser);
+			int row  = MesquiteInteger.fromString(parser);
+			if (!MesquiteInteger.isCombinable(column) && !MesquiteInteger.isCombinable(row))
+				return null;
+
+			UndoReference undoReference = new UndoReference();
+			AlteredDataParameters alteredDataParameters = new AlteredDataParameters();
+			int resultCode = AlignUtil.quickShiftFollowingToMatch(editorModule,  data, editorModule.getTable(),  row, column, null, true);
 
 			if (resultCode== ResultCodes.SUCCEEDED) {
 				editorModule.getTable().repaintAll();
@@ -5172,6 +5206,7 @@ class MatrixTable extends mesquite.lib.table.CMTable implements MesquiteDroppedF
 		popup.addItem("Scroll to start of data", editorModule, new MesquiteCommand("scrollToStart", this),  Integer.toString(row));
 		popup.addItem("Scroll to end of data", editorModule, new MesquiteCommand("scrollToEnd", this),  Integer.toString(row));
 		popup.addItem("Quick shift following to match", editorModule, new MesquiteCommand("shiftFollowingToMatch", this),   Integer.toString(column) + " " + Integer.toString(row));
+		popup.addItem("Quick shift single block in following to match", editorModule, new MesquiteCommand("shiftFollowingBlockToMatch", this),   Integer.toString(column) + " " + Integer.toString(row));
 		popup.addItem("Edit footnote...", editorModule, new MesquiteCommand("setFootnote", this), Integer.toString(column) + " " + Integer.toString(row));
 
 
