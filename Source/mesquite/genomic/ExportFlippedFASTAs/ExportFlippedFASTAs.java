@@ -30,6 +30,7 @@ import mesquite.lib.StringUtil;
 import mesquite.lib.characters.CharacterData;
 import mesquite.lib.duties.FileInterpreterI;
 import mesquite.lib.taxa.Taxa;
+import mesquite.lib.ui.ProgressIndicator;
 
 
 /* ============  a file exporter ============*/
@@ -143,9 +144,18 @@ public class ExportFlippedFASTAs extends FileInterpreterI {
 		StringBuffer buffer = new StringBuffer(500);
 		int numTaxa = taxa.getNumTaxa();
 		log("Exporting taxa ");
-		for (int it = 0; it<numTaxa; it++) {
+		int numToExport = numTaxa;
+		if (writeOnlySelectedTaxa)
+		numToExport = taxa.numberSelected();
+		ProgressIndicator progIndicator = new ProgressIndicator(getProject(),"Exporting single-taxon FASTA files", "", numToExport, true);
+		progIndicator.toFront();
+
+		progIndicator.start();
+		for (int it = 0; it<numTaxa && !progIndicator.isAborted(); it++) {
 			if (!writeOnlySelectedTaxa || taxa.getSelected(it)){
 				buffer.setLength(0);
+				progIndicator.setText("FASTA file being exported for taxon " + taxa.getTaxonName(it));
+				progIndicator.setCurrentValue(it);
 				int numMatrices = getProject().getNumberCharMatrices(null, taxa, MolecularState.class, true);
 				for (int iM = 0; iM < numMatrices; iM++){
 					CharacterData data = getProject().getCharacterMatrixVisible(taxa, iM, MolecularState.class);
@@ -163,6 +173,7 @@ public class ExportFlippedFASTAs extends FileInterpreterI {
 			}
 				log(".");
 		}
+		progIndicator.goAway();
 		logln(" done");
 		return true;
 	}
