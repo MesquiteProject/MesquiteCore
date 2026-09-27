@@ -70,7 +70,6 @@ public class MesquiteFile extends Listened implements HNode, Commandable, Listab
 	public static final int INCLUDED = 1;
 	public static final int HOME = -1;
 	public static String defaultEncoding = "ISO-8859-1";
-	public static boolean suppressReadWriteLogging = false;
 
 	private boolean local = true;
 	private URL url;
@@ -113,6 +112,7 @@ public class MesquiteFile extends Listened implements HNode, Commandable, Listab
 	public boolean writeCharactersWithNoData=true;
 	public boolean writeTaxaWithAllMissing = true;
 	public boolean writeOnlySelectedTaxa = false;
+	public boolean suppressReadWriteLogging = false;
 
 	//public boolean mrBayesReadingMode = false;  //todo: this is temporary until general format options system built
 	public String fileReadingArguments = null;
@@ -1097,6 +1097,7 @@ public class MesquiteFile extends Listened implements HNode, Commandable, Listab
 		writing = true;
 		if (!suppressReadWriteLogging)
 			MesquiteModule.mesquiteTrunk.logln( "Saving File: " + fileName);
+			Debugg.printStackTrace();
 		if (directoryName !=null) {
 			writingFileName = directoryName + fileName;
 			backupDirPath = directoryName + "backups" + fileSeparator;
