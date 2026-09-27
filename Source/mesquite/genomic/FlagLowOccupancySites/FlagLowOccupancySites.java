@@ -31,11 +31,13 @@ import mesquite.lib.MesquiteDouble;
 import mesquite.lib.MesquiteFile;
 import mesquite.lib.MesquiteInteger;
 import mesquite.lib.MesquiteThread;
+import mesquite.lib.Notification;
 import mesquite.lib.Snapshot;
 import mesquite.lib.StringUtil;
 import mesquite.lib.characters.CharacterData;
 import mesquite.lib.characters.MatrixFlags;
 import mesquite.lib.duties.MatrixFlaggerForTrimmingSites;
+import mesquite.lib.taxa.Taxa;
 import mesquite.lib.ui.DoubleField;
 import mesquite.lib.ui.ExtensibleDialog;
 
@@ -51,8 +53,10 @@ public class FlagLowOccupancySites extends MatrixFlaggerForTrimmingSites impleme
 	static boolean assumeSpecifiedNumberDEFAULT = false; 
 
 	boolean ignoreDataless = ignoreDatalessDEFAULT;
+	boolean selectedTaxaOnly = false;
 	boolean assumeSpecifiedNumber = assumeSpecifiedNumberDEFAULT;
 	int specifiedNumTaxa = MesquiteInteger.unassigned;
+	boolean invertedSelection = false;
 
 	double siteOccupancyThreshold = siteOccupancyThresholdDEFAULT; // A site is considered good (for gappiness) if it is less or as gappy than this (term or non-term).
 
@@ -61,6 +65,7 @@ public class FlagLowOccupancySites extends MatrixFlaggerForTrimmingSites impleme
 	public CompatibilityTest getCompatibilityTest(){
 		return new RequiresAnyMolecularData();
 	}
+	Taxa taxa;
 	/*.................................................................................................................*/
 	public boolean startJob(String arguments, Object condition, boolean hiredByName) {
 		loadPreferences();
@@ -70,6 +75,11 @@ public class FlagLowOccupancySites extends MatrixFlaggerForTrimmingSites impleme
 		}
 		addMenuItem(null, "Set Site Gappiness (Low Site Occupancy) options...", makeCommand("setOptions", this));
 		return true;
+	}
+	public void endJob(){
+		if (taxa != null)
+			taxa.removeListener(this);
+		super.endJob();
 	}
 	/*.................................................................................................................*/
 	public String preparePreferencesForXML () {
@@ -102,6 +112,8 @@ public class FlagLowOccupancySites extends MatrixFlaggerForTrimmingSites impleme
 		}
 		else
 			temp.addLine("ignoreDataless " + ignoreDataless);
+		temp.addLine("selectedTaxaOnly " + selectedTaxaOnly);
+		temp.addLine("invertedSelection " + invertedSelection);
 		temp.addLine("siteOccupancyThreshold " + siteOccupancyThreshold);
 		return temp;
 	}
@@ -109,7 +121,7 @@ public class FlagLowOccupancySites extends MatrixFlaggerForTrimmingSites impleme
 
 	DoubleField pgSField;
 	IntegerField sNT;
-	Checkbox specifNumCB, ignoreDatalessCB;
+	Checkbox specifNumCB, ignoreDatalessCB, selectedTaxaOnlyCB, invertedSelectionCB;
 	private boolean queryOptions() {
 		MesquiteInteger buttonPressed = new MesquiteInteger(1);
 		ExtensibleDialog dialog = new ExtensibleDialog(containerOfModule(),  "Criteria for Site Occupancy Filter (Gappy Sites)",buttonPressed);  
@@ -136,7 +148,10 @@ public class FlagLowOccupancySites extends MatrixFlaggerForTrimmingSites impleme
 					+ "delay the gappiness trimming until after the loci are compiled into a single file.";
 		}
 		else {
+			selectedTaxaOnlyCB = dialog.addCheckBox("Among selected taxa only", selectedTaxaOnly);
 			ignoreDatalessCB = dialog.addCheckBox("Ignore gaps in taxa with no data in matrix", ignoreDataless);
+			dialog.addHorizontalLine(1);
+			invertedSelectionCB = dialog.addCheckBox("Inverted selection (choose non-gappy sites instead)", invertedSelection);
 			s += "<p>To mimic the results you would obtain were you to process the loci individually in separate files (e.g. in a scripted pipeline), choose \"Ignore gaps in taxa with no data in matrix\"." 
 					+ " This will result in a more permissive trimming."
 					+ "<p><b>Recommendation</b>: if you want to treat this trimming as a site-level occupancy criterion (just like filtering loci for occupancy) then DON'T select \"Ignore\".";
@@ -151,6 +166,10 @@ public class FlagLowOccupancySites extends MatrixFlaggerForTrimmingSites impleme
 			if (ignoreDatalessCB!=null){
 				ignoreDataless = ignoreDatalessCB.getState();
 			}
+			if (selectedTaxaOnlyCB != null)
+				selectedTaxaOnly = selectedTaxaOnlyCB.getState();
+			if (invertedSelectionCB != null)
+				invertedSelection = invertedSelectionCB.getState();
 			if (specifNumCB!=null){
 				assumeSpecifiedNumber = specifNumCB.getState();
 			}
@@ -168,6 +187,14 @@ public class FlagLowOccupancySites extends MatrixFlaggerForTrimmingSites impleme
 			sNT.setEnabled(specifNumCB.getState());
 
 	}
+	/*.................................................................................................................*/
+	public void changed(Object caller, Object obj, Notification notification){
+		if (Notification.appearsCosmetic(notification))
+			return;
+		if (obj == taxa && selectedTaxaOnly)
+			parametersChanged();
+	}
+
 	public void queryLocalOptions () {
 		if (queryOptions())
 			storePreferences();
@@ -183,6 +210,20 @@ public class FlagLowOccupancySites extends MatrixFlaggerForTrimmingSites impleme
 		else if (checker.compare(this.getClass(), "Sets whether to count taxa with no data.", "[true or false]", commandName, "ignoreDataless")) {
 			boolean s = MesquiteBoolean.fromTrueFalseString(parser.getFirstToken(arguments));
 				ignoreDataless = s;
+				if (!MesquiteThread.isScripting())
+					parametersChanged(); 
+			
+		}
+		else if (checker.compare(this.getClass(), "Sets whether to count selected taxa only.", "[true or false]", commandName, "selectedTaxaOnly")) {
+			boolean s = MesquiteBoolean.fromTrueFalseString(parser.getFirstToken(arguments));
+			selectedTaxaOnly = s;
+				if (!MesquiteThread.isScripting())
+					parametersChanged(); 
+			
+		}
+		else if (checker.compare(this.getClass(), "Sets whether to invert the selection.", "[true or false]", commandName, "invertedSelection")) {
+			boolean s = MesquiteBoolean.fromTrueFalseString(parser.getFirstToken(arguments));
+			invertedSelection = s;
 				if (!MesquiteThread.isScripting())
 					parametersChanged(); 
 			
@@ -230,17 +271,24 @@ public class FlagLowOccupancySites extends MatrixFlaggerForTrimmingSites impleme
 	boolean ignoreDatalessTaxa(){
 		return ignoreDataless && !getProject().isProcessDataFilesProject; //this option available only for stable project open to user
 	}
+	boolean countSelectedTaxaOnly(){
+		return selectedTaxaOnly && !getProject().isProcessDataFilesProject; //this option available only for stable project open to user
+	}
 	boolean assumeSpecifiedNumberOfTaxa(){
 		return assumeSpecifiedNumber && getProject().isProcessDataFilesProject; //this option available only for stable project open to user
 	}
 
-	boolean countTaxon(int it) {
+	boolean countTaxon(int it, Taxa taxa) {
+		boolean okToCount = true;
 		if (ignoreDatalessTaxa())
-			return taxonHasData[it];
-		return true;
+			okToCount = okToCount && taxonHasData[it];
+		if (countSelectedTaxaOnly())
+			okToCount = okToCount && taxa.isSelected(it);
+		return okToCount;
 	}
 
 	int numNegWarnings = 0;
+	boolean anyTaxaSelected = false;
 	/*======================================================*/
 	public MatrixFlags flagMatrix(CharacterData data, MatrixFlags flags) {
 		if (data!=null && data.getNumChars()>0 && data instanceof CategoricalData){
@@ -252,8 +300,17 @@ public class FlagLowOccupancySites extends MatrixFlaggerForTrimmingSites impleme
 			Bits charFlags = flags.getCharacterFlags();		
 			int numTaxa = data.getNumTaxa();
 			int numChars = data.getNumChars();
-
-			if (ignoreDatalessTaxa()) {  //count how many taxa are all gaps
+			Taxa dtaxa = data.getTaxa();
+			if (taxa != dtaxa){
+				if (taxa != null)
+					taxa.removeListener(this);
+				taxa = dtaxa;
+				taxa.addListener(this);
+			}
+			anyTaxaSelected = taxa.anySelected();
+			if (countSelectedTaxaOnly() && !anyTaxaSelected)
+				return flags;
+			if (ignoreDatalessTaxa()) {  //record a count how many taxa are all gaps
 				numTaxaCounted = 0;
 				if (taxonHasData == null || taxonHasData.length!= numTaxa)
 					taxonHasData = new boolean[numTaxa];
@@ -264,7 +321,7 @@ public class FlagLowOccupancySites extends MatrixFlaggerForTrimmingSites impleme
 							taxonHasData[it] = true;
 							break;
 						}
-					if (taxonHasData[it])
+					if (taxonHasData[it] && (!countSelectedTaxaOnly() || taxa.isSelected(it)))
 						numTaxaCounted++;
 				}
 			}
@@ -281,6 +338,8 @@ public class FlagLowOccupancySites extends MatrixFlaggerForTrimmingSites impleme
 				else
 					numTaxaCounted = numTaxa;
 			}
+			else if (countSelectedTaxaOnly())
+				numTaxaCounted = taxa.numberSelected();
 			else
 				numTaxaCounted = numTaxa;
 
@@ -295,15 +354,19 @@ public class FlagLowOccupancySites extends MatrixFlaggerForTrimmingSites impleme
 						gapCount = 0;
 				}
 				for (int it = 0; it<numTaxa; it++) {
-					if (countTaxon(it) && data.isInapplicable(ic,it)) 
+					if (countTaxon(it, taxa) && data.isInapplicable(ic,it)) 
 						gapCount++;
 				}
 				siteGappiness[ic] = 1.0*gapCount/numTaxaCounted;
 
-				if (gapCount == numTaxaCounted)//if all gaps, delete regardless 
-					charFlags.setBit(ic, true);
-				else if (gappySite(ic))
-					charFlags.setBit(ic, true); 				
+				if (!invertedSelection){
+				if (gapCount == numTaxaCounted || gappySite(ic)) //flag if all gaps (regardless) or if gappy site
+					charFlags.setBit(ic, true); 	
+				}			
+				else {
+					if (gapCount != numTaxaCounted && !gappySite(ic)) //flag if all gaps (regardless) or if gappy site
+						charFlags.setBit(ic, true); 	
+				}
 			}
 
 		}
