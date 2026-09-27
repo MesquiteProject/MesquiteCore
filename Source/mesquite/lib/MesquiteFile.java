@@ -1097,7 +1097,6 @@ public class MesquiteFile extends Listened implements HNode, Commandable, Listab
 		writing = true;
 		if (!suppressReadWriteLogging)
 			MesquiteModule.mesquiteTrunk.logln( "Saving File: " + fileName);
-			Debugg.printStackTrace();
 		if (directoryName !=null) {
 			writingFileName = directoryName + fileName;
 			backupDirPath = directoryName + "backups" + fileSeparator;
