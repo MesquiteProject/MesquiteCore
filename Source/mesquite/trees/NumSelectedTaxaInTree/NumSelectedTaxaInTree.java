@@ -13,19 +13,20 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
 
  */
 
-package mesquite.trees.TreeDiameter;
+package mesquite.trees.NumSelectedTaxaInTree;
 
 
+import mesquite.lib.Bits;
 import mesquite.lib.MesquiteNumber;
 import mesquite.lib.MesquiteString;
 import mesquite.lib.duties.NumberForTree;
+import mesquite.lib.taxa.Taxa;
+import mesquite.lib.tree.MesquiteTree;
 import mesquite.lib.tree.Tree;
 import mesquite.lib.tree.TreeUtil;
-import mesquite.lib.duties.BranchLengthStatistic;
 
 /* ======================================================================== */
-public class TreeDiameter extends NumberForTree implements BranchLengthStatistic {
-	double[] pathLengths = null;
+public class NumSelectedTaxaInTree extends NumberForTree {
 	/*.................................................................................................................*/
 	public boolean startJob(String arguments, Object condition, boolean hiredByName) {
 		return true;
@@ -35,19 +36,30 @@ public class TreeDiameter extends NumberForTree implements BranchLengthStatistic
    	happening at inopportune times (e.g., while a long chart calculation is in mid-progress)*/
 	public void initialize(Tree tree){
 	}
+
+	/*-----------------------------------------*/
+	int countSelectedTaxa(Tree tree,  int node, Taxa taxa) {
+		if (tree.nodeIsTerminal(node)){
+			if (taxa.isSelected(tree.taxonNumberOfNode(node)))
+				return 1;
+			else
+				return 0;
+		}
+		int count = 0;
+		for (int d = tree.firstDaughterOfNode(node); tree.nodeExists(d); d = tree.nextSisterOfNode(d)) 
+			count += countSelectedTaxa(tree, d, taxa);
+		return count;
+	}
+
 	/*.................................................................................................................*/
 	public void calculateNumber(Tree tree, MesquiteNumber result, MesquiteString resultString) {
 		if (result==null || tree==null)
 			return;
 		clearResultAndLastResult(result);
-		if (tree.hasBranchLengths()) {
-			double diam = TreeUtil.getTreeDiameter(tree);
-				result.setValue(diam);
-		}
-		else
-			result.setValue(0);
+
+		result.setValue(countSelectedTaxa(tree, tree.getRoot(), tree.getTaxa()));
 		if (resultString!=null)
-			resultString.setValue("Diameter: "+ result.toString());
+			resultString.setValue("Number of selected taxa in tree: "+ result.toString());
 		saveLastResult(result);
 		saveLastResultString(resultString);
 	}
@@ -72,11 +84,15 @@ public class TreeDiameter extends NumberForTree implements BranchLengthStatistic
 		return true;
 	}
 	/*.................................................................................................................*/
+	public String getVeryShortName() {
+		return "Num. Selected Taxa";
+	}
+	/*.................................................................................................................*/
 	public String getName() {
-		return "Tree Diameter";
+		return "Number of Selected Taxa in Tree";
 	}
 	/*.................................................................................................................*/
 	public String getExplanation() {
-		return "Calculates the longest path from tip to tip in the tree.";
+		return "Counts the number of selected taxa in the tree.";
 	}
 }

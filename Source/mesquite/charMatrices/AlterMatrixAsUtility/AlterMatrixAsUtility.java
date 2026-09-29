@@ -129,14 +129,14 @@ public class AlterMatrixAsUtility extends CharMatricesListProcessorUtility {
 				progIndicator.increment();
 				if (im < 2)
 					progIndicator.toFront();
-				if (datas.size()>50 && im != 0 && im % 50 == 0)
-					logln("" + (im) +  " matrices altered.");
 				if (returnCode == 0){
 					Notification notification = new Notification(MesquiteListener.DATA_CHANGED, alteredDataParameters.getParameters(), null);
 					if (alteredDataParameters.getSubcodes()!=null)
 						notification.setSubcodes(alteredDataParameters.getSubcodes());
 					data.notifyListeners(this, notification);
 					count++;
+					if (datas.size()>100 && count != 0 && count % 100 == 0)
+						logln("" + (count) +  " matrices altered.");
 				} else if (returnCode < 0) {
 					MesquiteMessage.warnProgrammer("   Failed to alter matrix #" + (im+1) + " " +data.getName() + " (code " + returnCode + ").");
 					if (im == 0){

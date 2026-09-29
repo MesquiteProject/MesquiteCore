@@ -5427,7 +5427,7 @@ and the tree has been rerooted. Properties that belong to nodes implicitly have 
 		taxaInCladeForPrune(targetNode, taxonInClade);
 		boolean pruned = false;
 		for (int it=0; it<getNumTaxa(); it++) {
-			if (!taxonInClade[it]){
+			if (!taxonInClade[it] && taxonInTree(it)){
 				pruned = deleteClade(nodeOfTaxonNumber(it), false) || pruned;
 			}
 		}
@@ -5444,11 +5444,14 @@ and the tree has been rerooted. Properties that belong to nodes implicitly have 
 		else {  // also prohibit if will be left fewer than three??
 			if (!nodeExists(node))
 				return false;
+				
 			locked = true;
 			//int numSnipped = numberOfTerminalsInClade(node);
 			int mom = motherOfNode(node);
-			if (!nodeExists(mom))
+			if (!nodeExists(mom)){
+				MesquiteMessage.errln("Can't snip clade of node " + node + " because mother doesn't exist (a)");
 				return false;
+			}
 			if (numberOfDaughtersOfNode(mom)>2) {     //easy case; just pluck out
 				int sisterRight=nextSisterOfNode(node);
 				if (nodeIsFirstDaughter(node)) {
@@ -5456,8 +5459,10 @@ and the tree has been rerooted. Properties that belong to nodes implicitly have 
 				}
 				else {
 					int sisterLeft=previousSisterOfNode(node);
-					if (!nodeExists(sisterLeft))
+					if (!nodeExists(sisterLeft)){
+						MesquiteMessage.errln("Can't snip clade of node " + node + " because sisterLeft doesn't exist");
 						return false;
+					}
 					nextSister[sisterLeft] = sisterRight;
 				}
 
@@ -5468,8 +5473,10 @@ and the tree has been rerooted. Properties that belong to nodes implicitly have 
 						node = mom;  //cut one deeper
 						mom = motherOfNode(mom);
 					}
-					if (!nodeExists(mom))
+					if (!nodeExists(mom)){
+						MesquiteMessage.errln("Can't snip clade of node " + node + " because mother doesn't exist (b)");
 						return false;
+					}
 					if (mom == root && numberOfDaughtersOfNode(mom)==1){
 						locked = false;
 						exists = false;
@@ -5483,8 +5490,10 @@ and the tree has been rerooted. Properties that belong to nodes implicitly have 
 					sister = nextSisterOfNode(node);
 				else  
 					sister = previousSisterOfNode(node);
-				if (!nodeExists(sister))
+				if (!nodeExists(sister)){
+					MesquiteMessage.errln("Can't snip clade of node " + node + " because sister doesn't exist");
 					return false;
+				}
 				if (hasBranchLengths()) { //remember length of branches to adjust afterward
 					MesquiteDouble lengthOfRemoved = new MesquiteDouble();
 					if (!nodeIsPolytomous(mom)){ // && mom != root) {  post-1.12: adds also for root

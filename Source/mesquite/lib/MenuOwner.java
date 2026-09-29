@@ -1041,20 +1041,7 @@ public abstract class MenuOwner implements Doomable { // EMBEDDED: extends Apple
 			}
 
 			addBottom(myMenu, null, "%");
-			if (myMenu != null){
-			if (myMenu.getName().contains("Multi")){
-				Debugg.errln("menu Multi " + module.getName() + " " + myMenu.getItemCount());
-				//dumpMenu(myMenu, " ");
-		}
-			if (myMenu.getName().contains("Concern")){
-				Debugg.errln("menu Concern " + module.getName() + " " + myMenu.getItemCount());
-				//dumpMenu(myMenu, " ");
-		}
-			if (module.getName().contains("Concern")){
-				Debugg.errln("module " + module.getName() + " " + myMenu.getItemCount());
-				//dumpMenu(myMenu, " ");
-		}
-			}
+
 			if (myMenu != null && myMenu.getItemCount() > 0) { // why is this menu and not menuToUse????
 				menuBar.add(myMenu);
 			}

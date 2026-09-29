@@ -39,7 +39,7 @@ public class SequenceLength extends NumberForTaxonAndMatrix {
 	/*.................................................................................................................*/
 	public boolean startJob(String arguments, Object condition, boolean hiredByName) {
 		addCheckMenuItem(null, "Count Excluded Characters", makeCommand("toggleCountExcluded",  this), countExcluded);
-		addCheckMenuItem(null, "Count Missing Data", makeCommand("toggleCountMissing",  this), countMissing);
+		addCheckMenuItem(null, "Count Missing (\"?\" or \"N\") toward Sequence Length", makeCommand("toggleCountMissing",  this), countMissing);
 		return true;
 	}
 

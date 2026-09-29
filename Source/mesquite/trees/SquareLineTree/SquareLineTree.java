@@ -633,6 +633,7 @@ class SquareLineTreeDrawing extends TreeDrawing  {
 	}
 	/*_________________________________________________*/
 	public   void recalculatePositions(Tree tree) {
+		
 		if (MesquiteTree.OK(tree) && treeDisplay != null) {
 			if (tree.getNumNodeSpaces()!=numNodes)
 				resetNumNodes(tree.getNumNodeSpaces());

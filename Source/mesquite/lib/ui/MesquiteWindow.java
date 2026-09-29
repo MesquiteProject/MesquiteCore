@@ -2204,7 +2204,7 @@ public abstract class MesquiteWindow implements Listable, Commandable, OwnedByMo
 /**/
 
 	/*.................................................................................................................*/
-	/** INCOMPLETE. */
+	/** INCOMPLETE documentation. */
 	public void toFront(){
 		if (doingShow)
 			return;
@@ -2217,7 +2217,7 @@ public abstract class MesquiteWindow implements Listable, Commandable, OwnedByMo
 		}
 	}
 	/*.................................................................................................................*/
-	/** INCOMPLETE. */
+	/** INCOMPLETE documentation. */
 	public int getRank(){
 		return rank;
 	}

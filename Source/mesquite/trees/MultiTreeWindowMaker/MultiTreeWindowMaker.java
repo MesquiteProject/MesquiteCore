@@ -1281,7 +1281,7 @@ class MTWExtra extends TreeDisplayExtra implements Commandable, TreeDisplayExtra
 				MesquiteTree myTree = (MesquiteTree)treeDisplay.getTree();
 				CharacterData data = myTree.findLinkedMatrix(module.getProject());
 				if (data != null){
-					showMatrix(data, 0);
+					showMatrix(data, 1);
 					data.showRow(taxon, true, false, module.previousMatrixWindowMaker);
 				}
 			}
@@ -1466,6 +1466,7 @@ class MTWExtra extends TreeDisplayExtra implements Commandable, TreeDisplayExtra
 			oldWindow.doCommand("closeWindow","true", CommandChecker.defaultChecker);
 			module.previousMatrixWindowMaker = (DataWindowMaker)mb;		
 		}
+		module.multiTreeWindow.toFront();
 	}
 	/*---------------------------------------------------------------*/
 	boolean activeTreeWindow(){
