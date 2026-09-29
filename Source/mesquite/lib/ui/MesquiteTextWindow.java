@@ -126,7 +126,11 @@ public class MesquiteTextWindow extends MesquiteWindow implements FocusListener 
 		}
 	}
 	public void focusLost(FocusEvent e){
+		try {
 		tA.addNotify(); //A workaround for Java 22 and probably older in which text areas were disappearing
+		}
+		catch (Exception ex){
+		}
 	}
 	
 

@@ -95,8 +95,9 @@ public abstract class TreeDisplayExtra implements Listable, OwnedByModule {
 		ownerModule =null;
 		treeDisplay=null;
 	}
-	/**notifies the TreeDisplayExtra that the tree has changed, so it knows to redo calculations, and so on*/
+	/**notifies the TreeDisplayExtra that the tree has changed, so it knows to redo calculations, and so on. Tree passed may be a clone from the source's tree*/
 	public abstract void setTree(Tree tree);
+
 	/**draw on the tree passed*/
 	public abstract void drawOnTree(Tree tree, int drawnRoot, Graphics g);
 	/**print on the tree passed*/

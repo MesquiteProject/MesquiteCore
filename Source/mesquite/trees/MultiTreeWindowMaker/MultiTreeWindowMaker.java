@@ -673,7 +673,7 @@ class MultiTreeWindow extends MesquiteWindow implements KeyListener, Commandable
 			}
 		}
 	}
-	
+
 
 	/*.................................................................................................................*/
 	/** When called the window will determine its own title.  MesquiteWindows need
@@ -921,7 +921,7 @@ class MultiTreeWindow extends MesquiteWindow implements KeyListener, Commandable
 					treeDisplays[itree].getTree().dispose();
 				Tree tree = sourceTree.cloneTree();
 				trees.addElement(tree, false); //for notification of taxa changes
-				treeDisplays[itree].setTree(tree);
+				treeDisplays[itree].setTree(tree, sourceTree);
 				treeDisplays[itree].setNotice(Integer.toString(itree+treeNum + 1) + ": " + tree.getName()); // for debugging purposes???
 				treeDisplays[itree].suppressDrawing(false);
 				if (itree<numColumns*numRows&& itree<treeDisplays.length) {
@@ -1137,12 +1137,12 @@ class MTWExtra extends TreeDisplayExtra implements Commandable, TreeDisplayExtra
 				CharacterData data = ((MesquiteTree)treeDisplay.getTree()).findLinkedMatrix(module.getProject());
 				if (data != null && data instanceof MolecularData) {
 					popup.addItem("-", (MesquiteCommand)null, null);
-					popup.addItem("Mark Linked Sequences In Clade", module, new MesquiteCommand("markLinkedSequencesClade", this), Integer.toString(branch) +" true true" );
-					popup.addItem("Mark Linked Sequences Outside of Clade", module, new MesquiteCommand("markLinkedSequencesClade", this), Integer.toString(branch) +" true false");
-					popup.addItem("Unmark Linked Sequences In Clade", module, new MesquiteCommand("markLinkedSequencesClade", this), Integer.toString(branch)+ " false true");
-					popup.addItem("Unmark Linked Sequences Outside of Clade", module, new MesquiteCommand("markLinkedSequencesClade", this), Integer.toString(branch) +" false false");
+					popup.addItem("Mark Tips and Linked Sequences In Clade", module, new MesquiteCommand("markLinkedSequencesClade", this), Integer.toString(branch) +" true true" );
+					popup.addItem("Mark Tips and Linked Sequences Outside of Clade", module, new MesquiteCommand("markLinkedSequencesClade", this), Integer.toString(branch) +" true false");
+					popup.addItem("Unmark Tips and Linked Sequences In Clade", module, new MesquiteCommand("markLinkedSequencesClade", this), Integer.toString(branch)+ " false true");
+					popup.addItem("Unmark Tips and Linked Sequences Outside of Clade", module, new MesquiteCommand("markLinkedSequencesClade", this), Integer.toString(branch) +" false false");
 				}			
-		}
+			}
 			else {
 				Taxa taxa = tree.getTaxa();
 				int taxon = tree.taxonNumberOfNode(branch);
@@ -1154,9 +1154,9 @@ class MTWExtra extends TreeDisplayExtra implements Commandable, TreeDisplayExtra
 				if (data != null && data instanceof MolecularData) {
 					popup.addItem("-", (MesquiteCommand)null, null);
 					popup.addItem("Show Linked Sequence", module, new MesquiteCommand("showLinkedSequence", this), Integer.toString(taxon));
-					popup.addItem("Mark Linked Sequence", module, new MesquiteCommand("markLinkedSequence", this), Integer.toString(taxon));
-					popup.addItem("Unmark Linked Sequence", module, new MesquiteCommand("unmarkLinkedSequence", this), Integer.toString(taxon));
-					
+					popup.addItem("Mark Tip and Linked Sequence", module, new MesquiteCommand("markLinkedSequence", this), Integer.toString(taxon));
+					popup.addItem("Unmark Tip and Linked Sequence", module, new MesquiteCommand("unmarkLinkedSequence", this), Integer.toString(taxon));
+
 				}			
 			}
 			return;
@@ -1216,15 +1216,19 @@ class MTWExtra extends TreeDisplayExtra implements Commandable, TreeDisplayExtra
 	NameReference markedNR = NameReference.getNameReference("marked");
 	/*-----------------------------------------*/
 	public void markTipsInClade(MesquiteTree tree,  int node, Bits bits, boolean select) {
-		if (tree.nodeIsTerminal(node))
+		if (tree.nodeIsTerminal(node)){
 			bits.setBit(tree.taxonNumberOfNode(node), select);
+			tree.setAssociatedBit(markedNR, node, select);
+		}
 		for (int d = tree.firstDaughterOfNode(node); tree.nodeExists(d); d = tree.nextSisterOfNode(d)) 
 			markTipsInClade(tree, d, bits, select);
 	}
 	/*-----------------------------------------*/
 	public void markTipsOutsideClade(MesquiteTree tree,  int node, int targetNode, Bits bits, boolean select) {
-		if (tree.nodeIsTerminal(node))
+		if (tree.nodeIsTerminal(node)){
 			bits.setBit(tree.taxonNumberOfNode(node), select);
+			tree.setAssociatedBit(markedNR, node, select);
+		}
 		else if (node != targetNode)
 			for (int d = tree.firstDaughterOfNode(node); tree.nodeExists(d); d = tree.nextSisterOfNode(d)) 
 				markTipsOutsideClade(tree, d, targetNode, bits,  select);
@@ -1287,12 +1291,18 @@ class MTWExtra extends TreeDisplayExtra implements Commandable, TreeDisplayExtra
 			int taxon = MesquiteInteger.fromString(arguments);
 			if (MesquiteInteger.isCombinable(taxon)){
 				MesquiteTree myTree = (MesquiteTree)treeDisplay.getTree();
+				MesquiteTree originalTree = (MesquiteTree)treeDisplay.getOriginalTree();
+				Debugg.println(" trees " + (myTree == treeSet) + " originalTree " + originalTree);
 				CharacterData data = myTree.findLinkedMatrix(module.getProject());
 				if (data != null){
 					Associable taxInfo = data.getTaxaInfo(true);
 					taxInfo.setAssociatedBit(markedNR, taxon, true);
 					data.notifyListeners(this, new Notification(MesquiteListener.ASSOCIATED_CHANGED));
 				}
+				if (originalTree != null)
+					originalTree.setAssociatedBit(markedNR, originalTree.nodeOfTaxonNumber(taxon), true);
+				myTree.setAssociatedBit(markedNR, myTree.nodeOfTaxonNumber(taxon), true);
+				treeDisplay.repaint();
 			}
 			return null;
 		}
@@ -1300,12 +1310,17 @@ class MTWExtra extends TreeDisplayExtra implements Commandable, TreeDisplayExtra
 			int taxon = MesquiteInteger.fromString(arguments);
 			if (MesquiteInteger.isCombinable(taxon)){
 				MesquiteTree myTree = (MesquiteTree)treeDisplay.getTree();
+				MesquiteTree originalTree = (MesquiteTree)treeDisplay.getOriginalTree();
 				CharacterData data = myTree.findLinkedMatrix(module.getProject());
 				if (data != null){
 					Associable taxInfo = data.getTaxaInfo(true);
 					taxInfo.setAssociatedBit(markedNR, taxon, false);
 					data.notifyListeners(this, new Notification(MesquiteListener.ASSOCIATED_CHANGED));
 				}
+				if (originalTree != null)
+					originalTree.setAssociatedBit(markedNR, originalTree.nodeOfTaxonNumber(taxon), false);
+				myTree.setAssociatedBit(markedNR, myTree.nodeOfTaxonNumber(taxon), false);
+				treeDisplay.repaint();
 			}
 			return null;
 		}
@@ -1313,22 +1328,31 @@ class MTWExtra extends TreeDisplayExtra implements Commandable, TreeDisplayExtra
 			MesquiteInteger pos = new MesquiteInteger(0);
 			Parser parser = new Parser(arguments);
 			int branch = MesquiteInteger.fromString(parser.getFirstToken());
-			
+
 			boolean inside = MesquiteBoolean.fromTrueFalseString(parser.getNextToken());
 			boolean mark = MesquiteBoolean.fromTrueFalseString(parser.getNextToken());
 			if (MesquiteInteger.isCombinable(branch)){
 				MesquiteTree myTree = (MesquiteTree)treeDisplay.getTree();
+				MesquiteTree originalTree = (MesquiteTree)treeDisplay.getOriginalTree();
 				CharacterData data = myTree.findLinkedMatrix(module.getProject());
 				if (data != null){
 					Associable taxInfo = data.getTaxaInfo(true);
 					NameReference nr = taxInfo.makeAssociatedBits("marked");
 					Bits bits = taxInfo.getAssociatedBits(nr);
+					if (originalTree != null){
+						if (inside)
+							markTipsInClade(originalTree, branch, bits, mark);
+						else
+							markTipsOutsideClade(originalTree, myTree.getRoot(), branch, bits, mark);
+					}
 					if (inside)
 						markTipsInClade(myTree, branch, bits, mark);
 					else
 						markTipsOutsideClade(myTree, myTree.getRoot(), branch, bits, mark);
+
 					data.notifyListeners(this, new Notification(MesquiteListener.ASSOCIATED_CHANGED));
 				}
+				treeDisplay.repaint();
 			}
 			return null;
 		}
@@ -1493,7 +1517,10 @@ class MTWExtra extends TreeDisplayExtra implements Commandable, TreeDisplayExtra
 		}
 	}
 	public void setTree(Tree tree) {
+		treeSet = (MesquiteTree)tree;
 	}
+
+	MesquiteTree treeSet;
 
 	public void drawOnTree(Tree tree, int drawnRoot, Graphics g) {
 	}

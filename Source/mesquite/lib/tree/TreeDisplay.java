@@ -67,8 +67,11 @@ public class TreeDisplay extends TaxaTreeDisplay  {
 
 	/** The tree being drawn */
 	protected Tree tree;
-	/** A tree which is to be drawn, but which is being held until drawing of the current tree is finished. */
+	/** The original tree from which the drawn tree was cloned. Not always set. */
+	protected Tree originalTree;
+ 	/** A tree which is to be drawn, but which is being held until drawing of the current tree is finished. */
 	protected Tree holdingTree;
+	protected Tree holdingOriginalTree;
 	/** Orientation of the tree unspecified */
 	public static final int FREEFORM = -1;
 	/** Orientation of the tree with tips up */
@@ -286,7 +289,7 @@ public class TreeDisplay extends TaxaTreeDisplay  {
 	public void setTreeDrawing(TreeDrawing td) {
 		treeDrawing = td;
 		if (treeDrawing!=null && tree!=null)
-			setTree(tree);
+			setTree(tree, originalTree);
 	}
 	public TreeDrawing getTreeDrawing() {
 		return treeDrawing;
@@ -300,7 +303,7 @@ public class TreeDisplay extends TaxaTreeDisplay  {
 	public void setDrawingInProcess(boolean inProgress){
 		this.inProgress= inProgress;
 		if (!inProgress && holdingTree != null) {
-			setTree(holdingTree);
+			setTree(holdingTree, holdingOriginalTree);
 			//repaint();
 		}
 	}
@@ -318,8 +321,11 @@ public class TreeDisplay extends TaxaTreeDisplay  {
 	public Tree getTree() {
 		return tree;
 	}
+	public Tree getOriginalTree() {
+		return originalTree;
+	}
 
-	public void setTree(Tree tree) {
+	public void setTree(Tree tree, Tree originalTree) {
 		if (tree!=null && tree.getTaxa() != taxa)
 			setTaxa(tree.getTaxa());
 
@@ -327,9 +333,11 @@ public class TreeDisplay extends TaxaTreeDisplay  {
 			if (MesquiteTrunk.debugMode)
 				addToChain("TD-setTree HOLDING " + StringUtil.getDateTimeWithSeconds());
 			holdingTree = tree;
+			holdingOriginalTree = originalTree;
 		}
 		else {
 			this.tree = tree;
+			this.originalTree = originalTree;
 			if (treeDrawing !=null) {
 				if (tree !=null)
 					treeDrawing.setDrawnRoot(tree.getRoot());
@@ -340,7 +348,10 @@ public class TreeDisplay extends TaxaTreeDisplay  {
 			holdingTree = null;
 		}
 	}
-
+	public void setTree(Tree tree) {
+		setTree(tree, null);
+	}
+	
 	public DrawNamesTreeDisplay getDrawTaxonNames(){
 		return namesTask;
 	}
@@ -790,6 +801,7 @@ public class TreeDisplay extends TaxaTreeDisplay  {
 			accumulateRequestsFromExtras(tree);
 		}
 	}
+
 
 	
 
