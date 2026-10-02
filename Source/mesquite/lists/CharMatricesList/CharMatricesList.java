@@ -33,6 +33,8 @@ import mesquite.lib.ui.MesquiteSubmenuSpec;
 import mesquite.lib.ui.MesquiteWindow;
 import mesquite.lists.lib.CharMatricesListAssistant;
 import mesquite.lists.lib.CharMatricesListUtility;
+import mesquite.lists.lib.CharMatricesListUtilityPrimary;
+import mesquite.lists.lib.CharMatricesListUtilitySecondary;
 import mesquite.lists.lib.CharMatricesListWindow;
 import mesquite.lists.lib.ListLVModule;
 import mesquite.lists.lib.ListWindow;
@@ -91,7 +93,9 @@ public class CharMatricesList extends ListLVModule {
 		makeMenu("List");
 
 		MesquiteMenuSpec mss2 = addAuxiliaryMenu("Utilities");
-		addModuleMenuItems(mss2, makeCommand("doUtility", this), CharMatricesListUtility.class);
+		addModuleMenuItems(mss2, makeCommand("doUtility", this), CharMatricesListUtilityPrimary.class);
+		MesquiteSubmenuSpec otherUSM = addSubmenu(mss2, "Other Utilities");
+		addModuleMenuItemsSeparatelyToSubmenu(mss2, otherUSM, makeCommand("doUtility", this), CharMatricesListUtilitySecondary.class);
 		//MesquiteSubmenuSpec mss2 = addSubmenu(null, "Utilities", MesquiteModule.makeCommand("doUtility",  this));
 		//mss2.setList(DatasetsListUtility.class);
 		MesquiteSubmenuSpec mss3 = addSubmenu(null, "Matrix Names", MesquiteModule.makeCommand("doNames",  this));

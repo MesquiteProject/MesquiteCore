@@ -2226,6 +2226,19 @@ public class MesquiteTree extends Associable implements AdjustableTree, Listable
 			fillTermAr(node, result, count);
 		return result;
 	}
+	/** Returns list of terminal taxa of clade of node.*/
+	public boolean[] getTerminalTaxaAsBooleans(int node){
+		int[] tt = getTerminalTaxa(node);
+		if (tt != null){
+			boolean[] b = new boolean[taxa.getNumTaxa()];
+			for (int it = 0; it< taxa.getNumTaxa(); it++){
+				if (IntegerArray.indexOf(tt, it)>=0)
+					b[it] = true;
+			}
+			return b;
+		}
+		return null;
+	}
 	/*-----------------------------------------*/
 	private void fillTermArB(int node, boolean[] ar){
 		if (nodeIsTerminal(node)) {
@@ -2318,14 +2331,13 @@ public class MesquiteTree extends Associable implements AdjustableTree, Listable
 	}
 	/*-----------------------------------------*/
 	private  void downMarkPathsFromTerminals(Bits terminals, Bits nodes, int node){
+		if (nodeIsTerminal(node) && terminals.isBitOn(taxonNumberOfNode(node))){   // this is a terminal
+			nodes.setBit(node);
+		}
 		for (int d = firstDaughterOfNode(node); nodeExists(d); d = nextSisterOfNode(d)) {
 			downMarkPathsFromTerminals(terminals, nodes, d);
-			if (nodeIsTerminal(d) && terminals.isBitOn(taxonNumberOfNode(d))){   // this is a terminal
-				nodes.setBit(d);
-			}
-			if (nodes.isBitOn(d)){   // there is terminal above this point
+			if (nodes.isBitOn(d))   // there is terminal above this point
 				nodes.setBit(node);
-			}
 		}
 	}
 	/*-----------------------------------------*/
@@ -2410,16 +2422,21 @@ public class MesquiteTree extends Associable implements AdjustableTree, Listable
 		if (terminals==null) {
 			return false;
 		}
+		Bits terminalInTree = terminals.cloneBits();
+		for (int i = 0; i<terminalInTree.getSize(); i++){
+			if (terminalInTree.isBitOn(i) && !taxonInTree(i))
+				terminalInTree.clearBit(i);
+		}
 		MesquiteInteger single = new MesquiteInteger();
-		if (terminals.oneBitOn(single)) {
+		if (terminalInTree.oneBitOn(single)) {
 			descendantBoundary.setValue(nodeOfTaxonNumber(single.getValue()));
 			return true;
 		}
 		else {
 			Bits nodes = new Bits(numNodeSpaces);
-			markPathsFromTerminals(terminals, nodes, getRoot());
+			markPathsFromTerminals(terminalInTree, nodes, getRoot());
 			MesquiteInteger numTransitions = new MesquiteInteger(0);
-			scanForMultipleTransitions(terminals, nodes, getRoot(), numTransitions, descendantBoundary);
+			scanForMultipleTransitions(terminalInTree, nodes, getRoot(), numTransitions, descendantBoundary);
 			return numTransitions.getValue()<=1;
 		}
 	}
@@ -2525,12 +2542,21 @@ public class MesquiteTree extends Associable implements AdjustableTree, Listable
 	public boolean taxaInTree(Bits setOfTaxa){
 		if (setOfTaxa==null || !setOfTaxa.anyBitsOn())
 			return false;
-		boolean taxonMissing=false;
 		for (int it = 0; it<setOfTaxa.getSize(); it++) {
 			if (setOfTaxa.isBitOn(it) && !taxonInTree(it))
 				return false;
 		}
 		return true;
+	}
+	/** Returns whether the set of taxa in setOfTaxa are all part of tree. */
+	public boolean anyTaxaInTree(Bits setOfTaxa){
+		if (setOfTaxa==null || !setOfTaxa.anyBitsOn())
+			return false;
+		for (int it = 0; it<setOfTaxa.getSize(); it++) {
+			if (setOfTaxa.isBitOn(it) && taxonInTree(it))
+				return true;
+		}
+		return false;
 	}
 	/*-----------------------------------------*/
 	public int nextInPreorder(int node){
@@ -2723,6 +2749,11 @@ public class MesquiteTree extends Associable implements AdjustableTree, Listable
 		Bits nodes = new Bits(numNodeSpaces);
 		markPathsFromTerminals(terminals, nodes, getRoot());
 		int firstTerminal = terminals.firstBitOn();
+		while ((!taxonInTree(firstTerminal) || !terminals.isBitOn(firstTerminal)) && firstTerminal < terminals.getSize()){
+			firstTerminal++;
+		}
+		if (firstTerminal>= terminals.getSize())
+			return -1;
 		return getDeepest(nodeOfTaxonNumber(firstTerminal), nodes);
 	}
 	/*-----------------------------------------*/
@@ -3337,7 +3368,7 @@ public class MesquiteTree extends Associable implements AdjustableTree, Listable
 		else {
 			int taxon = taxa.whichTaxonNumber(c, false, permitTruncTaxNames && !permitTaxaBlockEnlargement);
 			boolean isNumber = MesquiteDouble.isNumber(c);
-			
+
 			if (!isNumber && taxon>=0){  //as of 4.04, doesn't warn if number. Assumes it's bootstrap or such.
 				System.out.println("Observed taxon " + c + " (" + taxa.getTaxonName(taxon) + ") in ancestral position; not yet allowed by Mesquite.  Tree will not be read in properly. ");
 			}
@@ -5444,7 +5475,7 @@ and the tree has been rerooted. Properties that belong to nodes implicitly have 
 		else {  // also prohibit if will be left fewer than three??
 			if (!nodeExists(node))
 				return false;
-				
+
 			locked = true;
 			//int numSnipped = numberOfTerminalsInClade(node);
 			int mom = motherOfNode(node);
@@ -6269,6 +6300,48 @@ and the tree has been rerooted. Properties that belong to nodes implicitly have 
 			collapseBranch(node, false);
 	}
 	/*-----------------------------------------*/
+	/** reroot the clade using the outgroups. Returns -1 if unable, 0 if unneeded, 1 if done successfully, 2 if no outgroup, 3 if no ingroup*/
+	public int rerootWithOutgroups(Bits outgroupTaxa, boolean notify) {
+		if (outgroupTaxa == null)
+			return -2;
+		MesquiteInteger descendantNode = new MesquiteInteger(-1);
+		boolean isconvex = isConvex(outgroupTaxa, descendantNode); 
+
+		if (isconvex){
+			//if outgroups and non-outgroups are monophyletic then done
+			int mrcaOut = mrca(outgroupTaxa);
+			Bits ingroupTaxa = outgroupTaxa.cloneBits();
+			ingroupTaxa.invertAllBits();
+			int mrcaIn = mrca(ingroupTaxa);
+			if ( !nodeExists(mrcaOut))
+				return 2;
+			else if (!nodeExists(mrcaIn))
+				return 3;
+			
+			if (!isAncestor(mrcaIn, mrcaOut) && !isAncestor(mrcaOut, mrcaIn)) {
+				setRooted(true, notify);
+				return 1;
+			}
+			//Otherwise, reroot
+			if (descendantNode.getValue() >=0) {
+				double oldBL = getBranchLength(descendantNode.getValue());
+				if (reroot(descendantNode.getValue(), getRoot(), false)) {
+					if (MesquiteDouble.isCombinable(oldBL)) {
+						int node = getRoot();
+						int rootDescendants = numberOfDaughtersOfNode(node);
+						double newBL = oldBL/rootDescendants;
+						for (int daughter=firstDaughterOfNode(node); nodeExists(daughter); daughter = nextSisterOfNode(daughter) ) {
+							setBranchLength(daughter, newBL, notify);
+						}
+					}
+					setRooted(true, notify);
+					return 1;
+				}
+			}
+		}
+		return -1;
+	}
+
 	static boolean warnedUnbranchedReroot = false;
 	/** reroot the clade below node atNode.*/
 	public  boolean reroot(int atNode, int cladeRoot, boolean notify) {
@@ -7284,6 +7357,20 @@ and the tree has been rerooted. Properties that belong to nodes implicitly have 
 		taxaVersion = taxa.getVersionNumber();
 		if (deleted>0 && notify)
 			incrementVersion(MesquiteListener.BRANCHES_REARRANGED,true);
+	}
+	public void snipTaxa(int[] toBeSnipped, boolean notify){
+		if (toBeSnipped == null)
+			return;
+		int deleted = 0; //added 14 Feb 02
+		for (int i=0; i<toBeSnipped.length; i++) {
+			int node = nodeOfTaxonNumber(toBeSnipped[i]);
+			if (node>=0){
+				snipClade(node, false);
+				deleted++;
+			}
+		}
+		if (deleted>0)
+			incrementVersion(MesquiteListener.BRANCHES_REARRANGED,notify);
 	}
 	/*-----------------------------------------*/
 	private long[] lastNotifications = new long[]{-1, -1, -1, -1, -1, -1, -1, -1, -1, -1}; //a partial protection against responding to the same notification twice, e.g. coming via two different pathways.

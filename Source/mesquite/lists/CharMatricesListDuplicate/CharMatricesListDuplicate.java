@@ -22,9 +22,10 @@ import mesquite.lib.characters.CharacterData;
 import mesquite.lib.table.MesquiteTable;
 import mesquite.lib.ui.AlertDialog;
 import mesquite.lists.lib.CharMatricesListUtility;
+import mesquite.lists.lib.CharMatricesListUtilityPrimary;
 
 /* ======================================================================== */
-public class CharMatricesListDuplicate extends CharMatricesListUtility {
+public class CharMatricesListDuplicate extends CharMatricesListUtilityPrimary {
 	boolean duplicateExcludedCharacters = false;
 	/*.................................................................................................................*/
 	public String getName() {

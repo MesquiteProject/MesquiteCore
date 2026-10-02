@@ -15,6 +15,7 @@ package mesquite.lib.tree;
 
 import java.util.Random;
 
+import mesquite.lib.Bits;
 import mesquite.lib.MesquiteInteger;
 import mesquite.lib.taxa.TaxaSelectionSet;
 import mesquite.lib.taxa.TaxonNamer;
@@ -95,6 +96,8 @@ public interface AdjustableTree extends Tree {
 	public int insertNode(int node, boolean notify);
 	/** reroot the clade below node atNode.*/
 	public boolean reroot(int atNode, int cladeRoot, boolean notify) ;
+	/** reroot the clade using the outgroups.*/
+	public int rerootWithOutgroups(Bits outgroupTaxa, boolean notify) ;
 	/** ultrametricizes the tree.*/
 	public void arbitrarilyUltrametricize();
 }

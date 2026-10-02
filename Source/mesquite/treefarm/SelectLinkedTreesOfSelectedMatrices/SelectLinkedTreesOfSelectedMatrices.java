@@ -26,10 +26,11 @@ import mesquite.lib.tree.MesquiteTree;
 import mesquite.lib.tree.Tree;
 import mesquite.lib.tree.TreeVector;
 import mesquite.lists.lib.CharMatricesListUtility;
+import mesquite.lists.lib.CharMatricesListUtilityPrimary;
 import mesquite.lists.lib.TreeListUtility;
 
 /* ======================================================================== */
-public class SelectLinkedTreesOfSelectedMatrices extends CharMatricesListUtility { 
+public class SelectLinkedTreesOfSelectedMatrices extends CharMatricesListUtilityPrimary { 
 	/*.................................................................................................................*/
 	public boolean startJob(String arguments, Object condition, boolean hiredByName){
 		return true;

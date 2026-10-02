@@ -51,9 +51,10 @@ import mesquite.lib.ui.ExtensibleDialog;
 import mesquite.lib.ui.ProgressIndicator;
 import mesquite.lib.ui.RadioButtons;
 import mesquite.lists.lib.CharMatricesListUtility;
+import mesquite.lists.lib.CharMatricesListUtilityPrimary;
 
 /* ======================================================================== */
-public class TreesFromSelMatricesParallel extends CharMatricesListUtility {
+public class TreesFromSelMatricesParallel extends CharMatricesListUtilityPrimary {
 	int storageChoice = 0; //0 = single tree block; 1 = multiple tree blocks; 2 = multiple tree files
 	static final int SINGLE_TREE_BLOCK = 0;
 	static final int MULTIPLE_TREE_BLOCKS = 1;

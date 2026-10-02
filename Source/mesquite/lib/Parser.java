@@ -13,6 +13,8 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
  */
 package mesquite.lib;
 
+import java.util.Vector;
+
 /* ======================================================================== */
 /** A class for parsing strings for NEXUS files and commands.*/
 public class Parser extends StringUtil {
@@ -1491,6 +1493,20 @@ public class Parser extends StringUtil {
 			tokens = StringUtil.tokenize(token);
 			for (int i=first+1; i<= last; i++)
 				tokens += StringUtil.tokenize(getNextToken());
+		}
+		return tokens;
+	}
+	/*............................................  ....................................................*/
+	public String[] getTokens(){
+		Vector v = new Vector();
+		String fRA = getFirstToken();
+		while (!StringUtil.blank(fRA)) {
+			v.addElement(fRA);
+			fRA = getNextToken();
+		}
+		String[] tokens = new String[v.size()];
+		for (int i=0; i<tokens.length; i++){
+			tokens[i] = (String)v.elementAt(i);
 		}
 		return tokens;
 	}

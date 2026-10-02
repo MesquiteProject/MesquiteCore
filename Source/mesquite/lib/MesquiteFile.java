@@ -2346,6 +2346,18 @@ public class MesquiteFile extends Listened implements HNode, Commandable, Listab
 	}	
 	/*.................................................................................................................*/
 	/** Checks to see if path leads to a file that is not a directory*/
+	public static long fileSize(String path) {
+		if (path != null) {
+			if (path.indexOf("//")>=0)
+				MesquiteMessage.printStackTrace("double // in path " + path);  
+			File testing = new File(path);
+			if (testing.exists() && testing.isFile())
+				return testing.length();
+		}
+		return 0;
+	}	
+	/*.................................................................................................................*/
+	/** Checks to see if path leads to a file that is not a directory*/
 	public static String getAvailableFileName(String directoryName, String fileNameBase) {
 		if (!fileExists(directoryName,fileNameBase))
 			return fileNameBase;
@@ -3312,7 +3324,7 @@ public class MesquiteFile extends Listened implements HNode, Commandable, Listab
 						String line = contents.getStringBuffer(i).toString();
 						if (addLineEndings)
 							line += StringUtil.lineEnding();
-						stream.write(contents.getStringBuffer(i).toString() + StringUtil.lineEnding());
+						stream.write(line);
 						stream.flush();
 					}
 				}

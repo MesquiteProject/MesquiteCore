@@ -16,6 +16,7 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
 
 package mesquite.treefarm.OutgroupRoot;
 
+import mesquite.lib.Debugg;
 import mesquite.lib.Listened;
 import mesquite.lib.MesquiteDouble;
 import mesquite.lib.MesquiteInteger;
@@ -41,7 +42,7 @@ public class OutgroupRoot extends TreeAltererMult {
 	/*.................................................................................................................*/
  	public void endJob() {
  		if (warnings>1) 
- 			logln("  (Some trees could not be rerooted for the complete outgroup, but were rerooted at the first selected taxon. These include trees " + notRooted + ".)");
+ 			logln("  (" + warnings + " trees could not be rerooted for the complete outgroup, but were rerooted at the first selected taxon. These include trees " + notRooted + ".)");
   	 	if (currentTaxa != null)
   	 		currentTaxa.removeListener(this);
  		super.endJob();
@@ -81,8 +82,9 @@ public class OutgroupRoot extends TreeAltererMult {
 			return false;
 		}
 		treeNumber ++;
-		MesquiteInteger descendantNode = new MesquiteInteger(-1);
-		tree.setRooted(true, notify);
+		
+				
+		/*MesquiteInteger descendantNode = new MesquiteInteger(-1);
 		boolean isconvex = tree.isConvex(taxa.getSelectedBits(), descendantNode);
 		if (isconvex && descendantNode.getValue() >=0) {
 			double oldBL = tree.getBranchLength(descendantNode.getValue());
@@ -96,12 +98,26 @@ public class OutgroupRoot extends TreeAltererMult {
 					}
 				}
 			}
-			if (resultString != null)
+			*/
+		int result = tree.rerootWithOutgroups(taxa.getSelectedBits(), notify);
+		if (result>=0){
+			if (resultString != null){
+				if (result== 1)
 				resultString.setValue("Tree rerooted");
+				else
+					resultString.setValue("Already rooted correctly");
+			}
 		}
 		else {
-			int firstSelected = taxa.firstSelected();
-			tree.reroot(tree.nodeOfTaxonNumber(firstSelected), tree.getRoot(), false);
+			int anchor = taxa.firstSelected();
+			while (!tree.taxonInTree(anchor) && anchor<taxa.getNumTaxa()){
+				anchor++;
+			}
+			
+			if (anchor< taxa.getNumTaxa()){
+			boolean success = tree.reroot(tree.nodeOfTaxonNumber(anchor), tree.getRoot(), false);
+			
+			tree.setRooted(true, notify);
 			String w = "Tree " + treeNumber + " was rooted using only the first selected taxon as outgroup. It could not be rerooted between the selected and unselected taxa, as the unselected taxa cannot be made monophyletic";
 			if (resultString != null)
 				resultString.setValue(w);
@@ -111,8 +127,7 @@ public class OutgroupRoot extends TreeAltererMult {
 			else if (warnings == warningsLimit)
 				logln("Other trees were also rooted only at first selected taxon.");
 			notRooted += " " + treeNumber;
-			return false;
-
+			}
 		}
 		if (notify && tree instanceof Listened) ((Listened)tree).notifyListeners(this, new Notification(MesquiteListener.BRANCHES_REARRANGED));
 		return true;

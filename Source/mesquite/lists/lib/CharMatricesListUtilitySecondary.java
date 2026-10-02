@@ -13,21 +13,21 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
 */
 package mesquite.lists.lib;
 
+import mesquite.lib.ListableVector;
+import mesquite.lib.MesquiteModule;
+import mesquite.lib.table.MesquiteTable;
+
+
+
 /* ======================================================================== */
-public abstract class CharMatricesListProcessorUtility extends CharMatricesListUtilityPrimary  {
+public abstract class CharMatricesListUtilitySecondary extends CharMatricesListUtility  {
 
    	 public Class getDutyClass() {
-   	 	return CharMatricesListProcessorUtility.class;
+   	 	return CharMatricesListUtilitySecondary.class;
    	 }
  	public String getDutyName() {
- 		return "Character matrices list processor utility";
+ 		return "Character matrices list utility (Secondary)";
    	 }
- 	public String getNameForProcessorList() {
- 		return getName();
-   	}
-   	public String[] getDefaultModule() {
-   		return new String[] { "#AlterMatrixAsUtility", "#ParallelAlterMatrixAsUtility", "#CharMatricesListConcatenate", "#CharMatricesListDeoncatenate", "#CharMatricesListDuplicate", "#CharMatricesListExport"};
-   	}
 
 }
 

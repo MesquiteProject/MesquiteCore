@@ -37,9 +37,10 @@ import mesquite.lib.table.MesquiteTable;
 import mesquite.lib.ui.ExtensibleDialog;
 import mesquite.lib.ui.ProgressIndicator;
 import mesquite.lists.lib.CharMatricesListUtility;
+import mesquite.lists.lib.CharMatricesListUtilityPrimary;
 
 /* ======================================================================== */
-public class CharMatricesListDeconcatenate extends CharMatricesListUtility {
+public class CharMatricesListDeconcatenate extends CharMatricesListUtilityPrimary {
 	/*.................................................................................................................*/
 	public String getName() {
 		return "Deconcatenate Partitions as Separate Matrices...";

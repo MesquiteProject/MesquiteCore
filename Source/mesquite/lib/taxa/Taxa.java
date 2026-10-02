@@ -491,6 +491,19 @@ public class Taxa extends FileElement implements NameableWithNotify {
 	public int whichTaxonNumber(String taxonName, boolean caseSensitive) {
 		return whichTaxonNumber(taxonName, caseSensitive, false);
 	}
+	/* ................................................................................................................. */
+	/** returns which taxon (i.e., its number) has the given t0 t1 name */
+	public static int taxonNumberFromT0(String taxonName) {
+		if (taxonName == null)
+			return -1;
+		if (taxonName.startsWith("t") || taxonName.startsWith("T")){
+			int num = MesquiteInteger.fromString(taxonName.substring(1, taxonName.length()));
+			if (MesquiteInteger.isCombinable(num))
+				return num;
+		}
+		
+		return -1;
+	}
 
 	/* ................................................................................................................. */
 	/** returns which taxon (i.e., its number) has the given name */

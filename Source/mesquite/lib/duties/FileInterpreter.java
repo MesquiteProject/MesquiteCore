@@ -374,6 +374,15 @@ public abstract class FileInterpreter extends MesquiteModule  {
 		}
 	}
 	/*.................................................................................................................*/
+	public void saveExportedFileWithExtension(MesquiteStringBuffer outputBuffer, String arguments, String extension, boolean addLineEndings) {
+		if (outputBuffer == null)
+			return;
+		String name = suggestedFileName(null, extension);
+		String filePath = getPathForExport(arguments, name, null, null);
+		if (filePath!=null) 
+			MesquiteFile.putFileContents(filePath, outputBuffer, true, addLineEndings);
+	}
+	/*.................................................................................................................*/
 	public void saveExportedFileWithExtension(MesquiteStringBuffer outputBuffer, String arguments, String extension) {
 		if (outputBuffer == null)
 			return;

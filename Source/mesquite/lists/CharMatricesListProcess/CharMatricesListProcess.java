@@ -39,9 +39,10 @@ import mesquite.lib.ui.AlertDialog;
 import mesquite.lib.ui.ExtensibleDialog;
 import mesquite.lists.lib.CharMatricesListProcessorUtility;
 import mesquite.lists.lib.CharMatricesListUtility;
+import mesquite.lists.lib.CharMatricesListUtilityPrimary;
 
 /* ======================================================================== */
-public class CharMatricesListProcess extends CharMatricesListUtility implements ActionListener {
+public class CharMatricesListProcess extends CharMatricesListUtilityPrimary implements ActionListener {
 	/*.................................................................................................................*/
 	public String getName() {
 		return "Process Matrices ";
