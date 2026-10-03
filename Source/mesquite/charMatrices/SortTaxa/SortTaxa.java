@@ -142,7 +142,8 @@ public class SortTaxa extends DataWindowAssistantI {
 					for (int i=1; i<taxa.getNumTaxa(); i++) {
 						if (i % 10 == 0) CommandRecord.tick("Sorting from taxon " + i);
 						for (int j= i-1; j>=0 && compare(gT, taxa.getTaxonName(j), taxa.getTaxonName(j+1)); j--) {
-							taxa.swapTaxa(j, j+1, false);
+							if (noneSelected || (taxa.getSelected(j) && taxa.getSelected(j+1)))
+								taxa.swapTaxa(j, j+1, false);
 						}
 					}
 					CommandRecord.tick("Sorting finished");
