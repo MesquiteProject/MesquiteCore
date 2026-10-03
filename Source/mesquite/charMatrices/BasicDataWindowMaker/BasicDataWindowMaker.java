@@ -4794,6 +4794,10 @@ class MatrixTable extends mesquite.lib.table.CMTable implements MesquiteDroppedF
 			t.setFirstRowVisible(row);
 		}
 	}
+	/* ................................................................................................................. */
+	public boolean matrixTextCopyUnderlyingCode() {
+		return true;
+	}
 
 	/* ............................................................................................................... */
 	public synchronized String getMatrixTextForDisplay(int column, int row) {

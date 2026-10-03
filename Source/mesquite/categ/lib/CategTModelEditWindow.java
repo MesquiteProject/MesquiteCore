@@ -346,13 +346,16 @@ class CategTModelTable extends MesquiteTable {
 		g.drawString("From", x+3, y+h-fm.getDescent());
 		g.drawString("To", x+w -fm.stringWidth("To "), y+lineHeight);
 	}
-	public String getMatrixText(int column, int row){
+	public String getMatrixText(int column, int row, boolean showUnderlyingCodeOnly){
 		if (column==row) {
 			return model.getTransitionValue(row,column, null).toString();
 		}
 		else  {
 			return model.getTransitionValue(row,column, null).toString();
 		}
+	}
+	public String getMatrixText(int column, int row){
+		return getMatrixText(column, row, false);
 	}
 	public void drawColumnNameCell(Graphics g, int x, int y, int w, int h, int column){
 		//g.clipRect(x,y,w,h);

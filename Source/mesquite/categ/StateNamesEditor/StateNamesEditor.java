@@ -818,11 +818,14 @@ class StateNamesTable extends MesquiteTable {
 		else
 			data.setStateName( column, row, name);
 	}
-	public String getMatrixText(int column, int row){  
+	public String getMatrixText(int column, int row, boolean showUnderlyingCodeOnly){  
 		if (rowsAreCharacters)
 			return getState(column, row);
 		else
 			return getState(row, column);
+	}
+	public String getMatrixText(int column, int row){  
+		return getMatrixText(column, row, false);
 	}
 
 	/*...............................................................................................................*/

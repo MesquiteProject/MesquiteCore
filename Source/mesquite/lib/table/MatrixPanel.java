@@ -60,7 +60,10 @@ public class MatrixPanel extends EditorPanel implements FocusListener {
 
 	/*...............................................................................................................*/
 	public String getText(int column, int row){
-		return table.getMatrixText(column, row, false);
+//		if (table.matrixTextCopyUnderlyingCode())
+			return table.getMatrixText(column, row, false);
+//		else
+//			return table.getMatrixText(column, row);
 	}
 	public void deselectCell(int column,int row){
 		table.deselectCell(column, row);

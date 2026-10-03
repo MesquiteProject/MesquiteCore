@@ -238,7 +238,7 @@ public class ListTable extends MesquiteTable {
 		}
 		return false;
 	}
-	public String getMatrixText(int column, int row){  
+	public String getMatrixText(int column, int row,boolean showUnderlyingCodeOnly){  
 		ListAssistant assistant = window.findAssistant(column);
 		if (assistant!=null) {
 			try{
@@ -248,6 +248,9 @@ public class ListTable extends MesquiteTable {
 			}
 		}
 		return "?";
+	}
+	public String getMatrixText(int column, int row){  
+		return getMatrixText(column, row, false);
 	}
 	public Color getBackgroundColor(int column, int row, boolean selected){
 		ListAssistant assistant = window.findAssistant(column);
