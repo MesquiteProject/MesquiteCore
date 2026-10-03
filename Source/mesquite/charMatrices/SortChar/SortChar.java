@@ -135,7 +135,7 @@ public class SortChar extends DataWindowAssistantI {
 					long[] fullChecksumBefore =data.getIDOrderedFullChecksum();
 					String[] text = new String[data.getNumChars()];
 					for (int i=0; i<data.getNumChars(); i++)
-						text[i] = table.getMatrixText(i, row);
+						text[i] = table.getMatrixText(i, row, false);
 					for (int i=1; i<data.getNumChars(); i++) {
 							if (i % 10 == 0) CommandRecord.tick("Sorting from character " + i);
 							for (int j= i-1; j>=0 && compare(gT, text[j], text[j+1]); j--) {

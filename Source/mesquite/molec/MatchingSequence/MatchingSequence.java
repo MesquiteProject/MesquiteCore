@@ -190,7 +190,7 @@ public class MatchingSequence extends FindSequenceCriterionG {
 				firstChar = 0;
    				return -1;
    			}
-   			cell = table.getMatrixText(site+checkChar+extra, it);
+   			cell = table.getMatrixText(site+checkChar+extra, it, true);
    			if (cell != null && !cell.equalsIgnoreCase(String.valueOf(sequence.charAt(site)))) {
    				mismatches++;
    				if (mismatches>numMismatch){

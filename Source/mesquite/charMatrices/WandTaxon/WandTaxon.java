@@ -134,10 +134,10 @@ public class WandTaxon extends DataWindowAssistantI {
 					table.deselectAll();
 				table.offAllEdits();
 				if (selectByText.getValue()){
-					String text = table.getMatrixText(column, row);
+					String text = table.getMatrixText(column, row,false);
 					if (!taxaAreRows){  //each row is a taxon; hence go through this column to find which rows to select
 						for (int i=0; i<table.getNumColumns(); i++){
-							if (satisfiesCriteria(text, table.getMatrixText(i, row))) {
+							if (satisfiesCriteria(text, table.getMatrixText(i, row,false))) {
 								if (subtractFromSelection) 
 									taxa.setSelected(i, false);
 								else 
@@ -147,7 +147,7 @@ public class WandTaxon extends DataWindowAssistantI {
 					}
 					else {
 						for (int i=0; i<table.getNumRows(); i++){
-							if (satisfiesCriteria(text, table.getMatrixText(column, i))) {
+							if (satisfiesCriteria(text, table.getMatrixText(column, i,false))) {
 								if (subtractFromSelection) {
 									taxa.setSelected(i, false);
 								}

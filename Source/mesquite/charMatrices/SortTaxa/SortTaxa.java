@@ -127,7 +127,7 @@ public class SortTaxa extends DataWindowAssistantI {
 				if (column>=0 && row >=0) {
 					String[] text = new String[taxa.getNumTaxa()];
 					for (int i=0; i<taxa.getNumTaxa(); i++)
-						text[i] = table.getMatrixText(column, i);
+						text[i] = table.getMatrixText(column, i, false);
 					for (int i=1; i<taxa.getNumTaxa(); i++) {
 						if (i % 10 == 0) CommandRecord.tick("Sorting from taxon " + i);
 						for (int j= i-1; j>=0 && compare(gT, text[j], text[j+1]); j--) {

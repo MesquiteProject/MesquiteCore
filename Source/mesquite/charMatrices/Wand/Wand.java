@@ -163,7 +163,7 @@ public class Wand extends DataWindowAssistantI {
 				}
 				else if (selectByText.getValue()){
 					if (contiguous.getValue()){
-						String text = table.getMatrixText(column, row);
+						String text = table.getMatrixText(column, row, false);
 						if (contigSel == null || contigSel.length != table.getNumColumns() || contigSel[0].length != table.getNumRows())
 							contigSel = new boolean[table.getNumColumns()][table.getNumRows()];
 						for (int i = 0; i< contigSel.length; i++)
@@ -177,7 +177,7 @@ public class Wand extends DataWindowAssistantI {
 						checkCell(column, row, text, subtractFromSelection);
 					} 
 					else {
-						String text = table.getMatrixText(column, row);
+						String text = table.getMatrixText(column, row, false);
 						int rowStart = 0;
 						int rowEnd = table.getNumRows();
 						int columnStart = 0;
@@ -205,7 +205,7 @@ public class Wand extends DataWindowAssistantI {
 						}
 						for (int j=rowStart; j<rowEnd; j++){
 							for (int i=columnStart; i<columnEnd; i++){
-								if (satisfiesCriteria(text, table.getMatrixText(i, j))) {
+								if (satisfiesCriteria(text, table.getMatrixText(i, j, false))) {
 									numContigFound++;
 									if (numContigFound % 100 == 0)
 										CommandRecord.tick(Integer.toString(numContigFound) + " cells found");
@@ -361,7 +361,7 @@ public class Wand extends DataWindowAssistantI {
 			return false;
 		contigSel[ic][it] = true;
 		//table.selectCell(ic, it); //select cell
-		if (satisfiesCriteria(text, table.getMatrixText(ic, it))) {
+		if (satisfiesCriteria(text, table.getMatrixText(ic, it, false))) {
 			numContigFound++;
 			if (numContigFound % 100 == 0)
 				CommandRecord.tick(Integer.toString(numContigFound) + " cells found");

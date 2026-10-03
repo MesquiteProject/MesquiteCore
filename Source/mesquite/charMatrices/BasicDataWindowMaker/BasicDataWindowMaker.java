@@ -4736,9 +4736,10 @@ class MatrixTable extends mesquite.lib.table.CMTable implements MesquiteDroppedF
 	MesquiteStringBuffer sb = new MesquiteStringBuffer(50);
 
 	/* ............................................................................................................... */
-	public synchronized String getMatrixText(int column, int row) {
+	public synchronized String getMatrixText(int column, int row, boolean showUnderlyingCodeOnly) {
 		sb.setLength(0);
-		data.statesIntoStringBuffer(column, row, sb, false);
+	//	data.statesIntoStringBuffer(column, row, sb, false);
+		data.statesIntoStringBuffer(column, row, sb, !showUnderlyingCodeOnly);
 		return sb.toString();
 	}
 

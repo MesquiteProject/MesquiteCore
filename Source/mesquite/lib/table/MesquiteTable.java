@@ -635,7 +635,7 @@ public class MesquiteTable extends MesquitePanel implements KeyListener, MouseWh
 				StringBuffer sb = new StringBuffer(getColumnNameText(column));
 				for (int i=0; i<getNumRows(); i++){
 					sb.append('\t');
-					sb.append(getMatrixText(column, i));
+					sb.append(getMatrixText(column, i, false));
 				}
 				return sb.toString();
 			}
@@ -647,7 +647,7 @@ public class MesquiteTable extends MesquitePanel implements KeyListener, MouseWh
 				StringBuffer sb = new StringBuffer(getRowNameText(row));
 				for (int i=0; i<getNumColumns(); i++){
 					sb.append('\t');
-					sb.append(getMatrixText(i, row));
+					sb.append(getMatrixText(i, row, false));
 				}
 				return sb.toString();
 			}
@@ -948,7 +948,7 @@ public class MesquiteTable extends MesquitePanel implements KeyListener, MouseWh
 					if (literal)
 						t = getMatrixTextForDisplay(i, j);
 					else
-						t = getMatrixText(i, j);
+						t = getMatrixText(i, j, true);
 					if (t != null)
 						s.append(t);
 				}
@@ -3933,7 +3933,7 @@ public class MesquiteTable extends MesquitePanel implements KeyListener, MouseWh
 		else if (row == -1)
 			return getColumnNameText(column);
 		else
-			return getMatrixText(column, row);
+			return getMatrixText(column, row, false);
 	}
 
 	/* ............................................................................................................... */
@@ -3956,14 +3956,14 @@ public class MesquiteTable extends MesquitePanel implements KeyListener, MouseWh
 	 * Returns text in cell of matrix, possibly adjusted to include asterisks for footnotes, etc.. Should be overridden in subclasses if text returned is appropriate.
 	 */
 	public synchronized String getMatrixTextForDisplay(int column, int row) {
-		return getMatrixText(column, row);
+		return getMatrixText(column, row, false);
 	}
 
 	/* ............................................................................................................... */
 	/**
 	 * Returns text in cell of matrix. Should be overridden in subclasses if text returned is appropriate.
 	 */
-	public synchronized String getMatrixText(int column, int row) {
+	public synchronized String getMatrixText(int column, int row, boolean showUnderlyingCodeOnly) {
 		return "Column " + Integer.toString(column) + " Row " + Integer.toString(row);
 	}
 

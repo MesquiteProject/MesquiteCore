@@ -139,7 +139,7 @@ public abstract class MaintainSequenceMatch extends FindSequenceCriterion {
   			table.deselectAllCells(true, false);
 			StringBuffer sb = new StringBuffer(data.getNumChars());
    			for (int ic = firstChar; ic< data.getNumChars(); ic++) {
-   				String cell = table.getMatrixText(ic, it);
+   				String cell = table.getMatrixText(ic, it, true);
    				if (cell!= null && cell.length()>0)
    					sb.append(cell.charAt(0));
    			}

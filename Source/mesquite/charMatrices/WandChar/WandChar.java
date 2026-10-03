@@ -128,13 +128,13 @@ public class WandChar extends DataWindowAssistantI {
 		else if (toggleSameWhole.getValue()) {
 			if (!charactersAreRows) {  // characters are column; normal orientation
 				for (int i=0; i<table.getNumRows(); i++){
-					if (!table.getMatrixText(standardChar, i).equals(table.getMatrixText(comparisonChar,i)))
+					if (!table.getMatrixText(standardChar, i, false).equals(table.getMatrixText(comparisonChar,i,false)))
 						return false;
 				}
 			}
 			else {
 				for (int i=0; i<table.getNumColumns(); i++){
-					if (!table.getMatrixText(i, standardChar).equals(table.getMatrixText(i, comparisonChar)))
+					if (!table.getMatrixText(i, standardChar,false).equals(table.getMatrixText(i, comparisonChar,false)))
 						return false;
 				}
 			}
@@ -144,13 +144,13 @@ public class WandChar extends DataWindowAssistantI {
 			
 			if (!charactersAreRows) {  // characters are column; normal orientation
 				for (int i=0; i<table.getNumRows(); i++){
-					if (!table.getMatrixText(standardChar, i).equals(table.getMatrixText(comparisonChar,i)))
+					if (!table.getMatrixText(standardChar, i,false).equals(table.getMatrixText(comparisonChar,i,false)))
 						return false;
 				}
 			}
 			else {
 				for (int i=0; i<table.getNumColumns(); i++){
-					if (!table.getMatrixText(i, standardChar).equals(table.getMatrixText(i, comparisonChar)))
+					if (!table.getMatrixText(i, standardChar,false).equals(table.getMatrixText(i, comparisonChar,false)))
 						return false;
 				}
 			}
@@ -173,10 +173,10 @@ public class WandChar extends DataWindowAssistantI {
 		   				table.deselectAll();
 		   			}
 		   			table.offAllEdits();
-					String text = table.getMatrixText(column, row);
+					String text = table.getMatrixText(column, row, false);
 					if (!charactersAreRows){  //each column is a char; hence go through this row to find which columns to select
 							for (int i=0; i<table.getNumColumns(); i++){  // scoot along this row, see which columns to select
-								if (satisfiesCriteria(column,i,text, table.getMatrixText(i, row))) {
+								if (satisfiesCriteria(column,i,text, table.getMatrixText(i, row, false))) {
 									if (subtractFromSelection) {
 											data.setSelected(i, false); //deselect whole character
 									}
@@ -188,7 +188,7 @@ public class WandChar extends DataWindowAssistantI {
 					}
 					else {
 							for (int i=0; i<table.getNumRows(); i++){
-								if (satisfiesCriteria(row,i,text, table.getMatrixText(column, i))) {
+								if (satisfiesCriteria(row,i,text, table.getMatrixText(column, i, false))) {
 									if (subtractFromSelection) {
 											data.setSelected(i, false); //deselect whole character
 									}
