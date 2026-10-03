@@ -3955,8 +3955,15 @@ public class MesquiteTable extends MesquitePanel implements KeyListener, MouseWh
 	/**
 	 * Returns text in cell of matrix, possibly adjusted to include asterisks for footnotes, etc.. Should be overridden in subclasses if text returned is appropriate.
 	 */
+	public synchronized String getMatrixTextForDisplay(int column, int row,boolean showUnderlyingCodeOnly) {
+		return getMatrixText(column, row, showUnderlyingCodeOnly);  
+	}
+	/* ............................................................................................................... */
+	/**
+	 * Returns text in cell of matrix, possibly adjusted to include asterisks for footnotes, etc.. Should be overridden in subclasses if text returned is appropriate.
+	 */
 	public synchronized String getMatrixTextForDisplay(int column, int row) {
-		return getMatrixText(column, row, false);
+		return getMatrixText(column, row);
 	}
 
 	/* ............................................................................................................... */
@@ -3964,6 +3971,14 @@ public class MesquiteTable extends MesquitePanel implements KeyListener, MouseWh
 	 * Returns text in cell of matrix. Should be overridden in subclasses if text returned is appropriate.
 	 */
 	public synchronized String getMatrixText(int column, int row, boolean showUnderlyingCodeOnly) {
+		return "Column " + Integer.toString(column) + " Row " + Integer.toString(row);
+	}
+
+	/* ............................................................................................................... */
+	/**
+	 * Returns text in cell of matrix. Should be overridden in subclasses if text returned is appropriate.
+	 */
+	public synchronized String getMatrixText(int column, int row) {
 		return "Column " + Integer.toString(column) + " Row " + Integer.toString(row);
 	}
 
