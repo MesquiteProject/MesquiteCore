@@ -125,13 +125,13 @@ public class Notification implements Identifiable {
 		if (n==null)
 			return false;
 		else
-			return n.getCode() == MesquiteListener.LOCK_CHANGED  ||  n.getCode() == MesquiteListener.ANNOTATION_CHANGED  ||  n.getCode() == MesquiteListener.ANNOTATION_ADDED  || n.getCode() == MesquiteListener.ANNOTATION_DELETED  ||n.getCode() == MesquiteListener.NAMES_CHANGED  ;
+			return n.getCode() == MesquiteListener.NOTHINGTOSEEHERE  || n.getCode() == MesquiteListener.LOCK_CHANGED  ||  n.getCode() == MesquiteListener.ANNOTATION_CHANGED  ||  n.getCode() == MesquiteListener.ANNOTATION_ADDED  || n.getCode() == MesquiteListener.ANNOTATION_DELETED  ||n.getCode() == MesquiteListener.NAMES_CHANGED  ;
 	}
 	public static boolean appearsCosmeticOrSelection(Notification n){
 		if (n==null)
 			return false;
 		else
-			return n.getCode() == MesquiteListener.SELECTION_CHANGED  || n.getCode() == MesquiteListener.LOCK_CHANGED  ||  n.getCode() == MesquiteListener.ANNOTATION_CHANGED  ||  n.getCode() == MesquiteListener.ANNOTATION_ADDED  || n.getCode() == MesquiteListener.ANNOTATION_DELETED  ||n.getCode() == MesquiteListener.NAMES_CHANGED  ;
+			return n.getCode() == MesquiteListener.SELECTION_CHANGED || n.getCode() == MesquiteListener.NOTHINGTOSEEHERE  || n.getCode() == MesquiteListener.LOCK_CHANGED  ||  n.getCode() == MesquiteListener.ANNOTATION_CHANGED  ||  n.getCode() == MesquiteListener.ANNOTATION_ADDED  || n.getCode() == MesquiteListener.ANNOTATION_DELETED  ||n.getCode() == MesquiteListener.NAMES_CHANGED  ;
 	}
 	public UndoReference getUndoReference() {
 		return undoReference;

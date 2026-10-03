@@ -59,18 +59,18 @@ public class SelCharsInMatrixAsUtility extends CharMatricesListProcessorUtility 
 		}
 		return true;
 	}
- 	public String getNameForProcessorList() {
- 		if (selectTask != null)
- 			return getName() + "(" + selectTask.getName() + ")";
- 		return getName();
-   	}
+	public String getNameForProcessorList() {
+		if (selectTask != null)
+			return getName() + "(" + selectTask.getName() + ")";
+		return getName();
+	}
 	/*.................................................................................................................*/
- public String getNameAndParameters() {
-	 if (selectTask==null)
-		 return "Select Characters";
-	 else
-		 return selectTask.getNameAndParameters();
- }
+	public String getNameAndParameters() {
+		if (selectTask==null)
+			return "Select Characters";
+		else
+			return selectTask.getNameAndParameters();
+	}
 	/*.................................................................................................................*/
 	public Snapshot getSnapshot(MesquiteFile file) { 
 		Snapshot temp = new Snapshot();
@@ -92,7 +92,7 @@ public class SelCharsInMatrixAsUtility extends CharMatricesListProcessorUtility 
 		return null;
 	}
 	/*.................................................................................................................*/
-	
+
 	boolean firstTime = true;
 	/** if returns true, then requests to remain on even after operateOnTaxas is called.  Default is false*/
 	public boolean pleaseLeaveMeOn(){
@@ -106,18 +106,18 @@ public class SelCharsInMatrixAsUtility extends CharMatricesListProcessorUtility 
 		if (getProject() != null)
 			getProject().incrementProjectWindowSuppression();
 		Vector v = pauseAllPausables();
-		int count = 0;
-		
+
 		ProgressIndicator progIndicator = new ProgressIndicator(getProject(),"Selecting characters", "", datas.size(), true);
 		progIndicator.start();
 		boolean abort = false;
+		if (datas.size()>1)
+			log("Selecting characters of " + datas.size() + " matrices ");
+		
 		for (int im = 0; im < datas.size() && !abort; im++){
 			CharacterData data = (CharacterData)datas.elementAt(im);
 			if (progIndicator.isAborted())
 				abort=true;
 			if (!abort && test.isCompatible(data, getProject(), this)){
-				if (datas.size()<=50)
-					logln("Selecting characters of \"" + data.getName() + "\"");
 				progIndicator.setText("Selecting characters of " +data.getName());
 				MesquiteThread.setHintToSuppressProgressIndicatorCurrentThread(true);
 				selectTask.selectCharacters(data);
@@ -125,14 +125,13 @@ public class SelCharsInMatrixAsUtility extends CharMatricesListProcessorUtility 
 				progIndicator.increment();
 				if (im < 2)
 					progIndicator.toFront();
-				if (datas.size()>50 && im != 0 && im % 50 == 0)
-					logln("" + (im) +  " matrices altered.");
-					Notification notification = new Notification(MesquiteListener.SELECTION_CHANGED);
-					data.notifyListeners(this, notification);
-					count++;
-				} 
-				firstTime = false;
-			}
+				if (im != 0 && im % 100 == 0)
+					log(".");
+				data.notifyListeners(this, new Notification(MesquiteListener.SELECTION_CHANGED));
+			} 
+			firstTime = false;
+		}
+		logln("");
 
 		progIndicator.goAway();
 		unpauseAllPausables(v);

@@ -18,6 +18,8 @@ package mesquite.lib;
 public interface MesquiteListener {
 	/** Constant for listener notify system.  Unknown change occured to object. */
 	public final static int UNKNOWN = MesquiteInteger.unassigned;
+	/** Nothing has happened; reserved in case codes are saved, to indicate there is nothing to do*/
+	public final static int NOTHINGTOSEEHERE = 0;
 	/** Names of parts have changed*/
 	public final static int NAMES_CHANGED = -1;
 	/** Selection of parts has changed*/

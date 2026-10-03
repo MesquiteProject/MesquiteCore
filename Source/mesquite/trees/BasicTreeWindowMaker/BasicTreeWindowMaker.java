@@ -87,6 +87,7 @@ import mesquite.lib.ObjectArray;
 import mesquite.lib.ObjectContainer;
 import mesquite.lib.ParseUtil;
 import mesquite.lib.Parser;
+import mesquite.lib.Pausable;
 import mesquite.lib.Selectionable;
 import mesquite.lib.Snapshot;
 import mesquite.lib.StringArray;
@@ -169,7 +170,7 @@ import mesquite.trees.BranchPropertiesList.BranchPropertiesList;
 import mesquite.trees.lib.TreeInfoExtraPanel;
 
 /** Makes and manages a Tree Window for tree editing and visualization */
-public class BasicTreeWindowMaker extends TreeWindowMaker implements CommandableOwner, TreeContext, TreeDisplayActive, TreeDisplayHolder, TreeVectorHolder {
+public class BasicTreeWindowMaker extends TreeWindowMaker implements CommandableOwner, TreeContext, TreeDisplayActive, TreeDisplayHolder, TreeVectorHolder, Pausable {
 
 	public String getName() {
 		return "Tree Window";
@@ -849,12 +850,17 @@ public class BasicTreeWindowMaker extends TreeWindowMaker implements Commandable
 			}
 			else if (!(notification != null && notification.getObjectClass() == Taxa.class)) { // if notification came from TAxa changes, don't respond, as that will be handled otherwise
 				if (code != MesquiteListener.SELECTION_CHANGED) {
-					if (basicTreeWindow.originalTree != null && basicTreeWindow.originalTree instanceof MesquiteTree && basicTreeWindow.taxa != null)
+					if (paused){
+						pausedNotificationCode = Notification.getCode(notification);
+					}
+					else {
+						if (basicTreeWindow.originalTree != null && basicTreeWindow.originalTree instanceof MesquiteTree && basicTreeWindow.taxa != null)
 						basicTreeWindow.taxa.removeListener((MesquiteTree) basicTreeWindow.originalTree);
 					basicTreeWindow.originalTree = null; // otree
 					editMode = false;
 					basicTreeWindow.resetForTreeSource(false, false, MesquiteThread.isDuringNotification(), Notification.getCode(notification)); // if switching between tree blocks, should reset to zero! If storing tree in tree block, shouldn't!
 					basicTreeWindow.contentsChanged();
+					}
 				}
 			}
 		}
@@ -983,6 +989,35 @@ public class BasicTreeWindowMaker extends TreeWindowMaker implements Commandable
 		if (basicTreeWindow == null)
 			return null;
 		return basicTreeWindow.goToTreeNumber(index, true);
+	}
+	/** to ask Pausable to pause*/
+	boolean paused = false;
+	int  pausedNotificationCode = MesquiteListener.NOTHINGTOSEEHERE;
+;
+	public void addPausables(Vector pausables) {
+		if (pausables != null)
+			pausables.addElement(this);
+	}
+	public void pause(){
+		paused = true;
+	}
+	/** to ask a Pausable to unpause (i.e. to resume regular activity)*/
+	public void unpause(){
+		paused = false;
+		if (pausedNotificationCode != MesquiteListener.NOTHINGTOSEEHERE){
+			if (basicTreeWindow.originalTree != null && basicTreeWindow.originalTree instanceof MesquiteTree && basicTreeWindow.taxa != null)
+				basicTreeWindow.taxa.removeListener((MesquiteTree) basicTreeWindow.originalTree);
+			basicTreeWindow.originalTree = null; // otree
+			editMode = false;
+			basicTreeWindow.resetForTreeSource(false, false, MesquiteThread.isDuringNotification(), pausedNotificationCode); // if switching between tree blocks, should reset to zero! If storing tree in tree block, shouldn't!
+			basicTreeWindow.contentsChanged();
+			pausedNotificationCode = MesquiteListener.NOTHINGTOSEEHERE;
+		}
+
+	}
+	/** to ask a Pausable whether it's paused.*/
+	public boolean isPaused(){
+		return paused;
 	}
 
 	/* ................................................................................................................. */
