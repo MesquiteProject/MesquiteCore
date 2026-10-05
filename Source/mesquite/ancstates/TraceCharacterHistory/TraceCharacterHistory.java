@@ -411,9 +411,9 @@ public class TraceCharacterHistory extends TreeDisplayAssistantMA {
 
 		}
 		else if (checker.compare(this.getClass(), "Remembers Modified Colors", "", commandName, "saveModColors")) {
-			if (!MesquiteThread.isScripting())
-				alert("This saves your currently modified colours as new defaults");  
 			storePreferences();
+			if (!MesquiteThread.isScripting())
+				alert("This saved your currently modified colours as new defaults");  
 
 			parametersChanged();
 

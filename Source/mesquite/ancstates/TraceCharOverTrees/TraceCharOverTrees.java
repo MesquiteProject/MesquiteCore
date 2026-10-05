@@ -26,6 +26,7 @@ import mesquite.categ.lib.CategoricalState;
 import mesquite.lib.CommandChecker;
 import mesquite.lib.CommandRecord;
 import mesquite.lib.Commandable;
+import mesquite.lib.Debugg;
 import mesquite.lib.DoubleArray;
 import mesquite.lib.EmployeeNeed;
 import mesquite.lib.IntegerArray;
@@ -105,6 +106,7 @@ public class TraceCharOverTrees extends TreeDisplayAssistantA implements TraceMo
 
 	StringArray modes;
 	MesquiteString modeName;
+	MesquiteColorTable colorTable = MesquiteColorTable.DEFAULTCOLORTABLE.cloneColorTable();
 
 	private boolean numTreesSet = false;
 	boolean suppress = false;
@@ -121,10 +123,13 @@ public class TraceCharOverTrees extends TreeDisplayAssistantA implements TraceMo
 	/*.................................................................................................................*/
 	public boolean startJob(String arguments, Object condition, boolean hiredByName) {
 		showLegend = new MesquiteBoolean(true);
+
+
+		loadPreferences();
 		if (MesquiteThread.isScripting())
 			suppress = true;
 		traces = new Vector();
-
+		
 		historyTask = (CharHistorySource)hireCompatibleEmployee(CharHistorySource.class, CategoricalState.class,"Source of character history (for Trace Character Over Trees)");
 
 		if (historyTask == null) {
@@ -221,6 +226,41 @@ public class TraceCharOverTrees extends TreeDisplayAssistantA implements TraceMo
 		return newTrace;
 	}
 
+	/*.................................................................................................................*/
+	String startingColors = null;
+	public void processSingleXMLPreference (String tag, String content) {  // a temporary kludge to borrow TraceCharacterHistory's modified color table
+		if ("startingColors".equalsIgnoreCase(tag)) {
+			startingColors = StringUtil.cleanXMLEscapeCharacters(content);
+			if (StringUtil.blank(startingColors))
+				startingColors = null;
+			else {
+					String command = parser.getFirstToken(startingColors);
+					String arguments = parser.getRemaining();
+					pos.setValue(0); 
+					int i = 0; 
+					Point[] whichColorsModified = new Point[64];
+					Color[] newColors = new Color[64];
+					int count = 0;
+					while (MesquiteInteger.isCombinable(i= MesquiteInteger.fromString(arguments, pos)) && count<64){
+						int j =  MesquiteInteger.fromString(arguments, pos);
+						int red =  MesquiteInteger.fromString(arguments, pos);
+						int green =  MesquiteInteger.fromString(arguments, pos);
+						int blue =  MesquiteInteger.fromString(arguments, pos);
+						if (MesquiteInteger.isCombinable(j) && MesquiteInteger.isCombinable(red) && MesquiteInteger.isCombinable(green) && MesquiteInteger.isCombinable(blue)){
+							newColors[count] = new Color(red, green, blue);
+							whichColorsModified[count++] = new Point(i, j);
+						}
+					}
+					
+					for (int box = 0; box<64; box++){
+						if (newColors[box] != null && colorTable.setColorEnabled()){
+
+							colorTable.setColor(whichColorsModified[box].x, whichColorsModified[box].y, newColors[box]);
+						}
+					}
+			}
+		}
+	}
 
 	/*.................................................................................................................*/
 	public Snapshot getSnapshot(MesquiteFile file) {
@@ -667,8 +707,8 @@ class TraceCOTOperator extends TreeDisplayDrawnExtra {
 	CategoricalHistory charStates;
 	public TraceLegend traceLegend;
 	TreeDecorator decorator;
-	MesquiteColorTable colorTable = MesquiteColorTable.DEFAULTCOLORTABLE;
 	int currentChar = 0;
+	MesquiteColorTable colorTable;
 	Taxa taxa = null;
 	long allStates = 0L;
 	static final int UNIQUELY_BEST=0;
@@ -691,6 +731,7 @@ class TraceCOTOperator extends TreeDisplayDrawnExtra {
 		super(ownerModule, treeDisplay);
 		traceModule = ownerModule;
 		mode = traceModule.mode;
+		colorTable = traceModule.colorTable;
 	}
 
 	public void setMode(int mode){
@@ -997,7 +1038,7 @@ class TraceCOTOperator extends TreeDisplayDrawnExtra {
 
 
 				charStates.prepareColors(myTree, drawnRoot);
-				colorTable = charStates.getColorTable(colorTable);
+				colorTable = charStates.getColorTable(traceModule.colorTable);
 				treeDisplay.pleaseUpdate(false);
 				place = 26;
 				if (traceLegend!=null && traceModule.showLegend()) {
