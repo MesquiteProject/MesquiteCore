@@ -2293,6 +2293,41 @@ public class MesquiteFile extends Listened implements HNode, Commandable, Listab
 		return true;
 	}
 	/*.................................................................................................................*/
+	public static boolean clearDirectory(String directoryPath){
+		if (StringUtil.blank(directoryPath))
+			return false;
+		try {
+			File directory = new File(directoryPath);
+			String sep = "";
+			if (!directoryPath.endsWith(MesquiteFile.fileSeparator))
+				sep=MesquiteFile.fileSeparator;
+			if (directory!=null && directory.isDirectory()) {
+				String[] files = directory.list();
+				for (int i=0; i<files.length; i++) {
+					String path = directoryPath + sep + files[i];
+					File f = new File(path);
+					if (f.isDirectory()) {
+						boolean success = deleteDirectory(path);
+						if (!success)
+							return false;
+					}
+					else
+						if (MesquiteFile.fileExists(path)) {
+							f.delete();
+						}
+				}
+			}
+		} catch (NullPointerException e){
+			MesquiteMessage.println("Directory could not be deleted because directory appears to be null: " + directoryPath + "\n");
+			e.printStackTrace();
+			return false;
+		
+		} catch (SecurityException e){
+			MesquiteMessage.println("Directory could not be deleted: " + directoryPath);
+			return false;
+		}
+		return true;
+	}	/*.................................................................................................................*/
 	/** Returns last modified time of file.*/
 	public static long fileOrDirectoryLastModified(String path) {
 		if (path != null) {

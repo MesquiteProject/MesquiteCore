@@ -3858,7 +3858,7 @@ and the tree has been rerooted. Properties that belong to nodes implicitly have 
 
 	/** Reads the tree description string and sets the tree object to store the tree described.*/
 	public boolean readTree(String TreeDescription, TaxonNamer namer) {
-		return readTree(TreeDescription, null, null, null);
+		return readTree(TreeDescription, namer, null, null);
 	}
 
 	/** Reads the tree description string and sets the tree object to store the tree described.*/
@@ -4377,7 +4377,37 @@ and the tree has been rerooted. Properties that belong to nodes implicitly have 
 		}
 	}
 	/*-----------------------------------------*/
-	/** Writes a tree description into the StringBuffer using translation table labels if available */
+	/** Writes a tree description into the StringBuffer using taxon names as per namer *
+	public void writeTreeByTaxonNamer(int node, StringBuffer treeDescription, boolean associatedUseComments, TaxonNamer taxonNamer) {
+		if (nodeIsInternal(node)) {
+			treeDescription.append('(');
+			int thisSister = firstDaughterOfNode(node);
+			writeTreeByTaxonNamer(thisSister, treeDescription, associatedUseComments, taxonNamer);
+			while (nodeExists(thisSister = nextSisterOfNode(thisSister))) {
+				treeDescription.append(',');
+				writeTreeByTaxonNamer(thisSister, treeDescription, associatedUseComments, taxonNamer);
+			}
+			treeDescription.append(')');
+			if (nodeHasLabel(node))
+				treeDescription.append(StringUtil.tokenize(getNodeLabel(node)));
+		}
+		else {
+			if (taxonNamer !=null){//use treeVector's translation table if one is available
+				treeDescription.append(ParseUtil.tokenize(taxonNamer.getNameToUse(taxa, taxonNumberOfNode(node)))); 
+			}
+			else
+				treeDescription.append(Integer.toString(Taxon.toExternal(taxonNumberOfNode(node))));
+		}
+		if (!branchLengthUnassigned(node)) {
+			treeDescription.append(':');
+			String bL = MesquiteDouble.toStringDigitsSpecified(getBranchLength(node), -1);
+			treeDescription.append(bL); //add -1 to signal full accuracy 17 Dec 01
+		}
+		String a = writeAssociated(node, associatedUseComments);
+		treeDescription.append(a);
+	}
+	/*-----------------------------------------*/
+/** Writes a tree description into the StringBuffer using translation table labels if available */
 	private void writeTreeByLabels(int node, StringBuffer treeDescription, boolean associatedUseComments) {
 		if (nodeIsInternal(node)) {
 			treeDescription.append('(');
