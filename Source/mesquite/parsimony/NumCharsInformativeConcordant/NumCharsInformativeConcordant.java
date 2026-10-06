@@ -22,8 +22,11 @@ import mesquite.lib.MesquiteModule;
 import mesquite.lib.MesquiteNumber;
 import mesquite.lib.MesquiteString;
 import mesquite.lib.characters.CharacterDistribution;
+import mesquite.lib.characters.CharacterPartition;
+import mesquite.lib.characters.CharactersGroup;
 import mesquite.lib.characters.MCharactersDistribution;
 import mesquite.lib.duties.NumberForMatrixAndTree;
+import mesquite.lib.taxa.TaxaPartition;
 import mesquite.lib.tree.MesquiteTree;
 import mesquite.lib.tree.Tree;
 import mesquite.parsimony.lib.CharacterSteps;
@@ -71,6 +74,10 @@ public class NumCharsInformativeConcordant extends NumberForMatrixAndTree {
 	MesquiteTree softPolytomous;
 	/*.................................................................................................................*/
 	public void calculateNumber(Tree tree, MCharactersDistribution matrix, MesquiteNumber result, MesquiteString resultString) {
+		calculateNumber(tree, matrix, null, result, resultString);
+	}
+	/*.................................................................................................................*/
+	public void calculateNumber(Tree tree, MCharactersDistribution matrix, CharactersGroup group, MesquiteNumber result, MesquiteString resultString) {
 		if (result==null || tree == null || matrix == null)
 			return;
 		if (resultString !=null)
@@ -86,12 +93,17 @@ public class NumCharsInformativeConcordant extends NumberForMatrixAndTree {
 		softPolytomous.setToClone((MesquiteTree)tree);  //this used rather than setToDefaultBush in case incoming tree doesn't include all taxa
 		softPolytomous.setPolytomiesAssumption(1, false);
 		softPolytomous.collapseAllBranches(softPolytomous.getRoot(), false, false);
+		CharacterPartition part = null;
+		mesquite.lib.characters.CharacterData data = matrix.getParentData();
+		if (group != null && data != null){
+			part = (CharacterPartition)data.getCurrentSpecsSet(CharacterPartition.class);
+		}
 		CategoricalData cData = (CategoricalData)matrix.getParentData();
 		MesquiteNumber cNum = new MesquiteNumber();
 		MesquiteNumber bNum = new MesquiteNumber();
 		boolean someNotCounted = false;
 		for (int ic=0;  ic<matrix.getNumChars(); ic++) {
-			if (matrix.isCurrentlyIncluded(ic)  && cData.charIsUnorderedInformative(ic)){
+			if (matrix.isCurrentlyIncluded(ic)  && (part == null || group == part.getProperty(ic)) && cData.charIsUnorderedInformative(ic)){
 				CharacterDistribution charStates = matrix.getCharacterDistribution(ic);
 				if (charStates!=null){
 					cNum.setToUnassigned();

@@ -13,9 +13,11 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
  */
 package mesquite.lib;
 
+import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.util.Optional;
@@ -39,7 +41,8 @@ public class ShellScriptUtil  {
 	public static final int shellScriptNoError = 0;
 	public static final int shellScriptNullProcess = -1;
 	public static final int shellScriptInterruptedException = -2;
-	public static final int shellScriptIOException = 3;
+	public static final int shellScriptIOException = -3;
+	public static final int unknownError = -4;
 	
 	//public static boolean useRunningFile = false;   // this is always false; no code changes it.
 
@@ -458,6 +461,42 @@ public class ShellScriptUtil  {
 		return executeAndWaitForShell( scriptPath,  null, null, false, "anon", null, null, null, false);
 	}
 
+	/*.................................................................................................................*/
+	public static int executeScriptInShell(String shellCommand, String scriptPath){
+        ProcessBuilder chmodProcess = new ProcessBuilder(shellCommand, "-l", "-i", "-c", "chmod +x " + StringUtil.protectFilePathForCommandLine(scriptPath));
+        try {
+            Process process = chmodProcess.start();
+            int exitCode = process.waitFor();
+
+        } catch (Exception e) {
+        	return unknownError;
+	    }
+
+        ProcessBuilder processBuilder = new ProcessBuilder(shellCommand, "-l", "-i", "-c", scriptPath);
+        try {
+            // Start the process
+            Process process = processBuilder.start();
+
+            // Read the output from the script (stdout)
+            try (BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream()))) {
+                String line;
+                while ((line = reader.readLine()) != null) {
+                    System.out.println(line);
+                }
+            }
+
+            // Wait for the script to finish and get the exit code
+            int exitCode = process.waitFor();
+            return exitCode;
+
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+            return ShellScriptUtil.shellScriptInterruptedException;
+        } catch (IOException e) {
+            e.printStackTrace();
+            return ShellScriptUtil.shellScriptIOException;
+       }
+	}
 	/*.................................................................................................................*
 	public static boolean executeLogAndWaitForShell(String scriptPath, String name, String[] outputFilePaths, OutputFileProcessor outputFileProcessor, ProcessWatcher watcher){
 		String runningFilePath = null;

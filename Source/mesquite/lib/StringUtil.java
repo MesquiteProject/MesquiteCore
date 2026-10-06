@@ -1954,6 +1954,13 @@ public class StringUtil {
 		return token;
 	}
 	/*.................................................................................................................*/
+	public static String simplifyCutBlanksUnderscores(String s){
+		s =  cleanseStringOfFancyChars(s,false,true);
+		s = s.replaceAll(" ", "");
+		s = s.replaceAll("_", "");
+		return s;
+	}
+	/*.................................................................................................................*/
 	public static String cleansePath(String s){
 		return cleanseStringOfFancyChars(s);
 	}
