@@ -16,8 +16,10 @@ package mesquite.parsimony.NumCharsInformativeConcordant;
 
 import mesquite.categ.lib.CategoricalData;
 import mesquite.categ.lib.MCategoricalDistribution;
+import mesquite.lib.Bits;
 import mesquite.lib.Debugg;
 import mesquite.lib.EmployeeNeed;
+import mesquite.lib.MesquiteInteger;
 import mesquite.lib.MesquiteModule;
 import mesquite.lib.MesquiteNumber;
 import mesquite.lib.MesquiteString;
@@ -77,7 +79,7 @@ public class NumCharsInformativeConcordant extends NumberForMatrixAndTree {
 		calculateNumber(tree, matrix, null, result, resultString);
 	}
 	/*.................................................................................................................*/
-	public void calculateNumber(Tree tree, MCharactersDistribution matrix, CharactersGroup group, MesquiteNumber result, MesquiteString resultString) {
+	public void calculateNumber(Tree tree, MCharactersDistribution matrix, Bits charsToInclude, MesquiteNumber result, MesquiteString resultString) {
 		if (result==null || tree == null || matrix == null)
 			return;
 		if (resultString !=null)
@@ -85,7 +87,6 @@ public class NumCharsInformativeConcordant extends NumberForMatrixAndTree {
 	   	clearResultAndLastResult(result);
 	   	if (!(matrix instanceof MCategoricalDistribution))
 	   		return;
-
 		numInformativeConcordant.setValue((int)0);
 		int count=0; 
 		if (softPolytomous == null)
@@ -94,16 +95,20 @@ public class NumCharsInformativeConcordant extends NumberForMatrixAndTree {
 		softPolytomous.setPolytomiesAssumption(1, false);
 		softPolytomous.collapseAllBranches(softPolytomous.getRoot(), false, false);
 		CharacterPartition part = null;
-		mesquite.lib.characters.CharacterData data = matrix.getParentData();
-		if (group != null && data != null){
-			part = (CharacterPartition)data.getCurrentSpecsSet(CharacterPartition.class);
-		}
 		CategoricalData cData = (CategoricalData)matrix.getParentData();
 		MesquiteNumber cNum = new MesquiteNumber();
 		MesquiteNumber bNum = new MesquiteNumber();
 		boolean someNotCounted = false;
-		for (int ic=0;  ic<matrix.getNumChars(); ic++) {
-			if (matrix.isCurrentlyIncluded(ic)  && (part == null || group == part.getProperty(ic)) && cData.charIsUnorderedInformative(ic)){
+		int start = 0;
+		int end = matrix.getNumChars();
+		if (charsToInclude != null){
+			if (MesquiteInteger.isCombinable(charsToInclude.getRecordedStart()))
+				start = charsToInclude.getRecordedStart();
+			if (MesquiteInteger.isCombinable(charsToInclude.getRecordedEnd()))
+				end = charsToInclude.getRecordedEnd();
+		}
+		for (int ic=start;  ic<end; ic++) {
+			if (matrix.isCurrentlyIncluded(ic)  && (charsToInclude == null || charsToInclude.isBitOn(ic)) && cData.charIsUnorderedInformative(ic)){
 				CharacterDistribution charStates = matrix.getCharacterDistribution(ic);
 				if (charStates!=null){
 					cNum.setToUnassigned();
@@ -131,7 +136,7 @@ public class NumCharsInformativeConcordant extends NumberForMatrixAndTree {
 			exclString = "";
 		result.setValue(numInformativeConcordant);
 		if (resultString!=null)
-			resultString.setValue("Number homoplasious: "+ result.toString() + exclString);
+			resultString.setValue("Number informative concordant: "+ result.toString() + exclString);
 		saveLastResult(result);
 		saveLastResultString(resultString);
 	}

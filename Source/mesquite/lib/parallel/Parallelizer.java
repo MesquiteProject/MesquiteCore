@@ -210,6 +210,7 @@ public class Parallelizer {
 		int firstItem = owner.getNextParallelItemAndReserve(null, this);
 		MesquiteInteger firstResult = new MesquiteInteger();
 		setItemStatus(firstItem, BEINGCALCULATED);  //should be redundant, given the AndReserve
+		ppFirst = null;
 		ppFirst = owner.doFirstCalculation_Parallel(firstItem, this, firstResult); 
 		if (firstResult.getValue() != ResultCodes.NO_ERROR) {
 			System.err.println("Error in first result " + firstResult.getValue());
@@ -289,8 +290,10 @@ public class Parallelizer {
 		if (threads == null)
 			return;
 		for (int i = 0; i < nThreads; i++) {
-			if (threads[i] !=null)
+			if (threads[i] !=null){
 				threads[i].fireParallelEmployees();
+				threads[i].shutDown();
+			}
 		}
 		threads = null;
 	}

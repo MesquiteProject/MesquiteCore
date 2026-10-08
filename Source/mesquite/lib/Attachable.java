@@ -104,6 +104,11 @@ public abstract class Attachable extends Listened implements HTMLDescribable {
 			attachments.removeElementAt(index);
 		}
 	}
+	public void detachAllObjects(){
+		if (attachments==null)
+			return;
+		attachments.removeAllElements();
+	}
 	public void setAttachments(Attachable at){
 		Vector atat = at.attachments;
 

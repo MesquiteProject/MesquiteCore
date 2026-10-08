@@ -671,6 +671,7 @@ public abstract class MesquiteTrunk extends MesquiteModule
 	/*.................................................................................................................*/
 	public static void resetEnabling(Menu menu) {
 		int numItems = menu.getItemCount();
+		try {
 		for (int i = 0; i<numItems; i++) {
 			MenuItem mi = menu.getItem(i);
 			if (mi instanceof MesquiteSubmenu) {
@@ -685,6 +686,10 @@ public abstract class MesquiteTrunk extends MesquiteModule
 			else if (mi instanceof MesquiteCheckMenuItem) {
 				((MesquiteCheckMenuItem)mi).resetEnable();
 			}
+		}
+		}
+		catch (Exception e){
+		System.err.println("exception in resetEnabling of menu items");
 		}
 	}
 	static boolean resetCheckSuppressed = false;

@@ -27,7 +27,8 @@ public class Bits implements Listable, Nameable {
 	NameReference nr;
 	static final int SIZECHUNK = 32;
 	static final int SIZECHUNKMINUS1 = 31;
-
+	int startBit = MesquiteInteger.unassigned;
+	int endBit = MesquiteInteger.unassigned;
 	public Bits(int numBits) {
 		this.numBits = numBits;
 		numInts = numBits / SIZECHUNK + 1;
@@ -58,7 +59,17 @@ public class Bits implements Listable, Nameable {
 	public int getNumInts() {
 		return numInts;
 	}
-
+	public void recordStartAndEnd(){
+	startBit = firstBitOn();
+	endBit = lastBitOn();
+	}
+	public int getRecordedStart(){
+	return startBit;
+	}
+	public int getRecordedEnd(){
+	return endBit;
+	}
+	
 	public Bits cloneBits() {
 		Bits b = new Bits(numBits);
 		for (int i = 0; i < numInts; i++)

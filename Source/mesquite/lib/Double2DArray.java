@@ -15,7 +15,7 @@ package mesquite.lib;
 
 /*Last documented:  August 1999 */
 /* ======================================================================== */
-public class Double2DArray {
+public class Double2DArray implements Listable {
 	double[][] values;
 	int numC;
 	int numT;
@@ -34,6 +34,7 @@ public class Double2DArray {
 			for (int j=0; j<numT; j++)
 				values[i][j] =  input[i][j];
 	}
+	
 	/*...........................................................*/
 	public static double[][] clone(double[][] d){
 		if (d==null || d.length==0)
@@ -488,7 +489,11 @@ public class Double2DArray {
 		if (name!=null)
 			return name.getValue();
 		else
-			return "";
+			return nameS;
+	}
+	String nameS;
+	public void setName(String n){
+	nameS = n;
 	}
 	public static String toString(double[][] matrix){
 		if (matrix == null)
