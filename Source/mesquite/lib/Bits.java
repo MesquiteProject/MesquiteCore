@@ -1320,6 +1320,23 @@ public class Bits implements Listable, Nameable {
 		}
 		return s;
 	}
+	/*------------------------------------------*/
+	public static String toString(boolean[][] bits) {
+		if (bits == null)
+			return null;
+		String s = "";
+		
+		for (int i = 0; i < bits.length; i++) {
+		for (int k = 0; k< bits[i].length; k++) {
+			if (bits[i][k])
+				s += '1';
+			else
+				s += '0';
+		}
+		s += "/";
+		}
+		return s;
+	}
 
 	/*
 	 * ..........................................Bits...............................

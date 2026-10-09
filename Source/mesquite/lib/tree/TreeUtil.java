@@ -56,6 +56,49 @@ public class TreeUtil {
 		return false;
 	}
 	/*.................................................................................................................*/
+	/*.................................................................................................................*/
+	static void cladeMembership(Tree tree,int node, boolean[][] members) {
+		if (tree.nodeIsTerminal(node))
+			members[node][tree.taxonNumberOfNode(node)] = true;
+		for (int d = tree.firstDaughterOfNode(node); tree.nodeExists(d); d = tree.nextSisterOfNode(d)){
+			cladeMembership(tree,d, members);
+			Bits.unionInto(members[node], members[d]);
+		}	
+	}
+	/*.................................................................................................................*/
+	static void compareMembership(Tree baseTree,int node, boolean[][] baseMembers, boolean[][] otherMembers, int[] correspondence) {
+		for (int otherClade = 0; otherClade<otherMembers.length; otherClade++){
+			boolean match = true;
+			for (int it = 0; it<baseMembers[node].length; it++){
+				if (baseMembers[node][it] != otherMembers[otherClade][it]){ //taxon in one but not other
+					match = false;
+					break;
+				}
+			}
+			if (match){
+				correspondence[node] = otherClade;
+				break;
+			}
+		}
+		for (int d = baseTree.firstDaughterOfNode(node); baseTree.nodeExists(d); d = baseTree.nextSisterOfNode(d)){
+			compareMembership(baseTree,d, baseMembers, otherMembers, correspondence);
+		}	
+	}
+	/** Returns array of correspondences, in Nth place being the node number of the other tree that corresponds to node N in the base tree */
+	public static int[] getNodeCorrespondenceWithOther (Tree baseTree, Tree otherTree) {
+		if (baseTree==null || otherTree==null || baseTree.getTaxa() != otherTree.getTaxa())
+			return null;
+		boolean[][] baseMembers = new boolean[baseTree.getNumNodeSpaces()][baseTree.getTaxa().getNumTaxa()];
+		cladeMembership(baseTree, baseTree.getRoot(), baseMembers);
+		Debugg.errln("cladeMembershipBase " + Bits.toString(baseMembers));
+		boolean[][] otherMembers = new boolean[otherTree.getNumNodeSpaces()][otherTree.getTaxa().getNumTaxa()];
+		cladeMembership(otherTree, otherTree.getRoot(), otherMembers);
+		Debugg.errln("cladeMembershipOther " + Bits.toString(otherMembers));
+		int[] correspondence = new int[baseTree.getNumNodeSpaces()];
+		compareMembership(baseTree, baseTree.getRoot(), baseMembers, otherMembers, correspondence);
+		return correspondence;
+	}
+	/*.................................................................................................................*/
 	/** Returns true iff the contained taxa in all containing taxa are monophyletic . */
 	public static boolean containedAllMonophyletic (Tree containedTree, Tree containingTree, TaxaAssociation association) {
 		if (containedTree==null || containingTree==null || association == null)
