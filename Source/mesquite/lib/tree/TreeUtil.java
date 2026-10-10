@@ -90,10 +90,8 @@ public class TreeUtil {
 			return null;
 		boolean[][] baseMembers = new boolean[baseTree.getNumNodeSpaces()][baseTree.getTaxa().getNumTaxa()];
 		cladeMembership(baseTree, baseTree.getRoot(), baseMembers);
-		Debugg.errln("cladeMembershipBase " + Bits.toString(baseMembers));
 		boolean[][] otherMembers = new boolean[otherTree.getNumNodeSpaces()][otherTree.getTaxa().getNumTaxa()];
 		cladeMembership(otherTree, otherTree.getRoot(), otherMembers);
-		Debugg.errln("cladeMembershipOther " + Bits.toString(otherMembers));
 		int[] correspondence = new int[baseTree.getNumNodeSpaces()];
 		compareMembership(baseTree, baseTree.getRoot(), baseMembers, otherMembers, correspondence);
 		return correspondence;
