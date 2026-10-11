@@ -14,14 +14,10 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
 package mesquite.genomic.TreesFromSelMatrices;
 /* created May 02 */
 
-import java.awt.Point;
 import java.util.Vector;
 
-import mesquite.lib.CommandChecker;
-import mesquite.lib.CompatibilityTest;
-import mesquite.lib.IntegerField;
+import mesquite.lib.Debugg;
 import mesquite.lib.ListableVector;
-import mesquite.lib.MesquiteBoolean;
 import mesquite.lib.MesquiteFile;
 import mesquite.lib.MesquiteInteger;
 import mesquite.lib.MesquiteMessage;
@@ -34,7 +30,6 @@ import mesquite.lib.characters.MCharactersDistribution;
 import mesquite.lib.duties.MatrixSourceCoord;
 import mesquite.lib.duties.TreeInferer;
 import mesquite.lib.duties.TreeSearcherFromMatrix;
-import mesquite.lib.misc.KeywordsCompatibilityTest;
 import mesquite.lib.table.MesquiteTable;
 import mesquite.lib.taxa.Taxa;
 import mesquite.lib.tree.MesquiteTree;
@@ -43,7 +38,6 @@ import mesquite.lib.tree.TreeVector;
 import mesquite.lib.ui.ExtensibleDialog;
 import mesquite.lib.ui.ProgressIndicator;
 import mesquite.lib.ui.RadioButtons;
-import mesquite.lists.lib.CharMatricesListUtility;
 import mesquite.lists.lib.CharMatricesListUtilityPrimary;
 
 /* ======================================================================== */
@@ -167,12 +161,12 @@ public class TreesFromSelMatrices extends CharMatricesListUtilityPrimary {
 		if (storageChoice != MULTIPLE_TREE_BLOCKS){
 			trees = new TreeVector(((CharacterData)datas.elementAt(0)).getTaxa());
 			if (storageChoice == MULTIPLE_FILES){
-			directoryPath = MesquiteFile.chooseDirectory("Where to save files?"); //MesquiteFile.saveFileAsDialog("Base name for files (files will be named <name>1.nex, <name>2.nex, etc.)", baseName);
-			if (StringUtil.blank(directoryPath))
-				return false;
-			basePath = directoryPath + MesquiteFile.fileSeparator ; //+ baseName;
-			treeFileListPath = StringUtil.getAllButLastItem(directoryPath, MesquiteFile.fileSeparator) + MesquiteFile.fileSeparator + "ListOfTreeFiles.txt";
-		}
+				directoryPath = MesquiteFile.chooseDirectory("Where to save files?"); //MesquiteFile.saveFileAsDialog("Base name for files (files will be named <name>1.nex, <name>2.nex, etc.)", baseName);
+				if (StringUtil.blank(directoryPath))
+					return false;
+				basePath = directoryPath + MesquiteFile.fileSeparator ; //+ baseName;
+				treeFileListPath = StringUtil.getAllButLastItem(directoryPath, MesquiteFile.fileSeparator) + MesquiteFile.fileSeparator + "ListOfTreeFiles.txt";
+			}
 		}
 		Vector v = pauseAllPausables();
 		long startTime = System.currentTimeMillis();

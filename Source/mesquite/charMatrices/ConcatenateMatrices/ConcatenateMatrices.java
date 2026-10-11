@@ -172,8 +172,8 @@ public class ConcatenateMatrices extends DataUtility {
 			}
 		}
 	}
-	
-	boolean concatenate(CharacterData data, CharacterData oData, boolean notify){
+	/*
+	public boolean concatenate(CharacterData data, CharacterData oData, boolean notify, boolean quiet){
 		if (oData==null)
 			return false;
 		if (oData.isLinked(data) || data.isLinked(oData)) {
@@ -190,7 +190,7 @@ public class ConcatenateMatrices extends DataUtility {
 					extra = true;
 			//different taxa block, with different names.  Offer to add names
 			if (extra){
-				if (AlertDialog.query(containerOfModule(), "Import taxa from other matrix?", "The matrix you are concatenating to this one is based on a different block of taxa, and includes taxa not in this matrix.  Do you want to add these taxa to this matrix before concatenating?")){
+				if (!quiet && AlertDialog.query(containerOfModule(), "Import taxa from other matrix?", "The matrix you are concatenating to this one is based on a different block of taxa, and includes taxa not in this matrix.  Do you want to add these taxa to this matrix before concatenating?")){
 					String names = "";
 					
 					for (int oit = 0; oit<oTaxa.getNumTaxa(); oit++){
@@ -232,7 +232,7 @@ public class ConcatenateMatrices extends DataUtility {
 			data.notifyListeners(this, new Notification(MesquiteListener.PARTS_ADDED, new int[] {origNumChars, oData.getNumChars()}));
 		return true;
 }
-	
+	*/
 	/** Called to operate on the data in all cells.  Returns true if data altered*/
 	public boolean operateOnData(CharacterData data){ 
 		this.data = data;
