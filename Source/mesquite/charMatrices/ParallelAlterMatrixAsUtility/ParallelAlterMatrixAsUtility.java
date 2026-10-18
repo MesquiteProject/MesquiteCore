@@ -294,10 +294,10 @@ public class ParallelAlterMatrixAsUtility extends CharMatricesListProcessorUtili
 					notification.setSubcodes(alteredDataParameters.getSubcodes());
 				data.notifyListeners(this, notification);
 				if (datas.size() > 1)
-					logln("First matrix altered. About to alter others in parallel on " + numThreads + " threads.");
+					logln("First matrix processed. About to process others in parallel on " + numThreads + " threads.");
 			}
 			else {
-				MesquiteMessage.warnProgrammer("   Failed to alter matrix #1 " +data.getName() + " (code " + successFirstMatrix + ").");
+				MesquiteMessage.warnProgrammer("   Failed to process matrix #1 " +data.getName() + " (code " + successFirstMatrix + ").");
 				MesquiteMessage.warnProgrammer("\nBecause this occurred with the first matrix, which is critical for setting up the calculations, Parallel Alter Matrices will be stopped.\n");
 			}
 		}
@@ -567,7 +567,7 @@ public class ParallelAlterMatrixAsUtility extends CharMatricesListProcessorUtili
 		if (numFailed>0)
 			failed = " Failed or incompatible: " + numFailed + " matrices.";
 		String sectionSummary = MesquiteTimer.summarize(sectionTimers);
-		logln("Altered: " + (numMatricesSuccessful()) + " matrices." + failed + " (Finished " + StringUtil.getDateTime(new Date(finishTime)) + ", after " + ((finishTime- startTime)/1000.0) + " seconds. Sections: " + sectionSummary + ")");
+		logln("Processed: " + (numMatricesSuccessful()) + " matrices." + failed + " (Finished " + StringUtil.getDateTime(new Date(finishTime)) + ", after " + ((finishTime- startTime)/1000.0) + " seconds. Sections: " + sectionSummary + ")");
 		
 		if (MesquiteTrunk.developmentMode){
 			String mTimings = "Average times of blocks of 100 matrices in sequence of starting: ";

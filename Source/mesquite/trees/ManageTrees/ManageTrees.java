@@ -566,19 +566,23 @@ public class ManageTrees extends TreesManager implements ItemListener {
 					Taxa taxa = trees.getTaxa();
 					//send script to tree window coord to makeTreeWindow with set of taxa and then set to stored trees and this tree vector
 					int whichTreeBlock = getTreeBlockNumber(taxa, trees);
-
+					
 
 					//Make new tree window and feed it script to show consensus
 					CommandRecord oldCR = MesquiteThread.getCurrentCommandRecord();
 					CommandRecord scr = new CommandRecord(true);
 					MesquiteThread.setCurrentCommandRecord(scr);
 					String commands = "makeTreeWindow " + getProject().getTaxaReferenceInternal(taxa) 
-							+ "  #BasicTreeWindowMaker; tell It; setTreeSource  #mesquite.consensus.ConsensusTree.ConsensusTree;"
+							+ "  #BasicTreeWindowMaker; tell It; suppressEPCResponse; setTreeSource  #mesquite.consensus.ConsensusTree.ConsensusTree;"
 							+ "  tell It; " 
 							+ "setTreeSource  #StoredTrees;"
-							+ " tell It; setTaxa " + getProject().getTaxaReferenceInternal(taxa) + " ;  setTreeBlock " + TreeVector.toExternal(whichTreeBlock)  + "; endTell; "
+							+ " tell It; setTaxa " + getProject().getTaxaReferenceInternal(taxa) 
+							+ " ;  setTreeBlock " + TreeVector.toExternal(whichTreeBlock)  + "; setTreeBlockID " + trees.getUniqueID() + "; "
+							+ " endTell; "
 							+ " setConsenser  #mesquite.consensus.MajRuleTree.MajRuleTree;"
+							+ " tell It; rooting 0; dumpTable off; frequencyLimit 0.5; endTell; "
 							+ "  endTell; " 
+							+ "getTreeWindow; tell It; setActive; setTreeNumber 1; endTell;  desuppressEPCResponse; "
 							+ "getWindow; tell It; setSize 400 300; endTell; showWindowForce; endTell; ";
 					MesquiteInteger pos = new MesquiteInteger(0);
 					Puppeteer p = new Puppeteer(this);

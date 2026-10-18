@@ -120,9 +120,9 @@ public class AlterMatrixAsUtility extends CharMatricesListProcessorUtility {
 				abort=true;
 			if (!abort && test.isCompatible(data, getProject(), this)){
 				if (datas.size()<=50)
-					logln("Altering matrix \"" + data.getName() + "\"");
+					logln("Processing matrix \"" + data.getName() + "\"");
 				AlteredDataParameters alteredDataParameters = new AlteredDataParameters();
-				progIndicator.setText("Altering matrix " +data.getName());
+				progIndicator.setText("Processing matrix " +data.getName());
 				MesquiteThread.setHintToSuppressProgressIndicatorCurrentThread(true);
 				int returnCode = alterTask.alterData(data, null, null, alteredDataParameters);
 				MesquiteThread.setHintToSuppressProgressIndicatorCurrentThread(false);
@@ -136,9 +136,9 @@ public class AlterMatrixAsUtility extends CharMatricesListProcessorUtility {
 					data.notifyListeners(this, notification);
 					count++;
 					if (datas.size()>100 && count != 0 && count % 100 == 0)
-						logln("" + (count) +  " matrices altered.");
+						logln("" + (count) +  " matrices processed.");
 				} else if (returnCode < 0) {
-					MesquiteMessage.warnProgrammer("   Failed to alter matrix #" + (im+1) + " " +data.getName() + " (code " + returnCode + ").");
+					MesquiteMessage.warnProgrammer("   Failed to process matrix #" + (im+1) + " " +data.getName() + " (code " + returnCode + ").");
 					if (im == 0){
 						MesquiteMessage.warnProgrammer("\nBecause this occurred with the first matrix, altering matrices will be stopped.\n");
 						abort = true;
@@ -149,7 +149,7 @@ public class AlterMatrixAsUtility extends CharMatricesListProcessorUtility {
 		}
 		MesquiteThread.releaseThreadMaxLogLevel();
 		progIndicator.goAway();
-		logln("\nAltered: " + (count) +  " matrices.");
+		logln("\nProcessed: " + (count) +  " matrices.");
 		unpauseAllPausables(v);
 		if (getProject() != null)
 			getProject().decrementProjectWindowSuppression();

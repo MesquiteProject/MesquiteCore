@@ -1914,12 +1914,14 @@ public abstract class EmployerEmployee extends MenuOwner implements HNode, Lista
 			cloneCommand += "\ntell It;\n";
 			cloneCommand += Snapshot.getSnapshotCommands(employee, null, "");
 			cloneCommand += "\nendTell;";
+			Debugg.errln("CLONE===============\n" + cloneCommand + "\n=================");
 			Puppeteer p = new Puppeteer(module);
 			MesquiteInteger pos = new MesquiteInteger(0);
 			CommandRecord previous = MesquiteThread.getCurrentCommandRecord();
 			CommandRecord record = new CommandRecord(true);
 			MesquiteThread.setCurrentCommandRecord(record);
 			MesquiteModule.incrementMenuResetSuppression();	
+			
 			Object obj = p.sendCommands(this, cloneCommand, pos, "", false, null,CommandChecker.defaultChecker);
 			MesquiteModule.decrementMenuResetSuppression();	
 			MesquiteModule cloned = null;

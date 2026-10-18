@@ -867,6 +867,10 @@ public class BasicTreeWindowMaker extends TreeWindowMaker implements Commandable
 		else {
 			if (suppressEPCResponse)
 				return;
+			if (paused){
+				updateWhilePaused = true;
+				return;
+			}
 			if (basicTreeWindow.treeDisplay != null) {
 				basicTreeWindow.contentsChanged();
 				TreeDisplayExtra[] ee = basicTreeWindow.treeDisplay.getMyExtras(employee);
@@ -992,6 +996,7 @@ public class BasicTreeWindowMaker extends TreeWindowMaker implements Commandable
 	}
 	/** to ask Pausable to pause*/
 	boolean paused = false;
+	boolean updateWhilePaused = false;
 	int  pausedNotificationCode = MesquiteListener.NOTHINGTOSEEHERE;
 ;
 	public void addPausables(Vector pausables) {

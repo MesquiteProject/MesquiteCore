@@ -17,6 +17,7 @@ package mesquite.consensus.ConsensusTree;
 import mesquite.lib.CommandChecker;
 import mesquite.lib.CommandRecord;
 import mesquite.lib.CompatibilityTest;
+import mesquite.lib.Debugg;
 import mesquite.lib.EmployerEmployee;
 import mesquite.lib.MesquiteCommand;
 import mesquite.lib.MesquiteFile;
@@ -219,7 +220,6 @@ public class ConsensusTree extends TreeSource {
 		if (suspended)
 			return null;
 		oldTaxa = taxa;
-
 		int numTrees = checkNumTrees(taxa);
 		Trees trees = new TSourceWrapper(treeSource, taxa);
 		Tree tree = null;
