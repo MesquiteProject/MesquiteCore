@@ -686,6 +686,8 @@ public class NodeLocsStandard extends NodeLocsVH {
 	private double lastleft;
 	/*_________________________________________________*/
 	private void UPCalcInternalLocs(TreeDrawing treeDrawing, Tree tree, int N) {
+		if (treeDrawing == null)
+			return;
 		if (tree.nodeIsInternal(N)) { //internal
 			for (int d = tree.firstDaughterOfNode(N); tree.nodeExists(d); d = tree.nextSisterOfNode(d))
 				UPCalcInternalLocs(treeDrawing, tree, d);
@@ -707,6 +709,8 @@ public class NodeLocsStandard extends NodeLocsVH {
 	}
 	/*_________________________________________________*/
 	private void UPDOWNCenterInternalLocs(TreeDrawing treeDrawing, Tree tree, int N) {
+		if (treeDrawing == null)
+			return;
 		if (tree.nodeIsInternal(N)) { //internal
 			for (int d = tree.firstDaughterOfNode(N); tree.nodeExists(d); d = tree.nextSisterOfNode(d))
 				UPDOWNCenterInternalLocs(treeDrawing, tree, d);
@@ -761,6 +765,8 @@ public class NodeLocsStandard extends NodeLocsVH {
 	}
 	/*....................................................................................................*/
 	private void UPevenNodeLocs(TreeDrawing treeDrawing, Tree tree, int N, double evenVertSpacing) {
+		if (treeDrawing == null)
+			return;
 		if (tree.nodeIsInternal(N)){
 			double deepest = MesquiteDouble.unassigned;
 			for (int d = tree.firstDaughterOfNode(N); tree.nodeExists(d); d = tree.nextSisterOfNode(d)) {
@@ -772,6 +778,8 @@ public class NodeLocsStandard extends NodeLocsVH {
 	}
 	/*....................................................................................................*/
 	private void UPstretchNodeLocs(TreeDisplay treeDisplay, TreeDrawing treeDrawing, Tree tree, int N) {
+		if (treeDrawing == null)
+			return;
 		for (int d = tree.firstDaughterOfNode(N); tree.nodeExists(d); d = tree.nextSisterOfNode(d))
 			UPstretchNodeLocs(treeDisplay, treeDrawing, tree, d);
 		treeDrawing.y[N] = treeDisplay.getTipsMargin() + (int)((treeDrawing.y[N]-treeDisplay.getTipsMargin())*treeDisplay.nodeLocsParameters[stretchfactor]);
@@ -779,6 +787,8 @@ public class NodeLocsStandard extends NodeLocsVH {
 
 	/*....................................................................................................*/
 	private void UPdoAdjustLengths (TreeDisplay treeDisplay, TreeDrawing treeDrawing, Tree tree, int bottom, int N, double ancH, int root) {
+		if (treeDrawing == null)
+			return;
 		double nH;
 		if (N==root) {
 			nH=bottom;
@@ -793,6 +803,8 @@ public class NodeLocsStandard extends NodeLocsVH {
 	}
 	/*_________________________________________________*/
 	private void DOWNCalcInternalLocs(TreeDrawing treeDrawing, Tree tree, int N) {
+		if (treeDrawing == null)
+			return;
 		if (tree.nodeIsInternal(N)) { //internal
 			for (int d = tree.firstDaughterOfNode(N); tree.nodeExists(d); d = tree.nextSisterOfNode(d))
 				DOWNCalcInternalLocs(treeDrawing, tree, d);
@@ -854,12 +866,16 @@ public class NodeLocsStandard extends NodeLocsVH {
 	}
 	/*....................................................................................................*/
 	private void DOWNstretchNodeLocs(TreeDisplay treeDisplay, TreeDrawing treeDrawing, Tree tree, int N, double margin) {
+		if (treeDrawing == null)
+			return;
 		for (int d = tree.firstDaughterOfNode(N); tree.nodeExists(d); d = tree.nextSisterOfNode(d))
 			DOWNstretchNodeLocs(treeDisplay, treeDrawing, tree, d, margin);
 		treeDrawing.y[N] = margin-(int)((margin-treeDrawing.y[N])*treeDisplay.nodeLocsParameters[stretchfactor]);
 	}
 	/*....................................................................................................*/
 	private void DOWNevenNodeLocs(TreeDrawing treeDrawing, Tree tree, int N, double evenVertSpacing) {
+		if (treeDrawing == null)
+			return;
 		if (tree.nodeIsInternal(N)){
 			double deepest = MesquiteDouble.unassigned;
 			for (int d = tree.firstDaughterOfNode(N); tree.nodeExists(d); d = tree.nextSisterOfNode(d)) {
@@ -872,6 +888,8 @@ public class NodeLocsStandard extends NodeLocsVH {
 
 	/*....................................................................................................*/
 	private void DOWNdoAdjustLengths (TreeDisplay treeDisplay, TreeDrawing treeDrawing, Tree tree, int bottom, int N, double ancH, int root) {
+		if (treeDrawing == null)
+			return;
 		double nH;
 		if (N==root) 
 			nH=bottom;
@@ -886,6 +904,8 @@ public class NodeLocsStandard extends NodeLocsVH {
 	}
 	/*_________________________________________________*/
 	private void RIGHTCalcInternalLocs(TreeDrawing treeDrawing, Tree tree, int N) {
+		if (treeDrawing == null)
+			return;
 		if (tree.nodeIsInternal(N)) { //internal
 			for (int d = tree.firstDaughterOfNode(N); tree.nodeExists(d); d = tree.nextSisterOfNode(d))
 				RIGHTCalcInternalLocs(treeDrawing, tree,  d);
@@ -907,6 +927,8 @@ public class NodeLocsStandard extends NodeLocsVH {
 	}
 	/*_________________________________________________*/
 	private void RIGHTLEFTCenterInternalLocs(TreeDrawing treeDrawing, Tree tree, int N) {
+		if (treeDrawing == null)
+			return;
 		if (tree.nodeIsInternal(N)) { //internal
 			for (int d = tree.firstDaughterOfNode(N); tree.nodeExists(d); d = tree.nextSisterOfNode(d))
 				RIGHTLEFTCenterInternalLocs(treeDrawing, tree, d);
@@ -959,23 +981,17 @@ public class NodeLocsStandard extends NodeLocsVH {
 	}
 	/*....................................................................................................*/
 	private void RIGHTstretchNodeLocs(TreeDisplay treeDisplay, TreeDrawing treeDrawing, Tree tree, int N, double margin) {
+		if (treeDrawing == null)
+			return;
 		for (int d = tree.firstDaughterOfNode(N); tree.nodeExists(d); d = tree.nextSisterOfNode(d))
 			RIGHTstretchNodeLocs(treeDisplay, treeDrawing, tree, d, margin);
 		treeDrawing.x[N] =  margin- (int)((margin - treeDrawing.x[N])*treeDisplay.nodeLocsParameters[stretchfactor]);
 	}
 	/*....................................................................................................*/
-	private double RIGHThighestTaxonByPixels(TreeDisplay treeDisplay, TreeDrawing treeDrawing, Tree tree, int N) {
-		if (tree.nodeIsTerminal(N))
-			return treeDrawing.x[N];
-		double highest = MesquiteDouble.unassigned;
-		for (int d = tree.firstDaughterOfNode(N); tree.nodeExists(d); d = tree.nextSisterOfNode(d)){
-			highest = MesquiteDouble.maximum(highest, RIGHThighestTaxonByPixels(treeDisplay, treeDrawing, tree, d));
-		}
-		return highest;
-	}
-
 	/*....................................................................................................*/
 	private void RIGHTevenNodeLocs(TreeDrawing treeDrawing, Tree tree, int N, double evenVertSpacing) {
+		if (treeDrawing == null)
+			return;
 		if (tree.nodeIsInternal(N)){
 			double deepest = MesquiteDouble.unassigned;
 			for (int d = tree.firstDaughterOfNode(N); tree.nodeExists(d); d = tree.nextSisterOfNode(d)) {
@@ -987,6 +1003,8 @@ public class NodeLocsStandard extends NodeLocsVH {
 	}
 	/*....................................................................................................*/
 	private void RIGHTdoAdjustLengths (TreeDisplay treeDisplay, TreeDrawing treeDrawing, Tree tree, int bottom, int N, double ancH, int root) {
+		if (treeDrawing == null)
+			return;
 		double nH;
 
 		if (N==root) 
@@ -1000,6 +1018,8 @@ public class NodeLocsStandard extends NodeLocsVH {
 	}
 	/*_________________________________________________*/
 	private void LEFTCalcInternalLocs(TreeDrawing treeDrawing, Tree tree, int N) {
+		if (treeDrawing == null)
+			return;
 		if (tree.nodeIsInternal(N)) { //internal
 			for (int d = tree.firstDaughterOfNode(N); tree.nodeExists(d); d = tree.nextSisterOfNode(d))
 				LEFTCalcInternalLocs(treeDrawing, tree, d);
@@ -1058,6 +1078,8 @@ public class NodeLocsStandard extends NodeLocsVH {
 	}
 	/*....................................................................................................*/
 	private void LEFTstretchNodeLocs(TreeDisplay treeDisplay, TreeDrawing treeDrawing, Tree tree, int N) {
+		if (treeDrawing == null)
+			return;
 		for (int d = tree.firstDaughterOfNode(N); tree.nodeExists(d); d = tree.nextSisterOfNode(d))
 			LEFTstretchNodeLocs(treeDisplay, treeDrawing, tree, d);
 		treeDrawing.x[N] = treeDisplay.getTipsMargin() + (int)((treeDrawing.x[N]-treeDisplay.getTipsMargin())*treeDisplay.nodeLocsParameters[stretchfactor]);
@@ -1065,6 +1087,8 @@ public class NodeLocsStandard extends NodeLocsVH {
 
 	/*....................................................................................................*/
 	private void LEFTevenNodeLocs(TreeDrawing treeDrawing, Tree tree, int N, double evenVertSpacing) {
+		if (treeDrawing == null)
+			return;
 		if (tree.nodeIsInternal(N)){
 			double deepest = MesquiteDouble.unassigned;
 			for (int d = tree.firstDaughterOfNode(N); tree.nodeExists(d); d = tree.nextSisterOfNode(d)) {
@@ -1076,6 +1100,8 @@ public class NodeLocsStandard extends NodeLocsVH {
 	}
 	/*....................................................................................................*/
 	private void LEFTdoAdjustLengths (TreeDisplay treeDisplay, TreeDrawing treeDrawing, Tree tree, int bottom, int N, double ancH, int root) {
+		if (treeDrawing == null)
+			return;
 		double nH;
 		if (N==root) 
 			nH=bottom;
