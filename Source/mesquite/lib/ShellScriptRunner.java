@@ -262,7 +262,7 @@ public class ShellScriptRunner implements Commandable  {
 					MesquiteFile.appendFileContents(scriptPath, StringUtil.lineEnding() + ShellScriptUtil.getRemoveCommand(MesquiteTrunk.isWindows(), runningFilePath), true);  //append remove command to guarantee that the runningFile is deleted
 			}
 			if (specifyShell)
-				proc = ShellScriptUtil.executeScriptInNamedShell("zsh", scriptPath);  
+				proc = ShellScriptUtil.executeScriptInNamedShell(true, null, scriptPath);  
 			else
 				proc = ShellScriptUtil.executeScript(scriptPath, visibleTerminal);  
 			externalProcessManager = new MesquiteExternalProcess(proc, true);

@@ -46,7 +46,9 @@ public class ShellScriptUtil  {
 	
 	//public static boolean useRunningFile = false;   // this is always false; no code changes it.
 
-
+	public static String DefaultShell() {
+	       	return System.getenv("SHELL");
+	}
 	/*.................................................................................................................*/
 	public static String protectForShellScript(String s) {  //Is this only used for paths???!!!!!  See StringUtil.protectForWindows.
 		if (MesquiteTrunk.isWindows())
@@ -498,8 +500,13 @@ public class ShellScriptUtil  {
        }
 	}
 	/*.................................................................................................................*/
-	public static Process executeScriptInNamedShell(String shellCommand, String scriptPath){  // this presumes the shell script is executable
-        ProcessBuilder processBuilder = new ProcessBuilder(shellCommand, "-l", "-i", "-c", scriptPath);
+	public static Process executeScriptInNamedShell(boolean useDefaultShell, String shellCommand, String scriptPath){  // this presumes the shell script is executable
+		ProcessBuilder processBuilder=null;
+		String pathToDefaultShell = DefaultShell();
+		if (useDefaultShell)
+			 processBuilder = new ProcessBuilder(pathToDefaultShell, "-l", "-i", "-c", scriptPath);
+		else
+			 processBuilder = new ProcessBuilder(shellCommand, "-l", "-i", "-c", scriptPath);
         try {
             // Start the process
             Process process = processBuilder.start();
