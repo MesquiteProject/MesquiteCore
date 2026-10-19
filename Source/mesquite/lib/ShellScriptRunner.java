@@ -249,7 +249,7 @@ public class ShellScriptRunner implements Commandable  {
 	/*.................................................................................................................*/
 	/** Executes a shell script at "scriptPath".  If runningFilePath is not blank and not null, then Mesquite will create a file there that will
 	 * serve as a flag to Mesquite that the script is running.   */
-	public boolean executeInShell(boolean specifyShell){
+	public boolean executeInShell(boolean useDefaultShell){
 		proc = null;
 		try{
 			ShellScriptUtil.setScriptFileToBeExecutable(scriptPath);
@@ -261,8 +261,8 @@ public class ShellScriptRunner implements Commandable  {
 				if (appendRemoveCommand && MesquiteFile.fileExists(runningFilePath))
 					MesquiteFile.appendFileContents(scriptPath, StringUtil.lineEnding() + ShellScriptUtil.getRemoveCommand(MesquiteTrunk.isWindows(), runningFilePath), true);  //append remove command to guarantee that the runningFile is deleted
 			}
-			if (specifyShell)
-				proc = ShellScriptUtil.executeScriptInNamedShell(true, null, scriptPath);  
+			if (useDefaultShell)
+				proc = ShellScriptUtil.executeScriptInExplicitDefaultShell(scriptPath);  
 			else
 				proc = ShellScriptUtil.executeScript(scriptPath, visibleTerminal);  
 			externalProcessManager = new MesquiteExternalProcess(proc, true);

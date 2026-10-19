@@ -464,7 +464,7 @@ public class ShellScriptUtil  {
 	}
 
 	/*.................................................................................................................*/
-	public static int executeScriptInShell(String shellCommand, String scriptPath){
+	public static int executeAndWaitForScriptInNamedShell(String shellCommand, String scriptPath){
         ProcessBuilder chmodProcess = new ProcessBuilder(shellCommand, "-l", "-i", "-c", "chmod +x " + StringUtil.protectFilePathForCommandLine(scriptPath));
         try {
             Process process = chmodProcess.start();
@@ -500,13 +500,13 @@ public class ShellScriptUtil  {
        }
 	}
 	/*.................................................................................................................*/
-	public static Process executeScriptInNamedShell(boolean useDefaultShell, String shellCommand, String scriptPath){  // this presumes the shell script is executable
-		ProcessBuilder processBuilder=null;
+	public static int executeAndWaitForScriptInExplicitDefaultShell(String scriptPath){
 		String pathToDefaultShell = DefaultShell();
-		if (useDefaultShell)
-			 processBuilder = new ProcessBuilder(pathToDefaultShell, "-l", "-i", "-c", scriptPath);
-		else
-			 processBuilder = new ProcessBuilder(shellCommand, "-l", "-i", "-c", scriptPath);
+		return executeAndWaitForScriptInNamedShell(pathToDefaultShell, scriptPath);
+	}
+	/*.................................................................................................................*/
+	public static Process executeScriptInNamedShell(String shellCommand, String scriptPath){  // this presumes the shell script is executable
+		ProcessBuilder processBuilder = new ProcessBuilder(shellCommand, "-l", "-i", "-c", scriptPath);
         try {
             // Start the process
             Process process = processBuilder.start();
@@ -525,6 +525,11 @@ public class ShellScriptUtil  {
             e.printStackTrace();
             return null;
        }
+	}
+	/*.................................................................................................................*/
+	public static Process executeScriptInExplicitDefaultShell(String scriptPath){  // this presumes the shell script is executable
+		String pathToDefaultShell = DefaultShell();
+		return executeScriptInNamedShell(pathToDefaultShell, scriptPath);
 	}
 	/*.................................................................................................................*
 	public static boolean executeLogAndWaitForShell(String scriptPath, String name, String[] outputFilePaths, OutputFileProcessor outputFileProcessor, ProcessWatcher watcher){
