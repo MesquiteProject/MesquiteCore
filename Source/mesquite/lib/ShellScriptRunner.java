@@ -249,7 +249,7 @@ public class ShellScriptRunner implements Commandable  {
 	/*.................................................................................................................*/
 	/** Executes a shell script at "scriptPath".  If runningFilePath is not blank and not null, then Mesquite will create a file there that will
 	 * serve as a flag to Mesquite that the script is running.   */
-	public boolean executeInShell(){
+	public boolean executeInShell(boolean specifyShell){
 		proc = null;
 		try{
 			ShellScriptUtil.setScriptFileToBeExecutable(scriptPath);
@@ -261,7 +261,10 @@ public class ShellScriptRunner implements Commandable  {
 				if (appendRemoveCommand && MesquiteFile.fileExists(runningFilePath))
 					MesquiteFile.appendFileContents(scriptPath, StringUtil.lineEnding() + ShellScriptUtil.getRemoveCommand(MesquiteTrunk.isWindows(), runningFilePath), true);  //append remove command to guarantee that the runningFile is deleted
 			}
-			proc = ShellScriptUtil.executeScript(scriptPath, visibleTerminal);  
+			if (specifyShell)
+				proc = ShellScriptUtil.executeScriptInNamedShell("zsh", scriptPath);  
+			else
+				proc = ShellScriptUtil.executeScript(scriptPath, visibleTerminal);  
 			externalProcessManager = new MesquiteExternalProcess(proc, true);
 			File outputFile = new File(stdOutFilePath);  // note this and stErrorFilePath are always within the scriptPath directory
 			File errorFile = new File(stdErrFilePath);
@@ -273,6 +276,12 @@ public class ShellScriptRunner implements Commandable  {
 			return false;
 		}
 		return true;
+	}
+	/*.................................................................................................................*/
+	/** Executes a shell script at "scriptPath".  If runningFilePath is not blank and not null, then Mesquite will create a file there that will
+	 * serve as a flag to Mesquite that the script is running.   */
+	public boolean executeInShell(){
+		return executeInShell(false);
 	}
 	/*.................................................................................................................*/
 	public void stopExecution(){

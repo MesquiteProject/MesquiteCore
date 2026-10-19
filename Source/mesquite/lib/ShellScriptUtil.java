@@ -497,6 +497,28 @@ public class ShellScriptUtil  {
             return ShellScriptUtil.shellScriptIOException;
        }
 	}
+	/*.................................................................................................................*/
+	public static Process executeScriptInNamedShell(String shellCommand, String scriptPath){  // this presumes the shell script is executable
+        ProcessBuilder processBuilder = new ProcessBuilder(shellCommand, "-l", "-i", "-c", scriptPath);
+        try {
+            // Start the process
+            Process process = processBuilder.start();
+
+            // Read the output from the script (stdout)
+            try (BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream()))) {
+                String line;
+                while ((line = reader.readLine()) != null) {
+                    System.out.println(line);
+                }
+            }
+
+            return process;
+
+        } catch (IOException e) {
+            e.printStackTrace();
+            return null;
+       }
+	}
 	/*.................................................................................................................*
 	public static boolean executeLogAndWaitForShell(String scriptPath, String name, String[] outputFilePaths, OutputFileProcessor outputFileProcessor, ProcessWatcher watcher){
 		String runningFilePath = null;
