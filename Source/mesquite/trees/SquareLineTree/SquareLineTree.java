@@ -334,7 +334,7 @@ class SquareLineTreeDrawing extends TreeDrawing  {
 			calculateLines( tree, d);
 		lineTipY[node]=y[node];
 		lineTipX[node]=x[node];
-		if (treeDisplay.getOrientation() == TreeDisplay.LEFT || treeDisplay.getOrientation() == TreeDisplay.RIGHT ){
+		if (treeDisplay!=null && (treeDisplay.getOrientation() == TreeDisplay.LEFT || treeDisplay.getOrientation() == TreeDisplay.RIGHT )){
 			lineBaseY[node]=y[node];
 			lineBaseX[node]=x[tree.motherOfNode(node)];
 		}
