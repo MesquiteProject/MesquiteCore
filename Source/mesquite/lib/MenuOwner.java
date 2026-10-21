@@ -1120,6 +1120,19 @@ public abstract class MenuOwner implements Doomable { // EMBEDDED: extends Apple
 		} catch (NullPointerException e) {
 			e.printStackTrace();
 		}
+		if (menuBar != null) {
+			int numLL = 0; int numRR = 0;
+			for (int i = 0; i < menuBar.getMenuCount(); i++) { //checking for strangeness
+				Menu m = menuBar.getMenu(i);
+				if (m.getLabel().indexOf(leftBracket)>=0)
+				numLL++;
+				else if (m.getLabel().indexOf(rightBracket)>=0)
+				numRR++;
+			}
+			if (numLL >1 || numRR >1)
+				MesquiteMessage.printStackTrace("Sorry, something is wrong with the menus. You may need to restart Mesquite.");
+		}
+		
 	}
 
 	public void removeEmptySubmenus(Menu parent) {

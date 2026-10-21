@@ -284,9 +284,11 @@ public abstract class MesquiteTrunk extends MesquiteModule
 	}
 	/** Read recent files */
 	public void readRecordOfRecentFiles(){
-		if (!MesquiteFile.fileExists(MesquiteModule.prefsDirectory + MesquiteFile.fileSeparator+ recentFilesFileName))
+		String path = MesquiteModule.prefsDirectory + MesquiteFile.fileSeparator+ recentFilesFileName;
+		if (!MesquiteFile.fileExists(path) || MesquiteFile.fileSize(path)>100000) //there was a strange bug in which the file had gotten written with a stutter
 			return;
-		String[] rfs = MesquiteFile.getFileContentsAsStrings(MesquiteModule.prefsDirectory + MesquiteFile.fileSeparator+ recentFilesFileName);
+			
+		String[] rfs = MesquiteFile.getFileContentsAsStrings(path);
 		if (rfs == null)
 			return;
 		for (int i=0; i<rfs.length; i++) {
