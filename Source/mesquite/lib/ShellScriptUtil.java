@@ -49,7 +49,8 @@ public class ShellScriptUtil  {
 	public static String DefaultShell() {
 		String shell = null;
 		if (MesquiteTrunk.isWindows())
-			shell = System.getenv("ComSpec");
+			shell = null;
+			//shell = System.getenv("ComSpec");  // this did not work for PhyloPyPruner
 		else
 			shell = System.getenv("SHELL");
 		shell = MesquiteFile.getFileNameFromFilePath(shell);
