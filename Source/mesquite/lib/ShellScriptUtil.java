@@ -47,10 +47,13 @@ public class ShellScriptUtil  {
 	//public static boolean useRunningFile = false;   // this is always false; no code changes it.
 
 	public static String DefaultShell() {
-	       	if (MesquiteTrunk.isWindows())
-	       		return System.getenv("ComSpec");
-	       	else
-	       		return System.getenv("SHELL");
+		String shell = null;
+		if (MesquiteTrunk.isWindows())
+			shell = System.getenv("ComSpec");
+		else
+			shell = System.getenv("SHELL");
+		shell = MesquiteFile.getFileNameFromFilePath(shell);
+		return shell;
 	}
 	/*.................................................................................................................*/
 	public static String protectForShellScript(String s) {  //Is this only used for paths???!!!!!  See StringUtil.protectForWindows.
