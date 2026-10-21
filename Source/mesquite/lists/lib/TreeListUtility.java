@@ -26,6 +26,9 @@ public abstract class TreeListUtility extends MesquiteModule  {
  	public String getDutyName() {
  		return "Tree list utility";
    	 }
+   	public String[] getDefaultModule() {
+   		return new String[] { "#AlterTrees", "#AlterLengths"};
+   	}
 	 public String getFunctionIconPath(){
    		 return getRootImageDirectoryPath() + "functionIcons/treeWindowUtil.gif";
    	 }
