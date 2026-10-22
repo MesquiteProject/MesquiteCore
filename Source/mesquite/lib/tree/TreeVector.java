@@ -442,6 +442,23 @@ public class TreeVector extends ListableVector implements Trees, Commandable, Id
 		else
 			return null;
 	}
+	
+	/*.................................................................................................................*/
+	public String getSelectedTaxaList(String separator) {
+		if (size()>0) {
+			Tree tree = (Tree)elementAt(0);
+			Taxa taxa = tree.getTaxa();
+			StringBuffer sb = new StringBuffer();
+			for (int it=0; it<taxa.getNumTaxa(); it++) {
+				if (taxa.isSelected(it))
+					sb.append(StringUtil.cleanseStringOfFancyChars(taxa.getTaxonName(it),false,true)+separator);
+			}
+			return sb.toString();
+		}
+
+		return null;
+	}
+
 	/** Set the label of the taxon with given name to be the label passed*/
 	public void setTranslationLabel(String label, String taxonName, boolean checkDuplicates){
 		if (translationTable==null || taxonName == null)
