@@ -507,7 +507,8 @@ public class StringInABox {
 							w = fm.stringWidth(strings[i]);
 						if (w>maxWidth)
 							maxWidth = w;
-						charCount += strings[i].length();
+						if (i<strings.length)
+							charCount += strings[i].length();
 					}
 					i++;
 				}	

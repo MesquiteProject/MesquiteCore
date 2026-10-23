@@ -146,6 +146,12 @@ public class CompareOtherTrees extends NumberForTree {
 		String s = "Comparison: " + treeDifferenceTask.getName() + "; Source of comparison trees: " + otherTreeTask.getName(); 
 		return s;
    	 }
+ 		/*.................................................................................................................*/
+ 	 public String getVeryShortName() {
+ 	 if (treeDifferenceTask != null)
+ 		return treeDifferenceTask.getVeryShortName();
+		return getName();
+	 }
 	/*.................................................................................................................*/
 	public String getNameAndParameters(){
 		if (treeDifferenceTask ==null)

@@ -149,6 +149,12 @@ public class CompareOtherTree extends NumberForTree {
     	 public String getName() {
 		return "Compare with Another Current Tree";
    	 }
+    		/*.................................................................................................................*/
+    	 public String getVeryShortName() {
+    	 if (treeDifferenceTask != null)
+    		return treeDifferenceTask.getVeryShortName();
+		return "Compare with Another Current Tree";
+   	 }
 	/*.................................................................................................................*/
   	 public String getExplanation() {
 		return "Calculates a number relating a tree and another current tree (e.g., a tree-to-tree distance metric).";

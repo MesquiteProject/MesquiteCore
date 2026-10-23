@@ -88,7 +88,7 @@ public class TaxaListHasData extends TaxonListAssistant  {
 	/*.................................................................................................................*/
 	public boolean startJob(String arguments, Object condition, boolean hiredByName) {
 		setSuppressEmployeeAutoRehiring(true);
-		matrixSourceTask = (CharMatrixSource)hireNamedEmployee(CharMatrixSource.class, "#StoredMatrices", DNAState.class); 
+		matrixSourceTask = (CharMatrixSource)hireNamedEmployee(CharMatrixSource.class, "#StoredMatrices", MolecularState.class); 
 		if (matrixSourceTask==null)
 			return sorry(getName() + " couldn't start because no source of character matrices was obtained.");
 		//	addMenuItem("Delete Prepended Length", makeCommand("deletePrepended", this));  // for Wayne!!!!!!
