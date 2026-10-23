@@ -5137,7 +5137,7 @@ and the tree has been rerooted. Properties that belong to nodes implicitly have 
 	/** Returns the number of a randomly chosen node.*/
 	public int randomNode(RandomBetween rng, boolean allowRoot){
 		int candidate = -1;
-		while (!(nodeExists(candidate) && getSubRoot()!=candidate && (getRoot()!=candidate || allowRoot))) {
+		while (!(nodeInTree(candidate) && getSubRoot()!=candidate && (getRoot()!=candidate || allowRoot))) {
 			candidate = rng.randomIntBetween(0, getNumNodeSpaces());
 		}
 		return candidate;
@@ -6375,7 +6375,7 @@ and the tree has been rerooted. Properties that belong to nodes implicitly have 
 	static boolean warnedUnbranchedReroot = false;
 	/** reroot the clade below node atNode.*/
 	public  boolean reroot(int atNode, int cladeRoot, boolean notify) {
-		if (!nodeExists(atNode) || !nodeExists(cladeRoot) ||cladeRoot==atNode || (!nodeIsPolytomous(cladeRoot) && cladeRoot == motherOfNode(atNode)))
+		if (!nodeInTree(atNode) || !nodeInTree(cladeRoot) ||cladeRoot==atNode || (!nodeIsPolytomous(cladeRoot) && cladeRoot == motherOfNode(atNode)))
 			return false;
 		checkTreeIntegrity(root);
 		if (hasUnbranchedInternals(root)){

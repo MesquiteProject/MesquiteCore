@@ -105,7 +105,7 @@ public class ExplanationArea extends MousePanel implements TextListener, Mesquit
 	boolean showClock = false;
 	String explanationSet = "";
 	String tickString = null;
-	public void tickClock(String tickString){
+	public void tickClock(String tickString, boolean now){
 		if (tickString == null)
 			tickString = "";
 		this.tickString = tickString;
@@ -120,7 +120,15 @@ public class ExplanationArea extends MousePanel implements TextListener, Mesquit
 				control.clockCount = 0;
 			else
 				control.clockCount++;
-			control.repaint();
+			if (now){
+				Graphics g = control.getGraphics();
+				if (g == null)
+					control.repaint();
+				else
+				control.update(g);
+			}
+			else 
+				control.repaint();
 			lastTick = System.currentTimeMillis();
 		}
 

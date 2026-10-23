@@ -1995,10 +1995,26 @@ class NodeLocsExtra extends TreeDisplayExtra implements TreeDisplayBkgdExtra {
 			g.drawRect(treeDisplay.getField().width - treeDisplay.effectiveFieldRightMargin(), treeDisplay.getField().height - treeDisplay.effectiveFieldBottomMargin(), treeDisplay.effectiveFieldRightMargin()-2, treeDisplay.effectiveFieldBottomMargin()-2);
 
 
-			int xTips = treeDisplay.effectiveFieldWidth()+treeDisplay.effectiveFieldLeftMargin()-treeDisplay.getTipsMargin();
 			g.setColor(ColorDistribution.lightBlue);
-			g.fillRect(xTips, treeDisplay.effectiveFieldTopMargin(), treeDisplay.getTaxonNameDistanceFromTip(), treeDisplay.effectiveFieldHeight());
-
+			if (treeDisplay.isUp()){
+				int yTips = treeDisplay.effectiveFieldTopMargin()+treeDisplay.getTipsMargin();
+				g.fillRect(treeDisplay.effectiveFieldLeftMargin(), yTips, treeDisplay.effectiveFieldWidth(), treeDisplay.getTaxonNameDistanceFromTip());
+				//g.fillRect(xTips, treeDisplay.effectiveFieldTopMargin(), treeDisplay.getTaxonNameDistanceFromTip(), treeDisplay.effectiveFieldHeight());
+			}
+			else if (treeDisplay.isDown()){
+				int yTips = treeDisplay.effectiveFieldHeight()+treeDisplay.effectiveFieldTopMargin()-treeDisplay.getTipsMargin();
+				g.fillRect(treeDisplay.effectiveFieldLeftMargin(), yTips, treeDisplay.effectiveFieldWidth(), treeDisplay.getTaxonNameDistanceFromTip());
+				//g.fillRect(xTips, treeDisplay.effectiveFieldTopMargin(), treeDisplay.getTaxonNameDistanceFromTip(), treeDisplay.effectiveFieldHeight());
+			}
+			else if (treeDisplay.isRight()){
+				int xTips = treeDisplay.effectiveFieldWidth()+treeDisplay.effectiveFieldLeftMargin()-treeDisplay.getTipsMargin();
+				g.fillRect(xTips, treeDisplay.effectiveFieldTopMargin(), treeDisplay.getTaxonNameDistanceFromTip(), treeDisplay.effectiveFieldHeight());
+			}
+			else if (treeDisplay.isLeft()){
+				int xTips = treeDisplay.effectiveFieldLeftMargin()+treeDisplay.getTipsMargin();
+				g.fillRect(xTips, treeDisplay.effectiveFieldTopMargin(), treeDisplay.getTaxonNameDistanceFromTip(), treeDisplay.effectiveFieldHeight());
+			}
+			
 			//	g.setColor(ColorDistribution.lightBlue);
 
 			//	g.fillRect(xTips + treeDisplay.getTaxonNameDistanceFromTip(), treeDisplay.effectiveFieldTopMargin(), treeDisplay.totalTipsFieldDistance(), treeDisplay.effectiveFieldHeight());

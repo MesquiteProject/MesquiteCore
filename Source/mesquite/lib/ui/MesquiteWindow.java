@@ -1784,6 +1784,11 @@ public abstract class MesquiteWindow implements Listable, Commandable, OwnedByMo
 	}
 	/*.................................................................................................................*/
 	public static void tickClock(String tickString){
+	tickClock(tickString, false);
+	}
+
+	/*.................................................................................................................*/
+	public static void tickClock(String tickString, boolean now){
 		if (MesquiteTrunk.isMacOSXPanther() || MesquiteTrunk.isMacOSXBeforePanther())
 			return;
 		if (MesquiteModule.mesquiteTrunk.windowVector.size() == 0)
@@ -1792,7 +1797,7 @@ public abstract class MesquiteWindow implements Listable, Commandable, OwnedByMo
 			Enumeration e = MesquiteModule.mesquiteTrunk.windowVector.elements();
 			while (e.hasMoreElements()) {
 				MesquiteWindow win = (MesquiteWindow)e.nextElement();
-				win.explanationArea.tickClock(tickString);
+				win.explanationArea.tickClock(tickString, now);
 			}
 		}
 	}
@@ -2491,8 +2496,10 @@ public abstract class MesquiteWindow implements Listable, Commandable, OwnedByMo
 		int numMenus = menuBar.getMenuCount();
 		for (int imenu = 0; imenu<numMenus; imenu++) {
 			try {
+				if (imenu<menuBar.getMenuCount()){ //seems silly, but started crashing with Java 25
 				Menu menu = menuBar.getMenu(imenu);
-			MesquiteTrunk.resetEnabling(menu);
+				MesquiteTrunk.resetEnabling(menu);
+				}
 			}
 			catch (Exception e){
 			}

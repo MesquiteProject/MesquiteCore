@@ -1,6 +1,7 @@
 /* Mesquite source code.  Copyright 1997 and onward, W. Maddison and D. Maddison. 
 Disclaimer:  The Mesquite source code is lengthy and we are few.  There are no doubt inefficiencies and goofs in this code. The commenting leaves much to be desired. Please approach this source code with the spirit of helping out.Perhaps with your help we can be more than a few, and make Mesquite better.Mesquite is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY.Mesquite's web site is http://mesquiteproject.orgThis source code and its compiled class files are free and modifiable under the terms of GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html) */package mesquite.lists.TaxonListShowAllHasData;/*~~  */import java.util.Vector;
 
+import mesquite.categ.lib.MolecularData;
 import mesquite.lib.CommandChecker;
 import mesquite.lib.CommandRecord;
 import mesquite.lib.MesquiteCommand;
@@ -13,8 +14,8 @@ import mesquite.lib.taxa.Taxa;
 import mesquite.lib.ui.AlertDialog;
 import mesquite.lists.lib.ListAssistant;
 import mesquite.lists.lib.ListModule;
-import mesquite.lists.lib.TaxaListAssistantI;/* ======================================================================== */public class TaxonListShowAllHasData extends TaxaListAssistantI  {	Taxa taxa;	MesquiteTable table;	public String getName() {		return "Show Columns for All Matrices";	}	public String getExplanation() {		return "Shows the Has Data column for all matrices.";	}	/*.................................................................................................................*/	public int getVersionOfFirstRelease(){		return 304;  	}	/*.................................................................................................................*/	public boolean startJob(String arguments, Object condition, boolean hiredByName){
-		addMenuItem("Show \"Has Data\" Columns for All Matrices", new MesquiteCommand("showAll", this));		return true;	}
+import mesquite.lists.lib.TaxaListAssistantI;/* ======================================================================== */public class TaxonListShowAllHasData extends TaxaListAssistantI  {	Taxa taxa;	MesquiteTable table;	public String getName() {		return "Show Columns for All Molecular Matrices";	}	public String getExplanation() {		return "Shows the Has Data column for all molecular matrices.";	}	/*.................................................................................................................*/	public int getVersionOfFirstRelease(){		return 304;  	}	/*.................................................................................................................*/	public boolean startJob(String arguments, Object condition, boolean hiredByName){
+		addMenuItem("Show \"Has Data\" Columns for All Molecular Matrices", new MesquiteCommand("showAll", this));		return true;	}
 	
 	void makeColumn(Puppeteer puppeteer, ListModule listModule, CharacterData data){
 		String commands = "newAssistant #TaxaListHasData; " +
@@ -36,7 +37,7 @@ import mesquite.lists.lib.TaxaListAssistantI;/* ==============================
 					datas.addElement(data);
 			}
 			if (datas.size()>10 && !MesquiteThread.isScripting()){
-				boolean yes = AlertDialog.query(containerOfModule(), "All Matrices?", "Do you want to show Has Data columns for all " + datas.size() + " matrices?");
+				boolean yes = AlertDialog.query(containerOfModule(), "All Matrices?", "Do you want to show Has Data columns for all " + datas.size() + " molecular matrices?");
 				if (!yes)
 					return null;
 			}			if (getEmployer() instanceof ListModule){
@@ -57,7 +58,8 @@ import mesquite.lists.lib.TaxaListAssistantI;/* ==============================
 				MesquiteThread.setCurrentCommandRecord(cRecord);
 				//at this point the vector should include only the ones not being shown.
 				for (int i = 0; i<datas.size(); i++)
-					makeColumn(puppeteer, listModule, (CharacterData)datas.elementAt(i));
+					if (datas.elementAt(i) instanceof MolecularData)
+						makeColumn(puppeteer, listModule, (CharacterData)datas.elementAt(i));
 			
 				MesquiteThread.setCurrentCommandRecord(prevR);
 			}		}		else			return  super.doCommand(commandName, arguments, checker);		return null;	}	/*.................................................................................................................*/	public boolean isSubstantive(){		return false;	}	/*.................................................................................................................*/	public void setTableAndTaxa(MesquiteTable table, Taxa taxa){		this.table = table;		this.taxa = taxa;	}}
