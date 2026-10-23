@@ -229,9 +229,17 @@ public abstract class TaxaTreeDisplay extends MesquitePanel  {
 		resetChain();
 	}
 	
+	public boolean trackRepaints = false;
+	public boolean errRepaints = false;
+	long repaintCount = 0;
+	
 	public void repaint() {  //TODO: this whole system needs revamping.  
 		if (!isVisible())
 			return;
+		if (trackRepaints)
+			MesquiteMessage.printStackTrace("Repaint tree display " + repaintCount++);
+		else if (errRepaints)
+			System.err.println("Repaint tree display " + repaintCount++);
 		if (redoCalculationsWaiting){
 			try{
 			recalculatePositions();
