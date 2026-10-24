@@ -1745,6 +1745,8 @@ class FrameTabsPanel extends MousePanel {
 	}
 	private MesquiteWindow getWindow(int i){
 		try {
+			if (i>= frame.windows.size())
+			return null;
 			MesquiteWindow w = (MesquiteWindow)frame.windows.elementAt(i);
 			return w;
 		}
