@@ -81,6 +81,14 @@ public class TreeVector extends ListableVector implements Trees, Commandable, Id
 	}
 	
 	//accumulates checksum for vector's trees
+	public void getTreeVersionsChecksum(CRC32 checksum){
+		for (int it = 0; it< size(); it++){
+			Tree tree = getTree(it);
+			checksum.update(Long.toString(tree.getTreeVersionNumber()).getBytes());
+			checksum.update(Long.toString(tree.getID()).getBytes());
+		}
+	}
+	//accumulates checksum for vector's trees
 	public void getVersionsChecksum(CRC32 checksum){
 		for (int it = 0; it< size(); it++){
 			Tree tree = getTree(it);

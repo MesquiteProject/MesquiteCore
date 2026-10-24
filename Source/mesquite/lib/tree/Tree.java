@@ -51,7 +51,8 @@ public interface Tree extends Listable {
 	/** Returns false if tree is null, has no nodes, or is locked, or if some taxonNumbers are negative.*/
 	public boolean isLocked();
 	public long getID();
-	public long getVersionNumber();
+	public long getVersionNumber();  //includes associates
+	public long getTreeVersionNumber();
 	/** updates the checksum for the node sequence, tips numbers, and branch lengths */
 	public void getFormChecksum(int node, CRC32 checksum);
 

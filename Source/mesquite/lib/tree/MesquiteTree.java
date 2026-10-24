@@ -153,6 +153,8 @@ public class MesquiteTree extends Associable implements AdjustableTree, Listable
 	private long[] taxaIDs;
 	/** A vector to store objects that are to be cut off if the tree changes, though to be kept if it's cloned*/
 	private Vector sensitiveAttachments; 
+	/** A number recording the tree version number, apart from the associable version.*/
+	private long treeVersion = 0;
 	/** A number recording the topology version number.  With changes of topology of the tree, the version number is incremented.  This way you know if you're dealing with the exact same tree or not.*/
 	private long topologyVersion = 0;
 	/** A number recording the branch lengths version number.  With changes of branch lengths or topology of the tree, the version number is incremented.  This way you know if you're dealing with the exact same tree or not.*/
@@ -974,6 +976,11 @@ public class MesquiteTree extends Associable implements AdjustableTree, Listable
 		nameLock = lock;
 	}
 	/*-----------------------------------------*/
+	/** Returns  version number of tree.  Version number should be incremented with each change in topology or branch lengths.*/
+	public long getTreeVersionNumber(){
+		return treeVersion;
+	}
+	/*-----------------------------------------*/
 	/** Returns topology version number of tree.  Version number should be incremented with each change in topology.*/
 	public long getTopologyVersion(){
 		return topologyVersion;
@@ -990,9 +997,12 @@ public class MesquiteTree extends Associable implements AdjustableTree, Listable
 		if (code == BRANCHES_REARRANGED) {
 			topologyVersion++;
 			branchLengthsVersion++;
+			treeVersion++;
 		}
-		if (code == BRANCHLENGTHS_CHANGED)
+		if (code == BRANCHLENGTHS_CHANGED){
 			branchLengthsVersion++;
+			treeVersion++;
+		}
 		if (sensitiveAttachments!=null)
 			sensitiveAttachments.removeAllElements();
 		modifiedSinceNamed = true; 
