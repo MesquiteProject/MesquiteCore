@@ -42,7 +42,7 @@ public class ColorDistribution {
 	public static int numberOfGreen = 11;
 	public static int numberOfBlue = 14;
 	public static Color lightGreen, veryLightGreen, strongGreen, darkGreen, lightGreenYellow, lightGreenYellowish, lightBlue, darkBlue, veryLightBlue, veryVeryLightBlue, violetBlue, aquamarine, veryLightGray, veryVeryLightGray, veryVeryVeryLightGray, lightRed, darkRed, veryVeryLightGreen;
-	public static Color darkBrown, brown, lightOrange, lightPurple, orange, straw, lightYellow, veryLightYellow, tabLineBrown, mesquiteBrown, darkMesquiteBrown, veryDarkMesquiteBrown, lightMesquiteBrown, brightMesquiteBrown;
+	public static Color darkBrown, brown, strongOrange, lightOrange, lightPurple, orange, straw, lightYellow, veryLightYellow, tabLineBrown, mesquiteBrown, darkMesquiteBrown, veryDarkMesquiteBrown, lightMesquiteBrown, brightMesquiteBrown;
 	public static Color lightBlueGray;
 	public static Color uneditable;
 	public static Color unassigned;
@@ -89,6 +89,8 @@ public class ColorDistribution {
 		veryVeryLightBlue = new Color((float)0.85, (float)0.85, (float)0.99);
 		aquamarine = new Color(0F, 0.2F, 0.9F);
 		lightOrange = new Color((float)1, (float)0.8, (float)0);
+		strongOrange = new Color((float)0.9, (float)0.7, (float)0);
+
 		orange = new Color((float)1, (float)0.5, (float)0);
 
 		lightPurple = new Color((float)0.7, (float)0.40, (float)0.7);

@@ -2424,7 +2424,7 @@ public abstract class MesquiteWindow implements Listable, Commandable, OwnedByMo
 	}
 	/*........................................................*/
 	//This saves the menus of current up until a difference with target, then transfers target menus over
-	void mergeMenus(MenuBar current, MenuBar target){
+	synchronized void mergeMenus(MenuBar current, MenuBar target){
 		try{
 			int startOfDifference = sameUntil(current, target);
 
@@ -2453,10 +2453,10 @@ public abstract class MesquiteWindow implements Listable, Commandable, OwnedByMo
 	/*........................................................*/
 	static double totalTime =0;
 
-	public void resetMenus(){
+	public synchronized void resetMenus(){
 		resetMenus(true);
 	}
-	public void resetMenus(boolean generateRegardless){
+	public synchronized void resetMenus(boolean generateRegardless){
 		if (ownerModule == null || ownerModule.isDoomed())
 			return;
 		if (getMenuBar()!= null && getParentFrame().getMenuBar() != null && !generateRegardless && refreshMenusOnlyFrontWindows && parentFrame.frontWindow != this){ //this is the short circuit that makes it so that only frontmost windows have their menus reset
