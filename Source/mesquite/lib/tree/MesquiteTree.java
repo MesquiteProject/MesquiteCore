@@ -415,6 +415,13 @@ public class MesquiteTree extends Associable implements AdjustableTree, Listable
 		}
 		return T;
 	}
+	
+	public void stealIDAndVersions(MesquiteTree tree){
+	id = tree.getID();
+	topologyVersion = tree.getTopologyVersion();
+	branchLengthsVersion = tree.getBranchLengthsVersion();
+	treeVersion = tree.getTreeVersionNumber();
+	}
 	/*-----------------------------------------*/
 	/** Sets this tree to be a clone of that passed.*/
 	public void setToClone(MesquiteTree tree) {
