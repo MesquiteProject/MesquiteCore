@@ -131,7 +131,8 @@ public class MainThread extends MesquiteThread {
 								setWindowContext(c.getWindowContext()); //in case a command wants to know what was the window from which it was called. Currently (v 4) works only for MesquiteMenuItem called commands
 							else
 								setWindowContext(MesquiteTrunk.mesquiteTrunk.containerOfModule());
-							pc.go();
+						 if (!isInterrupted())
+							 	pc.go();
 							setWindowContext(null); //in case a command wants to know what was the window from which it was called. Currently (v 4) works only for MesquiteMenuItem called commands
 							if (loggerSet){
 								MesquiteThread.setLoggerCurrentThread(null);
@@ -163,10 +164,15 @@ public class MainThread extends MesquiteThread {
 		dead = true;
 		threadGoodbye();
 	}
+	boolean yesIHaveBeenInterrupted = false;
 	public void interrupt(){
 			MesquiteDialog.closeWizard();
+			yesIHaveBeenInterrupted = true;
 		super.interrupt();
 	}
+    public boolean isInterrupted() {
+        return super.isInterrupted() || yesIHaveBeenInterrupted;
+    }
 
 }
 
