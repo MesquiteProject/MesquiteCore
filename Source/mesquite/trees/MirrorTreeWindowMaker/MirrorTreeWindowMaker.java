@@ -34,6 +34,7 @@ import mesquite.lib.duties.DrawTreeCoordinator;
 import mesquite.lib.duties.TreeDisplayAssistant;
 import mesquite.lib.duties.TreeDisplayAssistantA;
 import mesquite.lib.duties.TreeDisplayAssistantDI;
+import mesquite.lib.duties.TreeVectorHolder;
 import mesquite.lib.duties.TreeWindowAssistantN;
 import mesquite.lib.duties.TreeWindowMaker;
 import mesquite.lib.taxa.Taxa;
@@ -42,13 +43,14 @@ import mesquite.lib.tree.TreeDisplay;
 import mesquite.lib.tree.TreeDisplayActive;
 import mesquite.lib.tree.TreeDisplayExtra;
 import mesquite.lib.tree.TreeDisplayHolder;
+import mesquite.lib.tree.TreeVector;
 import mesquite.lib.ui.Legend;
 import mesquite.lib.ui.MesquitePDFFile;
 import mesquite.lib.ui.MesquiteWindow;
 import mesquite.lib.ui.MessagePanel;
 
 /* ======================================================================== */
-public class MirrorTreeWindowMaker extends TreeWindowAssistantN implements TreeDisplayActive, TreeDisplayHolder {
+public class MirrorTreeWindowMaker extends TreeWindowAssistantN implements TreeDisplayActive, TreeDisplayHolder, TreeVectorHolder {
 	public void getEmployeeNeeds(){  //This gets called on startup to harvest information; override this and inside, call registerEmployeeNeed
 		EmployeeNeed e = registerEmployeeNeed(DrawTreeCoordinator.class, getName() + "  needs a module to coordinate tree drawing.",
 		"This is arranged automatically");
@@ -77,6 +79,10 @@ public class MirrorTreeWindowMaker extends TreeWindowAssistantN implements TreeD
  	public boolean allowsReorientation(){
  		return false;
  	}
+	public TreeVector getCurrentTreeVector(Taxa taxa){  //this is here simply to ensure an assistant does not look to higher employers for the tree vector
+		
+		return null;
+	}
 	/*.................................................................................................................*/
  	public void employeeParametersChanged(MesquiteModule employee, MesquiteModule source, Notification notification) {
 		if (source instanceof DrawTreeCoordinator){ //ignores since this should have directly called to update tree display

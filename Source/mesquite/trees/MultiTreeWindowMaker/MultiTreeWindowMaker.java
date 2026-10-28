@@ -178,6 +178,7 @@ public class MultiTreeWindowMaker extends FileAssistantT implements TreeDisplayH
 	}
 	/** to ask Pausable to pause*/
 	boolean paused = false;
+	Notification treeSourceChangedDuringPause = null;
 	public void addPausables(Vector pausables) {
 		if (pausables != null)
 			pausables.addElement(this);
@@ -188,7 +189,13 @@ public class MultiTreeWindowMaker extends FileAssistantT implements TreeDisplayH
 	/** to ask a Pausable to unpause (i.e. to resume regular activity)*/
 	public void unpause(){
 		paused = false;
-		multiTreeWindow.renew(false, false);
+		if (treeSourceChangedDuringPause != null){
+			treeSourceChangedDuringPause = null;
+			multiTreeWindow.contentsChanged();
+			multiTreeWindow.renew(true, false);
+		}
+		else
+			multiTreeWindow.renew(false, false);
 
 	}
 	/** to ask a Pausable whether it's paused.*/
@@ -231,23 +238,29 @@ public class MultiTreeWindowMaker extends FileAssistantT implements TreeDisplayH
 	}
 	/*.................................................................................................................*/
 	public void employeeParametersChanged(MesquiteModule employee, MesquiteModule source, Notification notification) {
-		if (paused)
-			return;
 		if (employee == treeSourceTask || source == treeSourceTask){
-			if ((multiTreeWindow!=null) ) 
-				multiTreeWindow.renew(false, false);
+
+			if ((multiTreeWindow!=null && Notification.getCode(notification) != MesquiteListener.SELECTION_CHANGED) ) {
+				if (paused){
+					treeSourceChangedDuringPause = notification;
+					return;
+				}
+				multiTreeWindow.renew(true, false);
+			}
 		}
+		else if (paused)
+			return;
 		else if (employee!=treeDrawCoordTask){
 			if ((multiTreeWindow!=null) ) 
-				multiTreeWindow.renew(true, false);
+				multiTreeWindow.renew(false, false);
 			else if ((multiTreeWindow!=null)  && Notification.getCode(notification) != MesquiteListener.SELECTION_CHANGED) {
 				multiTreeWindow.contentsChanged();
-				multiTreeWindow.renew(true, false);
+				multiTreeWindow.renew(false, false);
 			}
 		}
 		else if (source instanceof DrawNamesTreeDisplay){
 			multiTreeWindow.contentsChanged();
-			multiTreeWindow.renew(true, false);
+			multiTreeWindow.renew(false, false);
 		}
 	}
 	/*.................................................................................................................*/
@@ -309,7 +322,11 @@ public class MultiTreeWindowMaker extends FileAssistantT implements TreeDisplayH
 			int newColumns = MesquiteInteger.fromFirstToken(arguments, pos);
 			if (!MesquiteInteger.isCombinable(newColumns))
 				newColumns= MesquiteInteger.queryInteger(containerOfModule(), "Set number of columns", "Columns:", numColumns);
-			if (newColumns>0 && newColumns<16) {
+			if (newColumns *numRows>MultiTreeWindow.maxDisplays){
+				discreetAlert("Sorry, that number of columns (" + newColumns + ", with current number of rows (" + numRows +"), would exceed the total allowable number of tree panels (" + MultiTreeWindow.maxDisplays + ")"); 
+
+			}
+			else if (newColumns>0 && newColumns<16) {
 				if (multiTreeWindow!=null)
 					if (newColumns!=multiTreeWindow.numColumns)
 						multiTreeWindow.setNumColumns(newColumns);
@@ -322,7 +339,11 @@ public class MultiTreeWindowMaker extends FileAssistantT implements TreeDisplayH
 			int newRows =MesquiteInteger.fromFirstToken(arguments, pos);
 			if (!MesquiteInteger.isCombinable(newRows))
 				newRows= MesquiteInteger.queryInteger(containerOfModule(), "Set number of rows", "Rows:", numRows);
-			if (newRows>0 && newRows<16){
+			if (newRows *numColumns>MultiTreeWindow.maxDisplays){
+				discreetAlert("Sorry, that number of rows (" + newRows + ", with current number of columns (" + numColumns +"), would exceed the total allowable number of tree panels (" + MultiTreeWindow.maxDisplays + ")"); 
+
+			}
+			else 			if (newRows>0 && newRows<16){
 				if (multiTreeWindow!=null)
 					if (newRows!=multiTreeWindow.numRows)
 						multiTreeWindow.setNumRows(newRows);
@@ -364,7 +385,7 @@ public class MultiTreeWindowMaker extends FileAssistantT implements TreeDisplayH
 		int code = Notification.getCode(notification);
 		int[] parameters = Notification.getParameters(notification);
 		if (obj instanceof Taxa && (Taxa) obj == taxa) {
-			multiTreeWindow.renew(Notification.appearsCosmeticOrSelection(notification), false);
+			multiTreeWindow.renew(!Notification.appearsCosmeticOrSelection(notification), false);
 		}
 		super.changed(caller, obj, notification);
 	}
@@ -593,7 +614,7 @@ class MultiTreeWindow extends MesquiteWindow implements KeyListener, Commandable
 	int totalWidth;
 	int totalHeight;
 	int firstTree=0;
-	int maxDisplays = 100;
+	static int maxDisplays = 24;
 	MessagePanel messagePanel;
 	MultiTreeScrollPanel containingPanel;
 	MesquiteTimer timer;
@@ -799,7 +820,7 @@ class MultiTreeWindow extends MesquiteWindow implements KeyListener, Commandable
 					treeDisplays[itree].repaint();
 				}
 				contentsChanged();
-				renew(false, false);
+				renew(true, false);
 				return tda;
 			}
 		}
@@ -809,8 +830,8 @@ class MultiTreeWindow extends MesquiteWindow implements KeyListener, Commandable
 	}
 	/*.................................................................................................................*/
 
-	public void renew(boolean redrawOnly, boolean resetToZero) {
-		if (!redrawOnly && treeScroll!=null && treeSourceTask!=null)
+	public void renew(boolean resetFirstTree, boolean resetToZero) {
+		if (resetFirstTree && treeScroll!=null && treeSourceTask!=null)
 			treeScroll.setMaximum(treeSourceTask.getNumberOfTrees(taxa)/numColumns + 1); //-1);
 		if (treeSourceTask!=null) {
 			if (ownerModule.getProject().getNumberTaxas()<=1)
@@ -818,7 +839,7 @@ class MultiTreeWindow extends MesquiteWindow implements KeyListener, Commandable
 			else
 				messagePanel.setMessage("Trees for taxa \"" + taxa.getName() + "\" from " + treeSourceTask.getNameAndParameters());
 		}
-		if (!redrawOnly){
+		if (resetFirstTree){
 			if (resetToZero)
 				setFirstTree(0);
 			else
@@ -908,7 +929,7 @@ class MultiTreeWindow extends MesquiteWindow implements KeyListener, Commandable
 			}
 	}
 	/*.................................................................................................................*/
-	public void setFirstTree(int treeNum){
+	void setFirstTree(int treeNum){
 		sizeDisplays(false);
 		firstTree = treeNum;
 		trees.removeAllElements(false);
@@ -938,7 +959,7 @@ class MultiTreeWindow extends MesquiteWindow implements KeyListener, Commandable
 		sizeDisplays(false);
 	}
 	/*.................................................................................................................*/
-	public void setNumColumns(int newNum){
+	void setNumColumns(int newNum){
 		if (newNum>0) {
 			// need to reset all of tree display extras!!!!!
 			for (int itree = 0; itree<numColumns*numRows&& itree<treeDisplays.length; itree++) {
@@ -958,11 +979,11 @@ class MultiTreeWindow extends MesquiteWindow implements KeyListener, Commandable
 		}
 	}
 	/*.................................................................................................................*/
-	public int getNumColumns(){
+	int getNumColumns(){
 		return numColumns;
 	}
 	/*.................................................................................................................*/
-	public void setNumRows(int newNum){
+	void setNumRows(int newNum){
 		if (newNum>0) {
 			// need to reset all of tree display extras!!!!!
 			for (int itree = 0; itree<numColumns*numRows && itree<treeDisplays.length; itree++) {
@@ -1292,15 +1313,16 @@ class MTWExtra extends TreeDisplayExtra implements Commandable, TreeDisplayExtra
 			if (MesquiteInteger.isCombinable(taxon)){
 				MesquiteTree myTree = (MesquiteTree)treeDisplay.getTree();
 				MesquiteTree originalTree = (MesquiteTree)treeDisplay.getOriginalTree();
-				Debugg.println(" trees " + (myTree == treeSet) + " originalTree " + originalTree);
 				CharacterData data = myTree.findLinkedMatrix(module.getProject());
 				if (data != null){
 					Associable taxInfo = data.getTaxaInfo(true);
 					taxInfo.setAssociatedBit(markedNR, taxon, true);
 					data.notifyListeners(this, new Notification(MesquiteListener.ASSOCIATED_CHANGED));
 				}
-				if (originalTree != null)
+				if (originalTree != null){
 					originalTree.setAssociatedBit(markedNR, originalTree.nodeOfTaxonNumber(taxon), true);
+					originalTree.notifyListeners(this, new Notification(MesquiteListener.ASSOCIATED_CHANGED));
+				}
 				myTree.setAssociatedBit(markedNR, myTree.nodeOfTaxonNumber(taxon), true);
 				treeDisplay.repaint();
 			}
@@ -1317,8 +1339,10 @@ class MTWExtra extends TreeDisplayExtra implements Commandable, TreeDisplayExtra
 					taxInfo.setAssociatedBit(markedNR, taxon, false);
 					data.notifyListeners(this, new Notification(MesquiteListener.ASSOCIATED_CHANGED));
 				}
-				if (originalTree != null)
+				if (originalTree != null){
 					originalTree.setAssociatedBit(markedNR, originalTree.nodeOfTaxonNumber(taxon), false);
+					originalTree.notifyListeners(this, new Notification(MesquiteListener.ASSOCIATED_CHANGED));
+				}
 				myTree.setAssociatedBit(markedNR, myTree.nodeOfTaxonNumber(taxon), false);
 				treeDisplay.repaint();
 			}
@@ -1344,12 +1368,12 @@ class MTWExtra extends TreeDisplayExtra implements Commandable, TreeDisplayExtra
 							markTipsInClade(originalTree, branch, bits, mark);
 						else
 							markTipsOutsideClade(originalTree, myTree.getRoot(), branch, bits, mark);
+						originalTree.notifyListeners(this, new Notification(MesquiteListener.ASSOCIATED_CHANGED));
 					}
 					if (inside)
 						markTipsInClade(myTree, branch, bits, mark);
 					else
 						markTipsOutsideClade(myTree, myTree.getRoot(), branch, bits, mark);
-
 					data.notifyListeners(this, new Notification(MesquiteListener.ASSOCIATED_CHANGED));
 				}
 				treeDisplay.repaint();

@@ -16,10 +16,11 @@ package mesquite.treefarm.CollessImbalance;
 
 import mesquite.lib.MesquiteNumber;
 import mesquite.lib.MesquiteString;
+import mesquite.lib.duties.DependsOnlyOnTreeForm;
 import mesquite.lib.duties.NumberForTree;
 import mesquite.lib.tree.Tree;
 
-public class CollessImbalance extends NumberForTree {
+public class CollessImbalance extends NumberForTree implements DependsOnlyOnTreeForm {
 	public boolean startJob(String arguments, Object condition, boolean hiredByName) {
  		return true;
 	}

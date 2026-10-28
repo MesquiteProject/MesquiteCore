@@ -25,9 +25,10 @@ import mesquite.lib.MesquiteString;
 import mesquite.lib.duties.NumberForTree;
 import mesquite.lib.tree.Tree;
 import mesquite.lib.duties.BranchLengthStatistic;
+import mesquite.lib.duties.DependsOnlyOnTreeForm;
 
 /* ======================================================================== */
-public class AverageTipHeight extends NumberForTree implements BranchLengthStatistic {
+public class AverageTipHeight extends NumberForTree implements BranchLengthStatistic, DependsOnlyOnTreeForm {
 	double[] pathLengths = null;
 	/*.................................................................................................................*/
 	public boolean startJob(String arguments, Object condition, boolean hiredByName) {

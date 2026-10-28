@@ -488,7 +488,7 @@ public class TreeDisplay extends TaxaTreeDisplay  {
 			treeDrawing.recalculatePositions(tree); //to force node locs recalc
 		}
 		}
-		catch (IllegalPathStateException e){
+		catch (Exception e){
 			redoCalculationsMainThread();
 		}
 

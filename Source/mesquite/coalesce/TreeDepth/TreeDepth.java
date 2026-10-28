@@ -18,10 +18,11 @@ import mesquite.lib.MesquiteString;
 import mesquite.lib.duties.NumberForTree;
 import mesquite.lib.tree.Tree;
 import mesquite.lib.duties.BranchLengthStatistic;
+import mesquite.lib.duties.DependsOnlyOnTreeForm;
 
 
 /* ======================================================================== */
-public class TreeDepth extends NumberForTree implements BranchLengthStatistic {
+public class TreeDepth extends NumberForTree implements BranchLengthStatistic, DependsOnlyOnTreeForm {
 	/*.................................................................................................................*/
 	public boolean startJob(String arguments, Object condition, boolean hiredByName) {
  		return true;

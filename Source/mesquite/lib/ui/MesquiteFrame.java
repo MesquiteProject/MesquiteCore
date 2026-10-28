@@ -892,10 +892,14 @@ public class MesquiteFrame extends Frame implements Commandable, MQComponent {
 		fixFrontness();
 	}
 	public MesquiteWindow frontMostInLocation(int location){
+		try {
 		for (int i=orderedWindows.size()-1; i>=0; i--){
 			MesquiteWindow w = (MesquiteWindow)orderedWindows.elementAt(i);
 			if (w.getTileLocation() == location)
 				return w;
+		}
+		}
+		catch (Exception e){
 		}
 		return null;
 	}

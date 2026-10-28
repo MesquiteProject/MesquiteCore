@@ -16,12 +16,13 @@ package mesquite.treefarm.TreeTotalPathLength;
 import mesquite.lib.MesquiteNumber;
 import mesquite.lib.MesquiteString;
 import mesquite.lib.duties.BranchLengthStatistic;
+import mesquite.lib.duties.DependsOnlyOnTreeForm;
 import mesquite.lib.duties.NumberForTree;
 import mesquite.lib.tree.Tree;
 
 
 /* ======================================================================== */
-public class TreeTotalPathLength extends NumberForTree implements BranchLengthStatistic {
+public class TreeTotalPathLength extends NumberForTree implements BranchLengthStatistic, DependsOnlyOnTreeForm {
 	/*.................................................................................................................*/
 	public boolean startJob(String arguments, Object condition, boolean hiredByName) {
  		return true;

@@ -294,7 +294,6 @@ public class StoredTrees extends TreeSource implements MesquiteListener, TreeVec
 			previous = notification.getNotificationNumber();
 		if (doomed)
 			return;
-
 		if (code != MesquiteListener.ANNOTATION_CHANGED && code != MesquiteListener.ANNOTATION_DELETED && code != MesquiteListener.ANNOTATION_ADDED && !(obj instanceof TreeVector && code == MesquiteListener.SELECTION_CHANGED)) {
 			if (obj == managerVectorOfTreeBlocks){
 				if (code == MesquiteListener.PARTS_MOVED){

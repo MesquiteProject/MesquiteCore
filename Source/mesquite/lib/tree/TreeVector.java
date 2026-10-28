@@ -79,38 +79,68 @@ public class TreeVector extends ListableVector implements Trees, Commandable, Id
 	public String getUniqueID() {
 		return uniqueID;
 	}
-	
-	//accumulates checksum for vector's trees
-	public void getFormsCheckstum(CRC32 checksum){
-		for (int it = 0; it< size(); it++){
-			Tree tree = getTree(it);
-			tree.getFormChecksum(tree.getRoot(),checksum);
-		}
-	}
-	//accumulates checksum for vector's trees
-	public void getTreeVersionsChecksum(CRC32 checksum){
-		for (int it = 0; it< size(); it++){
-			Tree tree = getTree(it);
-			checksum.update(Long.toString(tree.getTreeVersionNumber()).getBytes());
-			checksum.update(Long.toString(tree.getID()).getBytes());
-		}
-	}
-	//accumulates checksum for vector's trees
-	public void getVersionsChecksum(CRC32 checksum){
-		for (int it = 0; it< size(); it++){
-			Tree tree = getTree(it);
-			checksum.update(Long.toString(tree.getVersionNumber()).getBytes());
-			checksum.update(Long.toString(tree.getID()).getBytes());
-		}
-	}
+
+	boolean checksumsTFNeedRecalculation = true;
+	boolean checksumsTVNeedRecalculation = true;
+	boolean checksumsGVNeedRecalculation = true;
+	long cachedTreeFormsChecksum = 0;
+	long cachedTreeVersionsChecksum = 0;
+	long cachedGeneralVersionsChecksum = 0;
 
 	//accumulates checksum for vector's trees
-	public void getFormChecksum(CRC32 checksum){
+	public long getTreeFormsChecksum(boolean useCachedIfAvailable){
+		if (useCachedIfAvailable && cachedTreeFormsChecksum != 0 && !checksumsTFNeedRecalculation)
+			return cachedTreeFormsChecksum;
+		CRC32 crc32 = new CRC32();
+		crc32.reset();
 		for (int it = 0; it< size(); it++){
 			Tree tree = getTree(it);
-			tree.getFormChecksum(tree.getRoot(), checksum);
+			tree.getFormChecksum(tree.getRoot(),crc32);
 		}
+		long temp = crc32.getValue();
+		if (!checksumsTFNeedRecalculation && temp != cachedTreeFormsChecksum && cachedTreeFormsChecksum != 0)
+			Debugg.printStackTrace("TreeVector TF checksum should remain unchanged, but it isn't");
+		cachedTreeFormsChecksum =  temp; 
+		checksumsTFNeedRecalculation = false;
+		return cachedTreeFormsChecksum;
 	}
+	//accumulates checksum for vector's trees
+	public long getTreeVersionsChecksum(boolean useCachedIfAvailable){
+		if (useCachedIfAvailable && cachedTreeVersionsChecksum != 0 && !checksumsTVNeedRecalculation)
+			return cachedTreeVersionsChecksum;
+		CRC32 crc32 = new CRC32();
+		crc32.reset();
+		for (int it = 0; it< size(); it++){
+			Tree tree = getTree(it);
+			crc32.update(Long.toString(tree.getTreeVersionNumber()).getBytes());
+			crc32.update(Long.toString(tree.getID()).getBytes());
+		}
+		long temp = crc32.getValue();
+		if (!checksumsTVNeedRecalculation && temp != cachedTreeVersionsChecksum && cachedTreeVersionsChecksum != 0)
+			Debugg.printStackTrace("TreeVector TV checksum should remain unchanged, but it isn't");
+		cachedTreeVersionsChecksum =  temp; 
+		checksumsTVNeedRecalculation = false;
+		return cachedTreeVersionsChecksum;
+	}
+	//accumulates checksum for vector's trees
+	public long getGeneralVersionsChecksum(boolean useCachedIfAvailable){
+		if (useCachedIfAvailable && cachedGeneralVersionsChecksum != 0 && !checksumsGVNeedRecalculation)
+			return cachedGeneralVersionsChecksum;
+		CRC32 crc32 = new CRC32();
+		crc32.reset();
+		for (int it = 0; it< size(); it++){
+			Tree tree = getTree(it);
+			crc32.update(Long.toString(tree.getVersionNumber()).getBytes());
+			crc32.update(Long.toString(tree.getID()).getBytes());
+		}
+		long temp = crc32.getValue();
+		if (!checksumsGVNeedRecalculation && temp != cachedGeneralVersionsChecksum && cachedGeneralVersionsChecksum != 0)
+			Debugg.printStackTrace("TreeVector GV checksum should remain unchanged, but it isn't");
+		cachedGeneralVersionsChecksum = temp;
+		checksumsGVNeedRecalculation = false;
+		return cachedGeneralVersionsChecksum;
+	}
+
 
 	public String getDefaultIconFileName(){ //for small 16 pixel icon at left of main bar
 		return "treesSmall.gif";
@@ -140,14 +170,14 @@ public class TreeVector extends ListableVector implements Trees, Commandable, Id
 		return "<h2>Tree block \"" + StringUtil.protectForXML(getName()) + "\"</h2><ul>" + list + "</ul>";
 	}
 	/*.................................................................................................................*/
- public int whichTreeByForm(Tree target){
-			for (int i = 0; i< size(); i++){
-				MesquiteTree treeI = (MesquiteTree)elementAt(i);
-				if (treeI.equalsTopology((MesquiteTree)target, true))
-					return i;
-			}
-			return -1;
-	 }
+	public int whichTreeByForm(Tree target){
+		for (int i = 0; i< size(); i++){
+			MesquiteTree treeI = (MesquiteTree)elementAt(i);
+			if (treeI.equalsTopology((MesquiteTree)target, true))
+				return i;
+		}
+		return -1;
+	}
 
 	/*.................................................................................................................*/
 	public void attachCloneToFile(MesquiteFile f, ElementManager manager){
@@ -157,21 +187,21 @@ public class TreeVector extends ListableVector implements Trees, Commandable, Id
 		trees.setWriteWeights(getWriteWeights());
 		for (int i=0; i<size(); i++){
 			trees.addElement(elementAt(i), false);
-			
+
 		}
 	}
 	/*public boolean swapPartsQ(int first, int second) {
-		
+
 		return swapParts(first, second, false, false);  //NOTE DEFAULT IS FALSE. The reason is to avoid time cost on multiple swaps
 	}
-	*/
+	 */
 	public boolean swapParts(int first, int second, boolean resetNumbers) {
-		
+
 		return swapParts(first, second, false, resetNumbers);  //NOTE DEFAULT IS FALSE. The reason is to avoid time cost on multiple swaps
 	}
 
 	public boolean swapParts(int first, int second, boolean notify, boolean resetNumbers) {
-		
+
 		boolean success = super.swapParts(first, second, notify);
 		if (resetNumbers)
 			resetAssignedNumbers();
@@ -355,7 +385,7 @@ public class TreeVector extends ListableVector implements Trees, Commandable, Id
 			for (int i=0; i<size(); i++){
 				Tree t = (Tree)elementAt(i);
 				trees.addElement(t.cloneTree(), false);
-				
+
 			}
 			trees.addToFile(getFile(), getProject(), getManager()); 
 			if (getManager()!=null)
@@ -413,23 +443,23 @@ public class TreeVector extends ListableVector implements Trees, Commandable, Id
 		else if (checker.compare(this.getClass(), "Shows trees in multi-tree window", null, commandName, "showMulti")) {
 			MesquiteModule bfc = getProject().getCoordinatorModule();
 			if (bfc!=null) {
-					CommandRecord oldR = MesquiteThread.getCurrentCommandRecord();
-					CommandRecord scr = new CommandRecord(true);
-					MesquiteThread.setCurrentCommandRecord(scr);
-					String script = "newAssistant  #mesquite.trees.MultiTreeWindowMaker.MultiTreeWindowMaker;\ntell It;\nsetTaxa "
-					+ getProject().getTaxaReferenceExternal(taxa)
-					+ ";\ngetTreeSource #mesquite.trees.DefiniteTreeSource.DefiniteTreeSource;\ntell It;"
-					+ "\nsetTreeSource #mesquite.trees.StoredTrees.StoredTrees;\ntell It;\nsetTreeBlock "
-					+ Integer.toString(getProject().getFileElementNumber(this, getClass())) + ";"
-					+ "\nsetTreeBlockID " + StringUtil.tokenize(getUniqueID())+";\nendTell;\nendTell;\nmakeWindow;\n"
+				CommandRecord oldR = MesquiteThread.getCurrentCommandRecord();
+				CommandRecord scr = new CommandRecord(true);
+				MesquiteThread.setCurrentCommandRecord(scr);
+				String script = "newAssistant  #mesquite.trees.MultiTreeWindowMaker.MultiTreeWindowMaker;\ntell It;\nsetTaxa "
+						+ getProject().getTaxaReferenceExternal(taxa)
+						+ ";\ngetTreeSource #mesquite.trees.DefiniteTreeSource.DefiniteTreeSource;\ntell It;"
+						+ "\nsetTreeSource #mesquite.trees.StoredTrees.StoredTrees;\ntell It;\nsetTreeBlock "
+						+ Integer.toString(getProject().getFileElementNumber(this, getClass())) + ";"
+						+ "\nsetTreeBlockID " + StringUtil.tokenize(getUniqueID())+";\nendTell;\nendTell;\nmakeWindow;\n"
 
 					+ "tell It;\nsetActive;\nsetAsFront;\nendTell;\nshowWindow;\nendTell;\n";
-					Puppeteer p = new Puppeteer(bfc);
-					MesquiteInteger pos = new MesquiteInteger(0);
-					MesquiteModule.incrementMenuResetSuppression();	
-					Object obj = p.sendCommands(bfc, script, pos, "", false, null,CommandChecker.defaultChecker);
-					MesquiteModule.decrementMenuResetSuppression();	
-					MesquiteThread.setCurrentCommandRecord(oldR);
+				Puppeteer p = new Puppeteer(bfc);
+				MesquiteInteger pos = new MesquiteInteger(0);
+				MesquiteModule.incrementMenuResetSuppression();	
+				Object obj = p.sendCommands(bfc, script, pos, "", false, null,CommandChecker.defaultChecker);
+				MesquiteModule.decrementMenuResetSuppression();	
+				MesquiteThread.setCurrentCommandRecord(oldR);
 			}
 			return null;
 		}
@@ -457,7 +487,7 @@ public class TreeVector extends ListableVector implements Trees, Commandable, Id
 		else
 			return null;
 	}
-	
+
 	/*.................................................................................................................*/
 	public String getSelectedTaxaList(String separator) {
 		if (size()>0) {
@@ -481,7 +511,7 @@ public class TreeVector extends ListableVector implements Trees, Commandable, Id
 		if (taxa==null)
 			return;
 		Taxon t = taxa.getTaxon(taxonName, false, true);
-	
+
 		if (t==null)
 			MesquiteMessage.warnProgrammer("Taxon name in translation table doesn't correspond to name of known taxon (\"" + taxonName + "\" [a])");
 
@@ -545,7 +575,7 @@ public class TreeVector extends ListableVector implements Trees, Commandable, Id
 			String label = (ParseUtil.getToken((String)table.elementAt(i),pos));
 			Taxon t = taxa.getTaxon(taxonName, false, true);
 			translationTable.setLabel(t, label, false); //note label set even if taxon not found; signal later to return null for whichtaxon number
-		/*	if (t==null) {
+			/*	if (t==null) {
 				if (MesquiteTree.permitT0Names && taxonName.startsWith("t")){  //not found in taxon names, but as permits t0, t1 style names, look for it there
 						String number = taxonName.substring(1, taxonName.length());
 						int num = MesquiteInteger.fromString(number);
@@ -553,7 +583,7 @@ public class TreeVector extends ListableVector implements Trees, Commandable, Id
 							t = taxa.getTaxon(num);
 				}
 			}
-			*/
+			 */
 			if (t == null)
 				MesquiteMessage.warnProgrammer(	"Taxon name in translation table doesn't correspond to name of known taxon (\"" + taxonName + "\" [b])");
 
@@ -638,7 +668,7 @@ public class TreeVector extends ListableVector implements Trees, Commandable, Id
 	/*-----------------------------------------*/
 	boolean suppressNotifyL = false;
 	Thread threadOfTreeChange;
-	
+
 	private long[] lastNotifications = new long[]{-1, -1, -1, -1, -1, -1, -1, -1, -1, -1}; //a partial protection against responding to the same notification twice, e.g. coming via two different pathways.
 	private boolean notificationFound(Notification notification){
 		if (notification ==null)
@@ -665,6 +695,9 @@ public class TreeVector extends ListableVector implements Trees, Commandable, Id
 		if (notificationFound(notification))
 			return;
 		rememberNotification(notification);
+		checksumsTFNeedRecalculation = true;
+		checksumsTVNeedRecalculation = true;
+		checksumsGVNeedRecalculation = true;
 		if (obj == taxa){
 			if (Notification.appearsCosmeticOrSelection(notification))
 				return;
@@ -692,11 +725,11 @@ public class TreeVector extends ListableVector implements Trees, Commandable, Id
 		}
 		else {
 			if (!(suppressNotifyL && threadOfTreeChange == Thread.currentThread()) 
-				&& obj instanceof Tree && caller != this 
-				&& Notification.getCode(notification) != MesquiteListener.ANNOTATION_CHANGED 
-				&& Notification.getCode(notification) != MesquiteListener.ANNOTATION_ADDED 
-				&& Notification.getCode(notification) != MesquiteListener.ANNOTATION_DELETED)
-			notifyListeners(this, (new Notification(MesquiteListener.PARTS_CHANGED).setNotificationNumber(notification.getNotificationNumber()))); 
+					&& obj instanceof Tree && caller != this 
+					&& Notification.getCode(notification) != MesquiteListener.ANNOTATION_CHANGED 
+					&& Notification.getCode(notification) != MesquiteListener.ANNOTATION_ADDED 
+					&& Notification.getCode(notification) != MesquiteListener.ANNOTATION_DELETED)
+				notifyListeners(this, (new Notification(MesquiteListener.PARTS_CHANGED).setNotificationNumber(notification.getNotificationNumber()))); 
 		}
 	}
 	boolean deleteEmptyTrees(){
@@ -706,8 +739,8 @@ public class TreeVector extends ListableVector implements Trees, Commandable, Id
 		}
 		if (count>0){
 			MesquiteTrunk.mesquiteTrunk.logln(Integer.toString(count) + " tree(s) deleted because each contained no taxa.");
-	}
-	return count>0;
+		}
+		return count>0;
 	}
 	boolean deleteEmptyTree(){
 		for (int i=0; i<size(); i++) {
@@ -734,7 +767,7 @@ public class TreeVector extends ListableVector implements Trees, Commandable, Id
 				}
 			}
 	}
-	
+
 	public boolean anyLinkedMatrices(){
 		for (int i=0; i<size(); i++) {
 			Object o = elementAt(i);
@@ -742,9 +775,9 @@ public class TreeVector extends ListableVector implements Trees, Commandable, Id
 				MesquiteTree tree = (MesquiteTree)o;
 				if (tree.findLinkedMatrix(getProject()) != null)
 					return true;
-				}
 			}
-		
+		}
+
 		return false;
 	}
 

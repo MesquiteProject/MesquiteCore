@@ -28,13 +28,14 @@ import mesquite.lib.MesquiteThread;
 import mesquite.lib.Snapshot;
 import mesquite.lib.StringUtil;
 import mesquite.lib.duties.BooleanForTree;
+import mesquite.lib.duties.DependsOnlyOnTreeForm;
 import mesquite.lib.duties.OneTreeSource;
 import mesquite.lib.tree.MesquiteTree;
 import mesquite.lib.tree.Tree;
 import mesquite.lib.ui.ExtensibleDialog;
 import mesquite.lib.ui.MesquiteMenuItemSpec;
 
-public class TopologyCongruent extends BooleanForTree {
+public class TopologyCongruent extends BooleanForTree implements DependsOnlyOnTreeForm {
 	OneTreeSource constraintTreeSource;
 	Tree constraintTree;
 	MesquiteBoolean exactMatch = new MesquiteBoolean(false);

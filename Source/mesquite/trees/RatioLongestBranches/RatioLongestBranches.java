@@ -30,9 +30,10 @@ import mesquite.lib.tree.Tree;
 import mesquite.lib.tree.TreeUtil;
 import mesquite.lib.ui.ExtensibleDialog;
 import mesquite.lib.duties.BranchLengthStatistic;
+import mesquite.lib.duties.DependsOnlyOnTreeForm;
 
 /** this is a silly little module that can be used as a demonstration for NumberForTree modules */
-public class RatioLongestBranches extends NumberForTree  implements BranchLengthStatistic {
+public class RatioLongestBranches extends NumberForTree  implements BranchLengthStatistic, DependsOnlyOnTreeForm {
 	MesquiteNumber nt;
 	boolean unrooted = true;
 boolean ignoreRootDaughters = false;

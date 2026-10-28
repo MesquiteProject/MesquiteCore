@@ -18,11 +18,12 @@ import mesquite.lib.MesquiteListener;
 import mesquite.lib.MesquiteString;
 import mesquite.lib.Notification;
 import mesquite.lib.duties.BooleanForTree;
+import mesquite.lib.duties.DependsOnlyOnTreeForm;
 import mesquite.lib.taxa.Taxa;
 import mesquite.lib.tree.Tree;
 
 /** this is a little module that deterimines whether or not a set of taxa is a clade in a tree */
-public class CladeInTree extends BooleanForTree implements MesquiteListener {
+public class CladeInTree extends BooleanForTree implements MesquiteListener, DependsOnlyOnTreeForm {
 	Taxa currentTaxa = null;
 	/*.................................................................................................................*/
 	public boolean startJob(String arguments, Object condition, boolean hiredByName) {
