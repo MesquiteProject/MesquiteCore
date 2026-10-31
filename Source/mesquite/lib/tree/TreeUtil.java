@@ -39,6 +39,8 @@ import mesquite.lib.StringUtil;
 import mesquite.lib.taxa.Taxa;
 import mesquite.lib.taxa.TaxonNamer;
 import mesquite.lib.ui.ExtensibleDialog;
+import org.apache.commons.math3.stat.descriptive.moment.Skewness;
+import java.util.List;
 
 public class TreeUtil {
 
@@ -468,6 +470,61 @@ public class TreeUtil {
 		}
 		for (int d = tree.firstDaughterOfNode(node); tree.nodeExists(d); d = tree.nextSisterOfNode(d))
 			getLongestBranches(tree, d, longestBranches, longest, secondLongest, unrooted, ignoreRootDaughters);
+	}
+		        
+	        
+	/*.................................................................................................................*/
+	public static void getBranchLengthSkewRec(Tree tree, int node, double[] values) {
+		double length = tree.getBranchLength(node);
+		if (node<values.length)
+			values[node] = length;
+		for (int d = tree.firstDaughterOfNode(node); tree.nodeExists(d); d = tree.nextSisterOfNode(d))
+			getBranchLengthSkewRec(tree, d, values);
+	}
+	/*.................................................................................................................*/
+	public static double getBranchLengthSkew(Tree tree, boolean unrooted) {
+        Skewness skewness = new Skewness();
+        int root = tree.getRoot();
+        int numValues = 2*tree.numberOfTerminalsInClade(root)-2;
+        if (unrooted)
+        	numValues= numValues-1;
+        double[] values = new double[numValues];
+        for (int i=0; i<values.length; i++) {
+        	values[i]=MesquiteDouble.unassigned;
+        }
+        
+        if (!unrooted || tree.numberOfDaughtersOfNode(root)>2)
+        	getBranchLengthSkewRec(tree,root,values);
+        else {
+        	double rootLength = 0.0;
+    		for (int d = tree.firstDaughterOfNode(root); tree.nodeExists(d); d = tree.nextSisterOfNode(d))
+    			rootLength+=tree.getBranchLength(d);
+    		values[tree.firstDaughterOfNode(root)] = rootLength;
+    		for (int d = tree.firstDaughterOfNode(root); tree.nodeExists(d); d = tree.nextSisterOfNode(d))
+    			getBranchLengthSkewRec(tree, d, values);
+        }
+      numValues = 0;
+        for (int i=0; i<values.length; i++) {  // calculate number of slots with values
+        	if (MesquiteDouble.isCombinable(values[i]))
+        		numValues++;
+        }
+        if (numValues<3)
+        	return MesquiteDouble.unassigned;
+        double[] finalValues = new double[numValues];
+        int count=0;
+        for (int i=0; i<values.length; i++) {  // calculate number of slots with values
+        	if (MesquiteDouble.isCombinable(values[i])) {
+        		finalValues[count]=values[i];
+        		count++;
+        	}
+        }
+
+		
+        double skew = skewness.evaluate(finalValues);
+        if (Double.isNaN(skew))
+        	return MesquiteDouble.unassigned;
+        return skew;
+
 	}
 
 	/*.................................................................................................................*/
