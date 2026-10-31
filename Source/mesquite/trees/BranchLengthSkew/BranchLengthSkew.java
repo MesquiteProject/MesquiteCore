@@ -36,7 +36,6 @@ import mesquite.lib.duties.DependsOnlyOnTreeForm;
 public class BranchLengthSkew extends NumberForTree  implements BranchLengthStatistic, DependsOnlyOnTreeForm {
 	MesquiteNumber nt;
 	boolean unrooted = true;
-boolean ignoreRootDaughters = false;
 	/*.................................................................................................................*/
 	public boolean startJob(String arguments, Object condition, boolean hiredByName) {
 		if (!MesquiteThread.isScripting()){
@@ -71,7 +70,6 @@ boolean ignoreRootDaughters = false;
 	public Snapshot getSnapshot(MesquiteFile file) { 
 		Snapshot temp = new Snapshot();
 		temp.addLine("unrooted " + unrooted);
-		temp.addLine("ignoreRootDaughters " + ignoreRootDaughters);
 		return temp;
 	}
 
@@ -80,13 +78,11 @@ boolean ignoreRootDaughters = false;
 		MesquiteInteger buttonPressed = new MesquiteInteger(1);
 		ExtensibleDialog dialog = new ExtensibleDialog(containerOfModule(),  "Branch Length Skew Options",buttonPressed);  
 		Checkbox unrootedCB = dialog.addCheckBox("Treat tree as unrooted", unrooted);
-		Checkbox ignoreRootDaughtersCB = dialog.addCheckBox("If rooted, ignore daughters of root", ignoreRootDaughters);
 
 		dialog.addBlankLine();
 		dialog.completeAndShowDialog(true);
 		if (buttonPressed.getValue()==0)  {
 			unrooted = unrootedCB.getState();
-			ignoreRootDaughters = ignoreRootDaughtersCB.getState();
 		}
 		dialog.dispose();
 		return (buttonPressed.getValue()==0);
@@ -104,15 +100,6 @@ boolean ignoreRootDaughters = false;
 			boolean temp = MesquiteBoolean.fromTrueFalseString(parser.getFirstToken(arguments));
 			if (temp != unrooted){
 				unrooted = temp; 
-				if (!MesquiteThread.isScripting()){
-					parametersChanged();
-				}
-			}
-		}
-		else if (checker.compare(this.getClass(), "Sets whether to treat trees as unrooted.", "[true or false]", commandName, "ignoreRootDaughters")) {
-			boolean temp = MesquiteBoolean.fromTrueFalseString(parser.getFirstToken(arguments));
-			if (temp != ignoreRootDaughters){
-				ignoreRootDaughters = temp; 
 				if (!MesquiteThread.isScripting()){
 					parametersChanged();
 				}
