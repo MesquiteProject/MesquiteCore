@@ -40,9 +40,11 @@ public class CharMatricesListConvertDNAToProtein extends CharMatricesListProcess
 	boolean anyExcluded = true;  //default true so provokes question if no data matrix
 	boolean preferencesSet=false;
 	MesquiteBoolean removeDNAMatrix = new MesquiteBoolean(false); //(-e)
-	MesquiteBoolean translateExcludedCharacters = new MesquiteBoolean(false);
+	MesquiteBoolean multipleStatesAsMissing = new MesquiteBoolean(true); //(-e)
+	MesquiteBoolean dontConvertIfPartialTriplets = new MesquiteBoolean(false); //(-e)
+//	MesquiteBoolean translateExcludedCharacters = new MesquiteBoolean(false);
 	boolean alreadyQueried = false;
-	boolean dontConvertIfPartialTriplets = false;
+	
 	/*.................................................................................................................*/
 	public String getName() {
 		return "Convert DNA Matrices to Protein";
@@ -68,10 +70,12 @@ public class CharMatricesListConvertDNAToProtein extends CharMatricesListProcess
 
 	/*.................................................................................................................*/
 	public void processSingleXMLPreference(String tag, String content) {
-		if ("translateExcludedCharacters".equalsIgnoreCase(tag))
-			translateExcludedCharacters.setValue(MesquiteBoolean.fromTrueFalseString(content));
 		if ("removeDNAMatrix".equalsIgnoreCase(tag))
 			removeDNAMatrix.setValue(MesquiteBoolean.fromTrueFalseString(content));
+		if ("multipleStatesAsMissing".equalsIgnoreCase(tag))
+			multipleStatesAsMissing.setValue(MesquiteBoolean.fromTrueFalseString(content));
+		if ("dontConvertIfPartialTriplets".equalsIgnoreCase(tag))
+			dontConvertIfPartialTriplets.setValue(MesquiteBoolean.fromTrueFalseString(content));
 
 		preferencesSet = true;
 	}
@@ -79,8 +83,9 @@ public class CharMatricesListConvertDNAToProtein extends CharMatricesListProcess
 	/*.................................................................................................................*/
 	public String preparePreferencesForXML() {
 		StringBuffer buffer = new StringBuffer(200);
-		StringUtil.appendXMLTag(buffer, 2, "translateExcludedCharacters", translateExcludedCharacters);
 		StringUtil.appendXMLTag(buffer, 2, "removeDNAMatrix", removeDNAMatrix);
+		StringUtil.appendXMLTag(buffer, 2, "multipleStatesAsMissing", multipleStatesAsMissing);
+		StringUtil.appendXMLTag(buffer, 2, "dontConvertIfPartialTriplets", dontConvertIfPartialTriplets);
 
 		preferencesSet = true;
 		return buffer.toString();
@@ -89,7 +94,8 @@ public class CharMatricesListConvertDNAToProtein extends CharMatricesListProcess
 	public Snapshot getSnapshot(MesquiteFile file) { 
 		Snapshot temp = new Snapshot();
 		temp.addLine("removeDNAMatrix "+ removeDNAMatrix.toOffOnString());
-		temp.addLine("translateExcludedCharacters "+ translateExcludedCharacters.toOffOnString());
+		temp.addLine("multipleStatesAsMissing "+ multipleStatesAsMissing.toOffOnString());
+		temp.addLine("dontConvertIfPartialTriplets "+ dontConvertIfPartialTriplets.toOffOnString());
 		return temp;
 	}
 	/*.................................................................................................................*/
@@ -100,11 +106,16 @@ public class CharMatricesListConvertDNAToProtein extends CharMatricesListProcess
 			if (current!=removeDNAMatrix.getValue()) {
 				parametersChanged();
 			}
-		}
-		else if (checker.compare(this.getClass(), "Sets whether or not to remove excluded characters.", "[on or off]", commandName, "translateExcludedCharacters")) {
-			boolean current = translateExcludedCharacters.getValue();
-			translateExcludedCharacters.toggleValue(parser.getFirstToken(arguments));
-			if (current!=translateExcludedCharacters.getValue()) {
+		} else if (checker.compare(this.getClass(), "Sets whether or not convert multiple state cells to missing data.", "[on or off]", commandName, "multipleStatesAsMissing")) {
+			boolean current = multipleStatesAsMissing.getValue();
+			multipleStatesAsMissing.toggleValue(parser.getFirstToken(arguments));
+			if (current!=multipleStatesAsMissing.getValue()) {
+				parametersChanged();
+			}
+		} else if (checker.compare(this.getClass(), "Sets whether or not convert a DNA matrix if it has partial codon triplets.", "[on or off]", commandName, "dontConvertIfPartialTriplets")) {
+			boolean current = dontConvertIfPartialTriplets.getValue();
+			dontConvertIfPartialTriplets.toggleValue(parser.getFirstToken(arguments));
+			if (current!=dontConvertIfPartialTriplets.getValue()) {
 				parametersChanged();
 			}
 		}
@@ -124,22 +135,29 @@ public class CharMatricesListConvertDNAToProtein extends CharMatricesListProcess
 		if ((overrideScripting || !MesquiteThread.isScripting()) && okToInteractWithUser(CAN_PROCEED_ANYWAY, "Concatenated matrices")){
 			alreadyQueried = true;
 			MesquiteInteger buttonPressed = new MesquiteInteger(1);
-			ExtensibleDialog dialog = new ExtensibleDialog(containerOfModule(), "Concatenation Options",buttonPressed);  //MesquiteTrunk.mesquiteTrunk.containerOfModule()
-			if (anyExcluded) {
-				dialog.appendToHelpString("During concatenation, characters that are currently excluded will be omitted entirely from the concatenated matrix if \"Remove excluded characters\" is checked.<BR>");
-			}
-			dialog.appendToHelpString("You may choose to have the original matrices deleted after concatenation. <BR>");
+			ExtensibleDialog dialog = new ExtensibleDialog(containerOfModule(), "DNA to Protein Options",buttonPressed);  //MesquiteTrunk.mesquiteTrunk.containerOfModule()
+/**/
+//			if (anyExcluded) {
+//				dialog.appendToHelpString("During concatenation, characters that are currently excluded will be omitted entirely from the concatenated matrix if \"Remove excluded characters\" is checked.<BR>");
+//			}
+/*			dialog.appendToHelpString("You may choose to have the original matrices deleted after concatenation. <BR>");
 			dialog.appendToHelpString("Any characters not currently assigned to groups will be assigned to a group whose name is the name of the matrix from which they came. ");
 			dialog.appendToHelpString("Those characters that where previously assigned to a group will still be assigned to that group, or, optionally, to a new group whose name is its existing group name with the matrix name prefixed to it. ");
+*/
 			Checkbox deleteMatricesBox = dialog.addCheckBox("Delete original matrices", removeDNAMatrix.getValue());
-			Checkbox deleteExcludedBox=null;
+			Checkbox multipleStatesAsMissingBox = dialog.addCheckBox("Convert cells with multiple AAs to missing data", multipleStatesAsMissing.getValue());
+			Checkbox dontConvertIfPartialTripletsBox = dialog.addCheckBox("Convert matrices only if they have complete codon triplets", dontConvertIfPartialTriplets.getValue());
+/*			Checkbox deleteExcludedBox=null;
 			if (anyExcluded)
 				deleteExcludedBox = dialog.addCheckBox("Translate excluded characters", !translateExcludedCharacters.getValue());
+*/
 			dialog.completeAndShowDialog(true);
 			if (buttonPressed.getValue()==0)  {
 				removeDNAMatrix.setValue(deleteMatricesBox.getState());
-				if (anyExcluded)
-					translateExcludedCharacters.setValue(!deleteExcludedBox.getState());
+				multipleStatesAsMissing.setValue(multipleStatesAsMissingBox.getState());
+				dontConvertIfPartialTriplets.setValue(dontConvertIfPartialTripletsBox.getState());
+//				if (anyExcluded)
+//					translateExcludedCharacters.setValue(!deleteExcludedBox.getState());
 				storePreferences();
 			}
 			dialog.dispose();
@@ -202,13 +220,13 @@ public class CharMatricesListConvertDNAToProtein extends CharMatricesListProcess
 			if (data instanceof DNAData){
 				DNAData dData = (DNAData)data;
 				if (!dData.allSequencesMultiplesOfThree()) {
-					if (dontConvertIfPartialTriplets) {
-						logln("\nMatrix " + data.getName() + " cannot be converted as there are partial codon triplets");
+					if (dontConvertIfPartialTriplets.getValue()) {
+						logln("\nMatrix " + data.getName() + " not converted as there are partial codon triplets");
 						continue;
 					}
 				}
 					
-				ProteinData pData = dData.getProteinData(null, true,true);
+				ProteinData pData = dData.getProteinData(null, multipleStatesAsMissing.getValue(),true);
 				if (pData!= null) {
 					pData.setName(dData.getName()+".aa");
 					pData.addToFile(getProject().getHomeFile(), getProject(),  findElementManager(ProteinData.class));  
