@@ -17,6 +17,7 @@ import mesquite.categ.lib.DNAData;
 import mesquite.categ.lib.DNADataAlterer;
 import mesquite.categ.lib.DNAState;
 import mesquite.lib.MesquiteMessage;
+import mesquite.lib.MesquiteTrunk;
 import mesquite.lib.ResultCodes;
 import mesquite.lib.UndoInstructions;
 import mesquite.lib.UndoReference;
@@ -49,20 +50,26 @@ public class TrimTermPartTriplets extends SequenceTrimmer {
    		UndoInstructions undoInstructions = data.getUndoInstructionsAllMatrixCells(new int[] {UndoInstructions.NO_CHAR_TAXA_CHANGES});
 		boolean changed = false;
 		
+		StringBuffer report = new StringBuffer();
+		report.append("\nBases trimmed from " + dData.getName()+"\n");
+		
 		Taxa taxa = data.getTaxa();
 		boolean anyTaxaSelected = taxa.anySelected();
-		for (int it = 0; it<taxa.getNumTaxa(); it++)
+		for (int it = 0; it<taxa.getNumTaxa(); it++) {
 			if (!anyTaxaSelected || taxa.isSelected(it)) {
+				boolean taxonTrimmed=false;
 				for (int ic = 0; ic<data.getNumChars(); ic++){  // check start
 					if (!data.isInapplicable(ic, it)) {
 						if (data.getCodonPosition(ic)==2) {
 							data.setState(ic, it, DNAState.inapplicable);
 							changed=true;
+							taxonTrimmed = true;
 							if (data.getCodonPosition(ic+1)==3)
 								data.setState(ic+1, it, DNAState.inapplicable);
 						}
 						else if (data.getCodonPosition(ic)==3) {
 							data.setState(ic, it, DNAState.inapplicable);
+							taxonTrimmed = true;
 							changed=true;
 						}
 						break;
@@ -73,17 +80,24 @@ public class TrimTermPartTriplets extends SequenceTrimmer {
 						if (data.getCodonPosition(ic)==2) {
 							data.setState(ic, it, DNAState.inapplicable);
 							changed=true;
+							taxonTrimmed = true;
 							if (data.getCodonPosition(ic-1)==1)
 								data.setState(ic-1, it, DNAState.inapplicable);
 						}
 						else if (data.getCodonPosition(ic)==1) {
 							data.setState(ic, it, DNAState.inapplicable);
 							changed=true;
+							taxonTrimmed = true;
 						}
 						break;
 					}
 				}
+				if (taxonTrimmed)
+					report.append("\t" + taxa.getTaxonName(it)+"\n");
 			}
+		}
+		if (MesquiteTrunk.debugMode && changed)
+			logln(report.toString());
 		if (undoInstructions!=null) {
 			undoInstructions.setNewData(data);
 			if (undoReference!=null){

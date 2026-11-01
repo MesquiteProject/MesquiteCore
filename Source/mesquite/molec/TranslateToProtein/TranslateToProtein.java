@@ -90,7 +90,7 @@ public class TranslateToProtein extends CharMatrixSource {
 			CharacterData data = mData.getParentData();
 			if (data instanceof DNAData){
 				DNAData dData = (DNAData)data;
-				ProteinData pData = dData.getProteinData(null, true);
+				ProteinData pData = dData.getProteinData(null, false,true);
 				if (pData!= null) {
 					pData.setName("Protein translation of " + dData.getName());
 					return pData.getMCharactersDistribution();

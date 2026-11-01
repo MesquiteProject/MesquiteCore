@@ -514,7 +514,7 @@ public abstract class ExternalSequenceAligner extends MultipleSequenceAligner im
 			DNAData dData = (DNAData)data;
 			dData.collapseGapsInCellBlock(firstTaxon, lastTaxon, 0, data.getNumChars()-1, false);
 			dData.setAllCodonPositions(this,1,true,true);
-			dataToAlign = dData.getProteinData(null, false);
+			dataToAlign = dData.getProteinData(null, false,false);
 			if (dataToAlign==null) {
 				return null;
 			} 

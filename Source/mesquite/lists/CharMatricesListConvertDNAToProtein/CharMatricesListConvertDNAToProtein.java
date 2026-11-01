@@ -42,6 +42,7 @@ public class CharMatricesListConvertDNAToProtein extends CharMatricesListProcess
 	MesquiteBoolean removeDNAMatrix = new MesquiteBoolean(false); //(-e)
 	MesquiteBoolean translateExcludedCharacters = new MesquiteBoolean(false);
 	boolean alreadyQueried = false;
+	boolean dontConvertIfPartialTriplets = false;
 	/*.................................................................................................................*/
 	public String getName() {
 		return "Convert DNA Matrices to Protein";
@@ -200,7 +201,14 @@ public class CharMatricesListConvertDNAToProtein extends CharMatricesListProcess
 			progIndicator.setText("Converting matrix " + im + ": " +data.getName());
 			if (data instanceof DNAData){
 				DNAData dData = (DNAData)data;
-				ProteinData pData = dData.getProteinData(null, true);
+				if (!dData.allSequencesMultiplesOfThree()) {
+					if (dontConvertIfPartialTriplets) {
+						logln("\nMatrix " + data.getName() + " cannot be converted as there are partial codon triplets");
+						continue;
+					}
+				}
+					
+				ProteinData pData = dData.getProteinData(null, true,true);
 				if (pData!= null) {
 					pData.setName(dData.getName()+".aa");
 					pData.addToFile(getProject().getHomeFile(), getProject(),  findElementManager(ProteinData.class));  

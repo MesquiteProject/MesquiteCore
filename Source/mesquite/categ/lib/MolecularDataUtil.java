@@ -417,10 +417,10 @@ public class MolecularDataUtil {
 		MolecularData dataToCalculate = data;
 		boolean proteinDataCreated = false;
 		if (analyzeAsAminoAcids && !(data instanceof ProteinData)) {
-			if (!((DNAData)data).someCoding()) {  //
+			if (!((DNAData)data).someCoding() && !((DNAData)data).allSequencesMultiplesOfThree()) {  //warning?
 				return MesquiteDouble.unassigned;
 			}
-			dataToCalculate = (ProteinData)((DNAData)data).getProteinData(null, false);   // NEED TO CHECK THAT IN CODONS
+			dataToCalculate = (ProteinData)((DNAData)data).getProteinData(null, false,false);   
 			if (dataToCalculate==null) {
 				return MesquiteDouble.unassigned;
 			} 
@@ -477,7 +477,7 @@ public class MolecularDataUtil {
 			if (!((DNAData)data).someCoding()) {  //
 				return MesquiteDouble.unassigned;
 			}
-			dataToCalculate = (ProteinData)((DNAData)data).getProteinData(null, false);   // NEED TO CHECK THAT IN CODONS
+			dataToCalculate = (ProteinData)((DNAData)data).getProteinData(null, false,false);   // NEED TO CHECK THAT IN CODONS
 			if (dataToCalculate==null) {
 				return MesquiteDouble.unassigned;
 			} 

@@ -1078,7 +1078,7 @@ public class DNAData extends MolecularData {
 	} */	
 	/* ................................................................................................................. */
 	/** Returns a protein data object that corresponds to this nucleotide sequence */
-	public ProteinData getProteinData(ProteinData protData, boolean warn) {
+	public ProteinData getProteinData(ProteinData protData, boolean convertUncertaintyToMissing, boolean warn) {
 		if (!someCoding()) {
 			if (warn)
 				MesquiteMessage.discreetNotifyUser("Mesquite cannot translate DNA to Protein as codon positions have not been designated.");
@@ -1095,7 +1095,10 @@ public class DNAData extends MolecularData {
 		for (int it = 0; it < getNumTaxa(); it++) {
 			int icProt = 0;
 			for (int ic = 0; ic < getNumChars() && ic >= 0; ic = getStartOfNextCodon(ic)) {
-				proteins.setState(icProt, it, getAminoAcid(ic, it, variableCodes));
+				long aa = getAminoAcid(ic, it, variableCodes);
+				if (convertUncertaintyToMissing && ProteinState.hasMultipleStates(aa))
+					aa = ProteinState.unassigned;
+				proteins.setState(icProt, it, aa);
 				icProt++;
 			}
 		}
