@@ -4364,7 +4364,7 @@ public abstract class CharacterData extends FileElement implements MesquiteListe
 		}
 		return selAny;
 	}
-	/*------------------*/
+	/*------------------*
 	public int getNumberOfFirstLinkedTree(MesquiteProject project){
 		ListableVector treeVectors = project.getTreeVectors();
 

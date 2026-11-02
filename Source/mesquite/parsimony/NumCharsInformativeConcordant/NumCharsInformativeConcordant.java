@@ -100,14 +100,14 @@ public class NumCharsInformativeConcordant extends NumberForMatrixAndTree {
 		MesquiteNumber bNum = new MesquiteNumber();
 		boolean someNotCounted = false;
 		int start = 0;
-		int end = matrix.getNumChars();
+		int end = matrix.getNumChars()-1;
 		if (charsToInclude != null){
 			if (MesquiteInteger.isCombinable(charsToInclude.getRecordedStart()))
 				start = charsToInclude.getRecordedStart();
 			if (MesquiteInteger.isCombinable(charsToInclude.getRecordedEnd()))
 				end = charsToInclude.getRecordedEnd();
 		}
-		for (int ic=start;  ic<end; ic++) {
+		for (int ic=start;  ic<=end; ic++) {
 			if (matrix.isCurrentlyIncluded(ic)  && (charsToInclude == null || charsToInclude.isBitOn(ic)) && cData.charIsUnorderedInformative(ic)){
 				CharacterDistribution charStates = matrix.getCharacterDistribution(ic);
 				if (charStates!=null){

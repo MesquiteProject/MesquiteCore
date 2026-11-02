@@ -13,6 +13,7 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
 */
 package mesquite.lib.duties;
 
+import mesquite.lib.Bits;
 import mesquite.lib.MesquiteMessage;
 import mesquite.lib.MesquiteModule;
 import mesquite.lib.MesquiteNumber;
@@ -45,6 +46,9 @@ public abstract class NumberForMatrixAndTree extends MesquiteModule implements N
 
 
 	public abstract  void calculateNumber(Tree tree, MCharactersDistribution matrix, MesquiteNumber result, MesquiteString resultString);
+	public void calculateNumber(Tree tree, MCharactersDistribution matrix, Bits charsToInclude, MesquiteNumber result, MesquiteString resultString) {
+		calculateNumber(tree, matrix, null, result, resultString);
+	}
 	/*===== For NumberForItem interface ======*/
 	
  	public boolean returnsMultipleValues(){

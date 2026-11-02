@@ -705,6 +705,7 @@ public abstract class MesquiteTrunk extends MesquiteModule
 	static boolean resetNeededForCheckMenuItems = false;
 	/*.................................................................................................................*/
 	/** Updates the checked menu items to ensure that they are checked or not as appropriate.  */
+	//Debugg.println here possibly suppress reset check when menue being reconstructed
 	public final static void checkForResetCheckMenuItems(){
 		if (!resetNeededForCheckMenuItems)
 			return;
