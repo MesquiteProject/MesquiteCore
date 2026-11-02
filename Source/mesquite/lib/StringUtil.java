@@ -557,6 +557,10 @@ public class StringUtil {
 			return null;
 		else if (line.equals(""))
 			return "";
+		if (line.indexOf(separator)>=0)
+			return line.substring(0,line.indexOf(separator));
+		return line;
+		/*
 		String sep = defaultWhitespace;
 		if (separator!=null)
 			sep = separator;
@@ -574,7 +578,7 @@ public class StringUtil {
 				sb.append(line.charAt(i));
 			}
 		}
-		return sb.toString();
+		return sb.toString();*/
 	}
 	/*.................................................................................................................*/
 	/** returns the last item in a string, separated into parts by the separator*/
