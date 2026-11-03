@@ -636,9 +636,17 @@ public class BasicTreeWindowMaker extends TreeWindowMaker implements Commandable
 			String mssage = parser.getFirstToken(arguments);
 			editMode = true;
 			basicTreeWindow.treeEdited = false;
+			
+			//Cleaning out remnants of previous saves
 			if (mssage != null & mssage.contains("[Stored Trees]")){
-			mssage = StringUtil.getFirstItem(mssage, "[Stored Trees]");
-			mssage = StringUtil.stripTrailingWhitespace(mssage);
+				mssage = StringUtil.getAllButLastItem(mssage, "[Stored Trees]");
+				mssage = StringUtil.stripTrailingWhitespace(mssage);
+				Debugg.errln("last " + mssage.lastIndexOf("[Stored Trees]") + "  ml " + mssage.length());
+				while (mssage.lastIndexOf("[Stored Trees]")>0 && mssage.lastIndexOf("[Stored Trees]")== (mssage.length()-14)){
+					mssage = StringUtil.getAllButLastItem(mssage, "[Stored Trees]");
+					mssage = StringUtil.stripTrailingWhitespace(mssage);
+				}
+				mssage = StringUtil.stripLeadingWhitespace(mssage);
 			}
 			basicTreeWindow.forceRenameTree(mssage);
 			basicTreeWindow.originalTree = null;
@@ -859,11 +867,11 @@ public class BasicTreeWindowMaker extends TreeWindowMaker implements Commandable
 					}
 					else {
 						if (basicTreeWindow.originalTree != null && basicTreeWindow.originalTree instanceof MesquiteTree && basicTreeWindow.taxa != null)
-						basicTreeWindow.taxa.removeListener((MesquiteTree) basicTreeWindow.originalTree);
-					basicTreeWindow.originalTree = null; // otree
-					editMode = false;
-					basicTreeWindow.resetForTreeSource(false, false, MesquiteThread.isDuringNotification(), Notification.getCode(notification)); // if switching between tree blocks, should reset to zero! If storing tree in tree block, shouldn't!
-					basicTreeWindow.contentsChanged();
+							basicTreeWindow.taxa.removeListener((MesquiteTree) basicTreeWindow.originalTree);
+						basicTreeWindow.originalTree = null; // otree
+						editMode = false;
+						basicTreeWindow.resetForTreeSource(false, false, MesquiteThread.isDuringNotification(), Notification.getCode(notification)); // if switching between tree blocks, should reset to zero! If storing tree in tree block, shouldn't!
+						basicTreeWindow.contentsChanged();
 					}
 				}
 			}
@@ -1002,7 +1010,7 @@ public class BasicTreeWindowMaker extends TreeWindowMaker implements Commandable
 	boolean paused = false;
 	boolean updateWhilePaused = false;
 	int  pausedNotificationCode = MesquiteListener.NOTHINGTOSEEHERE;
-;
+	;
 	public void addPausables(Vector pausables) {
 		if (pausables != null)
 			pausables.addElement(this);
@@ -3787,7 +3795,7 @@ class BasicTreeWindow extends MesquiteWindow implements Fittable, MesquiteListen
 		branchFrom = 0;
 		storeTreeMenuItem.setEnabled(!treeSourceLocked());
 		selectTreeInBlockMenuItem.setEnabled(false);
-		
+
 		MesquiteTrunk.resetMenuItemEnabling();
 		checkPanelPositionsLegal();
 		resetBaseExplanation();
@@ -4821,7 +4829,7 @@ class BasicTreeWindow extends MesquiteWindow implements Fittable, MesquiteListen
 					popup.insert(new MenuItem("-"), numItems);
 			}
 		}
-	
+
 	}
 
 	/* ................................................................................................................. */
