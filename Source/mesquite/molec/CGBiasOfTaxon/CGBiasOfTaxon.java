@@ -15,6 +15,8 @@ package mesquite.molec.CGBiasOfTaxon;
 
 import mesquite.categ.lib.CategoricalState;
 import mesquite.categ.lib.DNAData;
+import mesquite.categ.lib.RequiresAnyDNAData;
+import mesquite.lib.CompatibilityTest;
 import mesquite.lib.MesquiteDouble;
 import mesquite.lib.MesquiteModule;
 import mesquite.lib.MesquiteNumber;
@@ -60,6 +62,11 @@ public class CGBiasOfTaxon extends NumberForTaxonAndMatrix {
 	public void initialize(Taxa taxa){
 		currentTaxa = taxa;
 	}
+	/*.................................................................................................................*/
+	/** Returns CompatibilityTest so other modules know if this is compatible with some object. */
+	public CompatibilityTest getCompatibilityTest(){
+		return new RequiresAnyDNAData();
+	}
 
 	public void calculateNumber(Taxon taxon, MCharactersDistribution matrix, MesquiteNumber result, MesquiteString resultString){
 		if (result==null)
@@ -70,6 +77,8 @@ public class CGBiasOfTaxon extends NumberForTaxonAndMatrix {
 		observedStates = matrix;
 		currentTaxa = taxa;
 		if (observedStates==null)
+			return;
+		if (!(observedStates.getParentData() instanceof DNAData))
 			return;
 		DNAData data = (DNAData)observedStates.getParentData();
 		CharInclusionSet inclusion = null;
