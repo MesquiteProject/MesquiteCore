@@ -565,7 +565,7 @@ public class BasicTreeWindowMaker extends TreeWindowMaker implements Commandable
 		}
 		temp.addLine("endTell");
 		if (MesquiteTrunk.snapshotMode != Snapshot.SNAPDISPLAYONLY && editMode) {
-			temp.addLine("setEditMode " + StringUtil.tokenize(basicTreeWindow.getTreeNameAndDetails()));
+			temp.addLine("setEditMode " + StringUtil.tokenize(basicTreeWindow.getTreeNameAndDetailsWithoutAddendum()));
 			temp.addLine("desuppressEPCResponseNORESET");
 		}
 		else
@@ -636,6 +636,10 @@ public class BasicTreeWindowMaker extends TreeWindowMaker implements Commandable
 			String mssage = parser.getFirstToken(arguments);
 			editMode = true;
 			basicTreeWindow.treeEdited = false;
+			if (mssage != null & mssage.contains("[Stored Trees]")){
+			mssage = StringUtil.getFirstItem(mssage, "[Stored Trees]");
+			mssage = StringUtil.stripTrailingWhitespace(mssage);
+			}
 			basicTreeWindow.forceRenameTree(mssage);
 			basicTreeWindow.originalTree = null;
 			basicTreeWindow.setHighlighted(false);
@@ -5031,6 +5035,9 @@ class BasicTreeWindow extends MesquiteWindow implements Fittable, MesquiteListen
 		return messagePanel.getFullMessage();
 	}
 
+	String getTreeNameAndDetailsWithoutAddendum() {
+		return messagePanel.getMessageWithoutAddendum();
+	}
 	/* ................................................................................................................. */
 	public void setTreeName(Tree t) {
 		String treename;
@@ -5775,6 +5782,9 @@ class MessagePanel extends MQPanel {
 		return modifiedString + treeMessage + treeSourceAddendum;
 	}
 
+	public String getMessageWithoutAddendum() {
+		return modifiedString +  treeMessage;
+	}
 	void setHighlighted(boolean edited) {
 		this.showDiamond = edited;
 		if (edited) {

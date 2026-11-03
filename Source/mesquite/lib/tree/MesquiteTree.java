@@ -2541,19 +2541,25 @@ public class MesquiteTree extends Associable implements AdjustableTree, Listable
 		return nodeWasFound;
 	}
 	/** Returns whether taxon is part of tree. Does a full recursion (more reliable, slower).*/
-	private boolean taxonWasFound = false;
-	public void findTaxonInTree(int node, int sought){
+	private boolean findTaxonInClade(int node, int sought){
 		if (nodeIsTerminal(node) && taxonNumber[node]==sought)
-			taxonWasFound=true;
-		for (int d = firstDaughterOfNode(node); nodeExists(d) && !taxonWasFound; d = nextSisterOfNode(d))
-			findTaxonInTree(d, sought);
+			return true;
+		for (int d = firstDaughterOfNode(node); nodeExists(d); d = nextSisterOfNode(d))
+			if (findTaxonInClade(d, sought))
+				return true;
+		return false;
 	}
 	/** Returns whether taxon is part of tree. */
 	public boolean taxonInTree(int taxonNum){
-		taxonWasFound=false;
 		if ((taxonNum>=0) && (taxonNum<taxa.getNumTaxa()))
-			findTaxonInTree(root, taxonNum);
-		return taxonWasFound;
+			return findTaxonInClade(root, taxonNum);
+		return false;
+	}
+	/** Returns whether taxon is part of tree. */
+	public boolean taxonInClade(int node, int taxonNum){
+		if ((taxonNum>=0) && (taxonNum<taxa.getNumTaxa()))
+			return findTaxonInClade(node, taxonNum);
+		return false;
 	}
 	/** Returns whether the set of taxa in setOfTaxa are all part of tree. */
 	public boolean taxaInTree(Bits setOfTaxa){
