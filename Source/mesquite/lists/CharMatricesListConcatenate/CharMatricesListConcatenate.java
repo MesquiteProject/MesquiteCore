@@ -162,36 +162,19 @@ public class CharMatricesListConcatenate extends CharMatricesListProcessorUtilit
 	public boolean pleaseLeaveMeOn(){
 		return false;
 	}
-	/** Called to operate on the CharacterData blocks.  Returns true if taxa altered*/
-	public boolean operateOnDatas(ListableVector datas, MesquiteTable table){
-		anyExcluded = false;
-		Taxa taxa = null;
-		for (int im = 0; im < datas.size(); im++){
-			CharacterData data = (CharacterData)datas.elementAt(im);
-			if (taxa == null)
-				taxa = data.getTaxa();
-			else if (taxa != data.getTaxa()) {
-				discreetAlert("Sorry, The matrices cannot be concatenated because they pertain to different taxa blocks.");
-				return false;
-			}
-			if (data.numCharsCurrentlyIncluded() < data.getNumChars())
-				anyExcluded = true;
-		}
-		getProject().getCharacterMatrices().incrementNotifySuppress(); 
-		if (!alreadyQueried && getHiredAs() != CharMatricesListProcessorUtility.class && !queryOptions(false))
-			return false;
-		int count = 0;
-		int countFailed = 0;
-		String name = "";
-		boolean found = false;
-		CharacterData starter = null;   // this will be the new concatenated matrix
-		int deleted = 0;
-		if (getProject() != null)
-			getProject().incrementProjectWindowSuppression();
-		Vector v = pauseAllPausables();
+	
+	/*.................................................................................................................*/
+
+	public boolean concatenateSome (ListableVector datas, int firstData, int lastData, boolean partial, MesquiteInteger part, MesquiteInteger count, MesquiteInteger countFailed, MesquiteInteger deleted) {
 		Vector chunks = new Vector();
 		int chunksize = 200;
-		int numMatrices = datas.size();
+		boolean found = false;
+		int localCount = count.getValue();
+		int localCountFailed = countFailed.getValue();
+		CharacterData starter = null;   // this will be the new concatenated matrix
+		String name = "";
+
+		int numMatrices = lastData-firstData;
 		if (numMatrices>(int)(chunksize*1.2)) {
 			// if many matrices, do in chunks.
 			CharacterData chunk = null;
@@ -212,19 +195,19 @@ public class CharMatricesListConcatenate extends CharMatricesListProcessorUtilit
 				}
 				boolean success = chunk.concatenate(data, false, concatExcludedCharacters.getValue(), true, prefixGroupLabelNames.getValue(), false, false);
 				if (success){
-					count++;
-					if (count % 100== 0)
-						logln("Concatenated " + count + " Matrices");
-					if (count > 1)
-						name = name + "+";
-					name = name + "(" + data.getName() + ")";
+					localCount++;
+					if (localCount % 100== 0)
+						logln("Concatenated " + localCount + " Matrices");
+					if (localCount > 1)
+						name+="+";
+					name+="(" + data.getName() + ")";
 					if (removeConcatenated.getValue()){
 						data.deleteMe(false);
-						deleted++;
+						deleted.increment();
 					}
 				}
 				else 
-					countFailed++;
+					localCountFailed++;
 			}
 
 			for (int im = 0; im < chunks.size(); im++){
@@ -244,39 +227,87 @@ public class CharMatricesListConcatenate extends CharMatricesListProcessorUtilit
 			}
 			boolean success = starter.concatenate(data, false, concatExcludedCharacters.getValue(), true, prefixGroupLabelNames.getValue(), false, false);
 			if (success){
-				count++;
-				if (count % 100== 0)
-					logln("Concatenated " + count + " Matrices");
-				if (count > 1)
-					name = name + "+";
-				name = name + "(" + data.getName() + ")";
+				localCount++;
+				if (localCount % 100== 0)
+					logln("Concatenated " + localCount + " Matrices");
+				if (localCount > 1)
+					name+="+";
+				name+="(" + data.getName() + ")";
 				if (removeConcatenated.getValue()){
 					data.deleteMe(false);
-					deleted++;
+					deleted.increment();
 				}
 			}
 			else 
-				countFailed++;
+				localCountFailed++;
 
 		}
-		if (numMatrices>10)
-			name = "Concat. (" + count +")";
-		logln("Total matrices concatenated: " + count);
+		countFailed.setValue(localCountFailed);
+		count.setValue(localCount);
+		if (numMatrices>10) {
+			if (partial) {
+				if (part !=null)
+					name="Concat. Part " + part.getValue()+" (" + count +")";  
+				else 
+					name="Concat. (" + count +")";  
+			}
+			else
+				name="Concat. (" + count +")";  
+		}
 		if (starter != null)
-			starter.setName(name);
+			starter.setName(name.toString());
 		for (int im = datas.size()-1; im>=0; im--){
 			CharacterData data = (CharacterData)datas.elementAt(im);
 			if (data.isDisposed())
 				datas.removeElement(data, false); 
 		}
 		datas.addElement(starter, false);
+		return found;
+	}
+	/*.................................................................................................................*/
+	
+	public boolean concatenate (ListableVector datas, MesquiteInteger count, MesquiteInteger countFailed, MesquiteInteger deleted) {
+		return concatenateSome(datas, 0, datas.size(), false, null, count, countFailed, deleted);
+	}
+
+	/*.................................................................................................................*/
+
+	/** Called to operate on the CharacterData blocks.  Returns true if taxa altered*/
+	public boolean operateOnDatas(ListableVector datas, MesquiteTable table){
+		anyExcluded = false;
+		Taxa taxa = null;
+		for (int im = 0; im < datas.size(); im++){
+			CharacterData data = (CharacterData)datas.elementAt(im);
+			if (taxa == null)
+				taxa = data.getTaxa();
+			else if (taxa != data.getTaxa()) {
+				discreetAlert("Sorry, The matrices cannot be concatenated because they pertain to different taxa blocks.");
+				return false;
+			}
+			if (data.numCharsCurrentlyIncluded() < data.getNumChars())
+				anyExcluded = true;
+		}
+		getProject().getCharacterMatrices().incrementNotifySuppress(); 
+		if (!alreadyQueried && getHiredAs() != CharMatricesListProcessorUtility.class && !queryOptions(false))
+			return false;
+		if (getProject() != null)
+			getProject().incrementProjectWindowSuppression();
+		Vector v = pauseAllPausables();
+		
+		MesquiteInteger count= new MesquiteInteger(0);
+		MesquiteInteger countFailed = new MesquiteInteger(0);
+		MesquiteInteger deleted = new MesquiteInteger(0);
+		
+		boolean found = concatenate(datas, count, countFailed, deleted);
+		
+		logln("Total matrices concatenated: " + count);
 		if (! found)
 			discreetAlert("Two more more matrices should be selected first in order to concatenate them");
-		if (countFailed>0)
+		if (countFailed.getValue()>0)
 			discreetAlert("Some matrices could not be concatenated into the first selected because they are of incompatible type or are linked to the first");
 		unpauseAllPausables(v);
 		getProject().getCharacterMatrices().decrementNotifySuppress(); 
-		table.setNumRows(table.getNumRows()-deleted+1);
+		table.setNumRows(table.getNumRows()-deleted.getValue()+1);
 		if (employer instanceof ListModule)
 			((ListModule)employer).forceRecalculations();
 		if (getProject() != null)
