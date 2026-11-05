@@ -132,7 +132,7 @@ public class CharMatricesListConvertDNAToProtein extends CharMatricesListProcess
 	/*.................................................................................................................*/
 	public boolean queryOptions(boolean overrideScripting) {
 
-		if ((overrideScripting || !MesquiteThread.isScripting()) && okToInteractWithUser(CAN_PROCEED_ANYWAY, "Concatenated matrices")){
+		if ((overrideScripting || !MesquiteThread.isScripting()) && okToInteractWithUser(CAN_PROCEED_ANYWAY, "DNA to Protein Options")){
 			alreadyQueried = true;
 			MesquiteInteger buttonPressed = new MesquiteInteger(1);
 			ExtensibleDialog dialog = new ExtensibleDialog(containerOfModule(), "DNA to Protein Options",buttonPressed);  //MesquiteTrunk.mesquiteTrunk.containerOfModule()
