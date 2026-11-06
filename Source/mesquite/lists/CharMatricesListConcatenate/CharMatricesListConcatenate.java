@@ -190,6 +190,8 @@ public class CharMatricesListConcatenate extends CharMatricesListProcessorUtilit
 		int localCountFailed = countFailed.getValue();
 		boolean firstLocal = true;
 		CharacterData starter = null;   // this will be the new concatenated matrix
+		String firstMatrixName ="";
+		String lastMatrixName = "";
 		String name = "";
 
 		if (lastData>numMatricesStart-1)
@@ -212,6 +214,7 @@ public class CharMatricesListConcatenate extends CharMatricesListProcessorUtilit
 						starter = data.makeCharacterData(data.getMatrixManager(), data.getTaxa());  
 						starter.addToFile(getProject().getHomeFile(), getProject(),  findElementManager(CharacterData.class));  
 						created.increment();
+						firstMatrixName = data.getName();
 					}
 
 				}
@@ -224,6 +227,7 @@ public class CharMatricesListConcatenate extends CharMatricesListProcessorUtilit
 						name+="+";
 					name+="(" + data.getName() + ")";
 					firstLocal=false;
+					lastMatrixName = data.getName();
 					if (removeConcatenated.getValue()){
 						data.deleteMe(false);
 						deleted.increment();
@@ -247,6 +251,7 @@ public class CharMatricesListConcatenate extends CharMatricesListProcessorUtilit
 				starter = data.makeCharacterData(data.getMatrixManager(), data.getTaxa());  
 				starter.addToFile(getProject().getHomeFile(), getProject(),  findElementManager(CharacterData.class));  
 				created.increment();
+				firstMatrixName = data.getName();
 			}
 			boolean success = starter.concatenate(data, false, concatExcludedCharacters.getValue(), true, prefixGroupLabelNames.getValue(), false, false);
 			if (success){
@@ -257,6 +262,7 @@ public class CharMatricesListConcatenate extends CharMatricesListProcessorUtilit
 					name+="+";
 				name+="(" + data.getName() + ")";
 				firstLocal=false;
+				lastMatrixName = data.getName();
 				if (removeConcatenated.getValue()){
 					data.deleteMe(false);
 					deleted.increment();
@@ -271,7 +277,7 @@ public class CharMatricesListConcatenate extends CharMatricesListProcessorUtilit
 		if (numMatrices>10 || partial) {
 			if (partial) {
 				if (part >=0)
-					name="Concat. Part " + part+" (" + localCount +")";  
+					name="Concat. Part " + part+" (" + localCount +" matrices: " +firstMatrixName+"–"+lastMatrixName + ")";  
 				else 
 					name="Concat. (" + localCount +")";  
 			}
