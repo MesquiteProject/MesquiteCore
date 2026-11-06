@@ -39,6 +39,11 @@ public class LongField  {
 		textField = dialog.addTextField (message, "", fieldLength);
 	}
 	/*.................................................................................................................*/
+	public void setEnabled(boolean s) {
+		if (textField!=null)
+			textField.setEnabled(s);
+	}
+	/*.................................................................................................................*/
 	public SingleLineTextField getTextField () {
 		return textField;
 	}

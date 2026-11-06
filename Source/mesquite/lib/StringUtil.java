@@ -1883,6 +1883,14 @@ public class StringUtil {
 		}
 	}
 	/*.................................................................................................................*/
+	public static void appendXMLTag(StringBuffer sb, int numTabs, String tag, long value){
+		if (sb!=null&& MesquiteLong.isCombinable(value)) {
+			appendStartXMLTag(sb,numTabs,tag);
+			sb.append(MesquiteLong.toString(value));
+			appendEndXMLTag(sb,tag);
+		}
+	}
+	/*.................................................................................................................*/
 	public static void appendXMLTag(StringBuffer sb, int numTabs, String tag, int value){
 		if (sb!=null && MesquiteInteger.isCombinable(value)) {
 			appendStartXMLTag(sb,numTabs,tag);

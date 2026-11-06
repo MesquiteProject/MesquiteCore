@@ -133,6 +133,10 @@ public class CharMatricesListConcatenate extends CharMatricesListProcessorUtilit
 	public void processExtraOptions() {
 		
 	}
+	/*.................................................................................................................*/
+	public String getDialogTitle() {
+		return "Concatenation Options";
+	}
 
 	/*.................................................................................................................*/
 	public boolean queryOptions(boolean overrideScripting) {
@@ -140,7 +144,7 @@ public class CharMatricesListConcatenate extends CharMatricesListProcessorUtilit
 		if ((overrideScripting || !MesquiteThread.isScripting()) && okToInteractWithUser(CAN_PROCEED_ANYWAY, "Concatenated matrices")){
 			alreadyQueried = true;
 			MesquiteInteger buttonPressed = new MesquiteInteger(1);
-			ExtensibleDialog dialog = new ExtensibleDialog(containerOfModule(), "Concatenation Options",buttonPressed);  //MesquiteTrunk.mesquiteTrunk.containerOfModule()
+			ExtensibleDialog dialog = new ExtensibleDialog(containerOfModule(), getDialogTitle(),buttonPressed);  //MesquiteTrunk.mesquiteTrunk.containerOfModule()
 			if (anyExcluded) {
 				dialog.appendToHelpString("During concatenation, characters that are currently excluded will be omitted entirely from the concatenated matrix if \"Remove excluded characters\" is checked.<BR>");
 			}
