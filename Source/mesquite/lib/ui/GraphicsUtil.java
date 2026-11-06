@@ -293,8 +293,10 @@ public class GraphicsUtil {
 	}
 	/*_________________________________________________*/
 	public static void drawPie(Graphics g, ColorDistribution colors, double x, double y, double dia, boolean select, boolean cosmic){
+		drawPie(g, colors, x, y, dia, 90, select, cosmic);
+	}
+	public static void drawPie(Graphics g, ColorDistribution colors, double x, double y, double dia, double startAngle, boolean select, boolean cosmic){
 		int numColors = colors.getNumColors();
-		double startAngle=90;//was 270
 		double totalFreq=0;
 		for (int i=0; i<numColors; i++) totalFreq += colors.getWeight(i);
 		double suppl = 0;

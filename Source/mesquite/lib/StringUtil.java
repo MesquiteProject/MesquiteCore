@@ -560,7 +560,7 @@ public class StringUtil {
 		if (line.indexOf(separator)>=0)
 			return line.substring(0,line.indexOf(separator));
 		return line;
-		/*
+		/* This is what it had been as of Nov 2026. Not sure why it was using String as a list of alternative character separators, rather than the single separator
 		String sep = defaultWhitespace;
 		if (separator!=null)
 			sep = separator;

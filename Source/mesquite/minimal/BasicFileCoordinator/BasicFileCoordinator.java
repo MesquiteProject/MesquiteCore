@@ -1016,12 +1016,12 @@ public class BasicFileCoordinator extends FileCoordinator implements PackageIntr
 			Object obj = enumeration.nextElement();
 			((MesquiteModule)obj).setProject(getProject());
 		}
-		broadcastFileRead(this, getProject().getHomeFile());
 		ready = true;
 		if (getModuleWindow()!=null) {
 			getModuleWindow().getParentFrame().showFrontWindow();
 			//	getModuleWindow().getParentFrame().fixFrontness();
 		}
+		broadcastFileRead(this, getProject().getHomeFile());
 
 		resetAllMenuBars();
 	}

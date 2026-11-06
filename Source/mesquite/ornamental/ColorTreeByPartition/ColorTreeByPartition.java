@@ -20,6 +20,7 @@ import java.util.Vector;
 import mesquite.lib.AssociableWithSpecs;
 import mesquite.lib.CommandChecker;
 import mesquite.lib.Commandable;
+import mesquite.lib.Debugg;
 import mesquite.lib.MesquiteBoolean;
 import mesquite.lib.MesquiteCommand;
 import mesquite.lib.MesquiteFile;
@@ -283,7 +284,7 @@ class ColorByPartitionExtra extends TreeDisplayExtra implements MesquiteListener
 	}
 	/*.................................................................................................................*/
 	Taxa taxa;
-	boolean needsReharvesting = false;
+	boolean needsReharvesting = true;
 	void reharvest(Tree tree){
 		if (tree == null)
 			return;

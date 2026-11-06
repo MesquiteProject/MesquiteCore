@@ -18,15 +18,18 @@ import java.awt.Container;
 import java.awt.Graphics;
 import java.awt.Panel;
 import java.awt.Rectangle;
+import java.util.Vector;
 
 import mesquite.lib.Debugg;
 import mesquite.lib.ListableVector;
+import mesquite.lib.MesquiteListener;
 import mesquite.lib.MesquiteMessage;
 import mesquite.lib.MesquiteModule;
 import mesquite.lib.MesquiteTrunk;
 import mesquite.lib.StringUtil;
 import mesquite.lib.ui.MesquitePanel;
 import mesquite.lib.ui.MesquiteWindow;
+import mesquite.lib.ui.RepaintListener;
 
 /* ======================================================================== */
 /** The panel in which taxa or trees are drawn.  Superclass to TreeDisplay and TaxaDisplay
@@ -229,13 +232,28 @@ public abstract class TaxaTreeDisplay extends MesquitePanel  {
 		resetChain();
 	}
 	
+	Vector repaintListeners = new Vector();
+	public void addRepaintListener(RepaintListener listener){
+		repaintListeners.addElement(listener);
+	}
+	public void removeRepaintListener(RepaintListener listener){
+		repaintListeners.removeElement(listener);
+	}
+	public void notifyRepaintListeners(){
+		for (int i = 0; i< repaintListeners.size(); i++){
+			RepaintListener listener = (RepaintListener)repaintListeners.elementAt(i);
+			listener.repainting(this);
+		}
+	}
 	public boolean trackRepaints = false;
 	public boolean errRepaints = false;
 	long repaintCount = 0;
 	
+	
 	public void repaint() {  //TODO: this whole system needs revamping.  
 		if (!isVisible())
 			return;
+		notifyRepaintListeners();
 		if (trackRepaints)
 			MesquiteMessage.printStackTrace("Repaint tree display " + repaintCount++);
 		else if (errRepaints)
