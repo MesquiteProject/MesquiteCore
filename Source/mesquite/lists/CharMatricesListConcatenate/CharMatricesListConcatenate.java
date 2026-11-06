@@ -125,6 +125,14 @@ public class CharMatricesListConcatenate extends CharMatricesListProcessorUtilit
 	public void queryLocalOptions () {
 		queryOptions(true);
 	}
+	/*.................................................................................................................*/
+	public void addExtraOptions(ExtensibleDialog dialog) {
+		
+	}
+	/*.................................................................................................................*/
+	public void processExtraOptions() {
+		
+	}
 
 	/*.................................................................................................................*/
 	public boolean queryOptions(boolean overrideScripting) {
@@ -139,6 +147,8 @@ public class CharMatricesListConcatenate extends CharMatricesListProcessorUtilit
 			dialog.appendToHelpString("You may choose to have the original matrices deleted after concatenation. <BR>");
 			dialog.appendToHelpString("Any characters not currently assigned to groups will be assigned to a group whose name is the name of the matrix from which they came. ");
 			dialog.appendToHelpString("Those characters that where previously assigned to a group will still be assigned to that group, or, optionally, to a new group whose name is its existing group name with the matrix name prefixed to it. ");
+			
+			addExtraOptions(dialog);
 			Checkbox deleteMatricesBox = dialog.addCheckBox("Delete original matrices", removeConcatenated.getValue());
 			Checkbox prefixGroupLabelNamesBox = dialog.addCheckBox("Prefix existing character group labels with matrix name", prefixGroupLabelNames.getValue());
 			Checkbox deleteExcludedBox=null;
@@ -150,6 +160,7 @@ public class CharMatricesListConcatenate extends CharMatricesListProcessorUtilit
 				prefixGroupLabelNames.setValue(prefixGroupLabelNamesBox.getState());
 				if (anyExcluded)
 					concatExcludedCharacters.setValue(!deleteExcludedBox.getState());
+				processExtraOptions();
 				storePreferences();
 			}
 			dialog.dispose();
@@ -181,9 +192,6 @@ public class CharMatricesListConcatenate extends CharMatricesListProcessorUtilit
 			lastData = numMatricesStart-1;
 		int numMatrices = lastData-firstData+1;
 
-		Debugg.println("numMatrices: "+numMatrices);
-		Debugg.println("  firstData: "+firstData);
-		Debugg.println("  lastData: "+lastData);
 		if (numMatrices>(int)(chunksize*1.2)) {
 			// if many matrices, do in chunks.
 			CharacterData chunk = null;
@@ -256,7 +264,7 @@ public class CharMatricesListConcatenate extends CharMatricesListProcessorUtilit
 		}
 		countFailed.setValue(localCountFailed);
 		count.setValue(startingCount+localCount);
-		if (numMatrices>10) {
+		if (numMatrices>10 || partial) {
 			if (partial) {
 				if (part >=0)
 					name="Concat. Part " + part+" (" + localCount +")";  

@@ -18,6 +18,7 @@ import java.awt.Checkbox;
 import java.util.Vector;
 
 import mesquite.lib.CommandChecker;
+import mesquite.lib.IntegerField;
 import mesquite.lib.ListableVector;
 import mesquite.lib.MesquiteBoolean;
 import mesquite.lib.MesquiteFile;
@@ -35,8 +36,8 @@ import mesquite.lists.CharMatricesListConcatenate.CharMatricesListConcatenate;
 
 /* ======================================================================== */
 public class CharMatricesListConcatenateSeveral extends mesquite.lists.CharMatricesListConcatenate.CharMatricesListConcatenate {
-	int numParts = 5;
-	int numMatricesPerPart = 15;
+	int numParts = 1;
+	int numMatricesPerPart = 100;
 	/*.................................................................................................................*/
 	public String getName() {
 		return "Concatenate Matrices into Several Matrices";
@@ -50,78 +51,70 @@ public class CharMatricesListConcatenateSeveral extends mesquite.lists.CharMatri
 		return "Concatenates  matrices in List of Character Matrices window into several matrices.  Only those compatible with first selected are concatenated into it." ;
 	}
 
-	/*.................................................................................................................*
+	/*.................................................................................................................*/
 	public void processSingleXMLPreference(String tag, String content) {
-		if ("prefixGroupLabelNames".equalsIgnoreCase(tag))
-			prefixGroupLabelNames.setValue(MesquiteBoolean.fromTrueFalseString(content));
-		if ("concatExcludedCharacters".equalsIgnoreCase(tag))
-			concatExcludedCharacters.setValue(MesquiteBoolean.fromTrueFalseString(content));
-		if ("removeConcatenated".equalsIgnoreCase(tag))
-			removeConcatenated.setValue(MesquiteBoolean.fromTrueFalseString(content));
-
-		preferencesSet = true;
+		if ("numParts".equalsIgnoreCase(tag))
+			numParts = MesquiteInteger.fromString(content);
+		super.processSingleXMLPreference(tag, content);
 	}
 
-	/*.................................................................................................................*
+	/*.................................................................................................................*/
 	public String preparePreferencesForXML() {
-		StringBuffer buffer = new StringBuffer(200);
-		StringUtil.appendXMLTag(buffer, 2, "concatExcludedCharacters", concatExcludedCharacters);
-		StringUtil.appendXMLTag(buffer, 2, "prefixGroupLabelNames", prefixGroupLabelNames);
-		StringUtil.appendXMLTag(buffer, 2, "removeConcatenated", removeConcatenated);
-
-		preferencesSet = true;
+		StringBuffer buffer = new StringBuffer(super.preparePreferencesForXML());
+		StringUtil.appendXMLTag(buffer, 2, "numParts", numParts);
 		return buffer.toString();
 	}
-	/*.................................................................................................................*
+	/*.................................................................................................................*/
 	public Snapshot getSnapshot(MesquiteFile file) { 
-		Snapshot temp = new Snapshot();
-		temp.addLine("setRemoveConcatenated "+ removeConcatenated.toOffOnString());
-		temp.addLine("setPrefixGroupLabelNames "+ prefixGroupLabelNames.toOffOnString());
-		temp.addLine("setConcatExcludedCharacters "+ concatExcludedCharacters.toOffOnString());
+		Snapshot temp = super.getSnapshot(file);
+		temp.addLine("numParts "+ numParts);
 		return temp;
 	}
-	/*.................................................................................................................*
+	/*.................................................................................................................*/
 	public Object doCommand(String commandName, String arguments, CommandChecker checker) {
-		if (checker.compare(this.getClass(), "Sets whether or not to remove concatenated matrices.", "[on or off]", commandName, "setRemoveConcatenated")) {
-			boolean current = removeConcatenated.getValue();
-			removeConcatenated.toggleValue(parser.getFirstToken(arguments));
-			if (current!=removeConcatenated.getValue()) {
-				parametersChanged();
-			}
-		}
-		else if (checker.compare(this.getClass(), "Sets whether or not to previx group label names.", "[on or off]", commandName, "setPrefixGroupLabelNames")) {
-			boolean current = prefixGroupLabelNames.getValue();
-			prefixGroupLabelNames.toggleValue(parser.getFirstToken(arguments));
-			if (current!=prefixGroupLabelNames.getValue()) {
-				parametersChanged();
-			}
-		}
-		else if (checker.compare(this.getClass(), "Sets whether or not to remove excluded characters.", "[on or off]", commandName, "setConcatExcludedCharacters")) {
-			boolean current = concatExcludedCharacters.getValue();
-			concatExcludedCharacters.toggleValue(parser.getFirstToken(arguments));
-			if (current!=concatExcludedCharacters.getValue()) {
-				parametersChanged();
+		if (checker.compare(this.getClass(), "Sets number of concatenated matrices to create.", "[int]", commandName, "numParts")) {
+			int temp = MesquiteInteger.fromString(parser.getFirstToken(arguments));
+			boolean changed=false;
+			if (MesquiteInteger.isCombinable(temp)) {
+				if (temp!=numParts) {
+					changed=true;
+					}
+				numParts = temp;
+				if (changed) {
+					parametersChanged();
+				}
 			}
 		}
 		else
 			return  super.doCommand(commandName, arguments, checker);
 		return null;
 	}
-	/** Re-query the user about all options and setting OTHER THAN most cases of setting employees.
-	 * For use by ProcessDataFiles and ProcessMatrices. Used to review current parameter setting while leaving (most) employee relationships in place.*/
-	public void queryLocalOptions () {
-		queryOptions(true);
+	IntegerField numPartsField=null;
+	/*.................................................................................................................*/
+	public void addExtraOptions(ExtensibleDialog dialog) {
+		numPartsField = dialog.addIntegerField("Number of concatenated matrices: ", numParts, 8, 1, MesquiteInteger.infinite);
+	}
+	/*.................................................................................................................*/
+	public void processExtraOptions() {
+		if (numPartsField!=null) {
+			int temp = numPartsField.getValue();
+			if (MesquiteInteger.isCombinable(temp))
+				numParts=temp;
+		}
 	}
 
-	/*.................................................................................................................*/
-	public int getNumConcatMatricesCreated() {
-		return 1;
-	}
 	
 	/*.................................................................................................................*/
 	
 	public boolean concatenate (ListableVector datas, MesquiteInteger count, MesquiteInteger countFailed, MesquiteInteger deleted, MesquiteInteger created) {
 		int numMatrices = datas.size();
+		numMatricesPerPart = (int)(numMatrices/numParts);
+		if (numMatrices % numParts>0)
+			numMatricesPerPart++;
+		if (numMatricesPerPart<1)
+			numMatricesPerPart=1;
+		if (numMatricesPerPart>numMatrices)
+			numMatricesPerPart=numMatrices;
 		boolean found = false;
 		int part=1;
 		for (int i=0; i<numMatrices; i+= numMatricesPerPart) {
