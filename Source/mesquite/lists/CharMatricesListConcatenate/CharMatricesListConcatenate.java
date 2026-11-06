@@ -18,6 +18,7 @@ import java.awt.Checkbox;
 import java.util.Vector;
 
 import mesquite.lib.CommandChecker;
+import mesquite.lib.Debugg;
 import mesquite.lib.ListableVector;
 import mesquite.lib.MesquiteBoolean;
 import mesquite.lib.MesquiteFile;
@@ -165,23 +166,31 @@ public class CharMatricesListConcatenate extends CharMatricesListProcessorUtilit
 	
 	/*.................................................................................................................*/
 
-	public boolean concatenateSome (ListableVector datas, int firstData, int lastData, boolean partial, MesquiteInteger part, MesquiteInteger count, MesquiteInteger countFailed, MesquiteInteger deleted) {
+	public boolean concatenateSome (ListableVector datas, int numMatricesStart, int firstData, int lastData, boolean partial, int part, MesquiteInteger count, MesquiteInteger countFailed, MesquiteInteger deleted) {
 		Vector chunks = new Vector();
 		int chunksize = 200;
 		boolean found = false;
-		int localCount = count.getValue();
+		int startingCount = count.getValue();
+		int localCount = 0;
 		int localCountFailed = countFailed.getValue();
+		boolean firstLocal = true;
 		CharacterData starter = null;   // this will be the new concatenated matrix
 		String name = "";
 
-		int numMatrices = lastData-firstData;
+		if (lastData>numMatricesStart-1)
+			lastData = numMatricesStart-1;
+		int numMatrices = lastData-firstData+1;
+
+		Debugg.println("numMatrices: "+numMatrices);
+		Debugg.println("  firstData: "+firstData);
+		Debugg.println("  lastData: "+lastData);
 		if (numMatrices>(int)(chunksize*1.2)) {
 			// if many matrices, do in chunks.
 			CharacterData chunk = null;
-			for (int im = 0; im < datas.size(); im++){
+			for (int im = firstData; im <=lastData; im++){
 				found = true;
 				CharacterData data = (CharacterData)datas.elementAt(im);
-				if (im != 0 && im % chunksize == 0 && datas.size() - im > (int)(chunksize*.2)) //time to start a new chunk!
+				if (im != 0 && im % chunksize == 0 && numMatrices - im > (int)(chunksize*.2)) //time to start a new chunk!
 					chunk = null;
 				if (chunk == null){
 					chunk = data.makeCharacterData(data.getMatrixManager(), data.getTaxa());  
@@ -196,11 +205,12 @@ public class CharMatricesListConcatenate extends CharMatricesListProcessorUtilit
 				boolean success = chunk.concatenate(data, false, concatExcludedCharacters.getValue(), true, prefixGroupLabelNames.getValue(), false, false);
 				if (success){
 					localCount++;
-					if (localCount % 100== 0)
-						logln("Concatenated " + localCount + " Matrices");
-					if (localCount > 1)
+					if ((startingCount+localCount) % 100== 0)
+						logln("Concatenated " + (startingCount+localCount)  + " Matrices");
+					if (!firstLocal)
 						name+="+";
 					name+="(" + data.getName() + ")";
+					firstLocal=false;
 					if (removeConcatenated.getValue()){
 						data.deleteMe(false);
 						deleted.increment();
@@ -217,7 +227,7 @@ public class CharMatricesListConcatenate extends CharMatricesListProcessorUtilit
 			}
 
 		}
-		else for (int im = 0; im < datas.size(); im++){
+		else for (int im = firstData; im <= lastData; im++){
 			found = true;
 			CharacterData data = (CharacterData)datas.elementAt(im);
 			if (starter == null){
@@ -228,11 +238,12 @@ public class CharMatricesListConcatenate extends CharMatricesListProcessorUtilit
 			boolean success = starter.concatenate(data, false, concatExcludedCharacters.getValue(), true, prefixGroupLabelNames.getValue(), false, false);
 			if (success){
 				localCount++;
-				if (localCount % 100== 0)
-					logln("Concatenated " + localCount + " Matrices");
-				if (localCount > 1)
+				if ( (startingCount+localCount)  % 100== 0)
+					logln("Concatenated " +  (startingCount+localCount)  + " Matrices");
+				if (!firstLocal)
 					name+="+";
 				name+="(" + data.getName() + ")";
+				firstLocal=false;
 				if (removeConcatenated.getValue()){
 					data.deleteMe(false);
 					deleted.increment();
@@ -243,31 +254,26 @@ public class CharMatricesListConcatenate extends CharMatricesListProcessorUtilit
 
 		}
 		countFailed.setValue(localCountFailed);
-		count.setValue(localCount);
+		count.setValue(startingCount+localCount);
 		if (numMatrices>10) {
 			if (partial) {
-				if (part !=null)
-					name="Concat. Part " + part.getValue()+" (" + count +")";  
+				if (part >=0)
+					name="Concat. Part " + part+" (" + localCount +")";  
 				else 
-					name="Concat. (" + count +")";  
+					name="Concat. (" + localCount +")";  
 			}
 			else
-				name="Concat. (" + count +")";  
+				name="Concat. (" + localCount +")";  
 		}
 		if (starter != null)
 			starter.setName(name.toString());
-		for (int im = datas.size()-1; im>=0; im--){
-			CharacterData data = (CharacterData)datas.elementAt(im);
-			if (data.isDisposed())
-				datas.removeElement(data, false); 
-		}
 		datas.addElement(starter, false);
 		return found;
 	}
 	/*.................................................................................................................*/
-	
+
 	public boolean concatenate (ListableVector datas, MesquiteInteger count, MesquiteInteger countFailed, MesquiteInteger deleted) {
-		return concatenateSome(datas, 0, datas.size(), false, null, count, countFailed, deleted);
+		return concatenateSome(datas, datas.size(), 0, datas.size(), false, -1, count, countFailed, deleted);
 	}
 
 	/*.................................................................................................................*/
@@ -300,6 +306,12 @@ public class CharMatricesListConcatenate extends CharMatricesListProcessorUtilit
 		
 		boolean found = concatenate(datas, count, countFailed, deleted);
 		
+		int numMatricesStart = datas.size();
+		for (int im = numMatricesStart-1; im>=0; im--){
+			CharacterData data = (CharacterData)datas.elementAt(im);
+			if (data.isDisposed())
+				datas.removeElement(data, false); 
+		}
 		logln("Total matrices concatenated: " + count);
 		if (! found)
 			discreetAlert("Two more more matrices should be selected first in order to concatenate them");
