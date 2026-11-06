@@ -113,48 +113,19 @@ public class CharMatricesListConcatenateSeveral extends mesquite.lists.CharMatri
 		queryOptions(true);
 	}
 
-	/*.................................................................................................................*
-	public boolean queryOptions(boolean overrideScripting) {
-
-		if ((overrideScripting || !MesquiteThread.isScripting()) && okToInteractWithUser(CAN_PROCEED_ANYWAY, "Concatenated matrices")){
-			alreadyQueried = true;
-			MesquiteInteger buttonPressed = new MesquiteInteger(1);
-			ExtensibleDialog dialog = new ExtensibleDialog(containerOfModule(), "Concatenation Options",buttonPressed);  //MesquiteTrunk.mesquiteTrunk.containerOfModule()
-			if (anyExcluded) {
-				dialog.appendToHelpString("During concatenation, characters that are currently excluded will be omitted entirely from the concatenated matrix if \"Remove excluded characters\" is checked.<BR>");
-			}
-			dialog.appendToHelpString("You may choose to have the original matrices deleted after concatenation. <BR>");
-			dialog.appendToHelpString("Any characters not currently assigned to groups will be assigned to a group whose name is the name of the matrix from which they came. ");
-			dialog.appendToHelpString("Those characters that where previously assigned to a group will still be assigned to that group, or, optionally, to a new group whose name is its existing group name with the matrix name prefixed to it. ");
-			Checkbox deleteMatricesBox = dialog.addCheckBox("Delete original matrices", removeConcatenated.getValue());
-			Checkbox prefixGroupLabelNamesBox = dialog.addCheckBox("Prefix existing character group labels with matrix name", prefixGroupLabelNames.getValue());
-			Checkbox deleteExcludedBox=null;
-			if (anyExcluded)
-				deleteExcludedBox = dialog.addCheckBox("Remove excluded characters", !concatExcludedCharacters.getValue());
-			dialog.completeAndShowDialog(true);
-			if (buttonPressed.getValue()==0)  {
-				removeConcatenated.setValue(deleteMatricesBox.getState());
-				prefixGroupLabelNames.setValue(prefixGroupLabelNamesBox.getState());
-				if (anyExcluded)
-					concatExcludedCharacters.setValue(!deleteExcludedBox.getState());
-				storePreferences();
-			}
-			dialog.dispose();
-			return (buttonPressed.getValue()==0);
-
-		}
-		return true;
+	/*.................................................................................................................*/
+	public int getNumConcatMatricesCreated() {
+		return 1;
 	}
-
 	
 	/*.................................................................................................................*/
 	
-	public boolean concatenate (ListableVector datas, MesquiteInteger count, MesquiteInteger countFailed, MesquiteInteger deleted) {
+	public boolean concatenate (ListableVector datas, MesquiteInteger count, MesquiteInteger countFailed, MesquiteInteger deleted, MesquiteInteger created) {
 		int numMatrices = datas.size();
 		boolean found = false;
 		int part=1;
 		for (int i=0; i<numMatrices; i+= numMatricesPerPart) {
-			if (concatenateSome(datas, numMatrices, i, i+numMatricesPerPart-1, true, part, count, countFailed, deleted))
+			if (concatenateSome(datas, numMatrices, i, i+numMatricesPerPart-1, true, part, count, countFailed, deleted, created))
 				found = true;
 			part++;
 		}

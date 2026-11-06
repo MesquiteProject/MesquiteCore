@@ -166,7 +166,7 @@ public class CharMatricesListConcatenate extends CharMatricesListProcessorUtilit
 	
 	/*.................................................................................................................*/
 
-	public boolean concatenateSome (ListableVector datas, int numMatricesStart, int firstData, int lastData, boolean partial, int part, MesquiteInteger count, MesquiteInteger countFailed, MesquiteInteger deleted) {
+	public boolean concatenateSome (ListableVector datas, int numMatricesStart, int firstData, int lastData, boolean partial, int part, MesquiteInteger count, MesquiteInteger countFailed, MesquiteInteger deleted, MesquiteInteger created) {
 		Vector chunks = new Vector();
 		int chunksize = 200;
 		boolean found = false;
@@ -199,6 +199,7 @@ public class CharMatricesListConcatenate extends CharMatricesListProcessorUtilit
 					if (starter == null) {
 						starter = data.makeCharacterData(data.getMatrixManager(), data.getTaxa());  
 						starter.addToFile(getProject().getHomeFile(), getProject(),  findElementManager(CharacterData.class));  
+						created.increment();
 					}
 
 				}
@@ -232,8 +233,8 @@ public class CharMatricesListConcatenate extends CharMatricesListProcessorUtilit
 			CharacterData data = (CharacterData)datas.elementAt(im);
 			if (starter == null){
 				starter = data.makeCharacterData(data.getMatrixManager(), data.getTaxa());  
-
 				starter.addToFile(getProject().getHomeFile(), getProject(),  findElementManager(CharacterData.class));  
+				created.increment();
 			}
 			boolean success = starter.concatenate(data, false, concatExcludedCharacters.getValue(), true, prefixGroupLabelNames.getValue(), false, false);
 			if (success){
@@ -272,10 +273,9 @@ public class CharMatricesListConcatenate extends CharMatricesListProcessorUtilit
 	}
 	/*.................................................................................................................*/
 
-	public boolean concatenate (ListableVector datas, MesquiteInteger count, MesquiteInteger countFailed, MesquiteInteger deleted) {
-		return concatenateSome(datas, datas.size(), 0, datas.size(), false, -1, count, countFailed, deleted);
+	public boolean concatenate (ListableVector datas, MesquiteInteger count, MesquiteInteger countFailed, MesquiteInteger deleted,MesquiteInteger created) {
+		return concatenateSome(datas, datas.size(), 0, datas.size(), false, -1, count, countFailed, deleted, created);
 	}
-
 	/*.................................................................................................................*/
 
 	/** Called to operate on the CharacterData blocks.  Returns true if taxa altered*/
@@ -302,9 +302,10 @@ public class CharMatricesListConcatenate extends CharMatricesListProcessorUtilit
 		
 		MesquiteInteger count= new MesquiteInteger(0);
 		MesquiteInteger countFailed = new MesquiteInteger(0);
+		MesquiteInteger created = new MesquiteInteger(0);
 		MesquiteInteger deleted = new MesquiteInteger(0);
 		
-		boolean found = concatenate(datas, count, countFailed, deleted);
+		boolean found = concatenate(datas, count, countFailed, deleted, created);
 		
 		int numMatricesStart = datas.size();
 		for (int im = numMatricesStart-1; im>=0; im--){
@@ -319,7 +320,9 @@ public class CharMatricesListConcatenate extends CharMatricesListProcessorUtilit
 			discreetAlert("Some matrices could not be concatenated into the first selected because they are of incompatible type or are linked to the first");
 		unpauseAllPausables(v);
 		getProject().getCharacterMatrices().decrementNotifySuppress(); 
-		table.setNumRows(table.getNumRows()-deleted.getValue()+1);
+		Debugg.println("table.getNumRows(): " + table.getNumRows());
+		Debugg.println("deleted: " + deleted.getValue());
+		table.setNumRows(table.getNumRows()-deleted.getValue()+created.getValue());
 		if (employer instanceof ListModule)
 			((ListModule)employer).forceRecalculations();
 		if (getProject() != null)
