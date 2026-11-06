@@ -715,11 +715,17 @@ public class MesquiteInteger implements Listable, Nameable{
 	public static int fromString(String s) { 
 		return fromString(s, false);
 	}
-	
 	/** Returns integer parsed from given string; warns about NumberFormatException if boolean is true,
 	   using warningMessage.
 	  Assumes entire string is what should be parsed. */
 	public static int fromString(String s, String warningMessage, boolean warnQuiet, boolean warnProminent) {
+		return fromString(s, warningMessage, warnQuiet, warnProminent, false);
+	}
+
+	/** Returns integer parsed from given string; warns about NumberFormatException if boolean is true,
+	   using warningMessage.
+	  Assumes entire string is what should be parsed. */
+	public static int fromString(String s, String warningMessage, boolean warnQuiet, boolean warnProminent, boolean allUnrecognizedToUnassigned) {
 		if (StringUtil.blank(s))
 			return impossible;
 		try {
@@ -744,6 +750,8 @@ public class MesquiteInteger implements Listable, Nameable{
 				MesquiteMessage.println(warningMessage);
 			else if (warnProminent)
 				MesquiteTrunk.mesquiteTrunk.alert(warningMessage);
+			if (allUnrecognizedToUnassigned)
+				return unassigned;
 			return impossible;
 		}
 	}

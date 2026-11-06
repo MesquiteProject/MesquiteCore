@@ -227,7 +227,7 @@ public class IntegerArray  implements Listable  {
 			return false;
 		if (a.length != b.length)
 			return false;
-		
+
 		for (int i=0; i<a.length; i++)
 			if (indexOf(b, a[i])<0)
 				return false;
@@ -297,6 +297,24 @@ public class IntegerArray  implements Listable  {
 		return index;
 	}
 	/*...........................................................*/
+	public int sum(){
+		if (values==null)
+			return MesquiteInteger.unassigned;
+		int total = 0;
+		for (int i=0; i<values.length; i++)
+			total += values[i];
+		return total;
+	}
+	/*...........................................................*/
+	public static int sum(int[] values){
+		if (values==null)
+			return MesquiteInteger.unassigned;
+		int total = 0;
+		for (int i=0; i<values.length; i++)
+			total += values[i];
+		return total;
+	}
+	/*...........................................................*/
 	public int maximum(){
 		if (values==null)
 			return MesquiteInteger.unassigned;
@@ -312,6 +330,24 @@ public class IntegerArray  implements Listable  {
 		MesquiteNumber d = new MesquiteNumber(MesquiteInteger.unassigned);
 		for (int i=0; i<values.length; i++)
 			d.setMeIfIAmLessThan(values[i]);
+		return d.getIntValue();
+	}
+	/*...........................................................*/
+	public int minimum(){
+		if (values==null)
+			return MesquiteInteger.unassigned;
+		MesquiteNumber d = new MesquiteNumber(MesquiteInteger.unassigned);
+		for (int i=0; i<values.length; i++)
+			d.setMeIfIAmMoreThan(values[i]);
+		return d.getIntValue();
+	}
+	/*...........................................................*/
+	public static int minimum(int[] values){
+		if (values==null)
+			return MesquiteInteger.unassigned;
+		MesquiteNumber d = new MesquiteNumber(MesquiteInteger.unassigned);
+		for (int i=0; i<values.length; i++)
+			d.setMeIfIAmMoreThan(values[i]);
 		return d.getIntValue();
 	}
 	/*...........................................................*/

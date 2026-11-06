@@ -1188,6 +1188,12 @@ public class MesquiteDouble implements Listable, Nameable {
 	/** Returns double parsed from given string; warns about NumberFormatException if boolean is true.
 	  Assumes entire string is what should be parsed. */
 	public static double fromString(String s, boolean warn) {
+		return fromString(s, warn, false);
+	}
+	
+	/** Returns double parsed from given string; warns about NumberFormatException if boolean is true.
+	  Assumes entire string is what should be parsed. */
+	public static double fromString(String s, boolean warn, boolean allUnrecognizedToUnassigned) {
 		if (StringUtil.blank(s))
 			return impossible;
 		try {
@@ -1215,6 +1221,8 @@ public class MesquiteDouble implements Listable, Nameable {
 			}
 			if (warn)
 				MesquiteMessage.println("NumberFormatException in parsing string \"" + s + "\"");
+			if (allUnrecognizedToUnassigned)
+				return unassigned;
 			return impossible;
 		}
 	}
