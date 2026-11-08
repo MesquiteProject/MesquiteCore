@@ -584,6 +584,15 @@ public class MesquiteTree extends Associable implements AdjustableTree, Listable
 	}
 	/*----------------------------------------*/
 	/** updates the checksum for the node sequence, tips numbers, and branch lengths */
+	public long getFormChecksum(){
+		java.util.zip.CRC32 crc32 = new CRC32();
+		crc32.reset();
+		getFormChecksum(getRoot(), crc32);
+		long checksum = crc32.getValue();
+		return checksum;
+	}
+	/*----------------------------------------*/
+	/** updates the checksum for the node sequence, tips numbers, and branch lengths */
 	public void getFormChecksum(int node, CRC32 checksum){
 		if (nodeIsTerminal(node))
 			checksum.update(Integer.toString(taxonNumberOfNode(node)).getBytes());

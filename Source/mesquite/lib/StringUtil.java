@@ -54,6 +54,7 @@ public class StringUtil {
 	public static final char defaultQuote = '\''; 
 	public static final String digits = "0123456789";
 	public static final char argumentMarker = '@'; 
+	public static final char psi = 'Ψ';
 
 	/*.................................................................................................................*
 	public static String getUniqueObjectID(){
