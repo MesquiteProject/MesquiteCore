@@ -14,32 +14,22 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
 package mesquite.lists.CharMatricesListConcatenateSeveral;
 /* created May 02 */
 
-import java.awt.Checkbox;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
-import java.util.Vector;
 
 import mesquite.lib.CommandChecker;
-import mesquite.lib.Debugg;
-import mesquite.lib.IntegerArray;
 import mesquite.lib.IntegerField;
 import mesquite.lib.ListableVector;
 import mesquite.lib.LongField;
-import mesquite.lib.MesquiteBoolean;
 import mesquite.lib.MesquiteFile;
 import mesquite.lib.MesquiteInteger;
 import mesquite.lib.MesquiteLong;
-import mesquite.lib.MesquiteThread;
 import mesquite.lib.Snapshot;
 import mesquite.lib.StringUtil;
 import mesquite.lib.characters.CharacterData;
-import mesquite.lib.table.MesquiteTable;
-import mesquite.lib.taxa.Taxa;
 import mesquite.lib.ui.ExtensibleDialog;
 import mesquite.lib.ui.RadioButtons;
-import mesquite.lists.lib.CharMatricesListProcessorUtility;
-import mesquite.lists.lib.ListModule;
-import mesquite.lists.CharMatricesListConcatenate.CharMatricesListConcatenate;
+
 
 /* ======================================================================== */
 public class CharMatricesListConcatenateSeveral extends mesquite.lists.CharMatricesListConcatenate.CharMatricesListConcatenate implements ItemListener {
