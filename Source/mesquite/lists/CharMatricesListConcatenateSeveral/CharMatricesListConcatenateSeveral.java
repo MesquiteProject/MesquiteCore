@@ -20,6 +20,8 @@ import java.awt.event.ItemListener;
 import java.util.Vector;
 
 import mesquite.lib.CommandChecker;
+import mesquite.lib.Debugg;
+import mesquite.lib.IntegerArray;
 import mesquite.lib.IntegerField;
 import mesquite.lib.ListableVector;
 import mesquite.lib.LongField;
@@ -44,26 +46,28 @@ public class CharMatricesListConcatenateSeveral extends mesquite.lists.CharMatri
 	int numParts = 1;
 	int numMatricesPerPart = 100;
 	long matrixSizeTarget =20000;
-	
+
 	static int USESIZETARGET=0;
 	static int USENUMPARTS=1;
-	
+
 	int concatStyle = USESIZETARGET;
-	
-	
-	
-	
+
+	boolean evenOutSizes = true;
+	double acceptableFractionForLastPart=0.8;
+
+
+
 	/*.................................................................................................................*/
 	public String getName() {
-		return "Concatenate Matrices into Several Matrices";
+		return "Concatenate Matrices into Multiple Matrices";
 	}
 	/*.................................................................................................................*/
 	public String getNameForMenuItem() {
-		return "Concatenate Matrices into Several Matrices...";
+		return "Concatenate Matrices into Multiple Matrices...";
 	}
 
 	public String getExplanation() {
-		return "Concatenates  matrices in List of Character Matrices window into several matrices.  Only those compatible with first selected are concatenated into it." ;
+		return "Concatenates matrices in List of Character Matrices window into multiple matrices.  Only those compatible with first selected are concatenated into it." ;
 	}
 
 	/*.................................................................................................................*/
@@ -101,7 +105,7 @@ public class CharMatricesListConcatenateSeveral extends mesquite.lists.CharMatri
 			if (MesquiteLong.isCombinable(temp)) {
 				if (temp!=matrixSizeTarget) {
 					changed=true;
-					}
+				}
 				matrixSizeTarget = temp;
 				if (changed) {
 					parametersChanged();
@@ -114,7 +118,7 @@ public class CharMatricesListConcatenateSeveral extends mesquite.lists.CharMatri
 			if (MesquiteInteger.isCombinable(temp)) {
 				if (temp!=numParts) {
 					changed=true;
-					}
+				}
 				numParts = temp;
 				if (changed) {
 					parametersChanged();
@@ -127,22 +131,22 @@ public class CharMatricesListConcatenateSeveral extends mesquite.lists.CharMatri
 			if (MesquiteInteger.isCombinable(temp)) {
 				if (temp!=concatStyle) {
 					changed=true;
-					}
+				}
 				concatStyle = temp;
 				if (changed) {
 					parametersChanged();
 				}
 			}
 		}
-			else
+		else
 			return  super.doCommand(commandName, arguments, checker);
 		return null;
 	}
 
-	
+
 	/*.................................................................................................................*/
 	public String getDialogTitle() {
-		return "Options to Concatenate to Several Matrices";
+		return "Options to Concatenate to Multiple Matrices";
 	}
 
 	IntegerField numPartsField=null;
@@ -150,7 +154,7 @@ public class CharMatricesListConcatenateSeveral extends mesquite.lists.CharMatri
 	RadioButtons concatStyleButtons=null;
 	/*.................................................................................................................*/
 	public void addExtraOptions(ExtensibleDialog dialog) {
-		concatStyleButtons = dialog.addRadioButtons (new String[] {"specify sequence length of each matrix", "specify number of matrices"}, concatStyle);
+		concatStyleButtons = dialog.addRadioButtons (new String[] {"specify approximate sequence length of each matrix", "specify number of matrices"}, concatStyle);
 		matrixSizeTargetField = dialog.addLongField("Approximate sequence length of each matrix: ", matrixSizeTarget, 8);
 		numPartsField = dialog.addIntegerField("Number of concatenated matrices: ", numParts, 8, 1, MesquiteInteger.infinite);
 		concatStyleButtons.addItemListener(this);
@@ -187,6 +191,51 @@ public class CharMatricesListConcatenateSeveral extends mesquite.lists.CharMatri
 	}
 
 	/*.................................................................................................................*/
+	protected double getMisMatchForTargetSize(ListableVector datas, int numMatrices, long targetSize, int numParts) {
+		int parts=0;
+		long currentSize =0;
+		double currentMismatch = 1.0;
+		double maxMismatch = 0.0;
+		for (int i=0; i<numMatrices; i++) {
+			CharacterData data = (CharacterData)datas.elementAt(i);
+			currentSize+= data.getNumChars();  // length of this next matrix added on
+			if (currentSize>=targetSize || i==numMatrices-1) {  // we've found enough
+				parts++;
+				if (i>=numMatrices-1 && parts!=numParts)  // didn't get the right number of parts
+					currentMismatch = 1.0;
+				else if (currentSize<targetSize)  // we haven't filled it up; too low
+					currentMismatch = (1.0*(targetSize-currentSize))/targetSize;
+				else
+					currentMismatch = (1.0*(currentSize-targetSize))/targetSize;
+				if (currentMismatch>maxMismatch)
+					maxMismatch=currentMismatch;
+				currentSize=0;
+			}
+		}
+		return maxMismatch;
+	}
+	/*.................................................................................................................*/
+	protected long getTargetSize(ListableVector datas, int numMatrices, int[] matrixLengths, long totalLength, int numParts) {
+		
+		double mismatch = 0.0;
+		double minMismatch=1.0;
+		
+		long increment = 10;
+		long bestTarget = matrixSizeTarget;
+
+		for (long target = (long)(matrixSizeTarget*0.5); target< (long)(matrixSizeTarget*1.5); target+=increment) {
+			mismatch= getMisMatchForTargetSize(datas, numMatrices, target, numParts);
+			if (mismatch<minMismatch) {
+				minMismatch=mismatch;
+				bestTarget = target;
+			}
+		}
+		
+	
+		return bestTarget;
+	}
+
+	/*.................................................................................................................*/
 
 	public boolean concatenate (ListableVector datas, MesquiteInteger count, MesquiteInteger countFailed, MesquiteInteger deleted, MesquiteInteger created) {
 		int numMatrices = datas.size();
@@ -206,7 +255,7 @@ public class CharMatricesListConcatenateSeveral extends mesquite.lists.CharMatri
 					found = true;
 				part++;
 			}
-		} else {
+		} else if (concatStyle==USESIZETARGET && !evenOutSizes) {
 			int firstData=0;
 			long currentSize =0;
 			for (int i=0; i<numMatrices; i++) {
@@ -220,7 +269,41 @@ public class CharMatricesListConcatenateSeveral extends mesquite.lists.CharMatri
 					part++;
 				}
 			}
+		} else if (concatStyle==USESIZETARGET && evenOutSizes) {
+
+			int[] matrixLengths = new int[numMatrices];
+			long totalLength = 0;
+			
+			for (int i=0; i<numMatrices; i++) {  // do survey
+				CharacterData data = (CharacterData)datas.elementAt(i);
+				matrixLengths[i]=data.getNumChars();
+				totalLength+=matrixLengths[i];
+			}
+
+			double approximateParts = (1.0*totalLength)/matrixSizeTarget;   //e.g., 5.23
+			double extraPortion  =  (approximateParts - (int)approximateParts);   // 0.23
+			int numParts = (int)approximateParts;
+			if (extraPortion >0.75)
+				numParts++;
+			
+			long adjustedTargetSize =  getTargetSize(datas, numMatrices, matrixLengths, totalLength, numParts);  // let's calculate optimum target size
+
+			part=1;
+			int firstData=0;
+			long currentSize =0;
+			for (int i=0; i<numMatrices; i++) {
+				CharacterData data = (CharacterData)datas.elementAt(i);
+				currentSize+= data.getNumChars();  // length of this next matrix added on
+				if (currentSize>=adjustedTargetSize || i==numMatrices-1) {  // we've found enough
+					if (concatenateSome(datas, numMatrices, firstData, i, true, part, count, countFailed, deleted, created))
+						found = true;
+					firstData=i+1;
+					currentSize=0;
+					part++;
+				}
+			}
 		}
+
 		return found;
 	}
 
