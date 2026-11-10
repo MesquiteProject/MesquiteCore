@@ -31,6 +31,7 @@ import java.util.Vector;
 
 import mesquite.lib.CommandChecker;
 import mesquite.lib.Commandable;
+import mesquite.lib.Debugg;
 import mesquite.lib.ListableVector;
 import mesquite.lib.MenuOwner;
 import mesquite.lib.MesquiteCommand;
@@ -201,6 +202,11 @@ public class InfoBar extends MousePanel implements Commandable {
 		width += 12;  // to accommodate release/nonrelease icon
 		return width;
 	}
+	
+	public void repaint(){
+		super.repaint();
+	}
+
 	/*.................................................................................................................*/
 	String[] label = new String[]{"Graphics", "Text", "Parameters", "Modules", "Citations"};
 	public void paint (Graphics g) {

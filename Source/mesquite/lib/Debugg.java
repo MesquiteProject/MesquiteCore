@@ -65,6 +65,12 @@ public class Debugg {
 			return "Caller: " + s[4];
 		return "no caller obtained";
 	}
+	public static void errStackTrace() {
+		System.err.println("An exception was generated intentionally to show a stack trace.  It is used for debugging purposes.");
+		Exception e = new Exception();
+			MesquiteFile.throwableToErr(null, e);
+	
+	}
 	public static void printStackTrace() {
 		printLogln("An exception was generated intentionally to show a stack trace.  It is used for debugging purposes.");
 		Exception e = new Exception();

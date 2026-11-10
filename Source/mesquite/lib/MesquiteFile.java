@@ -3638,6 +3638,22 @@ public class MesquiteFile extends Listened implements HNode, Commandable, Listab
 		}
 	}
 	/*.................................................................................................................*/
+	public static void throwableToErr(Object obj, Throwable e){
+		try {
+			if (e == null)
+				return;
+			ByteArrayOutputStream throwableStream= new ByteArrayOutputStream();
+			PrintWriter throwableWriter= new PrintWriter(throwableStream);
+			e.printStackTrace(throwableWriter);
+			throwableWriter.flush();
+			if (obj != null)
+				System.err.println("(Following stack trace from object of class: " + obj.getClass().toString() + ")");
+			System.err.println(throwableStream.toString());
+		}
+		catch (Throwable t){
+		}
+	}
+	/*.................................................................................................................*/
 	/** Closes to the log file*/
 	public static void closeLog() {
 		if (logStream!=null) {

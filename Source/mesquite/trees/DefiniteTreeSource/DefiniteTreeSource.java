@@ -65,6 +65,7 @@ public class DefiniteTreeSource extends TreeSourceDefinite implements NameHolder
 	boolean assigned = false;
 	private MesquiteMenuItemSpec numTreesItem;
 	MesquiteSubmenuSpec mss;
+	boolean hiredWithSpecificSource = false;
 	/*.................................................................................................................*/
 	public boolean startJob(String arguments, Object condition, boolean hiredByName) {
 		String exp, mexp;
@@ -76,8 +77,11 @@ public class DefiniteTreeSource extends TreeSourceDefinite implements NameHolder
 			exp = "Source of trees  (for " + getEmployer().getName() + ")";
 			mexp = "Tree Source  (for " + getEmployer().getName() + ")";
 		}
-		if (arguments != null)
+		if (arguments != null){
 			treeSource = (TreeSource)hireNamedEmployee(TreeSource.class, arguments);
+			if(treeSource != null)
+				hiredWithSpecificSource = true;  //if so, then getParameters shouldn't emphasize the tree source module itself
+		}
 		if (treeSource == null)
 			treeSource = (TreeSource)hireEmployee(TreeSource.class, exp);
 		if (treeSource == null)
@@ -273,8 +277,11 @@ public class DefiniteTreeSource extends TreeSourceDefinite implements NameHolder
 	public String getParameters() {
 		if (treeSource==null)
 			return null;
-		return treeSource.getName() + " (" + treeSource.getParameters() + ")";
-	}
+		if (hiredWithSpecificSource)
+			return treeSource.getParameters();
+		else
+ 			return treeSource.getName() + " (" + treeSource.getParameters() + ")";
+}
 	public String getNameAndParameters() {
 		return treeSource.getNameAndParameters();
 	}

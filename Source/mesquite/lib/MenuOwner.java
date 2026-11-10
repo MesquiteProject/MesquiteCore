@@ -1158,7 +1158,7 @@ public abstract class MenuOwner implements Doomable { // EMBEDDED: extends Apple
 	public void resetEmbeddedMenus(MesquiteWindow whichWindow) {
 
 		if ((window != null && window.getShowInfoBar())
-				&& (MesquiteTrunk.isMacOSX() || (whichWindow == null || !whichWindow.isLoneWindow()))) // &&
+				&& (MesquiteTrunk.isMacOSX() || (whichWindow == null || !whichWindow.isLoneWindow()))){ // &&
 			// MesquiteTrunk.isMacOSX())
 			// //these menus
 			// belong in the
@@ -1167,8 +1167,10 @@ public abstract class MenuOwner implements Doomable { // EMBEDDED: extends Apple
 			// info bar is
 			// shown
 			embeddedMenusVector = composeEmbeddedMenuBar(whichWindow);
-		else
+	}
+		else {
 			embeddedMenusVector = null;
+		}
 	}
 
 	Vector embeddedMenusVector = null;

@@ -355,6 +355,8 @@ public class StringInABox {
 			StringTokenizer tokenizer = new StringTokenizer(sMunched.toString(), ""+ linebreak);  
 			storeInStrings(tokenizer);
 		}
+		else
+			strings = new String[0];
 	}
 	/* ----------------------------------------------- */
 	private void storeInStrings(StringTokenizer tokenizer){
@@ -561,11 +563,20 @@ public class StringInABox {
 	}
 	/* ----------------------------------------------- */
 	public int getHeight(){
-		if (strings==null)
+		if (strings==null || strings.length == 0 || (strings.length == 1 && StringUtil.blank(strings[0])))
 			return 0;
 		FontMetrics fm = Toolkit.getDefaultToolkit().getFontMetrics(font);
 		int increment = fm.getMaxAscent() + fm.getMaxDescent() + buffer;
 		return (strings.length) * increment + buffer;	
+	}
+	public String diagnose(){
+		String s = "strings " + strings;
+		if (strings != null){
+			s += " length " + strings.length;
+			if (strings.length == 1)
+				s += " first is blank " +  StringUtil.blank(strings[0])  + " = " + strings[0];
+		}
+		return s;
 	}
 	public int getLineAscent( ){
 		FontMetrics fm = Toolkit.getDefaultToolkit().getFontMetrics(font);

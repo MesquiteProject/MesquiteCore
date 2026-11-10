@@ -781,6 +781,16 @@ public class StoredTrees extends TreeSource implements MesquiteListener, TreeVec
 
 		return "Trees stored in block \"" + currentTreeBlock.getName() + "\"";
 	}
+	/*.................................................................................................................*/
+	public String getParameters() {
+		if (currentTreeBlock==null) {
+			if (getProject()== null)
+				return "";
+			else
+				return "Trees stored in " + getProject().getName();
+		}
+		return "Trees \"" + currentTreeBlock.getName() + "\"";
+	}
 
 	/*.................................................................................................................*/
 	/** returns whether this module is requesting to appear as a primary choice */
@@ -790,16 +800,6 @@ public class StoredTrees extends TreeSource implements MesquiteListener, TreeVec
 	/*.................................................................................................................*/
 	public String getExplanation() {
 		return "Supplies trees stored, for instance in a file.";
-	}
-	/*.................................................................................................................*/
-	public String getParameters() {
-		if (currentTreeBlock==null) {
-			if (getProject()== null)
-				return "";
-			else
-				return "Trees stored in " + getProject().getName();
-		}
-		return "Trees \"" + currentTreeBlock.getName() + "\" from file " + currentTreeBlock.getFileName();
 	}
 	/*.................................................................................................................*/
 	public CompatibilityTest getCompatibilityTest() {

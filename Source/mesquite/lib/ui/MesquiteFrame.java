@@ -360,6 +360,9 @@ public class MesquiteFrame extends Frame implements Commandable, MQComponent {
 			catch(Exception e){
 			}
 		}
+		else if (frontMostInItsLocation(which))
+				which.repaintInfoBar();
+
 		checkInsets(true);
 	}
 	
@@ -890,6 +893,15 @@ public class MesquiteFrame extends Frame implements Commandable, MQComponent {
 	public void hide(MesquiteWindow w){
 		setVisible(w, false);
 		fixFrontness();
+	}
+	public boolean frontMostInItsLocation(MesquiteWindow w){
+		if (frontMostInLocation(MAIN) == w)
+			return true;
+		if (frontMostInLocation(RESOURCES) == w)
+			return true;
+		if (frontMostInLocation(POPTILE) == w)
+			return true;
+		return false;
 	}
 	public MesquiteWindow frontMostInLocation(int location){
 		try {
