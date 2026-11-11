@@ -103,7 +103,7 @@ public class MainThread extends MesquiteThread {
 			return currentlyExecuting.getListName();
 		return null;
 	}
-	
+
 	/** This is the main thread on which commands are queued (pendingCommands) and executed. */
 	public void run() {
 		try {
@@ -131,8 +131,9 @@ public class MainThread extends MesquiteThread {
 								setWindowContext(c.getWindowContext()); //in case a command wants to know what was the window from which it was called. Currently (v 4) works only for MesquiteMenuItem called commands
 							else
 								setWindowContext(MesquiteTrunk.mesquiteTrunk.containerOfModule());
-						 if (!isInterrupted())
-							 	pc.go();
+							long startTime = System.currentTimeMillis();
+							if (!isInterrupted())
+								pc.go();
 							setWindowContext(null); //in case a command wants to know what was the window from which it was called. Currently (v 4) works only for MesquiteMenuItem called commands
 							if (loggerSet){
 								MesquiteThread.setLoggerCurrentThread(null);
@@ -166,13 +167,13 @@ public class MainThread extends MesquiteThread {
 	}
 	boolean yesIHaveBeenInterrupted = false;
 	public void interrupt(){
-			MesquiteDialog.closeWizard();
-			yesIHaveBeenInterrupted = true;
+		MesquiteDialog.closeWizard();
+		yesIHaveBeenInterrupted = true;
 		super.interrupt();
 	}
-    public boolean isInterrupted() {
-        return super.isInterrupted() || yesIHaveBeenInterrupted;
-    }
+	public boolean isInterrupted() {
+		return super.isInterrupted() || yesIHaveBeenInterrupted;
+	}
 
 }
 

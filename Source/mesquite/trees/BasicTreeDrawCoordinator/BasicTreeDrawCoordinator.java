@@ -1168,7 +1168,20 @@ class BasicTreeDisplay extends TreeDisplay  implements KeyListener {
 	}
 	/*_________________________________________________*/
 	private boolean responseOK(){
-		return (!getDrawingInProcess() && (tree!=null) && (!tree.isLocked()) && ownerModule!=null &&  (ownerModule.getEmployer() instanceof TreeDisplayActive));
+		boolean okSoFar = (tree!=null) && (!tree.isLocked()) && ownerModule!=null &&  (ownerModule.getEmployer() instanceof TreeDisplayActive);
+		if (!okSoFar)
+			return false;
+		long startTime = System.currentTimeMillis();
+		boolean tooMuchTime = false;
+		while (getDrawingInProcess() && !tooMuchTime){
+			try {
+				Thread.sleep(20);
+			}
+			catch (Exception e){
+			}
+			tooMuchTime = System.currentTimeMillis()-startTime>2000;
+		}
+		return !tooMuchTime;
 	}
 	
 	/*_________________________________________________*/

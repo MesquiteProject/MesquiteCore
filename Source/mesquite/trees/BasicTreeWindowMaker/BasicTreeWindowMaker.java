@@ -641,7 +641,6 @@ public class BasicTreeWindowMaker extends TreeWindowMaker implements Commandable
 			if (mssage != null & mssage.contains("[Stored Trees]")){
 				mssage = StringUtil.getAllButLastItem(mssage, "[Stored Trees]");
 				mssage = StringUtil.stripTrailingWhitespace(mssage);
-				Debugg.errln("last " + mssage.lastIndexOf("[Stored Trees]") + "  ml " + mssage.length());
 				while (mssage.lastIndexOf("[Stored Trees]")>0 && mssage.lastIndexOf("[Stored Trees]")== (mssage.length()-14)){
 					mssage = StringUtil.getAllButLastItem(mssage, "[Stored Trees]");
 					mssage = StringUtil.stripTrailingWhitespace(mssage);
@@ -1083,8 +1082,9 @@ public class BasicTreeWindowMaker extends TreeWindowMaker implements Commandable
 	boolean downInTree = false;
 
 	public boolean mouseDownInTreeDisplay(int modifiers, int x, int y, TreeDisplay treeDisplay, Graphics g) {
-		if (x > 2000000 || y > 2000000)
+		if (x > 2000000 || y > 2000000){
 			return true; // here because of bug in Mac OS X 10.0.4
+		}
 		if (!treeDisplay.getTree().isLocked()) {
 			downInTree = true;
 			Shape c = g.getClip();

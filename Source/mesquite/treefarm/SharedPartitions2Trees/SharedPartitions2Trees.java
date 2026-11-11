@@ -14,6 +14,7 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
 package mesquite.treefarm.SharedPartitions2Trees;
 /*~~  */
 
+import mesquite.lib.Debugg;
 import mesquite.lib.IntegerArray;
 import mesquite.lib.MesquiteInteger;
 import mesquite.lib.MesquiteModule;
@@ -194,7 +195,7 @@ public class SharedPartitions2Trees extends DistanceBetween2Trees {
 			otherTerminalsAbove = new StringArray(numTerms);
 			otherTerminalsBelow = new StringArray(numTerms);
 		}
-		
+	
 		
 		MesquiteInteger numCon = new MesquiteInteger(0);
 		visitOriginal(use1, use1.getRoot(), use2, numCon);

@@ -1280,6 +1280,15 @@ public abstract class MesquiteModule extends EmployerEmployee implements Command
 		return null;
 	}
 	/*.................................................................................................................*/
+	/** A general flag for verbosity. Not used in the infrastructure, but available for specific debugging.*/
+	boolean verboseM = false;
+	public void setVerbosity(boolean v){
+		verboseM = v;
+	}
+	public boolean isVerbose(){
+		return verboseM;
+	}
+	/*.................................................................................................................*/
 	/** An employee can call this to know if it's ok to query for options or do any other UI interaction involving a user response.
 	 * An employer can override this to say "no".*/
 	public boolean okToInteractWithUser(int howImportant, String messageToUser){
