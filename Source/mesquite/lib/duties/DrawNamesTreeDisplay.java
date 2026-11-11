@@ -50,7 +50,8 @@ public abstract class DrawNamesTreeDisplay extends MesquiteModule  {
    	 TreeDisplay here) */
 	public void setTree(Tree tree) {
 	}
-	
+	public abstract void redrawTaxonName(int taxon) ;
+
 	/** Tells the coordinator that the tree display is to be recalculated, in case the taxon name drawer, DrawTree, or anything else wants to set anything */
 	public abstract void aboutToRecalculateTreeDisplay(TreeDisplay treeDisplay);
 

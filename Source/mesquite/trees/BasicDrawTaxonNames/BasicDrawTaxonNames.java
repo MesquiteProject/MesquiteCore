@@ -52,6 +52,7 @@ import mesquite.lib.StringUtil;
 import mesquite.lib.duties.BranchNamesAlterer;
 import mesquite.lib.duties.DrawNamesTreeDisplay;
 import mesquite.lib.duties.DrawTree;
+import mesquite.lib.duties.DrawTreeCoordinator;
 import mesquite.lib.duties.NumberForTaxon;
 import mesquite.lib.duties.TaxonNameStyler;
 import mesquite.lib.taxa.Taxa;
@@ -664,8 +665,446 @@ public class BasicDrawTaxonNames extends DrawNamesTreeDisplay {
 			return null;
 		return color;
 	}
+/* ===========================================================*/
+	/* ===========================================================*/
+	/*...&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&.*/
+	public void drawTaxonName(Tree tree, int N, int drawnRoot, TreeDisplay treeDisplay, TaxaPartition partitions, Graphics gL, TextRotator textRotator){
+		Color bgColor = null;
+		//Color bgColor = bgTransparent;
+		textRotator.assignBackground(bgColor);
+		TreeDrawing treeDrawing = treeDisplay.getTreeDrawing();
+		
+		double horiz=treeDrawing.x[N];
+		double vert=treeDrawing.y[N];
+		if (treeDisplay.floatNameAtHighest){ 
+			double furthestT = furthestTip(treeDrawing, tree, drawnRoot);
+			if (treeDisplay.isUp() || treeDisplay.isDown())
+				vert = furthestT;
+			else
+				horiz = furthestT;
+		}
+		else if (tree.isLeftmostTerminalOfCollapsedClade(N)){
+			if (!treeDisplay.collapsedCladeNameAtDescendant){
+				horiz = treeDrawing.x[tree.deepestCollapsedAncestor(N)];
+				vert = treeDrawing.y[tree.deepestCollapsedAncestor(N)];
+			}
+			else {
+				if (treeDisplay.isUp() || treeDisplay.isDown()){
+					horiz = treeDrawing.x[tree.deepestCollapsedAncestor(N)];
+				}
+				else if (treeDisplay.isRight() || treeDisplay.isLeft()){
+					vert = treeDrawing.y[tree.deepestCollapsedAncestor(N)];
+				}
+				else {
+					horiz = treeDrawing.x[tree.deepestCollapsedAncestor(N)];
+					vert = treeDrawing.y[tree.deepestCollapsedAncestor(N)];
+				}
+			}
+		}
+		int lengthString;
+		boolean warn = true;
+		Taxa taxa = tree.getTaxa();
+		int taxonNumber = tree.taxonNumberOfNode(N);
+		if (taxonNumber<0) {
+			if (warn)
+				MesquiteMessage.warnProgrammer("error: negative taxon number found in DrawNamesTreeDisplay " + taxonNumber + "  tree: " + tree.writeTree());
+			return;
+		}
+		else if (taxonNumber>=taxa.getNumTaxa()) {
+			if (warn)
+				MesquiteMessage.warnProgrammer("error: taxon number too high found in DrawNamesTreeDisplay " + taxonNumber + "  tree: " + tree.writeTree());
+			return;
+		}
+		if (taxonNumber>= treeDrawing.namePolys.length) {
+			if (warn)
+				MesquiteMessage.warnProgrammer("error: taxon number " + taxonNumber + " / name polys " + treeDrawing.namePolys.length);
+			return;
+		}
+		String s=taxa.getName(taxonNumber);
+		if (tree.isLeftmostTerminalOfCollapsedClade(N)){
+			s = getCladeName(N, partitions);
+		}
+		if (s== null){
+			if (warn)
+				MesquiteMessage.warnProgrammer("error: taxon name null");
+			return;
+		}
+		s = StringUtil.abbreviate(s, abbreviationLength, true);
+		Taxon taxon = taxa.getTaxon(taxonNumber);
+		if (taxon== null){
+			if (warn)
+				MesquiteMessage.warnProgrammer("error: taxon null");
+			return;
+		}
+		//@@@@ preparing for the specifics of the taxon name @@@@@@
+		boolean selected = taxa.getSelected(taxonNumber);
+		//check all extras to see if they want to add anything
+		boolean underlined = false;
+		Color taxonColor;
+		if (!tree.anySelected() || tree.getSelected(N))
+			taxonColor = fontColor;
+		else
+			taxonColor = fontColorLight;
 
-	/*.................................................................................................................*/
+		Color tempColor = Color.black;
+		if (!tree.isLeftmostTerminalOfCollapsedClade(N))
+			tempColor = colorerTask.getTaxonNameColor(taxa, taxonNumber);
+		else
+			tempColor = getCladeNamesColor(tree, tree.deepestCollapsedAncestor(N));
+		if (tempColor != null){
+			taxonColor = tempColor;
+		}
+		Font previousFont = gL.getFont();
+
+		if (tree.isLeftmostTerminalOfCollapsedClade(N)){
+			gL.setFont(currentFontsCollapsed[treeDisplay.collapsedCladeHighlightMode]);
+			underlined = treeDisplay.collapsedCladeUnderline;
+		}
+		else {
+			boolean useBold = colorerTask.getTaxonNameBoldness(taxa, taxonNumber);
+			if (treeDisplay.selectedTaxonHighlightMode > TreeDisplay.sTHM_GREYBOX){
+				if (bigFontChoice!= treeDisplay.selectedTaxonHighlightMode){ //there's been a shift
+					bigFontChoice = treeDisplay.selectedTaxonHighlightMode;
+					currentFontBIG = new Font(currentFont.getName(), Font.PLAIN, (int)(currentFont.getSize()*highlightMultiplier()));
+					currentFontBIGBOLD = new Font(currentFont.getName(), Font.BOLD, (int)(currentFont.getSize()*highlightMultiplier()));
+				}
+			}
+			if (useBold){
+				if (selected && treeDisplay.selectedTaxonHighlightMode >TreeDisplay.sTHM_GREYBOX)
+					gL.setFont(currentFontBIGBOLD);
+				else
+					gL.setFont(currentFontBOLD);
+			}
+			else if (selected && treeDisplay.selectedTaxonHighlightMode > TreeDisplay.sTHM_GREYBOX){
+				gL.setFont(currentFontBIG);
+			}
+			else
+				gL.setFont(currentFont);
+		}
+
+
+		if (!tree.isLeftmostTerminalOfCollapsedClade(N)) {
+			if (partitions!=null && shadePartition.getValue()){
+				TaxaGroup mi = (TaxaGroup)partitions.getProperty(taxonNumber);
+				if (mi!=null) {
+					if (shadePartition.getValue()){
+						bgColor =mi.getColor();
+						textRotator.assignBackground(bgColor);
+					}
+				}
+			}
+			if (showFootnotes.getValue()){
+				ListableVector extras = treeDisplay.getExtras();
+				if (extras!=null){
+					Enumeration e = extras.elements();
+					while (e.hasMoreElements()) {
+						Object obj = e.nextElement();
+						TreeDisplayExtra ex = (TreeDisplayExtra)obj;
+						if (ex.getTaxonUnderlined(taxon))
+							underlined = true;
+						Color tc = ex.getTaxonColor(taxon);
+						if (tc!=null) {
+							taxonColor = tc;
+						}
+						String es = ex.getTaxonStringAddition(taxon);
+						if (!StringUtil.blank(es))
+							s+= es;
+					}
+				}
+			}
+		}
+
+		Composite composite =null;
+		if(shades != null && taxonNumber < shades.length) {
+			composite = ColorDistribution.getComposite(gL);
+			ColorDistribution.setTransparentGraphics(gL,getTaxonShade(shades[taxonNumber]));		
+		}
+		gL.setColor(taxonColor); 
+
+
+		Font font = gL.getFont();
+		FontMetrics fontMet = gL.getFontMetrics(font);
+		lengthString = fontMet.stringWidth(s); //what to do if underlined?
+		int centeringOffset = 0;
+		if (treeDisplay.centerNames)
+			centeringOffset = (longestString-lengthString)/2;
+
+		if (treeDrawing.namesFollowLines ){    // ################## === For CircleTree or PlotTree === ####################
+			double slope = (treeDrawing.lineBaseY[N]*1.0-treeDrawing.lineTipY[N])*1.0/(treeDrawing.lineBaseX[N]*1.0-treeDrawing.lineTipX[N]);
+			double radians = Math.atan(slope);
+
+			boolean right = treeDrawing.lineTipX[N]>treeDrawing.lineBaseX[N];
+			double height = fontMet.getHeight(); //0.667
+			int length = fontMet.stringWidth(s)+ separation;
+			int textOffsetH = 0; //fontMet.getHeight()*2/3;
+			int textOffsetV = 0;
+			if (!right) {
+				textOffsetH = -(int)(Math.cos(radians)*length);
+
+				textOffsetV = -(int)(Math.sin(radians)*length);
+			}
+			else {
+				textOffsetH = (int)(Math.cos(radians + Math.atan(height*0.6/separation))*separation*1.4);  //1.0
+
+				textOffsetV = (int)(Math.sin(radians + Math.atan(height*0.6/separation))*separation*1.4);
+			}
+
+			double horizPosition = treeDrawing.lineTipX[N];
+			double vertPosition = treeDrawing.lineTipY[N];
+
+			textRotator.drawFreeRotatedText(s, gL, (int)horizPosition, (int)vertPosition, radians, new Point(textOffsetH, textOffsetV), false, treeDrawing.namePolys[taxonNumber]);  //integer nodeloc approximation
+
+		}
+		// ####################################### Taxon names for NodeLocsStandard trees ####################################################
+		else if ((treeDrawing.labelOrientation[N]==270) || treeDisplay.getOrientation()==TreeDisplay.UP) { // ################## === UP === ####################
+			//if there is a tipsField, then vert changes from the one based on the tip's y, to the one based on fields
+
+			horiz += treeDrawing.getEdgeWidth()/2;
+			if (Math.abs(treeDrawing.namesAngle)<0.01) {
+				horiz -= StringUtil.getStringDrawLength(gL,"A");
+			}
+			if (MesquiteDouble.isCombinable(treeDrawing.namesAngle) && treeDrawing.labelOrientation[N]!=270){
+				textRotator.drawFreeRotatedText(s,  gL, (int)horiz-rise/2, (int)vert-separation, treeDrawing.namesAngle, null, true, treeDrawing.namePolys[taxonNumber]); //integer nodeloc approximation
+			}
+			else {
+				if (treeDisplay.totalTipsFieldDistance()>0){
+					vert = treeDisplay.effectiveFieldTopMargin()+treeDisplay.getTipsMargin();
+				}
+				else vert -= centeringOffset;
+				if (!nameExposedOnTree(tree, taxonNumber))
+					setBounds(treeDrawing.namePolys[taxonNumber], 0, 0, 0, 0);
+				else
+					setBounds(treeDrawing.namePolys[taxonNumber], (int)horiz-rise/2, (int)vert-separation-lengthString, rise+descent, lengthString); //integer nodeloc approximation
+				if (nameIsVisible(treeDisplay, taxonNumber))
+					textRotator.drawRotatedText(s, taxonNumber, gL, treeDisplay, (int)horiz-rise/2, (int)vert-separation); //integer nodeloc approximation
+
+				if (underlined){
+					Rectangle b =treeDrawing.namePolys[taxonNumber].getB();
+					gL.drawLine(b.x+b.width, b.y, b.x+b.width, b.y+b.height);
+					//gL.fillPolygon(namePolys[taxonNumber]);
+				}
+			}
+		}
+		else if ((treeDrawing.labelOrientation[N]==90) || treeDisplay.getOrientation()==TreeDisplay.DOWN) {// ################## === DOWN === ####################
+			horiz += treeDrawing.getEdgeWidth()/2;
+			/*Name rotation now works only for UP
+			 * if (MesquiteWindow.Java2Davailable && (MesquiteDouble.isCombinable(treeDrawing.namesAngle) || treeDrawing.labelOrientation[N]!=90)){
+				textRotator.drawFreeRotatedText(s,  gL, horiz-rise*2, vert+separation, treeDrawing.namesAngle, null, false, namePolys[taxonNumber]); // /2
+			}
+			else */
+			{
+				if (treeDisplay.totalTipsFieldDistance()>0){
+					vert = treeDisplay.effectiveFieldHeight()+treeDisplay.effectiveFieldTopMargin()-treeDisplay.getTipsMargin();
+				}
+				vert += centeringOffset;
+				if (!nameExposedOnTree(tree, taxonNumber))
+					setBounds(treeDrawing.namePolys[taxonNumber], 0, 0, 0, 0);
+				else
+					setBounds(treeDrawing.namePolys[taxonNumber], (int)horiz-rise/2, (int)vert+separation, rise+descent, lengthString); //integer nodeloc approximation
+				if (nameIsVisible(treeDisplay, taxonNumber))
+					textRotator.drawRotatedText(s, taxonNumber, gL, treeDisplay, (int)horiz-rise/2, (int)vert+separation, false); //integer nodeloc approximation
+				if (underlined){
+					Rectangle b =treeDrawing.namePolys[taxonNumber].getB();
+					gL.drawLine(b.x+b.width, b.y, b.x+b.width, b.y+b.height);
+					//gL.fillPolygon(namePolys[taxonNumber]);
+				}
+			}
+		}
+		else if ((treeDrawing.labelOrientation[N]==0) || treeDisplay.getOrientation()==TreeDisplay.RIGHT) {// ################## ===RIGHT === ####################
+			vert += treeDrawing.getEdgeWidth()/2;
+			/*Name rotation now works only for UP
+			 *if (MesquiteWindow.Java2Davailable && (MesquiteDouble.isCombinable(treeDrawing.namesAngle) || treeDrawing.labelOrientation[N]!=0)){
+				textRotator.drawFreeRotatedText(s,  gL, horiz+separation, vert-rise*2, treeDrawing.namesAngle, null, false, namePolys[taxonNumber]); ///2
+			}
+			else */{
+				if (treeDisplay.totalTipsFieldDistance()>0){
+					horiz = treeDisplay.effectiveFieldWidth()+treeDisplay.effectiveFieldLeftMargin()-treeDisplay.getTipsMargin();
+				}
+				else {
+					//At this point horiz is just the x of the terminal node
+					//centering offset is just the left shift if we are to centre taxon names! (e.g. for mirror tree window)
+					horiz += centeringOffset;
+				}
+				if (!nameExposedOnTree(tree, taxonNumber))
+					setBounds(treeDrawing.namePolys[taxonNumber], 0, 0, 0, 0);
+				else
+					setBounds(treeDrawing.namePolys[taxonNumber], (int)horiz+separation, (int)vert-rise/2, lengthString, rise+descent); //integer nodeloc approximation
+
+				if (nameIsVisible(treeDisplay, taxonNumber)){
+					if (bgColor!=null) {
+						gL.setColor(bgColor);
+						//separation is getTaxonNameDistanceFromTip
+						GraphicsUtil.fillRect(gL,horiz+separation, vert-rise/2, lengthString, rise+descent);
+						gL.setColor(taxonColor);
+					}
+					gL.drawString(s, (int)horiz+separation, (int)vert+rise/2); //integer nodeloc approximation
+					if (underlined){
+						Rectangle b =treeDrawing.namePolys[taxonNumber].getB();
+						gL.drawLine(b.x, b.y+b.height, b.x+b.width, b.y+b.height);
+						//gL.fillPolygon(namePolys[taxonNumber]);
+					}
+				}
+			}
+		}
+		else if ((treeDrawing.labelOrientation[N]==180) || treeDisplay.getOrientation()==TreeDisplay.LEFT) {// ################## ===LEFT === ####################
+			vert += treeDrawing.getEdgeWidth()/2;
+			/*Name rotation now works only for UP
+			 *if (MesquiteWindow.Java2Davailable && (MesquiteDouble.isCombinable(treeDrawing.namesAngle) || treeDrawing.labelOrientation[N]!=0)){
+				textRotator.drawFreeRotatedText(s,  gL, horiz - separation, vert-rise*2, treeDrawing.namesAngle, null, true, namePolys[taxonNumber]);
+			}
+			else */{
+				if (treeDisplay.totalTipsFieldDistance()>0){
+					horiz = treeDisplay.effectiveFieldLeftMargin()+treeDisplay.getTipsMargin();
+				}
+				else {
+					horiz -= centeringOffset;
+				}
+				if (!nameExposedOnTree(tree, taxonNumber))
+					setBounds(treeDrawing.namePolys[taxonNumber], 0, 0, 0, 0);
+				else
+					setBounds(treeDrawing.namePolys[taxonNumber], (int)horiz - separation - lengthString, (int)vert-rise/2, lengthString, rise+descent); //integer nodeloc approximation
+				if (nameIsVisible(treeDisplay, taxonNumber)){
+					if (bgColor!=null) {
+						gL.setColor(bgColor);
+						GraphicsUtil.fillRect(gL,horiz - separation - lengthString, vert-rise/2, lengthString, rise+descent);
+						gL.setColor(taxonColor);
+					}
+					gL.drawString(s, (int)horiz - separation - lengthString, (int)vert+rise/2); //integer nodeloc approximation
+					if (underlined){
+						Rectangle b =treeDrawing.namePolys[taxonNumber].getB();
+						gL.drawLine(b.x, b.y+b.height, b.x+b.width, b.y+b.height);
+						//gL.fillPolygon(namePolys[taxonNumber]);
+					}
+				}
+			}
+		}
+		else if (treeDisplay.getOrientation()==TreeDisplay.FREEFORM) {
+			if (!nameExposedOnTree(tree, taxonNumber))
+				setBounds(treeDrawing.namePolys[taxonNumber], 0, 0, 0, 0);
+			else
+				setBounds(treeDrawing.namePolys[taxonNumber], (int)horiz+separation, (int)vert-rise/2, lengthString, rise+descent); //integer nodeloc approximation
+			if (nameIsVisible(treeDisplay, taxonNumber)){
+				if (bgColor!=null) {
+					gL.setColor(bgColor);
+					GraphicsUtil.fillRect(gL,horiz+separation, vert-rise/2, lengthString, rise+descent);
+					gL.setColor(taxonColor);
+				}
+				gL.drawString(s, (int)horiz+separation, (int)vert+rise/2);//integer nodeloc approximation
+				if (underlined){
+					Rectangle b =treeDrawing.namePolys[taxonNumber].getB();
+					gL.drawLine(b.x, b.y+b.height, b.x+b.width, b.y+b.height);
+					//gL.fillPolygon(namePolys[taxonNumber]);
+				}
+			}
+		}
+		else {
+			double slope = (treeDrawing.lineBaseY[N]*1.0-treeDrawing.lineTipY[N])/(treeDrawing.lineBaseX[N]-treeDrawing.lineTipX[N]);
+			if (slope>=-1 && slope <= 1) {  //right or left side
+				if (treeDrawing.lineTipX[N]> treeDrawing.lineBaseX[N]) { // right
+					if (!nameExposedOnTree(tree, taxonNumber))
+						setBounds(treeDrawing.namePolys[taxonNumber], 0, 0, 0, 0);
+					else
+						setBounds(treeDrawing.namePolys[taxonNumber], (int)horiz+separation, (int)vert, lengthString, rise+descent); //integer nodeloc approximation
+					if (nameIsVisible(treeDisplay, taxonNumber)){
+						if (bgColor!=null) {
+							gL.setColor(bgColor);
+							GraphicsUtil.fillRect(gL,horiz+separation, vert, lengthString, rise+descent);
+							gL.setColor(taxonColor);
+						}
+						gL.drawString(s, (int)horiz+separation, (int)vert + rise); //integer nodeloc approximation
+						if (underlined){
+							Rectangle b =treeDrawing.namePolys[taxonNumber].getB();
+							gL.drawLine(b.x, b.y+b.height, b.x+b.width, b.y+b.height);
+							//gL.fillPolygon(namePolys[taxonNumber]);
+						}
+					}
+				}
+				else {
+					if (!nameExposedOnTree(tree, taxonNumber))
+						setBounds(treeDrawing.namePolys[taxonNumber], 0, 0, 0, 0);
+					else
+						setBounds(treeDrawing.namePolys[taxonNumber], (int)horiz - separation - lengthString, (int)vert, lengthString, rise+descent); //integer nodeloc approximation
+					if (nameIsVisible(treeDisplay, taxonNumber)){
+						if (bgColor!=null) {
+							gL.setColor(bgColor);
+							GraphicsUtil.fillRect(gL,horiz - separation - lengthString, vert, lengthString, rise+descent);
+							gL.setColor(taxonColor);
+						}
+						gL.drawString(s, (int)horiz - separation - lengthString, (int)vert + rise); //integer nodeloc approximation
+						if (underlined){
+							Rectangle b =treeDrawing.namePolys[taxonNumber].getB();
+							gL.drawLine(b.x, b.y+b.height, b.x+b.width, b.y+b.height);
+							//gL.fillPolygon(namePolys[taxonNumber]);
+						}
+					}
+				}
+			}
+			else {//top or bottom
+				if (treeDrawing.lineTipY[N]> treeDrawing.lineBaseY[N]) { // bottom
+					if (!nameExposedOnTree(tree, taxonNumber))
+						setBounds(treeDrawing.namePolys[taxonNumber], 0, 0, 0, 0);
+					else
+						setBounds(treeDrawing.namePolys[taxonNumber], (int)horiz, (int)vert+separation, rise+descent, lengthString); //integer nodeloc approximation
+					if (nameIsVisible(treeDisplay, taxonNumber)){
+						textRotator.drawRotatedText(s, taxonNumber, gL, treeDisplay, (int)horiz, (int)vert+separation, false); //integer nodeloc approximation
+						if (underlined){
+							Rectangle b =treeDrawing.namePolys[taxonNumber].getB();
+							gL.drawLine(b.x+b.width, b.y, b.x+b.width, b.y+b.height);
+							//gL.fillPolygon(namePolys[taxonNumber]);
+						}
+					}
+				}
+				else { // top
+					if (!nameExposedOnTree(tree, taxonNumber))
+						setBounds(treeDrawing.namePolys[taxonNumber], 0, 0, 0, 0);
+					else
+						setBounds(treeDrawing.namePolys[taxonNumber], (int)horiz, (int)vert-separation-lengthString, rise+descent, lengthString); //integer nodeloc approximation
+					if (nameIsVisible(treeDisplay, taxonNumber)){
+						textRotator.drawRotatedText(s, taxonNumber, gL, treeDisplay, (int)horiz, (int)vert-separation); //integer nodeloc approximation
+						if (underlined){
+							Rectangle b =treeDrawing.namePolys[taxonNumber].getB();
+							gL.drawLine(b.x+b.width, b.y, b.x+b.width, b.y+b.height);
+							//gL.fillPolygon(namePolys[taxonNumber]);
+						}
+					}
+				}
+			}
+		}
+		textRotator.assignBackground(null);
+		gL.setColor(Color.black);
+		ColorDistribution.setComposite(gL,composite);
+		if (selected  && !treeDrawing.namePolys[taxonNumber].isHidden() && treeDisplay.selectedTaxonHighlightMode == TreeDisplay.sTHM_GREYBOX){ //&& GraphicsUtil.useXORMode(gL, false)
+			GraphicsUtil.fillTransparentBorderedSelectionPolygon(gL, treeDrawing.namePolys[taxonNumber]);
+		}
+
+		gL.setFont(previousFont);
+	}
+	/*...&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&.*/
+	public void redrawTaxonName(int taxon) {
+		Tree tree = treeDisplay.getTree();
+		TaxaPartition partitions = (TaxaPartition)tree.getTaxa().getCurrentSpecsSet(TaxaPartition.class);
+		TextRotator textRotator = new TextRotator(tree.getTaxa().getNumTaxa());
+
+		try {
+			Graphics g = treeDisplay.getGraphics();
+			g.setClip(null);
+			Color c = g.getColor();
+			g.setColor(treeDisplay.getBackground());
+			g.fillPolygon(treeDisplay.getTreeDrawing().namePolys[taxon]);
+			g.drawPolygon(treeDisplay.getTreeDrawing().namePolys[taxon]);
+			g.setColor(c);
+			drawTaxonName( tree,  tree.nodeOfTaxonNumber(taxon),  treeDisplay.getTreeDrawing().getDrawnRoot(),  treeDisplay,  partitions, g, textRotator);
+			g.dispose();
+		}
+		catch (Exception e){
+			MesquiteMessage.errln("Problem redrawing taxon name");
+		}
+	}
+	/*...========================================================================.*/
+	/*...========================================================================.*/
+	/*...========================================================================.*/
+	/*...========================================================================.*/
+	/*...========================================================================.*/
 	protected void drawNamesOnTree(Tree tree, int drawnRoot, int N, TreeDisplay treeDisplay, TaxaPartition partitions) {
 		TreeDrawing treeDrawing = treeDisplay.getTreeDrawing();
 		if  (tree.nodeIsTerminal(N)) {   //terminal ####################################################
@@ -673,6 +1112,9 @@ public class BasicDrawTaxonNames extends DrawNamesTreeDisplay {
 				return;
 			if (!showTaxonNames.getValue())
 				return;
+			
+			drawTaxonName( tree,  N,  drawnRoot,  treeDisplay,  partitions, gL, textRotator);
+		/*
 			Color bgColor = null;
 			//Color bgColor = bgTransparent;
 			textRotator.assignBackground(bgColor);
@@ -893,7 +1335,7 @@ public class BasicDrawTaxonNames extends DrawNamesTreeDisplay {
 				 * if (MesquiteWindow.Java2Davailable && (MesquiteDouble.isCombinable(treeDrawing.namesAngle) || treeDrawing.labelOrientation[N]!=90)){
 					textRotator.drawFreeRotatedText(s,  gL, horiz-rise*2, vert+separation, treeDrawing.namesAngle, null, false, namePolys[taxonNumber]); // /2
 				}
-				else */
+				else *
 				{
 					if (treeDisplay.totalTipsFieldDistance()>0){
 						vert = treeDisplay.effectiveFieldHeight()+treeDisplay.effectiveFieldTopMargin()-treeDisplay.getTipsMargin();
@@ -918,7 +1360,7 @@ public class BasicDrawTaxonNames extends DrawNamesTreeDisplay {
 				 *if (MesquiteWindow.Java2Davailable && (MesquiteDouble.isCombinable(treeDrawing.namesAngle) || treeDrawing.labelOrientation[N]!=0)){
 					textRotator.drawFreeRotatedText(s,  gL, horiz+separation, vert-rise*2, treeDrawing.namesAngle, null, false, namePolys[taxonNumber]); ///2
 				}
-				else */{
+				else *{
 					if (treeDisplay.totalTipsFieldDistance()>0){
 						horiz = treeDisplay.effectiveFieldWidth()+treeDisplay.effectiveFieldLeftMargin()-treeDisplay.getTipsMargin();
 					}
@@ -954,7 +1396,7 @@ public class BasicDrawTaxonNames extends DrawNamesTreeDisplay {
 				 *if (MesquiteWindow.Java2Davailable && (MesquiteDouble.isCombinable(treeDrawing.namesAngle) || treeDrawing.labelOrientation[N]!=0)){
 					textRotator.drawFreeRotatedText(s,  gL, horiz - separation, vert-rise*2, treeDrawing.namesAngle, null, true, namePolys[taxonNumber]);
 				}
-				else */{
+				else *{
 					if (treeDisplay.totalTipsFieldDistance()>0){
 						horiz = treeDisplay.effectiveFieldLeftMargin()+treeDisplay.getTipsMargin();
 					}
@@ -1079,7 +1521,7 @@ public class BasicDrawTaxonNames extends DrawNamesTreeDisplay {
 				GraphicsUtil.fillTransparentBorderedSelectionPolygon(gL, treeDrawing.namePolys[taxonNumber]);
 			}
 
-			gL.setFont(previousFont);
+			gL.setFont(previousFont);*/
 		}   //end terminal ##############################################################################################
 		else {
 			for (int d = tree.firstDaughterOfNode(N); tree.nodeExists(d); d = tree.nextSisterOfNode(d))

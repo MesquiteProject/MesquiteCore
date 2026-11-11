@@ -311,6 +311,11 @@ public class TreeDisplay extends TaxaTreeDisplay  {
 	public void paint(Graphics g) {
 	}
 	*/
+	
+	public void redrawTaxonName(int taxon) {
+		repaint();
+	}
+
 	public boolean repaintPending(){
 		return repaintsPending > 0;
 	}

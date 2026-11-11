@@ -938,6 +938,10 @@ class BasicTreeDisplay extends TreeDisplay  implements KeyListener {
 		setInvalid(false);
 
 	}
+	public void redrawTaxonName(int taxon) {
+		DrawNamesTreeDisplay namesTask = ((DrawTreeCoordinator)ownerModule).getNamesTask();
+		namesTask.redrawTaxonName( taxon);
+	}
 
 	public void update(Graphics g){
 			super.update(g);

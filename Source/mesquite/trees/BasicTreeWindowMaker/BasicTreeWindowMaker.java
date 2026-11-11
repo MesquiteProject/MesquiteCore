@@ -122,6 +122,7 @@ import mesquite.lib.duties.TreeWindowAssistantSGA;
 import mesquite.lib.duties.TreeWindowMaker;
 import mesquite.lib.duties.TreesManager;
 import mesquite.lib.taxa.Taxa;
+import mesquite.lib.taxa.TaxaPartition;
 import mesquite.lib.taxa.Taxon;
 import mesquite.lib.tree.MesquiteTree;
 import mesquite.lib.tree.Tree;
@@ -3991,7 +3992,7 @@ class BasicTreeWindow extends MesquiteWindow implements Fittable, MesquiteListen
 				// treeDisplay.redrawTaxa(g, highlightedTaxon);
 			} catch (InternalError e) { // workaround to bug in Windows Java 1.7_45
 			}
-			treeDisplay.repaint(); // TODO: just redraw the taxon
+			treeDisplay.redrawTaxonName(M); // TODO: just redraw the taxon
 
 
 			highlightedTaxon = -1;

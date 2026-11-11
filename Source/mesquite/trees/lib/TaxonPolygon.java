@@ -38,4 +38,7 @@ public class TaxonPolygon  extends Polygon {
 	public Rectangle getB(){
 		return b;
 	}
+	public String toString(){
+		return super.toString() + " bounds " + b + " npoints " + npoints;
+	}
 }
