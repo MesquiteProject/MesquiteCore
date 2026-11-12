@@ -39,6 +39,9 @@ import java.io.Writer;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLConnection;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.StandardCopyOption;
 import java.util.Enumeration;
 import java.util.Vector;
 
@@ -2210,7 +2213,7 @@ public class MesquiteFile extends Listened implements HNode, Commandable, Listab
 		return fileElements;
 	}
 	/*.................................................................................................................*/
-	/** appends a number to the end of the path until it finds that no file or directory does not exist at that path */
+	/** appends a number to the end of the path until it finds that no file or directory exists at that path */
 	public static String getUniqueNumberedPath(String path) {
 		if (!fileOrDirectoryExists(path+"1"))
 			return path+"1";
@@ -2223,7 +2226,7 @@ public class MesquiteFile extends Listened implements HNode, Commandable, Listab
 		return path + count;
 	}	
 	/*.................................................................................................................*/
-	/** appends a number to the end of the path until it finds that no file or directory does not exist at that path */
+	/** appends a number to the end of the path until it finds that no file or directory exists at that path */
 	public static String getUniqueModifiedPath(String path) {
 		if (!fileOrDirectoryExists(path))
 			return path;
@@ -2234,7 +2237,7 @@ public class MesquiteFile extends Listened implements HNode, Commandable, Listab
 		return path;
 	}	
 	/*.................................................................................................................*/
-	/** appends a number to the end of the path until it finds that no file or directory does not exist at that path */
+	/** appends a number to the end of the path until it finds that no file or directory exists at that path */
 	public static String getUniqueModifiedFileName(String path, String extension) {
 		if (!fileOrDirectoryExists(path + "." + extension))
 			return path + "." + extension;
@@ -2256,6 +2259,22 @@ public class MesquiteFile extends Listened implements HNode, Commandable, Listab
 	}	
 
 	/*.................................................................................................................*/
+	public static boolean moveContentsOfDirectory(String fromDirectoryPath, String toDirectoryPath){
+		if (!fileOrDirectoryExists(fromDirectoryPath) || !fileOrDirectoryExists(toDirectoryPath)){
+			MesquiteMessage.errln("Directory move: " + fromDirectoryPath + " to " + toDirectoryPath + " failed because:");
+			MesquiteMessage.errln("from exists?: " + fileExists(fromDirectoryPath) + " to exists? " + fileExists(toDirectoryPath));
+			return false;
+		}
+		try {
+			Path pathFrom = Path.of(fromDirectoryPath);
+			Path pathTo = Path.of(toDirectoryPath);
+			Files.move(pathFrom, pathTo, StandardCopyOption.REPLACE_EXISTING);
+		} catch (IOException e){
+			MesquiteMessage.println("Directory contents could not be moved from: " + fromDirectoryPath + " to " + toDirectoryPath);
+			return false;
+		}
+		return true;
+	}	/*.................................................................................................................*/
 	public static boolean deleteDirectory(String directoryPath){
 		if (StringUtil.blank(directoryPath))
 			return false;
@@ -2285,7 +2304,7 @@ public class MesquiteFile extends Listened implements HNode, Commandable, Listab
 			MesquiteMessage.println("Directory could not be deleted because directory appears to be null: " + directoryPath + "\n");
 			e.printStackTrace();
 			return false;
-		
+
 		} catch (SecurityException e){
 			MesquiteMessage.println("Directory could not be deleted: " + directoryPath);
 			return false;
@@ -2321,7 +2340,7 @@ public class MesquiteFile extends Listened implements HNode, Commandable, Listab
 			MesquiteMessage.println("Directory could not be deleted because directory appears to be null: " + directoryPath + "\n");
 			e.printStackTrace();
 			return false;
-		
+
 		} catch (SecurityException e){
 			MesquiteMessage.println("Directory could not be deleted: " + directoryPath);
 			return false;

@@ -25,6 +25,9 @@ public abstract class TreeWindowAssistantSGA extends TreeWindowAssistant  {
  	public String getDutyName() {
  		return "Assistant for Tree Window (Species Tree-Gene Tree Analysis)";
    	 }
+  	 public String[] getDefaultModule() {
+ 	 	return new String[] {"#ConcordanceAnalysis", "#Thicket"};
+ 	 }
 
 }
 
