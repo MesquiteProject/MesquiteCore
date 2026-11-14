@@ -225,7 +225,7 @@ public class Parallelizer {
 		totalCalculated++;
 
 		//Next, build others threads
-		if (threads == null || threads.length != nThreads || !owner.pleaseReuseParallelThreads()){
+		if (threads == null || threads.length != nThreads || !owner.pleaseReuseParallelThreads() || stopped()){
 			// ################## Building threads ##################
 			System.out.println("Parallelizer: building " + nThreads + " threads");
 			threads = new PThread[nThreads];
@@ -240,7 +240,9 @@ public class Parallelizer {
 		System.out.println("Parallelizer: starting threads");
 		for (int i = 0; i < nThreads; i++) {
 			threads[i].done = false;
+			threads[i].stopped = false;
 			threads[i].running = true;  // this is how they get re-going if second time around
+			threads[i].onCall = true;
 			threadParams[i] = threads[i].pp;
 			if (!threads[i].started)
 				threads[i].start();
@@ -329,6 +331,7 @@ public class Parallelizer {
 			done = false;
 			int item = -1;
 			calculatedOnThread = 0;
+			Debugg.errln("DO JOB @@@@@@@@@");
 			while (!stopped && (item = owner.getNextParallelItemAndReserve(pp, parallelizer))>=0){
 				itemBeingCalculated = item;
 				setItemStatus(item, BEINGCALCULATED);

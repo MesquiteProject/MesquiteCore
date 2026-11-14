@@ -39,6 +39,17 @@ public class IntegerArray  implements Listable  {
 	public int[] getMatrix(){
 		return values;
 	}
+	
+	/*...........................................................*/
+	public static int[] clone(int[] d){
+		if (d==null)
+			return d;
+		int[] q = new int[d.length];
+		for (int i=0; i< d.length; i++)
+			q[i] = d[i];
+		return q;
+	}
+
 	/*...........................................................*/
 	public void copyTo(IntegerArray d){
 		if (d==null)

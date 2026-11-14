@@ -18,7 +18,7 @@ GNU Lesser General Public License.  (http://www.gnu.org/copyleft/lesser.html)
 -- does not rely on the MesquiteTable passed to it in alterData
 -- is careful not to put up dialogs except after asking okToInteractWithUsers
  */
- public interface DataAltererParallelizable   {
+ public interface DataAltererParallelizable extends ParallelizableModule  {
   	 
 }
 
