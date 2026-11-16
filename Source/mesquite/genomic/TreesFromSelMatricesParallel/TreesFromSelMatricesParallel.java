@@ -205,7 +205,9 @@ public class TreesFromSelMatricesParallel extends CharMatricesListUtilityPrimary
 		StringUtil.appendXMLTag(buffer, 2, "numCoresPerInference", numCoresPerInference);  
 		StringUtil.appendXMLTag(buffer, 2, "storageChoice", storageChoice);  
 
-		buffer.append(super.preparePreferencesForXML());
+		String s = super.preparePreferencesForXML();
+		if (StringUtil.notEmpty(s))
+			buffer.append(s);
 		return buffer.toString();
 	}
 
