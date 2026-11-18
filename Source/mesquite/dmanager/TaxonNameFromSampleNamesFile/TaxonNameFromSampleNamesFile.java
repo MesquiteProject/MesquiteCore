@@ -410,7 +410,7 @@ public class TaxonNameFromSampleNamesFile extends TaxonNameAlterer  {
 
 	/*.................................................................................................................*/
 	public String getExplanation() {
-		return "Renames the taxa based upon chosen columns in a tab-delimited text file, using Taxon IDs or curent taxon names to find the relevant row within that file.";
+		return "Renames the taxa based upon chosen columns in a tab-delimited text file, using Taxon IDs or current taxon names to find the relevant row within that file.";
 	}
 
 	/*.................................................................................................................*/

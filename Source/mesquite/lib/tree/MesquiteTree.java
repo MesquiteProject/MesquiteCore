@@ -415,7 +415,37 @@ public class MesquiteTree extends Associable implements AdjustableTree, Listable
 		}
 		return T;
 	}
-	
+	         
+	/** Returns a clone of the tree that is intended for TEMPORARY USE because it has a reduced number of node spaces.*/
+	public MesquiteTree cloneTreeCompressed() {
+		MesquiteTree T = null;
+		boolean success = false;
+		cloneID++;
+		int gcCount = 0;
+		while (!success){
+			try {
+				T = new MesquiteTree(taxa, taxa.getNumTaxa(), taxa.getNumTaxa()*2 + 10 , taxaVersion);
+				T.readTree(writeTree());                                                        
+			}
+			catch (OutOfMemoryError e){
+				System.out.println("Out of memory error while cloning tree " + getID() + " clone ID " + cloneID + " gc " + gcCount + "; Mesquite will attempt to continue..  See file memory.txt in the Mesquite_Folder.");
+				MesquiteTrunk.mesquiteTrunk.logln("Out of memory error while cloning tree " + getID() + " clone ID " + cloneID + " gc " + gcCount + "; Mesquite will attempt to continue..  See file memory.txt in the Mesquite_Folder.");
+				try {
+					Thread.sleep(50);
+					Runtime rtm = Runtime.getRuntime();
+					rtm.gc();
+					gcCount++;
+				}
+				catch (InterruptedException ie){
+					Thread.currentThread().interrupt();
+				}
+				catch (OutOfMemoryError ee){
+				}
+			}
+		}
+		return T;
+	}
+
 	public void stealIDAndVersions(MesquiteTree tree){
 	id = tree.getID();
 	topologyVersion = tree.getTopologyVersion();

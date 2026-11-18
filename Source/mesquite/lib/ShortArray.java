@@ -51,6 +51,15 @@ public class ShortArray implements Listable {
 			this.values= values;
 	}
 	/*...........................................................*/
+	public static short[] clone(short[] d){
+		if (d==null)
+			return d;
+		short[] q = new short[d.length];
+		for (int i=0; i< d.length; i++)
+			q[i] = d[i];
+		return q;
+	}
+	/*...........................................................*/
 	public void copyTo(ShortArray d){
 		if (d==null || d.values.length!=values.length)
 			return;
@@ -68,6 +77,21 @@ public class ShortArray implements Listable {
 			return;
 		for (int i=0; i<values.length; i++)
 			values[i] =  0;
+	}
+	public static void zeroArray(short[][] values){
+		if (values==null)
+			return;
+		for (int i=0; i<values.length; i++)
+			for (int k = 0; k<values[i].length; k++)
+				values[i][k] =  0;
+	}
+	public static void zeroArray(short[][][] values){
+		if (values==null)
+			return;
+		for (int i=0; i<values.length; i++)
+			for (int k = 0; k<values[i].length; k++)
+				for (int m = 0; m<values[i][k].length; m++)
+				values[i][k][m] =  0;
 	}
 	/*...........................................................*/
 	public void deassignArray(){

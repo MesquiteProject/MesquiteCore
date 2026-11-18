@@ -331,7 +331,6 @@ public class Parallelizer {
 			done = false;
 			int item = -1;
 			calculatedOnThread = 0;
-			Debugg.errln("DO JOB @@@@@@@@@");
 			while (!stopped && (item = owner.getNextParallelItemAndReserve(pp, parallelizer))>=0){
 				itemBeingCalculated = item;
 				setItemStatus(item, BEINGCALCULATED);

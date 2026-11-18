@@ -796,6 +796,14 @@ public abstract class MesquiteTrunk extends MesquiteModule
 		}
 	}
 	/*.................................................................................................................*/
+	public static long getFreeMemory () {
+		Runtime rt = Runtime.getRuntime();
+		rt.gc();
+		long freeMem = rt.freeMemory(); 			
+		return freeMem; 
+
+	}
+	/*.................................................................................................................*/
 	public static long getMaxAvailableMemory () {
 		Runtime rt = Runtime.getRuntime();
 		rt.gc();
