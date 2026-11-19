@@ -1162,6 +1162,8 @@ class MTWExtra extends TreeDisplayExtra implements Commandable, TreeDisplayExtra
 					popup.addItem("Mark Tips and Linked Sequences Outside of Clade", module, new MesquiteCommand("markLinkedSequencesClade", this), Integer.toString(branch) +" true false");
 					popup.addItem("Unmark Tips and Linked Sequences In Clade", module, new MesquiteCommand("markLinkedSequencesClade", this), Integer.toString(branch)+ " false true");
 					popup.addItem("Unmark Tips and Linked Sequences Outside of Clade", module, new MesquiteCommand("markLinkedSequencesClade", this), Integer.toString(branch) +" false false");
+					popup.addItem("Delete Linked Sequences In Clade", module, new MesquiteCommand("deleteLinkedSequencesClade", this), Integer.toString(branch)+ " true");
+					popup.addItem("Delete Linked Sequences Outside of Clade", module, new MesquiteCommand("deleteLinkedSequencesClade", this), Integer.toString(branch) +" false");
 				}			
 			}
 			else {
@@ -1177,6 +1179,7 @@ class MTWExtra extends TreeDisplayExtra implements Commandable, TreeDisplayExtra
 					popup.addItem("Show Linked Sequence", module, new MesquiteCommand("showLinkedSequence", this), Integer.toString(taxon));
 					popup.addItem("Mark Tip and Linked Sequence", module, new MesquiteCommand("markLinkedSequence", this), Integer.toString(taxon));
 					popup.addItem("Unmark Tip and Linked Sequence", module, new MesquiteCommand("unmarkLinkedSequence", this), Integer.toString(taxon));
+					popup.addItem("Delete Linked Sequence", module, new MesquiteCommand("deleteLinkedSequence", this), Integer.toString(taxon));
 
 				}			
 			}
@@ -1254,7 +1257,24 @@ class MTWExtra extends TreeDisplayExtra implements Commandable, TreeDisplayExtra
 			for (int d = tree.firstDaughterOfNode(node); tree.nodeExists(d); d = tree.nextSisterOfNode(d)) 
 				markTipsOutsideClade(tree, d, targetNode, bits,  select);
 	}
-	/*.................................................................................................................*/
+	/*-----------------------------------------*/
+	public void deleteDataInClade(MesquiteTree tree,  int node, CharacterData data) {
+		if (tree.nodeIsTerminal(node)){
+			data.setToInapplicable(tree.taxonNumberOfNode(node));
+		}
+		for (int d = tree.firstDaughterOfNode(node); tree.nodeExists(d); d = tree.nextSisterOfNode(d)) 
+			deleteDataInClade(tree, d, data);
+	}
+	/*-----------------------------------------*/
+	public void deleteDataOutsideClade(MesquiteTree tree,  int node, int targetNode, CharacterData data) {
+		if (tree.nodeIsTerminal(node)){
+			data.setToInapplicable(tree.taxonNumberOfNode(node));
+		}
+		else if (node != targetNode)
+			for (int d = tree.firstDaughterOfNode(node); tree.nodeExists(d); d = tree.nextSisterOfNode(d)) 
+				deleteDataOutsideClade(tree, d, targetNode, data);
+	}
+/*.................................................................................................................*/
 	public Object doCommand(String commandName, String arguments, CommandChecker checker) {
 		if (checker.compare(this.getClass(), "Shows linked matrix", null, commandName, "showLinkedMatrix")) {
 			MesquiteTree myTree = (MesquiteTree)treeDisplay.getTree();
@@ -1308,6 +1328,19 @@ class MTWExtra extends TreeDisplayExtra implements Commandable, TreeDisplayExtra
 			}
 			return null;
 		}
+		else if (checker.compare(this.getClass(), "Deletes taxon's sequence in character matrix", "[taxon number]", commandName, "deleteLinkedSequence")) {  //WAYNECHECK
+			int taxon = MesquiteInteger.fromString(arguments);
+			if (MesquiteInteger.isCombinable(taxon)){
+				MesquiteTree myTree = (MesquiteTree)treeDisplay.getTree();
+				CharacterData data = myTree.findLinkedMatrix(module.getProject());
+				if (data != null){
+					data.setToInapplicable(taxon);
+					data.notifyListeners(this, new Notification(MesquiteListener.DATA_CHANGED));
+				}
+				treeDisplay.repaint();
+			}
+			return null;
+		}
 		else if (checker.compare(this.getClass(), "Marks taxon's sequence in character matrix", "[taxon number]", commandName, "markLinkedSequence")) {
 			int taxon = MesquiteInteger.fromString(arguments);
 			if (MesquiteInteger.isCombinable(taxon)){
@@ -1353,7 +1386,7 @@ class MTWExtra extends TreeDisplayExtra implements Commandable, TreeDisplayExtra
 			Parser parser = new Parser(arguments);
 			int branch = MesquiteInteger.fromString(parser.getFirstToken());
 
-			boolean inside = MesquiteBoolean.fromTrueFalseString(parser.getNextToken());
+			boolean inside = MesquiteBoolean.fromTrueFalseString(parser.getNextToken());  //WAYNECHECK: is this and the next line  reversed?
 			boolean mark = MesquiteBoolean.fromTrueFalseString(parser.getNextToken());
 			if (MesquiteInteger.isCombinable(branch)){
 				MesquiteTree myTree = (MesquiteTree)treeDisplay.getTree();
@@ -1375,6 +1408,29 @@ class MTWExtra extends TreeDisplayExtra implements Commandable, TreeDisplayExtra
 					else
 						markTipsOutsideClade(myTree, myTree.getRoot(), branch, bits, mark);
 					data.notifyListeners(this, new Notification(MesquiteListener.ASSOCIATED_CHANGED));
+				}
+				treeDisplay.repaint();
+			}
+			return null;
+		}
+		else if (checker.compare(this.getClass(), "Deletes sequences in character matrix of taxa in/out of clade", "[branch number][inside]", commandName, "deleteLinkedSequencesClade")) {//WAYNECHECK
+			MesquiteInteger pos = new MesquiteInteger(0);
+			Parser parser = new Parser(arguments);
+			int branch = MesquiteInteger.fromString(parser.getFirstToken());
+
+			boolean inside = MesquiteBoolean.fromTrueFalseString(parser.getNextToken());
+			if (MesquiteInteger.isCombinable(branch)){
+				MesquiteTree myTree = (MesquiteTree)treeDisplay.getTree();
+				MesquiteTree originalTree = (MesquiteTree)treeDisplay.getOriginalTree();
+				CharacterData data = myTree.findLinkedMatrix(module.getProject());
+				if (data != null){
+					if (originalTree != null){
+						if (inside)
+							deleteDataInClade(originalTree, branch, data);
+						else
+							deleteDataOutsideClade(originalTree, myTree.getRoot(), branch, data);
+						data.notifyListeners(this, new Notification(MesquiteListener.DATA_CHANGED));
+					}
 				}
 				treeDisplay.repaint();
 			}
