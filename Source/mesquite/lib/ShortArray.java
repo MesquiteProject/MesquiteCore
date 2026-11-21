@@ -173,6 +173,20 @@ public class ShortArray implements Listable {
 		values=newLongValues;
 	}
 	/*...........................................................*/
+	public static short[] resetArrayAtLeast(short[] array, int newNum) {
+	if (array == null || array.length<newNum)
+		return new short[newNum];
+		zeroArray(array);
+		return array;
+	}
+	/*...........................................................*/
+	public static short[] resetArrayToSize(short[] array, int newNum) {
+	if (array == null || array.length!=newNum)
+		return new short[newNum];
+		zeroArray(array);
+		return array;
+	}
+	/*...........................................................*/
 	public void addParts(int starting, int num, short defaultValue) {
 		values=addParts(values, starting, num, defaultValue);
 	}

@@ -388,6 +388,20 @@ public class IntegerArray  implements Listable  {
 		values=newIntValues;
 	}
 	/*...........................................................*/
+	public static int[] resetArrayAtLeast(int[] array, int newNum) {
+	if (array == null || array.length<newNum)
+		return new int[newNum];
+		zeroArray(array);
+		return array;
+	}
+	/*...........................................................*/
+	public static int[] resetArrayToSize(int[] array, int newNum) {
+	if (array == null || array.length!=newNum)
+		return new int[newNum];
+		zeroArray(array);
+		return array;
+	}
+	/*...........................................................*/
 	public void addParts(int starting, int num) {
 		values=addParts(values, starting, num);
 	}

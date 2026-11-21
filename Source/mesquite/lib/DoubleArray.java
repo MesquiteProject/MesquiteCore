@@ -130,7 +130,7 @@ public class DoubleArray implements Listable, Nameable  {
 			return;
 		for (int i=0; i<values.length; i++)
 			for (int k = 0; k<values[i].length; k++)
-			values[i][k] =  0;
+				values[i][k] =  0;
 	}
 	/*...........................................................*/
 	public void deassignArray(){
@@ -162,6 +162,20 @@ public class DoubleArray implements Listable, Nameable  {
 			for (int i=getSize(); i<newNum; i++)
 				newValues[i]=MesquiteDouble.unassigned;
 		values=newValues;
+	}
+	/*...........................................................*/
+	public static double[] resetArrayAtLeast(double[] array, int newNum) {
+		if (array == null || array.length<newNum)
+			return new double[newNum];
+		zeroArray(array);
+		return array;
+	}
+	/*...........................................................*/
+	public static double[] resetArrayToSize(double[] array, int newNum) {
+		if (array == null || array.length!=newNum)
+			return new double[newNum];
+		zeroArray(array);
+		return array;
 	}
 	/*...........................................................*/
 	public void addParts(int starting, int num) {
@@ -479,7 +493,7 @@ public class DoubleArray implements Listable, Nameable  {
 		int count = 0;
 		for (int i=0; i<values.length; i++)
 			if (MesquiteDouble.isCombinable(values[i]))
-					count++;
+				count++;
 		return count;
 	}
 	/*...........................................................*/
