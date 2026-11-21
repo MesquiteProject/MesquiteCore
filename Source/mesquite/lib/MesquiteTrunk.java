@@ -796,11 +796,52 @@ public abstract class MesquiteTrunk extends MesquiteModule
 		}
 	}
 	/*.................................................................................................................*/
+	public static long getMemoryUsed () {
+		Runtime rt = Runtime.getRuntime();
+		rt.gc();
+		return rt.totalMemory() - rt.freeMemory(); 			
+
+	}
+	/*.................................................................................................................*/
 	public static long getFreeMemory () {
 		Runtime rt = Runtime.getRuntime();
 		rt.gc();
 		long freeMem = rt.freeMemory(); 			
 		return freeMem; 
+
+	}
+	/*.................................................................................................................*/
+	public static String getMaxAvailableMemoryReport () {
+		Runtime rt = Runtime.getRuntime();
+		rt.gc();
+		long maxMem =  rt.maxMemory();
+		long totalMem =  rt.totalMemory();
+		long freeMem = rt.freeMemory(); 			
+		long maxAvailMem = maxMem - totalMem + freeMem;
+		return "Max mem " + (maxMem/1073741824.0) + " currently allocated " + MesquiteDouble.toString4(totalMem/1073741824.0) + " free of allcoated " + MesquiteDouble.toString4(freeMem/1073741824.0) + " available " + MesquiteDouble.toString4(maxAvailMem/1073741824.0);
+
+		/* What's being done here? 
+		 * 
+		 *    maxMem =  the most the VM will possibly take              |--------------------------------------------------------|
+		 *    totalMem = the amount of mem currently used by VM   		|-------------------------------|
+		 *    freeMem = the amount (of total) that is currently free                     |--------------|
+		 *    maxAvailMem = the most memory available                                    |--------------.-------------------------|
+		 *                                                                                                         {freeMem} + {maxMem-totalMem}
+		 */
+
+	}
+	/*.................................................................................................................*/
+	public static double getMaxAvailableMemoryGB () {
+		return getMaxAvailableMemory()/1073741824.0;
+
+		/* What's being done here? 
+		 * 
+		 *    maxMem =  the most the VM will possibly take              |--------------------------------------------------------|
+		 *    totalMem = the amount of mem currently used by VM   		|-------------------------------|
+		 *    freeMem = the amount (of total) that is currently free                     |--------------|
+		 *    maxAvailMem = the most memory available                                    |--------------.-------------------------|
+		 *                                                                                                         {freeMem} + {maxMem-totalMem}
+		 */
 
 	}
 	/*.................................................................................................................*/
@@ -811,15 +852,14 @@ public abstract class MesquiteTrunk extends MesquiteModule
 		long totalMem =  rt.totalMemory();
 		long freeMem = rt.freeMemory(); 			
 		long maxAvailMem = maxMem - totalMem + freeMem;
-		//("Free memory : " + maxMem + " - " + totalMem + " + " + freeMem + " = " + maxAvailMem);
 		return maxAvailMem; 
 
 		/* What's being done here? 
 		 * 
 		 *    maxMem =  the most the VM will possibly take              |--------------------------------------------------------|
-		 *    totalMem = the amount of mem currently used by VM   |-------------------------------|
-		 *    freeMem = the amount (of total) that is currently free                        |--------------|
-		 *    maxAvailMem = the most memory available                                      |--------------.-------------------------|
+		 *    totalMem = the amount of mem currently used by VM   		|-------------------------------|
+		 *    freeMem = the amount (of total) that is currently free                     |--------------|
+		 *    maxAvailMem = the most memory available                                    |--------------.-------------------------|
 		 *                                                                                                         {freeMem} + {maxMem-totalMem}
 		 */
 

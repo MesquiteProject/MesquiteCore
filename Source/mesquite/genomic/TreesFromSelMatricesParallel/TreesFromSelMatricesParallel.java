@@ -239,7 +239,7 @@ public class TreesFromSelMatricesParallel extends CharMatricesListUtilityPrimary
 		}
 		machine.setDatas(datas);
 		mesquite.lib.Commandable runner = (mesquite.lib.Commandable)inferenceTask.doCommand("getRunner", null, CommandChecker.defaultChecker); 
-		runner.doCommand("forceNumProcessors", MesquiteInteger.toString(numCoresPerInference), CommandChecker.defaultChecker);
+		runner.doCommand("setUseNumCoresPerInference", MesquiteInteger.toString(numCoresPerInference), CommandChecker.defaultChecker);  //used by only some runners!
 		runner.doCommand("showIntermediateTrees", "false", CommandChecker.defaultChecker);
 		inferenceTask.initialize(taxa);
 		inferenceTask.setMultipleMatrixMode(true);
@@ -438,6 +438,7 @@ class TreeInferenceParallelMachine implements Parallelizable {
 		return -1;
 	}
 	/*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~*/
+	boolean isFirstCalculation = false;
 	/*\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\*/
 	public ParallelParams doFirstCalculation_Parallel(int firstItem, Parallelizer parallelizer, MesquiteInteger resultCode) {
 
@@ -448,8 +449,12 @@ class TreeInferenceParallelMachine implements Parallelizable {
 		treeBlocks = new TreeVector[datas.size()];
 		countItemsDone = 0;
 		parallelizer.setItemStatus(firstItem, Parallelizer.BEINGCALCULATED);  //prob not necessary
+		progIndicator.toFront();
+		isFirstCalculation = true;
 		int result = doItemCalculation_Parallel(firstItem, pp, parallelizer);
+		isFirstCalculation = false;
 		resultCode.setValue(result);
+		progIndicator.toFront();
 		if (result != ResultCodes.NO_ERROR)
 			return null;
 		ownerModule.logln("\nRemaining trees will be inferred quietly, without logging.");
@@ -466,7 +471,7 @@ class TreeInferenceParallelMachine implements Parallelizable {
 		MesquiteModule mb = parallelizer.cloneEmployee(ownerModule, (MesquiteModule)ownerModule.inferenceTask, TreeSearcherFromMatrix.class);
 		((TreeSearcherFromMatrix)mb).setMultipleMatrixMode(true);
 		mesquite.lib.Commandable runner = (mesquite.lib.Commandable)mb.doCommand("getRunner", null, CommandChecker.defaultChecker); 
-		runner.doCommand("forceNumProcessors", MesquiteInteger.toString(ownerModule.numCoresPerInference), CommandChecker.defaultChecker);
+		runner.doCommand("setUseNumCoresPerInference", MesquiteInteger.toString(ownerModule.numCoresPerInference), CommandChecker.defaultChecker);  //used by only some runners!
 		runner.doCommand("showIntermediateTrees", "false", CommandChecker.defaultChecker);
 		runner.doCommand("setVerbose", "false", CommandChecker.defaultChecker);
 		runner.doCommand("optionsHaveBeenSet", "true", CommandChecker.defaultChecker);  
@@ -490,10 +495,17 @@ class TreeInferenceParallelMachine implements Parallelizable {
 		TreeSearcherFromMatrix inferenceTask = (TreeSearcherFromMatrix)params.employees[0];
 		progIndicator.setText("\nInferring trees from matrix " +matrix.getName());
 
+		if (isFirstCalculation)
+			progIndicator.toFront();
 		inferenceTask.initialize(taxa);
+		if (isFirstCalculation)
+			progIndicator.toFront();
+
 		MesquiteThread.setHintToSuppressProgressIndicatorCurrentThread(true);
 		MesquiteThread.setThreadMaxLogLevel(MesquiteMessage.HIGH_PRIORITY);
 		int result = inferenceTask.fillTreeBlock(trees);
+		if (isFirstCalculation)
+			progIndicator.toFront();
 		trees.setName(matrix.getName());
 		MesquiteThread.releaseThreadMaxLogLevel();
 		MesquiteThread.setHintToSuppressProgressIndicatorCurrentThread(false);

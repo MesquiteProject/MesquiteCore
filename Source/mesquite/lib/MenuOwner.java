@@ -2023,7 +2023,7 @@ public abstract class MenuOwner implements Doomable { // EMBEDDED: extends Apple
 		return (mmi.getListableFilter() == null || mmi.getListableFilter().isAssignableFrom(mbi.getModuleClass())
 				|| ((CompatibilityChecker) mbi).isCompatible(mmi.getListableFilter(), null, null));
 	}
-	static final int maxListSubmenuItemCount = 64;
+	static final int maxListSubmenuItemCount = 128;
 	/*............................................................................. */
 	int fillSubmenuWithListable(int currentCount, Menu menu, MesquiteSubmenu submenu, MesquiteSubmenuSpec msms,
 			Object ccc, QualificationsTest qualificationsTest, MesquiteInteger j, int priorityLevel) {
