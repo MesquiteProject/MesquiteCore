@@ -91,6 +91,29 @@ public class Bits implements Listable, Nameable {
 			bools[i] = isBitOn(i);
 		return bools;
 	}
+	/*...........................................................*/
+	public static boolean[] clone(boolean[] d){
+		if (d==null)
+			return d;
+		boolean[] q = new boolean[d.length];
+		for (int i=0; i< d.length; i++)
+			q[i] = d[i];
+		return q;
+	}
+	/*...........................................................*/
+	public static boolean[] resetArrayAtLeast(boolean[] array, int newNum) {
+	if (array == null || array.length<newNum)
+		return new boolean[newNum];
+		allFalse(array);
+		return array;
+	}
+	/*...........................................................*/
+	public static boolean[] resetArrayToSize(boolean[] array, int newNum) {
+	if (array == null || array.length!=newNum)
+		return new boolean[newNum];
+		allFalse(array);
+		return array;
+	}
 
 	public void setBits(Bits b) {
 		if (b == null)

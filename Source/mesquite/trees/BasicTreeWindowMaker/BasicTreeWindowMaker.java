@@ -637,7 +637,7 @@ public class BasicTreeWindowMaker extends TreeWindowMaker implements Commandable
 			String mssage = parser.getFirstToken(arguments);
 			editMode = true;
 			basicTreeWindow.treeEdited = false;
-			
+
 			//Cleaning out remnants of previous saves
 			if (mssage != null & mssage.contains("[Stored Trees]")){
 				mssage = StringUtil.getAllButLastItem(mssage, "[Stored Trees]");
@@ -3006,10 +3006,15 @@ class BasicTreeWindow extends MesquiteWindow implements Fittable, MesquiteListen
 				tree.setName(s);
 				TreeVector trees = null;
 				int numTreeBlocks = ownerModule.getProject().getNumberTreeVectors();
-				if (!inOther && originalTree != null && ((MesquiteTree) originalTree).getTreeVector() != null) {
-					trees = ownerModule.getProject().storeTree(this, ((MesquiteTree) originalTree).getTreeVector(), tree, true);
+				if (!inOther){
+					if (treeSourceTask instanceof TreeVectorHolder){
+						TreeVector currentTrees = ((TreeVectorHolder)treeSourceTask).getCurrentTreeVector(tree.getTaxa());
+						trees = ownerModule.getProject().storeTree(this, currentTrees, tree, true);
+					}
+					if (trees == null && originalTree != null && ((MesquiteTree) originalTree).getTreeVector() != null) 
+						trees = ownerModule.getProject().storeTree(this, ((MesquiteTree) originalTree).getTreeVector(), tree, true);
 				}
-				else
+				if (trees == null)
 					trees = ownerModule.getProject().storeTree(this, null, tree, true);
 				int numTreeBlocksAfter = ownerModule.getProject().getNumberTreeVectors();
 				if (numTreeBlocksAfter>numTreeBlocks)

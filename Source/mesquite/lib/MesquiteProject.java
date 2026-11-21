@@ -1927,6 +1927,7 @@ public class MesquiteProject extends Attachable implements Listable, MesquiteLis
 			}
 		}
 		if (trees!=null) {
+			Debugg.errln("added to trees vector " + trees.getID());
 			trees.addElement(tree, true);
 			return trees;
 		}
