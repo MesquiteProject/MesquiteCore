@@ -376,6 +376,15 @@ public class ListableVector extends FileElement implements StringLister, Command
 		}
 	}
 	/*-------------ListableVector----------------*/
+	public synchronized void replaceElementAt(Listable replacement, int old, boolean notify) {
+		if (replacement!=null && old>=0) {
+			removeElementAt(old, false);
+			vec.insertElementAt(replacement, old);
+			if (notify)
+				notifyListeners(this, new Notification(MesquiteListener.PARTS_CHANGED));
+		}
+	}
+	/*-------------ListableVector----------------*/
 	public void replaceElement(Listable old, Listable replacement, boolean notify) {
 		if (replacement!=null && old !=null && indexOf(old)>=0) {
 			int index = indexOf(old);
