@@ -739,11 +739,11 @@ public class ProcessDataFiles extends GeneralFileMakerMultiple implements Action
 	}
 	/*.................................................................................................................*/
 	public String getName() {
-		return "Process Data Files";
+		return "Pipeline-Process Data Files (Multi-Taxon)";
 	}
 	/*.................................................................................................................*/
 	public String getNameForMenuItem() {
-		return "Process Data Files...";
+		return "Pipeline-Process Data Files (Multi-Taxon)...";
 	}
 	/*.................................................................................................................*/
 	public boolean showCitation() {

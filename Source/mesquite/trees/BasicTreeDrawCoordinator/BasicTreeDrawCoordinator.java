@@ -896,26 +896,27 @@ class BasicTreeDisplay extends TreeDisplay  implements KeyListener {
 				stage = 2;
 
 				if (bailOut(initialPending)) return;
+				if (getTreeDrawing()!=null && tree !=null && getHighlightedBranch() > 0) 
+					getTreeDrawing().highlightBranch(tree, getHighlightedBranch(),g); 
+				stage = 3;
+				
+				if (bailOut(initialPending)) return;
 				drawAllExtras(tree, dRoot, g);
 				if (bailOut(initialPending)) return;
-				stage = 3;
+				stage = 4;
 				//	if (ownerDrawModule.labelBranchLengths.getValue())
 				//		drawBranchLengthsOnTree(tree, dRoot, g);
-				stage = 4;
+				stage = 5;
 				if (ownerDrawModule.showNodeNumbers.getValue())
 					drawNodeNumbersOnTree(tree, dRoot, g);
-				stage = 5;
+				stage = 6;
 				if (bailOut(initialPending)) return;
 
 				if (!suppressNames && ownerModule!=null && ((DrawTreeCoordinator)ownerModule).getNamesTask()!=null)
 					((DrawTreeCoordinator)ownerModule).getNamesTask().drawNames(this, tree, dRoot, g);
-				stage = 6;
-				if (bailOut(initialPending)) return;
-
-					if (getTreeDrawing()!=null && tree !=null && getHighlightedBranch() > 0) 
-						getTreeDrawing().highlightBranch(tree, getHighlightedBranch(),g); 
 				stage = 7;
 				if (bailOut(initialPending)) return;
+
 			}
 			catch (Throwable e){
 				MesquiteMessage.println("Error or Exception in tree drawing (stage " + stage +") (" + e.toString() + ")");

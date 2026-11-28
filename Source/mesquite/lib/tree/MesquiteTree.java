@@ -5559,6 +5559,17 @@ and the tree has been rerooted. Properties that belong to nodes implicitly have 
 		return pruned;
 
 	}
+	/** Count taxa from this tree that are in common.*/
+	public int countTaxaInCommon(MesquiteTree tree2) {   
+		if (getTaxa() != tree2.getTaxa())
+			return 0;
+		int count = 0;
+		for (int it=0; it<getNumTaxa(); it++) {
+			if (taxonInTree(it) && tree2.taxonInTree(it))
+				count++;
+		}
+		return count;
+	}
 	/*-----------------------------------------*/
 	/** Excise node and clade above it from tree but leave the clade intact, in case it is to be attached elsewhere.*/
 	public  boolean snipClade(int node, boolean notify) {   

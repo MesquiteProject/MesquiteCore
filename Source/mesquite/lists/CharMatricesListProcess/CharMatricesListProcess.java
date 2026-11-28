@@ -45,11 +45,11 @@ import mesquite.lists.lib.CharMatricesListUtilityPrimary;
 public class CharMatricesListProcess extends CharMatricesListUtilityPrimary implements ActionListener {
 	/*.................................................................................................................*/
 	public String getName() {
-		return "Process Matrices ";
+		return "Pipeline-Process Matrices";
 	}
 
 	public String getNameForMenuItem() {
-		return "Process Matrices...";
+		return "Pipeline-Process Matrices...";
 	}
 
 	public String getExplanation() {
